@@ -131,7 +131,7 @@ export class CommandProcessRegistry {
   }
 
   commandLine(commandLine: string, options: SpawnOptions, context: MessageContext): Promise<ErrorResult> {
-    options.shell = true;
+    options.shell = process.env.SHELL ?? true;
     return this.command(commandLine, [], options, context);
   }
 }

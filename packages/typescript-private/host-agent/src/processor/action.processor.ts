@@ -253,15 +253,14 @@ export class ActionProcessor {
     const config = await loader.load();
     const { runs_main } = config;
     const useSource = this.useSource();
-    const shell = useSource ? true : false;
-    this.logger.verbose('action run', { actionGitPath, runs_main, shell });
+    this.logger.verbose('action run', { actionGitPath, runs_main });
     return this.commandProcessRegistry.command(
       useSource ? 'yarn' : yarnPath,
       ['node', runs_main],
       {
         cwd: actionGitPath,
         env,
-        shell,
+        shell: process.env.SHELL ?? true,
       },
       context,
     );
