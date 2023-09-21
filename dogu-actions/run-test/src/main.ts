@@ -159,7 +159,7 @@ ActionKit.run(async ({ options, logger, input, deviceHostClient, consoleActionCl
   const result = spawnSync(executeCommand, {
     encoding: 'utf8',
     stdio: 'inherit',
-    shell: true,
+    shell: process.env.SHELL ?? true,
     cwd: DOGU_STEP_WORKING_PATH,
     env,
   });
