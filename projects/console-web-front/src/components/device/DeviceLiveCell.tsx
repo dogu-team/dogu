@@ -24,9 +24,10 @@ const DeviceIcon = ({ platform }: { platform: Platform }) => {
 
 interface Props {
   device: DeviceBase | undefined;
+  pid?: number;
 }
 
-const DeviceLiveCell = ({ device }: Props) => {
+const DeviceLiveCell = ({ device, pid }: Props) => {
   if (!device) {
     return (
       <div>
@@ -36,7 +37,7 @@ const DeviceLiveCell = ({ device }: Props) => {
   }
 
   return (
-    <DeviceStreaming device={device}>
+    <DeviceStreaming device={device} pid={pid}>
       <ContentWrapper>
         <FlexRow style={{ marginBottom: '.25rem' }}>
           <DeviceIcon platform={device.platform} />

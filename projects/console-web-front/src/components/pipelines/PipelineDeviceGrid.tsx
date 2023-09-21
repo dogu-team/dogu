@@ -32,6 +32,15 @@ const PipelineDeviceGrid = ({ routineJobs }: Props) => {
   const mobileJobs = jobs.filter((job) => !isDesktop(job.device));
   const desktopJobs = jobs.filter((job) => isDesktop(job.device));
 
+  if (mobileJobs.length === 0 && desktopJobs.length === 0) {
+    return (
+      <EmptyBox>
+        <MobileOutlined style={{ fontSize: '4rem' }} />
+        <p style={{ marginTop: '2rem' }}>Waiting for running...!</p>
+      </EmptyBox>
+    );
+  }
+
   return (
     <>
       {mobileJobs.length > 0 && (
@@ -55,13 +64,15 @@ const PipelineDeviceGrid = ({ routineJobs }: Props) => {
         <DesktopBox>
           {desktopJobs.map((deviceJob) => {
             if (deviceJob?.status === PIPELINE_STATUS.IN_PROGRESS) {
-              return (
-                <CellWrapper key={deviceJob.routineDeviceJobId} isDesktop={true}>
-                  <div>
-                    <DeviceLiveCell device={deviceJob.device} />
-                  </div>
-                </CellWrapper>
-              );
+              if (!!deviceJob.browserName && deviceJob.windowProcessId !== null) {
+                return (
+                  <CellWrapper key={deviceJob.routineDeviceJobId} isDesktop={true}>
+                    <div>
+                      <DeviceLiveCell device={deviceJob.device} pid={deviceJob.windowProcessId} />
+                    </div>
+                  </CellWrapper>
+                );
+              }
             }
 
             return null;

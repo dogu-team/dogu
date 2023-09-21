@@ -14,7 +14,12 @@ import { WebRtcExchangerFactory } from '../../utils/streaming/web-rtc-exchanger'
 
 type DataChannelLabel = PrivateProtocol.DataChannelLabel;
 
-const useRTCConnection = (device: DeviceBase | undefined, sendThrottleMs: number) => {
+type Option = {
+  device?: DeviceBase;
+  pid?: number;
+};
+
+const useRTCConnection = ({ device, pid }: Option, sendThrottleMs: number) => {
   const router = useRouter();
   const organizationId = router.query.orgId as OrganizationId;
   const { fps, resolution } = useStreamingOptionStore((state) => state.option);
@@ -68,8 +73,8 @@ const useRTCConnection = (device: DeviceBase | undefined, sendThrottleMs: number
   }, []);
 
   useEffect(() => {
-    if (!device) {
-      console.error('No device');
+    if (!device && !pid) {
+      console.error('No device or pid');
       return;
     }
 
@@ -151,34 +156,37 @@ const useRTCConnection = (device: DeviceBase | undefined, sendThrottleMs: number
     const streamingOption: StreamingOption = {
       screen: {
         maxFps: fps ?? 60,
+        pid,
         maxResolution: resolution ?? 720,
       },
     };
 
-    const { platform, serial } = device;
-    const webRtcExchanger = WebRtcExchangerFactory.createByPlatform(platform);
-    webRtcExchanger.startExchange(
-      organizationId,
-      device.deviceId,
-      serial,
-      pc,
-      device.platform,
-      streamingOption,
-      (error) => {
-        console.debug('startExchange error', error);
-        if (isVideoShowing(videoRef.current)) {
-          console.debug('rtc in progress. so ignore ws error', error);
-          return;
-        }
-        setHAConnectionError(error);
-      },
-    );
+    if (device) {
+      const { platform, serial } = device;
+      const webRtcExchanger = WebRtcExchangerFactory.createByPlatform(platform);
+      webRtcExchanger.startExchange(
+        organizationId,
+        device.deviceId,
+        serial,
+        pc,
+        device.platform,
+        streamingOption,
+        (error) => {
+          console.debug('startExchange error', error);
+          if (isVideoShowing(videoRef.current)) {
+            console.debug('rtc in progress. so ignore ws error', error);
+            return;
+          }
+          setHAConnectionError(error);
+        },
+      );
 
-    const caller = new DeviceRTCCaller(device.deviceId, dc);
-    caller.setSendThrottleMs(sendThrottleMs);
+      const caller = new DeviceRTCCaller(device.deviceId, dc);
+      caller.setSendThrottleMs(sendThrottleMs);
+      setDeviceRTCCaller(caller);
+    }
 
     setPeerConnection(pc);
-    setDeviceRTCCaller(caller);
 
     return () => {
       if (videoRef.current) {
@@ -190,7 +198,7 @@ const useRTCConnection = (device: DeviceBase | undefined, sendThrottleMs: number
       setHAConnectionError(undefined);
       setLoading(true);
     };
-  }, [device?.deviceId, fps, resolution]);
+  }, [device?.deviceId, pid, fps, resolution]);
 
   useEffect(() => {
     return () => {
