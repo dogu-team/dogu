@@ -583,7 +583,7 @@ Dest.withOptions({
         await Driver.clickElement({ xpath: '//button[@id="update-project-template-confirm-btn"]' });
         await Timer.wait(2000, 'wait for changing project template');
         const elements = await Driver.findElements({ xpath: '//li[@role="presentation"' });
-        expect(elements.length).toBe(3);
+        expect(elements.length).toBe(4);
 
         await Driver.clickElement({ xpath: '//button[@access-id="update-project-template-btn"]' });
         await Driver.clickElement({ xpath: '//input[@type="radio" and @value="3"]/../..' });
