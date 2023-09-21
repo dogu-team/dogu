@@ -204,32 +204,30 @@ const OrganizationSideBar = () => {
 
   return (
     <StyledSider collapsible collapsed={collapsed} trigger={null}>
-      <StyledBox>
-        <div
-          style={{
-            position: 'relative',
-            width: '100%',
-            flex: 1,
-            maxHeight: '100dvh',
-            display: 'flex',
-            flexDirection: 'column',
-          }}
-        >
-          <SidebarInner>
-            <Box>
-              <Menu style={{ borderInline: 'none' }} items={items} mode="inline" />
+      <div
+        style={{
+          position: 'relative',
+          width: '100%',
+          flex: 1,
+          maxHeight: '100dvh',
+          display: 'flex',
+          flexDirection: 'column',
+        }}
+      >
+        <SidebarInner>
+          <Box>
+            <Menu style={{ borderInline: 'none' }} items={items} mode="inline" />
 
-              <div style={{ marginTop: '1rem' }}>
-                <Menu style={{ borderInline: 'none' }} items={bottomItems} mode="inline" />
-              </div>
-            </Box>
-          </SidebarInner>
-        </div>
+            <div style={{ marginTop: '1rem' }}>
+              <Menu style={{ borderInline: 'none' }} items={bottomItems} mode="inline" />
+            </div>
+          </Box>
+        </SidebarInner>
+      </div>
 
-        <Wrapper>
-          <CollpaseSidebarMenu />
-        </Wrapper>
-      </StyledBox>
+      <Wrapper>
+        <CollpaseSidebarMenu />
+      </Wrapper>
     </StyledSider>
   );
 };
@@ -330,14 +328,4 @@ const Wrapper = styled.div`
   top: 0;
   bottom: 0;
   z-index: 99;
-`;
-
-const StyledBox = styled.div`
-  position: sticky;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  max-height: 100vh;
-  display: flex;
-  padding-bottom: 3rem;
 `;

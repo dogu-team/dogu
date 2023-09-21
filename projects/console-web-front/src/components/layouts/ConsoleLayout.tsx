@@ -81,10 +81,12 @@ const StyledLayout = styled(Layout)`
   flex-direction: row;
   background-color: #fff;
   flex: 1;
+  height: 100%;
 `;
 
 const StyledLayoutContent = styled(Layout.Content)`
   background-color: #ffffff;
+  height: 100%;
 `;
 
 const TitleBox = styled.div`
@@ -96,9 +98,13 @@ const TitleBox = styled.div`
 `;
 
 const PaddingBox = styled.div`
+  display: flex;
+  flex-direction: column;
   position: relative;
   padding: 2rem;
   padding-bottom: 6rem;
+  height: 100%;
+  overflow-y: auto;
 
   @media only screen and (max-width: 767px) {
     padding: 0;
@@ -107,6 +113,7 @@ const PaddingBox = styled.div`
 
 const ContentBox = styled.div`
   margin-top: 1rem;
+  flex: 1;
 `;
 
 export default ConsoleLayout;

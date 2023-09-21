@@ -115,7 +115,7 @@ const ConsoleBasicLayout = ({ children, user, licenseInfo }: Props) => {
             </FlexRow>
           }
         />
-        {children}
+        <Content>{children}</Content>
       </Box>
     </>
   );
@@ -124,8 +124,8 @@ const ConsoleBasicLayout = ({ children, user, licenseInfo }: Props) => {
 export default ConsoleBasicLayout;
 
 const Box = styled.div`
-  min-height: 100dvh;
-  height: 100%;
+  height: 100dvh;
+  width: 100vw;
   display: flex;
   flex-direction: column;
 `;
@@ -172,4 +172,9 @@ const CloseAlertButton = styled.button`
   &:hover {
     background-color: ${(props) => props.theme.main.colors.blue5};
   }
+`;
+
+const Content = styled.main`
+  height: calc(100dvh - 57px);
+  overflow: hidden;
 `;
