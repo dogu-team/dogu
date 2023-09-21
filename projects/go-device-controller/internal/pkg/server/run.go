@@ -56,7 +56,7 @@ func RunDetach() *grpc.Server {
 
 	log.Inst.Info("arguments", zap.Int("grpcServerPort", grpcServerPort), zap.Int("deviceServerPort", deviceServerPort), zap.String("ffmpegPath", args.Global.FFmpegPath))
 
-	err := robotgo.SetXDisplayName(":0")
+	err := robotgo.SetXDisplayName(":9")
 	if err != nil {
 		log.Inst.Warn("SetXDisplayName failed", zap.Error(err))
 	}
