@@ -13,7 +13,7 @@ Xvfb :9 -screen 0 1920x1080x24 &
 XVFB_PID=$!
 
 # Start the yarn dogu-agent run in the background
-yarn dogu-agent run "$@" &
+yarn dogu-agent run --linux-device-serial $(uuidgen) "$@" &
 
 # Get the PID of the yarn dogu-agent process
 DOG_AGENT_PID=$!

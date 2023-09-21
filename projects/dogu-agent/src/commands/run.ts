@@ -9,7 +9,7 @@ import {
 } from '@dogu-private/dogu-agent-core/app';
 import { HostPaths, LoggerFactory } from '@dogu-tech/node';
 
-export async function run(url: string, token: string) {
+export async function run(url: string, token: string, linuxDeviceSerial: string) {
   const runType = process.env.DOGU_RUN_TYPE;
   const appName = 'dogu-agent-cli' + (runType ? `-${runType?.toLowerCase()}` : '');
   const logger = LoggerFactory.create(appName);
@@ -26,6 +26,9 @@ export async function run(url: string, token: string) {
   appConfigService.set('DOGU_API_BASE_URL', url);
   appConfigService.set('DOGU_HOST_TOKEN', token);
   appConfigService.set('DOGU_DEVICE_PLATFORM_ENABLED', 'windows,macos,linux');
+  if (!appConfigService.getOrDefault('DOGU_LINUX_DEVICE_SERIAL', '')) {
+    appConfigService.set('DOGU_LINUX_DEVICE_SERIAL', linuxDeviceSerial);
+  }
 
   const featureConfigService = await new FeatureConfigLoader({
     appConfigService,

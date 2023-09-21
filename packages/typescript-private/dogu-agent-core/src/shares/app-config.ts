@@ -35,6 +35,9 @@ export const AppConfigSchema = {
   DOGU_DEVICE_IOS_RESTART_ON_INIT: {
     type: 'boolean',
   },
+  DOGU_LINUX_DEVICE_SERIAL: {
+    type: 'string',
+  },
   is_show_devui: {
     type: 'boolean',
   },
