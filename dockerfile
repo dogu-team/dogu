@@ -66,6 +66,7 @@ RUN apt-get update && \
     libgbm-dev \ 
     build-essential \
     xvfb \
+    uuid-runtime \
     && \
     update-ca-certificates
 
