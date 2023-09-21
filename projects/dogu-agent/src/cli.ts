@@ -12,9 +12,10 @@ program
   .description('run Dogu Agent')
   .addOption(new Option('--url <url>', 'Dogu API Base URL').env('DOGU_API_BASE_URL').makeOptionMandatory(true))
   .addOption(new Option('--token <token>', 'Dogu Host Token').env('DOGU_HOST_TOKEN').makeOptionMandatory(true))
+  .addOption(new Option('--linux-device-serial <linux-device-serial>', 'Linux Device Serial').env('DOGU_LINUX_DEVICE_SERIAL').default(''))
   .action(async (options) => {
-    const { url, token } = options;
-    await run(url, token);
+    const { url, token, linuxDeviceSerial } = options;
+    await run(url, token, linuxDeviceSerial);
   });
 
 program.parse();
