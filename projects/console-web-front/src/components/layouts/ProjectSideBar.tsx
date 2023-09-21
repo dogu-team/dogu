@@ -181,8 +181,9 @@ const ProjectSideBar = () => {
             },
           ],
         },
-    project?.type === PROJECT_TYPE.APP
-      ? {
+    project?.type === PROJECT_TYPE.WEB
+      ? null
+      : {
           type: 'group',
           label: collapsed ? null : 'Resource',
           children: [
@@ -210,8 +211,7 @@ const ProjectSideBar = () => {
               ) : undefined,
             },
           ],
-        }
-      : null,
+        },
     {
       type: 'group',
       label: collapsed ? null : 'General',
