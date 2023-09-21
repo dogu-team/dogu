@@ -106,4 +106,4 @@ RUN yarn run build
 RUN yarn run third-party:download:build
 
 WORKDIR /dogu/projects/dogu-agent
-ENTRYPOINT ["./entrypoint.sh"]
+ENTRYPOINT ["/usr/bin/bash", "-c", "./entrypoint.sh"]
