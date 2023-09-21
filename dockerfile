@@ -67,6 +67,7 @@ RUN apt-get update && \
     build-essential \
     xvfb \
     uuid-runtime \
+    python3.10-venv \
     && \
     update-ca-certificates
 
