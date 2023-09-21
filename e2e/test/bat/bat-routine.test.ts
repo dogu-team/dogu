@@ -574,7 +574,7 @@ Dest.withOptions({
         await Driver.clickElement({ xpath: '//input[@type="radio" and @value="0"]/../..' });
         await Driver.clickElement({ xpath: '//button[@id="update-project-template-confirm-btn"]' });
         await Timer.wait(2000, 'wait for changing project template');
-        let element = await Driver.findElement({ xpath: '//div[@title="General" and @class="ant-menu-item-group-title"]/../ul/li[1]/span/a' });
+        let element = await Driver.findElement({ xpath: '//div[@title="Resource" and @class="ant-menu-item-group-title"]/../ul/li[1]/span/a' });
         let accessId = await element.getAttribute('access-id');
         expect(accessId).toBe('project-side-bar-apps');
 
@@ -582,15 +582,14 @@ Dest.withOptions({
         await Driver.clickElement({ xpath: '//input[@type="radio" and @value="1"]/../..' });
         await Driver.clickElement({ xpath: '//button[@id="update-project-template-confirm-btn"]' });
         await Timer.wait(2000, 'wait for changing project template');
-        element = await Driver.findElement({ xpath: '//div[@title="General" and @class="ant-menu-item-group-title"]/../ul/li[1]/span/a' });
-        accessId = await element.getAttribute('access-id');
-        expect(accessId).toBe('project-side-bar-members');
+        const elements = await Driver.findElements({ xpath: '//li[@role="presentation"' });
+        expect(elements.length).toBe(3);
 
         await Driver.clickElement({ xpath: '//button[@access-id="update-project-template-btn"]' });
         await Driver.clickElement({ xpath: '//input[@type="radio" and @value="3"]/../..' });
         await Driver.clickElement({ xpath: '//button[@id="update-project-template-confirm-btn"]' });
         await Timer.wait(2000, 'wait for changing project template');
-        element = await Driver.findElement({ xpath: '//div[@title="General" and @class="ant-menu-item-group-title"]/../ul/li[1]/span/a' });
+        element = await Driver.findElement({ xpath: '//div[@title="Resource" and @class="ant-menu-item-group-title"]/../ul/li[1]/span/a' });
         accessId = await element.getAttribute('access-id');
         expect(accessId).toBe('project-side-bar-apps');
       });
