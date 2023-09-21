@@ -7,7 +7,6 @@ import { swrAuthFetcher } from '../../api';
 import { ProjectContext } from '../../hooks/context/useProjectContext';
 import { getErrorMessageFromAxios } from '../../utils/error';
 import ErrorBox from '../common/boxes/ErrorBox';
-
 import ConsoleLayout, { ConsoleLayoutProps } from './ConsoleLayout';
 import ProjectSideBar from './ProjectSideBar';
 
