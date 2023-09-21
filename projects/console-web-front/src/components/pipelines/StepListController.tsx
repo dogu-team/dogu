@@ -288,7 +288,7 @@ const Item = styled.div``;
 
 const StepHeader = styled.button<{ isOpen: boolean; isVerified?: boolean }>`
   position: sticky;
-  top: 109px;
+  top: calc(109px - 2rem);
   display: flex;
   width: 100%;
   height: 48px;

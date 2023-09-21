@@ -43,7 +43,7 @@ const ProjectLayoutWithSidebar = ({ children, innerSidebar, project, ...props }:
     <ProjectContext.Provider value={{ project: data ?? project, mutate }}>
       <ConsoleLayout sidebar={<ProjectSideBar />} {...props} padding="2rem 2rem 0">
         <FlexRow>
-          {!!innerSidebar && <SideBar offset={56}>{innerSidebar}</SideBar>}
+          {!!innerSidebar && <SideBar>{innerSidebar}</SideBar>}
           <Content hasSidebar={!!innerSidebar}>{children}</Content>
         </FlexRow>
       </ConsoleLayout>
@@ -58,9 +58,9 @@ const FlexRow = styled.div`
   height: 100%;
 `;
 
-const SideBar = styled.div<{ offset: number }>`
+const SideBar = styled.div`
   position: sticky;
-  top: 0px;
+  top: -2rem;
   width: 300px;
   max-height: calc(100dvh - 57px);
   padding: 1rem 1rem 0 0;

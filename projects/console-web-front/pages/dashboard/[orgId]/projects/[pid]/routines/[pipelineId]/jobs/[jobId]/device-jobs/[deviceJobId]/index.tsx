@@ -38,11 +38,10 @@ const DeviceJobPage: NextPageWithLayout<ProjectServerSideProps> = ({ organizatio
     `/organizations/${organization.organizationId}/projects/${project.projectId}/pipelines/${pipelineId}/jobs/${jobId}/device-jobs/${deviceJobId}`,
     swrAuthFetcher,
   );
-  const liveDeviceJob = useLivePipelineStore(
-    (state) =>
-      state.pipeline?.routineJobs
-        ?.find((job) => job.routineJobId === Number(jobId))
-        ?.routineDeviceJobs?.find((deviceJob) => deviceJob.routineDeviceJobId === Number(deviceJobId)),
+  const liveDeviceJob = useLivePipelineStore((state) =>
+    state.pipeline?.routineJobs
+      ?.find((job) => job.routineJobId === Number(jobId))
+      ?.routineDeviceJobs?.find((deviceJob) => deviceJob.routineDeviceJobId === Number(deviceJobId)),
   );
   const { t } = useTranslation();
 
@@ -148,7 +147,7 @@ const Box = styled.div`
 const HeadBox = styled.div<{ isVerified?: boolean }>`
   position: sticky;
   height: 109px;
-  top: 0px;
+  top: -2rem;
   padding: 1rem;
   border-bottom: 1px solid ${(props) => props.theme.colors.gray3};
   background-color: inherit;

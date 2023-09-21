@@ -175,6 +175,8 @@ const CloseAlertButton = styled.button`
 `;
 
 const Content = styled.main`
-  height: calc(100dvh - 57px);
-  overflow: hidden;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  overflow-y: auto;
 `;

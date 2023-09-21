@@ -95,6 +95,7 @@ const TitleBox = styled.div`
   flex-direction: column;
   width: 100%;
   justify-content: space-between;
+  flex-shrink: 0;
 `;
 
 const PaddingBox = styled.div`
