@@ -16,6 +16,7 @@ import (
 	generatedEnv "go-device-controller/types/protocol/generated/env"
 	gs "go-device-controller/types/protocol/generated/proto/inner/grpc/services"
 
+	"github.com/go-vgo/robotgo"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 )
@@ -54,6 +55,11 @@ func RunDetach() *grpc.Server {
 	}
 
 	log.Inst.Info("arguments", zap.Int("grpcServerPort", grpcServerPort), zap.Int("deviceServerPort", deviceServerPort), zap.String("ffmpegPath", args.Global.FFmpegPath))
+
+	err := robotgo.SetXDisplayName(":0")
+	if err != nil {
+		log.Inst.Warn("SetXDisplayName failed", zap.Error(err))
+	}
 
 	srv := grpc.NewServer()
 	gs.RegisterGoDeviceControllerServiceServer(srv, streamer.NewGoDeviceControllerService(int32(deviceServerPort)))
