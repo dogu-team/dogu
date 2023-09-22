@@ -42,6 +42,7 @@
     "@dogu-tech/env-tools": "workspace:^",
     "@dogu-tech/node": "workspace:^",
     "@gitbeaker/node": "35.8.1",
+    "@google-cloud/run": "^1.0.1",
     "@grpc/grpc-js": "1.7.3",
     "@influxdata/influxdb-client": "1.27.0",
     "@liaoliaots/nestjs-redis": "9.0.5",
