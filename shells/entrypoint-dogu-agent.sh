@@ -6,9 +6,11 @@ function exit_with_error() {
   exit 1
 }
 
-# # Start Xvfb in the background
+# Start Xvfb in the background if it is not already running
 export DISPLAY=:0
-Xvfb $DISPLAY -screen 0 1920x1080x24 &
+if ! pgrep -x Xvfb > /dev/null; then
+  Xvfb $DISPLAY -screen 0 1920x1080x24 &
+fi
 
 # # Get the PID of the Xvfb process
 XVFB_PID=$!
