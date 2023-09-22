@@ -1,10 +1,9 @@
 import { DeviceSystemInfo, Platform, PrivateProtocol, Serial } from '@dogu-private/types';
-import { delay, Milisecond, Printable, stringifyError } from '@dogu-tech/common';
+import { delay, FilledPrintable, Milisecond, Printable, stringifyError } from '@dogu-tech/common';
 import { isFreePort, killChildProcess } from '@dogu-tech/node';
 import child_process from 'child_process';
 import { EventEmitter } from 'stream';
 import WebSocket from 'ws';
-import { logger } from '../../../logger/logger.instance';
 import { pathMap } from '../../../path-map';
 import { Adb, AdbUtil } from '../../externals/index';
 import { StreamingService } from '../streaming/streaming-service';
@@ -41,7 +40,7 @@ export class AndroidDeviceAgentService implements DeviceAgentService, Zombieable
     private readonly port: number,
     private readonly devicePort: number,
     private readonly streamingService: StreamingService,
-    private readonly logger: Printable,
+    private readonly logger: FilledPrintable,
   ) {
     this.zombieWaiter = ZombieServiceInstance.addComponent(this);
   }
@@ -60,6 +59,7 @@ export class AndroidDeviceAgentService implements DeviceAgentService, Zombieable
 
   private async connect(): Promise<void> {
     const ws = new WebSocket(`ws://127.0.0.1:${this.port}/proto`);
+    this.logger.info(`AndroidDeviceAgentService.connect serial: ${this.serial}, ws connecting...`);
 
     ws.on('open', () => {
       this.protoWs = ws;
@@ -77,12 +77,12 @@ export class AndroidDeviceAgentService implements DeviceAgentService, Zombieable
       ws.send(buffer);
     });
     ws.on('error', (err: Error) => {
-      logger.error(`AndroidDeviceAgentService.connect ws error: ${stringifyError(err)}`);
+      this.logger.error(`AndroidDeviceAgentService.connect serial: ${this.serial}, ws error: ${stringifyError(err)}`);
     });
 
     ws.on('close', (err: Error) => {
-      logger.error(`AndroidDeviceAgentService.connect ws clpsed: ${stringifyError(err)}`);
-      ZombieServiceInstance.notifyDie(this, `AndroidDeviceAgentService.connect ws clpsed: ${stringifyError(err)}`);
+      this.logger.error(`AndroidDeviceAgentService.connect serial: ${this.serial}, ws closed: ${stringifyError(err)}`);
+      ZombieServiceInstance.notifyDie(this, `AndroidDeviceAgentService.connect ws closed: ${stringifyError(err)}`);
     });
 
     return Promise.resolve();
@@ -97,7 +97,7 @@ export class AndroidDeviceAgentService implements DeviceAgentService, Zombieable
     // dcLogger.verbose(`AndroidDeviceAgentService.sendWithProtobuf ${paramKey}`);
     return new Promise((resolve) => {
       if (!this.protoWs) {
-        logger.error('AndroidDeviceAgentService.sendAndWaitParamResult this.protoWs is null');
+        this.logger.error('AndroidDeviceAgentService.sendAndWaitParamResult this.protoWs is null');
         return null;
       }
       const seq = this.getSeq();
@@ -105,13 +105,13 @@ export class AndroidDeviceAgentService implements DeviceAgentService, Zombieable
       // complete handle
       this.protoAPIRetEmitter.once(seq.toString(), (data: DcDaReturn) => {
         if (data.value?.$case !== returnKey) {
-          logger.error(`AndroidDeviceAgentService.sendWithProtobuf ${returnKey} is null`);
+          this.logger.error(`AndroidDeviceAgentService.sendWithProtobuf ${returnKey} is null`);
           resolve(null);
           return;
         }
         const returnObj = data.value as DcDaReturnUnionPick<ReturnKey>;
         if (returnObj == null) {
-          logger.error('AndroidDeviceAgentService.sendWithProtobuf returnObj is null');
+          this.logger.error('AndroidDeviceAgentService.sendWithProtobuf returnObj is null');
           resolve(null);
           return;
         }
@@ -168,7 +168,7 @@ export class AndroidDeviceAgentService implements DeviceAgentService, Zombieable
     return Platform.PLATFORM_ANDROID;
   }
   get props(): ZombieProps {
-    return { hostPort: this.port, devicePort: this.devicePort };
+    return { hostPort: this.port, devicePort: this.devicePort, error: this._error };
   }
   get printable(): Printable {
     return this.logger;
@@ -182,14 +182,14 @@ export class AndroidDeviceAgentService implements DeviceAgentService, Zombieable
       await Adb.kill(serial, pid);
     }
 
-    logger.verbose(`AndroidDeviceAgentService.revive start.  id: ${serial}`);
+    this.logger.info(`AndroidDeviceAgentService.revive start.  id: ${serial}`);
 
     await Adb.unforward(serial, hostPort, { ignore: true });
     await Adb.forward(serial, hostPort, devicePort);
 
     const proc = await Adb.runAppProcess(serial, pathMap().common.androidDeviceAgent, '/data/local/tmp/dogu-deviceagent', 'com.dogu.deviceagent.Entry', this.printable);
     proc.on('exit', (code: number, signal: string) => {
-      this.printable.verbose?.(`AndroidDeviceAgentService.revive exit. code: ${code}, signal: ${signal}`);
+      this.printable.error(`AndroidDeviceAgentService.revive exit. code: ${code}, signal: ${signal}`);
       ZombieServiceInstance.notifyDie(this);
     });
     await AdbUtil.waitPortOpenInternal(this.serial, this.devicePort);
@@ -228,7 +228,7 @@ export class AndroidDeviceAgentService implements DeviceAgentService, Zombieable
     const surfaceStatus = await this.streamingService.getSurfaceStatus(this.serial).catch(() => {
       return { hasSurface: null };
     });
-    if (surfaceStatus.hasSurface && surfaceStatus.isPlaying && surfaceStatus.lastFrameDeltaMillisec > Milisecond.t15Seconds) {
+    if (surfaceStatus.hasSurface && surfaceStatus.isPlaying && surfaceStatus.lastFrameDeltaMillisec > Milisecond.t30Seconds) {
       this._error = 'not stable playing';
       return false;
     }
