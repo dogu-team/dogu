@@ -72,7 +72,9 @@ export function startServer(port: number, deviceServerPort: number, printable: P
   return ChildProcess.spawnSync(
     pathMap().common.goDeviceController,
     [`--grpcServerPort=${port}`, `--deviceServerPort=${deviceServerPort}`, `--ffmpegPath=${pathMap().common.ffmpeg}`],
-    {},
+    {
+      env: process.env,
+    },
     printable,
   );
 }

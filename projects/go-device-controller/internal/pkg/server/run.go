@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"net"
+	"os"
 	"runtime"
 
 	log "go-device-controller/internal/pkg/log"
@@ -56,7 +57,10 @@ func RunDetach() *grpc.Server {
 
 	log.Inst.Info("arguments", zap.Int("grpcServerPort", grpcServerPort), zap.Int("deviceServerPort", deviceServerPort), zap.String("ffmpegPath", args.Global.FFmpegPath))
 
-	err := robotgo.SetXDisplayName(":9")
+	display := os.Getenv("DISPLAY")
+	log.Inst.Info("env vars", zap.String("DISPLAY", display))
+
+	err := robotgo.SetXDisplayName(display)
 	if err != nil {
 		log.Inst.Warn("SetXDisplayName failed", zap.Error(err))
 	}
