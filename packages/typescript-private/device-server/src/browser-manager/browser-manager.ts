@@ -17,6 +17,8 @@ import {
   FindBrowserInstallationsResult,
 } from '@dogu-tech/device-client-common';
 import { HostPaths } from '@dogu-tech/node';
+import fs from 'fs';
+import path from 'path';
 import { Adb } from '../internal/externals/index';
 import { logger } from '../logger/logger.instance';
 import { Chrome, ChromeInstallablePlatform } from './chrome';
@@ -80,7 +82,7 @@ export class BrowserManager {
 
           switch (browserPlatform) {
             case 'macos':
-            case 'windows': 
+            case 'windows':
             case 'linux': {
               const edgePlatformArch = this.getEdgeInstallablePlatformArchByBrowserPlatform(browserPlatform);
               if (!edgePlatformArch) {
@@ -892,5 +894,17 @@ export class BrowserManager {
     });
 
     return { browserInstallations };
+  }
+
+  async migrate(): Promise<void> {
+    const geckodriverPath = path.resolve(HostPaths.external.browser.browsersPath(), 'geckodriver');
+    if (
+      !(await fs.promises
+        .stat(geckodriverPath)
+        .then((stat) => stat.isDirectory())
+        .catch(() => false))
+    ) {
+      await fs.promises.rm(geckodriverPath, { recursive: true, force: true });
+    }
   }
 }
