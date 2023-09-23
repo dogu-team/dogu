@@ -2,9 +2,10 @@ import { MobileOutlined } from '@ant-design/icons';
 import { RoutineDeviceJobBase, RoutineJobBase } from '@dogu-private/console';
 import { PIPELINE_STATUS } from '@dogu-private/types';
 import styled from 'styled-components';
+import { GoBrowser } from 'react-icons/go';
 
 import { isDesktop } from '../../utils/device';
-import DeviceLiveCell from '../device/DeviceLiveCell';
+import DeviceLiveCell, { DeviceCellInfo } from '../device/DeviceLiveCell';
 
 interface Props {
   routineJobs: RoutineJobBase[];
@@ -31,15 +32,6 @@ const PipelineDeviceGrid = ({ routineJobs }: Props) => {
 
   const mobileJobs = jobs.filter((job) => !isDesktop(job.device));
   const desktopJobs = jobs.filter((job) => isDesktop(job.device));
-
-  if (mobileJobs.length === 0 && desktopJobs.length === 0) {
-    return (
-      <EmptyBox>
-        <MobileOutlined style={{ fontSize: '4rem' }} />
-        <p style={{ marginTop: '2rem' }}>Waiting for running...!</p>
-      </EmptyBox>
-    );
-  }
 
   return (
     <>
@@ -70,6 +62,18 @@ const PipelineDeviceGrid = ({ routineJobs }: Props) => {
                     <div>
                       <DeviceLiveCell device={deviceJob.device} pid={deviceJob.windowProcessId} />
                     </div>
+                  </CellWrapper>
+                );
+              }
+
+              if (deviceJob.device) {
+                return (
+                  <CellWrapper key={deviceJob.routineDeviceJobId} isDesktop={true}>
+                    <DeviceCellInfo device={deviceJob.device} />
+                    <EmptyBox>
+                      <GoBrowser style={{ fontSize: '4rem' }} />
+                      <p style={{ marginTop: '2rem', textAlign: 'center' }}>Waiting for running...!</p>
+                    </EmptyBox>
                   </CellWrapper>
                 );
               }

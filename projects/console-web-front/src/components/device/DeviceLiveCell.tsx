@@ -22,6 +22,22 @@ const DeviceIcon = ({ platform }: { platform: Platform }) => {
   }
 };
 
+export const DeviceCellInfo = ({ device }: { device: DeviceBase }) => {
+  return (
+    <ContentWrapper>
+      <FlexRow style={{ marginBottom: '.25rem' }}>
+        <DeviceIcon platform={device.platform} />
+        <DeviceName style={{ marginLeft: '.25rem' }}>{device.name}</DeviceName>
+      </FlexRow>
+      <FlexRow>
+        <PlatformIcon platform={device.platform} />
+        <DeviceVersion>{`(${device.version})`}</DeviceVersion>
+        <Model>{device.modelName ? `${device.modelName} (${device.model})` : device.model}</Model>
+      </FlexRow>
+    </ContentWrapper>
+  );
+};
+
 interface Props {
   device: DeviceBase | undefined;
   pid?: number;
@@ -38,17 +54,7 @@ const DeviceLiveCell = ({ device, pid }: Props) => {
 
   return (
     <DeviceStreaming device={device} pid={pid}>
-      <ContentWrapper>
-        <FlexRow style={{ marginBottom: '.25rem' }}>
-          <DeviceIcon platform={device.platform} />
-          <DeviceName style={{ marginLeft: '.25rem' }}>{device.name}</DeviceName>
-        </FlexRow>
-        <FlexRow>
-          <PlatformIcon platform={device.platform} />
-          <DeviceVersion>{`(${device.version})`}</DeviceVersion>
-          <Model>{device.modelName ? `${device.modelName} (${device.model})` : device.model}</Model>
-        </FlexRow>
-      </ContentWrapper>
+      <DeviceCellInfo device={device} />
       <VideoWrapper style={{ height: isDesktop(device) ? '550px' : '400px' }}>
         <DeviceStreaming.Video style={{ alignItems: 'center' }} readonly />
       </VideoWrapper>
