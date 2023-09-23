@@ -77,6 +77,9 @@ export module RemoteDeviceJobProcessor {
       sessionState: REMOTE_DEVICE_JOB_SESSION_STATE.WAITING,
     });
 
+    // update projct updatedAt
+    await manager.getRepository(Project).update({ projectId }, { updatedAt: new Date() });
+
     await manager.getRepository(Remote).save(remoteData);
     await manager.getRepository(RemoteWebDriverInfo).save(remoteWebDriverInfoData);
     const remoteDeviceJob = await manager.getRepository(RemoteDeviceJob).save(remoteDeviceJobData);

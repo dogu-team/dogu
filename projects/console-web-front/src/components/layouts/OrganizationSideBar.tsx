@@ -4,6 +4,7 @@ import useTranslation from 'next-translate/useTranslation';
 import {
   BookOutlined,
   ClusterOutlined,
+  DashboardOutlined,
   ProjectOutlined,
   SettingOutlined,
   TeamOutlined,
@@ -58,6 +59,25 @@ const OrganizationSideBar = () => {
     },
     {
       type: 'divider',
+    },
+    {
+      key: 'dashboard',
+      icon: collapsed ? (
+        <StyledIconLink selected={router.asPath === `/dashboard/${orgId}`} href={`/dashboard/${orgId}`}>
+          <DashboardOutlined />
+        </StyledIconLink>
+      ) : undefined,
+      label: collapsed ? (
+        'Dashboard'
+      ) : (
+        <SideBarMenu
+          icon={<DashboardOutlined style={{ fontSize: '1.2rem' }} />}
+          path={`/dashboard/${orgId}`}
+          text={'Dashboard'}
+          accessId={process.env.NEXT_PUBLIC_ENV !== 'production' ? 'side-bar-dashboard' : undefined}
+        />
+      ),
+      style: { borderRadius: '6px' },
     },
     {
       key: 'project',

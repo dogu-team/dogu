@@ -25,6 +25,7 @@ import { notEmpty } from '@dogu-tech/common';
 import { HttpException, HttpStatus, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import crypto from 'crypto';
+import _ from 'lodash';
 import { DataSource, DeepPartial, EntityManager, In } from 'typeorm';
 import { v4 } from 'uuid';
 
@@ -52,6 +53,7 @@ import {
 } from '../../db/entity';
 import { OrganizationAccessToken } from '../../db/entity/organization-access-token.entity';
 import { UserAndInvitationToken } from '../../db/entity/relations/user-and-invitation-token.entity';
+import { Remote } from '../../db/entity/remote.entity';
 import { Routine } from '../../db/entity/routine.entity';
 import { RoutineStep } from '../../db/entity/step.entity';
 import { UserVisit } from '../../db/entity/user-visit.entity';
@@ -694,5 +696,18 @@ export class OrganizationService {
       await manager.getRepository(OrganizationAccessToken).update({ organizationAccessTokenId: orgApiToken.organizationAccessTokenId }, { revokerId });
       await manager.getRepository(OrganizationAccessToken).softDelete({ organizationAccessTokenId: orgApiToken.organizationAccessTokenId });
     });
+  }
+
+  async findLatestTests(userId: UserId, organizationId: OrganizationId): Promise<(RoutinePipeline | Remote)[]> {
+    const userAccessibleProjects = await this.projectService.findAllProjectsByOrganizationId(organizationId, userId);
+
+    let tests: (RoutinePipeline | Remote)[] = [];
+    for (const project of userAccessibleProjects) {
+      const projectLatestTests = await this.projectService.findLatestTests(project.organizationId, project.projectId);
+      tests = tests.concat(projectLatestTests);
+    }
+
+    const latestTests = _.sortBy(tests, ['createdAt']).reverse().slice(0, 10);
+    return latestTests;
   }
 }

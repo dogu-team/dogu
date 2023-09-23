@@ -28,10 +28,12 @@ import { OrganizationId, PIPELINE_STATUS, ProjectId, REMOTE_DEVICE_JOB_STATE, Us
 import { notEmpty } from '@dogu-tech/common';
 import { HttpException, HttpStatus, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
+import _ from 'lodash';
 import { Brackets, DataSource, DeepPartial, EntityManager, Not } from 'typeorm';
 import { v4 } from 'uuid';
 import { Device, Project, RoutinePipeline, Token, User } from '../../db/entity';
 import { ProjectAccessToken } from '../../db/entity/project-access-token.entity';
+import { Remote } from '../../db/entity/remote.entity';
 import { EMPTY_PAGE, Page } from '../../module/common/dto/pagination/page';
 import { ORGANIZATION_ROLE } from '../auth/auth.types';
 import { UserPermission } from '../auth/guard/common';
@@ -83,109 +85,6 @@ export class ProjectService {
     });
   }
 
-  private async findProjectsByOrganizationIdByOrganizationAdmin(organizationId: OrganizationId, dto: FindProjectDto): Promise<Page<ProjectResponse>> {
-    const rv = await this.dataSource //
-      .getRepository(Project)
-      .createQueryBuilder('project')
-      .leftJoinAndSelect(`project.${ProjectPropCamel.projectAndUserAndProjectRoles}`, 'projectUserRole')
-      .leftJoinAndSelect(`projectUserRole.${ProjectAndUserAndProjectRolePropCamel.user}`, 'user')
-      .leftJoinAndSelect(`project.${ProjectPropCamel.projectAndTeamAndProjectRoles}`, 'projectTeamRole')
-      .leftJoinAndSelect(`projectTeamRole.${ProjectAndTeamAndProjectRolePropCamel.team}`, 'team')
-      .where(`project.${ProjectPropSnake.organization_id} = :${ProjectPropCamel.organizationId}`, { organizationId })
-      .andWhere(`project.${ProjectPropSnake.name} ILIKE :keyword`, { keyword: `%${dto.keyword}%` })
-      .orderBy(`project.${ProjectPropCamel.updatedAt}`, 'DESC')
-      .skip(dto.getDBOffset())
-      .take(dto.getDBLimit())
-      .getManyAndCount();
-
-    const projects = rv[0];
-
-    const addMembersProjects = projects.map((project) => {
-      const users = project.projectAndUserAndProjectRoles ? project.projectAndUserAndProjectRoles.map((item) => item.user).filter(notEmpty) : [];
-      const teams = project.projectAndTeamAndProjectRoles ? project.projectAndTeamAndProjectRoles.map((item) => item.team).filter(notEmpty) : [];
-      const members = [...users, ...teams];
-      const sortedMember = members.sort((a, b) => {
-        if (a.updatedAt > b.updatedAt) {
-          return -1;
-        } else {
-          return 1;
-        }
-      });
-      project.members = sortedMember;
-      return project;
-    });
-
-    const count = rv[1];
-
-    if (0 === projects.length) {
-      return EMPTY_PAGE;
-    }
-
-    const page = new Page<ProjectResponse>(dto.page, dto.offset, count, addMembersProjects);
-    return page;
-  }
-
-  private async findProjectsByOrganizationIdByOrganizationMember(organizationId: OrganizationId, userId: UserId, dto: FindProjectDto): Promise<Page<ProjectResponse>> {
-    const rv = await this.dataSource //
-      .getRepository(Project)
-      .createQueryBuilder('project')
-      .leftJoinAndSelect(
-        `project.${ProjectPropCamel.projectAndUserAndProjectRoles}`,
-        'projectUserRole',
-        `projectUserRole.${ProjectAndUserAndProjectRolePropSnake.user_id} = :${UserPropCamel.userId}`,
-        { userId },
-      )
-      .leftJoinAndSelect(`projectUserRole.${ProjectAndUserAndProjectRolePropCamel.user}`, 'user')
-      .leftJoinAndSelect(`project.${ProjectPropCamel.projectAndTeamAndProjectRoles}`, 'projectTeamRole')
-      .leftJoinAndSelect(`projectTeamRole.${ProjectAndTeamAndProjectRolePropCamel.team}`, 'team')
-      .leftJoinAndSelect(
-        `team.${TeamPropCamel.organizationAndUserAndTeams}`, //
-        'userAndTeam',
-        `userAndTeam.${OrganizationUserAndTeamPropCamel.userId} = :${UserPropCamel.userId}`,
-      )
-      .where(`project.${ProjectPropSnake.organization_id} = :${ProjectPropCamel.organizationId}`, { organizationId })
-      .andWhere(`project.${ProjectPropSnake.name} ILIKE :keyword`, { keyword: `%${dto.keyword}%` })
-      .orderBy(`project.${ProjectPropCamel.updatedAt}`, 'DESC')
-      .skip(dto.getDBOffset())
-      .take(dto.getDBLimit())
-      .getManyAndCount();
-
-    const projects = rv[0].filter((project) => {
-      if (project?.projectAndTeamAndProjectRoles?.length !== 0 || project?.projectAndUserAndProjectRoles?.length !== 0) {
-        return true;
-      } else {
-        return false;
-      }
-    });
-
-    // 중복제거
-    const projectFiltered = [...new Set(projects)];
-
-    const addMembersProjects = projectFiltered.map((project) => {
-      const users = project.projectAndUserAndProjectRoles ? project.projectAndUserAndProjectRoles.map((item) => item.user).filter(notEmpty) : [];
-      const teams = project.projectAndTeamAndProjectRoles ? project.projectAndTeamAndProjectRoles.map((item) => item.team).filter(notEmpty) : [];
-      const members = [...users, ...teams];
-      const sortedMember = members.sort((a, b) => {
-        if (a.updatedAt > b.updatedAt) {
-          return -1;
-        } else {
-          return 1;
-        }
-      });
-      project.members = sortedMember;
-      return project;
-    });
-
-    const count = rv[1];
-
-    if (0 === projects.length) {
-      return EMPTY_PAGE;
-    }
-
-    const page = new Page<ProjectResponse>(dto.page, dto.offset, count, addMembersProjects);
-    return page;
-  }
-
   async findProjectsByOrganizationId(organizationId: OrganizationId, userId: UserId, dto: FindProjectDto): Promise<Page<ProjectResponse>> {
     const user = await this.dataSource //
       .getRepository(User)
@@ -208,6 +107,32 @@ export class ProjectService {
       return rv;
     } else {
       const rv = await this.findProjectsByOrganizationIdByOrganizationMember(organizationId, userId, dto);
+      return rv;
+    }
+  }
+
+  async findAllProjectsByOrganizationId(organizationId: OrganizationId, userId: UserId): Promise<ProjectResponse[]> {
+    const user = await this.dataSource //
+      .getRepository(User)
+      .createQueryBuilder('user')
+      .leftJoinAndSelect(`user.${UserPropCamel.projects}`, 'project')
+      .leftJoinAndSelect(`user.${UserPropCamel.organizationAndUserAndOrganizationRoles}`, 'orgUserRole')
+      .where(`user.${UserPropSnake.user_id} = :${UserPropCamel.userId}`, { userId })
+      .getOne();
+    if (!user) {
+      throw new HttpException(`User not found with id: ${userId}`, HttpStatus.NOT_FOUND);
+    }
+
+    const orgRole = user.organizationAndUserAndOrganizationRoles?.find((item) => item.organizationId === organizationId);
+    if (!orgRole) {
+      throw new HttpException(`This user is not a member of the organization`, HttpStatus.FORBIDDEN);
+    }
+
+    if (UserPermission.checkOrganizationRolePermission(orgRole.organizationRoleId, ORGANIZATION_ROLE.ADMIN)) {
+      const rv = await this.findAllProjectsByOrganizationIdByOrganizationAdmin(organizationId, userId);
+      return rv;
+    } else {
+      const rv = await this.findAllProjectsByOrganizationIdByOrganizationMember(organizationId, userId);
       return rv;
     }
   }
@@ -468,6 +393,25 @@ export class ProjectService {
     return accessToken.token.token;
   }
 
+  async deleteAccessToken(projectId: ProjectId, revokerId: UserId): Promise<void> {
+    const accessToken = await this.dataSource //
+      .getRepository(ProjectAccessToken)
+      .createQueryBuilder('projectAccessToken')
+      .innerJoinAndSelect(`projectAccessToken.${ProjectAccessTokenPropCamel.token}`, 'token')
+      .where(`projectAccessToken.${ProjectAccessTokenPropSnake.project_id} = :projectId`, { projectId })
+      .getOne();
+
+    if (!accessToken) {
+      throw new HttpException(`AccessToken not found. projectId: ${projectId}`, HttpStatus.NOT_FOUND);
+    }
+
+    await this.dataSource.transaction(async (manager) => {
+      await manager.getRepository(Token).softDelete({ tokenId: accessToken.tokenId });
+      await manager.getRepository(ProjectAccessToken).update({ projectAccessTokenId: accessToken.projectAccessTokenId }, { revokerId });
+      await manager.getRepository(ProjectAccessToken).softDelete({ projectAccessTokenId: accessToken.projectAccessTokenId });
+    });
+  }
+
   async regenerateAccessToken(projectId: ProjectId, regeneratorId: UserId): Promise<string> {
     const accessToken = await this.dataSource //
       .getRepository(ProjectAccessToken)
@@ -508,22 +452,200 @@ export class ProjectService {
     return rv;
   }
 
-  async deleteAccessToken(projectId: ProjectId, revokerId: UserId): Promise<void> {
-    const accessToken = await this.dataSource //
-      .getRepository(ProjectAccessToken)
-      .createQueryBuilder('projectAccessToken')
-      .innerJoinAndSelect(`projectAccessToken.${ProjectAccessTokenPropCamel.token}`, 'token')
-      .where(`projectAccessToken.${ProjectAccessTokenPropSnake.project_id} = :projectId`, { projectId })
-      .getOne();
+  async findLatestTests(organizationId: OrganizationId, projectId: ProjectId): Promise<(RoutinePipeline | Remote)[]> {
+    const [routines, remotes] = await Promise.all([
+      this.dataSource.getRepository(RoutinePipeline).find({ where: { projectId }, order: { createdAt: 'DESC' }, relations: ['routine'], take: 10 }),
+      this.dataSource.getRepository(Remote).find({ where: { projectId }, order: { createdAt: 'DESC' }, relations: ['remoteDeviceJobs'], take: 10 }),
+    ]);
 
-    if (!accessToken) {
-      throw new HttpException(`AccessToken not found. projectId: ${projectId}`, HttpStatus.NOT_FOUND);
+    const tests = _.cloneDeep([...routines, ...remotes]);
+    const latestTests = _.sortBy(tests, ['createdAt']).reverse().slice(0, 10);
+    return latestTests;
+  }
+
+  private async findProjectsByOrganizationIdByOrganizationAdmin(organizationId: OrganizationId, dto: FindProjectDto): Promise<Page<ProjectResponse>> {
+    const rv = await this.dataSource //
+      .getRepository(Project)
+      .createQueryBuilder('project')
+      .leftJoinAndSelect(`project.${ProjectPropCamel.projectAndUserAndProjectRoles}`, 'projectUserRole')
+      .leftJoinAndSelect(`projectUserRole.${ProjectAndUserAndProjectRolePropCamel.user}`, 'user')
+      .leftJoinAndSelect(`project.${ProjectPropCamel.projectAndTeamAndProjectRoles}`, 'projectTeamRole')
+      .leftJoinAndSelect(`projectTeamRole.${ProjectAndTeamAndProjectRolePropCamel.team}`, 'team')
+      .where(`project.${ProjectPropSnake.organization_id} = :${ProjectPropCamel.organizationId}`, { organizationId })
+      .andWhere(`project.${ProjectPropSnake.name} ILIKE :keyword`, { keyword: `%${dto.keyword}%` })
+      .orderBy(`project.${ProjectPropCamel.updatedAt}`, 'DESC')
+      .skip(dto.getDBOffset())
+      .take(dto.getDBLimit())
+      .getManyAndCount();
+
+    const projects = rv[0];
+
+    const addMembersProjects = projects.map((project) => {
+      const users = project.projectAndUserAndProjectRoles ? project.projectAndUserAndProjectRoles.map((item) => item.user).filter(notEmpty) : [];
+      const teams = project.projectAndTeamAndProjectRoles ? project.projectAndTeamAndProjectRoles.map((item) => item.team).filter(notEmpty) : [];
+      const members = [...users, ...teams];
+      const sortedMember = members.sort((a, b) => {
+        if (a.updatedAt > b.updatedAt) {
+          return -1;
+        } else {
+          return 1;
+        }
+      });
+      project.members = sortedMember;
+      return project;
+    });
+
+    const count = rv[1];
+
+    if (0 === projects.length) {
+      return EMPTY_PAGE;
     }
 
-    await this.dataSource.transaction(async (manager) => {
-      await manager.getRepository(Token).softDelete({ tokenId: accessToken.tokenId });
-      await manager.getRepository(ProjectAccessToken).update({ projectAccessTokenId: accessToken.projectAccessTokenId }, { revokerId });
-      await manager.getRepository(ProjectAccessToken).softDelete({ projectAccessTokenId: accessToken.projectAccessTokenId });
+    const page = new Page<ProjectResponse>(dto.page, dto.offset, count, addMembersProjects);
+    return page;
+  }
+
+  private async findProjectsByOrganizationIdByOrganizationMember(organizationId: OrganizationId, userId: UserId, dto: FindProjectDto): Promise<Page<ProjectResponse>> {
+    const rv = await this.dataSource //
+      .getRepository(Project)
+      .createQueryBuilder('project')
+      .leftJoinAndSelect(
+        `project.${ProjectPropCamel.projectAndUserAndProjectRoles}`,
+        'projectUserRole',
+        `projectUserRole.${ProjectAndUserAndProjectRolePropSnake.user_id} = :${UserPropCamel.userId}`,
+        { userId },
+      )
+      .leftJoinAndSelect(`projectUserRole.${ProjectAndUserAndProjectRolePropCamel.user}`, 'user')
+      .leftJoinAndSelect(`project.${ProjectPropCamel.projectAndTeamAndProjectRoles}`, 'projectTeamRole')
+      .leftJoinAndSelect(`projectTeamRole.${ProjectAndTeamAndProjectRolePropCamel.team}`, 'team')
+      .leftJoinAndSelect(
+        `team.${TeamPropCamel.organizationAndUserAndTeams}`, //
+        'userAndTeam',
+        `userAndTeam.${OrganizationUserAndTeamPropCamel.userId} = :${UserPropCamel.userId}`,
+      )
+      .where(`project.${ProjectPropSnake.organization_id} = :${ProjectPropCamel.organizationId}`, { organizationId })
+      .andWhere(`project.${ProjectPropSnake.name} ILIKE :keyword`, { keyword: `%${dto.keyword}%` })
+      .orderBy(`project.${ProjectPropCamel.updatedAt}`, 'DESC')
+      .skip(dto.getDBOffset())
+      .take(dto.getDBLimit())
+      .getManyAndCount();
+
+    const projects = rv[0].filter((project) => {
+      if (project?.projectAndTeamAndProjectRoles?.length !== 0 || project?.projectAndUserAndProjectRoles?.length !== 0) {
+        return true;
+      } else {
+        return false;
+      }
     });
+
+    // 중복제거
+    const projectFiltered = [...new Set(projects)];
+
+    const addMembersProjects = projectFiltered.map((project) => {
+      const users = project.projectAndUserAndProjectRoles ? project.projectAndUserAndProjectRoles.map((item) => item.user).filter(notEmpty) : [];
+      const teams = project.projectAndTeamAndProjectRoles ? project.projectAndTeamAndProjectRoles.map((item) => item.team).filter(notEmpty) : [];
+      const members = [...users, ...teams];
+      const sortedMember = members.sort((a, b) => {
+        if (a.updatedAt > b.updatedAt) {
+          return -1;
+        } else {
+          return 1;
+        }
+      });
+      project.members = sortedMember;
+      return project;
+    });
+
+    const count = rv[1];
+
+    if (0 === projects.length) {
+      return EMPTY_PAGE;
+    }
+
+    const page = new Page<ProjectResponse>(dto.page, dto.offset, count, addMembersProjects);
+    return page;
+  }
+
+  private async findAllProjectsByOrganizationIdByOrganizationAdmin(organizationId: OrganizationId, userId: UserId): Promise<ProjectResponse[]> {
+    const projects = await this.dataSource //
+      .getRepository(Project)
+      .createQueryBuilder('project')
+      .leftJoinAndSelect(`project.${ProjectPropCamel.projectAndUserAndProjectRoles}`, 'projectUserRole')
+      .leftJoinAndSelect(`projectUserRole.${ProjectAndUserAndProjectRolePropCamel.user}`, 'user')
+      .leftJoinAndSelect(`project.${ProjectPropCamel.projectAndTeamAndProjectRoles}`, 'projectTeamRole')
+      .leftJoinAndSelect(`projectTeamRole.${ProjectAndTeamAndProjectRolePropCamel.team}`, 'team')
+      .where(`project.${ProjectPropSnake.organization_id} = :${ProjectPropCamel.organizationId}`, { organizationId })
+      .orderBy(`project.${ProjectPropCamel.updatedAt}`, 'DESC')
+      .getMany();
+
+    const addMembersProjects = projects.map((project) => {
+      const users = project.projectAndUserAndProjectRoles ? project.projectAndUserAndProjectRoles.map((item) => item.user).filter(notEmpty) : [];
+      const teams = project.projectAndTeamAndProjectRoles ? project.projectAndTeamAndProjectRoles.map((item) => item.team).filter(notEmpty) : [];
+      const members = [...users, ...teams];
+      const sortedMember = members.sort((a, b) => {
+        if (a.updatedAt > b.updatedAt) {
+          return -1;
+        } else {
+          return 1;
+        }
+      });
+      project.members = sortedMember;
+      return project;
+    });
+
+    return addMembersProjects;
+  }
+
+  private async findAllProjectsByOrganizationIdByOrganizationMember(organizationId: OrganizationId, userId: UserId): Promise<ProjectResponse[]> {
+    const rv = await this.dataSource //
+      .getRepository(Project)
+      .createQueryBuilder('project')
+      .leftJoinAndSelect(
+        `project.${ProjectPropCamel.projectAndUserAndProjectRoles}`,
+        'projectUserRole',
+        `projectUserRole.${ProjectAndUserAndProjectRolePropSnake.user_id} = :${UserPropCamel.userId}`,
+        { userId },
+      )
+      .leftJoinAndSelect(`projectUserRole.${ProjectAndUserAndProjectRolePropCamel.user}`, 'user')
+      .leftJoinAndSelect(`project.${ProjectPropCamel.projectAndTeamAndProjectRoles}`, 'projectTeamRole')
+      .leftJoinAndSelect(`projectTeamRole.${ProjectAndTeamAndProjectRolePropCamel.team}`, 'team')
+      .leftJoinAndSelect(
+        `team.${TeamPropCamel.organizationAndUserAndTeams}`, //
+        'userAndTeam',
+        `userAndTeam.${OrganizationUserAndTeamPropCamel.userId} = :${UserPropCamel.userId}`,
+      )
+      .where(`project.${ProjectPropSnake.organization_id} = :${ProjectPropCamel.organizationId}`, { organizationId })
+
+      .orderBy(`project.${ProjectPropCamel.updatedAt}`, 'DESC')
+
+      .getMany();
+
+    const projects = rv.filter((project) => {
+      if (project?.projectAndTeamAndProjectRoles?.length !== 0 || project?.projectAndUserAndProjectRoles?.length !== 0) {
+        return true;
+      } else {
+        return false;
+      }
+    });
+
+    // 중복제거
+    const projectFiltered = [...new Set(projects)];
+
+    const addMembersProjects = projectFiltered.map((project) => {
+      const users = project.projectAndUserAndProjectRoles ? project.projectAndUserAndProjectRoles.map((item) => item.user).filter(notEmpty) : [];
+      const teams = project.projectAndTeamAndProjectRoles ? project.projectAndTeamAndProjectRoles.map((item) => item.team).filter(notEmpty) : [];
+      const members = [...users, ...teams];
+      const sortedMember = members.sort((a, b) => {
+        if (a.updatedAt > b.updatedAt) {
+          return -1;
+        } else {
+          return 1;
+        }
+      });
+      project.members = sortedMember;
+      return project;
+    });
+
+    return addMembersProjects;
   }
 }

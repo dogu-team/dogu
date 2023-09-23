@@ -42,7 +42,7 @@ import lodash from 'lodash';
 import { Brackets, DataSource, EntityManager } from 'typeorm';
 import { RoutineDeviceJob } from '../../../db/entity/device-job.entity';
 import { DeviceRunner } from '../../../db/entity/device-runner.entity';
-import { Device, DeviceAndDeviceTag, DeviceTag, ProjectAndDevice, RoutineJob, RoutineJobEdge } from '../../../db/entity/index';
+import { Device, DeviceAndDeviceTag, DeviceTag, Project, ProjectAndDevice, RoutineJob, RoutineJobEdge } from '../../../db/entity/index';
 import { RoutinePipeline } from '../../../db/entity/pipeline.entity';
 import { Routine } from '../../../db/entity/routine.entity';
 import { RoutineStep } from '../../../db/entity/step.entity';
@@ -598,6 +598,8 @@ export class PipelineService {
       deviceJobs.forEach((deviceJob) => {
         deviceJob.routineSteps = steps.filter((step) => step.routineDeviceJobId === deviceJob.routineDeviceJobId);
       });
+
+      await transactionEntityManager.getRepository(Project).update({ projectId }, { updatedAt: new Date() });
 
       return pipeline;
     });

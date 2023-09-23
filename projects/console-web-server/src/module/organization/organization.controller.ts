@@ -12,6 +12,9 @@ import { Body, Controller, Delete, Get, HttpException, HttpStatus, Inject, Param
 import { FileInterceptor } from '@nestjs/platform-express';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
+
+import { RoutinePipeline } from '../../db/entity/pipeline.entity';
+import { Remote } from '../../db/entity/remote.entity';
 import { FEATURE_CONFIG } from '../../feature.config';
 import { EMAIL_VERIFICATION, ORGANIZATION_ROLE } from '../../module/auth/auth.types';
 import { EmailVerification, OrganizationPermission, User } from '../../module/auth/decorators';
@@ -202,5 +205,11 @@ export class OrganizationController {
 
     await this.userService.softRemoveUserFromOrganization(organizationId, userId);
     return;
+  }
+
+  @Get(':organizationId/latest-tests')
+  @OrganizationPermission(ORGANIZATION_ROLE.MEMBER)
+  async getLatestTests(@User() user: UserPayload, @Param(OrganizationPropCamel.organizationId) organizationId: OrganizationId): Promise<(RoutinePipeline | Remote)[]> {
+    return await this.organizationService.findLatestTests(user.userId, organizationId);
   }
 }
