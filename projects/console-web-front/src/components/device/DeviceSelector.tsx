@@ -83,6 +83,7 @@ const DeviceSelector = ({
       open={open}
       onBlur={onBlur}
       dropdownStyle={{ maxHeight: '15rem' }}
+      virtual={false}
     />
   );
 };
