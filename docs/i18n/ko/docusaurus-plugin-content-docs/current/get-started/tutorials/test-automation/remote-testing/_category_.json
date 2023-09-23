@@ -2,6 +2,6 @@
   "position": 3,
   "label": "sidebar.getStartedSidebar.category.Remote Testing",
   "collapsible": true,
-  "collapsed": true,
+  "collapsed": false,
   "className": "remote_sidebar_header"
 }
