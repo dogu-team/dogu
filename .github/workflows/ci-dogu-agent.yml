@@ -35,7 +35,7 @@ jobs:
       fail-fast: false
       max-parallel: 99
       matrix:
-        runner: [windows-2019, macos-latest]
+        runner: [windows-2019, macos-13-xlarge]
         arch: [arm64, x64]
         exclude:
           - runner: ${{ github.event.inputs.exclude_runner }}
