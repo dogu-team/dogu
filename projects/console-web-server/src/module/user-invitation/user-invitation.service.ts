@@ -63,7 +63,9 @@ export class UserInvitationService {
       throw new BadRequestException('Expired invitation');
     }
 
+    // our table -> 기존 참여한 org를 찾아서 -> 삭제 -> 초대받은 org, orgRole로 save
     await this.dataSource.transaction(async (entityManager) => {
+      await entityManager.softDelete(OrganizationAndUserAndOrganizationRole, { userId });
       await entityManager.save(UserAndInvitationToken, Object.assign(invitation, { status: USER_INVITATION_STATUS.ACCEPTED }));
 
       // create organization - user - role relation
