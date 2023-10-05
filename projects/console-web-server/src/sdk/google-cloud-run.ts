@@ -88,20 +88,21 @@ export module GoogleCloudRun {
       resource: getResourcePath(serviceName),
     });
 
+    await servicesClient.createService(request);
+
+    // set all user access policy
     policy[0].bindings = [
       {
         role: 'roles/run.invoker',
         members: ['allUsers'],
       },
     ];
-
-    const rv = await servicesClient.createService(request);
-    const setPolicy = await servicesClient.setIamPolicy({
+    await servicesClient.setIamPolicy({
       resource: getResourcePath(serviceName),
       policy: policy[0],
     });
 
-    const ser = await servicesClient.getService({
+    const service = await servicesClient.getService({
       name: getResourcePath(serviceName),
     });
   }
