@@ -33,7 +33,7 @@ export const PrivateHostToken = {
 
   findHostByToken: new ControllerMethodSpec({
     controllerSpec: PrivateHostTokenController,
-    method: 'POST',
+    method: 'GET',
     path: '/',
     pathProvider: DefaultPathProvider,
     responseBody: FindHostByTokenResponse,
