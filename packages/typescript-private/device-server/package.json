@@ -6,7 +6,7 @@
   "author": "Dogu Technologies",
   "main": "./build/src/index.js",
   "scripts": {
-    "build": "tsc -b",
+    "build": "tsc -b && shx cp -r res build",
     "clean": "shx rm -rf build generated dist",
     "dev": "nodemon",
     "rebuild": "yarn run clean && yarn run build",

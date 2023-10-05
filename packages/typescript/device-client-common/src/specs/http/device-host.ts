@@ -75,6 +75,13 @@ export class DeviceHostEnsureBrowserAndDriverResponseBodyData implements EnsureB
   deviceSerial?: Serial;
 }
 
+export class ResignAppFileRequestBody {
+  @IsString()
+  filePath!: string;
+}
+
+export class ResignAppFileResponseBodyData {}
+
 const DeviceHostController = new ControllerSpec({ path: '/device-host' });
 export const DeviceHost = {
   controller: DeviceHostController,
@@ -106,5 +113,15 @@ export const DeviceHost = {
     requestBody: DeviceHostEnsureBrowserAndDriverRequestBody,
     responseBody: DeviceServerResponseDto,
     responseBodyData: DeviceHostEnsureBrowserAndDriverResponseBodyData,
+  }),
+
+  resignAppFile: new DeviceServerControllerMethodSpec({
+    controllerSpec: DeviceHostController,
+    method: 'POST',
+    path: '/resign-app-file',
+    pathProvider: DefaultPathProvider,
+    requestBody: ResignAppFileRequestBody,
+    responseBody: DeviceServerResponseDto,
+    responseBodyData: ResignAppFileResponseBodyData,
   }),
 };
