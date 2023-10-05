@@ -53,3 +53,9 @@ export enum SELF_HOSTED_ROLE {
   ROOT = 'ROOT',
   MEMBER = 'MEMBER',
 }
+
+export const CLOUD_ROLE_KEY = 'CLOUD_ROLE';
+export enum CLOUD_ROLE {
+  ROOT = 'ROOT',
+  MEMBER = 'MEMBER',
+}
