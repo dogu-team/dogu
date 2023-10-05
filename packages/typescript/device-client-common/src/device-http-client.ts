@@ -46,10 +46,6 @@ export class DeviceHttpClient {
       },
       this.options,
     );
-    const { statusCode } = response;
-    if (!(200 <= statusCode && statusCode < 300)) {
-      throw new Error(`Unexpected status code: ${statusCode}`);
-    }
     let stringValue = '';
     if (response.body?.value?.$case === 'bytesValue') {
       stringValue = Buffer.from(response.body.value.bytesValue).toString();
@@ -57,6 +53,10 @@ export class DeviceHttpClient {
       stringValue = response.body.value.stringValue;
     } else {
       throw new Error(`Unexpected body: ${stringify(response.body)}`);
+    }
+    const { statusCode } = response;
+    if (!(200 <= statusCode && statusCode < 300)) {
+      throw new Error(`Unexpected status code: ${statusCode}, body: ${stringValue}`);
     }
     const responseBody = await transformAndValidate(DeviceServerResponseDto, JSON.parse(stringValue));
     const { value } = responseBody;

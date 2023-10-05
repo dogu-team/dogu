@@ -94,12 +94,16 @@ const useDeviceAppInstall = (
 
   const installApp = useCallback(
     async (uploadedFilePath: string) => {
-      if (!serial || !deviceClient) {
+      if (!serial || !deviceClient || !deviceHostClient) {
         return;
       }
 
       setIsInstalling(true);
       try {
+        console.log('resignApp');
+        await deviceHostClient.resignApp({ filePath: uploadedFilePath }).catch((e) => {
+          console.error('resignApp error:', e);
+        });
         await deviceClient.installApp(serial, uploadedFilePath);
         setResult({
           isSuccess: true,
