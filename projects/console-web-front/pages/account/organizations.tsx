@@ -1,5 +1,5 @@
 import { UserBase } from '@dogu-private/console';
-import { Button, Divider } from 'antd';
+import { Divider } from 'antd';
 import { GetServerSideProps } from 'next';
 import useTranslation from 'next-translate/useTranslation';
 import Head from 'next/head';
@@ -9,31 +9,10 @@ import { SWRConfig } from 'swr';
 import TableListView from '../../src/components/common/TableListView';
 import ConsoleBasicLayout from '../../src/components/layouts/ConsoleBasicLayout';
 import Footer from '../../src/components/layouts/Footer';
-import CreateOrganizationModal from '../../src/components/organizations/CreateOrganizationModal';
 import OrganizationListController from '../../src/components/organizations/OrganizationListController';
 import useAuth from '../../src/hooks/useAuth';
-import useModal from '../../src/hooks/useModal';
 import { checkUserVerifiedInServerSide } from '../../src/utils/auth';
 import { NextPageWithLayout } from '../_app';
-
-const CreateOrganizationButton = () => {
-  const [isOpen, openModal, closeModal] = useModal();
-  const { t } = useTranslation();
-
-  return (
-    <>
-      <Button
-        type="primary"
-        onClick={() => openModal()}
-        access-id={process.env.NEXT_PUBLIC_ENV !== 'production' ? 'new-org-btn' : undefined}
-      >
-        {t('account:createOrganizationButtonText')}
-      </Button>
-
-      <CreateOrganizationModal open={isOpen} close={closeModal} />
-    </>
-  );
-};
 
 interface Props {
   fallback: {
@@ -61,14 +40,7 @@ const OrganizationListPage: NextPageWithLayout<Props> = ({ fallback }) => {
       <Box>
         <StyledH2>{t('account:myOrganizationPageTitle')}</StyledH2>
         <Divider />
-        <TableListView
-          top={
-            <div>
-              <CreateOrganizationButton />
-            </div>
-          }
-          table={<OrganizationListController />}
-        />
+        <TableListView top={<div></div>} table={<OrganizationListController />} />
       </Box>
     </SWRConfig>
   );
