@@ -21,7 +21,7 @@ import CollpaseSidebarMenu from './CollapseSidebarMenu';
 import ProjectSwitch from '../projects/ProjectSwitch';
 import useRefresh from '../../hooks/useRefresh';
 import useProjectContext from '../../hooks/context/useProjectContext';
-import { IS_CLOUD } from '../../../pages/_app';
+// import { IS_CLOUD } from '../../../pages/_app';
 
 type MenuItem = Required<MenuProps>['items'];
 
@@ -150,37 +150,66 @@ const ProjectSideBar = () => {
         },
       ],
     },
-    IS_CLOUD
-      ? null
-      : {
-          type: 'group',
-          label: collapsed ? null : 'Device Farm',
-          children: [
-            {
-              key: 'devices',
-              label: collapsed ? (
-                t('project:tabMenuDeviceTitle')
-              ) : (
-                <SideBarMenu
-                  path={`/dashboard/${project?.organizationId}/projects/${project?.projectId}/devices`}
-                  text={t('project:tabMenuDeviceTitle')}
-                  accessId="project-side-bar-devices"
-                  icon={<MobileOutlined style={{ fontSize: '1.2rem' }} />}
-                />
-              ),
-              icon: collapsed ? (
-                <StyledIconLink
-                  selected={
-                    router.asPath === `/dashboard/${project?.organizationId}/projects/${project?.projectId}/devices`
-                  }
-                  href={`/dashboard/${project?.organizationId}/projects/${project?.projectId}/devices`}
-                >
-                  <MobileOutlined />
-                </StyledIconLink>
-              ) : undefined,
-            },
-          ],
+    // IS_CLOUD
+    //   ? null
+    //   : {
+    //       type: 'group',
+    //       label: collapsed ? null : 'Device Farm',
+    //       children: [
+    //         {
+    //           key: 'devices',
+    //           label: collapsed ? (
+    //             t('project:tabMenuDeviceTitle')
+    //           ) : (
+    //             <SideBarMenu
+    //               path={`/dashboard/${project?.organizationId}/projects/${project?.projectId}/devices`}
+    //               text={t('project:tabMenuDeviceTitle')}
+    //               accessId="project-side-bar-devices"
+    //               icon={<MobileOutlined style={{ fontSize: '1.2rem' }} />}
+    //             />
+    //           ),
+    //           icon: collapsed ? (
+    //             <StyledIconLink
+    //               selected={
+    //                 router.asPath === `/dashboard/${project?.organizationId}/projects/${project?.projectId}/devices`
+    //               }
+    //               href={`/dashboard/${project?.organizationId}/projects/${project?.projectId}/devices`}
+    //             >
+    //               <MobileOutlined />
+    //             </StyledIconLink>
+    //           ) : undefined,
+    //         },
+    //       ],
+    //     },
+    {
+      type: 'group',
+      label: collapsed ? null : 'Device Farm',
+      children: [
+        {
+          key: 'devices',
+          label: collapsed ? (
+            t('project:tabMenuDeviceTitle')
+          ) : (
+            <SideBarMenu
+              path={`/dashboard/${project?.organizationId}/projects/${project?.projectId}/devices`}
+              text={t('project:tabMenuDeviceTitle')}
+              accessId="project-side-bar-devices"
+              icon={<MobileOutlined style={{ fontSize: '1.2rem' }} />}
+            />
+          ),
+          icon: collapsed ? (
+            <StyledIconLink
+              selected={
+                router.asPath === `/dashboard/${project?.organizationId}/projects/${project?.projectId}/devices`
+              }
+              href={`/dashboard/${project?.organizationId}/projects/${project?.projectId}/devices`}
+            >
+              <MobileOutlined />
+            </StyledIconLink>
+          ) : undefined,
         },
+      ],
+    },
     project?.type === PROJECT_TYPE.WEB
       ? null
       : {

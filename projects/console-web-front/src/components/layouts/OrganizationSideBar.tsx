@@ -23,7 +23,7 @@ import { flexRowCenteredStyle } from '../../styles/box';
 import CollpaseSidebarMenu from './CollapseSidebarMenu';
 import useRefresh from '../../hooks/useRefresh';
 import useOrganizationContext from '../../hooks/context/useOrganizationContext';
-import { IS_CLOUD } from '../../../pages/_app';
+// import { IS_CLOUD } from '../../../pages/_app';
 
 type MenuItem = Required<MenuProps>['items'];
 
@@ -81,31 +81,54 @@ const OrganizationSideBar = () => {
       ),
       style: { borderRadius: '6px' },
     },
-    IS_CLOUD
-      ? null
-      : {
-          key: 'device-farm',
-          icon: collapsed ? (
-            <StyledIconLink
-              selected={router.asPath.startsWith(`/dashboard/${orgId}/device-farm`)}
-              href={`/dashboard/${orgId}/device-farm/hosts`}
-            >
-              <ClusterOutlined />
-            </StyledIconLink>
-          ) : undefined,
-          label: collapsed ? (
-            t('organization:deviceFarmPageTitle')
-          ) : (
-            <SideBarMenu
-              icon={<ClusterOutlined style={{ fontSize: '1.2rem' }} />}
-              path={`/dashboard/${orgId}/device-farm/hosts`}
-              text={t('organization:deviceFarmPageTitle')}
-              startWith={`/dashboard/${orgId}/device-farm`}
-              accessId="side-bar-device-farm"
-            />
-          ),
-          style: { borderRadius: '6px' },
-        },
+    // IS_CLOUD
+    //   ? null
+    //   : {
+    //       key: 'device-farm',
+    //       icon: collapsed ? (
+    //         <StyledIconLink
+    //           selected={router.asPath.startsWith(`/dashboard/${orgId}/device-farm`)}
+    //           href={`/dashboard/${orgId}/device-farm/hosts`}
+    //         >
+    //           <ClusterOutlined />
+    //         </StyledIconLink>
+    //       ) : undefined,
+    //       label: collapsed ? (
+    //         t('organization:deviceFarmPageTitle')
+    //       ) : (
+    //         <SideBarMenu
+    //           icon={<ClusterOutlined style={{ fontSize: '1.2rem' }} />}
+    //           path={`/dashboard/${orgId}/device-farm/hosts`}
+    //           text={t('organization:deviceFarmPageTitle')}
+    //           startWith={`/dashboard/${orgId}/device-farm`}
+    //           accessId="side-bar-device-farm"
+    //         />
+    //       ),
+    //       style: { borderRadius: '6px' },
+    //     },
+    {
+      key: 'device-farm',
+      icon: collapsed ? (
+        <StyledIconLink
+          selected={router.asPath.startsWith(`/dashboard/${orgId}/device-farm`)}
+          href={`/dashboard/${orgId}/device-farm/hosts`}
+        >
+          <ClusterOutlined />
+        </StyledIconLink>
+      ) : undefined,
+      label: collapsed ? (
+        t('organization:deviceFarmPageTitle')
+      ) : (
+        <SideBarMenu
+          icon={<ClusterOutlined style={{ fontSize: '1.2rem' }} />}
+          path={`/dashboard/${orgId}/device-farm/hosts`}
+          text={t('organization:deviceFarmPageTitle')}
+          startWith={`/dashboard/${orgId}/device-farm`}
+          accessId="side-bar-device-farm"
+        />
+      ),
+      style: { borderRadius: '6px' },
+    },
     { type: 'divider' },
     {
       key: 'member',
