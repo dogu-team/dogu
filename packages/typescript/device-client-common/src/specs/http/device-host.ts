@@ -80,7 +80,9 @@ export class ResignAppFileRequestBody {
   filePath!: string;
 }
 
-export class ResignAppFileResponseBodyData {}
+export class ResignAppFileResponseBodyData {
+  result!: 'success' | 'no-identity' | 'no-provisioning' | 'not-ipa';
+}
 
 const DeviceHostController = new ControllerSpec({ path: '/device-host' });
 export const DeviceHost = {

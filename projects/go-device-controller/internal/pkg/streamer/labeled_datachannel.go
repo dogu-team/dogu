@@ -317,14 +317,12 @@ func (ldc *DeviceServerHttpLabeledDatachannel) onMessage(msg webrtc.DataChannelM
 	url := url.URL{Scheme: "http", Host: fmt.Sprintf("127.0.0.1:%d", ldc.deviceServerPort), Path: request.GetPath(), RawQuery: rawQuery}
 
 	var rawBody *bytes.Buffer = nil
-	isBodyString := false
 	if body := request.GetBody(); body != nil {
 		switch body.Value.(type) {
 		case *outer.Body_BytesValue:
 			rawBody = bytes.NewBuffer(body.GetBytesValue())
 		case *outer.Body_StringValue:
 			rawBody = bytes.NewBufferString(body.GetStringValue())
-			isBodyString = true
 		default:
 			log.Inst.Error("DeviceServerHttpLabeledDatachannel body type error")
 			if err := ldc.sendResult(sequenceId, &outer.HttpRequestResult{
@@ -361,9 +359,6 @@ func (ldc *DeviceServerHttpLabeledDatachannel) onMessage(msg webrtc.DataChannelM
 		}
 		ldc.channel.Close()
 		return
-	}
-	if isBodyString {
-		req.Header.Set("Content-Type", "application/json")
 	}
 
 	if headers := request.GetHeaders(); headers != nil {

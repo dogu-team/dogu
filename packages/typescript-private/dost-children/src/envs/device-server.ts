@@ -30,6 +30,9 @@ export class DeviceServerEnv extends PreloadDeviceServerEnv {
   APPIUM_HOME = HostPaths.external.defaultAppiumHomePath();
 
   @IsString()
+  APPLE_RESIGN_IDENTITY_NAME = '';
+
+  @IsString()
   DOGU_PACKAGED_RESOURCES_PATH = '';
 
   @IsBoolean()
