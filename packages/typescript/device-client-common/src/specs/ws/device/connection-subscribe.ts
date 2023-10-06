@@ -44,6 +44,9 @@ export class DeviceConnectionSubscribeReceiveMessage {
   @Type(() => Number)
   resolutionHeight!: number;
 
+  @IsString()
+  memory!: string;
+
   @ValidateNested({ each: true })
   @Type(() => BrowserInstallation)
   @IsArray()
@@ -63,6 +66,7 @@ export function DefaultDeviceConnectionSubscribeReceiveMessage(): DeviceConnecti
     isVirtual: 0,
     resolutionWidth: 0,
     resolutionHeight: 0,
+    memory: '',
     browserInstallations: [],
   };
 }

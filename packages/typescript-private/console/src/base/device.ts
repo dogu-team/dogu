@@ -26,6 +26,12 @@ interface DeviceRelationTraits {
   deviceRunners?: DeviceRunnerBase[];
 }
 
+export enum DeviceUsageState {
+  available = 'available',
+  preparing = 'preparing',
+  busy = 'busy',
+}
+
 export type DeviceBase = Omit<Required<Device>, 'heartbeat' | 'modelName' | 'displayError'> & {
   heartbeat: Date | null;
   modelName: string | null;
@@ -33,6 +39,8 @@ export type DeviceBase = Omit<Required<Device>, 'heartbeat' | 'modelName' | 'dis
   deletedAt: Date | null;
   enableHostDevice: number;
   maxParallelJobs: number;
+  location: string | null;
+  usageState: DeviceUsageState;
 } & DeviceRelationTraits;
 
 export const DevicePropCamel = propertiesOf<DeviceBase>();

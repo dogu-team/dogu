@@ -44,6 +44,9 @@ export class OnDeviceConnectedEventValue implements DeviceConnectionInfo {
   @Type(() => Number)
   resolutionHeight!: number;
 
+  @IsString()
+  memory!: string;
+
   @ValidateNested({ each: true })
   @Type(() => BrowserInstallation)
   @IsArray()

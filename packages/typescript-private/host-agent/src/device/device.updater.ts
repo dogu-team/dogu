@@ -33,6 +33,7 @@ export class DeviceUpdater {
       resolutionHeight,
       platform,
       isVirtual,
+      memory,
       browserInstallations,
     } = value;
     const pathProvider = new PrivateDevice.updateDevice.pathProvider(organizationId, deviceId);
@@ -48,6 +49,7 @@ export class DeviceUpdater {
       resolutionHeight,
       platform,
       isVirtual,
+      memory,
       browserInstallations,
     };
     const bodyValidated = await transformAndValidate(PrivateDevice.updateDevice.requestBody, body);

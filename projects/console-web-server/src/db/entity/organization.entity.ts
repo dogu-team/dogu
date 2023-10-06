@@ -26,6 +26,9 @@ export class Organization extends BaseEntity implements OrganizationBase {
   @Column({ type: 'character varying', name: OrganizationPropSnake.profile_image_url, length: USER_PROFILE_IMAGE_URL_MAX_LENGTH, default: null, nullable: true })
   profileImageUrl!: string;
 
+  @Column({ type: 'boolean', name: OrganizationPropSnake.shareable, default: false, nullable: false })
+  shareable!: boolean;
+
   @ColumnTemplate.CreateDate(OrganizationPropSnake.created_at)
   createdAt!: Date;
 

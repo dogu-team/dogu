@@ -65,6 +65,7 @@ export class DeviceConnectionSubscribeService
       const display = graphics.displays.at(0);
       const resolutionWidth = display?.resolutionX ?? 0;
       const resolutionHeight = display?.resolutionY ?? 0;
+      const memory = `${info.memLayout.at(0)?.size ?? 0}`;
 
       const message: Instance<typeof DeviceConnectionSubscribe.receiveMessage> = {
         serial,
@@ -78,6 +79,7 @@ export class DeviceConnectionSubscribeService
         isVirtual: isVirtual ? 1 : 0,
         resolutionWidth,
         resolutionHeight,
+        memory,
         browserInstallations,
       };
       return message;
