@@ -54,7 +54,6 @@ import { OrganizationAccessToken } from '../../db/entity/organization-access-tok
 import { UserAndInvitationToken } from '../../db/entity/relations/user-and-invitation-token.entity';
 import { Routine } from '../../db/entity/routine.entity';
 import { RoutineStep } from '../../db/entity/step.entity';
-import { UserVisit } from '../../db/entity/user-visit.entity';
 import { FeatureLicenseService } from '../../enterprise/module/license/feature-license.service';
 import { FEATURE_CONFIG } from '../../feature.config';
 import { castEntity } from '../../types/entity-cast';
@@ -237,7 +236,6 @@ export class OrganizationService {
       .leftJoinAndSelect(`organization.${OrganizationPropCamel.organizationAndUserAndTeams}`, 'orgUserTime')
       .leftJoinAndSelect(`organization.${OrganizationPropCamel.organizationAndUserAndOrganizationRoles}`, 'orgUserRole')
       .leftJoinAndSelect(`organization.${OrganizationPropCamel.teams}`, 'team')
-      .leftJoinAndSelect(`organization.${OrganizationPropCamel.userVisits}`, 'userVisit')
       .leftJoinAndSelect(`organization.${OrganizationPropCamel.userInvitations}`, 'userInvitation')
       .leftJoinAndSelect(`userInvitation.${UserAndInvitationTokenPropCamel.token}`, 'invitationtoken')
       // project
@@ -346,7 +344,6 @@ export class OrganizationService {
       await manager.getRepository(Device).softDelete({ organizationId });
       await manager.getRepository(DeviceTag).softDelete({ organizationId });
       await manager.getRepository(Host).softDelete({ organizationId });
-      await manager.getRepository(UserVisit).softDelete({ organizationId });
       await manager.getRepository(UserAndInvitationToken).softDelete({ organizationId });
       await manager.getRepository(OrganizationAndUserAndTeam).softDelete({ organizationId });
       const invitations = organization.userInvitations ? organization.userInvitations : [];
@@ -473,11 +470,11 @@ export class OrganizationService {
       if (invitation) {
         if (invitation.deletedAt) {
           await manager.getRepository(UserAndInvitationToken).recover(invitation);
-          invitation.status = USER_INVITATION_STATUS.ACCEPTED;
         }
         await manager.getRepository(Token).softDelete({ tokenId: invitation.tokenId });
         invitation.organizationRoleId = organizationRoleId;
         invitation.tokenId = token.tokenId;
+        invitation.status = USER_INVITATION_STATUS.PENDING;
         await manager.getRepository(UserAndInvitationToken).save(invitation);
       } else {
         const invitationData = manager.getRepository(UserAndInvitationToken).create({
@@ -545,8 +542,8 @@ export class OrganizationService {
       if (invitation) {
         if (invitation.deletedAt) {
           await manager.getRepository(UserAndInvitationToken).recover(invitation);
-          invitation.status = USER_INVITATION_STATUS.PENDING;
         }
+        invitation.status = USER_INVITATION_STATUS.PENDING;
         await manager.getRepository(Token).softDelete({ tokenId: invitation.tokenId });
         invitation.organizationRoleId = organizationRoleId;
         invitation.tokenId = token.tokenId;

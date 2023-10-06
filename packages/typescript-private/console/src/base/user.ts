@@ -19,7 +19,6 @@ import { RoutinePipelineBase } from './routine-pipeline';
 import { TeamBase } from './team';
 import { UserAndInvitationTokenBase } from './user-and-invitation-token';
 import { UserAndVerificationTokenBase } from './user-and-verification-token';
-import { UserVisitBase } from './user-visit';
 
 export interface UserRelationTraits {
   organizations?: OrganizationBase[];
@@ -30,7 +29,6 @@ export interface UserRelationTraits {
   routinePipelines?: RoutinePipelineBase[];
   organizationAndUserAndTeams?: OrganizationUserAndTeamBase[];
   projectAndUserAndProjectRoles?: ProjectAndUserAndProjectRoleBase[];
-  userVisits?: UserVisitBase[];
   userAndVerificationToken?: UserAndVerificationTokenBase;
   userAndInvitationToken?: UserAndInvitationTokenBase;
   userAndResetPasswordToken?: UserAndResetPasswordTokenBase;

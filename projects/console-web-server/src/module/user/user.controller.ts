@@ -27,7 +27,7 @@ import { ImageFileParser } from '../../utils/file';
 import { Page } from '../common/dto/pagination/page';
 import { PageDto } from '../common/dto/pagination/page.dto';
 import { UpdateUserEmailPreferenceDto } from './dto/user-email-preference.dto';
-import { ResetPasswordDto, UpdateLastOrganizationDto, UpdateTutorialDto, UpdateUserDto } from './dto/user.dto';
+import { ResetPasswordDto, UpdateTutorialDto, UpdateUserDto } from './dto/user.dto';
 import { UserEmailPreferenceService } from './user-email-preference.service';
 
 @Controller('users')
@@ -39,12 +39,12 @@ export class UserController {
     private readonly userEmailPreferenceService: UserEmailPreferenceService,
   ) {}
 
-  @Patch('record/last-organization')
-  @OrganizationPermission(ORGANIZATION_ROLE.MEMBER)
-  async updateLastAccess(@User() userPayLoad: UserPayload, @Body() dto: UpdateLastOrganizationDto): Promise<void> {
-    const rv = await this.userService.updateLastAccess(userPayLoad.userId, dto.organizationId);
-    return rv;
-  }
+  // @Patch('record/last-organization')
+  // @OrganizationPermission(ORGANIZATION_ROLE.MEMBER)
+  // async updateLastAccess(@User() userPayLoad: UserPayload, @Body() dto: UpdateLastOrganizationDto): Promise<void> {
+  //   const rv = await this.userService.updateLastAccess(userPayLoad.userId, dto.organizationId);
+  //   return rv;
+  // }
 
   @Get(':userId')
   @EmailVerification(EMAIL_VERIFICATION.UNVERIFIED)

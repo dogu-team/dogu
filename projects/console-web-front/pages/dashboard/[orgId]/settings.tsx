@@ -16,7 +16,6 @@ import ImageCropUploader from 'src/components/images/ImageCropUploader';
 import {
   getOrganizationAccessToken,
   regenerateOrganizationAccessToken,
-  removeOrganization,
   updateOrganization,
   updateOrganizationOwner,
   uploadOrganizationImage,
@@ -46,18 +45,6 @@ const OrganizationSettingPage: NextPageWithLayout<OrganizationServerSideProps> =
   useEffect(() => {
     setEditingOrganization(organization);
   }, [organization]);
-
-  const handleRemove = async () => {
-    try {
-      await removeOrganization(organization.organizationId);
-      sendSuccessNotification('Removed');
-      router.push(`/account/organizations`);
-    } catch (e) {
-      if (e instanceof AxiosError) {
-        sendErrorNotification(`Failed to remove.\n${getErrorMessageFromAxios(e)}`);
-      }
-    }
-  };
 
   const updateProfileImage = (src: string) =>
     setEditingOrganization((prev) => {
@@ -248,7 +235,7 @@ const OrganizationSettingPage: NextPageWithLayout<OrganizationServerSideProps> =
                 </DangerZone.Button>
               }
             />
-            <DangerZone.Item
+            {/* <DangerZone.Item
               title={t('organization:settingRemoveOrgMenuTitle')}
               description={t('organization:settingRemoveOrgDescriptionText')}
               button={
@@ -271,7 +258,7 @@ const OrganizationSettingPage: NextPageWithLayout<OrganizationServerSideProps> =
                   {t('organization:settingRemoveOrgButtonTitle')}
                 </DangerZone.Button>
               }
-            />
+            /> */}
           </DangerZone>
         </div>
       </Box>

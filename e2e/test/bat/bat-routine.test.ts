@@ -1113,17 +1113,17 @@ Dest.withOptions({
         expect(elems.length).toBe(1);
       });
 
-      test('Delete org', async () => {
-        await Driver.clickElement({ xpath: '//a[@access-id="side-bar-setting"]' });
-        await Driver.clickElement({ xpath: '//button[@access-id="remove-org-btn"]' });
-        await Driver.clickElement({ xpath: '//button[@id="remove-org-confirm-btn"]' });
-      });
+      // test('Delete org', async () => {
+      //   await Driver.clickElement({ xpath: '//a[@access-id="side-bar-setting"]' });
+      //   await Driver.clickElement({ xpath: '//button[@access-id="remove-org-btn"]' });
+      //   await Driver.clickElement({ xpath: '//button[@id="remove-org-confirm-btn"]' });
+      // });
 
-      test('Check org deletion', async () => {
-        await Timer.wait(2000, 'wait for org deletion');
-        const elems = await Driver.findElements({ xpath: '//div[@access-id="organization-list"]//li[contains(@class, "ant-list-item")]' });
-        expect(elems.length).toBe(1);
-      });
+      // test('Check org deletion', async () => {
+      //   await Timer.wait(2000, 'wait for org deletion');
+      //   const elems = await Driver.findElements({ xpath: '//div[@access-id="organization-list"]//li[contains(@class, "ant-list-item")]' });
+      //   expect(elems.length).toBe(1);
+      // });
     });
     job('Check log', () => {
       dost.checkLog();

@@ -109,7 +109,7 @@ const OrganizationListItem = ({ organization }: Props) => {
             : t('account:organizationListMemberSingularText')}
         </Col>
         <Col flex={1} style={{ justifyContent: 'flex-end' }}>
-          <MenuButton menu={{ items }} />
+          {/* <MenuButton menu={{ items }} /> */}
         </Col>
       </FlexRowBox>
     </ItemBox>
