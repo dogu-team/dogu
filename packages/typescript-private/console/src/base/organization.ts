@@ -10,7 +10,6 @@ import { OrganizationSlackBase } from './organization-slack';
 import { ProjectBase } from './project';
 import { TeamBase } from './team';
 import { UserBase } from './user';
-import { UserVisitBase } from './user-visit';
 
 export interface OrganizationRelationTraits {
   hosts?: HostBase[];
@@ -18,7 +17,6 @@ export interface OrganizationRelationTraits {
   users?: UserBase[];
   teams?: TeamBase[];
   organizationAndUserAndOrganizationRoles?: OrganizationAndUserAndOrganizationRoleBase[];
-  userVisits?: UserVisitBase[];
   organizationAndUserAndTeams?: OrganizationUserAndTeamBase[];
   deviceTags?: DeviceTagBase[];
   devices?: DeviceBase[];

@@ -70,9 +70,13 @@ export const checkUserVerifiedInServerSide = async (context: GetServerSidePropsC
 };
 
 export const redirectToLastAccessOrganization = (user: UserBase, context: GetServerSidePropsContext) => {
-  if (user.userVisits && user.userVisits.length > 0) {
+  if (user.organizationAndUserAndOrganizationRoles && user.organizationAndUserAndOrganizationRoles.length > 0) {
     return {
-      redirect: redirectWithLocale(context, `/dashboard/${user.userVisits[0].organizationId}`, false),
+      redirect: redirectWithLocale(
+        context,
+        `/dashboard/${user.organizationAndUserAndOrganizationRoles[0].organizationId}`,
+        false,
+      ),
     };
   }
 

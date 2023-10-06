@@ -15,29 +15,25 @@ import {
   UserPropCamel,
   UserPropSnake,
   UserResponse,
-  UserVisitPropCamel,
-  UserVisitPropSnake,
 } from '@dogu-private/console';
-import { UserId } from '@dogu-private/types';
-import { HttpException, HttpStatus, Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { OrganizationId, UserId } from '@dogu-private/types';
+import { notEmpty } from '@dogu-tech/common';
+import { HttpException, HttpStatus, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { Brackets, DataSource, DeepPartial, EntityManager, In } from 'typeorm';
-
-import { OrganizationId } from '@dogu-private/types';
-import { notEmpty } from '@dogu-tech/common';
 import { v4 } from 'uuid';
+
 import { Organization, OrganizationAndUserAndOrganizationRole, OrganizationAndUserAndTeam, Project, ProjectAndUserAndProjectRole, Token } from '../../db/entity/index';
 import { PersonalAccessToken } from '../../db/entity/personal-access-token.entity';
 import { UserAndInvitationToken } from '../../db/entity/relations/user-and-invitation-token.entity';
-import { UserVisit } from '../../db/entity/user-visit.entity';
 import { User } from '../../db/entity/user.entity';
 import { EMPTY_PAGE, Page } from '../../module/common/dto/pagination/page';
 import { FindUsersByOrganizationIdDto, ResetPasswordDto, UpdateTutorialDto, UpdateUserDto } from '../../module/user/dto/user.dto';
 import { ORGANIZATION_ROLE } from '../auth/auth.types';
 import { PageDto } from '../common/dto/pagination/page.dto';
 import { UserFileService } from '../file/user-file.service';
-import { GitlabService } from '../gitlab/gitlab.service';
+import { OrganizationService } from '../organization/organization.service';
 import { TokenService } from '../token/token.service';
 
 @Injectable()
@@ -46,8 +42,7 @@ export class UserService {
     @InjectDataSource()
     private readonly dataSource: DataSource,
     private readonly userFileService: UserFileService,
-    @Inject(GitlabService)
-    private readonly gitlabService: GitlabService,
+    private readonly organizationService: OrganizationService,
   ) {}
 
   async findOne(userId: UserId): Promise<UserBase> {
@@ -55,9 +50,8 @@ export class UserService {
       .getRepository(User) //
       .createQueryBuilder('user')
       .innerJoinAndSelect(`user.${UserPropCamel.userAndVerificationToken}`, 'userAndVerificationToken')
-      .leftJoinAndSelect(`user.${UserPropCamel.userVisits}`, 'userVisit')
+      .leftJoinAndSelect(`user.${UserPropCamel.organizationAndUserAndOrganizationRoles}`, 'organizationAndUserAndOrganizationRoles')
       .where(`user.${UserPropSnake.user_id} = :${UserPropCamel.userId}`, { userId })
-      .orderBy(`userVisit.${UserVisitPropCamel.updatedAt}`, 'DESC')
       .getOne();
 
     if (!user) {
@@ -72,10 +66,8 @@ export class UserService {
       .getRepository(User) //
       .createQueryBuilder('user')
       .innerJoinAndSelect(`user.${UserPropCamel.userAndVerificationToken}`, 'userAndVerificationToken')
-      .leftJoinAndSelect(`user.${UserPropCamel.userVisits}`, 'userVisit')
       .leftJoinAndSelect(`user.${UserPropCamel.emailPreference}`, 'userEmailPreference')
       .where(`user.${UserPropSnake.user_id} = :${UserPropCamel.userId}`, { userId })
-      .orderBy(`userVisit.${UserVisitPropCamel.updatedAt}`, 'DESC')
       .getOne();
 
     if (!user) {
@@ -87,11 +79,11 @@ export class UserService {
 
   async findLastAccessOrganizationId(email: string): Promise<OrganizationId | null> {
     const visit = await this.dataSource //
-      .getRepository(UserVisit) //
-      .createQueryBuilder('visit')
-      .innerJoinAndSelect(`visit.${UserVisitPropCamel.user}`, 'user')
+      .getRepository(OrganizationAndUserAndOrganizationRole) //
+      .createQueryBuilder('ouor')
+      .innerJoinAndSelect(`ouor.${OrganizationAndUserAndOrganizationRolePropCamel.user}`, 'user')
       .where(`user.${UserPropSnake.email} = :${UserPropSnake.email}`, { email })
-      .orderBy(`visit.${UserVisitPropSnake.updated_at}`, 'DESC')
+      .andWhere(`ouor.${OrganizationAndUserAndOrganizationRolePropSnake.deleted_at} IS NULL`)
       .getOne();
 
     return visit?.organizationId ?? null;
@@ -103,12 +95,6 @@ export class UserService {
       .createQueryBuilder('organization')
       .innerJoinAndSelect(`organization.${OrganizationPropCamel.organizationAndUserAndOrganizationRoles}`, 'orgUserRole')
       .leftJoinAndSelect(`orgUserRole.${OrganizationAndUserAndOrganizationRolePropCamel.user}`, 'user')
-      .leftJoinAndSelect(
-        `organization.${OrganizationPropCamel.userVisits}`,
-        'userVisit', //
-        `userVisit.${UserVisitPropSnake.user_id} = :${UserVisitPropCamel.userId}`,
-        { userId },
-      )
       .where((qb) => {
         const subQuery = qb //
           .subQuery()
@@ -122,7 +108,6 @@ export class UserService {
 
         return `organization.${OrganizationPropSnake.organization_id} IN ${subQuery}`;
       })
-      .orderBy(`userVisit.${UserVisitPropCamel.updatedAt}`, 'DESC')
       .skip(dto.getDBOffset())
       .take(dto.getDBLimit())
       .getManyAndCount();
@@ -222,23 +207,23 @@ export class UserService {
     return page;
   }
 
-  async updateLastAccess(userId: UserId, organizationId: OrganizationId): Promise<void> {
-    const visit = await this.dataSource.getRepository(UserVisit).findOne({
-      where: { organizationId, userId },
-    });
-    if (visit) {
-      //updateAt
-      await this.dataSource.getRepository(UserVisit).update({ userId, organizationId }, { updatedAt: new Date() });
-      return;
-    }
+  // async updateLastAccess(userId: UserId, organizationId: OrganizationId): Promise<void> {
+  //   const visit = await this.dataSource.getRepository(UserVisit).findOne({
+  //     where: { organizationId, userId },
+  //   });
+  //   if (visit) {
+  //     //updateAt
+  //     await this.dataSource.getRepository(UserVisit).update({ userId, organizationId }, { updatedAt: new Date() });
+  //     return;
+  //   }
 
-    //create
-    const newVisit = this.dataSource.getRepository(UserVisit).create({
-      userId,
-      organizationId,
-    });
-    await this.dataSource.getRepository(UserVisit).save(newVisit);
-  }
+  //   //create
+  //   const newVisit = this.dataSource.getRepository(UserVisit).create({
+  //     userId,
+  //     organizationId,
+  //   });
+  //   await this.dataSource.getRepository(UserVisit).save(newVisit);
+  // }
 
   async updateUser(userId: UserId, updateUserDto: UpdateUserDto): Promise<UserResponse> {
     const user: User | null = await this.dataSource.getRepository(User).findOne({ where: { userId: userId } });
@@ -279,7 +264,6 @@ export class UserService {
       .leftJoinAndSelect(`userAndVerificationToken.${UserAndVerificationTokenPropCamel.token}`, 'verificationToken')
       .leftJoinAndSelect(`userAndInvitationToken.${UserAndInvitationTokenPropCamel.token}`, 'invitationToken')
       .leftJoinAndSelect(`resetPassword.${UserAndResetPasswordTokenPropCamel.token}`, 'resetPasswordToken')
-      .leftJoinAndSelect(`user.${UserPropCamel.userVisits}`, 'userVisit')
       .leftJoinAndSelect(`user.${UserPropCamel.emailPreference}`, 'emailPreference')
       .where(`user.${UserPropSnake.user_id} = :userId`, { userId })
       .getOne();
@@ -361,15 +345,20 @@ export class UserService {
     invitation?.tokenId;
 
     await this.dataSource.transaction(async (entityManager) => {
-      //organization and role
+      // organization and role
       await entityManager.getRepository(OrganizationAndUserAndOrganizationRole).softDelete({ organizationId, userId });
 
       // soft delete by projectIds
       await entityManager.getRepository(ProjectAndUserAndProjectRole).softDelete({ projectId: In(projectIds), userId });
       // user and team
       await entityManager.getRepository(OrganizationAndUserAndTeam).softDelete({ organizationId, userId });
-      // visit
-      await entityManager.getRepository(UserVisit).softDelete({ organizationId, userId });
+
+      // create new organization and role
+      const newOrg = await this.organizationService.createOrganization(entityManager, user.userId, { name: `${user.name}'s organization` });
+      const newOrganizationRole = entityManager
+        .getRepository(OrganizationAndUserAndOrganizationRole)
+        .create({ organizationId: newOrg.organizationId, userId, organizationRoleId: ORGANIZATION_ROLE.OWNER });
+      await entityManager.getRepository(OrganizationAndUserAndOrganizationRole).save(newOrganizationRole);
 
       // invitation
       if (invitation) {

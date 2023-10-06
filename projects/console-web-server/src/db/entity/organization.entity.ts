@@ -14,7 +14,6 @@ import { DeviceTag, OrganizationAndUserAndOrganizationRole, OrganizationAndUserA
 import { OrganizationSlack } from './organization-slack.entity';
 import { Project } from './project.entity';
 import { UserAndInvitationToken } from './relations/user-and-invitation-token.entity';
-import { UserVisit } from './user-visit.entity';
 
 @Entity(ORGANIZATION_TABLE_NAME)
 export class Organization extends BaseEntity implements OrganizationBase {
@@ -74,9 +73,6 @@ export class Organization extends BaseEntity implements OrganizationBase {
     },
   })
   users?: User[];
-
-  @OneToMany(() => UserVisit, (visit) => visit.organization, { cascade: ['soft-remove'] })
-  userVisits?: UserVisit[];
 
   @OneToMany(() => UserAndInvitationToken, (invitation) => invitation.organization, { cascade: ['soft-remove'] })
   userInvitations?: UserAndInvitationToken[];
