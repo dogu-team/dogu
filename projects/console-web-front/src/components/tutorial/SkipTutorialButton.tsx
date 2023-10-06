@@ -1,8 +1,8 @@
 import { Button } from 'antd';
 import { isAxiosError } from 'axios';
 import { useRouter } from 'next/router';
-import { UrlObject } from 'url';
 
+import { IS_CLOUD } from '../../../pages/_app';
 import { updateUserTutorial } from '../../api/user';
 import useTutorialContext from '../../hooks/context/useTutorialContext';
 import useRequest from '../../hooks/useRequest';
@@ -10,7 +10,6 @@ import { sendErrorNotification } from '../../utils/antd';
 
 interface Props {
   children: React.ReactNode;
-  // href: UrlObject | string;
 }
 
 const SkipTutorialButton = ({ children }: Props) => {
@@ -24,12 +23,18 @@ const SkipTutorialButton = ({ children }: Props) => {
     }
 
     if (me.isTutorialCompleted) {
+      // IS_CLOUD
+      //   ? router.push(`/dashboard/${organization.organizationId}/projects`)
+      //   : router.push(`/dashboard/${organization.organizationId}/device-farm/devices`);
       router.push(`/dashboard/${organization.organizationId}/device-farm/devices`);
       return;
     }
 
     try {
       await request(me.userId, { isTutorialCompleted: 1 });
+      // IS_CLOUD
+      //   ? router.push(`/dashboard/${organization.organizationId}/projects`)
+      //   : router.push(`/dashboard/${organization.organizationId}/device-farm/devices`);
       router.push(`/dashboard/${organization.organizationId}/device-farm/devices`);
     } catch (e) {
       if (isAxiosError(e)) {

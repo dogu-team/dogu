@@ -16,7 +16,7 @@ import SkipTutorialButton from '../../../../src/components/tutorial/SkipTutorial
 import { TutorialContext } from '../../../../src/hooks/context/useTutorialContext';
 import { flexRowBaseStyle } from '../../../../src/styles/box';
 import { checkUserVerifiedInServerSide } from '../../../../src/utils/auth';
-import { NextPageWithLayout } from '../../../_app';
+import { IS_CLOUD, NextPageWithLayout } from '../../../_app';
 
 interface ServerSideProps {
   organization: OrganizationBase;
@@ -26,8 +26,6 @@ interface ServerSideProps {
 const OrganizationTutorialPage: NextPageWithLayout<ServerSideProps> = ({ organization, me }) => {
   const [project, setProject] = useState<ProjectBase>();
   const { t } = useTranslation('tutorial');
-
-  const isCloud = process.env.NEXT_PUBLIC_ENV === 'production';
 
   const updateProject = useCallback((project: ProjectBase) => {
     setProject(project);
@@ -50,21 +48,29 @@ const OrganizationTutorialPage: NextPageWithLayout<ServerSideProps> = ({ organiz
           <HeaderContent>
             <div>
               <StyledTitle>
-                {isCloud ? (
-                  'Tutorial'
+                {/* {IS_CLOUD ? (
+                  <>
+                    Welcome to&nbsp;
+                    <DoguText />!
+                  </>
                 ) : (
                   <Trans
                     i18nKey="tutorial:deviceFarmTutorialTitle"
                     components={{ icon: <ClusterOutlined style={{ margin: '0 0.35rem' }} /> }}
                   />
-                )}
+                )} */}
+                <Trans
+                  i18nKey="tutorial:deviceFarmTutorialTitle"
+                  components={{ icon: <ClusterOutlined style={{ margin: '0 0.35rem' }} /> }}
+                />
               </StyledTitle>
             </div>
             <div>
               <SkipTutorialButton>{t('skipTutorialLinkTitle')}</SkipTutorialButton>
             </div>
           </HeaderContent>
-          {isCloud ? <CloudUserTutorial /> : <DeviceFarmTutorial />}
+          {/* {IS_CLOUD ? <CloudUserTutorial /> : <DeviceFarmTutorial />} */}
+          <DeviceFarmTutorial />
           <FlexEndBox>
             <SkipTutorialButton>{t('closeTutorialLinkTitle')}</SkipTutorialButton>
           </FlexEndBox>
