@@ -62,10 +62,6 @@ export const createOrganization = async (dto: CreateOrganizationDtoBase) => {
   return data;
 };
 
-export const removeOrganization = async (organizationId: OrganizationId) => {
-  return await api.delete<void>(`/organizations/${organizationId}`);
-};
-
 export const updateOrganizationOwner = async (orgId: OrganizationId, userId: UserId) => {
   const dto: UpdateOrganizationOwnerDtoBase = {
     userId,

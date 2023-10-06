@@ -13,20 +13,26 @@ const SlackConnectionPage: NextPageWithLayout<PageProps> = ({ user }) => {
   const router = useRouter();
   const query = router.query as Object as ConnectSlackDtoBase;
 
-  const userVisits = user.userVisits;
-  if (!userVisits) {
+  // const userVisits = user.userVisits;
+  // if (!userVisits) {
+  //   return <>Not Auth</>;
+  // }
+
+  // const latestVisit = userVisits[0];
+  // if (!latestVisit) {
+  //   return <>Not Auth</>;
+  // }
+
+  // const organizationId = latestVisit.organizationId;
+  // if (!organizationId) {
+  //   return <>Not Auth</>;
+  // }
+
+  if (!user.organizationAndUserAndOrganizationRoles || user.organizationAndUserAndOrganizationRoles.length === 0) {
     return <>Not Auth</>;
   }
 
-  const latestVisit = userVisits[0];
-  if (!latestVisit) {
-    return <>Not Auth</>;
-  }
-
-  const organizationId = latestVisit.organizationId;
-  if (!organizationId) {
-    return <>Not Auth</>;
-  }
+  const organizationId = user.organizationAndUserAndOrganizationRoles[0].organizationId;
 
   connectSlack(organizationId, query).then((redirectUrl) => {
     router.push(redirectUrl);

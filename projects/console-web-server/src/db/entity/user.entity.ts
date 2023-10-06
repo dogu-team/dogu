@@ -41,7 +41,6 @@ import { UserAndResetPasswordToken } from './relations/user-and-reset-password-t
 import { UserAndVerificationToken } from './relations/user-and-verification-token.entity';
 import { UserEmailPreference } from './user-email-preference.entity';
 import { UserSns } from './user-sns.entity';
-import { UserVisit } from './user-visit.entity';
 
 @Entity('user')
 export class User extends BaseEntity implements UserBase {
@@ -145,9 +144,6 @@ export class User extends BaseEntity implements UserBase {
 
   @OneToMany(() => UserAndRefreshToken, (userAndRefreshToken) => userAndRefreshToken.user, { cascade: ['soft-remove'] })
   userAndRefreshTokens?: UserAndRefreshToken[];
-
-  @OneToMany(() => UserVisit, (visit) => visit.user, { cascade: ['soft-remove'] })
-  userVisits?: UserVisit[];
 
   @OneToOne(() => UserSns, { cascade: ['soft-remove'], createForeignKeyConstraints: false })
   @JoinColumn({

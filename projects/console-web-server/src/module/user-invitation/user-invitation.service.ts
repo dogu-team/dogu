@@ -2,11 +2,12 @@ import { OrganizationAndUserAndOrganizationRolePropCamel, UserAndInvitationToken
 import { OrganizationId, UserId, USER_INVITATION_STATUS } from '@dogu-private/types';
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
-import { DataSource, EntityManager } from 'typeorm';
+import { DataSource, EntityManager, Not } from 'typeorm';
 
 import { OrganizationAndUserAndOrganizationRole } from '../../db/entity/index';
 import { UserAndInvitationToken } from '../../db/entity/relations/user-and-invitation-token.entity';
 import { castEntity } from '../../types/entity-cast';
+import { ORGANIZATION_ROLE } from '../auth/auth.types';
 import { TokenService } from '../token/token.service';
 import { AcceptUserInvitationDto } from './dto/user-invitation.dto';
 
@@ -64,6 +65,23 @@ export class UserInvitationService {
     }
 
     await this.dataSource.transaction(async (entityManager) => {
+      // if invitee is owner, move owner to exising member and leave
+      const currentOrgRole = await entityManager.findOne(OrganizationAndUserAndOrganizationRole, { where: { userId } });
+      if (currentOrgRole?.organizationRoleId === ORGANIZATION_ROLE.OWNER) {
+        const members = await entityManager.find(OrganizationAndUserAndOrganizationRole, { where: { organizationId: currentOrgRole.organizationId, userId: Not(userId) } });
+        if (members.length > 0) {
+          const adminMember = members.find((member) => member.organizationRoleId === ORGANIZATION_ROLE.ADMIN);
+          const member = adminMember || members[0];
+
+          await entityManager.update(
+            OrganizationAndUserAndOrganizationRole,
+            { organizationId: currentOrgRole.organizationId, userId: member.userId },
+            { organizationRoleId: ORGANIZATION_ROLE.OWNER },
+          );
+        }
+      }
+
+      await entityManager.softDelete(OrganizationAndUserAndOrganizationRole, { userId });
       await entityManager.save(UserAndInvitationToken, Object.assign(invitation, { status: USER_INVITATION_STATUS.ACCEPTED }));
 
       // create organization - user - role relation

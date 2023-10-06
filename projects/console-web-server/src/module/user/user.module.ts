@@ -3,7 +3,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Organization, OrganizationAndUserAndOrganizationRole } from '../../db/entity/index';
 import { OrganizationRole } from '../../db/entity/organization-role.entity';
 import { UserEmailPreference } from '../../db/entity/user-email-preference.entity';
-import { UserVisit } from '../../db/entity/user-visit.entity';
 import { User } from '../../db/entity/user.entity';
 import { EmailModule } from '../../module/email/email.module';
 import { UserController } from '../../module/user/user.controller';
@@ -16,7 +15,7 @@ import { UserEmailPreferenceService } from './user-email-preference.service';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, UserEmailPreference, OrganizationAndUserAndOrganizationRole, OrganizationRole, Organization, UserVisit]),
+    TypeOrmModule.forFeature([User, UserEmailPreference, OrganizationAndUserAndOrganizationRole, OrganizationRole, Organization]),
     EmailModule,
     GitlabModule,
     FileModule,

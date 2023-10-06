@@ -19,7 +19,7 @@ import { ImageFileParser } from '../../utils/file';
 import { Page } from '../common/dto/pagination/page';
 import { FindUsersByOrganizationIdDto } from '../user/dto/user.dto';
 import { UserService } from '../user/user.service';
-import { createOrganizationDto, FindInvitationsDto, InviteEmailDto, UpdateOrganizationDto, UpdateOrganizationOwnerDto, UpdateOrganizationRoleDto } from './dto/organization.dto';
+import { FindInvitationsDto, InviteEmailDto, UpdateOrganizationDto, UpdateOrganizationOwnerDto, UpdateOrganizationRoleDto } from './dto/organization.dto';
 import { OrganizationService } from './organization.service';
 
 @Controller('organizations')
@@ -33,15 +33,15 @@ export class OrganizationController {
     private readonly dataSource: DataSource,
   ) {}
 
-  @Post('')
-  @EmailVerification(EMAIL_VERIFICATION.VERIFIED)
-  async createOrganization(@User() userPayload: UserPayload, @Body() dto: createOrganizationDto): Promise<OrganizationBase> {
-    const rv = this.dataSource.manager.transaction(async (manager) => {
-      const org = await this.organizationService.createOrganization(manager, userPayload.userId, dto);
-      return org;
-    });
-    return rv;
-  }
+  // @Post('')
+  // @EmailVerification(EMAIL_VERIFICATION.VERIFIED)
+  // async createOrganization(@User() userPayload: UserPayload, @Body() dto: createOrganizationDto): Promise<OrganizationBase> {
+  //   const rv = this.dataSource.manager.transaction(async (manager) => {
+  //     const org = await this.organizationService.createOrganization(manager, userPayload.userId, dto);
+  //     return org;
+  //   });
+  //   return rv;
+  // }
 
   @Get(':organizationId')
   @OrganizationPermission(ORGANIZATION_ROLE.MEMBER)
@@ -111,11 +111,11 @@ export class OrganizationController {
     await this.organizationService.deleteAccessToken(organizationId, userPayload.userId);
   }
 
-  @Delete(':organizationId')
-  @OrganizationPermission(ORGANIZATION_ROLE.OWNER)
-  async softRemoveOrganization(@User() userPayload: UserPayload, @Param(OrganizationPropCamel.organizationId) organizationId: OrganizationId): Promise<void> {
-    await this.organizationService.softRemoveOrganization(userPayload, organizationId);
-  }
+  // @Delete(':organizationId')
+  // @OrganizationPermission(ORGANIZATION_ROLE.OWNER)
+  // async softRemoveOrganization(@User() userPayload: UserPayload, @Param(OrganizationPropCamel.organizationId) organizationId: OrganizationId): Promise<void> {
+  //   await this.organizationService.softRemoveOrganization(userPayload, organizationId);
+  // }
 
   @Get(':organizationId/users')
   @OrganizationPermission(ORGANIZATION_ROLE.MEMBER)
