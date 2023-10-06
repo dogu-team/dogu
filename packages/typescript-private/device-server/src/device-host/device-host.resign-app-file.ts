@@ -31,6 +31,9 @@ export class DeviceHostResignAppFileService {
         maxOccupationTime: Milisecond.t15Minutes,
       },
     );
+    if (result.result !== 'success') {
+      this.logger.error('DeviceHostResignAppFileService.queueResign error', { result });
+    }
     return result;
   }
 
@@ -41,12 +44,16 @@ export class DeviceHostResignAppFileService {
     const identityName = env.APPLE_RESIGN_IDENTITY_NAME;
     const provisioningProfilePath = HostPaths.resignProvisoningProfilePath(configsPath);
 
+    if (process.platform !== 'darwin') {
+      return { result: 'not-macos' };
+    }
+
     if (!appPath.endsWith('.ipa')) {
       return { result: 'not-ipa' };
     }
 
     if (0 == identityName.length) {
-      return { result: 'no-identity' };
+      return { result: 'no-identity-specified' };
     }
     if (!fs.existsSync(provisioningProfilePath)) {
       return { result: 'no-provisioning' };
@@ -54,6 +61,11 @@ export class DeviceHostResignAppFileService {
 
     if (!fs.existsSync(HostPaths.doguTempPath())) {
       await fs.promises.mkdir(HostPaths.doguTempPath(), { recursive: true });
+    }
+
+    const identityResult = await ChildProcess.execIgnoreError('security find-identity', {}, this.logger);
+    if (!identityResult.stderr.includes(identityName) && identityResult.stderr.includes(identityName)) {
+      return { result: 'no-identity-exists' };
     }
 
     const contents = await fs.promises.readFile(ResignShPath, { encoding: 'utf-8' });

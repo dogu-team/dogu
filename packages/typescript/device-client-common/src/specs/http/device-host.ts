@@ -81,7 +81,7 @@ export class ResignAppFileRequestBody {
 }
 
 export class ResignAppFileResponseBodyData {
-  result!: 'success' | 'no-identity' | 'no-provisioning' | 'not-ipa';
+  result!: 'success' | 'no-identity-specified' | 'no-identity-exists' | 'no-provisioning' | 'not-ipa' | 'not-macos';
 }
 
 const DeviceHostController = new ControllerSpec({ path: '/device-host' });
