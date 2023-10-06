@@ -57,7 +57,10 @@ const InviteConfirmPage: NextPageWithLayout<Props> = ({ email, token, invitation
             />
           </div>
           <Description>
-            You&apos;re invited to join <b>{invitation.organization?.name}</b> organization
+            You&apos;re invited to join <b>{invitation.organization?.name}</b> organization!
+          </Description>
+          <Description>
+            If you accept the invitation, <b>you will leave your organization</b>.
           </Description>
         </FlexColumnBox>
 
@@ -135,6 +138,7 @@ const FlexColumnBox = styled.div`
 const Description = styled.p`
   line-height: 1.4;
   margin-top: 0.5rem;
+  text-align: center;
 
   b {
     font-weight: 600;
