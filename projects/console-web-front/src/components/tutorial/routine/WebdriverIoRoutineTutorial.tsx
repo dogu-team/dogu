@@ -102,7 +102,7 @@ on:
 
 jobs:
   sample-job:
-    runs-on: ${IS_CLOUD ? CLOUD_LINUX_DEVICE_NAME : '[]'}
+    runs-on: []
     browserName: chrome
     record: true
     steps:

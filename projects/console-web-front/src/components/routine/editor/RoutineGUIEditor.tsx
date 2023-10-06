@@ -22,15 +22,15 @@ const RoutineGUIEditor = ({ projectType, hideAddButton }: Props) => {
   const { t } = useTranslation();
 
   const getNewJob = (index: number): { [k: string]: JobSchema } => {
-    if (IS_CLOUD) {
-      return {
-        [`new-job-${index}`]: {
-          'runs-on': projectType === PROJECT_TYPE.WEB ? CLOUD_LINUX_DEVICE_NAME : { group: [] },
-          ...(projectType === PROJECT_TYPE.WEB ? { browserName: 'chrome' } : {}),
-          steps: [{ name: 'run-test', uses: RUN_TEST_ACTION_NAME, with: {} }],
-        },
-      };
-    }
+    // if (IS_CLOUD) {
+    //   return {
+    //     [`new-job-${index}`]: {
+    //       'runs-on': projectType === PROJECT_TYPE.WEB ? CLOUD_LINUX_DEVICE_NAME : { group: [] },
+    //       ...(projectType === PROJECT_TYPE.WEB ? { browserName: 'chrome' } : {}),
+    //       steps: [{ name: 'run-test', uses: RUN_TEST_ACTION_NAME, with: {} }],
+    //     },
+    //   };
+    // }
 
     return {
       [`new-job-${index}`]: {

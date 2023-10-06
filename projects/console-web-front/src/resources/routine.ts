@@ -1,7 +1,5 @@
 import { PROJECT_TYPE } from '@dogu-private/types';
 
-import { IS_CLOUD } from '../../pages/_app';
-
 export const CLOUD_LINUX_DEVICE_NAME = 'cloud-ubuntu';
 
 export const APP_ROUTINE_SAMPLE = `name: sample-routine
@@ -83,17 +81,17 @@ jobs:
 `;
 
 export const getSampleRoutine = (projectType: PROJECT_TYPE): string => {
-  if (IS_CLOUD) {
-    if (projectType === PROJECT_TYPE.WEB) {
-      return CLOUD_WEB_ROUTINE_SAMPLE;
-    } else {
-      return CLOUD_APP_ROUTINE_SAMPLE;
-    }
+  // if (IS_CLOUD) {
+  //   if (projectType === PROJECT_TYPE.WEB) {
+  //     return CLOUD_WEB_ROUTINE_SAMPLE;
+  //   } else {
+  //     return CLOUD_APP_ROUTINE_SAMPLE;
+  //   }
+  // } else {
+  if (projectType === PROJECT_TYPE.WEB) {
+    return WEB_ROUTINE_SAMPLE;
   } else {
-    if (projectType === PROJECT_TYPE.WEB) {
-      return WEB_ROUTINE_SAMPLE;
-    } else {
-      return APP_ROUTINE_SAMPLE;
-    }
+    return APP_ROUTINE_SAMPLE;
   }
+  // }
 };

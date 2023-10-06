@@ -390,52 +390,52 @@ const JobContainer = ({ name, job, updateJob, updateJobName, deleteJob, updateJo
           </ContentInner>
         </Content>
       )}
-      {!IS_CLOUD && (
-        <Content>
-          <div>
-            <FlexRow style={{ marginBottom: '.25rem' }}>
-              <ContentTitle style={{ marginBottom: '0' }}>{t('routine:routineGuiEditorJobDeviceLabel')}</ContentTitle>
-              <Checkbox
-                checked={isGroupRun}
-                style={{ marginLeft: '.75rem' }}
-                onChange={(e) => {
-                  if (e.target.checked) {
-                    updateJob({ ...job, 'runs-on': { group: job['runs-on'] as string | string[] } }, name);
-                  } else {
-                    updateJob(
-                      {
-                        ...job,
-                        'runs-on': (job['runs-on'] as { group: string | string[] }).group as string | string[],
-                      },
-                      name,
-                    );
-                  }
-                }}
-              >
-                {t('routine:routineGuiEditorJobDeviceGroupLabel')}
-              </Checkbox>
-            </FlexRow>
-            <ContentDesc>
-              {isGroupRun ? (
-                <Trans
-                  i18nKey="routine:routineGuiEditorJobDeviceGroupDescription"
-                  components={{ b: <b style={{ fontWeight: '600' }} /> }}
-                />
-              ) : (
-                t('routine:routineGuiEditorJobDeviceDescription')
-              )}
-            </ContentDesc>
-          </div>
-          <ContentInner>
-            <RunsOn runsOn={job['runs-on']} onDelete={handleRemoveRunsOn} />
-            <AddDeviceAndTagButton
-              group={isGroupRun}
-              onSelect={handleAddRunsOn}
-              devicePlatform={getPlatformByAppPackageName()}
-            />
-          </ContentInner>
-        </Content>
-      )}
+
+      <Content>
+        <div>
+          <FlexRow style={{ marginBottom: '.25rem' }}>
+            <ContentTitle style={{ marginBottom: '0' }}>{t('routine:routineGuiEditorJobDeviceLabel')}</ContentTitle>
+            <Checkbox
+              checked={isGroupRun}
+              style={{ marginLeft: '.75rem' }}
+              onChange={(e) => {
+                if (e.target.checked) {
+                  updateJob({ ...job, 'runs-on': { group: job['runs-on'] as string | string[] } }, name);
+                } else {
+                  updateJob(
+                    {
+                      ...job,
+                      'runs-on': (job['runs-on'] as { group: string | string[] }).group as string | string[],
+                    },
+                    name,
+                  );
+                }
+              }}
+            >
+              {t('routine:routineGuiEditorJobDeviceGroupLabel')}
+            </Checkbox>
+          </FlexRow>
+          <ContentDesc>
+            {isGroupRun ? (
+              <Trans
+                i18nKey="routine:routineGuiEditorJobDeviceGroupDescription"
+                components={{ b: <b style={{ fontWeight: '600' }} /> }}
+              />
+            ) : (
+              t('routine:routineGuiEditorJobDeviceDescription')
+            )}
+          </ContentDesc>
+        </div>
+        <ContentInner>
+          <RunsOn runsOn={job['runs-on']} onDelete={handleRemoveRunsOn} />
+          <AddDeviceAndTagButton
+            group={isGroupRun}
+            onSelect={handleAddRunsOn}
+            devicePlatform={getPlatformByAppPackageName()}
+          />
+        </ContentInner>
+      </Content>
+
       <Content>
         <div>
           <ContentTitle>{t('routine:routineGuiEditorJobScreenRecordLabel')}</ContentTitle>
