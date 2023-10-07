@@ -44,5 +44,6 @@ export class DotenvConfigLoader {
     await service.write('JAVA_HOME', HostPaths.external.defaultJavaHomePath());
     await service.write('ANDROID_HOME', HostPaths.external.defaultAndroidHomePath());
     await service.write('APPIUM_HOME', HostPaths.external.defaultAppiumHomePath());
+    await service.write('APPLE_RESIGN_IDENTITY_NAME', 'Apple Development: Apple Dogu (S8F42MYPGH)');
   }
 }
