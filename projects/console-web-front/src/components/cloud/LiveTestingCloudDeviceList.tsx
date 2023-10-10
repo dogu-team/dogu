@@ -1,4 +1,4 @@
-import { CloudDeviceMetadataBase, PageBase } from '@dogu-private/console';
+import { CloudDeviceMetadataBase, DeviceUsageState, PageBase } from '@dogu-private/console';
 import { List, Button, Modal } from 'antd';
 import { useRouter } from 'next/router';
 import useSWR from 'swr';
@@ -31,7 +31,11 @@ const DeviceItem: React.FC<{ device: CloudDeviceMetadataBase }> = ({ device }) =
           </OneSpan>
           <OneSpan>{isNaN(Number(device.memory)) ? '-' : `${convertByteToGigaByte(Number(device.memory))}GB`}</OneSpan>
           <ButtonWrapper>
-            <Button type="primary" onClick={() => openModal()} disabled={!device.available}>
+            <Button
+              type="primary"
+              onClick={() => openModal()}
+              disabled={device.usageState !== DeviceUsageState.available}
+            >
               Start
             </Button>
           </ButtonWrapper>

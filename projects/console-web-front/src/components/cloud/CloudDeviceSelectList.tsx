@@ -1,4 +1,4 @@
-import { CloudDeviceMetadataBase, DeviceBase } from '@dogu-private/console';
+import { CloudDeviceMetadataBase, CloudDeviceByModelResponse, DeviceUsageState } from '@dogu-private/console';
 import { Platform } from '@dogu-private/types';
 import useSWR from 'swr';
 import styled from 'styled-components';
@@ -8,7 +8,7 @@ import { swrAuthFetcher } from '../../api/index';
 import { flexRowBaseStyle, listItemStyle, tableCellStyle, tableHeaderStyle } from '../../styles/box';
 import PlatformIcon from '../device/PlatformIcon';
 
-const SelectItem: React.FC<{ item: Pick<DeviceBase, 'version'>; platform: Platform }> = ({ item, platform }) => {
+const SelectItem: React.FC<{ item: CloudDeviceByModelResponse; platform: Platform }> = ({ item, platform }) => {
   return (
     <Item>
       <ItemInner>
@@ -17,7 +17,9 @@ const SelectItem: React.FC<{ item: Pick<DeviceBase, 'version'>; platform: Platfo
           &nbsp;{item.version}
         </OneSpan>
         <ButtonWrapper>
-          <Button type="primary">Start</Button>
+          <Button type="primary" disabled={item.usageState !== DeviceUsageState.available}>
+            Start
+          </Button>
         </ButtonWrapper>
       </ItemInner>
     </Item>
@@ -29,7 +31,7 @@ interface Props {
 }
 
 const CloudDeviceVersionList: React.FC<Props> = ({ device }) => {
-  const { data, isLoading } = useSWR<Pick<DeviceBase, 'version'>[]>(
+  const { data, isLoading, error } = useSWR<CloudDeviceByModelResponse[]>(
     `/cloud-devices/${device.model}/versions`,
     swrAuthFetcher,
     {
@@ -43,7 +45,7 @@ const CloudDeviceVersionList: React.FC<Props> = ({ device }) => {
         <OneSpan>Version</OneSpan>
         <ButtonWrapper />
       </Header>
-      <List
+      <List<CloudDeviceByModelResponse>
         dataSource={data}
         loading={isLoading}
         renderItem={(item) => <SelectItem item={item} platform={device.platform} />}
