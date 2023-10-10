@@ -3,6 +3,7 @@ import { List, Button, Modal } from 'antd';
 import { useRouter } from 'next/router';
 import useSWR from 'swr';
 import styled from 'styled-components';
+import Image from 'next/image';
 
 import { swrAuthFetcher } from '../../api';
 import { flexRowBaseStyle, listItemStyle, tableCellStyle, tableHeaderStyle } from '../../styles/box';
@@ -39,8 +40,22 @@ const DeviceItem: React.FC<{ device: CloudDeviceMetadataBase }> = ({ device }) =
 
       <Modal open={isOpen} closable onCancel={closeModal} footer={null} centered destroyOnClose title="Select version">
         <DeviceInfoWrapper>
-          <DeviceName>{device.modelName}</DeviceName>
-          <DeviceModel>&nbsp;{`(${device.model})`}</DeviceModel>
+          <div>
+            <Image
+              src={`https://s3.ap-northeast-2.amazonaws.com/public.dogutech.io/dogu/device/${device.model}.png`}
+              width={120}
+              height={120}
+              onError={(e) => {
+                e.currentTarget.style.display = 'none';
+              }}
+              alt={device.modelName ?? device.model}
+              style={{ objectFit: 'contain' }}
+            />
+          </div>
+          <div>
+            <DeviceName>{device.modelName}</DeviceName>
+            <DeviceModel>{`${device.model}`}</DeviceModel>
+          </div>
         </DeviceInfoWrapper>
         <CloudDeviceVersionList device={device} />
       </Modal>
@@ -116,6 +131,7 @@ const ButtonWrapper = styled.div`
 `;
 
 const DeviceInfoWrapper = styled.div`
+  ${flexRowBaseStyle}
   margin-bottom: 1rem;
 `;
 
@@ -124,7 +140,7 @@ const DeviceName = styled.b`
   font-weight: 700;
   line-height: 1.5;
 `;
-const DeviceModel = styled.span`
+const DeviceModel = styled.div`
   font-size: 0.8rem;
   font-weight: 400;
   line-height: 1.5;
