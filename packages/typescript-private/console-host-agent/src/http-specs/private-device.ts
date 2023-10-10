@@ -5,7 +5,7 @@ import { Type } from 'class-transformer';
 import { IsArray, IsEnum, IsNotEmpty, IsNumber, IsString, IsUUID, Max, Min, ValidateNested } from 'class-validator';
 import { Result, WebSocketProxyId, WebSocketProxyReceive } from '../validations/types/built-in-messages';
 
-export class CreateDeviceRequestBody implements Pick<Required<Device>, 'serial' | 'serialUnique' | 'model' | 'platform' | 'hostId' | 'isHost' | 'isVirtual'> {
+export class CreateDeviceRequestBody implements Pick<Required<Device>, 'serial' | 'serialUnique' | 'model' | 'platform' | 'hostId' | 'isHost' | 'isVirtual' | 'memory'> {
   @IsString()
   @IsNotEmpty()
   serial!: Serial;
@@ -35,6 +35,9 @@ export class CreateDeviceRequestBody implements Pick<Required<Device>, 'serial' 
   @IsNumber()
   @IsNotEmpty()
   isVirtual!: number;
+
+  @IsString()
+  memory!: string;
 }
 
 export class CreateDeviceResponseBody implements Pick<Required<Device>, 'deviceId'> {
@@ -71,7 +74,10 @@ export class PushDeviceResultRequestBody {
 
 export class UpdateDeviceRequestBody
   implements
-    Pick<Required<Device>, 'serial' | 'serialUnique' | 'hostId' | 'platform' | 'model' | 'version' | 'manufacturer' | 'isVirtual' | 'resolutionWidth' | 'resolutionHeight'>
+    Pick<
+      Required<Device>,
+      'serial' | 'serialUnique' | 'hostId' | 'platform' | 'model' | 'version' | 'manufacturer' | 'isVirtual' | 'resolutionWidth' | 'resolutionHeight' | 'memory'
+    >
 {
   @IsString()
   @IsNotEmpty()
@@ -109,6 +115,9 @@ export class UpdateDeviceRequestBody
   @IsNumber()
   @Type(() => Number)
   resolutionHeight!: number;
+
+  @IsString()
+  memory!: string;
 
   @ValidateNested({ each: true })
   @Type(() => BrowserInstallation)

@@ -41,13 +41,14 @@ export interface Device {
   displayError: string | undefined;
   connectionState: DeviceConnectionState;
   heartbeat: Date | undefined;
+  manufacturer: string;
+  resolutionWidth: number;
+  resolutionHeight: number;
+  memory: string;
   /** relations */
   organizationId: string;
   hostId: string;
   /** timestamps */
   createdAt: Date | undefined;
   updatedAt: Date | undefined;
-  manufacturer: string;
-  resolutionWidth: number;
-  resolutionHeight: number;
 }

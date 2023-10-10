@@ -32,6 +32,7 @@ export interface OrganizationBaseTraits {
   organizationId: OrganizationId;
   name: string;
   profileImageUrl: string | null;
+  shareable: boolean;
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date | null;

@@ -18,7 +18,7 @@ export interface HostResolutionInfo extends HostConnectionInfo {
   pathMap: ThirdPartyPathMap;
 }
 
-export type DeviceConnectionInfo = Pick<Device, 'serial' | 'serialUnique' | 'platform' | 'model' | 'version' | 'organizationId' | 'hostId' | 'isVirtual'> & {
+export type DeviceConnectionInfo = Pick<Device, 'serial' | 'serialUnique' | 'platform' | 'model' | 'version' | 'organizationId' | 'hostId' | 'isVirtual' | 'memory'> & {
   browserInstallations: BrowserInstallation[];
 };
 export interface DeviceResolutionInfo extends DeviceConnectionInfo, Pick<Device, 'deviceId'> {
