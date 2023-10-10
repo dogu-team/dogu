@@ -27,7 +27,7 @@ const RecordTesting = ({ organization, me, project, deviceId }: Props) => {
 
   return (
     <DeviceStreamingLayout
-      project={project}
+      organization={organization}
       deviceId={deviceId}
       right={caseId ? <RecordTestingEditor /> : <RecordTestingEntry project={project} />}
       title="Record Testing"

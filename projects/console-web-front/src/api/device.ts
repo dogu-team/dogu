@@ -1,7 +1,9 @@
 import { AttachTagToDeviceDtoBase, DeviceBase, UpdateDeviceDtoBase } from '@dogu-private/console';
 import { DeviceId, DeviceTagId, HostId, OrganizationId, ProjectId } from '@dogu-private/types';
+import { GetServerSidePropsContext } from 'next';
 
 import api from 'src/api';
+import { EmptyTokenError, getServersideCookies } from '../utils/auth';
 
 export const getDeviceCpuRuntimeInfo = async (organizationId: OrganizationId, hostId: HostId, deviceId: string) => {
   const query = new URLSearchParams({
@@ -75,4 +77,25 @@ export const removeDeviceFromProject = async (
 ): Promise<void> => {
   await api.delete<void>(`/organizations/${organizationId}/devices/${deviceId}/projects/${projectId}`);
   return;
+};
+
+export const getDeviceByIdInServerSide = async (
+  context: GetServerSidePropsContext,
+  organizationId: OrganizationId,
+  deviceId: DeviceId,
+) => {
+  const { authToken } = getServersideCookies(context.req.cookies);
+
+  if (authToken) {
+    try {
+      const response = await api.get<DeviceBase>(`/organizations/${organizationId}/devices/${deviceId}`, {
+        headers: { Authorization: `Bearer ${authToken}` },
+      });
+      return response.data;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  throw new EmptyTokenError();
 };

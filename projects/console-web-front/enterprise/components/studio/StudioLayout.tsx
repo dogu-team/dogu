@@ -16,18 +16,18 @@ import { flexRowCenteredStyle } from '../../../src/styles/box';
 
 interface Props {
   children: React.ReactNode;
-  project: ProjectBase;
+  // project: ProjectBase;
   deviceId: DeviceId | null;
   editionType: EDITION_TYPE;
 }
 
-const StudioLayout = ({ children, project, deviceId, editionType }: Props) => {
+const StudioLayout = ({ children, deviceId, editionType }: Props) => {
   const router = useRouter();
 
   return (
     <>
       <Head>
-        <title>Studio - {project.name} | Dogu</title>
+        <title>Studio - {deviceId} | Dogu</title>
       </Head>
       <Box>
         <Header
@@ -36,7 +36,7 @@ const StudioLayout = ({ children, project, deviceId, editionType }: Props) => {
           }
         />
         <FlexRow>
-          <Side>
+          {/* <Side>
             <Tooltip title="Manual Testing" placement="right">
               <StyledLink
                 href={{
@@ -56,7 +56,7 @@ const StudioLayout = ({ children, project, deviceId, editionType }: Props) => {
                 </IconWrapper>
               </StyledLink>
             </Tooltip>
-            {/* <Tooltip title="Record Testing" placement="right">
+            <Tooltip title="Record Testing" placement="right">
               <StyledLink
                 href={{
                   pathname: '/dashboard/[orgId]/projects/[pid]/studio/[deviceId]/record',
@@ -70,8 +70,8 @@ const StudioLayout = ({ children, project, deviceId, editionType }: Props) => {
                   <BiVideoRecording style={{ fontSize: '1.5rem' }} />
                 </IconWrapper>
               </StyledLink>
-            </Tooltip> */}
-          </Side>
+            </Tooltip>
+          </Side> */}
           <Main>{children}</Main>
         </FlexRow>
       </Box>
