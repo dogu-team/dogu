@@ -52,10 +52,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:packages/typescript-dev-private/build-tools"\
       },\
       {\
-        "name": "@dogu-dev-private/cli-tools",\
-        "reference": "workspace:packages/typescript-dev-private/cli-tools"\
-      },\
-      {\
         "name": "@dogu-dev-private/publish-package",\
         "reference": "workspace:packages/typescript-dev-private/publish-package"\
       },\
@@ -228,7 +224,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@dogu-actions/run-test", ["workspace:dogu-actions/run-test"]],\
       ["@dogu-dev-private/base-build-tools", ["workspace:packages/typescript-dev-private/base-build-tools"]],\
       ["@dogu-dev-private/build-tools", ["workspace:packages/typescript-dev-private/build-tools"]],\
-      ["@dogu-dev-private/cli-tools", ["workspace:packages/typescript-dev-private/cli-tools"]],\
       ["@dogu-dev-private/publish-package", ["workspace:packages/typescript-dev-private/publish-package"]],\
       ["@dogu-private/console", ["workspace:packages/typescript-private/console"]],\
       ["@dogu-private/console-host-agent", ["workspace:packages/typescript-private/console-host-agent"]],\
@@ -322,6 +317,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["timeout-cli", "npm:0.3.2"],\
             ["tree-kill", "npm:1.2.2"],\
             ["ts-node", "virtual:f2635a2fcff48218c189c72f8ec68a58c0c9a493231eeb25fc0d4d97932a237dd3a38bfaa7c8a6d4be36984c08b243589188d7525f771fc6d7018c6cf79aeba1#npm:10.9.1"],\
+            ["turbo", "npm:1.10.15"],\
             ["typescript", "patch:typescript@npm%3A4.7.4#~builtin<compat/typescript>::version=4.7.4&hash=65a307"],\
             ["ws", "virtual:f2635a2fcff48218c189c72f8ec68a58c0c9a493231eeb25fc0d4d97932a237dd3a38bfaa7c8a6d4be36984c08b243589188d7525f771fc6d7018c6cf79aeba1#npm:8.9.0"],\
             ["yargs", "npm:17.7.1"]\
@@ -10976,22 +10972,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "SOFT"\
         }]\
       ]],\
-      ["@dogu-dev-private/cli-tools", [\
-        ["workspace:packages/typescript-dev-private/cli-tools", {\
-          "packageLocation": "./packages/typescript-dev-private/cli-tools/",\
-          "packageDependencies": [\
-            ["@dogu-dev-private/cli-tools", "workspace:packages/typescript-dev-private/cli-tools"],\
-            ["@next/env", "npm:13.2.3"],\
-            ["@types/node", "npm:18.15.11"],\
-            ["class-transformer", "npm:0.5.1"],\
-            ["class-validator", "npm:0.14.0"],\
-            ["nodemon", "npm:2.0.22"],\
-            ["ts-node", "virtual:f2635a2fcff48218c189c72f8ec68a58c0c9a493231eeb25fc0d4d97932a237dd3a38bfaa7c8a6d4be36984c08b243589188d7525f771fc6d7018c6cf79aeba1#npm:10.9.1"],\
-            ["typescript", "patch:typescript@npm%3A4.7.4#~builtin<compat/typescript>::version=4.7.4&hash=65a307"]\
-          ],\
-          "linkType": "SOFT"\
-        }]\
-      ]],\
       ["@dogu-dev-private/publish-package", [\
         ["workspace:packages/typescript-dev-private/publish-package", {\
           "packageLocation": "./packages/typescript-dev-private/publish-package/",\
@@ -14512,13 +14492,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/@next-env-npm-13.2.1-539ef4ac94-16a8774793.zip/node_modules/@next/env/",\
           "packageDependencies": [\
             ["@next/env", "npm:13.2.1"]\
-          ],\
-          "linkType": "HARD"\
-        }],\
-        ["npm:13.2.3", {\
-          "packageLocation": "./.yarn/cache/@next-env-npm-13.2.3-02a5ac8955-e3d59b888c.zip/node_modules/@next/env/",\
-          "packageDependencies": [\
-            ["@next/env", "npm:13.2.3"]\
           ],\
           "linkType": "HARD"\
         }],\
@@ -27057,6 +27030,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["timeout-cli", "npm:0.3.2"],\
             ["tree-kill", "npm:1.2.2"],\
             ["ts-node", "virtual:f2635a2fcff48218c189c72f8ec68a58c0c9a493231eeb25fc0d4d97932a237dd3a38bfaa7c8a6d4be36984c08b243589188d7525f771fc6d7018c6cf79aeba1#npm:10.9.1"],\
+            ["turbo", "npm:1.10.15"],\
             ["typescript", "patch:typescript@npm%3A4.7.4#~builtin<compat/typescript>::version=4.7.4&hash=65a307"],\
             ["ws", "virtual:f2635a2fcff48218c189c72f8ec68a58c0c9a493231eeb25fc0d4d97932a237dd3a38bfaa7c8a6d4be36984c08b243589188d7525f771fc6d7018c6cf79aeba1#npm:8.9.0"],\
             ["yargs", "npm:17.7.1"]\
@@ -49756,6 +49730,75 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/tunnel-npm-0.0.6-b1c0830ea4-c362948df9.zip/node_modules/tunnel/",\
           "packageDependencies": [\
             ["tunnel", "npm:0.0.6"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["turbo", [\
+        ["npm:1.10.15", {\
+          "packageLocation": "./.yarn/cache/turbo-npm-1.10.15-9f8266af35-b494c8bf79.zip/node_modules/turbo/",\
+          "packageDependencies": [\
+            ["turbo", "npm:1.10.15"],\
+            ["turbo-darwin-64", "npm:1.10.15"],\
+            ["turbo-darwin-arm64", "npm:1.10.15"],\
+            ["turbo-linux-64", "npm:1.10.15"],\
+            ["turbo-linux-arm64", "npm:1.10.15"],\
+            ["turbo-windows-64", "npm:1.10.15"],\
+            ["turbo-windows-arm64", "npm:1.10.15"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["turbo-darwin-64", [\
+        ["npm:1.10.15", {\
+          "packageLocation": "./.yarn/unplugged/turbo-darwin-64-npm-1.10.15-c2678359bb/node_modules/turbo-darwin-64/",\
+          "packageDependencies": [\
+            ["turbo-darwin-64", "npm:1.10.15"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["turbo-darwin-arm64", [\
+        ["npm:1.10.15", {\
+          "packageLocation": "./.yarn/unplugged/turbo-darwin-arm64-npm-1.10.15-1f6c0c97fd/node_modules/turbo-darwin-arm64/",\
+          "packageDependencies": [\
+            ["turbo-darwin-arm64", "npm:1.10.15"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["turbo-linux-64", [\
+        ["npm:1.10.15", {\
+          "packageLocation": "./.yarn/unplugged/turbo-linux-64-npm-1.10.15-9926b77750/node_modules/turbo-linux-64/",\
+          "packageDependencies": [\
+            ["turbo-linux-64", "npm:1.10.15"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["turbo-linux-arm64", [\
+        ["npm:1.10.15", {\
+          "packageLocation": "./.yarn/unplugged/turbo-linux-arm64-npm-1.10.15-01876e3cff/node_modules/turbo-linux-arm64/",\
+          "packageDependencies": [\
+            ["turbo-linux-arm64", "npm:1.10.15"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["turbo-windows-64", [\
+        ["npm:1.10.15", {\
+          "packageLocation": "./.yarn/unplugged/turbo-windows-64-npm-1.10.15-7ada64ed6c/node_modules/turbo-windows-64/",\
+          "packageDependencies": [\
+            ["turbo-windows-64", "npm:1.10.15"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["turbo-windows-arm64", [\
+        ["npm:1.10.15", {\
+          "packageLocation": "./.yarn/unplugged/turbo-windows-arm64-npm-1.10.15-21f1686f9f/node_modules/turbo-windows-arm64/",\
+          "packageDependencies": [\
+            ["turbo-windows-arm64", "npm:1.10.15"]\
           ],\
           "linkType": "HARD"\
         }]\

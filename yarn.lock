@@ -4765,20 +4765,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@dogu-dev-private/cli-tools@workspace:packages/typescript-dev-private/cli-tools":
-  version: 0.0.0-use.local
-  resolution: "@dogu-dev-private/cli-tools@workspace:packages/typescript-dev-private/cli-tools"
-  dependencies:
-    "@next/env": 13.2.3
-    "@types/node": 18.15.11
-    class-transformer: 0.5.1
-    class-validator: 0.14.0
-    nodemon: 2.0.22
-    ts-node: 10.9.1
-    typescript: 4.7.4
-  languageName: unknown
-  linkType: soft
-
 "@dogu-dev-private/publish-package@workspace:^, @dogu-dev-private/publish-package@workspace:packages/typescript-dev-private/publish-package":
   version: 0.0.0-use.local
   resolution: "@dogu-dev-private/publish-package@workspace:packages/typescript-dev-private/publish-package"
@@ -7305,13 +7291,6 @@ __metadata:
   version: 13.2.1
   resolution: "@next/env@npm:13.2.1"
   checksum: 16a877479348b9d6a9e69e74312546889d6419a6dec0556cf7d9ed5876b4f69a0974c804f2c5ec81526522c243d97bd2d6919d3241cd165e10e8fd6c3bb4b975
-  languageName: node
-  linkType: hard
-
-"@next/env@npm:13.2.3":
-  version: 13.2.3
-  resolution: "@next/env@npm:13.2.3"
-  checksum: e3d59b888c0e57ead895ec0c96ce92b6929684a1af8b3435e0142d21e6af21b1193f421f9d6b9b36ce7711a0379fb85033e25670fef3ba9c923cc77752be6c10
   languageName: node
   linkType: hard
 
@@ -17309,6 +17288,7 @@ __metadata:
     timeout-cli: 0.3.2
     tree-kill: 1.2.2
     ts-node: 10.9.1
+    turbo: ^1.10.15
     typescript: 4.7.4
     ws: 8.9.0
     yargs: 17.7.1
@@ -35324,6 +35304,77 @@ __metadata:
   version: 0.0.6
   resolution: "tunnel@npm:0.0.6"
   checksum: c362948df9ad34b649b5585e54ce2838fa583aa3037091aaed66793c65b423a264e5229f0d7e9a95513a795ac2bd4cb72cda7e89a74313f182c1e9ae0b0994fa
+  languageName: node
+  linkType: hard
+
+"turbo-darwin-64@npm:1.10.15":
+  version: 1.10.15
+  resolution: "turbo-darwin-64@npm:1.10.15"
+  conditions: os=darwin & cpu=x64
+  languageName: node
+  linkType: hard
+
+"turbo-darwin-arm64@npm:1.10.15":
+  version: 1.10.15
+  resolution: "turbo-darwin-arm64@npm:1.10.15"
+  conditions: os=darwin & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"turbo-linux-64@npm:1.10.15":
+  version: 1.10.15
+  resolution: "turbo-linux-64@npm:1.10.15"
+  conditions: os=linux & cpu=x64
+  languageName: node
+  linkType: hard
+
+"turbo-linux-arm64@npm:1.10.15":
+  version: 1.10.15
+  resolution: "turbo-linux-arm64@npm:1.10.15"
+  conditions: os=linux & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"turbo-windows-64@npm:1.10.15":
+  version: 1.10.15
+  resolution: "turbo-windows-64@npm:1.10.15"
+  conditions: os=win32 & cpu=x64
+  languageName: node
+  linkType: hard
+
+"turbo-windows-arm64@npm:1.10.15":
+  version: 1.10.15
+  resolution: "turbo-windows-arm64@npm:1.10.15"
+  conditions: os=win32 & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"turbo@npm:^1.10.15":
+  version: 1.10.15
+  resolution: "turbo@npm:1.10.15"
+  dependencies:
+    turbo-darwin-64: 1.10.15
+    turbo-darwin-arm64: 1.10.15
+    turbo-linux-64: 1.10.15
+    turbo-linux-arm64: 1.10.15
+    turbo-windows-64: 1.10.15
+    turbo-windows-arm64: 1.10.15
+  dependenciesMeta:
+    turbo-darwin-64:
+      optional: true
+    turbo-darwin-arm64:
+      optional: true
+    turbo-linux-64:
+      optional: true
+    turbo-linux-arm64:
+      optional: true
+    turbo-windows-64:
+      optional: true
+    turbo-windows-arm64:
+      optional: true
+  bin:
+    turbo: bin/turbo
+  checksum: b494c8bf79355874919e76ee0e4a0a53616e0ae5c7126eb1add50e67d4cd1e445ed9aecf99cb6d81c592b7a43ba91cd7dbf30df70410a44cecedba8b5126095d
   languageName: node
   linkType: hard
 
