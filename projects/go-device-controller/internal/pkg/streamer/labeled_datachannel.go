@@ -360,12 +360,14 @@ func (ldc *DeviceServerHttpLabeledDatachannel) onMessage(msg webrtc.DataChannelM
 		ldc.channel.Close()
 		return
 	}
+
 	if headers := request.GetHeaders(); headers != nil {
 		for _, v := range headers.GetValues() {
 			req.Header.Add(v.GetKey(), v.GetValue())
 		}
 	}
 
+	log.Inst.Debug("DeviceServerHttpLabeledDatachannel OnMessage", zap.String("url", url.String()), zap.String("method", request.GetMethod()), zap.String("rawQuery", rawQuery), zap.Int("bodyLen", len(rawBody.String())))
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		log.Inst.Error("DeviceServerHttpLabeledDatachannel Do error", zap.Error(err))

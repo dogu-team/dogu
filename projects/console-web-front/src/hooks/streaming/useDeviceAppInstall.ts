@@ -1,4 +1,5 @@
 import { Serial } from '@dogu-private/types';
+import { errorify } from '@dogu-tech/common';
 import { DeviceClient, DeviceHostClient, HostFileUploader } from '@dogu-tech/device-client-common';
 import { useCallback, useEffect, useState } from 'react';
 
@@ -13,7 +14,7 @@ const useDeviceAppInstall = (
   const [isInstalling, setIsInstalling] = useState(false);
   const [result, setResult] = useState<{
     isSuccess: boolean;
-    failType?: 'upload' | 'install';
+    failType?: 'upload' | 'resign' | 'install';
     error?: Error;
   }>();
   const [hostFileUploader, setHostFileUploader] = useState<HostFileUploader | null>(null);
@@ -94,11 +95,23 @@ const useDeviceAppInstall = (
 
   const installApp = useCallback(
     async (uploadedFilePath: string) => {
-      if (!serial || !deviceClient) {
+      if (!serial || !deviceClient || !deviceHostClient) {
         return;
       }
 
       setIsInstalling(true);
+      try {
+        await deviceHostClient.resignApp({ filePath: uploadedFilePath });
+      } catch (e) {
+        const error = errorify(e);
+        console.debug('resignApp error:', error);
+        setResult({
+          isSuccess: false,
+          failType: 'resign',
+          error,
+        });
+        return;
+      }
       try {
         await deviceClient.installApp(serial, uploadedFilePath);
         setResult({
@@ -106,14 +119,13 @@ const useDeviceAppInstall = (
         });
         setTimeout(() => reset(), 2000);
       } catch (e) {
-        console.debug('installApp error:', e);
-        if (e instanceof Error) {
-          setResult({
-            isSuccess: false,
-            failType: 'install',
-            error: e,
-          });
-        }
+        const error = errorify(e);
+        console.debug('installApp error:', error);
+        setResult({
+          isSuccess: false,
+          failType: 'install',
+          error,
+        });
       }
     },
     [reset, deviceClient, serial],

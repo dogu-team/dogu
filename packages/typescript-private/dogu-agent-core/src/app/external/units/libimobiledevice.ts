@@ -55,6 +55,22 @@ const files: File[] = [
   },
   {
     condition: () => process.platform === 'darwin' && process.arch === 'arm64',
+    url: 'https://github.com/dogu-team/third-party-binaries/releases/download/libimobiledevice-1.0.6/ideviceinstaller-arm64',
+    path: () => HostPaths.external.libimobiledevice.ideviceinstaller(),
+    archCheckPath: () => HostPaths.external.libimobiledevice.ideviceinstaller(),
+    fileMode: 0o777,
+    archName: 'arm64',
+  },
+  {
+    condition: () => process.platform === 'darwin' && process.arch === 'x64',
+    url: 'https://github.com/dogu-team/third-party-binaries/releases/download/libimobiledevice-1.0.6/ideviceinstaller-x64',
+    path: () => HostPaths.external.libimobiledevice.ideviceinstaller(),
+    archCheckPath: () => HostPaths.external.libimobiledevice.ideviceinstaller(),
+    fileMode: 0o777,
+    archName: 'x86_64',
+  },
+  {
+    condition: () => process.platform === 'darwin' && process.arch === 'arm64',
     url: 'https://github.com/dogu-team/third-party-binaries/releases/download/libimobiledevice-1.0.6/libimobiledevice-dylib-arm64.zip',
     path: () => HostPaths.external.libimobiledevice.libimobiledeviceLibPath(),
     archCheckPath: () => path.resolve(HostPaths.external.libimobiledevice.libimobiledeviceLibPath(), 'libimobiledevice-1.0.6.dylib'),

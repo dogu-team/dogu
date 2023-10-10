@@ -133,19 +133,13 @@ export class XCTestRunContext {
   }
 
   get history(): string {
-    let logInfos = Array.from(this.buffer.buffers).flatMap((buffer) =>
-      buffer[1].flatMap((log) => {
-        return {
-          level: buffer[0],
-          time: log.time,
-          message: log.message,
-          details: log.details,
-        };
-      }),
-    );
-    logInfos.sort((a, b) => a.time - b.time);
     const bufferLogs =
-      '>>> LOG DUMP start\n' + logInfos.map((log) => `${log.level}|${new Date(log.time).toISOString()}|${log.message} ${stringify(log.details)}`).join('\n') + '\n>>> LOG DUMP end';
+      '>>> LOG DUMP start\n' +
+      this.buffer
+        .sortedLogInfos()
+        .map((log) => `${log.level}|${new Date(log.time).toISOString()}|${stringify(log.message)} ${stringify(log.details)}`)
+        .join('\n') +
+      '\n>>> LOG DUMP end';
     return bufferLogs;
   }
 

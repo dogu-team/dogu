@@ -14,7 +14,7 @@ import {
 } from '@dogu-private/types';
 import { Closable, errorify, loopTime, Milisecond, Printable, PromiseOrValue, stringify } from '@dogu-tech/common';
 import { AppiumCapabilities, BrowserInstallation, StreamingOfferDto } from '@dogu-tech/device-client-common';
-import { killChildProcess } from '@dogu-tech/node';
+import { ChildProcessError, killChildProcess } from '@dogu-tech/node';
 import { ChildProcess } from 'child_process';
 import compressing from 'compressing';
 import fs from 'fs';
@@ -29,6 +29,7 @@ import { env } from '../../env';
 import { GamiumContext } from '../../gamium/gamium.context';
 import { createIdaLogger } from '../../logger/logger.instance';
 import { IdeviceDiagnostics, IdeviceSyslog, MobileDevice, Xctrace } from '../externals';
+import { IdeviceInstaller } from '../externals/cli/ideviceinstaller';
 import { IosDeviceAgentProcess } from '../externals/cli/ios-device-agent';
 import { ZombieTunnel } from '../externals/cli/mobiledevice-tunnel';
 import { WebdriverAgentProcess } from '../externals/cli/webdriver-agent-process';
@@ -410,11 +411,24 @@ export class IosChannel implements DeviceChannel {
   async uninstallApp(appPath: string, printable?: Printable): Promise<void> {
     const dotAppPath = await this.findDotAppPath(appPath);
     const appName = await MobileDevice.getBundleId(dotAppPath);
-    await MobileDevice.uninstallApp(this.serial, appName, printable);
+    await IdeviceInstaller.uninstallApp(this.serial, appName, printable);
   }
 
   async installApp(appPath: string, printable?: Printable): Promise<void> {
-    await MobileDevice.installApp(this.serial, appPath, printable);
+    const result = await IdeviceInstaller.installApp(this.serial, appPath, printable).catch((error) => {
+      if (!(error instanceof ChildProcessError)) {
+        throw error;
+      }
+      const logInfos = error.bufferLogger?.sortedLogInfos() ?? [];
+      if (logInfos.find((log) => stringify(log.message).includes('MismatchedApplicationIdentifierEntitlement'))) {
+        return { errorType: 'MismatchedApplicationIdentifierEntitlement' };
+      }
+      throw error;
+    });
+    if ('errorType' in result && result.errorType === 'MismatchedApplicationIdentifierEntitlement') {
+      await this.uninstallApp(appPath, printable);
+      await IdeviceInstaller.installApp(this.serial, appPath, printable);
+    }
   }
 
   async runApp(appPath: string, printable?: Printable): Promise<void> {

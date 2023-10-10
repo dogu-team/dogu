@@ -9,6 +9,7 @@ export * from './download';
 export * from './environment-variables/matchers';
 export * from './environment-variables/replacement-providers';
 export * from './environment-variables/replacers';
+export * from './errors/child-process-error';
 export * from './feature-config';
 export * from './file-rotation/directory-rotation';
 export * from './filesystem';

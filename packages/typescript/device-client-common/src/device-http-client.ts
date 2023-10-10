@@ -1,5 +1,5 @@
 import { Class, Instance, PathProviderType as PathProviderType_, stringify, transformAndValidate } from '@dogu-tech/common';
-import { Body, DOGU_PROTOCOL_VERSION } from '@dogu-tech/types';
+import { Body, DOGU_PROTOCOL_VERSION, Headers } from '@dogu-tech/types';
 import { DeviceClientOptions, DeviceService, fillDeviceClientOptions } from './bases';
 import { DeviceServerControllerMethodSpec } from './specs/types';
 import { DeviceServerResponseDto } from './validations/types/responses';
@@ -28,6 +28,9 @@ export class DeviceHttpClient {
   ): Promise<Instance<ResponseBodyDataType>> {
     const path = httpSpec.resolvePath(pathProvider);
     const method = httpSpec.method;
+    const headers: Headers = {
+      values: requestBody ? [{ key: 'Content-Type', value: 'application/json' }] : [],
+    };
     const body: Body | undefined = requestBody
       ? {
           value: {
@@ -43,13 +46,10 @@ export class DeviceHttpClient {
         path,
         query: queryCasted,
         body,
+        headers,
       },
       this.options,
     );
-    const { statusCode } = response;
-    if (!(200 <= statusCode && statusCode < 300)) {
-      throw new Error(`Unexpected status code: ${statusCode}`);
-    }
     let stringValue = '';
     if (response.body?.value?.$case === 'bytesValue') {
       stringValue = Buffer.from(response.body.value.bytesValue).toString();
@@ -57,6 +57,10 @@ export class DeviceHttpClient {
       stringValue = response.body.value.stringValue;
     } else {
       throw new Error(`Unexpected body: ${stringify(response.body)}`);
+    }
+    const { statusCode } = response;
+    if (!(200 <= statusCode && statusCode < 300)) {
+      throw new Error(`Unexpected status code: ${statusCode}, body: ${stringValue}`);
     }
     const responseBody = await transformAndValidate(DeviceServerResponseDto, JSON.parse(stringValue));
     const { value } = responseBody;

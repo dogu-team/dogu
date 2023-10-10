@@ -12,6 +12,7 @@ export const HostPaths = {
 
   configsPath: (doguHomePath: string): string => path.resolve(doguHomePath, 'configs'),
   dotenvConfigPath: (configsPath: string, runType: string): string => path.resolve(configsPath, `${runType === 'production' ? '' : runType}.env`),
+  resignProvisoningProfilePath: (configsPath: string): string => path.resolve(configsPath, 'resign.mobileprovision'),
 
   logsPath: (doguHomePath: string): string => path.resolve(doguHomePath, 'logs'),
   deviceServerLogsPath: (logsPath: string): string => path.resolve(logsPath, 'child/device-server'),
@@ -73,6 +74,7 @@ export const HostPaths = {
       libimobiledeviceLibPath: (): string => path.resolve(HostPaths.external.externalsPath(), 'libimobiledevice/lib'),
       idevicediagnostics: (): string => path.resolve(HostPaths.external.externalsPath(), 'libimobiledevice/idevicediagnostics'),
       idevicesyslog: (): string => path.resolve(HostPaths.external.externalsPath(), 'libimobiledevice/idevicesyslog'),
+      ideviceinstaller: (): string => path.resolve(HostPaths.external.externalsPath(), 'libimobiledevice/ideviceinstaller'),
     },
     browser: {
       browsersPath: (): string => path.resolve(HostPaths.external.externalsPath(), 'browsers'),

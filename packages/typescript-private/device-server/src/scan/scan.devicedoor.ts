@@ -90,23 +90,27 @@ export class DeviceDoor {
       }
       return;
     }
-    let closedForced = false;
+    let closeForced = false;
     if (this.channel && this._state.type === 'opened') {
       const healthStatus = await this.channel.checkHealth();
       if (!healthStatus.isHealthy) {
         this._healthFaliCount++;
         if (this._healthFaliCount > 3) {
           this._closeReason = 'health check failed';
-          closedForced = true;
+          closeForced = true;
         }
       } else {
         this._healthFaliCount = 0;
       }
     }
 
-    if ((this._latestOpenTime < this._latestCloseTime && 10000 < this._latestCloseTime - this._firstCloseTime) || closedForced) {
+    if ((this._latestOpenTime < this._latestCloseTime && 10000 < this._latestCloseTime - this._firstCloseTime) || closeForced) {
       this.channel = null;
-      logger.info(`DeviceDoor.processInternal closeChannel serial:${this.serial}, reason: ${this._closeReason}`);
+      logger.info(
+        `DeviceDoor.processInternal closeChannel serial:${this.serial}, firstCloseTime: ${this._firstCloseTime}, latestCloseTime: ${this._latestCloseTime}, reason: ${
+          this._closeReason
+        }, forced: ${stringify(closeForced)}`,
+      );
       await Promise.resolve(this.driver.closeChannel(this.serial)).catch((error) => {
         logger.error(`DeviceDoor.processInternal closeChannel error serial:${this.serial} ${stringifyError(error)}`);
       });

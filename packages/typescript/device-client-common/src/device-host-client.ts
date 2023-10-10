@@ -33,6 +33,11 @@ export class DeviceHostClient extends DeviceHttpClient {
     return result;
   }
 
+  async resignApp(options: Instance<typeof DeviceHost.resignAppFile.requestBody>): Promise<Instance<typeof DeviceHost.resignAppFile.responseBodyData>> {
+    const result = await this.httpRequest(DeviceHost.resignAppFile, new DeviceHost.resignAppFile.pathProvider(), undefined, options);
+    return result;
+  }
+
   private async connectWebSocket<SendMessageType, ReceiveMessageType, ReturnType>(
     webSocketSpec: WebSocketSpec<SendMessageType, ReceiveMessageType>,
     onOpen: (deviceWebSocket: DeviceWebSocket) => ReturnType,
