@@ -1,0 +1,44 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "pipeline": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": [".next/**", "!.next/cache/**", "build/**"]
+    },
+    "build:archive": {
+      "cache": false
+    },
+    "build:python": {
+      "cache": false
+    },
+    "newbie:python": {
+      "cache": false
+    },
+    "lint": {
+      "cache": false
+    },
+    "format": {
+      "cache": false
+    },
+    "watch": {
+      "cache": false,
+      "persistent": true
+    },
+    "publish:github": {
+      "dependsOn": ["build"]
+    },
+    "publish:npm": {
+      "dependsOn": ["build"]
+    },
+    "clean": {
+      "inputs": [".next/**", "build/**"]
+    },
+    "test": {
+      "dependsOn": ["build"],
+      "inputs": ["src/**/*.tsx", "src/**/*.ts", "test/**/*.ts", "test/**/*.tsx"]
+    },
+    "printenv": {
+      "cache": false
+    }
+  }
+}
