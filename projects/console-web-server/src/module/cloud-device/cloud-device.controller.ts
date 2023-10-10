@@ -1,25 +1,20 @@
-import { DevicePropCamel, OrganizationPropCamel } from '@dogu-private/console';
-import { Controller, Get } from '@nestjs/common';
-import { InjectDataSource } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
+import { UserPayload } from '@dogu-private/types';
+import { Controller, Get, Query } from '@nestjs/common';
+
 import { Device } from '../../db/entity/device.entity';
-import { Organization } from '../../db/entity/organization.entity';
+import { EMAIL_VERIFICATION } from '../auth/auth.types';
+import { EmailVerification, User } from '../auth/decorators';
+import { Page } from '../common/dto/pagination/page';
+import { FindCloudDevicesDto } from './cloud-device.dto';
+import { CloudDeviceService } from './cloud-device.service';
 
 @Controller('/cloud-devices')
 export class CloudDeviceController {
-  constructor(
-    @InjectDataSource()
-    private readonly dataSource: DataSource,
-  ) {}
+  constructor(private readonly cloudDeviceService: CloudDeviceService) {}
 
   @Get()
-  async getCloudDevice() {
-    const devices = await this.dataSource.manager
-      .getRepository(Device)
-      .createQueryBuilder(Device.name)
-      .leftJoinAndSelect(DevicePropCamel.organization, Organization.name)
-      .where(`${Organization.name}.${OrganizationPropCamel.shareable} = :shareable`, { shareable: true })
-      .getMany();
-    console.log(devices);
+  @EmailVerification(EMAIL_VERIFICATION.VERIFIED)
+  async getCloudDevice(@User() user: UserPayload, @Query() dto: FindCloudDevicesDto): Promise<Page<Device>> {
+    return await this.cloudDeviceService.findCloudDevices(dto);
   }
 }
