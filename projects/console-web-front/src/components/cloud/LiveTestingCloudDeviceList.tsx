@@ -52,7 +52,7 @@ const DeviceItem: React.FC<{ device: CloudDeviceMetadataBase }> = ({ device }) =
               style={{ objectFit: 'contain' }}
             />
           </div>
-          <div>
+          <div style={{ marginLeft: '.5rem' }}>
             <DeviceName>{device.modelName}</DeviceName>
             <DeviceModel>{`${device.model}`}</DeviceModel>
           </div>
