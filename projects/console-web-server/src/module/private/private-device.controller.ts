@@ -113,9 +113,9 @@ export class PrivateDeviceController {
         deviceId,
       });
     }
-    const { serial, hostId, version, model, manufacturer, isVirtual, resolutionWidth, resolutionHeight, browserInstallations } = body;
+    const { serial, hostId, version, model, manufacturer, isVirtual, resolutionWidth, resolutionHeight, browserInstallations, memory } = body;
     await this.dataSource.transaction(async (manager) => {
-      await manager.getRepository(Device).update({ deviceId }, { serial, hostId, version, model, manufacturer, isVirtual, resolutionWidth, resolutionHeight });
+      await manager.getRepository(Device).update({ deviceId }, { serial, hostId, version, model, manufacturer, isVirtual, resolutionWidth, resolutionHeight, memory });
       await DeviceStatusService.updateDeviceBrowserInstallations(manager, deviceId, browserInstallations);
       await DeviceStatusService.updateDeviceRunners(manager, deviceId);
     });

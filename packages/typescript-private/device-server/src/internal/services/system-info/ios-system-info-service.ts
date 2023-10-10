@@ -1,4 +1,4 @@
-import { DefaultDeviceSystemInfo, DeviceSystemInfo, Serial } from '@dogu-private/types';
+import { DefaultDeviceSystemInfo, DeviceSystemInfo, ProfileMethods, Serial } from '@dogu-private/types';
 import { idcLogger } from '../../../logger/logger.instance';
 import { MobileDevice } from '../../externals';
 import { IosDeviceAgentService } from '../device-agent/ios-device-agent-service';
@@ -35,6 +35,10 @@ export class IosSystemInfoService implements SystemInfoService {
       resolutionX: deviceAgentInfo?.screenWidth ?? 0,
       resolutionY: deviceAgentInfo?.screenHeight ?? 0,
     });
+    const profileResult = await this.service.sendWithProtobuf('dcIdaQueryProfileParam', 'dcIdaQueryProfileResult', {
+      profileMethods: [ProfileMethods.Ios.MemVmStatistics],
+    });
+    info.memLayout.push({ size: profileResult?.info?.mems[0].total ?? 0 });
     return info;
   }
 }

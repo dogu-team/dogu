@@ -1,4 +1,12 @@
-import { DeviceAndDeviceTagPropCamel, DeviceAndDeviceTagPropSnake, DeviceBase, DevicePropSnake, ProjectAndDevicePropCamel, ProjectAndDevicePropSnake } from '@dogu-private/console';
+import {
+  DeviceAndDeviceTagPropCamel,
+  DeviceAndDeviceTagPropSnake,
+  DeviceBase,
+  DevicePropSnake,
+  DeviceUsageState,
+  ProjectAndDevicePropCamel,
+  ProjectAndDevicePropSnake,
+} from '@dogu-private/console';
 import {
   DeviceConnectionState,
   DeviceId,
@@ -30,6 +38,10 @@ import { RemoteDeviceJob } from './remote-device-job.entity';
 
 const DEVICE_DEFAULT_MAX_PARALLEL_JOBS = 1;
 export const DEVICE_DEFAULT_MAX_PARALLEL_JOBS_IF_IS_HOST = 1;
+
+const DEVICE_LOCATION_MAX_LENGTH = 256;
+const DEVICE_USAGE_STATE_MAX_LENGTH = 32;
+const DEVICE_MEMORY_MAX_LENGTH = 32;
 
 @Entity(DEVICE_TABLE_NAME)
 export class Device extends BaseEntity implements DeviceBase {
@@ -86,6 +98,15 @@ export class Device extends BaseEntity implements DeviceBase {
 
   @Column({ type: 'smallint', name: DevicePropSnake.max_parallel_jobs, unsigned: true, default: DEVICE_DEFAULT_MAX_PARALLEL_JOBS, nullable: false })
   maxParallelJobs!: number;
+
+  @Column({ type: 'character varying', name: DevicePropSnake.memory, length: DEVICE_MEMORY_MAX_LENGTH, default: '', nullable: false })
+  memory!: string;
+
+  @Column({ type: 'character varying', name: DevicePropSnake.location, length: DEVICE_LOCATION_MAX_LENGTH, default: null, nullable: true })
+  location!: string | null;
+
+  @Column({ type: 'character varying', name: DevicePropSnake.usage_state, length: DEVICE_USAGE_STATE_MAX_LENGTH, default: DeviceUsageState.available, nullable: false })
+  usageState!: DeviceUsageState;
 
   @ColumnTemplate.Date(DevicePropSnake.heartbeat, true)
   heartbeat!: Date | null;

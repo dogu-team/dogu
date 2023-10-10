@@ -34,10 +34,10 @@ export class DeviceResolver {
       throw new Error('Host resolution info is not resolved');
     }
 
-    const { serial, serialUnique, model, platform, organizationId, isVirtual } = value;
+    const { serial, serialUnique, model, platform, organizationId, isVirtual, memory } = value;
     let deviceId = await this.findDeviceId(organizationId, serialUnique);
     if (deviceId === null) {
-      deviceId = await this.createDevice(organizationId, serial, serialUnique, model, platform, isVirtual);
+      deviceId = await this.createDevice(organizationId, serial, serialUnique, model, platform, isVirtual, memory);
       this.logger.info('Device created', {
         serial,
         deviceId,
@@ -93,7 +93,15 @@ export class DeviceResolver {
     }
   }
 
-  private async createDevice(organizationId: OrganizationId, serial: Serial, serialUnique: Serial, model: string, platform: Platform, isVirtual: number): Promise<DeviceId> {
+  private async createDevice(
+    organizationId: OrganizationId,
+    serial: Serial,
+    serialUnique: Serial,
+    model: string,
+    platform: Platform,
+    isVirtual: number,
+    memory: string,
+  ): Promise<DeviceId> {
     if (this.hostResolutionInfo === null) {
       throw new Error('Host connection info is not resolved');
     }
@@ -109,6 +117,7 @@ export class DeviceResolver {
       isHost,
       hostId,
       isVirtual,
+      memory,
     };
     const bodyValidated = await transformAndValidate(PrivateDevice.createDevice.requestBody, body);
     const { data } = await this.consoleClientService.client
