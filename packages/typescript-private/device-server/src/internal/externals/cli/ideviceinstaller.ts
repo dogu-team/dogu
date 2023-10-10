@@ -1,5 +1,5 @@
 import { PlatformAbility } from '@dogu-private/dost-children';
-import { Printable, stringify } from '@dogu-tech/common';
+import { errorify, Printable, stringify } from '@dogu-tech/common';
 import { ChildProcess, HostPaths } from '@dogu-tech/node';
 import child_process from 'child_process';
 import fs from 'fs';
@@ -55,9 +55,9 @@ class IdeviceInstallerImpl {
   private makeAccessableSync = (): void => {
     try {
       fs.chmodSync(HostPaths.external.libimobiledevice.ideviceinstaller(), 0o777);
-    } catch (error) {
-      const cause = error instanceof Error ? error : new Error(stringify(error));
-      throw new Error(`Failed to chmod ideviceinstaller`, { cause });
+    } catch (e) {
+      const error = errorify(e);
+      throw new Error(`Failed to chmod ideviceinstaller ${stringify(error)}`);
     }
   };
   private libPath(): string {
@@ -73,9 +73,9 @@ registerBootstrapHandler(
     }
     try {
       await fs.promises.chmod(HostPaths.external.libimobiledevice.ideviceinstaller(), 0o777);
-    } catch (error) {
-      const cause = error instanceof Error ? error : new Error(stringify(error));
-      throw new Error(`Failed to chmod ideviceinstaller`, { cause });
+    } catch (e) {
+      const error = errorify(e);
+      throw new Error(`Failed to chmod ideviceinstaller ${stringify(error)}`);
     }
   },
   () => new PlatformAbility().isIosEnabled,

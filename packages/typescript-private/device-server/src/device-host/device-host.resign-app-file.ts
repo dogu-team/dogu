@@ -68,22 +68,28 @@ export class DeviceHostResignAppFileService {
       return { result: 'no-identity-exists' };
     }
 
-    const contents = await fs.promises.readFile(ResignShPath, { encoding: 'utf-8' });
-    const shellPath = path.resolve(HostPaths.doguTempPath(), `resign-${uuidv4()}.sh`);
-    await fs.promises.writeFile(shellPath, contents, { encoding: 'utf-8' });
-    await fs.promises.chmod(shellPath, 0o755);
-
+    const resignShellPath = path.resolve(HostPaths.doguTempPath(), `resign-${uuidv4()}.sh`);
     const resignedAppPath = path.resolve(HostPaths.doguTempPath(), `resign-${uuidv4()}.ipa`);
-    const args = [shellPath, appPath, `"${identityName}"`, '-p', provisioningProfilePath, resignedAppPath].join(' ');
 
-    this.logger.info('DeviceHostResignAppFileService.resign', { args });
-    const result = await ChildProcess.exec(args, {}, this.logger);
-    this.logger.info('DeviceHostResignAppFileService.resign done', { result });
-    await fs.promises.rm(appPath, { recursive: true, force: true });
-    await fs.promises.cp(resignedAppPath, appPath, { recursive: true, force: true });
+    if (!fs.existsSync(HostPaths.doguTempPath())) {
+      await fs.promises.mkdir(HostPaths.doguTempPath(), { recursive: true });
+    }
+    try {
+      await fs.promises.cp(ResignShPath, resignShellPath, { recursive: true, force: true });
+      await fs.promises.chmod(resignShellPath, 0o755);
 
-    await fs.promises.rm(shellPath, { recursive: true, force: true });
-    await fs.promises.rm(resignedAppPath, { recursive: true, force: true });
+      const args = [resignShellPath, appPath, `"${identityName}"`, '-p', provisioningProfilePath, resignedAppPath].join(' ');
+
+      this.logger.info('DeviceHostResignAppFileService.resign', { args });
+      const result = await ChildProcess.exec(args, {}, this.logger);
+      this.logger.info('DeviceHostResignAppFileService.resign done', { result });
+
+      await fs.promises.rm(appPath, { recursive: true, force: true });
+      await fs.promises.rename(resignedAppPath, appPath);
+    } finally {
+      await fs.promises.rm(resignShellPath, { recursive: true, force: true });
+      await fs.promises.rm(resignedAppPath, { recursive: true, force: true });
+    }
     return { result: 'success' };
   }
 }
