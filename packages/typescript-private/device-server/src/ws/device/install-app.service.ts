@@ -28,9 +28,11 @@ export class DeviceInstallAppService
     }
     await deviceChannel.installApp(appPath, {
       error: (message, details) => {
+        this.logger.error(`DeviceInstallAppService.onWebSocketMessage error`, { message, details });
         this.send(webSocket, this.createMessage('error', stringify(message), details));
       },
       info: (message, details) => {
+        this.logger.info(`DeviceInstallAppService.onWebSocketMessage info`, { message, details });
         this.send(webSocket, this.createMessage('info', stringify(message), details));
       },
     });

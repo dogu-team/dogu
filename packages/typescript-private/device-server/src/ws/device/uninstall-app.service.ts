@@ -29,9 +29,11 @@ export class DeviceUninstallAppService
 
     await deviceChannel.uninstallApp(appPath, {
       error: (message, details) => {
+        this.logger.error(`DeviceUninstallAppService.onWebSocketMessage error`, { message, details });
         this.send(webSocket, this.createMessage('error', stringify(message), details));
       },
       info: (message, details) => {
+        this.logger.info(`DeviceUninstallAppService.onWebSocketMessage info`, { message, details });
         this.send(webSocket, this.createMessage('info', stringify(message), details));
       },
     });

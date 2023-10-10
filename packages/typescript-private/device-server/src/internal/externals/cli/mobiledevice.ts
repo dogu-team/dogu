@@ -75,17 +75,17 @@ class MobileDeviceImpl {
     if (!dotAppPath.endsWith('.app')) {
       throw Error(`appPath must be end with .app: ${dotAppPath}`);
     }
-    const { stdout } = await ChildProcess.execIgnoreError(`${pathMap().macos.mobiledevice} get_bundle_id ${dotAppPath}`, {}, idcLogger);
+    const { stdout } = await ChildProcess.execIgnoreError(`${pathMap().macos.mobiledevice} get_bundle_id "${dotAppPath}"`, {}, idcLogger);
     return stdout.trim();
   }
 
-  uninstallApp(udid: string, appName: string, printable: Printable = idcLogger): Promise<child_process.ChildProcess> {
-    return ChildProcess.spawnAndWait(pathMap().macos.mobiledevice, ['uninstall_app', '-u', udid, appName], {}, printable);
-  }
+  // uninstallApp(udid: string, appName: string, printable: Printable = idcLogger): Promise<child_process.ChildProcess> {
+  //   return ChildProcess.spawnAndWait(pathMap().macos.mobiledevice, ['uninstall_app', '-u', udid, appName], {}, printable);
+  // }
 
-  installApp(udid: string, appPath: string, printable: Printable = idcLogger): Promise<child_process.ChildProcess> {
-    return ChildProcess.spawnAndWait(pathMap().macos.mobiledevice, ['install_app', '-u', udid, appPath], {}, printable);
-  }
+  // installApp(udid: string, appPath: string, printable: Printable = idcLogger): Promise<child_process.ChildProcess> {
+  //   return ChildProcess.spawnAndWait(pathMap().macos.mobiledevice, ['install_app', '-u', udid, appPath], {}, printable);
+  // }
 
   @Retry()
   async listApps(udid: string): Promise<string[]> {

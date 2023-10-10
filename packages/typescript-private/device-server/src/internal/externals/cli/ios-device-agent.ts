@@ -9,9 +9,10 @@ import { IosDeviceAgentService } from '../../services/device-agent/ios-device-ag
 import { StreamingService } from '../../services/streaming/streaming-service';
 import { Zombieable, ZombieProps, ZombieQueriable } from '../../services/zombie/zombie-component';
 import { ZombieServiceInstance } from '../../services/zombie/zombie-service';
-import { MobileDevice, XcodeBuild } from '../index';
+import { XcodeBuild } from '../index';
 import { DerivedData } from '../xcode/deriveddata';
 import { Xctestrun as XctestrunFile } from '../xcode/xctestrun';
+import { IdeviceInstaller } from './ideviceinstaller';
 import { ZombieTunnel } from './mobiledevice-tunnel';
 import { XCTestRunContext } from './xcodebuild';
 
@@ -216,10 +217,10 @@ class ZombieIdaXCTest implements Zombieable {
 
     const xctestrunPath = this.xctestrunfile.filePath;
     await this.dissmissAlert(sessionId);
-    await MobileDevice.uninstallApp(this.serial, 'com.dogu.IOSDeviceAgentRunner', this.logger).catch(() => {
+    await IdeviceInstaller.uninstallApp(this.serial, 'com.dogu.IOSDeviceAgentRunner', this.logger).catch(() => {
       this.logger.warn?.('uninstallApp com.dogu.IOSDeviceAgentRunner failed');
     });
-    await MobileDevice.uninstallApp(this.serial, 'com.dogu.IOSDeviceAgentRunner.xctrunner', this.logger).catch(() => {
+    await IdeviceInstaller.uninstallApp(this.serial, 'com.dogu.IOSDeviceAgentRunner.xctrunner', this.logger).catch(() => {
       this.logger.warn?.('uninstallApp com.dogu.IOSDeviceAgentRunner.xctrunner failed');
     });
     await this.dissmissAlert(sessionId);

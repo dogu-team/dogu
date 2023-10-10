@@ -7,7 +7,7 @@ import { Zombieable, ZombieProps, ZombieQueriable } from '../../services/zombie/
 import { ZombieServiceInstance } from '../../services/zombie/zombie-service';
 import { XcodeBuild } from '../index';
 import { DerivedData } from '../xcode/deriveddata';
-import { MobileDevice } from './mobiledevice';
+import { IdeviceInstaller } from './ideviceinstaller';
 import { ZombieTunnel } from './mobiledevice-tunnel';
 import { XCTestRunContext } from './xcodebuild';
 
@@ -136,7 +136,7 @@ class ZombieWdaXCTest implements Zombieable {
     this.logger.debug?.(`ZombieWdaXCTest.revive`);
     await delay(1000);
 
-    await MobileDevice.uninstallApp(this.serial, 'com.facebook.WebDriverAgentRunner', this.logger).catch(() => {
+    await IdeviceInstaller.uninstallApp(this.serial, 'com.facebook.WebDriverAgentRunner', this.logger).catch(() => {
       this.logger.warn?.('uninstallApp com.facebook.WebDriverAgentRunner failed');
     });
     await XcodeBuild.killPreviousXcodebuild(this.serial, `webdriveragent.*${this.serial}`, this.logger).catch(() => {

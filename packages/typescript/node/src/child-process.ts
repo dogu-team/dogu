@@ -1,6 +1,7 @@
-import { NullLogger, Printable, stringify } from '@dogu-tech/common';
+import { BufferLogger, MixedLogger, NullLogger, Printable, stringify } from '@dogu-tech/common';
 import childProcess from 'child_process';
 import lodash from 'lodash';
+import { ChildProcessError } from './errors/child-process-error';
 
 type ExecOptions = {
   encoding: BufferEncoding;
@@ -97,47 +98,37 @@ export async function spawn(command: string, args: string[], options: childProce
   });
 }
 
-export async function spawnAndWait(command: string, args: string[], options: childProcess.SpawnOptions, stream: Printable): Promise<childProcess.ChildProcess> {
-  const appendLog = (data: string, dest: { str: string }): void => {
-    dest.str += data;
-    const diff = dest.str.length - 1000;
-    if (0 < diff) {
-      dest.str = dest.str.slice(Math.min(999, diff));
-    }
-  };
+export async function spawnAndWait(command: string, args: string[], options: childProcess.SpawnOptions, printable: Printable): Promise<childProcess.ChildProcess> {
+  const bufferLogger = new BufferLogger({ limit: 100 });
+  const loggerWrap = new MixedLogger([printable, bufferLogger]);
 
   return new Promise((resolve, reject) => {
     const commandAndArgs = `${command} ${args.join(' ')}`;
-    const proc = spawnSync(command, args, options, stream);
-    const logs = { str: '' };
+    const proc = spawnSync(command, args, options, printable);
     proc.stdout?.setEncoding('utf8');
     proc.stdout?.on('data', (data) => {
-      appendLog(String(data), logs);
+      loggerWrap.info(String(data));
     });
 
     proc.stderr?.setEncoding('utf8');
     proc.stderr?.on('data', (data) => {
-      appendLog(String(data), logs);
+      loggerWrap.error(String(data));
     });
     proc.on('spawn', () => {
-      stream.verbose?.(`spawned: ${commandAndArgs}`);
+      loggerWrap.info(`spawned: ${commandAndArgs}`);
     });
     proc.on('error', (err) => {
-      stream.error?.(`error: ${commandAndArgs} ${stringify(err)}`);
+      loggerWrap.error(`error: ${commandAndArgs} ${stringify(err)}`);
     });
     proc.on('close', (code: number | null, signal: NodeJS.Signals | null) => {
       if (code != null) {
         if (code == 0) {
           resolve(proc);
         } else {
-          reject(new Error(`command: ${commandAndArgs} failed.\n returned code: ${code}\n last logs: ${logs.str}`));
+          reject(new ChildProcessError(commandAndArgs, code, signal, bufferLogger));
         }
       } else {
-        if (signal) {
-          reject(new Error(`command: ${commandAndArgs} failed.\n received signal: ${signal}\n last logs: ${logs.str}`));
-        } else {
-          throw new Error(`command: ${commandAndArgs} failed.\n unhandled case`);
-        }
+        reject(new ChildProcessError(commandAndArgs, code, signal, bufferLogger));
       }
     });
   });

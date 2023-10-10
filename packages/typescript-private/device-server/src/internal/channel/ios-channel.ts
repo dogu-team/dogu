@@ -14,7 +14,7 @@ import {
 } from '@dogu-private/types';
 import { Closable, errorify, loopTime, Milisecond, Printable, PromiseOrValue, stringify } from '@dogu-tech/common';
 import { AppiumCapabilities, BrowserInstallation, StreamingOfferDto } from '@dogu-tech/device-client-common';
-import { killChildProcess } from '@dogu-tech/node';
+import { ChildProcessError, killChildProcess } from '@dogu-tech/node';
 import { ChildProcess } from 'child_process';
 import compressing from 'compressing';
 import fs from 'fs';
@@ -415,7 +415,20 @@ export class IosChannel implements DeviceChannel {
   }
 
   async installApp(appPath: string, printable?: Printable): Promise<void> {
-    await IdeviceInstaller.installApp(this.serial, appPath, printable);
+    const result = await IdeviceInstaller.installApp(this.serial, appPath, printable).catch((error) => {
+      if (!(error instanceof ChildProcessError)) {
+        throw error;
+      }
+      const logInfos = error.bufferLogger?.sortedLogInfos() ?? [];
+      if (logInfos.find((log) => stringify(log.message).includes('MismatchedApplicationIdentifierEntitlement'))) {
+        return { errorType: 'MismatchedApplicationIdentifierEntitlement' };
+      }
+      throw error;
+    });
+    if ('errorType' in result && result.errorType === 'MismatchedApplicationIdentifierEntitlement') {
+      await this.uninstallApp(appPath, printable);
+      await IdeviceInstaller.installApp(this.serial, appPath, printable);
+    }
   }
 
   async runApp(appPath: string, printable?: Printable): Promise<void> {

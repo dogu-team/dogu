@@ -9,9 +9,12 @@ import { idcLogger } from '../../../logger/logger.instance';
 class IdeviceInstallerImpl {
   async uninstallApp(udid: string, appName: string, printable: Printable = idcLogger): Promise<child_process.ChildProcess> {
     this.tryAccessAndFix();
+    const exe = HostPaths.external.libimobiledevice.ideviceinstaller();
+    const args = ['-u', udid, '--uninstall', appName];
+    printable.info(`IdeviceInstallerImpl.uninstallApp ${exe} ${stringify(args)}`);
     return ChildProcess.spawnAndWait(
-      HostPaths.external.libimobiledevice.ideviceinstaller(),
-      ['-u', udid, '--uninstall', appName],
+      exe,
+      args,
       {
         env: {
           ...process.env,
@@ -24,9 +27,12 @@ class IdeviceInstallerImpl {
 
   async installApp(udid: string, appPath: string, printable: Printable = idcLogger): Promise<child_process.ChildProcess> {
     this.tryAccessAndFix();
+    const exe = HostPaths.external.libimobiledevice.ideviceinstaller();
+    const args = ['-u', udid, '--install', appPath];
+    printable.info(`IdeviceInstallerImpl.installApp ${exe} ${stringify(args)}`);
     return ChildProcess.spawnAndWait(
-      HostPaths.external.libimobiledevice.ideviceinstaller(),
-      ['-u', udid, '--install', appPath],
+      exe,
+      args,
       {
         env: {
           ...process.env,

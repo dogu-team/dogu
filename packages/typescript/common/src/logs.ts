@@ -199,6 +199,21 @@ export class BufferLogger implements FilledPrintable {
     this.pushToBuffer('verbose', message, details);
   }
 
+  sortedLogInfos(): LevelLogInfo[] {
+    const logInfos = Array.from(this.buffers).flatMap((buffer) =>
+      buffer[1].flatMap((log) => {
+        return {
+          level: buffer[0],
+          time: log.time,
+          message: log.message,
+          details: log.details,
+        };
+      }),
+    );
+    logInfos.sort((a, b) => a.time - b.time);
+    return logInfos;
+  }
+
   private pushToBuffer(level: LogLevel, message: unknown, details?: Record<string, unknown>): void {
     const buffer = this.buffers.get(level);
     if (!buffer) {
