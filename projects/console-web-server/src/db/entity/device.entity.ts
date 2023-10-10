@@ -32,6 +32,7 @@ import { DeviceRunner } from './device-runner.entity';
 import { DeviceTag } from './device-tag.entity';
 import { Host } from './host.entity';
 import { DeviceAndDeviceTag, Organization, ProjectAndDevice } from './index';
+import { LiveSession } from './live-session.entity';
 import { Project } from './project.entity';
 import { RecordDeviceJob } from './record-device-job.entity';
 import { RemoteDeviceJob } from './remote-device-job.entity';
@@ -105,7 +106,7 @@ export class Device extends BaseEntity implements DeviceBase {
   @Column({ type: 'character varying', name: DevicePropSnake.location, length: DEVICE_LOCATION_MAX_LENGTH, default: null, nullable: true })
   location!: string | null;
 
-  @Column({ type: 'character varying', name: DevicePropSnake.usage_state, length: DEVICE_USAGE_STATE_MAX_LENGTH, default: DeviceUsageState.available, nullable: false })
+  @Column({ type: 'enum', name: DevicePropSnake.usage_state, enum: DeviceUsageState, default: DeviceUsageState.AVAILABLE, nullable: false })
   usageState!: DeviceUsageState;
 
   @ColumnTemplate.Date(DevicePropSnake.heartbeat, true)
@@ -182,4 +183,7 @@ export class Device extends BaseEntity implements DeviceBase {
 
   @OneToMany(() => DeviceRunner, (deviceRunner) => deviceRunner.device, { cascade: ['soft-remove'] })
   deviceRunners?: DeviceRunner[];
+
+  @OneToMany(() => LiveSession, (liveSession) => liveSession.device, { cascade: ['soft-remove'] })
+  liveSessions?: LiveSession[];
 }

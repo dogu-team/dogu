@@ -1,5 +1,6 @@
 import { Device } from '@dogu-private/types';
 import { camelToSnakeCasePropertiesOf, propertiesOf } from '@dogu-tech/common';
+import { LiveSessionBase } from '..';
 import { DeviceAndDeviceTagBase } from './device-and-device-tag';
 import { DeviceBrowserInstallationBase } from './device-browser-installation';
 import { DeviceRunnerBase } from './device-runner';
@@ -24,12 +25,13 @@ interface DeviceRelationTraits {
   organization?: OrganizationBase;
   deviceBrowserInstallations?: DeviceBrowserInstallationBase[];
   deviceRunners?: DeviceRunnerBase[];
+  liveSessions?: LiveSessionBase[];
 }
 
 export enum DeviceUsageState {
-  available = 'available',
-  preparing = 'preparing',
-  busy = 'busy',
+  AVAILABLE = 'AVAILABLE',
+  PREPARING = 'PREPARING',
+  IN_USE = 'IN_USE',
 }
 
 export type DeviceBase = Omit<Required<Device>, 'heartbeat' | 'modelName' | 'displayError'> & {

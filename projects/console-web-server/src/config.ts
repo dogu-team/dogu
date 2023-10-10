@@ -52,7 +52,8 @@ export const config = {
       deviceParam: (organizationId: OrganizationId, deviceId: DeviceId): string => `/organizations/${organizationId}/devices/${deviceId}/params`,
       deviceResult: (organizationId: OrganizationId, deviceId: DeviceId, resultId: string): string => `/organizations/${organizationId}/devices/${deviceId}/results/${resultId}`,
       deviceStreamingSessionParam: (deviceId: DeviceId): string => `device-streaming-session/${deviceId}/params`,
-      updateConnection: '/updateConnection',
+      updateConnection: 'update-connection',
+      updateLiveSession: 'update-live-session',
       WebSocketProxyReceive: (organizationId: OrganizationId, deviceId: DeviceId, webSocketProxyId: WebSocketProxyId): string =>
         `/organizations/${organizationId}/devices/${deviceId}/webSocketProxies/${webSocketProxyId}/receives`,
     },
@@ -140,6 +141,14 @@ export const config = {
     },
     lifetime: {
       allowedSeconds: 1800,
+    },
+  },
+  liveSession: {
+    heartbeat: {
+      allowedMilliseconds: 10 * 1000,
+    },
+    closeWait: {
+      allowedMilliseconds: 3 * 60 * 1000,
     },
   },
 };
