@@ -1,30 +1,63 @@
 import { ProfileMethod, ProfileMethodKind, RuntimeInfo, Serial } from '@dogu-private/types';
 import { loop } from '@dogu-tech/common';
 import { logger } from '../../../logger/logger.instance';
+import { FocusedAppInfo } from '../../externals/cli/adb/adb';
 import { Adb, AndroidShellTopInfo, AndroidShellTopProcInfo, DefaultAndroidShellTopInfo } from '../../externals/index';
 import { AndroidDeviceAgentService } from '../device-agent/android-device-agent-service';
 import { ProfileService } from './profile-service';
 
+interface QueryContext<T> {
+  name: string;
+  querying: boolean;
+  info: T | undefined;
+  func: () => Promise<T>;
+  default: T;
+}
+
 class AndroidAdbProfileContext {
-  private shellTopInfo: AndroidShellTopInfo | undefined = undefined;
-  private isShellTopQuering = false;
-  constructor(private readonly serial: Serial) {}
+  private shellTopInfoContext: QueryContext<AndroidShellTopInfo>;
+  private focusedAppInfosContext: QueryContext<FocusedAppInfo[]>;
+
+  constructor(private readonly serial: Serial) {
+    this.shellTopInfoContext = {
+      name: 'shell top info',
+      querying: false,
+      info: undefined,
+      func: async (): Promise<AndroidShellTopInfo> => Adb.getShellTopInfo(serial),
+      default: DefaultAndroidShellTopInfo(),
+    };
+    this.focusedAppInfosContext = {
+      name: 'focused app infos',
+      querying: false,
+      info: undefined,
+      func: async (): Promise<FocusedAppInfo[]> => Adb.getForegroundPackage(serial),
+      default: [],
+    };
+  }
 
   async queryShellTopInfo(): Promise<AndroidShellTopInfo> {
-    if (!this.isShellTopQuering) {
-      this.isShellTopQuering = true;
-      this.shellTopInfo = await Adb.getShellTopInfo(this.serial);
+    return this.query(this.shellTopInfoContext);
+  }
+
+  async queryForegroundPackage(): Promise<FocusedAppInfo[]> {
+    return this.query(this.focusedAppInfosContext);
+  }
+
+  private async query<T>(context: QueryContext<T>): Promise<T> {
+    if (!context.querying) {
+      context.querying = true;
+      context.info = await context.func();
     }
     for await (const _ of loop(300, 10)) {
-      if (this.shellTopInfo) {
+      if (context.info) {
         break;
       }
     }
-    if (!this.shellTopInfo) {
-      logger.warn(`shell top info is not available for ${this.serial}`);
-      return DefaultAndroidShellTopInfo();
+    if (!context.info) {
+      logger.warn(`AndroidAdbProfileContext.query ${context.name} is not available for ${this.serial}`);
+      return context.default;
     }
-    return this.shellTopInfo;
+    return context.info;
   }
 }
 
@@ -105,7 +138,7 @@ export class FsProfiler implements AndroidAdbProfiler {
 export class ProcessProfiler implements AndroidAdbProfiler {
   async profile(serial: Serial, context: AndroidAdbProfileContext): Promise<Partial<RuntimeInfo>> {
     const topInfo = await context.queryShellTopInfo();
-    const foregroundApps = (await Adb.getForegroundPackage(serial)).filter((x) => x.displayId === 0);
+    const foregroundApps = (await context.queryForegroundPackage()).filter((x) => x.displayId === 0);
     const procs: AndroidShellTopProcInfo[] = [];
 
     foregroundApps.forEach((app) => {
@@ -149,12 +182,27 @@ export class ProcessProfiler implements AndroidAdbProfiler {
   }
 }
 
+export class BlockDeveloperOptionsProfiler implements AndroidAdbProfiler {
+  async profile(serial: Serial, context: AndroidAdbProfileContext): Promise<Partial<RuntimeInfo>> {
+    const foregroundApps = (await context.queryForegroundPackage()).filter((x) => x.displayId === 0);
+    const developerAppInfo = foregroundApps.find(
+      (app) => app.packageName.startsWith('com.android.settings') && (app.activity.endsWith('SubSettings') || app.activity.endsWith('DevelopmentSettings')),
+    );
+    if (!developerAppInfo) {
+      return Promise.resolve({});
+    }
+    await Adb.killPackage(serial, developerAppInfo.packageName);
+    return Promise.resolve({});
+  }
+}
+
 export class AndroidAdbProfileService implements ProfileService {
   private _profilers = new Map<ProfileMethodKind, AndroidAdbProfiler>([
     [ProfileMethodKind.PROFILE_METHOD_KIND_ANDROID_CPU_SHELLTOP, new CpuProfiler()],
     [ProfileMethodKind.PROFILE_METHOD_KIND_ANDROID_MEM_PROCMEMINFO, new MemProfiler()],
     // [ProfileMethodKind.PROFILE_METHOD_KIND_ANDROID_FS_PROCDISKSTATS, new FsProfiler()],
     [ProfileMethodKind.PROFILE_METHOD_KIND_ANDROID_PROCESS_SHELLTOP, new ProcessProfiler()],
+    [ProfileMethodKind.PROFILE_METHOD_KIND_ANDROID_BLOCK_DEVELOPER_OPTIONS, new BlockDeveloperOptionsProfiler()],
   ]);
 
   async profile(serial: Serial, methods: ProfileMethod[]): Promise<Partial<RuntimeInfo>> {

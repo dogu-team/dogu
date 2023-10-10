@@ -448,7 +448,7 @@ export async function getShellTopInfo(serial: Serial): Promise<AndroidShellTopIn
   return rv;
 }
 
-interface FocusedAppInfo {
+export interface FocusedAppInfo {
   displayId: number;
   packageName: string;
   activity: string;
@@ -849,11 +849,15 @@ export async function getSystemBarVisibility(serial: Serial): Promise<AndroidSys
   };
 }
 
-registerBootstrapHandler(__filename, async (): Promise<void> => {
-  try {
-    await fs.promises.chmod(adbBinary(), 0o777);
-  } catch (error) {
-    const cause = error instanceof Error ? error : new Error(stringify(error));
-    throw new Error(`Failed to chmod adb`, { cause });
-  }
-}, () => new PlatformAbility().isAndroidEnabled);  
+registerBootstrapHandler(
+  __filename,
+  async (): Promise<void> => {
+    try {
+      await fs.promises.chmod(adbBinary(), 0o777);
+    } catch (error) {
+      const cause = error instanceof Error ? error : new Error(stringify(error));
+      throw new Error(`Failed to chmod adb`, { cause });
+    }
+  },
+  () => new PlatformAbility().isAndroidEnabled,
+);
