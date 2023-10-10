@@ -6,6 +6,8 @@ import shelljs from 'shelljs';
 import { findRootWorkspace } from '../workspace';
 import { PackageJson } from './packagejson';
 
+const skipPackages = ['@dogu-tech/jest-environment'];
+
 interface Watch {
   src: string;
   dest: string;
@@ -142,6 +144,7 @@ export async function mirrorWorkspace(spacePath: string, option: WatchOption = {
       if (!fs.existsSync(srcPath)) continue;
 
       const srcPackageJson = new PackageJson(path.resolve(tsPackageRoot, dir, 'package.json'));
+      if (skipPackages.includes(srcPackageJson.getName())) continue;
 
       const packageName = srcPackageJson.getName().replaceAll('/', '-');
       const destPackagePath = path.resolve(outputPackagesPath, packageName);
@@ -151,18 +154,38 @@ export async function mirrorWorkspace(spacePath: string, option: WatchOption = {
       copyDependentPackages(outputWorkspace, packageJson, packagesPaths, outputPackagesPath, returningWatchs);
     }
   }
+  // make returningWatchs src unique
+  const uniqueReturningWatchs: Watch[] = [];
+  returningWatchs.forEach((watch) => {
+    if (uniqueReturningWatchs.find((w) => w.src === watch.src)) {
+      return;
+    }
+    uniqueReturningWatchs.push(watch);
+  });
 
   if (option.copyOnly) {
-    returningWatchs.forEach(({ src, dest }) => {
-      console.log(chalk.yellowBright(`[mirror copy] from: ${src}`));
-      console.log(chalk.yellowBright(`              to:   ${dest}\n`));
-      shelljs.rm('-rf', dest);
-      shelljs.cp('-rf', src, dest);
+    const promises = uniqueReturningWatchs.map(async ({ src, dest }): Promise<void> => {
+      return new Promise<void>((resolve, reject) => {
+        (async (): Promise<void> => {
+          console.log(chalk.yellowBright(`[mirror copy] from: ${src}`));
+          console.log(chalk.yellowBright(`              to:   ${dest}\n`));
+          await fs.promises.rm(dest, { recursive: true, force: true });
+          await fs.promises.cp(src, dest, { recursive: true, force: true });
+          return Promise.resolve();
+        })()
+          .then(() => {
+            resolve();
+          })
+          .catch((error: unknown) => {
+            reject(error);
+          });
+      });
     });
+    await Promise.all(promises);
     return outputWorkspace;
   }
 
-  const watchers = returningWatchs.map(({ src, dest, bidirectional }) => {
+  const watchers = uniqueReturningWatchs.map(({ src, dest, bidirectional }) => {
     console.log(chalk.yellowBright(`[mirror] from: ${src}`));
     console.log(chalk.yellowBright(`         to:   ${dest}\n`));
     const watcher = chokidar.watch(src);
