@@ -1,5 +1,5 @@
 import { CloudDeviceMetadataBase } from '@dogu-private/console';
-import { UserPayload } from '@dogu-private/types';
+import { DeviceId, UserPayload } from '@dogu-private/types';
 import { Controller, Get, Param, Query } from '@nestjs/common';
 
 import { Device } from '../../db/entity/device.entity';
@@ -21,7 +21,13 @@ export class CloudDeviceController {
 
   @Get(':model/versions')
   @EmailVerification(EMAIL_VERIFICATION.VERIFIED)
-  async getCloudDeviceByModel(@User() user: UserPayload, @Param('model') model: string): Promise<Device[]> {
-    return await this.cloudDeviceService.findCloudDevicesByModel(model);
+  async getCloudDeviceVersionsByModel(@User() user: UserPayload, @Param('model') model: string): Promise<Device[]> {
+    return await this.cloudDeviceService.findCloudDeviceVersionsByModel(model);
+  }
+
+  @Get(':deviceId')
+  @EmailVerification(EMAIL_VERIFICATION.VERIFIED)
+  async findCloudDeviceById(@User() user: UserPayload, @Param('deviceId') deviceId: DeviceId): Promise<Device> {
+    return await this.cloudDeviceService.findCloudDeviceById(deviceId);
   }
 }

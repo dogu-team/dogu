@@ -1,5 +1,5 @@
 import { MobileOutlined } from '@ant-design/icons';
-import { DeviceBase, OrganizationBase, ProjectBase, UserBase } from '@dogu-private/console';
+import { DeviceBase, OrganizationBase, UserBase } from '@dogu-private/console';
 import { DeviceId, OrganizationId, ProjectId } from '@dogu-private/types';
 import { Avatar, Tag, Tooltip } from 'antd';
 import { isAxiosError } from 'axios';
@@ -10,7 +10,6 @@ import useSWR from 'swr';
 
 import { swrAuthFetcher } from '../../api';
 import useWebSocket from '../../hooks/useWebSocket';
-import useAuthStore from '../../stores/auth';
 import { flexRowBaseStyle, flexRowCenteredStyle } from '../../styles/box';
 import { theme } from '../../styles/theme';
 import { getErrorMessageFromAxios } from '../../utils/error';
@@ -22,36 +21,27 @@ import StudioDeviceSelector from './StudioDeviceSelector';
 export interface DeviceStreamingLayoutProps {
   organization: OrganizationBase;
   userId: UserBase['userId'];
-  deviceId: DeviceId;
+  device: DeviceBase;
   right: React.ReactNode;
   title: string;
   screenViewer: React.ReactNode;
   hideDeviceSelector?: boolean;
+  isCloudDevice?: boolean;
 }
 
 const DeviceStreamingLayout = ({
   organization,
   userId,
-  deviceId,
+  device,
   right,
   title,
   screenViewer,
   hideDeviceSelector,
+  isCloudDevice,
 }: DeviceStreamingLayoutProps) => {
   const router = useRouter();
-  const {
-    data: device,
-    error: deviceError,
-    isLoading: deviceIsLoading,
-  } = useSWR<DeviceBase>(
-    !hideDeviceSelector && `/organizations/${organization.organizationId}/devices/${deviceId}`,
-    swrAuthFetcher,
-    {
-      revalidateOnFocus: false,
-    },
-  );
   const socketRef = useWebSocket(
-    `/ws/device-streaming-session?organizationId=${organization.organizationId}&deviceId=${deviceId}`,
+    `/ws/device-streaming-session?organizationId=${organization.organizationId}&deviceId=${device.deviceId}`,
   );
   const [users, setUsers] = useState<UserBase[]>([]);
 
@@ -70,17 +60,6 @@ const DeviceStreamingLayout = ({
     };
   }, [socketRef]);
 
-  if (deviceError) {
-    return (
-      <Box style={{ justifyContent: 'center' }}>
-        <ErrorBox
-          title="Something went wrong"
-          desc={isAxiosError(deviceError) ? getErrorMessageFromAxios(deviceError) : 'Cannot find device information'}
-        />
-      </Box>
-    );
-  }
-
   if (device && device.displayError !== null) {
     return (
       <Box style={{ justifyContent: 'center' }}>
@@ -90,7 +69,7 @@ const DeviceStreamingLayout = ({
   }
 
   return (
-    <DeviceStreaming device={device}>
+    <DeviceStreaming device={device} isCloudDevice={isCloudDevice}>
       <Box>
         <ScreenBox>
           <TitleBox>

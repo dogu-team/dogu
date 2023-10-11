@@ -24,11 +24,12 @@ interface Props {
 }
 
 const ApplicationUploader = ({}: Props) => {
-  const { device, deviceService, loading } = useDeviceStreamingContext();
+  const { device, deviceService, loading, isCloudDevice } = useDeviceStreamingContext();
   const { uploadApp, cancelUpload, runApp, isInstalling, progress, app, result } = useDeviceAppInstall(
     device?.serial,
     deviceService?.deviceHostClient,
     deviceService?.deviceClient,
+    { isCloudDevice: isCloudDevice ?? false },
   );
   const [shouldRun, setShouldRun] = useState(false);
   const { t } = useTranslation();

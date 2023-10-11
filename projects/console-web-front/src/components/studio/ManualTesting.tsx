@@ -1,4 +1,4 @@
-import { OrganizationBase, ProjectBase, UserBase } from '@dogu-private/console';
+import { DeviceBase, OrganizationBase, ProjectBase, UserBase } from '@dogu-private/console';
 import { DeviceId, Platform } from '@dogu-private/types';
 import styled from 'styled-components';
 import dynamic from 'next/dynamic';
@@ -105,25 +105,27 @@ const ManualTestingMenu = () => {
 
 interface Props {
   organization: OrganizationBase;
-  deviceId: DeviceId;
+  device: DeviceBase;
   me: UserBase;
   hideDeviceSelector?: boolean;
+  isCloudDevice?: boolean;
 }
 
-const ManualTesting = ({ organization, me, deviceId, hideDeviceSelector }: Props) => {
+const ManualTesting = ({ organization, me, device, hideDeviceSelector, isCloudDevice }: Props) => {
   return (
     <DeviceStreamingLayout
       organization={organization}
-      deviceId={deviceId}
+      device={device}
       right={
         <MenuBox>
           <ManualTestingMenu />
         </MenuBox>
       }
-      title="Manual Testing"
+      title="Live Testing"
       screenViewer={<ManualTestingScreenViewer />}
       userId={me.userId}
       hideDeviceSelector={hideDeviceSelector}
+      isCloudDevice={isCloudDevice}
     />
   );
 };

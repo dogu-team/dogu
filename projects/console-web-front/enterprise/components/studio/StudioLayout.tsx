@@ -1,14 +1,11 @@
-import { ProjectBase } from '@dogu-private/console';
+import { DeviceBase } from '@dogu-private/console';
+import { EDITION_TYPE } from '@dogu-private/types';
 import React from 'react';
-import styled from 'styled-components';
 import Head from 'next/head';
-import { FaRegHandPaper } from 'react-icons/fa';
 import Link from 'next/link';
-import { Tooltip } from 'antd';
-import { DeviceId, EDITION_TYPE } from '@dogu-private/types';
-import { useRouter } from 'next/router';
 import Image from 'next/image';
-import { BiVideoRecording } from 'react-icons/bi';
+import { useRouter } from 'next/router';
+import styled from 'styled-components';
 
 import Header from '../../../src/components/layouts/Header';
 import resources from '../../../src/resources/index';
@@ -17,17 +14,17 @@ import { flexRowCenteredStyle } from '../../../src/styles/box';
 interface Props {
   children: React.ReactNode;
   // project: ProjectBase;
-  deviceId: DeviceId | null;
+  device: DeviceBase | null;
   editionType: EDITION_TYPE;
 }
 
-const StudioLayout = ({ children, deviceId, editionType }: Props) => {
+const StudioLayout = ({ children, device, editionType }: Props) => {
   const router = useRouter();
 
   return (
     <>
       <Head>
-        <title>Studio - {deviceId} | Dogu</title>
+        <title>Studio - {device?.name} | Dogu</title>t
       </Head>
       <Box>
         <Header
@@ -108,7 +105,8 @@ const Side = styled.aside`
 const Main = styled.main`
   display: flex;
   padding: 1rem;
-  width: calc(100% - 100px);
+  width: 100%;
+  flex: 1;
 `;
 
 const IconWrapper = styled.div`

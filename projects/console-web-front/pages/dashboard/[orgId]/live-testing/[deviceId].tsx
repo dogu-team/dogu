@@ -9,14 +9,10 @@ import {
   CloudStudioTestingPageProps,
 } from 'enterprise/pages/studio';
 
-const CloudLiveTestingStudioPage: NextPageWithLayout<CloudStudioTestingPageProps> = ({
-  organization,
-  me,
-  deviceId,
-}) => {
+const CloudLiveTestingStudioPage: NextPageWithLayout<CloudStudioTestingPageProps> = ({ organization, me, device }) => {
   return (
     <Box>
-      <ManualTesting organization={organization} deviceId={deviceId} me={me} hideDeviceSelector />
+      <ManualTesting organization={organization} device={device} me={me} hideDeviceSelector isCloudDevice />
     </Box>
   );
 };

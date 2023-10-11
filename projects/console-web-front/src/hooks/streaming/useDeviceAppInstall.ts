@@ -7,6 +7,7 @@ const useDeviceAppInstall = (
   serial: Serial | undefined,
   deviceHostClient: DeviceHostClient | undefined,
   deviceClient: DeviceClient | undefined,
+  option: { isCloudDevice: boolean },
 ) => {
   const [app, setApp] = useState<File>();
   const [progress, setProgress] = useState<number>();
@@ -100,18 +101,21 @@ const useDeviceAppInstall = (
       }
 
       setIsInstalling(true);
-      try {
-        await deviceHostClient.resignApp({ filePath: uploadedFilePath });
-      } catch (e) {
-        const error = errorify(e);
-        console.debug('resignApp error:', error);
-        setResult({
-          isSuccess: false,
-          failType: 'resign',
-          error,
-        });
-        return;
+      if (option.isCloudDevice) {
+        try {
+          await deviceHostClient.resignApp({ filePath: uploadedFilePath });
+        } catch (e) {
+          const error = errorify(e);
+          console.debug('resignApp error:', error);
+          setResult({
+            isSuccess: false,
+            failType: 'resign',
+            error,
+          });
+          return;
+        }
       }
+
       try {
         await deviceClient.installApp(serial, uploadedFilePath);
         setResult({

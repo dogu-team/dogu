@@ -1,6 +1,6 @@
 import { CloudDeviceMetadataBase, DevicePropCamel, DeviceUsageState } from '@dogu-private/console';
-import { DeviceConnectionState } from '@dogu-private/types';
-import { Injectable } from '@nestjs/common';
+import { DeviceConnectionState, DeviceId } from '@dogu-private/types';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 
@@ -48,7 +48,7 @@ export class CloudDeviceService {
     return new Page<CloudDeviceMetadataBase>(dto.page, dto.offset, totalCount, metaInfos);
   }
 
-  async findCloudDevicesByModel(model: string): Promise<Device[]> {
+  async findCloudDeviceVersionsByModel(model: string): Promise<Device[]> {
     const query = this.createCloudDeviceDefaultQuery().andWhere(`device.model = :model`, { model: model }).select(['device.version', 'device.model']);
 
     const devices = await query.getMany();
@@ -59,6 +59,16 @@ export class CloudDeviceService {
     });
 
     return devices;
+  }
+
+  async findCloudDeviceById(deviceId: DeviceId): Promise<Device> {
+    const device = await this.createCloudDeviceDefaultQuery().andWhere(`device.${DevicePropCamel.deviceId} = :deviceId`, { deviceId }).getOne();
+
+    if (!device) {
+      throw new NotFoundException(`Device not found. id: ${deviceId}`);
+    }
+
+    return device;
   }
 
   private createCloudDeviceDefaultQuery() {
