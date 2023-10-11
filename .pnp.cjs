@@ -313,6 +313,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["prettier-package-json", "npm:2.8.0"],\
             ["redis-cli", "npm:2.1.2"],\
             ["shelljs", "npm:0.8.5"],\
+            ["shx", "npm:0.3.4"],\
             ["tar", "npm:6.1.15"],\
             ["timeout-cli", "npm:0.3.2"],\
             ["tree-kill", "npm:1.2.2"],\
@@ -27026,6 +27027,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["prettier-package-json", "npm:2.8.0"],\
             ["redis-cli", "npm:2.1.2"],\
             ["shelljs", "npm:0.8.5"],\
+            ["shx", "npm:0.3.4"],\
             ["tar", "npm:6.1.15"],\
             ["timeout-cli", "npm:0.3.2"],\
             ["tree-kill", "npm:1.2.2"],\
