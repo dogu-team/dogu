@@ -247,16 +247,18 @@ export class BlockDeveloperOptionsProfiler implements AndroidAdbProfiler {
       if (!settingsAppInfo) {
         break;
       }
-      const text = this.locale ? DeveloperOptionsString[this.locale] : 'Developer options';
-      const devOptionsTitle = await appium.select(`android=new UiSelector().resourceId("com.android.settings:id/action_bar").childSelector(new UiSelector().text("${text}"))`);
-      if (!devOptionsTitle) {
-        return;
-      }
-      if (devOptionsTitle.error) {
-        return;
-      }
+      const texts = this.locale ? DeveloperOptionsString[this.locale] : DeveloperOptionsString.en;
+      for (const text of texts) {
+        const devOptionsTitle = await appium.select(`android=new UiSelector().resourceId("com.android.settings:id/action_bar").childSelector(new UiSelector().text("${text}"))`);
+        if (!devOptionsTitle) {
+          continue;
+        }
+        if (devOptionsTitle.error) {
+          continue;
+        }
 
-      await Adb.killPackage(serial, packageName);
+        await Adb.killPackage(serial, packageName);
+      }
     }
   }
 
