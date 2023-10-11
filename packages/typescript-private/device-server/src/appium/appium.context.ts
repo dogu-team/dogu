@@ -86,7 +86,7 @@ export interface AppiumContext extends Zombieable {
   getPageSource(): Promise<string>;
   switchContextAndGetPageSource(contextId: string): Promise<string>;
   getContextPageSources(): Promise<ContextPageSource[]>;
-  findByText(text: string): Promise<WDIOElement | undefined>;
+  select(selector: string): Promise<WDIOElement | undefined>;
 }
 
 class NullAppiumContext implements AppiumContext {
@@ -168,7 +168,7 @@ class NullAppiumContext implements AppiumContext {
   async getContextPageSources(): Promise<ContextPageSource[]> {
     return Promise.resolve([]);
   }
-  async findByText(text: string): Promise<WDIOElement | undefined> {
+  async select(selector: string): Promise<WDIOElement | undefined> {
     return Promise.resolve(undefined);
   }
 }
@@ -532,15 +532,12 @@ export class AppiumContextImpl implements AppiumContext {
     return contextPageSources;
   }
 
-  async findByText(text: string): Promise<WDIOElement | undefined> {
-    if (this.options.platform === Platform.PLATFORM_ANDROID) {
-      try {
-        const selector = `new UiSelector().className("android.widget.TextView").text("${text}")`;
-        const elem = await this.data.client.driver.$(`android=${selector}`);
-        return elem;
-      } catch (e) {
-        return undefined;
-      }
+  async select(selector: string): Promise<WDIOElement | undefined> {
+    try {
+      const elem = await this.data.client.driver.$(selector);
+      return elem;
+    } catch (e) {
+      return undefined;
     }
 
     return undefined;
@@ -679,8 +676,8 @@ export class AppiumContextProxy implements AppiumContext, Zombieable {
     });
   }
 
-  async findByText(text: string): Promise<WDIOElement | undefined> {
-    return this.impl.findByText(text);
+  async select(selector: string): Promise<WDIOElement | undefined> {
+    return this.impl.select(selector);
   }
 
   getImpl<T extends Class<T>>(constructor: T): Instance<T> {

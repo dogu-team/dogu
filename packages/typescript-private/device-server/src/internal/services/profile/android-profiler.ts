@@ -1,5 +1,5 @@
 import { ProfileMethod, ProfileMethodKind, RuntimeInfo, Serial } from '@dogu-private/types';
-import { loop } from '@dogu-tech/common';
+import { DuplicatedCallGuarder, loop } from '@dogu-tech/common';
 import { AppiumContext } from '../../../appium/appium.context';
 import { logger } from '../../../logger/logger.instance';
 import { FocusedAppInfo } from '../../externals/cli/adb/adb';
@@ -194,33 +194,45 @@ export class ProcessProfiler implements AndroidAdbProfiler {
 }
 
 export class BlockDeveloperOptionsProfiler implements AndroidAdbProfiler {
+  private readonly onUpdateGuarder = new DuplicatedCallGuarder();
   async profile(params: AndroidAdbProfilerParams): Promise<Partial<RuntimeInfo>> {
     const { serial, context, appium } = params;
-    const developerAppInfo = this.findDeveloperAppOptionsAppInfo(await context.queryForegroundPackage());
-    if (!developerAppInfo) {
+    const settingsAppInfo = this.getSettingsInfoIfFocused(await context.queryForegroundPackage());
+    if (!settingsAppInfo) {
       return {};
     }
-    const devOptionsTitle = await appium.findByText('Developer options');
-    if (!devOptionsTitle) {
-      return {};
-    }
-    if (devOptionsTitle.error) {
-      return {};
-    }
+    this.onUpdateGuarder
+      .guard(async () => {
+        await this.catchAndKill(serial, settingsAppInfo.packageName, appium);
+      })
+      .catch((e) => {
+        logger.warn(`BlockDeveloperOptionsProfiler.profile failed`, { reason: e });
+      });
 
-    const againDeveloperAppInfo = this.findDeveloperAppOptionsAppInfo(await Adb.getForegroundPackage(serial));
-    if (!againDeveloperAppInfo) {
-      return {};
-    }
-
-    await Adb.killPackage(serial, developerAppInfo.packageName);
     return {};
   }
 
-  private findDeveloperAppOptionsAppInfo(focusedAppInfos: FocusedAppInfo[]): FocusedAppInfo | undefined {
-    const filtered = focusedAppInfos.filter(
-      (app) => app.displayId === 0 && app.packageName.startsWith('com.android.settings') && (app.activity.endsWith('SubSettings') || app.activity.endsWith('DevelopmentSettings')),
-    );
+  private async catchAndKill(serial: Serial, packageName: string, appium: AppiumContext): Promise<void> {
+    for await (const _ of loop(300, 30)) {
+      const settingsAppInfo = this.getSettingsInfoIfFocused(await Adb.getForegroundPackage(serial));
+      if (!settingsAppInfo) {
+        break;
+      }
+      const text = 'Developer options';
+      const devOptionsTitle = await appium.select(`android=new UiSelector().resourceId("com.android.settings:id/action_bar").childSelector(new UiSelector().text("${text}"))`);
+      if (!devOptionsTitle) {
+        return;
+      }
+      if (devOptionsTitle.error) {
+        return;
+      }
+
+      await Adb.killPackage(serial, packageName);
+    }
+  }
+
+  private getSettingsInfoIfFocused(focusedAppInfos: FocusedAppInfo[]): FocusedAppInfo | undefined {
+    const filtered = focusedAppInfos.filter((app) => app.displayId === 0 && app.packageName.startsWith('com.android.settings'));
     if (0 === filtered.length) {
       return undefined;
     }

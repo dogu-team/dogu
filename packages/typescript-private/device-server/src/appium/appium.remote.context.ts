@@ -182,7 +182,7 @@ export class AppiumRemoteContext implements AppiumContext {
     return Promise.resolve([]);
   }
 
-  async findByText(text: string): Promise<WDIOElement | undefined> {
+  async select(selector: string): Promise<WDIOElement | undefined> {
     this.printable.error('AppiumRemoteContext.findByText is not implemented');
     return Promise.resolve(undefined);
   }
