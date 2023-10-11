@@ -3,7 +3,7 @@
   "pipeline": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": [".next/**", "!.next/cache/**", "build/**"]
+      "outputs": [".next/**", "!.next/cache/**"]
     },
     "build:archive": {
       "cache": false
@@ -31,11 +31,10 @@
       "dependsOn": ["build"]
     },
     "clean": {
-      "inputs": [".next/**", "build/**"]
+      "cache": false
     },
     "test": {
-      "dependsOn": ["build"],
-      "inputs": ["src/**/*.tsx", "src/**/*.ts", "test/**/*.ts", "test/**/*.tsx"]
+      "dependsOn": ["build"]
     },
     "printenv": {
       "cache": false
