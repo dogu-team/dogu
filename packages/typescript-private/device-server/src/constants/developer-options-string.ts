@@ -1,7 +1,7 @@
 import { AndroidLocale } from '@dogu-private/types';
 
 // ref: https://sourcegraph.com/search?q=context%3Aglobal+repo%3A%5Egithub%5C.com%2FLineageOS%2Fandroid_frameworks_base%24+development_settings_title&patternType=standard&sm=1&groupBy=path
-// some fixs are applied
+// some fixs are applied (ms, id-Id, zh-Hans, zh-Hant)
 export const DeveloperOptionsString: {
   [key in AndroidLocale]: string;
 } = {
@@ -77,6 +77,7 @@ export const DeveloperOptionsString: {
   my: 'ဆော့ဝဲလ်ရေးသူ ရွေးစရာများ',
   ta: 'டெவெலப்பர் விருப்பங்கள்',
   ml: 'ഡെവലപ്പർ ഓ‌പ്ഷനുകൾ',
+  en: 'Developer options',
   'en-US': 'Developer options',
   'en-XA': 'Developer options',
   'en-CA': 'Developer options',
@@ -87,6 +88,7 @@ export const DeveloperOptionsString: {
   zh: '开发者选项',
   'zh-Hans': '开发者选项',
   'zh-Hant': '開發人員選項',
+  pt: 'Opções de programador',
   'pt-BR': 'Opções do desenvolvedor',
   'pt-PT': 'Opções de programador',
   'es-US': 'Opciones para desarrolladores',

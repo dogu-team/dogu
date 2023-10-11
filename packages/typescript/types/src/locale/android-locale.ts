@@ -15,6 +15,7 @@ export const AndroidLocaleCandidates = [
   'da', // Danish
   'de', // German
   'el', // Greek
+  'en', // English
   'en-AU', // English (Australia)
   'en-CA', // English (Canada)
   'en-GB', // English (United Kingdom)
@@ -63,6 +64,7 @@ export const AndroidLocaleCandidates = [
   'or', // Odia
   'pa', // Punjabi
   'pl', // Polish
+  'pt', // Portuguese
   'pt-BR', // Portuguese (Brazil)
   'pt-PT', // Portuguese (Portugal)
   'ro', // Romanian
