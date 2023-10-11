@@ -1,10 +1,11 @@
-import { ProfileMethod, ProfileMethodKind, RuntimeInfo, Serial } from '@dogu-private/types';
+import { AndroidLocale, createAndroidLocale, ProfileMethod, ProfileMethodKind, RuntimeInfo, Serial } from '@dogu-private/types';
 import { DuplicatedCallGuarder, FilledPrintable, loop, stringify } from '@dogu-tech/common';
 import { killChildProcess } from '@dogu-tech/node';
 import child_process from 'child_process';
 import { AppiumContext } from '../../../appium/appium.context';
+import { DeveloperOptionsString } from '../../../constants/developer-options-string';
 import { FocusedAppInfo } from '../../externals/cli/adb/adb';
-import { Adb, AndroidShellTopInfo, AndroidShellTopProcInfo, DefaultAndroidShellTopInfo } from '../../externals/index';
+import { Adb, AndroidPropInfo, AndroidShellTopInfo, AndroidShellTopProcInfo, DefaultAndroidPropInfo, DefaultAndroidShellTopInfo } from '../../externals/index';
 import { AndroidDeviceAgentService } from '../device-agent/android-device-agent-service';
 import { ProfileService } from './profile-service';
 
@@ -19,6 +20,7 @@ interface QueryContext<T> {
 class AndroidAdbProfileContext {
   private shellTopInfoContext: QueryContext<AndroidShellTopInfo>;
   private focusedAppInfosContext: QueryContext<FocusedAppInfo[]>;
+  private propContext: QueryContext<AndroidPropInfo>;
 
   constructor(private readonly serial: Serial, private readonly logger: FilledPrintable) {
     this.shellTopInfoContext = {
@@ -35,6 +37,13 @@ class AndroidAdbProfileContext {
       func: async (): Promise<FocusedAppInfo[]> => Adb.getForegroundPackage(serial),
       default: [],
     };
+    this.propContext = {
+      name: 'prop',
+      querying: false,
+      info: undefined,
+      func: async (): Promise<AndroidPropInfo> => Adb.getProps(serial),
+      default: DefaultAndroidPropInfo(),
+    };
   }
 
   async queryShellTopInfo(): Promise<AndroidShellTopInfo> {
@@ -43,6 +52,10 @@ class AndroidAdbProfileContext {
 
   async queryForegroundPackage(): Promise<FocusedAppInfo[]> {
     return this.query(this.focusedAppInfosContext);
+  }
+
+  async queryProp(): Promise<AndroidPropInfo> {
+    return this.query(this.propContext);
   }
 
   private async query<T>(context: QueryContext<T>): Promise<T> {
@@ -200,6 +213,7 @@ const DeveloperEnabledLogKeyword = 'onDeveloperOptionsEnabled';
 export class BlockDeveloperOptionsProfiler implements AndroidAdbProfiler {
   private readonly onUpdateGuarder = new DuplicatedCallGuarder();
   private logcatProc: child_process.ChildProcess | undefined = undefined;
+  private locale: AndroidLocale | undefined = undefined;
   async profile(params: AndroidAdbProfilerParams): Promise<Partial<RuntimeInfo>> {
     const { serial, context, appium, logger } = params;
     const settingsAppInfo = this.getSettingsInfoIfFocused(await context.queryForegroundPackage());
@@ -210,6 +224,12 @@ export class BlockDeveloperOptionsProfiler implements AndroidAdbProfiler {
     if (!this.logcatProc) {
       await this.startLogcatProcess(serial, settingsAppInfo.packageName, logger);
     }
+    const props = await context.queryProp();
+    this.locale = createAndroidLocale(props.persist_sys_locale);
+    if (!this.locale) {
+      this.locale = createAndroidLocale(props.ro_product_locale);
+    }
+
     this.onUpdateGuarder
       .guard(async () => {
         await this.catchAndKill(serial, settingsAppInfo.packageName, appium);
@@ -227,7 +247,7 @@ export class BlockDeveloperOptionsProfiler implements AndroidAdbProfiler {
       if (!settingsAppInfo) {
         break;
       }
-      const text = 'Developer options';
+      const text = this.locale ? DeveloperOptionsString[this.locale] : 'Developer options';
       const devOptionsTitle = await appium.select(`android=new UiSelector().resourceId("com.android.settings:id/action_bar").childSelector(new UiSelector().text("${text}"))`);
       if (!devOptionsTitle) {
         return;

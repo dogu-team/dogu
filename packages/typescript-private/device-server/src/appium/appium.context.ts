@@ -6,7 +6,7 @@
 import { Platform, Serial } from '@dogu-private/types';
 import { callAsyncWithTimeout, Class, delay, errorify, Instance, NullLogger, Printable, Retry, stringify } from '@dogu-tech/common';
 import { Android, AppiumContextInfo, ContextPageSource, Rect, ScreenSize, SystemBar } from '@dogu-tech/device-client-common';
-import { killChildProcess, killProcessOnPort, Logger, TaskQueueTask } from '@dogu-tech/node';
+import { killChildProcess, killProcessOnPort, Logger } from '@dogu-tech/node';
 import AsyncLock from 'async-lock';
 import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
 import _ from 'lodash';
@@ -533,14 +533,13 @@ export class AppiumContextImpl implements AppiumContext {
   }
 
   async select(selector: string): Promise<WDIOElement | undefined> {
+    this.data.client.driver;
     try {
       const elem = await this.data.client.driver.$(selector);
       return elem;
     } catch (e) {
       return undefined;
     }
-
-    return undefined;
   }
 }
 
@@ -549,8 +548,6 @@ const constructorMap = {
   remote: AppiumRemoteContext,
   null: NullAppiumContext,
 };
-
-class AppiumContextProxyTask extends TaskQueueTask<void> {}
 
 export class AppiumContextProxy implements AppiumContext, Zombieable {
   private readonly logger: Logger;
