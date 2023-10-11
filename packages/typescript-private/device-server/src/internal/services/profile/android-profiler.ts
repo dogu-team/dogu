@@ -1,7 +1,8 @@
 import { ProfileMethod, ProfileMethodKind, RuntimeInfo, Serial } from '@dogu-private/types';
-import { DuplicatedCallGuarder, loop } from '@dogu-tech/common';
+import { DuplicatedCallGuarder, FilledPrintable, loop, stringify } from '@dogu-tech/common';
+import { killChildProcess } from '@dogu-tech/node';
+import child_process from 'child_process';
 import { AppiumContext } from '../../../appium/appium.context';
-import { logger } from '../../../logger/logger.instance';
 import { FocusedAppInfo } from '../../externals/cli/adb/adb';
 import { Adb, AndroidShellTopInfo, AndroidShellTopProcInfo, DefaultAndroidShellTopInfo } from '../../externals/index';
 import { AndroidDeviceAgentService } from '../device-agent/android-device-agent-service';
@@ -19,7 +20,7 @@ class AndroidAdbProfileContext {
   private shellTopInfoContext: QueryContext<AndroidShellTopInfo>;
   private focusedAppInfosContext: QueryContext<FocusedAppInfo[]>;
 
-  constructor(private readonly serial: Serial) {
+  constructor(private readonly serial: Serial, private readonly logger: FilledPrintable) {
     this.shellTopInfoContext = {
       name: 'shell top info',
       querying: false,
@@ -55,7 +56,7 @@ class AndroidAdbProfileContext {
       }
     }
     if (!context.info) {
-      logger.warn(`AndroidAdbProfileContext.query ${context.name} is not available for ${this.serial}`);
+      this.logger.warn(`AndroidAdbProfileContext.query ${context.name} is not available for ${this.serial}`);
       return context.default;
     }
     return context.info;
@@ -66,6 +67,7 @@ interface AndroidAdbProfilerParams {
   serial: Serial;
   context: AndroidAdbProfileContext;
   appium: AppiumContext;
+  logger: FilledPrintable;
 }
 
 interface AndroidAdbProfiler {
@@ -193,13 +195,20 @@ export class ProcessProfiler implements AndroidAdbProfiler {
   }
 }
 
+const DeveloperEnabledLogKeyword = 'onDeveloperOptionsEnabled';
+
 export class BlockDeveloperOptionsProfiler implements AndroidAdbProfiler {
   private readonly onUpdateGuarder = new DuplicatedCallGuarder();
+  private logcatProc: child_process.ChildProcess | undefined = undefined;
   async profile(params: AndroidAdbProfilerParams): Promise<Partial<RuntimeInfo>> {
-    const { serial, context, appium } = params;
+    const { serial, context, appium, logger } = params;
     const settingsAppInfo = this.getSettingsInfoIfFocused(await context.queryForegroundPackage());
     if (!settingsAppInfo) {
+      this.killLogcatProcess();
       return {};
+    }
+    if (!this.logcatProc) {
+      await this.startLogcatProcess(serial, settingsAppInfo.packageName, logger);
     }
     this.onUpdateGuarder
       .guard(async () => {
@@ -213,7 +222,7 @@ export class BlockDeveloperOptionsProfiler implements AndroidAdbProfiler {
   }
 
   private async catchAndKill(serial: Serial, packageName: string, appium: AppiumContext): Promise<void> {
-    for await (const _ of loop(300, 30)) {
+    for await (const _ of loop(300, 10)) {
       const settingsAppInfo = this.getSettingsInfoIfFocused(await Adb.getForegroundPackage(serial));
       if (!settingsAppInfo) {
         break;
@@ -238,6 +247,38 @@ export class BlockDeveloperOptionsProfiler implements AndroidAdbProfiler {
     }
     return filtered[0];
   }
+
+  private async startLogcatProcess(serial: Serial, packageName: string, logger: FilledPrintable): Promise<void> {
+    const openTime = await Adb.getTime(serial);
+    if (openTime) {
+      const killPackageIfContains = (msg: string): void => {
+        if (msg.includes(DeveloperEnabledLogKeyword)) {
+          Adb.killPackage(serial, packageName).catch((e) => {
+            logger.error(e);
+          });
+          this.killLogcatProcess();
+        }
+      };
+      this.logcatProc = Adb.logcat(
+        serial,
+        ['-e', DeveloperEnabledLogKeyword, '-T', `${openTime}`],
+        {
+          info: (msg) => killPackageIfContains(stringify(msg)),
+          error: (msg) => killPackageIfContains(stringify(msg)),
+        },
+        logger,
+      );
+    }
+  }
+
+  private killLogcatProcess(): void {
+    if (this.logcatProc) {
+      killChildProcess(this.logcatProc).catch((e) => {
+        console.error(e);
+      });
+      this.logcatProc = undefined;
+    }
+  }
 }
 
 export class AndroidAdbProfileService implements ProfileService {
@@ -251,7 +292,7 @@ export class AndroidAdbProfileService implements ProfileService {
 
   constructor(private readonly appium: AppiumContext) {}
 
-  async profile(serial: Serial, methods: ProfileMethod[]): Promise<Partial<RuntimeInfo>> {
+  async profile(serial: Serial, methods: ProfileMethod[], logger: FilledPrintable): Promise<Partial<RuntimeInfo>> {
     const profilers = methods
       .map((method) => {
         const { kind } = method;
@@ -271,8 +312,8 @@ export class AndroidAdbProfileService implements ProfileService {
         return profiler;
       })
       .filter((profiler) => profiler !== undefined) as AndroidAdbProfiler[];
-    const context = new AndroidAdbProfileContext(serial);
-    const results = await Promise.allSettled(profilers.map((profiler) => profiler.profile({ serial, context, appium: this.appium })));
+    const context = new AndroidAdbProfileContext(serial, logger);
+    const results = await Promise.allSettled(profilers.map((profiler) => profiler.profile({ serial, context, appium: this.appium, logger })));
     const result = results.reduce((acc, cur) => {
       if (cur.status === 'fulfilled') {
         return { ...acc, ...cur.value };

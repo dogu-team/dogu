@@ -102,7 +102,7 @@ export class MacosChannel implements DeviceChannel {
 
   async queryProfile(methods: ProfileMethod[] | ProfileMethod): Promise<FilledRuntimeInfo> {
     const methodList = Array.isArray(methods) ? methods : [methods];
-    const result = await this._profile.profile(this.serial, methodList);
+    const result = await this._profile.profile(this.serial, methodList, logger);
     return {
       ...RuntimeInfo.fromPartial(result),
       platform: Platform.PLATFORM_MACOS,

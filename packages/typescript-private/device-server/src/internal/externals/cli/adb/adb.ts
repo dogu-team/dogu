@@ -719,6 +719,19 @@ export async function reconnect(serial: Serial): Promise<void> {
   adbLogger.verbose('adb.reconnect end', { serial, random });
 }
 
+export async function getTime(serial: Serial): Promise<string | undefined> {
+  const random = Math.random();
+  adbLogger.verbose('adb.getTime begin', { serial, random });
+  try {
+    const result = await shellIgnoreError(serial, `echo $(date +'%Y-%m-%d %H:%M:%S')`);
+    return `${result.stdout.trim()}.000`;
+  } catch (e) {
+    return undefined;
+  } finally {
+    adbLogger.verbose('adb.getTime end', { serial, random });
+  }
+}
+
 /**
  *  emulator
  *
