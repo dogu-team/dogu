@@ -105,15 +105,15 @@ const ManualTestingMenu = () => {
 
 interface Props {
   organization: OrganizationBase;
-  project: ProjectBase;
   deviceId: DeviceId;
   me: UserBase;
+  hideDeviceSelector?: boolean;
 }
 
-const ManualTesting = ({ organization, me, project, deviceId }: Props) => {
+const ManualTesting = ({ organization, me, deviceId, hideDeviceSelector }: Props) => {
   return (
     <DeviceStreamingLayout
-      project={project}
+      organization={organization}
       deviceId={deviceId}
       right={
         <MenuBox>
@@ -123,6 +123,7 @@ const ManualTesting = ({ organization, me, project, deviceId }: Props) => {
       title="Manual Testing"
       screenViewer={<ManualTestingScreenViewer />}
       userId={me.userId}
+      hideDeviceSelector={hideDeviceSelector}
     />
   );
 };

@@ -1,5 +1,5 @@
 import { MobileOutlined } from '@ant-design/icons';
-import { DeviceBase, ProjectBase, UserBase } from '@dogu-private/console';
+import { DeviceBase, OrganizationBase, ProjectBase, UserBase } from '@dogu-private/console';
 import { DeviceId, OrganizationId, ProjectId } from '@dogu-private/types';
 import { Avatar, Tag, Tooltip } from 'antd';
 import { isAxiosError } from 'axios';
@@ -20,7 +20,7 @@ import DeviceStreaming from '../streaming/DeviceStreaming';
 import StudioDeviceSelector from './StudioDeviceSelector';
 
 export interface DeviceStreamingLayoutProps {
-  project: ProjectBase;
+  organization: OrganizationBase;
   userId: UserBase['userId'];
   deviceId: DeviceId;
   right: React.ReactNode;
@@ -30,7 +30,7 @@ export interface DeviceStreamingLayoutProps {
 }
 
 const DeviceStreamingLayout = ({
-  project,
+  organization,
   userId,
   deviceId,
   right,
@@ -43,11 +43,15 @@ const DeviceStreamingLayout = ({
     data: device,
     error: deviceError,
     isLoading: deviceIsLoading,
-  } = useSWR<DeviceBase>(`/organizations/${project.organizationId}/devices/${deviceId}`, swrAuthFetcher, {
-    revalidateOnFocus: false,
-  });
+  } = useSWR<DeviceBase>(
+    !hideDeviceSelector && `/organizations/${organization.organizationId}/devices/${deviceId}`,
+    swrAuthFetcher,
+    {
+      revalidateOnFocus: false,
+    },
+  );
   const socketRef = useWebSocket(
-    `/ws/device-streaming-session?organizationId=${project.organizationId}&deviceId=${deviceId}`,
+    `/ws/device-streaming-session?organizationId=${organization.organizationId}&deviceId=${deviceId}`,
   );
   const [users, setUsers] = useState<UserBase[]>([]);
 

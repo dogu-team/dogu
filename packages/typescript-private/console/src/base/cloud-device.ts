@@ -18,3 +18,10 @@ export interface CloudDeviceBaseTraits {
 export type CloudDeviceBase = CloudDeviceBaseTraits & CloudDeviceRelationTraits;
 export const CloudDevicePropCamel = propertiesOf<CloudDeviceBase>();
 export const CloudDevicePropSnake = camelToSnakeCasePropertiesOf<CloudDeviceBase>();
+
+export type CloudDeviceMetadataBase = Pick<
+  DeviceBase,
+  'location' | 'model' | 'modelName' | 'manufacturer' | 'resolutionWidth' | 'resolutionHeight' | 'memory' | 'platform' | 'usageState'
+>;
+
+export type CloudDeviceByModelResponse = Pick<DeviceBase, 'version' | 'model' | 'usageState'>;

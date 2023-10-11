@@ -13,6 +13,7 @@ import { Layout, Menu, MenuProps } from 'antd';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { RiExternalLinkLine } from 'react-icons/ri';
+import { IoIosTimer } from 'react-icons/io';
 
 import { scrollbarStyle } from '../../styles/common';
 import useCollapsibleSidebar from '../../stores/collapsible-sidebar';
@@ -57,147 +58,182 @@ const OrganizationSideBar = () => {
           ),
     },
     {
-      type: 'divider',
+      type: 'group',
+      label: collapsed ? null : 'Cloud Farm',
+      children: [
+        {
+          key: 'live-testing',
+          icon: collapsed ? (
+            <StyledIconLink
+              selected={router.asPath === `/dashboard/${orgId}/live-testing`}
+              href={`/dashboard/${orgId}/live-testing`}
+            >
+              <IoIosTimer />
+            </StyledIconLink>
+          ) : undefined,
+          label: collapsed ? (
+            t('organization:liveTestingPageTitle')
+          ) : (
+            <SideBarMenu
+              icon={<IoIosTimer style={{ fontSize: '1.2rem' }} />}
+              path={`/dashboard/${orgId}/live-testing`}
+              text={t('organization:liveTestingPageTitle')}
+              accessId={process.env.NEXT_PUBLIC_ENV !== 'production' ? 'side-bar-live-testing' : undefined}
+            />
+          ),
+          style: { borderRadius: '6px' },
+        },
+      ],
     },
     {
-      key: 'project',
-      icon: collapsed ? (
-        <StyledIconLink
-          selected={router.asPath === `/dashboard/${orgId}/projects`}
-          href={`/dashboard/${orgId}/projects`}
-        >
-          <ProjectOutlined />
-        </StyledIconLink>
-      ) : undefined,
-      label: collapsed ? (
-        t('organization:projectPageTitle')
-      ) : (
-        <SideBarMenu
-          icon={<ProjectOutlined style={{ fontSize: '1.2rem' }} />}
-          path={`/dashboard/${orgId}/projects`}
-          text={t('organization:projectPageTitle')}
-          accessId={process.env.NEXT_PUBLIC_ENV !== 'production' ? 'side-bar-project' : undefined}
-        />
-      ),
-      style: { borderRadius: '6px' },
-    },
-    // IS_CLOUD
-    //   ? null
-    //   : {
-    //       key: 'device-farm',
-    //       icon: collapsed ? (
-    //         <StyledIconLink
-    //           selected={router.asPath.startsWith(`/dashboard/${orgId}/device-farm`)}
-    //           href={`/dashboard/${orgId}/device-farm/hosts`}
-    //         >
-    //           <ClusterOutlined />
-    //         </StyledIconLink>
-    //       ) : undefined,
-    //       label: collapsed ? (
-    //         t('organization:deviceFarmPageTitle')
-    //       ) : (
-    //         <SideBarMenu
-    //           icon={<ClusterOutlined style={{ fontSize: '1.2rem' }} />}
-    //           path={`/dashboard/${orgId}/device-farm/hosts`}
-    //           text={t('organization:deviceFarmPageTitle')}
-    //           startWith={`/dashboard/${orgId}/device-farm`}
-    //           accessId="side-bar-device-farm"
-    //         />
-    //       ),
-    //       style: { borderRadius: '6px' },
-    //     },
-    {
-      key: 'device-farm',
-      icon: collapsed ? (
-        <StyledIconLink
-          selected={router.asPath.startsWith(`/dashboard/${orgId}/device-farm`)}
-          href={`/dashboard/${orgId}/device-farm/hosts`}
-        >
-          <ClusterOutlined />
-        </StyledIconLink>
-      ) : undefined,
-      label: collapsed ? (
-        t('organization:deviceFarmPageTitle')
-      ) : (
-        <SideBarMenu
-          icon={<ClusterOutlined style={{ fontSize: '1.2rem' }} />}
-          path={`/dashboard/${orgId}/device-farm/hosts`}
-          text={t('organization:deviceFarmPageTitle')}
-          startWith={`/dashboard/${orgId}/device-farm`}
-          accessId="side-bar-device-farm"
-        />
-      ),
-      style: { borderRadius: '6px' },
-    },
-    { type: 'divider' },
-    {
-      key: 'member',
-      icon: collapsed ? (
-        <StyledIconLink
-          selected={router.asPath.startsWith(`/dashboard/${orgId}/members`)}
-          href={`/dashboard/${orgId}/members`}
-        >
-          <UserOutlined />
-        </StyledIconLink>
-      ) : undefined,
-      label: collapsed ? (
-        t('organization:memberPageTitle')
-      ) : (
-        <SideBarMenu
-          icon={<UserOutlined style={{ fontSize: '1.2rem' }} />}
-          path={`/dashboard/${orgId}/members`}
-          text={t('organization:memberPageTitle')}
-          startWith={`/dashboard/${orgId}/members`}
-          accessId={process.env.NEXT_PUBLIC_ENV !== 'production' ? 'side-bar-member' : undefined}
-        />
-      ),
-      style: { borderRadius: '6px' },
+      type: 'group',
+      label: collapsed ? null : 'Self Device',
+      children: [
+        {
+          key: 'project',
+          icon: collapsed ? (
+            <StyledIconLink
+              selected={router.asPath === `/dashboard/${orgId}/projects`}
+              href={`/dashboard/${orgId}/projects`}
+            >
+              <ProjectOutlined />
+            </StyledIconLink>
+          ) : undefined,
+          label: collapsed ? (
+            t('organization:projectPageTitle')
+          ) : (
+            <SideBarMenu
+              icon={<ProjectOutlined style={{ fontSize: '1.2rem' }} />}
+              path={`/dashboard/${orgId}/projects`}
+              text={t('organization:projectPageTitle')}
+              accessId={process.env.NEXT_PUBLIC_ENV !== 'production' ? 'side-bar-project' : undefined}
+            />
+          ),
+          style: { borderRadius: '6px' },
+        },
+        // IS_CLOUD
+        //   ? null
+        //   : {
+        //       key: 'device-farm',
+        //       icon: collapsed ? (
+        //         <StyledIconLink
+        //           selected={router.asPath.startsWith(`/dashboard/${orgId}/device-farm`)}
+        //           href={`/dashboard/${orgId}/device-farm/hosts`}
+        //         >
+        //           <ClusterOutlined />
+        //         </StyledIconLink>
+        //       ) : undefined,
+        //       label: collapsed ? (
+        //         t('organization:deviceFarmPageTitle')
+        //       ) : (
+        //         <SideBarMenu
+        //           icon={<ClusterOutlined style={{ fontSize: '1.2rem' }} />}
+        //           path={`/dashboard/${orgId}/device-farm/hosts`}
+        //           text={t('organization:deviceFarmPageTitle')}
+        //           startWith={`/dashboard/${orgId}/device-farm`}
+        //           accessId="side-bar-device-farm"
+        //         />
+        //       ),
+        //       style: { borderRadius: '6px' },
+        //     },
+        {
+          key: 'device-farm',
+          icon: collapsed ? (
+            <StyledIconLink
+              selected={router.asPath.startsWith(`/dashboard/${orgId}/device-farm`)}
+              href={`/dashboard/${orgId}/device-farm/hosts`}
+            >
+              <ClusterOutlined />
+            </StyledIconLink>
+          ) : undefined,
+          label: collapsed ? (
+            t('organization:deviceFarmPageTitle')
+          ) : (
+            <SideBarMenu
+              icon={<ClusterOutlined style={{ fontSize: '1.2rem' }} />}
+              path={`/dashboard/${orgId}/device-farm/hosts`}
+              text={t('organization:deviceFarmPageTitle')}
+              startWith={`/dashboard/${orgId}/device-farm`}
+              accessId="side-bar-device-farm"
+            />
+          ),
+          style: { borderRadius: '6px' },
+        },
+      ],
     },
     {
-      key: 'team',
-      icon: collapsed ? (
-        <StyledIconLink
-          selected={router.asPath.startsWith(`/dashboard/${orgId}/teams`)}
-          href={`/dashboard/${orgId}/teams`}
-        >
-          <TeamOutlined />
-        </StyledIconLink>
-      ) : undefined,
-      label: collapsed ? (
-        t('organization:teamPageTitle')
-      ) : (
-        <SideBarMenu
-          icon={<TeamOutlined style={{ fontSize: '1.2rem' }} />}
-          path={`/dashboard/${orgId}/teams`}
-          text={t('organization:teamPageTitle')}
-          startWith={`/dashboard/${orgId}/teams`}
-          accessId={process.env.NEXT_PUBLIC_ENV !== 'production' ? 'side-bar-team' : undefined}
-        />
-      ),
-      style: { borderRadius: '6px' },
-    },
-    { type: 'divider' },
-    {
-      key: 'settings',
-      icon: collapsed ? (
-        <StyledIconLink
-          selected={router.asPath === `/dashboard/${orgId}/settings`}
-          href={`/dashboard/${orgId}/settings`}
-        >
-          <SettingOutlined />
-        </StyledIconLink>
-      ) : undefined,
-      label: collapsed ? (
-        t('organization:organizationSettingPageTitle')
-      ) : (
-        <SideBarMenu
-          icon={<SettingOutlined style={{ fontSize: '1.2rem' }} />}
-          path={`/dashboard/${orgId}/settings`}
-          text={t('organization:organizationSettingPageTitle')}
-          accessId={process.env.NEXT_PUBLIC_ENV !== 'production' ? 'side-bar-setting' : undefined}
-        />
-      ),
-      style: { borderRadius: '6px' },
+      type: 'group',
+      label: collapsed ? null : 'General',
+      children: [
+        {
+          key: 'member',
+          icon: collapsed ? (
+            <StyledIconLink
+              selected={router.asPath.startsWith(`/dashboard/${orgId}/members`)}
+              href={`/dashboard/${orgId}/members`}
+            >
+              <UserOutlined />
+            </StyledIconLink>
+          ) : undefined,
+          label: collapsed ? (
+            t('organization:memberPageTitle')
+          ) : (
+            <SideBarMenu
+              icon={<UserOutlined style={{ fontSize: '1.2rem' }} />}
+              path={`/dashboard/${orgId}/members`}
+              text={t('organization:memberPageTitle')}
+              startWith={`/dashboard/${orgId}/members`}
+              accessId={process.env.NEXT_PUBLIC_ENV !== 'production' ? 'side-bar-member' : undefined}
+            />
+          ),
+          style: { borderRadius: '6px' },
+        },
+        {
+          key: 'team',
+          icon: collapsed ? (
+            <StyledIconLink
+              selected={router.asPath.startsWith(`/dashboard/${orgId}/teams`)}
+              href={`/dashboard/${orgId}/teams`}
+            >
+              <TeamOutlined />
+            </StyledIconLink>
+          ) : undefined,
+          label: collapsed ? (
+            t('organization:teamPageTitle')
+          ) : (
+            <SideBarMenu
+              icon={<TeamOutlined style={{ fontSize: '1.2rem' }} />}
+              path={`/dashboard/${orgId}/teams`}
+              text={t('organization:teamPageTitle')}
+              startWith={`/dashboard/${orgId}/teams`}
+              accessId={process.env.NEXT_PUBLIC_ENV !== 'production' ? 'side-bar-team' : undefined}
+            />
+          ),
+          style: { borderRadius: '6px' },
+        },
+        {
+          key: 'settings',
+          icon: collapsed ? (
+            <StyledIconLink
+              selected={router.asPath === `/dashboard/${orgId}/settings`}
+              href={`/dashboard/${orgId}/settings`}
+            >
+              <SettingOutlined />
+            </StyledIconLink>
+          ) : undefined,
+          label: collapsed ? (
+            t('organization:organizationSettingPageTitle')
+          ) : (
+            <SideBarMenu
+              icon={<SettingOutlined style={{ fontSize: '1.2rem' }} />}
+              path={`/dashboard/${orgId}/settings`}
+              text={t('organization:organizationSettingPageTitle')}
+              accessId={process.env.NEXT_PUBLIC_ENV !== 'production' ? 'side-bar-setting' : undefined}
+            />
+          ),
+          style: { borderRadius: '6px' },
+        },
+      ],
     },
   ];
 

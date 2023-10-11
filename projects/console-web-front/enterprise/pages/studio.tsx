@@ -16,13 +16,13 @@ export interface StudioTestingPageProps {
   feature: FeatureTableBase;
 }
 
-export const getStudioTestingLayout = (page: React.ReactElement<StudioTestingPageProps>) => {
+export interface CloudStudioTestingPageProps extends Omit<StudioTestingPageProps, 'project'> {}
+
+export const getStudioTestingLayout = (
+  page: React.ReactElement<StudioTestingPageProps | CloudStudioTestingPageProps>,
+) => {
   return (
-    <StudioLayout
-      editionType={page.props.feature.defaultEdition}
-      project={page.props.project}
-      deviceId={page.props.deviceId}
-    >
+    <StudioLayout editionType={page.props.feature.defaultEdition} deviceId={page.props.deviceId}>
       {page}
     </StudioLayout>
   );
@@ -49,6 +49,39 @@ export const getStudioTestingServerSideProps: GetServerSideProps<StudioTestingPa
       props: {
         organization,
         project,
+        me: user,
+        deviceId,
+        feature: featureConfig,
+      },
+    };
+  } catch (e) {
+    return {
+      notFound: true,
+    };
+  }
+};
+
+export const getCloudDeviceStudioTestingServerSideProps: GetServerSideProps<CloudStudioTestingPageProps> = async (
+  context,
+) => {
+  const deviceId = context.query.deviceId as DeviceId | undefined;
+
+  if (!deviceId) {
+    return {
+      notFound: true,
+    };
+  }
+
+  try {
+    const [organization, user, featureConfig] = await Promise.all([
+      getOrganizationInServerSide(context),
+      getUserInServerSide(context),
+      getFeatureConfigInServerSide(context),
+    ]);
+
+    return {
+      props: {
+        organization,
         me: user,
         deviceId,
         feature: featureConfig,
