@@ -196,10 +196,7 @@ export class ProcessProfiler implements AndroidAdbProfiler {
 export class BlockDeveloperOptionsProfiler implements AndroidAdbProfiler {
   async profile(params: AndroidAdbProfilerParams): Promise<Partial<RuntimeInfo>> {
     const { serial, context, appium } = params;
-    const foregroundApps = (await context.queryForegroundPackage()).filter((x) => x.displayId === 0);
-    const developerAppInfo = foregroundApps.find(
-      (app) => app.packageName.startsWith('com.android.settings') && (app.activity.endsWith('SubSettings') || app.activity.endsWith('DevelopmentSettings')),
-    );
+    const developerAppInfo = this.findDeveloperAppOptionsAppInfo(await context.queryForegroundPackage());
     if (!developerAppInfo) {
       return {};
     }
@@ -207,10 +204,27 @@ export class BlockDeveloperOptionsProfiler implements AndroidAdbProfiler {
     if (!devOptionsTitle) {
       return {};
     }
+    if (devOptionsTitle.error) {
+      return {};
+    }
 
-    // const pagesource = await appium.getPageSource();
+    const againDeveloperAppInfo = this.findDeveloperAppOptionsAppInfo(await Adb.getForegroundPackage(serial));
+    if (!againDeveloperAppInfo) {
+      return {};
+    }
+
     await Adb.killPackage(serial, developerAppInfo.packageName);
     return {};
+  }
+
+  private findDeveloperAppOptionsAppInfo(focusedAppInfos: FocusedAppInfo[]): FocusedAppInfo | undefined {
+    const filtered = focusedAppInfos.filter(
+      (app) => app.displayId === 0 && app.packageName.startsWith('com.android.settings') && (app.activity.endsWith('SubSettings') || app.activity.endsWith('DevelopmentSettings')),
+    );
+    if (0 === filtered.length) {
+      return undefined;
+    }
+    return filtered[0];
   }
 }
 

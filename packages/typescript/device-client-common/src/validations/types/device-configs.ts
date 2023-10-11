@@ -84,7 +84,7 @@ export function DefaultDeviceConfig(platform: Platform): DeviceConfigDto {
           { profileMethod: ProfileMethods.Android.NetTrafficStats, periodSec: 3 },
           { profileMethod: ProfileMethods.Android.ProcessShellTop, periodSec: 3 },
           { profileMethod: ProfileMethods.Android.Display, periodSec: 3 },
-          { profileMethod: ProfileMethods.Android.BlockDeveloperOptions, periodSec: 2 },
+          { profileMethod: ProfileMethods.Android.BlockDeveloperOptions, periodSec: 1 },
         ],
       };
     case Platform.PLATFORM_IOS:

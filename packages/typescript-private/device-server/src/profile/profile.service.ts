@@ -79,7 +79,7 @@ export class ProfileService {
         if (!timeChecker.isTimeHasCome) continue;
         toUpdateMethods.push(method.profileMethod);
       }
-      if (0 == toUpdateMethods.length) {
+      if (0 === toUpdateMethods.length) {
         return;
       }
       return Promise.resolve(channel.queryProfile(toUpdateMethods));
@@ -93,7 +93,7 @@ export class ProfileService {
           queryPromise: query(channel, this.configService, this.devceTimeCheckers),
         };
       })
-      .filter((query) => query.queryPromise !== undefined) as { serial: Serial; queryPromise: Promise<FilledRuntimeInfo> }[];
+      .filter((query) => query.queryPromise !== undefined) as { serial: Serial; queryPromise: Promise<RuntimeInfo> }[];
     const results = await Promise.allSettled(queries.map((query) => query.queryPromise));
     if (queries.length !== results.length) {
       throw new Error(`DevicesStatus.queryRuntimePoints queries.length !== results.length`);

@@ -535,7 +535,7 @@ export class AppiumContextImpl implements AppiumContext {
   async findByText(text: string): Promise<WDIOElement | undefined> {
     if (this.options.platform === Platform.PLATFORM_ANDROID) {
       try {
-        const selector = `new UiSelector().text("${text}")`;
+        const selector = `new UiSelector().className("android.widget.TextView").text("${text}")`;
         const elem = await this.data.client.driver.$(`android=${selector}`);
         return elem;
       } catch (e) {
