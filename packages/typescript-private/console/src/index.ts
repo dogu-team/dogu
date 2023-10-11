@@ -72,6 +72,7 @@ export * from './base/user-email-preference';
 export * from './base/user-key';
 export * from './base/user-sns';
 export * from './dto/change-log/change-log.dto';
+export * from './dto/cloud-device/cloud-device.dto';
 export * from './dto/device-tag/device-tag.dto';
 export * from './dto/device/device-response.dto';
 export * from './dto/device/device.dto';
