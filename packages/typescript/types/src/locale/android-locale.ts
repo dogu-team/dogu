@@ -81,6 +81,7 @@ export const AndroidLocaleCandidates = [
   'te', // Telugu
   'th', // Thai
   'tl', // Filipino
+  'fil', // Filipino
   'tr', // Turkish
   'uk', // Ukrainian
   'ur', // Urdu
