@@ -17284,6 +17284,7 @@ __metadata:
     prettier-package-json: 2.8.0
     redis-cli: 2.1.2
     shelljs: 0.8.5
+    shx: 0.3.4
     tar: 6.1.15
     timeout-cli: 0.3.2
     tree-kill: 1.2.2
