@@ -24,7 +24,7 @@ const StudioLayout = ({ children, device, editionType }: Props) => {
   return (
     <>
       <Head>
-        <title>Studio - {device?.name} | Dogu</title>t
+        <title>Studio - {device?.modelName ?? device?.name} | Dogu</title>t
       </Head>
       <Box>
         <Header

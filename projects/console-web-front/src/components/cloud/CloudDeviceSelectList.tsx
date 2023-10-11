@@ -3,12 +3,29 @@ import { Platform } from '@dogu-private/types';
 import useSWR from 'swr';
 import styled from 'styled-components';
 import { List, Button } from 'antd';
+import { useRouter } from 'next/router';
 
 import { swrAuthFetcher } from '../../api/index';
 import { flexRowBaseStyle, listItemStyle, tableCellStyle, tableHeaderStyle } from '../../styles/box';
 import PlatformIcon from '../device/PlatformIcon';
+import { isAxiosError } from 'axios';
+import { sendErrorNotification } from '../../utils/antd';
+import { getErrorMessageFromAxios } from '../../utils/error';
 
 const SelectItem: React.FC<{ item: CloudDeviceByModelResponse; platform: Platform }> = ({ item, platform }) => {
+  const router = useRouter();
+
+  const handleStart = async () => {
+    try {
+      const deviceId = '42689e8e-231d-454e-9a9f-3c795a872985';
+      window.open(`/dashboard/${router.query.orgId}/live-testing/${deviceId}`, '_blank');
+    } catch (e) {
+      if (isAxiosError(e)) {
+        sendErrorNotification(`Cannot start device: ${getErrorMessageFromAxios(e)}`);
+      }
+    }
+  };
+
   return (
     <Item>
       <ItemInner>
@@ -17,7 +34,7 @@ const SelectItem: React.FC<{ item: CloudDeviceByModelResponse; platform: Platfor
           &nbsp;{item.version}
         </OneSpan>
         <ButtonWrapper>
-          <Button type="primary" disabled={item.usageState !== DeviceUsageState.available}>
+          <Button type="primary" disabled={item.usageState !== DeviceUsageState.available} onClick={handleStart}>
             Start
           </Button>
         </ButtonWrapper>
