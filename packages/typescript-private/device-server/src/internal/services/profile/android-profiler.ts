@@ -1,5 +1,6 @@
 import { ProfileMethod, ProfileMethodKind, RuntimeInfo, Serial } from '@dogu-private/types';
 import { loop } from '@dogu-tech/common';
+import { AppiumContext } from '../../../appium/appium.context';
 import { logger } from '../../../logger/logger.instance';
 import { FocusedAppInfo } from '../../externals/cli/adb/adb';
 import { Adb, AndroidShellTopInfo, AndroidShellTopProcInfo, DefaultAndroidShellTopInfo } from '../../externals/index';
@@ -61,12 +62,19 @@ class AndroidAdbProfileContext {
   }
 }
 
+interface AndroidAdbProfilerParams {
+  serial: Serial;
+  context: AndroidAdbProfileContext;
+  appium: AppiumContext;
+}
+
 interface AndroidAdbProfiler {
-  profile(serial: Serial, context: AndroidAdbProfileContext): Promise<Partial<RuntimeInfo>>;
+  profile(params: AndroidAdbProfilerParams): Promise<Partial<RuntimeInfo>>;
 }
 
 export class CpuProfiler implements AndroidAdbProfiler {
-  async profile(serial: Serial, context: AndroidAdbProfileContext): Promise<Partial<RuntimeInfo>> {
+  async profile(params: AndroidAdbProfilerParams): Promise<Partial<RuntimeInfo>> {
+    const { context } = params;
     const topInfo = await context.queryShellTopInfo();
     return {
       cpues: [
@@ -86,7 +94,8 @@ export class CpuProfiler implements AndroidAdbProfiler {
 }
 
 export class MemProfiler implements AndroidAdbProfiler {
-  async profile(serial: Serial, context: AndroidAdbProfileContext): Promise<Partial<RuntimeInfo>> {
+  async profile(params: AndroidAdbProfilerParams): Promise<Partial<RuntimeInfo>> {
+    const { serial, context } = params;
     const procMeminfo = await Adb.getProcMemInfo(serial);
     return {
       mems: [
@@ -108,7 +117,8 @@ export class MemProfiler implements AndroidAdbProfiler {
 }
 
 export class FsProfiler implements AndroidAdbProfiler {
-  async profile(serial: Serial, context: AndroidAdbProfileContext): Promise<Partial<RuntimeInfo>> {
+  async profile(params: AndroidAdbProfilerParams): Promise<Partial<RuntimeInfo>> {
+    const { serial, context } = params;
     const dfInfos = (await Adb.getDfInfo(serial)).filter((x) => x.Mounted.startsWith('/data') || x.Mounted.startsWith('/storage'));
     const procDiskstats = await Adb.getProcDiskstats(serial);
     if (0 == procDiskstats.length) {
@@ -136,7 +146,8 @@ export class FsProfiler implements AndroidAdbProfiler {
 }
 
 export class ProcessProfiler implements AndroidAdbProfiler {
-  async profile(serial: Serial, context: AndroidAdbProfileContext): Promise<Partial<RuntimeInfo>> {
+  async profile(params: AndroidAdbProfilerParams): Promise<Partial<RuntimeInfo>> {
+    const { serial, context } = params;
     const topInfo = await context.queryShellTopInfo();
     const foregroundApps = (await context.queryForegroundPackage()).filter((x) => x.displayId === 0);
     const procs: AndroidShellTopProcInfo[] = [];
@@ -183,16 +194,23 @@ export class ProcessProfiler implements AndroidAdbProfiler {
 }
 
 export class BlockDeveloperOptionsProfiler implements AndroidAdbProfiler {
-  async profile(serial: Serial, context: AndroidAdbProfileContext): Promise<Partial<RuntimeInfo>> {
+  async profile(params: AndroidAdbProfilerParams): Promise<Partial<RuntimeInfo>> {
+    const { serial, context, appium } = params;
     const foregroundApps = (await context.queryForegroundPackage()).filter((x) => x.displayId === 0);
     const developerAppInfo = foregroundApps.find(
       (app) => app.packageName.startsWith('com.android.settings') && (app.activity.endsWith('SubSettings') || app.activity.endsWith('DevelopmentSettings')),
     );
     if (!developerAppInfo) {
-      return Promise.resolve({});
+      return {};
     }
+    const devOptionsTitle = await appium.findByText('Developer options');
+    if (!devOptionsTitle) {
+      return {};
+    }
+
+    // const pagesource = await appium.getPageSource();
     await Adb.killPackage(serial, developerAppInfo.packageName);
-    return Promise.resolve({});
+    return {};
   }
 }
 
@@ -204,6 +222,8 @@ export class AndroidAdbProfileService implements ProfileService {
     [ProfileMethodKind.PROFILE_METHOD_KIND_ANDROID_PROCESS_SHELLTOP, new ProcessProfiler()],
     [ProfileMethodKind.PROFILE_METHOD_KIND_ANDROID_BLOCK_DEVELOPER_OPTIONS, new BlockDeveloperOptionsProfiler()],
   ]);
+
+  constructor(private readonly appium: AppiumContext) {}
 
   async profile(serial: Serial, methods: ProfileMethod[]): Promise<Partial<RuntimeInfo>> {
     const profilers = methods
@@ -226,7 +246,7 @@ export class AndroidAdbProfileService implements ProfileService {
       })
       .filter((profiler) => profiler !== undefined) as AndroidAdbProfiler[];
     const context = new AndroidAdbProfileContext(serial);
-    const results = await Promise.allSettled(profilers.map((profiler) => profiler.profile(serial, context)));
+    const results = await Promise.allSettled(profilers.map((profiler) => profiler.profile({ serial, context, appium: this.appium })));
     const result = results.reduce((acc, cur) => {
       if (cur.status === 'fulfilled') {
         return { ...acc, ...cur.value };

@@ -147,7 +147,7 @@ export class AndroidChannel implements DeviceChannel {
       systemInfo,
       systemInfoService,
       deviceAgent,
-      [new AndroidAdbProfileService(), new AndroidDisplayProfileService(deviceAgent)],
+      [new AndroidAdbProfileService(appiumContextProxy), new AndroidDisplayProfileService(deviceAgent)],
       streaming,
       appiumContextProxy,
       appiumDeviceWebDriverHandler,
