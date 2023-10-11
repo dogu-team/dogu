@@ -1,18 +1,19 @@
-import { CloudDeviceMetadataBase, DeviceUsageState, PageBase } from '@dogu-private/console';
+import { CloudDeviceMetadataBase, DeviceUsageState, PageBase, ceilDeviceMemory } from '@dogu-private/console';
 import { List, Button, Modal } from 'antd';
 import { useRouter } from 'next/router';
 import useSWR from 'swr';
 import styled from 'styled-components';
 import Image from 'next/image';
+import { shallow } from 'zustand/shallow';
 
 import { swrAuthFetcher } from '../../api';
 import { flexRowBaseStyle, listItemStyle, tableCellStyle, tableHeaderStyle } from '../../styles/box';
-import { convertByteToGigaByte } from '../../utils/unit';
 import { deviceBrandMapper } from '../../resources/device/brand';
 import useRefresh from '../../hooks/useRefresh';
 import useModal from '../../hooks/useModal';
 import PlatformIcon from '../device/PlatformIcon';
 import CloudDeviceVersionList from './CloudDeviceSelectList';
+import useCloudDeviceFilterStore from '../../stores/cloud-device-filter';
 
 const DeviceItem: React.FC<{ device: CloudDeviceMetadataBase }> = ({ device }) => {
   const [isOpen, openModal, closeModal] = useModal();
@@ -29,7 +30,7 @@ const DeviceItem: React.FC<{ device: CloudDeviceMetadataBase }> = ({ device }) =
           <OneSpan>
             {device.resolutionWidth} * {device.resolutionHeight}
           </OneSpan>
-          <OneSpan>{isNaN(Number(device.memory)) ? '-' : `${convertByteToGigaByte(Number(device.memory))}GB`}</OneSpan>
+          <OneSpan>{Number(device.memory) ? `${ceilDeviceMemory(Number(device.memory))}` : '-'}</OneSpan>
           <ButtonWrapper>
             <Button
               type="primary"
@@ -71,8 +72,10 @@ interface Props {}
 
 const LiveTestingCloudDeviceList: React.FC<Props> = () => {
   const router = useRouter();
+  const { keyword } = useCloudDeviceFilterStore((state) => state.filterValue, shallow);
+  console.log(keyword);
   const { data, error, isLoading, mutate } = useSWR<PageBase<CloudDeviceMetadataBase>>(
-    `/cloud-devices?page=${Number(router.query.page) || 1}`,
+    `/cloud-devices?page=${Number(router.query.page) || 1}&keyword=${keyword}`,
     swrAuthFetcher,
     { keepPreviousData: true, revalidateOnFocus: false },
   );

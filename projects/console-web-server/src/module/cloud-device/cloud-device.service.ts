@@ -16,8 +16,15 @@ export class CloudDeviceService {
   ) {}
 
   async findCloudDevices(dto: FindCloudDevicesDto): Promise<Page<CloudDeviceMetadataBase>> {
+    const { keyword } = dto;
+
+    const modelFilterClause = keyword ? `device.${DevicePropCamel.model} ~* :keyword` : '1=1';
+    const modelNameFilterClause = keyword ? `device.${DevicePropCamel.modelName} ~* :keyword` : '1=1';
+    const manufacturerFilterClause = keyword ? `device.${DevicePropCamel.manufacturer} ~* :keyword` : '1=1';
+
     const query = this.createCloudDeviceDefaultQuery()
       .andWhere(`device.${DevicePropCamel.model} IN (SELECT DISTINCT device.${DevicePropCamel.model} FROM device)`) // Subquery to select distinct models
+      .andWhere(`(${modelFilterClause} OR ${modelNameFilterClause} OR ${manufacturerFilterClause})`, { keyword: `.*${keyword}.*` })
       .skip(dto.getDBOffset())
       .take(dto.getDBLimit());
 

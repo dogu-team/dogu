@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import Head from 'next/head';
-import { Divider } from 'antd';
+import { Divider, Input } from 'antd';
 
 import { NextPageWithLayout } from 'pages/_app';
 import ConsoleLayout from 'src/components/layouts/ConsoleLayout';
@@ -11,6 +11,7 @@ import RefreshButton from '../../../../src/components/buttons/RefreshButton';
 import { flexRowSpaceBetweenStyle } from '../../../../src/styles/box';
 import LiveChat from '../../../../src/components/external/livechat';
 import LiveTestingCloudDeviceList from '../../../../src/components/cloud/LiveTestingCloudDeviceList';
+import CloudDeviceFilter from '../../../../src/components/cloud/CloudDeviceFilter';
 
 const OrganizationLiveTestingPage: NextPageWithLayout<OrganizationServerSideProps> = ({ user, organization }) => {
   const hasUsingDevices = true;
@@ -37,7 +38,9 @@ const OrganizationLiveTestingPage: NextPageWithLayout<OrganizationServerSideProp
       <TableListView
         top={
           <FlexBox>
-            <div></div>
+            <div>
+              <CloudDeviceFilter />
+            </div>
             <RefreshButton />
           </FlexBox>
         }

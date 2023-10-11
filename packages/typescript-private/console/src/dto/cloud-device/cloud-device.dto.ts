@@ -1,3 +1,5 @@
 import { PageDtoBase } from '../pagination/page.dto';
 
-export interface FindCloudDevicesDtoBase extends PageDtoBase {}
+export interface FindCloudDevicesDtoBase extends PageDtoBase {
+  keyword: string;
+}
