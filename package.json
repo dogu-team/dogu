@@ -27,7 +27,7 @@
     "publish:npm:dev": "cross-env DOGU_RUN_TYPE=development turbo run publish:npm",
     "publish:npm:prod": "cross-env DOGU_RUN_TYPE=production turbo run publish:npm",
     "rebuild": "yarn run clean && yarn run build --force",
-    "rebuild:archive": "turbo run rebuild:archive --force",
+    "rebuild:archive": "turbo run clean:archive --force && turbo run build:archive --force",
     "rebuild:packages": "yarn run clean:packages && yarn run build:packages --force",
     "reset": "yarn run clean-lock && yarn install && yarn run rebuild",
     "show": "yarn workspaces list",
