@@ -11,44 +11,44 @@ import { AndroidAdbProfiler, AndroidAdbProfilerParams } from './android-profiler
 
 interface Fragment {
   type: 'developer-options' | 'lock-screen';
-  venger: 'samsung' | 'google' | 'unknown';
+  vender: 'samsung' | 'google' | 'unknown';
   fragmentName: string;
 }
 
 const blockFragments: Fragment[] = [
   {
     type: 'developer-options',
-    venger: 'samsung',
+    vender: 'samsung',
     fragmentName: 'com.android.settings.development.DevelopmentSettingsDashboardFragment',
   },
   {
     type: 'lock-screen',
-    venger: 'samsung',
+    vender: 'samsung',
     fragmentName: 'com.samsung.android.settings.lockscreen.LockScreenSettings',
   },
   {
     type: 'developer-options',
-    venger: 'google',
+    vender: 'google',
     fragmentName: 'com.android.settings.development.DevelopmentSettingsDashboardFragment',
   },
   {
     type: 'lock-screen',
-    venger: 'google',
+    vender: 'google',
     fragmentName: 'com.android.settings.security.SecuritySettings',
   },
   {
     type: 'lock-screen',
-    venger: 'unknown',
+    vender: 'unknown',
     fragmentName: 'com.android.settings.password.ChooseLockGeneric$ChooseLockGenericFragment',
   },
   {
     type: 'lock-screen',
-    venger: 'unknown',
+    vender: 'unknown',
     fragmentName: 'com.android.settings.password.ChooseLockPattern$ChooseLockPatternFragment',
   },
   {
     type: 'lock-screen',
-    venger: 'unknown',
+    vender: 'unknown',
     fragmentName: 'com.android.settings.password.ChooseLockPassword$ChooseLockPasswordFragment',
   },
 ];

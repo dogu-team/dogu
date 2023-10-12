@@ -533,7 +533,6 @@ export class AppiumContextImpl implements AppiumContext {
   }
 
   async select(selector: string): Promise<WDIOElement | undefined> {
-    this.data.client.driver;
     try {
       const elem = await this.data.client.driver.$(selector);
       return elem;
