@@ -23,7 +23,7 @@ const DeviceItem: React.FC<{ device: CloudDeviceMetadataBase }> = ({ device }) =
       <Item>
         <ItemInner>
           <OneSpan>{deviceBrandMapper[device.manufacturer] ?? device.manufacturer}</OneSpan>
-          <OneSpan>{device.modelName}</OneSpan>
+          <OneSpan>{device.modelName ?? device.model}</OneSpan>
           <OneSpan>
             <PlatformIcon platform={device.platform} />
           </OneSpan>
@@ -35,7 +35,7 @@ const DeviceItem: React.FC<{ device: CloudDeviceMetadataBase }> = ({ device }) =
             <Button
               type="primary"
               onClick={() => openModal()}
-              disabled={device.usageState !== DeviceUsageState.available}
+              disabled={device.usageState !== DeviceUsageState.AVAILABLE}
             >
               Start
             </Button>
@@ -73,7 +73,6 @@ interface Props {}
 const LiveTestingCloudDeviceList: React.FC<Props> = () => {
   const router = useRouter();
   const { keyword } = useCloudDeviceFilterStore((state) => state.filterValue, shallow);
-  console.log(keyword);
   const { data, error, isLoading, mutate } = useSWR<PageBase<CloudDeviceMetadataBase>>(
     `/cloud-devices?page=${Number(router.query.page) || 1}&keyword=${keyword}`,
     swrAuthFetcher,

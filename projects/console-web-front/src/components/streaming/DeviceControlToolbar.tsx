@@ -31,10 +31,11 @@ const ToolbarButton = ({ workingPlatforms, ...props }: ToolbarButtonProps) => {
   return <StyledToolbarButton tabIndex={-1} {...props} />;
 };
 
-const DeviceControlToolbar = () => {
-  const { deviceRTCCaller, device } = useDeviceStreamingContext();
-  const { handleToolMenuInput } = useDeviceInput(deviceRTCCaller ?? undefined);
+interface Props {
+  handleToolMenuInput: (e: React.MouseEvent<HTMLButtonElement>, menu: DeviceToolBarMenu) => void;
+}
 
+const DeviceControlToolbar: React.FC<Props> = ({ handleToolMenuInput }) => {
   return (
     <ToolbarBox>
       {/* volume buttons */}

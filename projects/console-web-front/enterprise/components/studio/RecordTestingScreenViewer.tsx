@@ -36,7 +36,10 @@ const RecordTestingScreenViewer = ({ project, caseId, stepId }: Props) => {
     handleMouseMove,
     handleMouseUp,
     handleWheel,
-  } = useDeviceInput(deviceRTCCaller ?? undefined);
+    handleBlur,
+    handleFocus,
+    handleToolMenuInput,
+  } = useDeviceInput(deviceRTCCaller ?? undefined, false);
   const fireEvent = useEventStore((state) => state.fireEvent, shallow);
 
   const handleClick = useCallback(
@@ -134,6 +137,18 @@ const RecordTestingScreenViewer = ({ project, caseId, stepId }: Props) => {
               handleClick(e, videoSize);
               return;
             }
+          }}
+          onFocus={(e) => {
+            if (isRecording) {
+              return;
+            }
+            handleFocus(e);
+          }}
+          onBlur={(e) => {
+            if (isRecording) {
+              return;
+            }
+            handleBlur(e);
           }}
         >
           {requestLoading && (

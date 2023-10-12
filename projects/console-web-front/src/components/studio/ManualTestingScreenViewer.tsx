@@ -9,9 +9,9 @@ import DeviceStreaming from '../streaming/DeviceStreaming';
 import InspectorSelectedNode from '../streaming/InspectorSelectedNode';
 import { VideoSize } from '../streaming/StreamingVideo';
 
-const ManualTestingScreenViewer = () => {
+const ManualTestingScreenViewer: React.FC = () => {
   const router = useRouter();
-  const { mode, loading, inspector, device, deviceRTCCaller, updateMode } = useDeviceStreamingContext();
+  const { mode, loading, inspector, device, deviceRTCCaller, updateMode, isCloudDevice } = useDeviceStreamingContext();
   const tab = (router.query.tab as StreamingTabMenuKey | undefined) ?? StreamingTabMenuKey.INFO;
   const {
     handleDoubleClick,
@@ -24,7 +24,8 @@ const ManualTestingScreenViewer = () => {
     handleWheel,
     handleFocus,
     handleBlur,
-  } = useDeviceInput(deviceRTCCaller ?? undefined);
+    handleToolMenuInput,
+  } = useDeviceInput(deviceRTCCaller ?? undefined, isCloudDevice ?? false);
 
   const handleMouseDownVideo = useCallback(
     (e: React.MouseEvent<HTMLTextAreaElement>, videoSize: VideoSize) => {
@@ -62,7 +63,7 @@ const ManualTestingScreenViewer = () => {
   return (
     <VideoWrapper>
       <DeviceStreaming.Video
-        rightSidebar={loading ? null : <DeviceStreaming.Controlbar />}
+        rightSidebar={loading ? null : <DeviceStreaming.Controlbar handleToolMenuInput={handleToolMenuInput} />}
         onKeyPress={handleKeyDown}
         onKeyDown={handleKeyDown}
         onKeyUp={handleKeyUp}

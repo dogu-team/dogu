@@ -1,24 +1,30 @@
 import { CloudDeviceMetadataBase, CloudDeviceByModelResponse, DeviceUsageState } from '@dogu-private/console';
-import { Platform } from '@dogu-private/types';
+import { OrganizationId, Platform } from '@dogu-private/types';
 import useSWR from 'swr';
 import styled from 'styled-components';
 import { List, Button } from 'antd';
 import { useRouter } from 'next/router';
+import { isAxiosError } from 'axios';
 
 import { swrAuthFetcher } from '../../api/index';
 import { flexRowBaseStyle, listItemStyle, tableCellStyle, tableHeaderStyle } from '../../styles/box';
 import PlatformIcon from '../device/PlatformIcon';
-import { isAxiosError } from 'axios';
 import { sendErrorNotification } from '../../utils/antd';
 import { getErrorMessageFromAxios } from '../../utils/error';
+import { createLiveTestingSession } from '../../api/live-session';
 
 const SelectItem: React.FC<{ item: CloudDeviceByModelResponse; platform: Platform }> = ({ item, platform }) => {
   const router = useRouter();
+  const organizationId = router.query.orgId as OrganizationId;
 
   const handleStart = async () => {
     try {
-      const deviceId = '42689e8e-231d-454e-9a9f-3c795a872985';
-      window.open(`/dashboard/${router.query.orgId}/live-testing/${deviceId}`, '_blank');
+      const session = await createLiveTestingSession({
+        organizationId,
+        deviceModel: item.model,
+        deviceVersion: item.version,
+      });
+      window.open(`/dashboard/${organizationId}/live-testing/${session.liveSessionId}/${session.deviceId}`, '_blank');
     } catch (e) {
       if (isAxiosError(e)) {
         sendErrorNotification(`Cannot start device: ${getErrorMessageFromAxios(e)}`);
@@ -34,7 +40,7 @@ const SelectItem: React.FC<{ item: CloudDeviceByModelResponse; platform: Platfor
           &nbsp;{item.version}
         </OneSpan>
         <ButtonWrapper>
-          <Button type="primary" disabled={item.usageState !== DeviceUsageState.available} onClick={handleStart}>
+          <Button type="primary" disabled={item.usageState !== DeviceUsageState.AVAILABLE} onClick={handleStart}>
             Start
           </Button>
         </ButtonWrapper>

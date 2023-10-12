@@ -25,6 +25,8 @@ export class CloudDeviceService {
     const query = this.createCloudDeviceDefaultQuery()
       .andWhere(`device.${DevicePropCamel.model} IN (SELECT DISTINCT device.${DevicePropCamel.model} FROM device)`) // Subquery to select distinct models
       .andWhere(`(${modelFilterClause} OR ${modelNameFilterClause} OR ${manufacturerFilterClause})`, { keyword: `.*${keyword}.*` })
+      .orderBy(`device.${DevicePropCamel.modelName}`, 'ASC')
+      .addOrderBy(`device.${DevicePropCamel.model}`, 'ASC')
       .skip(dto.getDBOffset())
       .take(dto.getDBLimit());
 
@@ -78,7 +80,6 @@ export class CloudDeviceService {
       .leftJoin('device.organization', 'organization')
       .where(`device.${DevicePropCamel.isHost} = :isHost`, { isHost: 0 })
       .andWhere(`device.${DevicePropCamel.isGlobal} = :isGlobal`, { isGlobal: 1 })
-      .andWhere(`device.${DevicePropCamel.connectionState} = :connectionState`, { connectionState: DeviceConnectionState.DEVICE_CONNECTION_STATE_CONNECTED })
       .andWhere(`organization.shareable = :shareable`, { shareable: true });
   }
 
@@ -87,20 +88,25 @@ export class CloudDeviceService {
     const query = this.createCloudDeviceDefaultQuery()
       .andWhere(`device.${DevicePropCamel.model} = :model`, { model: options.model })
       .andWhere(versionFilterClause, { version: options.version })
-      .select(['device.usageState']);
+      .select(['device.usageState', 'device.connectionState']);
 
     const devices = await query.getMany();
 
-    const hasAvailableDevice = devices.some((device) => device.usageState === DeviceUsageState.available);
+    const isOffline = devices.every((device) => device.connectionState !== DeviceConnectionState.DEVICE_CONNECTION_STATE_CONNECTED);
+    if (isOffline) {
+      return DeviceUsageState.IN_USE;
+    }
+
+    const hasAvailableDevice = devices.some((device) => device.usageState === DeviceUsageState.AVAILABLE);
     if (hasAvailableDevice) {
-      return DeviceUsageState.available;
+      return DeviceUsageState.AVAILABLE;
     }
 
-    const hasPreparingDevice = devices.some((device) => device.usageState === DeviceUsageState.preparing);
+    const hasPreparingDevice = devices.some((device) => device.usageState === DeviceUsageState.PREPARING);
     if (hasPreparingDevice) {
-      return DeviceUsageState.preparing;
+      return DeviceUsageState.PREPARING;
     }
 
-    return DeviceUsageState.busy;
+    return DeviceUsageState.IN_USE;
   }
 }

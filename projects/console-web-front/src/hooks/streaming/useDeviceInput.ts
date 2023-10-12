@@ -1,6 +1,7 @@
 import { Code, CodeUtil, input, PrivateProtocol } from '@dogu-private/types';
 import { DeviceRTCCaller } from '@dogu-private/webrtc';
-import { useCallback, useState } from 'react';
+import { useRouter } from 'next/router';
+import { useCallback, useEffect, useState } from 'react';
 
 import useStreamingOptionStore from 'src/stores/streaming-option';
 import {
@@ -10,7 +11,9 @@ import {
   mapWebKeyboardToDeviceKeyboard,
   mapWebMetaKeyToDeviceMetaState,
 } from 'src/utils/streaming/streaming';
+import useEventStore from '../../stores/events';
 import { sendErrorNotification } from '../../utils/antd';
+import useWebSocket from '../useWebSocket';
 
 type DeviceControlType = PrivateProtocol.DeviceControlType;
 const DeviceControlType = PrivateProtocol.DeviceControlType;
@@ -28,8 +31,30 @@ export interface DeviceInputOption {
   isDoubleClicked?: boolean;
 }
 
-const useDeviceInput = (deviceRTCCaller: DeviceRTCCaller | undefined) => {
+const useDeviceInput = (deviceRTCCaller: DeviceRTCCaller | undefined, isCloudDevice: boolean) => {
   const [isPressing, setIsPressing] = useState(false);
+  const router = useRouter();
+  const cloudHeartbeatSocketRef = useWebSocket(
+    isCloudDevice
+      ? `/live-session-heartbeat?organizationId=${router.query.orgId}&liveSessionId=${router.query.sessionId}`
+      : null,
+  );
+  const fireEvent = useEventStore((state) => state.fireEvent);
+
+  useEffect(() => {
+    if (cloudHeartbeatSocketRef.current) {
+      const handleClose = () => {
+        fireEvent('cloudHeartbeatSocketClosed');
+      };
+
+      cloudHeartbeatSocketRef.current.onclose = handleClose;
+      cloudHeartbeatSocketRef.current.onerror = handleClose;
+
+      return () => {
+        cloudHeartbeatSocketRef.current?.close();
+      };
+    }
+  });
 
   const handleControlResult = useCallback((result: CfGdcDaControlResult | null) => {
     if (result === null) {
@@ -80,9 +105,11 @@ const useDeviceInput = (deviceRTCCaller: DeviceRTCCaller | undefined) => {
         const result = await deviceRTCCaller.call('cfGdcDaControlParam', 'cfGdcDaControlResult', {
           control: c,
         });
+        cloudHeartbeatSocketRef.current?.send('input');
         handleControlResult(result);
       } catch (e) {}
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [deviceRTCCaller, handleControlResult],
   );
 
@@ -127,9 +154,11 @@ const useDeviceInput = (deviceRTCCaller: DeviceRTCCaller | undefined) => {
         const result = await deviceRTCCaller?.call('cfGdcDaControlParam', 'cfGdcDaControlResult', {
           control: c,
         });
+        cloudHeartbeatSocketRef.current?.send('input');
         handleControlResult(result);
       } catch (e) {}
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [deviceRTCCaller, handleControlResult],
   );
 
@@ -159,6 +188,7 @@ const useDeviceInput = (deviceRTCCaller: DeviceRTCCaller | undefined) => {
           const result = await deviceRTCCaller.call('cfGdcDaControlParam', 'cfGdcDaControlResult', {
             control: c,
           });
+          cloudHeartbeatSocketRef.current?.send('input');
           handleControlResult(result);
         } catch (e) {}
       }
@@ -179,6 +209,7 @@ const useDeviceInput = (deviceRTCCaller: DeviceRTCCaller | undefined) => {
         control: c,
       });
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [deviceRTCCaller, handleControlResult],
   );
 
@@ -252,8 +283,11 @@ const useDeviceInput = (deviceRTCCaller: DeviceRTCCaller | undefined) => {
         }
         handleControlResult(result);
       }
+
+      cloudHeartbeatSocketRef.current?.send('input');
       return;
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [deviceRTCCaller, handleControlResult],
   );
 
@@ -264,9 +298,11 @@ const useDeviceInput = (deviceRTCCaller: DeviceRTCCaller | undefined) => {
       }
 
       try {
+        cloudHeartbeatSocketRef.current?.send('input');
         handleKeyboardInput(event, false);
       } catch (e) {}
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [handleKeyboardInput],
   );
 
@@ -277,9 +313,11 @@ const useDeviceInput = (deviceRTCCaller: DeviceRTCCaller | undefined) => {
       }
 
       try {
+        cloudHeartbeatSocketRef.current?.send('input');
         handleKeyboardInput(event, true);
       } catch (e) {}
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [handleKeyboardInput],
   );
 
@@ -290,9 +328,11 @@ const useDeviceInput = (deviceRTCCaller: DeviceRTCCaller | undefined) => {
       }
 
       try {
+        cloudHeartbeatSocketRef.current?.send('input');
         handleScrollInput(event, videoSize);
       } catch (e) {}
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [handleScrollInput],
   );
 
@@ -305,6 +345,7 @@ const useDeviceInput = (deviceRTCCaller: DeviceRTCCaller | undefined) => {
       try {
         deviceRTCCaller?.setSendThrottleMs(33);
         setIsPressing(true);
+        cloudHeartbeatSocketRef.current?.send('input');
         handleTouchInput(event, {
           type: DeviceControlType.DEVICE_CONTROL_TYPE_AOS_INJECT_TOUCH_EVENT,
           action: DeviceControlAction.DEVICE_CONTROL_ACTION_DESKTOP_ACTION_DOWN_UNSPECIFIED,
@@ -312,6 +353,7 @@ const useDeviceInput = (deviceRTCCaller: DeviceRTCCaller | undefined) => {
         });
       } catch (e) {}
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [deviceRTCCaller, handleTouchInput],
   );
 
@@ -324,6 +366,7 @@ const useDeviceInput = (deviceRTCCaller: DeviceRTCCaller | undefined) => {
       try {
         deviceRTCCaller?.setSendThrottleMs(33);
         setIsPressing(false);
+        cloudHeartbeatSocketRef.current?.send('input');
         handleTouchInput(event, {
           type: DeviceControlType.DEVICE_CONTROL_TYPE_AOS_INJECT_TOUCH_EVENT,
           action: DeviceControlAction.DEVICE_CONTROL_ACTION_DESKTOP_ACTION_UP,
@@ -331,6 +374,7 @@ const useDeviceInput = (deviceRTCCaller: DeviceRTCCaller | undefined) => {
         });
       } catch (e) {}
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [deviceRTCCaller, handleTouchInput],
   );
 
@@ -343,6 +387,7 @@ const useDeviceInput = (deviceRTCCaller: DeviceRTCCaller | undefined) => {
       if (isPressing) {
         try {
           deviceRTCCaller?.setSendThrottleMs(33);
+          cloudHeartbeatSocketRef.current?.send('input');
           handleTouchInput(event, {
             type: DeviceControlType.DEVICE_CONTROL_TYPE_AOS_INJECT_TOUCH_EVENT,
             action: DeviceControlAction.DEVICE_CONTROL_ACTION_AOS_MOTIONEVENT_ACTION_MOVE,
@@ -351,6 +396,7 @@ const useDeviceInput = (deviceRTCCaller: DeviceRTCCaller | undefined) => {
         } catch (e) {}
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [deviceRTCCaller, handleTouchInput, isPressing],
   );
 
@@ -362,6 +408,7 @@ const useDeviceInput = (deviceRTCCaller: DeviceRTCCaller | undefined) => {
 
       try {
         setIsPressing(false);
+        cloudHeartbeatSocketRef.current?.send('input');
         handleTouchInput(event, {
           type: DeviceControlType.DEVICE_CONTROL_TYPE_AOS_INJECT_TOUCH_EVENT,
           action: DeviceControlAction.DEVICE_CONTROL_ACTION_AOS_KEYEVENT_ACTION_UP,
@@ -369,6 +416,7 @@ const useDeviceInput = (deviceRTCCaller: DeviceRTCCaller | undefined) => {
         });
       } catch (e) {}
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [handleTouchInput],
   );
 
@@ -379,6 +427,7 @@ const useDeviceInput = (deviceRTCCaller: DeviceRTCCaller | undefined) => {
       }
 
       try {
+        cloudHeartbeatSocketRef.current?.send('input');
         handleTouchInput(event, {
           type: DeviceControlType.DEVICE_CONTROL_TYPE_AOS_INJECT_TOUCH_EVENT,
           action: DeviceControlAction.DEVICE_CONTROL_ACTION_DESKTOP_ACTION_DOWNUP,
@@ -387,6 +436,7 @@ const useDeviceInput = (deviceRTCCaller: DeviceRTCCaller | undefined) => {
         });
       } catch (e) {}
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [handleTouchInput],
   );
 
@@ -411,6 +461,7 @@ const useDeviceInput = (deviceRTCCaller: DeviceRTCCaller | undefined) => {
           timeStamp: event.timeStamp,
         };
 
+        cloudHeartbeatSocketRef.current?.send('input');
         const result = await deviceRTCCaller.call('cfGdcDaControlParam', 'cfGdcDaControlResult', {
           control: c,
         });
@@ -418,6 +469,7 @@ const useDeviceInput = (deviceRTCCaller: DeviceRTCCaller | undefined) => {
         console.error(e);
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [deviceRTCCaller],
   );
 
@@ -442,6 +494,7 @@ const useDeviceInput = (deviceRTCCaller: DeviceRTCCaller | undefined) => {
           timeStamp: event.timeStamp,
         };
 
+        cloudHeartbeatSocketRef.current?.send('input');
         const result = await deviceRTCCaller.call('cfGdcDaControlParam', 'cfGdcDaControlResult', {
           control: c,
         });
@@ -449,6 +502,7 @@ const useDeviceInput = (deviceRTCCaller: DeviceRTCCaller | undefined) => {
         console.error(e);
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [deviceRTCCaller],
   );
 

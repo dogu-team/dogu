@@ -75,7 +75,10 @@ export type EventName =
   | 'onRecordStepDeleted'
 
   // license
-  | 'onLicenseUpdated';
+  | 'onLicenseUpdated'
+
+  // cloud
+  | 'cloudHeartbeatSocketClosed';
 
 interface EventStore {
   eventName: EventName | null;

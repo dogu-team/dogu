@@ -1,6 +1,6 @@
 import { DeviceBase } from '@dogu-private/console';
 import useTranslation from 'next-translate/useTranslation';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 import useDeviceClient from '../../hooks/streaming/useDeviceClient';
@@ -9,6 +9,7 @@ import useGamiumClient from '../../hooks/streaming/useGamiumClient';
 import useInspector from '../../hooks/streaming/useInspector';
 import useLocalDeviceDetect from '../../hooks/streaming/useLocalDeviceDetect';
 import useRTCConnection from '../../hooks/streaming/useRTCConnection';
+import useEventStore from '../../stores/events';
 import { StreamingMode } from '../../types/device';
 import ErrorBox from '../common/boxes/ErrorBox';
 import ApplicationUploader from './ApplicationUploader';
@@ -40,6 +41,18 @@ const DeviceStreaming = ({ device, children, pid, isCloudDevice }: Props) => {
   );
   const inspector = useInspector(deviceService?.deviceInspector, device ?? null, videoRef);
   const { t } = useTranslation();
+
+  useEffect(() => {
+    if (peerConnection) {
+      const unsub = useEventStore.subscribe(({ eventName }) => {
+        if (eventName === 'cloudHeartbeatSocketClosed') {
+          peerConnection.close();
+        }
+      });
+
+      return unsub;
+    }
+  }, [peerConnection]);
 
   if (error) {
     return (

@@ -1,6 +1,8 @@
+import { LiveSessionBase } from '@dogu-private/console';
 import styled from 'styled-components';
 import Head from 'next/head';
-import { Divider, Input } from 'antd';
+import { Divider } from 'antd';
+import useSWR from 'swr';
 
 import { NextPageWithLayout } from 'pages/_app';
 import ConsoleLayout from 'src/components/layouts/ConsoleLayout';
@@ -12,16 +14,27 @@ import { flexRowSpaceBetweenStyle } from '../../../../src/styles/box';
 import LiveChat from '../../../../src/components/external/livechat';
 import LiveTestingCloudDeviceList from '../../../../src/components/cloud/LiveTestingCloudDeviceList';
 import CloudDeviceFilter from '../../../../src/components/cloud/CloudDeviceFilter';
+import LiveTestingSessionList from '../../../../src/components/cloud/LiveTestingSessionList';
+import { swrAuthFetcher } from '../../../../src/api';
+import useRefresh from '../../../../src/hooks/useRefresh';
 
 const OrganizationLiveTestingPage: NextPageWithLayout<OrganizationServerSideProps> = ({ user, organization }) => {
-  const hasUsingDevices = true;
+  const { data, isLoading } = useSWR<LiveSessionBase[]>(
+    `/organizations/${organization.organizationId}/live-sessions`,
+    swrAuthFetcher,
+    { keepPreviousData: true, revalidateOnFocus: false },
+  );
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <>
       <Head>
         <title>Live Testing - {organization.name} | Dogu</title>
       </Head>
-      {hasUsingDevices && (
+      {!!data && data.length > 0 && (
         <>
           <TableListView
             top={
@@ -30,7 +43,7 @@ const OrganizationLiveTestingPage: NextPageWithLayout<OrganizationServerSideProp
                 <RefreshButton />
               </FlexBox>
             }
-            table={<div>Using...</div>}
+            table={<LiveTestingSessionList organizationId={organization.organizationId} />}
           />
           <Divider />
         </>
