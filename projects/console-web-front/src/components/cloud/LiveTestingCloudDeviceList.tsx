@@ -35,7 +35,7 @@ const DeviceItem: React.FC<{ device: CloudDeviceMetadataBase }> = ({ device }) =
             <Button
               type="primary"
               onClick={() => openModal()}
-              disabled={device.usageState !== DeviceUsageState.available}
+              disabled={device.usageState !== DeviceUsageState.AVAILABLE}
             >
               Start
             </Button>

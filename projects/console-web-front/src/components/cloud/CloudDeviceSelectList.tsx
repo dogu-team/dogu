@@ -17,7 +17,7 @@ const SelectItem: React.FC<{ item: CloudDeviceByModelResponse; platform: Platfor
           &nbsp;{item.version}
         </OneSpan>
         <ButtonWrapper>
-          <Button type="primary" disabled={item.usageState !== DeviceUsageState.available}>
+          <Button type="primary" disabled={item.usageState !== DeviceUsageState.AVAILABLE}>
             Start
           </Button>
         </ButtonWrapper>
