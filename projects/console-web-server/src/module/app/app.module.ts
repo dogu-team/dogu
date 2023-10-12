@@ -29,6 +29,7 @@ import { FeatureFileModule } from '../feature/file/feature-file.module';
 import { FileModule } from '../file/file.module';
 import { GitlabModule } from '../gitlab/gitlab.module';
 import { InitModule } from '../init/init.module';
+import { LiveSessionModule } from '../live-session/live-session.module';
 import { LoggerModule } from '../logger/logger.module';
 import { DeviceTagModule } from '../organization/device-tag/device-tag.module';
 import { DeviceModule } from '../organization/device/device.module';
@@ -93,6 +94,7 @@ const BASE_MODULES = [
   LicenseModule,
   RecordModule,
   CloudDeviceModule,
+  LiveSessionModule,
 ];
 
 @Module({

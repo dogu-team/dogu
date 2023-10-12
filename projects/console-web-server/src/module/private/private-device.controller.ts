@@ -66,25 +66,28 @@ export class PrivateDeviceController {
     @Param(OrganizationPropCamel.organizationId, IsOrganizationExist) organizationId: OrganizationId,
     @Body() body: CreateDeviceRequestBody,
   ): Promise<Instance<typeof PrivateDevice.createDevice.responseBody>> {
-    const { serial, serialUnique, platform } = body;
-
-    const exist = await this.deviceRepository.exist({ where: { serialUnique, organizationId } });
-    if (exist) {
-      throw new ConflictException({
-        message: 'Device already exists',
-        organizationId,
-        serial,
-        serialUnique,
-      });
-    }
-
-    // find model name from id
-    const modelName = findDeviceModelNameByModelId(body.model);
-
-    const maxParallelJobs = body.isHost ? DEVICE_DEFAULT_MAX_PARALLEL_JOBS_IF_IS_HOST : undefined;
-    const created = this.deviceRepository.create({ ...body, organizationId, name: serial, modelName: modelName ?? undefined, maxParallelJobs });
+    const { serial, serialUnique, model, isHost } = body;
 
     const rv = await this.dataSource.transaction(async (manager) => {
+      const exist = await manager.getRepository(Device).findOne({ where: { serialUnique, organizationId } });
+      if (exist) {
+        throw new ConflictException({
+          message: 'Device already exists',
+          organizationId,
+          serial,
+          serialUnique,
+        });
+      }
+
+      const modelName = findDeviceModelNameByModelId(model);
+      const maxParallelJobs = isHost ? DEVICE_DEFAULT_MAX_PARALLEL_JOBS_IF_IS_HOST : undefined;
+      const created = manager.getRepository(Device).create({
+        ...body,
+        organizationId,
+        name: serial,
+        modelName: modelName ?? undefined,
+        maxParallelJobs,
+      });
       const saved = await manager.save(created);
       const { deviceId } = saved;
       const response: Instance<typeof PrivateDevice.createDevice.responseBody> = {
