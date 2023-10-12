@@ -43,6 +43,10 @@ export class DeviceServerEnv extends PreloadDeviceServerEnv {
   @TransformBooleanString()
   DOGU_DEVICE_IOS_IS_IDAPROJECT_VALIDATED = false;
 
+  @IsBoolean()
+  @TransformBooleanString()
+  DOGU_IS_DEVICE_SHARE = false;
+
   @IsString()
   DOGU_LINUX_DEVICE_SERIAL = '';
 }

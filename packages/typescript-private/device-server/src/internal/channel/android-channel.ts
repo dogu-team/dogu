@@ -167,6 +167,10 @@ export class AndroidChannel implements DeviceChannel {
     const gamiumContext = deviceServerService.gamiumService.openGamiumContext(deviceChannel);
     deviceChannel.gamiumContext = gamiumContext;
 
+    if (env.DOGU_IS_DEVICE_SHARE) {
+      await deviceChannel.setupForSharedDevice();
+    }
+
     return deviceChannel;
   }
 
@@ -446,6 +450,10 @@ export class AndroidChannel implements DeviceChannel {
 
   getWebDriverHandler(): DeviceWebDriverHandler | null {
     return this._appiumDeviceWebDriverHandler;
+  }
+
+  private async setupForSharedDevice(): Promise<void> {
+    await Adb.stayOnWhilePluggedIn(this.serial);
   }
 }
 

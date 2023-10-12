@@ -695,6 +695,13 @@ export async function getDisplaySize(serial: Serial): Promise<{ width: number; h
   return rv;
 }
 
+export async function stayOnWhilePluggedIn(serial: Serial): Promise<void> {
+  const random = Math.random();
+  adbLogger.verbose('adb.stayOnWhilePluggedIn begin', { serial, random });
+  await shellIgnoreError(serial, 'settings put global stay_on_while_plugged_in 3');
+  adbLogger.verbose('adb.stayOnWhilePluggedIn end', { serial, random });
+}
+
 // security
 export async function unlock(serial: Serial): Promise<void> {
   const random = Math.random();

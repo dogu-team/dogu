@@ -1,4 +1,4 @@
-import { FilledRuntimeInfo, ProfileMethod, ProfileMethodKind, ProfileMethods, RuntimeInfo, Serial } from '@dogu-private/types';
+import { FilledRuntimeInfo, ProfileMethod, ProfileMethodKind, ProfileMethods, Serial } from '@dogu-private/types';
 import { DuplicatedCallGuarder, Instance, validateAndEmitEventAsync } from '@dogu-tech/common';
 import { Injectable } from '@nestjs/common';
 import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
@@ -12,6 +12,21 @@ import { PeriodTimeChecker } from '../utils/period-time-checker';
 
 type DeviceTimeChecker = Map<ProfileMethodKind, PeriodTimeChecker>;
 type DeviceTimeCheckers = Map<Serial, DeviceTimeChecker>;
+
+function isEmptyRuntimeInfo(runtimeInfo: FilledRuntimeInfo): boolean {
+  let isArraysEmpty = true;
+  for (const key of Object.keys(runtimeInfo)) {
+    const resultDesc = Object.getOwnPropertyDescriptor(runtimeInfo, key);
+    if (!resultDesc || !Array.isArray(resultDesc?.value)) {
+      continue;
+    }
+    if (0 < resultDesc.value.length) {
+      isArraysEmpty = false;
+      break;
+    }
+  }
+  return isArraysEmpty;
+}
 
 @Injectable()
 export class ProfileService {
@@ -60,7 +75,7 @@ export class ProfileService {
   }
 
   async queryRuntimeInfos(): Promise<DeviceRuntimeInfo[]> {
-    function query(channel: DeviceChannel, configService: ConfigService, devceTimeCheckers: DeviceTimeCheckers): Promise<RuntimeInfo> | undefined {
+    function query(channel: DeviceChannel, configService: ConfigService, devceTimeCheckers: DeviceTimeCheckers): Promise<FilledRuntimeInfo> | undefined {
       const { serial, platform } = channel;
       const config = configService.findConfig(serial, platform);
       if (!config) {
@@ -93,7 +108,7 @@ export class ProfileService {
           queryPromise: query(channel, this.configService, this.devceTimeCheckers),
         };
       })
-      .filter((query) => query.queryPromise !== undefined) as { serial: Serial; queryPromise: Promise<RuntimeInfo> }[];
+      .filter((query) => query.queryPromise !== undefined) as { serial: Serial; queryPromise: Promise<FilledRuntimeInfo> }[];
     const results = await Promise.allSettled(queries.map((query) => query.queryPromise));
     if (queries.length !== results.length) {
       throw new Error(`DevicesStatus.queryRuntimePoints queries.length !== results.length`);
@@ -107,6 +122,9 @@ export class ProfileService {
     const filtereds = zippeds.filter((zipped) => {
       if (zipped.result.status === 'rejected') {
         this.logger.error('DevicesStatus.queryRuntimePoints error.', { reason: zipped.result.reason });
+        return false;
+      }
+      if (isEmptyRuntimeInfo(zipped.result.value)) {
         return false;
       }
       return true;
