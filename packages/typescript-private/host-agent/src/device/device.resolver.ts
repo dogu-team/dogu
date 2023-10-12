@@ -4,6 +4,7 @@ import { DefaultHttpOptions, errorify, Instance, isFilteredAxiosError, transform
 import { HostPaths } from '@dogu-tech/node';
 import { Injectable } from '@nestjs/common';
 import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
+import AsyncLock from 'async-lock';
 import fs from 'fs';
 import { ConsoleClientService } from '../console-client/console-client.service';
 import { env } from '../env';
@@ -15,6 +16,7 @@ import { OnDeviceConnectedEvent, OnDeviceResolvedEvent } from './device.events';
 @Injectable()
 export class DeviceResolver {
   private hostResolutionInfo: HostResolutionInfo | null = null;
+  private readonly creationMutex = new AsyncLock();
 
   constructor(private readonly consoleClientService: ConsoleClientService, private readonly eventEmitter: EventEmitter2, private readonly logger: DoguLogger) {}
 
@@ -35,14 +37,17 @@ export class DeviceResolver {
     }
 
     const { serial, serialUnique, model, platform, organizationId, isVirtual, memory } = value;
-    let deviceId = await this.findDeviceId(organizationId, serialUnique);
-    if (deviceId === null) {
-      deviceId = await this.createDevice(organizationId, serial, serialUnique, model, platform, isVirtual, memory);
-      this.logger.info('Device created', {
-        serial,
-        deviceId,
-      });
-    }
+    const deviceId = await this.creationMutex.acquire(`${organizationId}:${serialUnique}`, async () => {
+      let deviceId = await this.findDeviceId(organizationId, serialUnique);
+      if (deviceId === null) {
+        deviceId = await this.createDevice(organizationId, serial, serialUnique, model, platform, isVirtual, memory);
+        this.logger.info('Device created', {
+          serial,
+          deviceId,
+        });
+      }
+      return deviceId;
+    });
 
     const { rootWorkspace, recordWorkspacePath, hostWorkspacePath, pathMap } = this.hostResolutionInfo;
     const hostPlatform = this.hostResolutionInfo.platform;
