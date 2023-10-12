@@ -12,7 +12,7 @@ import {
   Serial,
   StreamingAnswer,
 } from '@dogu-private/types';
-import { Closable, errorify, loopTime, Milisecond, Printable, PromiseOrValue, stringify } from '@dogu-tech/common';
+import { Closable, errorify, FilledPrintable, loopTime, Milisecond, Printable, PromiseOrValue, stringify } from '@dogu-tech/common';
 import { AppiumCapabilities, BrowserInstallation, StreamingOfferDto } from '@dogu-tech/device-client-common';
 import { ChildProcessError, killChildProcess } from '@dogu-tech/node';
 import { ChildProcess } from 'child_process';
@@ -68,7 +68,7 @@ export class IosChannel implements DeviceChannel {
     private readonly deviceAgent: IosDeviceAgentService,
     private _appiumContext: AppiumContextProxy,
     private readonly _appiumDeviceWebDriverHandler: AppiumDeviceWebDriverHandler,
-    private readonly logger: Printable,
+    private readonly logger: FilledPrintable,
     readonly browserInstallations: BrowserInstallation[],
   ) {
     this.logger.info(`IosChannel created: ${this.serial}`);
@@ -277,7 +277,7 @@ export class IosChannel implements DeviceChannel {
 
   async queryProfile(methods: ProfileMethod[] | ProfileMethod): Promise<FilledRuntimeInfo> {
     const methodList = Array.isArray(methods) ? methods : [methods];
-    const results = await Promise.allSettled(this._profilers.map(async (profiler) => profiler.profile(this.serial, methodList)));
+    const results = await Promise.allSettled(this._profilers.map(async (profiler) => profiler.profile(this.serial, methodList, this.logger)));
     const result = results.reduce((acc, result) => {
       if (result.status === 'fulfilled') {
         Object.keys(acc).forEach((key) => {

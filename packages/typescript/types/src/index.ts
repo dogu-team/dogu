@@ -11,6 +11,7 @@ export * from './errors';
 export * from './host-envs';
 export * from './host-paths';
 export * from './host/types';
+export * from './locale/android-locale';
 export * from './organization/types';
 export * from './platforms';
 export * from './project-application/types';

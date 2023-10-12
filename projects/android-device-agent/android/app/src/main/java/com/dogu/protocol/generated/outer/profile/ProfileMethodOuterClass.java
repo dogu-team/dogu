@@ -82,6 +82,10 @@ public final class ProfileMethodOuterClass {
      */
     PROFILE_METHOD_KIND_ANDROID_PROCESS_SHELLTOP(1070),
     /**
+     * <code>PROFILE_METHOD_KIND_ANDROID_BLOCK_DEVELOPER_OPTIONS = 1080;</code>
+     */
+    PROFILE_METHOD_KIND_ANDROID_BLOCK_DEVELOPER_OPTIONS(1080),
+    /**
      * <code>PROFILE_METHOD_KIND_IOS_CPU_LOAD_INFO = 2001;</code>
      */
     PROFILE_METHOD_KIND_IOS_CPU_LOAD_INFO(2001),
@@ -165,6 +169,10 @@ public final class ProfileMethodOuterClass {
      */
     public static final int PROFILE_METHOD_KIND_ANDROID_PROCESS_SHELLTOP_VALUE = 1070;
     /**
+     * <code>PROFILE_METHOD_KIND_ANDROID_BLOCK_DEVELOPER_OPTIONS = 1080;</code>
+     */
+    public static final int PROFILE_METHOD_KIND_ANDROID_BLOCK_DEVELOPER_OPTIONS_VALUE = 1080;
+    /**
      * <code>PROFILE_METHOD_KIND_IOS_CPU_LOAD_INFO = 2001;</code>
      */
     public static final int PROFILE_METHOD_KIND_IOS_CPU_LOAD_INFO_VALUE = 2001;
@@ -216,6 +224,7 @@ public final class ProfileMethodOuterClass {
         case 1050: return PROFILE_METHOD_KIND_ANDROID_NET_TRAFFICSTATS;
         case 1060: return PROFILE_METHOD_KIND_ANDROID_DISPLAY;
         case 1070: return PROFILE_METHOD_KIND_ANDROID_PROCESS_SHELLTOP;
+        case 1080: return PROFILE_METHOD_KIND_ANDROID_BLOCK_DEVELOPER_OPTIONS;
         case 2001: return PROFILE_METHOD_KIND_IOS_CPU_LOAD_INFO;
         case 2030: return PROFILE_METHOD_KIND_IOS_MEM_VM_STATISTICS;
         case 2060: return PROFILE_METHOD_KIND_IOS_DISPLAY;
