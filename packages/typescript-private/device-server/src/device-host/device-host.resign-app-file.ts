@@ -78,7 +78,7 @@ export class DeviceHostResignAppFileService {
       await fs.promises.cp(ResignShPath, resignShellPath, { recursive: true, force: true });
       await fs.promises.chmod(resignShellPath, 0o755);
 
-      const args = [resignShellPath, appPath, `"${identityName}"`, '-p', provisioningProfilePath, resignedAppPath].join(' ');
+      const args = [resignShellPath, `"${appPath}"`, `"${identityName}"`, '-p', provisioningProfilePath, resignedAppPath].join(' ');
 
       this.logger.info('DeviceHostResignAppFileService.resign', { args });
       const result = await ChildProcess.exec(args, {}, this.logger);

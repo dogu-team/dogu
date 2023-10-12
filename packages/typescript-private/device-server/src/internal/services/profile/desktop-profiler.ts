@@ -1,6 +1,6 @@
 import { ProfileMethod, ProfileMethodKind, RuntimeInfo, Serial } from '@dogu-private/types';
+import { FilledPrintable } from '@dogu-tech/common';
 import systeminformation from 'systeminformation';
-import { logger } from '../../../logger/logger.instance';
 import { ProfileService } from './profile-service';
 
 interface DesktopProfiler {
@@ -85,7 +85,7 @@ export class DesktopProfileService implements ProfileService {
     [ProfileMethodKind.PROFILE_METHOD_KIND_DESKTOP_DISPLAY, new DisplayProfiler()],
   ]);
 
-  async profile(serial: Serial, methods: ProfileMethod[]): Promise<RuntimeInfo> {
+  async profile(serial: Serial, methods: ProfileMethod[], logger: FilledPrintable): Promise<RuntimeInfo> {
     const profilers = methods
       .map((method) => {
         const { kind } = method;

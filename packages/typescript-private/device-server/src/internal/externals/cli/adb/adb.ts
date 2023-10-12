@@ -448,7 +448,7 @@ export async function getShellTopInfo(serial: Serial): Promise<AndroidShellTopIn
   return rv;
 }
 
-interface FocusedAppInfo {
+export interface FocusedAppInfo {
   displayId: number;
   packageName: string;
   activity: string;
@@ -536,14 +536,14 @@ export async function getIntalledPackages(serial: Serial): Promise<InstalledPack
       }
       return !!match;
     })
-    .map(({ line, match }) => ({ line, match } as { line: string; match: RegExpExecArray }))
+    .map(({ line, match }) => ({ line, match }) as { line: string; match: RegExpExecArray })
     .filter(({ line, match }) => {
       if (!match.groups) {
         adbLogger.warn(`Failed to match groups in package line: ${line}`);
       }
       return !!match.groups;
     })
-    .map(({ line, match }) => ({ line, groups: match.groups } as { line: string; groups: Record<string, string> }))
+    .map(({ line, match }) => ({ line, groups: match.groups }) as { line: string; groups: Record<string, string> })
     .filter(({ line, groups }) => {
       if (!groups.packageName) {
         adbLogger.warn(`Failed to find package name in package line: ${line}`);
@@ -555,7 +555,7 @@ export async function getIntalledPackages(serial: Serial): Promise<InstalledPack
         ({
           packagePath: groups.packagePath,
           packageName: groups.packageName,
-        } as InstalledPackage),
+        }) as InstalledPackage,
     );
   return installedPackages;
 }
@@ -695,6 +695,13 @@ export async function getDisplaySize(serial: Serial): Promise<{ width: number; h
   return rv;
 }
 
+export async function stayOnWhilePluggedIn(serial: Serial): Promise<void> {
+  const random = Math.random();
+  adbLogger.verbose('adb.stayOnWhilePluggedIn begin', { serial, random });
+  await shellIgnoreError(serial, 'settings put global stay_on_while_plugged_in 3');
+  adbLogger.verbose('adb.stayOnWhilePluggedIn end', { serial, random });
+}
+
 // security
 export async function unlock(serial: Serial): Promise<void> {
   const random = Math.random();
@@ -717,6 +724,19 @@ export async function reconnect(serial: Serial): Promise<void> {
   await commandIgnoreError(serial, 'reconnect');
   await commandIgnoreError(serial, 'usb');
   adbLogger.verbose('adb.reconnect end', { serial, random });
+}
+
+export async function getTime(serial: Serial): Promise<string | undefined> {
+  const random = Math.random();
+  adbLogger.verbose('adb.getTime begin', { serial, random });
+  try {
+    const result = await shellIgnoreError(serial, `echo $(date +'%Y-%m-%d %H:%M:%S')`);
+    return `${result.stdout.trim()}.000`;
+  } catch (e) {
+    return undefined;
+  } finally {
+    adbLogger.verbose('adb.getTime end', { serial, random });
+  }
 }
 
 /**
@@ -849,11 +869,15 @@ export async function getSystemBarVisibility(serial: Serial): Promise<AndroidSys
   };
 }
 
-registerBootstrapHandler(__filename, async (): Promise<void> => {
-  try {
-    await fs.promises.chmod(adbBinary(), 0o777);
-  } catch (error) {
-    const cause = error instanceof Error ? error : new Error(stringify(error));
-    throw new Error(`Failed to chmod adb`, { cause });
-  }
-}, () => new PlatformAbility().isAndroidEnabled);  
+registerBootstrapHandler(
+  __filename,
+  async (): Promise<void> => {
+    try {
+      await fs.promises.chmod(adbBinary(), 0o777);
+    } catch (error) {
+      const cause = error instanceof Error ? error : new Error(stringify(error));
+      throw new Error(`Failed to chmod adb`, { cause });
+    }
+  },
+  () => new PlatformAbility().isAndroidEnabled,
+);

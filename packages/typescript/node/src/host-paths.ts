@@ -75,6 +75,7 @@ export const HostPaths = {
       idevicediagnostics: (): string => path.resolve(HostPaths.external.externalsPath(), 'libimobiledevice/idevicediagnostics'),
       idevicesyslog: (): string => path.resolve(HostPaths.external.externalsPath(), 'libimobiledevice/idevicesyslog'),
       ideviceinstaller: (): string => path.resolve(HostPaths.external.externalsPath(), 'libimobiledevice/ideviceinstaller'),
+      version: (): string => path.resolve(HostPaths.external.externalsPath(), 'libimobiledevice/version'),
     },
     browser: {
       browsersPath: (): string => path.resolve(HostPaths.external.externalsPath(), 'browsers'),

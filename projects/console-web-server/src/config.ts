@@ -56,6 +56,9 @@ export const config = {
       updateLiveSession: 'update-live-session',
       WebSocketProxyReceive: (organizationId: OrganizationId, deviceId: DeviceId, webSocketProxyId: WebSocketProxyId): string =>
         `/organizations/${organizationId}/devices/${deviceId}/webSocketProxies/${webSocketProxyId}/receives`,
+      liveSessionParticipantsCount: (liveSessionId: string): string => `/liveSessions/${liveSessionId}/participants-count`,
+      liveSessionHeartbeat: (liveSessionId: string): string => `/liveSessions/${liveSessionId}/heartbeat`,
+      liveSessionCloseEvent: (liveSessionId: string): string => `/liveSessions/${liveSessionId}/close-event`,
     },
     expireSeconds: 10 * 60,
     deviceStreamingExpireSeconds: 7,
@@ -145,10 +148,13 @@ export const config = {
   },
   liveSession: {
     heartbeat: {
-      allowedMilliseconds: 10 * 1000,
+      allowedSeconds: 1 * 60 * 60,
     },
     closeWait: {
       allowedMilliseconds: 3 * 60 * 1000,
+    },
+    participantsCount: {
+      allowedSeconds: 24 * 60 * 60,
     },
   },
 };

@@ -20,6 +20,8 @@ interface File {
   unzipDirName?: string;
 }
 
+const LibimobiledeviceArchivesVersion = '12-10-2023';
+
 const files: File[] = [
   {
     condition: () => process.platform === 'darwin' && process.arch === 'arm64',
@@ -120,6 +122,10 @@ export class LibimobledeviceExternalUnit extends IExternalUnit {
   }
 
   async validateInternal(): Promise<void> {
+    const version = await this.readVersion();
+    if (version !== LibimobiledeviceArchivesVersion) {
+      throw new Error(`invalid version: ${version}`);
+    }
     for (const file of files) {
       if (file.condition && !file.condition()) {
         continue;
@@ -135,6 +141,7 @@ export class LibimobledeviceExternalUnit extends IExternalUnit {
       }
 
       await ChildProcess.execIgnoreError(`xattr -dr com.apple.quarantine ${archCheckPath}`, {}, NullLogger.instance);
+      await ChildProcess.execIgnoreError(`xattr -d com.apple.quarantine ${archCheckPath}`, {}, NullLogger.instance);
       if (file.fileMode) {
         await fs.promises.chmod(path, 0o777);
       }
@@ -206,6 +213,7 @@ export class LibimobledeviceExternalUnit extends IExternalUnit {
         this.logger.info(`Download move completed. path: ${destPath}`);
       }
     }
+    await this.writeVersion();
 
     this.unitCallback.onInstallCompleted();
   }
@@ -220,6 +228,19 @@ export class LibimobledeviceExternalUnit extends IExternalUnit {
 
   getTermUrl(): string | null {
     return null;
+  }
+
+  private async readVersion(): Promise<string> {
+    const versionPath = HostPaths.external.libimobiledevice.version();
+    if (!fs.existsSync(versionPath)) {
+      throw new Error(`version file not found: ${versionPath}`);
+    }
+    const version = await fs.promises.readFile(versionPath, 'utf-8');
+    return version;
+  }
+
+  private async writeVersion(): Promise<void> {
+    await fs.promises.writeFile(HostPaths.external.libimobiledevice.version(), LibimobiledeviceArchivesVersion, 'utf-8');
   }
 }
 

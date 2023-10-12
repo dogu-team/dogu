@@ -21,9 +21,6 @@ export class LiveSession implements LiveSessionBase {
   @Column({ type: 'enum', name: LiveSessionPropSnake.state, enum: LiveSessionState, default: LiveSessionState.CREATED, nullable: false })
   state!: LiveSessionState;
 
-  @ColumnTemplate.Date(LiveSessionPropSnake.heartbeat, true)
-  heartbeat!: Date | null;
-
   @ColumnTemplate.Date(LiveSessionPropSnake.close_wait_at, true)
   closeWaitAt!: Date | null;
 

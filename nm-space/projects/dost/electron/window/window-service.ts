@@ -1,4 +1,5 @@
 import { app, BrowserWindow, ipcMain, Menu } from 'electron';
+import windowStateKeeper from 'electron-window-state';
 import { windowClientKey } from '../../src/shares/window';
 import { logger } from '../log/logger.instance';
 import { PreloadScriptPath, ReactPublicIndexPath } from '../path-map';
@@ -39,9 +40,15 @@ export class WindowService {
   window: BrowserWindow | null;
 
   private constructor() {
+    let mainWindowState = windowStateKeeper({
+      defaultWidth: 960,
+      defaultHeight: 720,
+    });
     this.window = new BrowserWindow({
-      width: 960,
-      height: 720,
+      x: mainWindowState.x,
+      y: mainWindowState.y,
+      width: mainWindowState.width,
+      height: mainWindowState.height,
       resizable: true,
       movable: true,
       minimizable: true,
@@ -61,6 +68,7 @@ export class WindowService {
         devTools: false,
       },
     });
+    mainWindowState.manage(this.window);
     this.window.on('closed', () => {
       logger.debug('WindowService window closed');
       this.window = null;

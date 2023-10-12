@@ -38,6 +38,9 @@ export const AppConfigSchema = {
   DOGU_LINUX_DEVICE_SERIAL: {
     type: 'string',
   },
+  DOGU_IS_DEVICE_SHARE: {
+    type: 'boolean',
+  },
   is_show_devui: {
     type: 'boolean',
   },

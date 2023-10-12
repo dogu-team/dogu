@@ -33,6 +33,9 @@
     "clean": {
       "cache": false
     },
+    "clean:archive": {
+      "cache": false
+    },
     "test": {
       "dependsOn": ["build"]
     },

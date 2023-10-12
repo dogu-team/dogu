@@ -44,7 +44,10 @@ import { ZombieServiceInstance } from '../services/zombie/zombie-service';
 type DeviceControl = PrivateProtocol.DeviceControl;
 
 export class AndroidLogClosable implements Closable {
-  constructor(private readonly childProcess: ChildProcess, private readonly printable?: Printable) {}
+  constructor(
+    private readonly childProcess: ChildProcess,
+    private readonly printable?: Printable,
+  ) {}
 
   close(): void {
     killChildProcess(this.childProcess).catch((error) => {
@@ -147,7 +150,7 @@ export class AndroidChannel implements DeviceChannel {
       systemInfo,
       systemInfoService,
       deviceAgent,
-      [new AndroidAdbProfileService(), new AndroidDisplayProfileService(deviceAgent)],
+      [new AndroidAdbProfileService(appiumContextProxy), new AndroidDisplayProfileService(deviceAgent)],
       streaming,
       appiumContextProxy,
       appiumDeviceWebDriverHandler,
@@ -167,6 +170,10 @@ export class AndroidChannel implements DeviceChannel {
     const gamiumContext = deviceServerService.gamiumService.openGamiumContext(deviceChannel);
     deviceChannel.gamiumContext = gamiumContext;
 
+    if (env.DOGU_IS_DEVICE_SHARE) {
+      await deviceChannel.setupForSharedDevice();
+    }
+
     return deviceChannel;
   }
 
@@ -184,7 +191,7 @@ export class AndroidChannel implements DeviceChannel {
 
   async queryProfile(methods: ProfileMethod[] | ProfileMethod): Promise<FilledRuntimeInfo> {
     const methodList = Array.isArray(methods) ? methods : [methods];
-    const results = await Promise.allSettled(this._profilers.map(async (profiler) => profiler.profile(this.serial, methodList)));
+    const results = await Promise.allSettled(this._profilers.map(async (profiler) => profiler.profile(this.serial, methodList, this.logger)));
     const result = results.reduce((acc, result) => {
       if (result.status === 'fulfilled') {
         Object.keys(acc).forEach((key) => {
@@ -446,6 +453,10 @@ export class AndroidChannel implements DeviceChannel {
 
   getWebDriverHandler(): DeviceWebDriverHandler | null {
     return this._appiumDeviceWebDriverHandler;
+  }
+
+  private async setupForSharedDevice(): Promise<void> {
+    await Adb.stayOnWhilePluggedIn(this.serial);
   }
 }
 

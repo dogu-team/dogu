@@ -39,6 +39,7 @@ public enum Outer_Profile_ProfileMethodKind: SwiftProtobuf.Enum {
   case androidNetTrafficstats // = 1050
   case androidDisplay // = 1060
   case androidProcessShelltop // = 1070
+  case androidBlockDeveloperOptions // = 1080
   case iosCpuLoadInfo // = 2001
   case iosMemVmStatistics // = 2030
   case iosDisplay // = 2060
@@ -67,6 +68,7 @@ public enum Outer_Profile_ProfileMethodKind: SwiftProtobuf.Enum {
     case 1050: self = .androidNetTrafficstats
     case 1060: self = .androidDisplay
     case 1070: self = .androidProcessShelltop
+    case 1080: self = .androidBlockDeveloperOptions
     case 2001: self = .iosCpuLoadInfo
     case 2030: self = .iosMemVmStatistics
     case 2060: self = .iosDisplay
@@ -93,6 +95,7 @@ public enum Outer_Profile_ProfileMethodKind: SwiftProtobuf.Enum {
     case .androidNetTrafficstats: return 1050
     case .androidDisplay: return 1060
     case .androidProcessShelltop: return 1070
+    case .androidBlockDeveloperOptions: return 1080
     case .iosCpuLoadInfo: return 2001
     case .iosMemVmStatistics: return 2030
     case .iosDisplay: return 2060
@@ -124,6 +127,7 @@ extension Outer_Profile_ProfileMethodKind: CaseIterable {
     .androidNetTrafficstats,
     .androidDisplay,
     .androidProcessShelltop,
+    .androidBlockDeveloperOptions,
     .iosCpuLoadInfo,
     .iosMemVmStatistics,
     .iosDisplay,
@@ -211,6 +215,7 @@ extension Outer_Profile_ProfileMethodKind: SwiftProtobuf._ProtoNameProviding {
     1050: .same(proto: "PROFILE_METHOD_KIND_ANDROID_NET_TRAFFICSTATS"),
     1060: .same(proto: "PROFILE_METHOD_KIND_ANDROID_DISPLAY"),
     1070: .same(proto: "PROFILE_METHOD_KIND_ANDROID_PROCESS_SHELLTOP"),
+    1080: .same(proto: "PROFILE_METHOD_KIND_ANDROID_BLOCK_DEVELOPER_OPTIONS"),
     2001: .same(proto: "PROFILE_METHOD_KIND_IOS_CPU_LOAD_INFO"),
     2030: .same(proto: "PROFILE_METHOD_KIND_IOS_MEM_VM_STATISTICS"),
     2060: .same(proto: "PROFILE_METHOD_KIND_IOS_DISPLAY"),

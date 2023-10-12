@@ -39,3 +39,8 @@ export const Display: ProfileMethod = {
   kind: ProfileMethodKind.PROFILE_METHOD_KIND_ANDROID_DISPLAY,
   name: 'display',
 };
+
+export const BlockDeveloperOptions: ProfileMethod = {
+  kind: ProfileMethodKind.PROFILE_METHOD_KIND_ANDROID_BLOCK_DEVELOPER_OPTIONS,
+  name: 'block-developer-options',
+};

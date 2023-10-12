@@ -6,11 +6,11 @@
 import { Platform, Serial } from '@dogu-private/types';
 import { callAsyncWithTimeout, Class, delay, errorify, Instance, NullLogger, Printable, Retry, stringify } from '@dogu-tech/common';
 import { Android, AppiumContextInfo, ContextPageSource, Rect, ScreenSize, SystemBar } from '@dogu-tech/device-client-common';
-import { killChildProcess, killProcessOnPort, Logger, TaskQueueTask } from '@dogu-tech/node';
+import { killChildProcess, killProcessOnPort, Logger } from '@dogu-tech/node';
 import AsyncLock from 'async-lock';
 import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
 import _ from 'lodash';
-import { remote } from 'webdriverio';
+import WebDriverIO, { remote } from 'webdriverio';
 import { DevicePortService } from '../device-port/device-port.service';
 import { Adb } from '../internal/externals/index';
 import { Zombieable, ZombieProps } from '../internal/services/zombie/zombie-component';
@@ -20,7 +20,8 @@ import { createAppiumCapabilities } from './appium.capabilites';
 import { AppiumRemoteContext } from './appium.remote.context';
 import { AppiumService } from './appium.service';
 
-type Browser = Awaited<ReturnType<typeof remote>>;
+type Browser = WebDriverIO.Browser<'async'>;
+export type WDIOElement = WebDriverIO.Element<'async'>;
 
 const AppiumClientCallAsyncTimeout = 10 * 1000; // unit: milliseconds
 export const AppiumHealthCheckInterval = 5 * 1000; // unit: milliseconds
@@ -85,11 +86,15 @@ export interface AppiumContext extends Zombieable {
   getPageSource(): Promise<string>;
   switchContextAndGetPageSource(contextId: string): Promise<string>;
   getContextPageSources(): Promise<ContextPageSource[]>;
+  select(selector: string): Promise<WDIOElement | undefined>;
 }
 
 class NullAppiumContext implements AppiumContext {
   public readonly props: ZombieProps = {};
-  constructor(public readonly options: AppiumContextOptions, public readonly printable: Logger) {}
+  constructor(
+    public readonly options: AppiumContextOptions,
+    public readonly printable: Logger,
+  ) {}
   get name(): string {
     return 'NullAppiumContext';
   }
@@ -106,7 +111,7 @@ class NullAppiumContext implements AppiumContext {
     return 'openingSucceeded';
   }
 
-  revive(): Promise<void> {
+  async revive(): Promise<void> {
     return Promise.resolve();
   }
   onDie(): void | Promise<void> {
@@ -135,47 +140,52 @@ class NullAppiumContext implements AppiumContext {
     };
   }
 
-  getAndroid(): Promise<undefined> {
+  async getAndroid(): Promise<undefined> {
     return Promise.resolve(undefined);
   }
 
-  getScreenSize(): Promise<ScreenSize> {
+  async getScreenSize(): Promise<ScreenSize> {
     return Promise.resolve({ width: 0, height: 0 });
   }
 
-  switchContext(contextId: string): Promise<void> {
+  async switchContext(contextId: string): Promise<void> {
     return Promise.resolve();
   }
 
-  getContext(): Promise<string> {
+  async getContext(): Promise<string> {
     return Promise.resolve('');
   }
 
-  getContexts(): Promise<string[]> {
+  async getContexts(): Promise<string[]> {
     return Promise.resolve([]);
   }
 
-  getPageSource(): Promise<string> {
+  async getPageSource(): Promise<string> {
     return Promise.resolve('');
   }
 
-  switchContextAndGetPageSource(contextId: string): Promise<string> {
+  async switchContextAndGetPageSource(contextId: string): Promise<string> {
     return Promise.resolve('');
   }
 
-  getContextPageSources(): Promise<ContextPageSource[]> {
+  async getContextPageSources(): Promise<ContextPageSource[]> {
     return Promise.resolve([]);
+  }
+  async select(selector: string): Promise<WDIOElement | undefined> {
+    return Promise.resolve(undefined);
   }
 }
 
+export interface AppiumServerData {
+  port: number;
+  command: string;
+  env: Record<string, string | undefined>;
+  workingPath: string;
+  process: ChildProcessWithoutNullStreams;
+}
+
 export interface AppiumData {
-  server: {
-    port: number;
-    command: string;
-    env: Record<string, string | undefined>;
-    workingPath: string;
-    process: ChildProcessWithoutNullStreams;
-  };
+  server: AppiumServerData;
   client: {
     remoteOptions: Record<string, unknown>;
     driver: Browser;
@@ -193,7 +203,10 @@ export class AppiumContextImpl implements AppiumContext {
   private notHealthyCount = 0;
 
   openingState: 'opening' | 'openingSucceeded' | 'openingFailed' = 'opening';
-  constructor(public readonly options: AppiumContextOptions, public readonly printable: Logger) {}
+  constructor(
+    public readonly options: AppiumContextOptions,
+    public readonly printable: Logger,
+  ) {}
 
   get name(): string {
     return 'AppiumContextImpl';
@@ -425,15 +438,18 @@ export class AppiumContextImpl implements AppiumContext {
       },
     };
     const driver = await remote(remoteOptions);
-    const filteredRemoteOptions = Object.keys(remoteOptions).reduce((acc, key) => {
-      const value = _.get(remoteOptions, key) as unknown;
-      if (_.isFunction(value)) {
-        return acc;
-      } else {
-        _.set(acc, key, value);
-        return acc;
-      }
-    }, {} as Record<string, unknown>);
+    const filteredRemoteOptions = Object.keys(remoteOptions).reduce(
+      (acc, key) => {
+        const value = _.get(remoteOptions, key) as unknown;
+        if (_.isFunction(value)) {
+          return acc;
+        } else {
+          _.set(acc, key, value);
+          return acc;
+        }
+      },
+      {} as Record<string, unknown>,
+    );
     this.printable.info('Appium client started', { remoteOptions, sessionId: driver.sessionId, capabilities: driver.capabilities });
     return {
       remoteOptions: filteredRemoteOptions,
@@ -524,6 +540,15 @@ export class AppiumContextImpl implements AppiumContext {
     }
     return contextPageSources;
   }
+
+  async select(selector: string): Promise<WDIOElement | undefined> {
+    try {
+      const elem = await this.data.client.driver.$(selector);
+      return elem;
+    } catch (e) {
+      return undefined;
+    }
+  }
 }
 
 const constructorMap = {
@@ -531,8 +556,6 @@ const constructorMap = {
   remote: AppiumRemoteContext,
   null: NullAppiumContext,
 };
-
-class AppiumContextProxyTask extends TaskQueueTask<void> {}
 
 export class AppiumContextProxy implements AppiumContext, Zombieable {
   private readonly logger: Logger;
@@ -600,35 +623,35 @@ export class AppiumContextProxy implements AppiumContext, Zombieable {
     return this.impl.getInfo();
   }
 
-  getAndroid(): Promise<Android | undefined> {
+  async getAndroid(): Promise<Android | undefined> {
     return this.impl.getAndroid();
   }
 
-  getScreenSize(): Promise<ScreenSize> {
+  async getScreenSize(): Promise<ScreenSize> {
     return this.impl.getScreenSize();
   }
 
-  switchContext(contextId: string): Promise<void> {
+  async switchContext(contextId: string): Promise<void> {
     return this.impl.switchContext(contextId);
   }
 
-  getContext(): Promise<string> {
+  async getContext(): Promise<string> {
     return this.impl.getContext();
   }
 
-  getContexts(): Promise<string[]> {
+  async getContexts(): Promise<string[]> {
     return this.impl.getContexts();
   }
 
-  getPageSource(): Promise<string> {
+  async getPageSource(): Promise<string> {
     return this.impl.getPageSource();
   }
 
-  switchContextAndGetPageSource(contextId: string): Promise<string> {
+  async switchContextAndGetPageSource(contextId: string): Promise<string> {
     return this.impl.switchContextAndGetPageSource(contextId);
   }
 
-  getContextPageSources(): Promise<ContextPageSource[]> {
+  async getContextPageSources(): Promise<ContextPageSource[]> {
     return this.impl.getContextPageSources();
   }
 
@@ -656,6 +679,10 @@ export class AppiumContextProxy implements AppiumContext, Zombieable {
       this.impl = appiumContext;
       this.logger.info(`switching appium context: from: ${befImplKey}, to: ${key} done`);
     });
+  }
+
+  async select(selector: string): Promise<WDIOElement | undefined> {
+    return this.impl.select(selector);
   }
 
   getImpl<T extends Class<T>>(constructor: T): Instance<T> {
