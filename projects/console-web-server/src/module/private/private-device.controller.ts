@@ -1,4 +1,4 @@
-import { DevicePropCamel, OrganizationPropCamel } from '@dogu-private/console';
+import { DevicePropCamel, DeviceUsageState, OrganizationPropCamel } from '@dogu-private/console';
 import {
   CreateDeviceRequestBody,
   PrivateDevice,
@@ -118,7 +118,21 @@ export class PrivateDeviceController {
     }
     const { serial, hostId, version, model, manufacturer, isVirtual, resolutionWidth, resolutionHeight, browserInstallations, memory } = body;
     await this.dataSource.transaction(async (manager) => {
-      await manager.getRepository(Device).update({ deviceId }, { serial, hostId, version, model, manufacturer, isVirtual, resolutionWidth, resolutionHeight, memory });
+      await manager.getRepository(Device).update(
+        { deviceId },
+        {
+          serial,
+          hostId,
+          version,
+          model,
+          manufacturer,
+          isVirtual,
+          resolutionWidth,
+          resolutionHeight,
+          memory,
+          usageState: DeviceUsageState.AVAILABLE,
+        },
+      );
       await DeviceStatusService.updateDeviceBrowserInstallations(manager, deviceId, browserInstallations);
       await DeviceStatusService.updateDeviceRunners(manager, deviceId);
     });

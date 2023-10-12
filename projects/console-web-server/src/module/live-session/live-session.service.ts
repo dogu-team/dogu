@@ -11,6 +11,7 @@ import { Device } from '../../db/entity/device.entity';
 import { LiveSession } from '../../db/entity/live-session.entity';
 import { Organization } from '../../db/entity/organization.entity';
 import { DoguLogger } from '../logger/logger';
+import { DeviceCommandService } from '../organization/device/device-command.service';
 
 @Injectable()
 export class LiveSessionService {
@@ -21,6 +22,7 @@ export class LiveSessionService {
     private readonly dataSource: DataSource,
     @InjectRedis()
     private readonly redis: Redis,
+    private readonly deviceCommandService: DeviceCommandService,
     private readonly logger: DoguLogger,
   ) {
     this.subscriber = redis.duplicate();
@@ -124,7 +126,7 @@ export class LiveSessionService {
   /**
    * @description do NOT access this.dataSource in this method
    */
-  async closeInTran(manager: EntityManager, liveSessions: LiveSession[]): Promise<LiveSession[]> {
+  async closeInTransaction(manager: EntityManager, liveSessions: LiveSession[]): Promise<LiveSession[]> {
     liveSessions.forEach((liveSession) => {
       liveSession.state = LiveSessionState.CLOSED;
       liveSession.closedAt = new Date();
@@ -146,11 +148,15 @@ export class LiveSessionService {
       },
     });
     devices.forEach((device) => {
-      device.usageState = DeviceUsageState.AVAILABLE;
+      device.usageState = DeviceUsageState.PREPARING;
     });
     await manager.save(devices);
     this.logger.debug('LiveSessionService.close.devices', {
       devices,
+    });
+
+    devices.forEach((device) => {
+      this.deviceCommandService.reboot(device.organizationId, device.deviceId, device.serial);
     });
 
     return closeds;
@@ -167,7 +173,7 @@ export class LiveSessionService {
         return liveSession;
       }
 
-      const closeds = await this.closeInTran(manager, [liveSession]);
+      const closeds = await this.closeInTransaction(manager, [liveSession]);
       if (closeds.length !== 1) {
         throw new InternalServerErrorException(`LiveSession close failed for liveSessionId: ${liveSessionId}`);
       }
