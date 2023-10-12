@@ -1,10 +1,10 @@
 import { DevicePropCamel, DeviceUsageState, LiveSessionCreateRequestBodyDto, LiveSessionFindQueryDto, OrganizationPropCamel } from '@dogu-private/console';
 import { LiveSessionId, LiveSessionState } from '@dogu-private/types';
 import { InjectRedis } from '@liaoliaots/nestjs-redis';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import Redis from 'ioredis';
-import { DataSource } from 'typeorm';
+import { DataSource, EntityManager, In } from 'typeorm';
 import { v4 } from 'uuid';
 import { config } from '../../config';
 import { Device } from '../../db/entity/device.entity';
@@ -119,5 +119,60 @@ export class LiveSessionService {
   async isLiveSessionExists(liveSessionId: LiveSessionId): Promise<boolean> {
     const exists = await this.redis.exists(config.redis.key.liveSessionHeartbeat(liveSessionId));
     return exists !== 0;
+  }
+
+  /**
+   * @description do NOT access this.dataSource in this method
+   */
+  async closeInTran(manager: EntityManager, liveSessions: LiveSession[]): Promise<LiveSession[]> {
+    liveSessions.forEach((liveSession) => {
+      liveSession.state = LiveSessionState.CLOSED;
+      liveSession.closedAt = new Date();
+    });
+    const closeds = await manager.save(liveSessions);
+    await Promise.all(
+      liveSessions.map(async (liveSession) => {
+        await this.publishCloseEvent(liveSession.liveSessionId, 'closed!');
+      }),
+    );
+    this.logger.debug('LiveSessionService.close.liveSessions', {
+      liveSessions,
+    });
+
+    const deviceIds = liveSessions.map((liveSession) => liveSession.deviceId);
+    const devices = await manager.getRepository(Device).find({
+      where: {
+        deviceId: In(deviceIds),
+      },
+    });
+    devices.forEach((device) => {
+      device.usageState = DeviceUsageState.AVAILABLE;
+    });
+    await manager.save(devices);
+    this.logger.debug('LiveSessionService.close.devices', {
+      devices,
+    });
+
+    return closeds;
+  }
+
+  async closeByLiveSessionId(liveSessionId: LiveSessionId): Promise<LiveSession> {
+    return await this.dataSource.transaction(async (manager) => {
+      const liveSession = await manager.getRepository(LiveSession).findOne({ where: { liveSessionId } });
+      if (!liveSession) {
+        throw new NotFoundException(`LiveSession not found for liveSessionId: ${liveSessionId}`);
+      }
+
+      if (liveSession.state === LiveSessionState.CLOSED) {
+        return liveSession;
+      }
+
+      const closeds = await this.closeInTran(manager, [liveSession]);
+      if (closeds.length !== 1) {
+        throw new InternalServerErrorException(`LiveSession close failed for liveSessionId: ${liveSessionId}`);
+      }
+
+      return closeds[0];
+    });
   }
 }

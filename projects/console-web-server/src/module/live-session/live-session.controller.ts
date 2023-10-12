@@ -1,5 +1,6 @@
 import { LiveSessionCreateRequestBodyDto, LiveSessionFindQueryDto } from '@dogu-private/console';
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import { LiveSessionId } from '@dogu-private/types';
+import { Body, Controller, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { LiveSession } from '../../db/entity/live-session.entity';
 import { ORGANIZATION_ROLE } from '../auth/auth.types';
 import { OrganizationPermission } from '../auth/decorators';
@@ -16,8 +17,14 @@ export class LiveSessionController {
   }
 
   @Post()
-  // @OrganizationPermission(ORGANIZATION_ROLE.MEMBER)
+  @OrganizationPermission(ORGANIZATION_ROLE.MEMBER)
   async create(@Body() body: LiveSessionCreateRequestBodyDto): Promise<LiveSession> {
     return await this.liveSessionService.create(body);
+  }
+
+  @Patch('/:liveSessionId/close')
+  @OrganizationPermission(ORGANIZATION_ROLE.MEMBER)
+  async close(@Param('liveSessionId') liveSessionId: LiveSessionId): Promise<LiveSession> {
+    return this.liveSessionService.closeByLiveSessionId(liveSessionId);
   }
 }

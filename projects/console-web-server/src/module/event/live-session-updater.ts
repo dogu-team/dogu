@@ -1,12 +1,10 @@
-import { DeviceUsageState } from '@dogu-private/console';
 import { LiveSessionState } from '@dogu-private/types';
 import { InjectRedis } from '@liaoliaots/nestjs-redis';
 import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import Redis from 'ioredis';
-import { DataSource, In } from 'typeorm';
+import { DataSource } from 'typeorm';
 import { config } from '../../config';
-import { Device } from '../../db/entity/device.entity';
 import { LiveSession } from '../../db/entity/live-session.entity';
 import { LiveSessionService } from '../live-session/live-session.service';
 import { DoguLogger } from '../logger/logger';
@@ -133,38 +131,10 @@ export class LiveSessionUpdater implements OnModuleInit, OnModuleDestroy {
           } else {
             throw new Error('closeWaitAt must not be null');
           }
-        })
-        .map((liveSession) => {
-          liveSession.state = LiveSessionState.CLOSED;
-          liveSession.closedAt = new Date();
-          return liveSession;
         });
 
       if (toCloses.length > 0) {
-        await manager.save(toCloses);
-        await Promise.all(
-          toCloses.map(async (liveSession) => {
-            await this.liveSessionService.publishCloseEvent(liveSession.liveSessionId, 'close');
-          }),
-        );
-        this.logger.debug('LiveSessionUpdater: closeWaitToCreatedOrClosed', {
-          toCloses,
-        });
-
-        const deviceIds = toCloses.map((liveSession) => liveSession.deviceId);
-        const devices = await manager.getRepository(Device).find({
-          where: {
-            deviceId: In(deviceIds),
-          },
-        });
-        devices.forEach((device) => {
-          device.usageState = DeviceUsageState.AVAILABLE;
-          return device;
-        });
-        await manager.save(devices);
-        this.logger.debug('LiveSessionUpdater: closeWaitToCreatedOrClosed', {
-          devices,
-        });
+        await this.liveSessionService.closeInTran(manager, toCloses);
       }
     });
   }
