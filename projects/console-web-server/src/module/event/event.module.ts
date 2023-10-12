@@ -20,6 +20,7 @@ import { LicenseUpdater } from '../../enterprise/module/event/license/license-up
 import { SlackModule } from '../../enterprise/module/integration/slack/slack.module';
 import { LicenseModule } from '../../enterprise/module/license/feature-license.module';
 import { DeviceMessageModule } from '../device-message/device-message.module';
+import { LiveSessionModule } from '../live-session/live-session.module';
 import { ProjectModule } from '../project/project.module';
 import { RemoteModule } from '../remote/remote.module';
 import { PipelineModule } from '../routine/pipeline/pipeline.module';
@@ -71,6 +72,7 @@ import { UpdateProducer } from './update-producer';
     SlackModule,
     ProjectModule,
     LicenseModule,
+    LiveSessionModule,
   ],
   providers: [
     UpdateProducer,

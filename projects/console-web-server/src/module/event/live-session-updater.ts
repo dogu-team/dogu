@@ -8,6 +8,7 @@ import { DataSource, In } from 'typeorm';
 import { config } from '../../config';
 import { Device } from '../../db/entity/device.entity';
 import { LiveSession } from '../../db/entity/live-session.entity';
+import { LiveSessionService } from '../live-session/live-session.service';
 import { DoguLogger } from '../logger/logger';
 import { EventConsumer } from './event.consumer';
 import { EventProducer } from './event.producer';
@@ -23,6 +24,7 @@ export class LiveSessionUpdater implements OnModuleInit, OnModuleDestroy {
     @InjectRedis()
     redis: Redis,
     private readonly logger: DoguLogger,
+    private readonly liveSessionService: LiveSessionService,
   ) {
     this.eventProducer = new EventProducer({
       redis,
@@ -66,22 +68,22 @@ export class LiveSessionUpdater implements OnModuleInit, OnModuleDestroy {
         },
       });
 
-      const newCloseWaits = createds
-        .filter((liveSession) => {
-          const allowedTime = new Date().getTime() - config.liveSession.heartbeat.allowedMilliseconds;
-          if (liveSession.heartbeat) {
-            // old heartbeat
-            return liveSession.heartbeat.getTime() < allowedTime;
+      const newCloseWaits: LiveSession[] = [];
+      for (const liveSession of createds) {
+        const allowedSeconds = new Date().getTime() - config.liveSession.heartbeat.allowedSeconds;
+        if (liveSession.createdAt.getTime() < allowedSeconds) {
+          const isLiveSessionExists = await this.liveSessionService.isLiveSessionExists(liveSession.liveSessionId);
+          if (isLiveSessionExists) {
+            // ok
           } else {
-            // no heartbeat
-            return liveSession.createdAt.getTime() < allowedTime;
+            liveSession.state = LiveSessionState.CLOSE_WAIT;
+            liveSession.closeWaitAt = new Date();
+            newCloseWaits.push(liveSession);
           }
-        })
-        .map((liveSession) => {
-          liveSession.state = LiveSessionState.CLOSE_WAIT;
-          liveSession.closeWaitAt = new Date();
-          return liveSession;
-        });
+        } else {
+          // ok
+        }
+      }
 
       if (newCloseWaits.length > 0) {
         await manager.save(newCloseWaits);
@@ -102,22 +104,17 @@ export class LiveSessionUpdater implements OnModuleInit, OnModuleDestroy {
           },
         });
 
-      const toCreateds = closeWaits
-        .filter((liveSession) => {
-          const allowedTime = new Date().getTime() - config.liveSession.closeWait.allowedMilliseconds;
-          if (liveSession.heartbeat) {
-            // still heartbeat
-            return liveSession.heartbeat.getTime() >= allowedTime;
-          } else {
-            // no heartbeat
-            return false;
-          }
-        })
-        .map((liveSession) => {
+      const toCreateds: LiveSession[] = [];
+      for (const liveSession of closeWaits) {
+        const isLiveSessionExists = await this.liveSessionService.isLiveSessionExists(liveSession.liveSessionId);
+        if (isLiveSessionExists) {
           liveSession.state = LiveSessionState.CREATED;
           liveSession.closeWaitAt = null;
-          return liveSession;
-        });
+          toCreateds.push(liveSession);
+        } else {
+          // no heartbeat
+        }
+      }
 
       if (toCreateds.length > 0) {
         await manager.save(toCreateds);
@@ -145,6 +142,11 @@ export class LiveSessionUpdater implements OnModuleInit, OnModuleDestroy {
 
       if (toCloses.length > 0) {
         await manager.save(toCloses);
+        await Promise.all(
+          toCloses.map(async (liveSession) => {
+            await this.liveSessionService.publishCloseEvent(liveSession.liveSessionId, 'close');
+          }),
+        );
         this.logger.debug('LiveSessionUpdater: closeWaitToCreatedOrClosed', {
           toCloses,
         });

@@ -16,7 +16,7 @@ export class LiveSessionController {
   }
 
   @Post()
-  @OrganizationPermission(ORGANIZATION_ROLE.MEMBER)
+  // @OrganizationPermission(ORGANIZATION_ROLE.MEMBER)
   async create(@Body() body: LiveSessionCreateRequestBodyDto): Promise<LiveSession> {
     return await this.liveSessionService.create(body);
   }

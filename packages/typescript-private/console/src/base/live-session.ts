@@ -18,7 +18,6 @@ export interface LiveSessionBase extends LiveSessionRelationTraits {
    */
   deviceId: DeviceId;
   state: LiveSessionState;
-  heartbeat: Date | null;
   closeWaitAt: Date | null;
   closedAt: Date | null;
   createdAt: Date;

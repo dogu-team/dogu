@@ -6,5 +6,6 @@ import { LiveSessionService } from './live-session.service';
 @Module({
   controllers: [LiveSessionController],
   providers: [LiveSessionHeartbeatGateway, LiveSessionService],
+  exports: [LiveSessionService],
 })
 export class LiveSessionModule {}
