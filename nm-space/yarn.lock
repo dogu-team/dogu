@@ -12963,6 +12963,7 @@ __metadata:
     electron-is-dev: 2.0.0
     electron-log: 4.4.8
     electron-store: 8.1.0
+    electron-window-state: ^5.0.3
     extract-zip: 2.0.1
     find-free-ports: 3.0.0
     framer-motion: 10.6.1
@@ -13360,6 +13361,16 @@ __metadata:
   version: 1.4.475
   resolution: "electron-to-chromium@npm:1.4.475"
   checksum: 3e7a538c486b351c13bcd05295535b2b5b0a2980dcf3504457fe47c6689d74a87fd62eab629227dcc86b66cfd732076667d6392f998b13995a8b54eff8073fb8
+  languageName: node
+  linkType: hard
+
+"electron-window-state@npm:^5.0.3":
+  version: 5.0.3
+  resolution: "electron-window-state@npm:5.0.3"
+  dependencies:
+    jsonfile: ^4.0.0
+    mkdirp: ^0.5.1
+  checksum: 955868c1db598cfb5111612c9df93f61b8999b339fb56cb37ba884a9141478feaef9e9b4d9e777079cdad80fb0bb64b61ae706c85f1f91ba5904f8596d30d7e9
   languageName: node
   linkType: hard
 
