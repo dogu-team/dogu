@@ -17,6 +17,7 @@ export * from './enum';
 export * from './host';
 export * from './influxdb';
 export * from './input';
+export * from './live-session';
 export * from './log';
 export * from './open-api';
 export * from './organization';

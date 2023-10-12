@@ -52,6 +52,18 @@ export function propertiesOf<T>(obj?: T): PropertiesOf<T> {
   ) as PropertiesOf<T>;
 }
 
+export function prefixPropertiesOf<T>(prefix: string, obj?: T): PropertiesOf<T> {
+  return new Proxy(
+    {},
+    {
+      get: (_, prop) => `${prefix}${typeof prop === 'symbol' ? prop.toString() : prop}`,
+      set: (): boolean => {
+        throw new Error('Cannot set property on a proxied object');
+      },
+    },
+  ) as PropertiesOf<T>;
+}
+
 export function camelToSnakeCaseWithPrefixPropertiesOf<T>(prefix: string, obj?: T): CamelToSnakeCaseProxy<T> {
   return new Proxy(
     {},

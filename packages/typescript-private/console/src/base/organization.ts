@@ -1,6 +1,6 @@
 import { OrganizationId } from '@dogu-private/types';
 import { camelToSnakeCasePropertiesOf, propertiesOf } from '@dogu-tech/common';
-import { UserAndInvitationTokenBase } from '..';
+import { LiveSessionBase, UserAndInvitationTokenBase } from '..';
 import { DeviceBase } from './device';
 import { DeviceTagBase } from './device-tag';
 import { HostBase } from './host';
@@ -22,6 +22,7 @@ export interface OrganizationRelationTraits {
   devices?: DeviceBase[];
   userInvitations?: UserAndInvitationTokenBase[];
   organizationSlack?: OrganizationSlackBase[];
+  liveSessions?: LiveSessionBase[];
 }
 
 export interface OrganizationResponseTraits {
