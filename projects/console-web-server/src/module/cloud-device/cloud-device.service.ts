@@ -81,16 +81,16 @@ export class CloudDeviceService {
 
     const devices = await query.getMany();
 
-    const hasAvailableDevice = devices.some((device) => device.usageState === DeviceUsageState.available);
+    const hasAvailableDevice = devices.some((device) => device.usageState === DeviceUsageState.AVAILABLE);
     if (hasAvailableDevice) {
-      return DeviceUsageState.available;
+      return DeviceUsageState.AVAILABLE;
     }
 
-    const hasPreparingDevice = devices.some((device) => device.usageState === DeviceUsageState.preparing);
+    const hasPreparingDevice = devices.some((device) => device.usageState === DeviceUsageState.PREPARING);
     if (hasPreparingDevice) {
-      return DeviceUsageState.preparing;
+      return DeviceUsageState.PREPARING;
     }
 
-    return DeviceUsageState.busy;
+    return DeviceUsageState.IN_USE;
   }
 }
