@@ -1,7 +1,7 @@
 import { LiveSessionId } from '@dogu-private/types';
 import { errorify } from '@dogu-tech/common';
 import { InjectDataSource } from '@nestjs/typeorm';
-import { OnGatewayConnection, OnGatewayDisconnect, WebSocketGateway } from '@nestjs/websockets';
+import { OnGatewayConnection, WebSocketGateway } from '@nestjs/websockets';
 import { IncomingMessage } from 'http';
 import { DataSource } from 'typeorm';
 import WebSocket from 'ws';
@@ -9,7 +9,7 @@ import { LiveSession } from '../../db/entity/live-session.entity';
 import { DoguLogger } from '../logger/logger';
 
 @WebSocketGateway({ path: '/live-session-heartbeat' })
-export class LiveSessionHeartbeatGateway implements OnGatewayConnection, OnGatewayDisconnect {
+export class LiveSessionHeartbeatGateway implements OnGatewayConnection {
   constructor(
     private readonly logger: DoguLogger,
     @InjectDataSource()
@@ -49,8 +49,6 @@ export class LiveSessionHeartbeatGateway implements OnGatewayConnection, OnGatew
       return;
     }
   }
-
-  async handleDisconnect(webSocket: WebSocket): Promise<void> {}
 
   private updateHeartbeat(liveSessionId: LiveSessionId): void {
     (async () => {

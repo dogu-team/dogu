@@ -85,6 +85,9 @@ export class LiveSessionUpdater implements OnModuleInit, OnModuleDestroy {
 
       if (newCloseWaits.length > 0) {
         await manager.save(newCloseWaits);
+        this.logger.debug('LiveSessionUpdater: createdToCloseWait', {
+          newCloseWaits,
+        });
       }
     });
   }
@@ -118,10 +121,22 @@ export class LiveSessionUpdater implements OnModuleInit, OnModuleDestroy {
 
       if (toCreateds.length > 0) {
         await manager.save(toCreateds);
+        this.logger.debug('LiveSessionUpdater: closeWaitToCreatedOrClosed', {
+          toCreateds,
+        });
       }
 
       const toCloses = closeWaits
         .filter((liveSession) => toCreateds.findIndex((toCreated) => toCreated.liveSessionId === liveSession.liveSessionId) === -1)
+        .filter((liveSession) => {
+          const allowedTime = new Date().getTime() - config.liveSession.closeWait.allowedMilliseconds;
+          if (liveSession.closeWaitAt) {
+            // old closeWaitAt
+            return liveSession.closeWaitAt.getTime() < allowedTime;
+          } else {
+            throw new Error('closeWaitAt must not be null');
+          }
+        })
         .map((liveSession) => {
           liveSession.state = LiveSessionState.CLOSED;
           liveSession.closedAt = new Date();
@@ -130,6 +145,9 @@ export class LiveSessionUpdater implements OnModuleInit, OnModuleDestroy {
 
       if (toCloses.length > 0) {
         await manager.save(toCloses);
+        this.logger.debug('LiveSessionUpdater: closeWaitToCreatedOrClosed', {
+          toCloses,
+        });
 
         const deviceIds = toCloses.map((liveSession) => liveSession.deviceId);
         const devices = await manager.getRepository(Device).find({
@@ -142,6 +160,9 @@ export class LiveSessionUpdater implements OnModuleInit, OnModuleDestroy {
           return device;
         });
         await manager.save(devices);
+        this.logger.debug('LiveSessionUpdater: closeWaitToCreatedOrClosed', {
+          devices,
+        });
       }
     });
   }

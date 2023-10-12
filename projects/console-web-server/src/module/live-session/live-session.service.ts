@@ -6,12 +6,14 @@ import { DataSource } from 'typeorm';
 import { v4 } from 'uuid';
 import { Device } from '../../db/entity/device.entity';
 import { LiveSession } from '../../db/entity/live-session.entity';
+import { DoguLogger } from '../logger/logger';
 
 @Injectable()
 export class LiveSessionService {
   constructor(
     @InjectDataSource()
     private readonly dataSource: DataSource,
+    private readonly logger: DoguLogger,
   ) {}
 
   async findAllByQuery(query: LiveSessionFindQueryDto): Promise<LiveSession[]> {
@@ -47,6 +49,7 @@ export class LiveSessionService {
 
       device.usageState = DeviceUsageState.IN_USE;
       await manager.getRepository(Device).save(device);
+      this.logger.debug('Device usageState updated', { device });
 
       const created = manager.getRepository(LiveSession).create({
         liveSessionId: v4(),
@@ -55,6 +58,7 @@ export class LiveSessionService {
         deviceId: device.deviceId,
       });
       const saved = await manager.getRepository(LiveSession).save(created);
+      this.logger.debug('LiveSession created', { saved });
       return saved;
     });
   }
