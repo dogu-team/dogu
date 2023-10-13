@@ -1,4 +1,4 @@
-import { CloudDeviceMetadataBase, DevicePropCamel, DeviceUsageState } from '@dogu-private/console';
+import { CloudDeviceByModelResponse, CloudDeviceMetadataBase, DevicePropCamel, DeviceUsageState } from '@dogu-private/console';
 import { DeviceConnectionState, DeviceId } from '@dogu-private/types';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
@@ -22,8 +22,36 @@ export class CloudDeviceService {
     const modelNameFilterClause = keyword ? `device.${DevicePropCamel.modelName} ~* :keyword` : '1=1';
     const manufacturerFilterClause = keyword ? `device.${DevicePropCamel.manufacturer} ~* :keyword` : '1=1';
 
+    // pick representative device for each model
+    const cloudDevices = await this.createCloudDeviceDefaultQuery().getMany();
+
+    const deviceMap = new Map<string, Device>();
+    cloudDevices.forEach((device) => {
+      const key = `${device.model}`;
+      const existingDevice = deviceMap.get(key);
+
+      if (!existingDevice) {
+        deviceMap.set(key, device);
+        return;
+      }
+
+      if (device.usageState < existingDevice.usageState) {
+        deviceMap.set(key, device);
+        return;
+      }
+
+      if (device.usageState === existingDevice.usageState) {
+        if (device.connectionState === DeviceConnectionState.DEVICE_CONNECTION_STATE_CONNECTED) {
+          deviceMap.set(key, device);
+          return;
+        }
+      }
+    });
+    const representativeDevices = Array.from(deviceMap.values());
+    const deviceIds = representativeDevices.map((device) => device.deviceId);
+
     const query = this.createCloudDeviceDefaultQuery()
-      .andWhere(`device.${DevicePropCamel.model} IN (SELECT DISTINCT device.${DevicePropCamel.model} FROM device)`) // Subquery to select distinct models
+      .where('device.device_id IN (:...deviceIds)', { deviceIds })
       .andWhere(`(${modelFilterClause} OR ${modelNameFilterClause} OR ${manufacturerFilterClause})`, { keyword: `.*${keyword}.*` })
       .orderBy(`device.${DevicePropCamel.modelName}`, 'ASC')
       .addOrderBy(`device.${DevicePropCamel.model}`, 'ASC')
@@ -31,9 +59,8 @@ export class CloudDeviceService {
       .take(dto.getDBLimit());
 
     const [devices, totalCount] = await query.getManyAndCount();
-    const usageStates = await Promise.all(devices.map((device) => this.mergeDeviceUsageState({ model: device.model })));
 
-    const metaInfos: CloudDeviceMetadataBase[] = devices.map((device, i) => {
+    const metaInfos: CloudDeviceMetadataBase[] = devices.map((device) => {
       return {
         model: device.model,
         modelName: device.modelName,
@@ -43,24 +70,45 @@ export class CloudDeviceService {
         memory: device.memory,
         platform: device.platform,
         location: device.location,
-        usageState: usageStates[i],
+        connectionState: device.connectionState,
+        usageState: device.usageState,
       };
     });
 
     return new Page<CloudDeviceMetadataBase>(dto.page, dto.offset, totalCount, metaInfos);
   }
 
-  async findCloudDeviceVersionsByModel(model: string): Promise<Device[]> {
-    const query = this.createCloudDeviceDefaultQuery().andWhere(`device.model = :model`, { model: model }).select(['device.version', 'device.model']);
-
+  async findCloudDeviceVersionsByModel(model: string): Promise<CloudDeviceByModelResponse[]> {
+    const query = this.createCloudDeviceDefaultQuery()
+      .andWhere(`device.model = :model`, { model: model })
+      .select([`device.${DevicePropCamel.version}`, `device.${DevicePropCamel.model}`, `device.${DevicePropCamel.usageState}`, `device.${DevicePropCamel.connectionState}`]);
     const devices = await query.getMany();
-    const usageStates = await Promise.all(devices.map((device) => this.mergeDeviceUsageState({ model: device.model, version: device.version })));
 
-    devices.forEach((device, i) => {
-      device.usageState = usageStates[i];
+    // pick representative device for each version
+    const deviceMap = new Map<string, Device>();
+    devices.forEach((device) => {
+      const key = `${device.version}`;
+      const existingDevice = deviceMap.get(key);
+
+      if (!existingDevice) {
+        deviceMap.set(key, device);
+        return;
+      }
+
+      if (device.usageState < existingDevice.usageState) {
+        deviceMap.set(key, device);
+        return;
+      }
+
+      if (device.usageState === existingDevice.usageState) {
+        if (device.connectionState === DeviceConnectionState.DEVICE_CONNECTION_STATE_CONNECTED) {
+          deviceMap.set(key, device);
+          return;
+        }
+      }
     });
 
-    return devices;
+    return Array.from(deviceMap.values());
   }
 
   async findCloudDeviceById(deviceId: DeviceId): Promise<Device> {
