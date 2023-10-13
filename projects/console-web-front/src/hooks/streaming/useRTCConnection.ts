@@ -3,12 +3,13 @@ import { OrganizationId, PrivateProtocol, StreamingOption } from '@dogu-private/
 import { DeviceRTCCaller } from '@dogu-private/webrtc';
 import { AxiosError } from 'axios';
 import { useRouter } from 'next/router';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { checkDeviceStateAsync } from 'src/api/device';
 import useStreamingOptionStore from 'src/stores/streaming-option';
 import { StreamingError, StreamingErrorType } from 'src/types/streaming';
 import { config } from '../../../config';
+import useEventStore from '../../stores/events';
 import { createDataChannel } from '../../utils/streaming/web-rtc';
 import { WebRtcExchangerFactory } from '../../utils/streaming/web-rtc-exchanger';
 
@@ -29,6 +30,29 @@ const useRTCConnection = ({ device, pid }: Option, sendThrottleMs: number) => {
   const [haConnectionError, setHAConnectionError] = useState<StreamingError>();
   const [loading, setLoading] = useState(true);
   const videoRef = useRef<HTMLVideoElement>(null);
+
+  const cleanUp = useCallback(() => {
+    console.debug('deviceRTCCaller', deviceRTCCaller);
+    deviceRTCCaller?.channel?.close();
+    console.debug(`close connection data ${device?.deviceId}`);
+
+    console.debug('peer', peerConnection);
+    peerConnection?.close();
+    console.debug(`close connection ${device?.deviceId}`);
+  }, [deviceRTCCaller, peerConnection]);
+
+  useEffect(() => {
+    if (peerConnection) {
+      const unsub = useEventStore.subscribe(({ eventName }) => {
+        if (eventName === 'onCloudHeartbeatSocketClosed') {
+          cleanUp();
+          setHAConnectionError(new StreamingError(StreamingErrorType.CONNECTION_REFUSED, 'Session has been expired'));
+        }
+      });
+
+      return unsub;
+    }
+  }, [peerConnection, cleanUp]);
 
   useEffect(() => {
     const checkDeviceState = async () => {
@@ -202,15 +226,9 @@ const useRTCConnection = ({ device, pid }: Option, sendThrottleMs: number) => {
 
   useEffect(() => {
     return () => {
-      console.debug('deviceRTCCaller', deviceRTCCaller);
-      deviceRTCCaller?.channel?.close();
-      console.debug(`close connection data ${device?.deviceId}`);
-
-      console.debug('peer', peerConnection);
-      peerConnection?.close();
-      console.debug(`close connection ${device?.deviceId}`);
+      cleanUp();
     };
-  }, [peerConnection, deviceRTCCaller, fps, resolution]);
+  }, [cleanUp, fps, resolution]);
 
   return { loading, peerConnection, deviceRTCCaller, videoRef, error: haConnectionError };
 };

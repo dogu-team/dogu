@@ -9,8 +9,8 @@ import useGamiumClient from '../../hooks/streaming/useGamiumClient';
 import useInspector from '../../hooks/streaming/useInspector';
 import useLocalDeviceDetect from '../../hooks/streaming/useLocalDeviceDetect';
 import useRTCConnection from '../../hooks/streaming/useRTCConnection';
-import useEventStore from '../../stores/events';
 import { StreamingMode } from '../../types/device';
+import { StreamingErrorType } from '../../types/streaming';
 import ErrorBox from '../common/boxes/ErrorBox';
 import ApplicationUploader from './ApplicationUploader';
 import DeviceControlToolbar from './DeviceControlToolbar';
@@ -42,28 +42,22 @@ const DeviceStreaming = ({ device, children, pid, isCloudDevice }: Props) => {
   const inspector = useInspector(deviceService?.deviceInspector, device ?? null, videoRef);
   const { t } = useTranslation();
 
-  useEffect(() => {
-    if (peerConnection) {
-      const unsub = useEventStore.subscribe(({ eventName }) => {
-        if (eventName === 'cloudHeartbeatSocketClosed') {
-          peerConnection.close();
-        }
-      });
-
-      return unsub;
-    }
-  }, [peerConnection]);
-
   if (error) {
-    return (
-      <>
+    if (error.type === StreamingErrorType.CONNECTION_REFUSED) {
+      return (
         <div style={{ flex: 1 }}>
-          <ErrorBox
-            title={t('device-streaming:deviceStreamingStreamingErrorTitle')}
-            desc={t('device-streaming:deviceRTCStreamingDisconnectedErrorMessage')}
-          />
+          <ErrorBox title={'Your session has been expired'} desc={''} />
         </div>
-      </>
+      );
+    }
+
+    return (
+      <div style={{ flex: 1 }}>
+        <ErrorBox
+          title={t('device-streaming:deviceStreamingStreamingErrorTitle')}
+          desc={t('device-streaming:deviceRTCStreamingDisconnectedErrorMessage')}
+        />
+      </div>
     );
   }
 

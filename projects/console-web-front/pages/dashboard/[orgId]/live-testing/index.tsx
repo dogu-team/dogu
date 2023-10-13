@@ -2,7 +2,7 @@ import { LiveSessionBase } from '@dogu-private/console';
 import styled from 'styled-components';
 import Head from 'next/head';
 import { Divider } from 'antd';
-import useSWR from 'swr';
+import useSWR, { mutate } from 'swr';
 
 import { NextPageWithLayout } from 'pages/_app';
 import ConsoleLayout from 'src/components/layouts/ConsoleLayout';
@@ -19,10 +19,14 @@ import { swrAuthFetcher } from '../../../../src/api';
 import useRefresh from '../../../../src/hooks/useRefresh';
 
 const OrganizationLiveTestingPage: NextPageWithLayout<OrganizationServerSideProps> = ({ user, organization }) => {
-  const { data, isLoading } = useSWR<LiveSessionBase[]>(
+  const { data, isLoading, mutate } = useSWR<LiveSessionBase[]>(
     `/organizations/${organization.organizationId}/live-sessions`,
     swrAuthFetcher,
     { keepPreviousData: true, revalidateOnFocus: false },
+  );
+
+  useRefresh(['onRefreshClicked', 'onCloudLiveTestingSessionCreated', 'onCloudLiveTestingSessionClosed'], () =>
+    mutate(),
   );
 
   if (isLoading) {
@@ -43,7 +47,7 @@ const OrganizationLiveTestingPage: NextPageWithLayout<OrganizationServerSideProp
                 <RefreshButton />
               </FlexBox>
             }
-            table={<LiveTestingSessionList organizationId={organization.organizationId} />}
+            table={<LiveTestingSessionList data={data} />}
           />
           <Divider />
         </>

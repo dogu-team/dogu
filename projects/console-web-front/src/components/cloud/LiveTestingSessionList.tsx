@@ -1,16 +1,15 @@
-import { LiveSessionState, OrganizationId, Platform } from '@dogu-private/types';
+import { LiveSessionState, Platform } from '@dogu-private/types';
 import { LiveSessionBase } from '@dogu-private/console';
-import useSWR from 'swr';
 import styled from 'styled-components';
 import { List, Button } from 'antd';
 import { useRouter } from 'next/router';
+import Link from 'next/link';
 
-import { swrAuthFetcher } from '../../api';
 import { flexRowBaseStyle, listItemStyle, tableCellStyle, tableHeaderStyle } from '../../styles/box';
-import useRefresh from '../../hooks/useRefresh';
 import { deviceBrandMapper } from '../../resources/device/brand';
 import PlatformIcon from '../device/PlatformIcon';
-import Link from 'next/link';
+import { sendSuccessNotification } from '../../utils/antd';
+import LiveTestingCloseSessionButton from './LiveTestingCloseSessionButton';
 
 const SessionState: React.FC<{ state: LiveSessionState; closeWaitAt: Date | null }> = ({ state, closeWaitAt }) => {
   if (state === LiveSessionState.CREATED) {
@@ -49,7 +48,9 @@ const SessionItem: React.FC<ItemProps> = ({ session }) => {
           >
             <Button type="primary">Enter</Button>
           </Link>
-          <Button danger>Close</Button>
+          <LiveTestingCloseSessionButton onClose={() => sendSuccessNotification('Session closed!')}>
+            Close
+          </LiveTestingCloseSessionButton>
         </ButtonWrapper>
       </ItemInner>
     </Item>
@@ -57,18 +58,11 @@ const SessionItem: React.FC<ItemProps> = ({ session }) => {
 };
 
 interface Props {
-  organizationId: OrganizationId;
+  data: LiveSessionBase[];
 }
 
-const LiveTestingSessionList: React.FC<Props> = ({ organizationId }) => {
+const LiveTestingSessionList: React.FC<Props> = ({ data }) => {
   const router = useRouter();
-  const { data, error, isLoading, mutate } = useSWR<LiveSessionBase[]>(
-    `/organizations/${organizationId}/live-sessions`,
-    swrAuthFetcher,
-    { keepPreviousData: true, revalidateOnFocus: false },
-  );
-
-  useRefresh(['onRefreshClicked'], () => mutate());
 
   return (
     <>
@@ -82,7 +76,6 @@ const LiveTestingSessionList: React.FC<Props> = ({ organizationId }) => {
         </ItemInner>
       </Header>
       <List<LiveSessionBase>
-        loading={isLoading}
         dataSource={data}
         renderItem={(session) => <SessionItem session={session} />}
         rowKey={(session) => session.liveSessionId}

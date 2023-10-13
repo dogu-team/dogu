@@ -1,12 +1,13 @@
 import { DeviceBase, FeatureTableBase, OrganizationBase, ProjectBase, UserBase } from '@dogu-private/console';
 import { DeviceId, OrganizationId } from '@dogu-private/types';
 import { GetServerSideProps } from 'next';
+
 import { getCloudDeviceByIdInServerSide } from '../../src/api/cloud-device';
 import { getDeviceByIdInServerSide } from '../../src/api/device';
-
 import { getOrganizationInServerSide } from '../../src/api/organization';
 import { getProjectInServerSide } from '../../src/api/project';
 import { getUserInServerSide } from '../../src/api/registery';
+import LiveTestingCloseSessionButton from '../../src/components/cloud/LiveTestingCloseSessionButton';
 import { getFeatureConfigInServerSide } from '../api/feature';
 import StudioLayout from '../components/studio/StudioLayout';
 
@@ -23,8 +24,21 @@ export interface CloudStudioTestingPageProps extends Omit<StudioTestingPageProps
 export const getStudioTestingLayout = (
   page: React.ReactElement<StudioTestingPageProps | CloudStudioTestingPageProps>,
 ) => {
+  return <StudioLayout device={page.props.device}>{page}</StudioLayout>;
+};
+
+export const getCloudStudioTestingLayout = (
+  page: React.ReactElement<StudioTestingPageProps | CloudStudioTestingPageProps>,
+) => {
   return (
-    <StudioLayout editionType={page.props.feature.defaultEdition} device={page.props.device}>
+    <StudioLayout
+      device={page.props.device}
+      headerRight={
+        <LiveTestingCloseSessionButton onClose={() => window.close()} type="primary">
+          Close session
+        </LiveTestingCloseSessionButton>
+      }
+    >
       {page}
     </StudioLayout>
   );

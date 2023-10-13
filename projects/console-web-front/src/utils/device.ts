@@ -1,5 +1,5 @@
-import { DeviceBase } from '@dogu-private/console';
-import { Platform } from '@dogu-private/types';
+import { DeviceBase, DeviceUsageState } from '@dogu-private/console';
+import { DeviceConnectionState, Platform } from '@dogu-private/types';
 
 export const isDesktop = (device: DeviceBase | undefined) => {
   if (device) {
@@ -11,4 +11,11 @@ export const isDesktop = (device: DeviceBase | undefined) => {
   }
 
   return false;
+};
+
+export const isCloudDeviceAvailable = (device: Pick<DeviceBase, 'connectionState' | 'usageState'>) => {
+  return (
+    device.usageState === DeviceUsageState.AVAILABLE &&
+    device.connectionState === DeviceConnectionState.DEVICE_CONNECTION_STATE_CONNECTED
+  );
 };

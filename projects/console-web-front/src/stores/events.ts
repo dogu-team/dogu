@@ -78,7 +78,9 @@ export type EventName =
   | 'onLicenseUpdated'
 
   // cloud
-  | 'cloudHeartbeatSocketClosed';
+  | 'onCloudLiveTestingSessionCreated'
+  | 'onCloudLiveTestingSessionClosed'
+  | 'onCloudHeartbeatSocketClosed';
 
 interface EventStore {
   eventName: EventName | null;

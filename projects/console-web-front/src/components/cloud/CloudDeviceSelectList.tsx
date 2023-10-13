@@ -5,6 +5,7 @@ import styled from 'styled-components';
 import { List, Button } from 'antd';
 import { useRouter } from 'next/router';
 import { isAxiosError } from 'axios';
+import { shallow } from 'zustand/shallow';
 
 import { swrAuthFetcher } from '../../api/index';
 import { flexRowBaseStyle, listItemStyle, tableCellStyle, tableHeaderStyle } from '../../styles/box';
@@ -12,10 +13,15 @@ import PlatformIcon from '../device/PlatformIcon';
 import { sendErrorNotification } from '../../utils/antd';
 import { getErrorMessageFromAxios } from '../../utils/error';
 import { createLiveTestingSession } from '../../api/live-session';
+import useEventStore from '../../stores/events';
+import { isCloudDeviceAvailable } from '../../utils/device';
 
 const SelectItem: React.FC<{ item: CloudDeviceByModelResponse; platform: Platform }> = ({ item, platform }) => {
+  const fireEvent = useEventStore((state) => state.fireEvent, shallow);
   const router = useRouter();
+
   const organizationId = router.query.orgId as OrganizationId;
+  const isAvailable = isCloudDeviceAvailable(item);
 
   const handleStart = async () => {
     try {
@@ -24,6 +30,7 @@ const SelectItem: React.FC<{ item: CloudDeviceByModelResponse; platform: Platfor
         deviceModel: item.model,
         deviceVersion: item.version,
       });
+      fireEvent('onCloudLiveTestingSessionCreated', session);
       window.open(`/dashboard/${organizationId}/live-testing/${session.liveSessionId}/${session.deviceId}`, '_blank');
     } catch (e) {
       if (isAxiosError(e)) {
@@ -40,7 +47,7 @@ const SelectItem: React.FC<{ item: CloudDeviceByModelResponse; platform: Platfor
           &nbsp;{item.version}
         </OneSpan>
         <ButtonWrapper>
-          <Button type="primary" disabled={item.usageState !== DeviceUsageState.AVAILABLE} onClick={handleStart}>
+          <Button type="primary" disabled={!isAvailable} onClick={handleStart}>
             Start
           </Button>
         </ButtonWrapper>

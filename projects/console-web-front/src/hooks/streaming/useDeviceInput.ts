@@ -11,6 +11,7 @@ import {
   mapWebKeyboardToDeviceKeyboard,
   mapWebMetaKeyToDeviceMetaState,
 } from 'src/utils/streaming/streaming';
+import { shallow } from 'zustand/shallow';
 import useEventStore from '../../stores/events';
 import { sendErrorNotification } from '../../utils/antd';
 import useWebSocket from '../useWebSocket';
@@ -39,22 +40,24 @@ const useDeviceInput = (deviceRTCCaller: DeviceRTCCaller | undefined, isCloudDev
       ? `/live-session-heartbeat?organizationId=${router.query.orgId}&liveSessionId=${router.query.sessionId}`
       : null,
   );
-  const fireEvent = useEventStore((state) => state.fireEvent);
+  const fireEvent = useEventStore((state) => state.fireEvent, shallow);
 
   useEffect(() => {
     if (cloudHeartbeatSocketRef.current) {
       const handleClose = () => {
-        fireEvent('cloudHeartbeatSocketClosed');
+        fireEvent('onCloudHeartbeatSocketClosed');
       };
 
       cloudHeartbeatSocketRef.current.onclose = handleClose;
       cloudHeartbeatSocketRef.current.onerror = handleClose;
 
       return () => {
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         cloudHeartbeatSocketRef.current?.close();
       };
     }
-  });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleControlResult = useCallback((result: CfGdcDaControlResult | null) => {
     if (result === null) {

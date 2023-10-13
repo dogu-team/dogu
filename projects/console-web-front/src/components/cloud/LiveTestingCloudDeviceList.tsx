@@ -1,4 +1,4 @@
-import { CloudDeviceMetadataBase, DeviceUsageState, PageBase, ceilDeviceMemory } from '@dogu-private/console';
+import { CloudDeviceMetadataBase, PageBase, ceilDeviceMemory } from '@dogu-private/console';
 import { List, Button, Modal } from 'antd';
 import { useRouter } from 'next/router';
 import useSWR from 'swr';
@@ -14,9 +14,12 @@ import useModal from '../../hooks/useModal';
 import PlatformIcon from '../device/PlatformIcon';
 import CloudDeviceVersionList from './CloudDeviceSelectList';
 import useCloudDeviceFilterStore from '../../stores/cloud-device-filter';
+import { isCloudDeviceAvailable } from '../../utils/device';
 
 const DeviceItem: React.FC<{ device: CloudDeviceMetadataBase }> = ({ device }) => {
   const [isOpen, openModal, closeModal] = useModal();
+
+  const isAvailable = isCloudDeviceAvailable(device);
 
   return (
     <>
@@ -32,11 +35,7 @@ const DeviceItem: React.FC<{ device: CloudDeviceMetadataBase }> = ({ device }) =
           </OneSpan>
           <OneSpan>{Number(device.memory) ? `${ceilDeviceMemory(Number(device.memory))}` : '-'}</OneSpan>
           <ButtonWrapper>
-            <Button
-              type="primary"
-              onClick={() => openModal()}
-              disabled={device.usageState !== DeviceUsageState.AVAILABLE}
-            >
+            <Button type="primary" onClick={() => openModal()} disabled={!isAvailable}>
               Start
             </Button>
           </ButtonWrapper>

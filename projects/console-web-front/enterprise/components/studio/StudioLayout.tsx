@@ -15,10 +15,10 @@ interface Props {
   children: React.ReactNode;
   // project: ProjectBase;
   device: DeviceBase | null;
-  editionType: EDITION_TYPE;
+  headerRight?: React.ReactNode;
 }
 
-const StudioLayout = ({ children, device, editionType }: Props) => {
+const StudioLayout = ({ children, device, headerRight }: Props) => {
   const router = useRouter();
 
   return (
@@ -31,6 +31,7 @@ const StudioLayout = ({ children, device, editionType }: Props) => {
           image={
             <Image src={resources.icons.studioLogo} height={48} width={170} alt="Dogu Studio" unoptimized priority />
           }
+          right={headerRight}
         />
         <FlexRow>
           {/* <Side>
