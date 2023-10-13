@@ -1,6 +1,7 @@
 import { DeviceBase, FeatureTableBase, OrganizationBase, ProjectBase, UserBase } from '@dogu-private/console';
-import { DeviceId, OrganizationId } from '@dogu-private/types';
+import { DeviceId, LiveSessionId, OrganizationId } from '@dogu-private/types';
 import { GetServerSideProps } from 'next';
+import { useRouter } from 'next/router';
 
 import { getCloudDeviceByIdInServerSide } from '../../src/api/cloud-device';
 import { getDeviceByIdInServerSide } from '../../src/api/device';
@@ -30,11 +31,18 @@ export const getStudioTestingLayout = (
 export const getCloudStudioTestingLayout = (
   page: React.ReactElement<StudioTestingPageProps | CloudStudioTestingPageProps>,
 ) => {
+  const router = useRouter();
+
   return (
     <StudioLayout
       device={page.props.device}
       headerRight={
-        <LiveTestingCloseSessionButton onClose={() => window.close()} type="primary">
+        <LiveTestingCloseSessionButton
+          organizationId={page.props.organization.organizationId}
+          sessionId={router.query.sessionId as LiveSessionId}
+          onClose={() => window.close()}
+          type="primary"
+        >
           Close session
         </LiveTestingCloseSessionButton>
       }

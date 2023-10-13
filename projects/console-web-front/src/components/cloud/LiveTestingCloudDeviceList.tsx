@@ -15,11 +15,21 @@ import PlatformIcon from '../device/PlatformIcon';
 import CloudDeviceVersionList from './CloudDeviceSelectList';
 import useCloudDeviceFilterStore from '../../stores/cloud-device-filter';
 import { isCloudDeviceAvailable } from '../../utils/device';
+import { useEffect } from 'react';
+import useEventStore from '../../stores/events';
 
 const DeviceItem: React.FC<{ device: CloudDeviceMetadataBase }> = ({ device }) => {
   const [isOpen, openModal, closeModal] = useModal();
 
   const isAvailable = isCloudDeviceAvailable(device);
+
+  useEffect(() => {
+    useEventStore.subscribe(({ eventName }) => {
+      if (eventName === 'onCloudLiveTestingSessionCreated') {
+        closeModal();
+      }
+    });
+  }, []);
 
   return (
     <>

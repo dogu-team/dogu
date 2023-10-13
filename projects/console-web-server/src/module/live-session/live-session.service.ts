@@ -131,7 +131,7 @@ export class LiveSessionService {
       liveSession.state = LiveSessionState.CLOSED;
       liveSession.closedAt = new Date();
     });
-    const closeds = await manager.save(liveSessions);
+    const closeds = await manager.getRepository(LiveSession).save(liveSessions);
     await Promise.all(
       liveSessions.map(async (liveSession) => {
         await this.publishCloseEvent(liveSession.liveSessionId, 'closed!');
@@ -150,7 +150,7 @@ export class LiveSessionService {
     devices.forEach((device) => {
       device.usageState = DeviceUsageState.PREPARING;
     });
-    await manager.save(devices);
+    await manager.getRepository(Device).save(devices);
     this.logger.debug('LiveSessionService.close.devices', {
       devices,
     });

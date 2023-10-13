@@ -48,7 +48,11 @@ const SessionItem: React.FC<ItemProps> = ({ session }) => {
           >
             <Button type="primary">Enter</Button>
           </Link>
-          <LiveTestingCloseSessionButton onClose={() => sendSuccessNotification('Session closed!')}>
+          <LiveTestingCloseSessionButton
+            sessionId={session.liveSessionId}
+            organizationId={session.organizationId}
+            onClose={() => sendSuccessNotification('Session closed!')}
+          >
             Close
           </LiveTestingCloseSessionButton>
         </ButtonWrapper>
