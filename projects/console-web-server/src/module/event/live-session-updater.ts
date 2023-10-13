@@ -134,7 +134,7 @@ export class LiveSessionUpdater implements OnModuleInit, OnModuleDestroy {
         });
 
       if (toCloses.length > 0) {
-        await this.liveSessionService.closeInTran(manager, toCloses);
+        await this.liveSessionService.closeInTransaction(manager, toCloses);
       }
     });
   }
