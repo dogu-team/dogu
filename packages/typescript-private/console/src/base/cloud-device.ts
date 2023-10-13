@@ -21,7 +21,7 @@ export const CloudDevicePropSnake = camelToSnakeCasePropertiesOf<CloudDeviceBase
 
 export type CloudDeviceMetadataBase = Pick<
   DeviceBase,
-  'location' | 'model' | 'modelName' | 'manufacturer' | 'resolutionWidth' | 'resolutionHeight' | 'memory' | 'platform' | 'usageState'
+  'location' | 'model' | 'modelName' | 'manufacturer' | 'resolutionWidth' | 'resolutionHeight' | 'memory' | 'platform' | 'usageState' | 'connectionState'
 >;
 
-export type CloudDeviceByModelResponse = Pick<DeviceBase, 'version' | 'model' | 'usageState'>;
+export type CloudDeviceByModelResponse = Pick<DeviceBase, 'version' | 'model' | 'usageState' | 'connectionState'>;
