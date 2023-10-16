@@ -2,7 +2,8 @@ import { LiveSessionBase } from '@dogu-private/console';
 import styled from 'styled-components';
 import Head from 'next/head';
 import { Divider } from 'antd';
-import useSWR, { mutate } from 'swr';
+import useSWR from 'swr';
+import { GetServerSideProps } from 'next';
 
 import { NextPageWithLayout } from 'pages/_app';
 import ConsoleLayout from 'src/components/layouts/ConsoleLayout';
@@ -82,7 +83,15 @@ OrganizationLiveTestingPage.getLayout = (page) => {
   );
 };
 
-export const getServerSideProps = getOrganizationPageServerSideProps;
+export const getServerSideProps: GetServerSideProps<OrganizationServerSideProps> = async (context) => {
+  if (process.env.DOGU_RUN_TYPE === 'self-hosted') {
+    return {
+      notFound: true,
+    };
+  }
+
+  return await getOrganizationPageServerSideProps(context);
+};
 
 export default OrganizationLiveTestingPage;
 

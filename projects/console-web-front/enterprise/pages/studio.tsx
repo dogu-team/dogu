@@ -96,6 +96,12 @@ export const getStudioTestingServerSideProps: GetServerSideProps<StudioTestingPa
 export const getCloudDeviceStudioTestingServerSideProps: GetServerSideProps<CloudStudioTestingPageProps> = async (
   context,
 ) => {
+  if (process.env.DOGU_RUN_TYPE === 'self-hosted') {
+    return {
+      notFound: true,
+    };
+  }
+
   const deviceId = context.query.deviceId as DeviceId | undefined;
 
   if (!deviceId) {
