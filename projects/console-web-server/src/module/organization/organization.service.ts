@@ -713,6 +713,7 @@ export class OrganizationService {
         deviceId: true,
         state: true,
         closeWaitAt: true,
+        createdAt: true,
         device: {
           deviceId: true,
           platform: true,

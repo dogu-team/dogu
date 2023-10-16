@@ -1,22 +1,66 @@
 import { LiveSessionState, Platform } from '@dogu-private/types';
 import { LiveSessionBase } from '@dogu-private/console';
+import { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { List, Button } from 'antd';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
+import { shallow } from 'zustand/shallow';
 
 import { flexRowBaseStyle, listItemStyle, tableCellStyle, tableHeaderStyle } from '../../styles/box';
 import { deviceBrandMapper } from '../../resources/device/brand';
 import PlatformIcon from '../device/PlatformIcon';
 import { sendSuccessNotification } from '../../utils/antd';
 import LiveTestingCloseSessionButton from './LiveTestingCloseSessionButton';
+import { stringifyDurationAsTimer } from '../../utils/date';
+import useEventStore from '../../stores/events';
 
-const SessionState: React.FC<{ state: LiveSessionState; closeWaitAt: Date | null }> = ({ state, closeWaitAt }) => {
-  if (state === LiveSessionState.CREATED) {
-    return <div>Ongoing</div>;
+const SessionState: React.FC<{ session: LiveSessionBase }> = ({ session }) => {
+  const countDuration = useCallback(() => {
+    const now = new Date();
+    if (session.state === LiveSessionState.CREATED) {
+      return now.getTime() - new Date(session.createdAt).getTime();
+    }
+
+    if (session.closeWaitAt) {
+      const closeWaitAt = new Date(session.closeWaitAt).getTime();
+      const THREE_MIN = 3 * 60 * 1000;
+      return THREE_MIN - (now.getTime() - closeWaitAt);
+    }
+
+    return 0;
+  }, [session.state, session.createdAt, session.closeWaitAt]);
+  const [duration, setDuration] = useState<number>(() => {
+    return countDuration();
+  });
+  const fireEvent = useEventStore((state) => state.fireEvent, shallow);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setDuration(countDuration());
+    }, 1000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [countDuration]);
+
+  useEffect(() => {
+    if (duration <= 0) {
+      setDuration(0);
+      fireEvent('onRefreshClicked');
+    }
+  }, [duration]);
+
+  if (session.state === LiveSessionState.CLOSED) {
+    return <div>Closed</div>;
   }
 
-  return <div>{state}</div>;
+  if (session.state === LiveSessionState.CREATED) {
+    return <div>Started {stringifyDurationAsTimer(duration)}</div>;
+  }
+
+  return <div>Close after {stringifyDurationAsTimer(duration)}</div>;
 };
 
 interface ItemProps {
@@ -39,7 +83,7 @@ const SessionItem: React.FC<ItemProps> = ({ session }) => {
           {session.device?.version}
         </OneSpan>
         <OneSpan>
-          <SessionState state={session.state} closeWaitAt={session.closeWaitAt} />
+          <SessionState session={session} />
         </OneSpan>
         <ButtonWrapper>
           <Link

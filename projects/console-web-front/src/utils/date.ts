@@ -101,3 +101,32 @@ export const stringifyDuration = (duration: number): string => {
   const s = Math.floor((duration - h * 1000 * 60 * 60 - m * 1000 * 60) / 1000);
   return `${h}h ${m}m ${s}s`;
 };
+
+/**
+ * get duration diff as mm:ss or hh:mm:ss
+ * @param duration milliseconds
+ * @returns string ex) 00:20 or 01:20:23
+ */
+export const stringifyDurationAsTimer = (duration: number): string => {
+  if (duration < 1000) {
+    return `00:00`;
+  }
+
+  if (duration < 1000 * 60) {
+    const s = Math.floor(duration / 1000);
+    return `00:${addZeroBeforeString(s.toString())}`;
+  }
+
+  if (duration < 1000 * 60 * 60) {
+    const m = Math.floor(duration / (1000 * 60));
+    const s = Math.floor((duration - m * 1000 * 60) / 1000);
+    return `${addZeroBeforeString(m.toString())}:${addZeroBeforeString(s.toString())}`;
+  }
+
+  const h = Math.floor(duration / (1000 * 60 * 60));
+  const m = Math.floor((duration - h * 1000 * 60 * 60) / (1000 * 60));
+  const s = Math.floor((duration - h * 1000 * 60 * 60 - m * 1000 * 60) / 1000);
+  return `${addZeroBeforeString(h.toString())}:${addZeroBeforeString(m.toString())}:${addZeroBeforeString(
+    s.toString(),
+  )}`;
+};

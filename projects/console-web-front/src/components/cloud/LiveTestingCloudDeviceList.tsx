@@ -29,7 +29,7 @@ const DeviceItem: React.FC<{ device: CloudDeviceMetadataBase }> = ({ device }) =
         closeModal();
       }
     });
-  }, []);
+  }, [closeModal]);
 
   return (
     <>
