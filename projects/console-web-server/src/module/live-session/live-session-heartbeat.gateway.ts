@@ -23,9 +23,6 @@ export class LiveSessionHeartbeatGateway implements OnGatewayConnection {
     private readonly liveSessionService: LiveSessionService,
   ) {}
 
-  /**
-   * @fixme - henry: validation
-   */
   async handleConnection(webSocket: WebSocket, incomingMessage: IncomingMessage): Promise<void> {
     const url = new URL(`http://localhost${incomingMessage.url ?? ''}`);
     const organizationId = url.searchParams.get('organizationId');
@@ -59,22 +56,10 @@ export class LiveSessionHeartbeatGateway implements OnGatewayConnection {
       (async () => {
         const count = await this.liveSessionService.decreaseParticipantsCount(liveSessionId);
         if (count < 1) {
-          await this.dataSource.transaction(async (manager) => {
-            const liveSession = await manager.getRepository(LiveSession).findOne({ where: { liveSessionId } });
-            if (!liveSession) {
-              return;
-            }
-
-            if (liveSession.organizationId !== organizationId) {
-              return;
-            }
-
-            if (liveSession.state === LiveSessionState.CREATED) {
-              liveSession.state = LiveSessionState.CLOSE_WAIT;
-              await manager.getRepository(LiveSession).save(liveSession);
-              this.logger.debug('LiveSessionHeartbeatGateway.onClose.toCloseWait', { liveSession });
-            }
-          });
+          const rv = await this.dataSource
+            .getRepository(LiveSession)
+            .update({ liveSessionId, state: LiveSessionState.CLOSED, organizationId }, { state: LiveSessionState.CLOSE_WAIT });
+          this.logger.debug('LiveSessionHeartbeatGateway.onClose.toCloseWait', { rv });
         }
       })().catch((error) => {
         this.logger.error('LiveSessionHeartbeatGateway.onClose.catch', { error: errorify(error) });

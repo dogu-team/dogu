@@ -25,7 +25,7 @@ import { notEmpty } from '@dogu-tech/common';
 import { HttpException, HttpStatus, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import crypto from 'crypto';
-import { DataSource, DeepPartial, EntityManager, In } from 'typeorm';
+import { DataSource, DeepPartial, EntityManager, In, IsNull } from 'typeorm';
 import { v4 } from 'uuid';
 
 import {
@@ -699,6 +699,7 @@ export class OrganizationService {
       where: {
         organizationId,
         state: In([LiveSessionState.CREATED, LiveSessionState.CLOSE_WAIT]),
+        closedAt: IsNull(),
       },
       relations: ['device'],
       order: {

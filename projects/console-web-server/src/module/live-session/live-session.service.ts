@@ -1,7 +1,7 @@
 import { DevicePropCamel, DeviceUsageState, LiveSessionCreateRequestBodyDto, LiveSessionFindQueryDto, OrganizationPropCamel } from '@dogu-private/console';
 import { LiveSessionId, LiveSessionState } from '@dogu-private/types';
 import { InjectRedis } from '@liaoliaots/nestjs-redis';
-import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import Redis from 'ioredis';
 import { DataSource, EntityManager, In } from 'typeorm';
@@ -132,11 +132,7 @@ export class LiveSessionService {
       liveSession.closedAt = new Date();
     });
     const closeds = await manager.getRepository(LiveSession).save(liveSessions);
-    await Promise.all(
-      liveSessions.map(async (liveSession) => {
-        await this.publishCloseEvent(liveSession.liveSessionId, 'closed!');
-      }),
-    );
+
     this.logger.debug('LiveSessionService.close.liveSessions', {
       liveSessions,
     });
@@ -163,7 +159,7 @@ export class LiveSessionService {
   }
 
   async closeByLiveSessionId(liveSessionId: LiveSessionId): Promise<LiveSession> {
-    return await this.dataSource.transaction(async (manager) => {
+    const closedSession = await this.dataSource.transaction(async (manager) => {
       const liveSession = await manager.getRepository(LiveSession).findOne({ where: { liveSessionId } });
       if (!liveSession) {
         throw new NotFoundException(`LiveSession not found for liveSessionId: ${liveSessionId}`);
@@ -173,12 +169,11 @@ export class LiveSessionService {
         return liveSession;
       }
 
-      const closeds = await this.closeInTransaction(manager, [liveSession]);
-      if (closeds.length !== 1) {
-        throw new InternalServerErrorException(`LiveSession close failed for liveSessionId: ${liveSessionId}`);
-      }
-
-      return closeds[0];
+      const rv = await this.closeInTransaction(manager, [liveSession]);
+      return rv[0];
     });
+
+    await this.publishCloseEvent(closedSession.liveSessionId, 'closed!');
+    return closedSession;
   }
 }

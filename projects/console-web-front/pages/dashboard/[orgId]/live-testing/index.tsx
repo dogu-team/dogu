@@ -22,7 +22,7 @@ const OrganizationLiveTestingPage: NextPageWithLayout<OrganizationServerSideProp
   const { data, isLoading, mutate } = useSWR<LiveSessionBase[]>(
     `/organizations/${organization.organizationId}/live-sessions`,
     swrAuthFetcher,
-    { keepPreviousData: true, revalidateOnFocus: false },
+    { keepPreviousData: true },
   );
 
   useRefresh(['onRefreshClicked', 'onCloudLiveTestingSessionCreated', 'onCloudLiveTestingSessionClosed'], () =>

@@ -9,5 +9,5 @@ export const createLiveTestingSession = async (dto: LiveSessionCreateRequestBody
 };
 
 export const closeLiveTestingSession = async (sessionId: LiveSessionId, organizationId: OrganizationId) => {
-  await api.delete(`/live-sessions/${sessionId}/${organizationId}`);
+  return await api.delete<void>(`/live-sessions/${sessionId}/${organizationId}`);
 };

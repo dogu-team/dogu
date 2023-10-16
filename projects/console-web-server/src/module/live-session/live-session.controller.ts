@@ -19,6 +19,6 @@ export class LiveSessionController {
   @Delete('/:liveSessionId/:organizationId')
   @OrganizationPermission(ORGANIZATION_ROLE.MEMBER)
   async close(@Param('liveSessionId') liveSessionId: LiveSessionId): Promise<LiveSession> {
-    return this.liveSessionService.closeByLiveSessionId(liveSessionId);
+    return await this.liveSessionService.closeByLiveSessionId(liveSessionId);
   }
 }
