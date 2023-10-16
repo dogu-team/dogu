@@ -159,16 +159,17 @@ export class LiveSessionService {
   }
 
   async closeByLiveSessionId(liveSessionId: LiveSessionId): Promise<LiveSession> {
+    const liveSession = await this.dataSource.getRepository(LiveSession).findOne({ where: { liveSessionId } });
+
+    if (!liveSession) {
+      throw new NotFoundException(`LiveSession not found for liveSessionId: ${liveSessionId}`);
+    }
+
+    if (liveSession.state === LiveSessionState.CLOSED) {
+      return liveSession;
+    }
+
     const closedSession = await this.dataSource.transaction(async (manager) => {
-      const liveSession = await manager.getRepository(LiveSession).findOne({ where: { liveSessionId } });
-      if (!liveSession) {
-        throw new NotFoundException(`LiveSession not found for liveSessionId: ${liveSessionId}`);
-      }
-
-      if (liveSession.state === LiveSessionState.CLOSED) {
-        return liveSession;
-      }
-
       const rv = await this.closeInTransaction(manager, [liveSession]);
       return rv[0];
     });
