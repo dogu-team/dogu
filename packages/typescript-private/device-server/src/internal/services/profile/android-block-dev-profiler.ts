@@ -10,7 +10,7 @@ import { Adb } from '../../externals/index';
 import { AndroidAdbProfiler, AndroidAdbProfilerParams } from './android-profiler';
 
 interface Fragment {
-  type: 'developer-options' | 'lock-screen';
+  type: 'developer-options' | 'lock-screen' | 'reset';
   vender: 'samsung' | 'google' | 'unknown';
   fragmentName: string;
 }
@@ -50,6 +50,16 @@ const blockFragments: Fragment[] = [
     type: 'lock-screen',
     vender: 'unknown',
     fragmentName: 'com.android.settings.password.ChooseLockPassword$ChooseLockPasswordFragment',
+  },
+  {
+    type: 'reset',
+    vender: 'unknown',
+    fragmentName: 'com.android.settings.system.ResetDashboardFragment',
+  },
+  {
+    type: 'reset',
+    vender: 'unknown',
+    fragmentName: 'com.android.settings.MainClear',
   },
 ];
 

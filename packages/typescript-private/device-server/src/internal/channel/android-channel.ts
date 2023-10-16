@@ -44,10 +44,7 @@ import { ZombieServiceInstance } from '../services/zombie/zombie-service';
 type DeviceControl = PrivateProtocol.DeviceControl;
 
 export class AndroidLogClosable implements Closable {
-  constructor(
-    private readonly childProcess: ChildProcess,
-    private readonly printable?: Printable,
-  ) {}
+  constructor(private readonly childProcess: ChildProcess, private readonly printable?: Printable) {}
 
   close(): void {
     killChildProcess(this.childProcess).catch((error) => {
@@ -267,12 +264,16 @@ export class AndroidChannel implements DeviceChannel {
     return { isHealthy: true, message: '' };
   }
 
-  /**
-   * @note reset android
-   * adb -s $DOGU_DEVICE_SERIAL shell cmd testharness enable
-   */
   async reset(): Promise<void> {
-    await Adb.reset(this.serial);
+    try {
+      const version = this._info.version;
+      if (version && semver.lt(version, '10.0.0')) {
+        throw new Error(`Android version must be 10 or higher. to use testharness`);
+      }
+      await Adb.resetWithTestHarness(this.serial);
+    } catch (e) {
+      await Adb.resetManual(this.serial, this.logger);
+    }
   }
 
   async killOnPort(port: number): Promise<void> {

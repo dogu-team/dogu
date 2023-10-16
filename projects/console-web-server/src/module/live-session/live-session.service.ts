@@ -152,7 +152,12 @@ export class LiveSessionService {
     });
 
     devices.forEach((device) => {
-      this.deviceCommandService.reboot(device.organizationId, device.deviceId, device.serial);
+      this.deviceCommandService.resetAndJoinWifi(device.organizationId, device.deviceId, device.serial).catch((error) => {
+        this.logger.error('LiveSessionService.close.resetAndJoinWifi error', {
+          error,
+          device,
+        });
+      });
     });
 
     return closeds;

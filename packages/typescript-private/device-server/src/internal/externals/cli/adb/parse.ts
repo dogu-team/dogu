@@ -283,3 +283,31 @@ export function parseAndroidShellTop(contents: string): AndroidShellTopInfo {
 
   return topInfo;
 }
+
+export interface AndroidFileEntry {
+  isDirectory: boolean;
+  name: string;
+}
+
+export function parseAndroidLs(contents: string): AndroidFileEntry[] {
+  const ret: AndroidFileEntry[] = [];
+
+  const lines = contents.replace(/\r/gi, '').split('\n');
+  for (const l of lines) {
+    const entry: AndroidFileEntry = {
+      isDirectory: false,
+      name: '',
+    };
+    const fields = l.split(/\s{1,}|\t/);
+    if (fields.length < 8) continue;
+    if (fields[0] === undefined) continue;
+    if (fields[0].length < 1) continue;
+    if (fields[0].charAt(0) !== 'd') continue;
+    entry.isDirectory = true;
+    if (fields[7] === undefined) continue;
+    entry.name = fields.slice(7).join(' ');
+    ret.push(entry);
+  }
+
+  return ret;
+}

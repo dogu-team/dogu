@@ -12,7 +12,16 @@ import { LogHandler } from '../../../public/device-channel';
 import { DeviceScanResult, DeviceScanStatus } from '../../../public/device-driver';
 import { parseRecord } from '../../../util/parse';
 import { AndroidDfInfo, AndroidProcCpuInfo, AndroidProcDiskstats, AndroidProcMemInfo, AndroidPropInfo, AndroidShellTopInfo } from './info';
-import { parseAndroidProcCpuInfo, parseAndroidProcDiskstats, parseAndroidProcMemInfo, parseAndroidShellDf, parseAndroidShellProp, parseAndroidShellTop } from './parse';
+import {
+  AndroidFileEntry,
+  parseAndroidLs,
+  parseAndroidProcCpuInfo,
+  parseAndroidProcDiskstats,
+  parseAndroidProcMemInfo,
+  parseAndroidShellDf,
+  parseAndroidShellProp,
+  parseAndroidShellTop,
+} from './parse';
 
 export const DOGU_ADB_SERVER_PORT = 5037;
 
@@ -208,6 +217,28 @@ export async function uninstallApp(serial: Serial, appName: string, keep = false
     return;
   });
   adbLogger.verbose('adb.uninstallApp end', { serial, appName, keep, random });
+}
+
+export async function clearApp(serial: Serial, appName: string, printable: Printable = adbLogger): Promise<void> {
+  const random = Math.random();
+  adbLogger.verbose('adb.clearApp begin', { serial, appName, random });
+  const command = ['-P', DOGU_ADB_SERVER_PORT.toString(), '-s', serial, 'shell', 'pm', 'clear', appName];
+  await ChildProcess.spawnAndWait(adbBinary(), command, { timeout: 60000 * 5 }, printable).catch((err) => {
+    printable.error?.(`ChildProcess.clearApp failed`, { error: stringify(err) });
+    return;
+  });
+  adbLogger.verbose('adb.clearApp end', { serial, appName, random });
+}
+
+export async function resetAppPermission(serial: Serial, appName: string, printable: Printable = adbLogger): Promise<void> {
+  const random = Math.random();
+  adbLogger.verbose('adb.resetAppPermission begin', { serial, appName, random });
+  const command = ['-P', DOGU_ADB_SERVER_PORT.toString(), '-s', serial, 'shell', 'pm', 'reset-permissions', appName];
+  await ChildProcess.spawnAndWait(adbBinary(), command, { timeout: 60000 * 5 }, printable).catch((err) => {
+    printable.error?.(`ChildProcess.resetAppPermission failed`, { error: stringify(err) });
+    return;
+  });
+  adbLogger.verbose('adb.resetAppPermission end', { serial, appName, random });
 }
 
 function installAppArgsInternal(serial: Serial, apkPath: string): { command: string; args: string[] } {
@@ -522,8 +553,8 @@ export interface InstalledPackage {
   packageName: string;
 }
 
-export async function getIntalledPackages(serial: Serial): Promise<InstalledPackage[]> {
-  const { stdout } = await shell(serial, 'pm list packages -f');
+export async function getIntalledPackages(serial: Serial, flags = ''): Promise<InstalledPackage[]> {
+  const { stdout } = await shell(serial, `pm list packages -f ${flags}`);
   const installedPackages = stdout
     .split('\n')
     .map((line) => ({
@@ -536,14 +567,14 @@ export async function getIntalledPackages(serial: Serial): Promise<InstalledPack
       }
       return !!match;
     })
-    .map(({ line, match }) => ({ line, match }) as { line: string; match: RegExpExecArray })
+    .map(({ line, match }) => ({ line, match } as { line: string; match: RegExpExecArray }))
     .filter(({ line, match }) => {
       if (!match.groups) {
         adbLogger.warn(`Failed to match groups in package line: ${line}`);
       }
       return !!match.groups;
     })
-    .map(({ line, match }) => ({ line, groups: match.groups }) as { line: string; groups: Record<string, string> })
+    .map(({ line, match }) => ({ line, groups: match.groups } as { line: string; groups: Record<string, string> }))
     .filter(({ line, groups }) => {
       if (!groups.packageName) {
         adbLogger.warn(`Failed to find package name in package line: ${line}`);
@@ -555,9 +586,13 @@ export async function getIntalledPackages(serial: Serial): Promise<InstalledPack
         ({
           packagePath: groups.packagePath,
           packageName: groups.packageName,
-        }) as InstalledPackage,
+        } as InstalledPackage),
     );
   return installedPackages;
+}
+
+export async function getNonSystemIntalledPackages(serial: Serial): Promise<InstalledPackage[]> {
+  return getIntalledPackages(serial, '-3');
 }
 
 const packageVersionLinePattern = /^\s*versionName=(?<versionName>.*)\s*$/;
@@ -740,6 +775,19 @@ export async function getTime(serial: Serial): Promise<string | undefined> {
 }
 
 /**
+ * FileSystem
+ */
+
+export async function readDir(serial: Serial, path: string): Promise<AndroidFileEntry[]> {
+  const random = Math.random();
+  adbLogger.verbose('adb.readDir begin', { serial, path, random });
+  const result = await shellIgnoreError(serial, `ls -l "${path}"`);
+  const rv = parseAndroidLs(result.stdout);
+  adbLogger.verbose('adb.readDir end', { serial, path, random });
+  return rv;
+}
+
+/**
  *  emulator
  *
  */
@@ -762,7 +810,7 @@ export async function getEmulatorName(serial: Serial): Promise<string> {
  * @note It takes about three minutes.
  * @link https://developer.android.com/tools/adb#test_harness
  */
-export async function reset(serial: Serial): Promise<void> {
+export async function resetWithTestHarness(serial: Serial): Promise<void> {
   const random = Math.random();
   adbLogger.verbose('adb.reset begin', { serial, random });
   return new Promise((resolve, reject) => {
@@ -786,6 +834,48 @@ export async function reset(serial: Serial): Promise<void> {
       },
     );
   });
+}
+
+export async function resetManual(serial: Serial, logger: Printable): Promise<void> {
+  const allApps = await getIntalledPackages(serial);
+  const userApps = await getNonSystemIntalledPackages(serial);
+  const promises = allApps.map(async (app): Promise<void> => {
+    if (!userApps.find((targetApp) => targetApp.packageName === app.packageName)) {
+      return;
+    }
+    await clearApp(serial, app.packageName, logger).catch((err) => {
+      logger.error(`adb.Failed to clear app ${app.packageName}`, { error: stringify(err) });
+    });
+    await resetAppPermission(serial, app.packageName, logger).catch((err) => {
+      logger.error(`adb.Failed to reset app permission ${app.packageName}`, { error: stringify(err) });
+    });
+    await uninstallApp(serial, app.packageName, false, logger).catch((err) => {
+      logger.error(`adb.Failed to uninstall app ${app.packageName}`, { error: stringify(err) });
+    });
+    return Promise.resolve();
+  });
+  await Promise.all(promises);
+
+  const mkdirLists = ['Alarms', 'DCIM', 'Documents', 'Download', 'Movies', 'Music', 'Notifications', 'Pictures', 'Podcasts', 'Ringtones'];
+  const files = await readDir(serial, '/storage/emulated/0');
+  const promises2 = files.map(async (file): Promise<void> => {
+    if (file.name === 'Android') {
+      return Promise.resolve();
+    }
+    await shellIgnoreError(serial, `rm -rf /storage/emulated/0/${file.name}`).catch((err) => {
+      logger.error(`adb.Failed to remove directory ${file.name}`, { error: stringify(err) });
+    });
+    if (mkdirLists.includes(file.name)) {
+      await shellIgnoreError(serial, `mkdir /storage/emulated/0/${file.name}`).catch((err) => {
+        logger.error(`adb.Failed to make directory ${file.name}`, { error: stringify(err) });
+      });
+    }
+    return Promise.resolve();
+  });
+  await Promise.all(promises2);
+  await logcatClear(serial, logger);
+
+  await reboot(serial);
 }
 
 export interface AndroidSystemBarVisibility {
