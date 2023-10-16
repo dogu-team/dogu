@@ -6,6 +6,7 @@ import { List, Button } from 'antd';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { shallow } from 'zustand/shallow';
+import { CheckCircleTwoTone, WarningTwoTone } from '@ant-design/icons';
 
 import { flexRowBaseStyle, listItemStyle, tableCellStyle, tableHeaderStyle } from '../../styles/box';
 import { deviceBrandMapper } from '../../resources/device/brand';
@@ -57,10 +58,20 @@ const SessionState: React.FC<{ session: LiveSessionBase }> = ({ session }) => {
   }
 
   if (session.state === LiveSessionState.CREATED) {
-    return <div>Started {stringifyDurationAsTimer(duration)}</div>;
+    return (
+      <div>
+        <CheckCircleTwoTone twoToneColor="#52c41a" />
+        &nbsp;Started {stringifyDurationAsTimer(duration)}
+      </div>
+    );
   }
 
-  return <div>Close after {stringifyDurationAsTimer(duration)}</div>;
+  return (
+    <div>
+      <WarningTwoTone twoToneColor="#e99957" />
+      &nbsp;Close after {stringifyDurationAsTimer(duration)}
+    </div>
+  );
 };
 
 interface ItemProps {

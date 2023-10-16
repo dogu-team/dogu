@@ -81,9 +81,11 @@ interface Props {}
 
 const LiveTestingCloudDeviceList: React.FC<Props> = () => {
   const router = useRouter();
-  const { keyword } = useCloudDeviceFilterStore((state) => state.filterValue, shallow);
+  const { keyword, platform, version } = useCloudDeviceFilterStore((state) => state.filterValue, shallow);
   const { data, error, isLoading, mutate } = useSWR<PageBase<CloudDeviceMetadataBase>>(
-    `/cloud-devices?page=${Number(router.query.page) || 1}&keyword=${keyword}`,
+    `/cloud-devices?page=${Number(router.query.page) || 1}&keyword=${keyword}${
+      platform ? `&platform=${platform}` : ''
+    }&version=${version}`,
     swrAuthFetcher,
     { keepPreviousData: true, revalidateOnFocus: false },
   );

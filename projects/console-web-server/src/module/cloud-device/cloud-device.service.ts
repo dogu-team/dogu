@@ -1,5 +1,5 @@
-import { CloudDeviceByModelResponse, CloudDeviceMetadataBase, DevicePropCamel, DeviceUsageState } from '@dogu-private/console';
-import { DeviceConnectionState, DeviceId } from '@dogu-private/types';
+import { CloudDeviceByModelResponse, CloudDeviceMetadataBase, DevicePropCamel } from '@dogu-private/console';
+import { DeviceConnectionState, DeviceId, Platform } from '@dogu-private/types';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
@@ -17,11 +17,14 @@ export class CloudDeviceService {
   ) {}
 
   async findCloudDevices(dto: FindCloudDevicesDto): Promise<Page<CloudDeviceMetadataBase>> {
-    const { keyword } = dto;
+    const { keyword, platform, version } = dto;
 
     const modelFilterClause = keyword ? `device.${DevicePropCamel.model} ~* :keyword` : '1=1';
     const modelNameFilterClause = keyword ? `device.${DevicePropCamel.modelName} ~* :keyword` : '1=1';
     const manufacturerFilterClause = keyword ? `device.${DevicePropCamel.manufacturer} ~* :keyword` : '1=1';
+
+    const platformFilterClause = platform ? `device.${DevicePropCamel.platform} = :platform` : '1=1';
+    const versionFilterClause = version ? `device.${DevicePropCamel.version} LIKE :version` : '1=1';
 
     // pick representative device for each model
     const cloudDevices = await this.createCloudDeviceDefaultQuery().getMany();
@@ -54,6 +57,8 @@ export class CloudDeviceService {
     const query = this.createCloudDeviceDefaultQuery()
       .where('device.device_id IN (:...deviceIds)', { deviceIds })
       .andWhere(`(${modelFilterClause} OR ${modelNameFilterClause} OR ${manufacturerFilterClause})`, { keyword: `.*${keyword}.*` })
+      .andWhere(platformFilterClause, { platform })
+      .andWhere(versionFilterClause, { version: `${version}%` })
       .orderBy(`device.${DevicePropCamel.modelName}`, 'ASC')
       .addOrderBy(`device.${DevicePropCamel.model}`, 'ASC')
       .skip(dto.getDBOffset())
@@ -131,6 +136,16 @@ export class CloudDeviceService {
     return device;
   }
 
+  async findCloudDeviceVersions(platform?: Platform): Promise<string[]> {
+    const platformFilterClause = platform ? `device.${DevicePropCamel.platform} = :platform` : '1=1';
+
+    const query = this.createCloudDeviceDefaultQuery().andWhere(platformFilterClause, { platform });
+
+    const devices = await query.getMany();
+
+    return devices.map((device) => device.version);
+  }
+
   private createCloudDeviceDefaultQuery() {
     return this.dataSource
       .getRepository(Device)
@@ -139,32 +154,5 @@ export class CloudDeviceService {
       .where(`device.${DevicePropCamel.isHost} = :isHost`, { isHost: 0 })
       .andWhere(`device.${DevicePropCamel.isGlobal} = :isGlobal`, { isGlobal: 1 })
       .andWhere(`organization.shareable = :shareable`, { shareable: true });
-  }
-
-  private async mergeDeviceUsageState(options: { model: string; version?: string }): Promise<DeviceUsageState> {
-    const versionFilterClause = options.version ? `device.${DevicePropCamel.version} = :version` : '1=1';
-    const query = this.createCloudDeviceDefaultQuery()
-      .andWhere(`device.${DevicePropCamel.model} = :model`, { model: options.model })
-      .andWhere(versionFilterClause, { version: options.version })
-      .select(['device.usageState', 'device.connectionState']);
-
-    const devices = await query.getMany();
-
-    const isOffline = devices.every((device) => device.connectionState !== DeviceConnectionState.DEVICE_CONNECTION_STATE_CONNECTED);
-    if (isOffline) {
-      return DeviceUsageState.IN_USE;
-    }
-
-    const hasAvailableDevice = devices.some((device) => device.usageState === DeviceUsageState.AVAILABLE);
-    if (hasAvailableDevice) {
-      return DeviceUsageState.AVAILABLE;
-    }
-
-    const hasPreparingDevice = devices.some((device) => device.usageState === DeviceUsageState.PREPARING);
-    if (hasPreparingDevice) {
-      return DeviceUsageState.PREPARING;
-    }
-
-    return DeviceUsageState.IN_USE;
   }
 }
