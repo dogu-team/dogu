@@ -58,7 +58,7 @@ export class LiveSessionHeartbeatGateway implements OnGatewayConnection {
         if (count < 1) {
           const rv = await this.dataSource
             .getRepository(LiveSession)
-            .update({ liveSessionId, state: LiveSessionState.CREATED, organizationId }, { state: LiveSessionState.CLOSE_WAIT });
+            .update({ liveSessionId, state: LiveSessionState.CREATED, organizationId }, { state: LiveSessionState.CLOSE_WAIT, closeWaitAt: new Date() });
           this.logger.debug('LiveSessionHeartbeatGateway.onClose.toCloseWait', { rv });
         }
       })().catch((error) => {
