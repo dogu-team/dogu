@@ -1,11 +1,14 @@
 import { LiveSessionState } from '@dogu-private/types';
-import { errorify } from '@dogu-tech/common';
+import { closeWebSocketWithTruncateReason, errorify } from '@dogu-tech/common';
+import { Inject } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { OnGatewayConnection, WebSocketGateway } from '@nestjs/websockets';
 import { IncomingMessage } from 'http';
 import { DataSource } from 'typeorm';
 import WebSocket from 'ws';
+
 import { LiveSession } from '../../db/entity/live-session.entity';
+import { WsCommonService } from '../../ws/common/ws-common.service';
 import { DoguLogger } from '../logger/logger';
 import { LiveSessionService } from './live-session.service';
 
@@ -13,6 +16,8 @@ import { LiveSessionService } from './live-session.service';
 export class LiveSessionHeartbeatGateway implements OnGatewayConnection {
   constructor(
     private readonly logger: DoguLogger,
+    @Inject(WsCommonService)
+    private readonly wsCommonService: WsCommonService,
     @InjectDataSource()
     private readonly dataSource: DataSource,
     private readonly liveSessionService: LiveSessionService,
@@ -34,6 +39,12 @@ export class LiveSessionHeartbeatGateway implements OnGatewayConnection {
     if (!liveSessionId) {
       webSocket.close(1003, `liveSessionId is required`);
       return;
+    }
+
+    const validateResult = await this.wsCommonService.validateCloudDeviceAccessPermission(incomingMessage, this.dataSource, organizationId, liveSessionId);
+    if (!validateResult.result) {
+      this.logger.info(`LiveSessionHeartbeatGateway. handleConnection. ${validateResult.message}`);
+      closeWebSocketWithTruncateReason(webSocket, 1003, 'Unauthorized');
     }
 
     webSocket.on('message', () => {
