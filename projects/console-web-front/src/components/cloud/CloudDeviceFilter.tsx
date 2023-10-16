@@ -15,7 +15,7 @@ const CloudDeviceFilter: React.FC = () => {
 
   return (
     <Input.Search
-      placeholder="Search"
+      placeholder="Brand or name"
       allowClear
       value={inputValue}
       onChange={(e) => handleChangeValues(e.target.value)}

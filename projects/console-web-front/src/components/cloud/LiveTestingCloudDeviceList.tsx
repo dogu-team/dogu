@@ -5,6 +5,7 @@ import useSWR from 'swr';
 import styled from 'styled-components';
 import Image from 'next/image';
 import { shallow } from 'zustand/shallow';
+import { useEffect } from 'react';
 
 import { swrAuthFetcher } from '../../api';
 import { flexRowBaseStyle, listItemStyle, tableCellStyle, tableHeaderStyle } from '../../styles/box';
@@ -15,7 +16,6 @@ import PlatformIcon from '../device/PlatformIcon';
 import CloudDeviceVersionList from './CloudDeviceSelectList';
 import useCloudDeviceFilterStore from '../../stores/cloud-device-filter';
 import { isCloudDeviceAvailable } from '../../utils/device';
-import { useEffect } from 'react';
 import useEventStore from '../../stores/events';
 
 const DeviceItem: React.FC<{ device: CloudDeviceMetadataBase }> = ({ device }) => {
@@ -41,7 +41,7 @@ const DeviceItem: React.FC<{ device: CloudDeviceMetadataBase }> = ({ device }) =
             <PlatformIcon platform={device.platform} />
           </OneSpan>
           <OneSpan>
-            {device.resolutionWidth} * {device.resolutionHeight}
+            {device.resolutionHeight} * {device.resolutionWidth}
           </OneSpan>
           <OneSpan>{Number(device.memory) ? `${ceilDeviceMemory(Number(device.memory))}` : '-'}</OneSpan>
           <ButtonWrapper>

@@ -5,6 +5,7 @@ import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 
 import { Device } from '../../db/entity/device.entity';
+import { retinaDisplayRatio } from '../../resources/retina-display-ratio';
 import { Page } from '../common/dto/pagination/page';
 import { FindCloudDevicesDto } from './cloud-device.dto';
 
@@ -59,6 +60,15 @@ export class CloudDeviceService {
       .take(dto.getDBLimit());
 
     const [devices, totalCount] = await query.getManyAndCount();
+
+    devices.forEach((device) => {
+      const ratio = retinaDisplayRatio[device.model];
+
+      if (ratio) {
+        device.resolutionWidth = device.resolutionWidth * ratio;
+        device.resolutionHeight = device.resolutionHeight * ratio;
+      }
+    });
 
     const metaInfos: CloudDeviceMetadataBase[] = devices.map((device) => {
       return {
