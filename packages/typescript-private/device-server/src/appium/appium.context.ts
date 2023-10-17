@@ -87,14 +87,13 @@ export interface AppiumContext extends Zombieable {
   switchContextAndGetPageSource(contextId: string): Promise<string>;
   getContextPageSources(): Promise<ContextPageSource[]>;
   select(selector: string): Promise<WDIOElement | undefined>;
+  driver(): Browser | undefined;
 }
 
 class NullAppiumContext implements AppiumContext {
   public readonly props: ZombieProps = {};
-  constructor(
-    public readonly options: AppiumContextOptions,
-    public readonly printable: Logger,
-  ) {}
+  constructor(public readonly options: AppiumContextOptions, public readonly printable: Logger) {}
+
   get name(): string {
     return 'NullAppiumContext';
   }
@@ -174,6 +173,9 @@ class NullAppiumContext implements AppiumContext {
   async select(selector: string): Promise<WDIOElement | undefined> {
     return Promise.resolve(undefined);
   }
+  driver(): undefined {
+    return;
+  }
 }
 
 export interface AppiumServerData {
@@ -203,10 +205,7 @@ export class AppiumContextImpl implements AppiumContext {
   private notHealthyCount = 0;
 
   openingState: 'opening' | 'openingSucceeded' | 'openingFailed' = 'opening';
-  constructor(
-    public readonly options: AppiumContextOptions,
-    public readonly printable: Logger,
-  ) {}
+  constructor(public readonly options: AppiumContextOptions, public readonly printable: Logger) {}
 
   get name(): string {
     return 'AppiumContextImpl';
@@ -438,18 +437,16 @@ export class AppiumContextImpl implements AppiumContext {
       },
     };
     const driver = await remote(remoteOptions);
-    const filteredRemoteOptions = Object.keys(remoteOptions).reduce(
-      (acc, key) => {
-        const value = _.get(remoteOptions, key) as unknown;
-        if (_.isFunction(value)) {
-          return acc;
-        } else {
-          _.set(acc, key, value);
-          return acc;
-        }
-      },
-      {} as Record<string, unknown>,
-    );
+    const filteredRemoteOptions = Object.keys(remoteOptions).reduce((acc, key) => {
+      const value = _.get(remoteOptions, key) as unknown;
+      if (_.isFunction(value)) {
+        return acc;
+      } else {
+        _.set(acc, key, value);
+        return acc;
+      }
+    }, {} as Record<string, unknown>);
+
     this.printable.info('Appium client started', { remoteOptions, sessionId: driver.sessionId, capabilities: driver.capabilities });
     return {
       remoteOptions: filteredRemoteOptions,
@@ -548,6 +545,10 @@ export class AppiumContextImpl implements AppiumContext {
     } catch (e) {
       return undefined;
     }
+  }
+
+  driver(): Browser | undefined {
+    return this.data.client.driver;
   }
 }
 
@@ -683,6 +684,9 @@ export class AppiumContextProxy implements AppiumContext, Zombieable {
 
   async select(selector: string): Promise<WDIOElement | undefined> {
     return this.impl.select(selector);
+  }
+  driver(): Browser | undefined {
+    return this.impl.driver();
   }
 
   getImpl<T extends Class<T>>(constructor: T): Instance<T> {

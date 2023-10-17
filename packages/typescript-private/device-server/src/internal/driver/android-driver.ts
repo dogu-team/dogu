@@ -4,7 +4,7 @@ import { killProcessOnPort } from '@dogu-tech/node';
 import { env } from '../../env';
 import { createGdcLogger, logger } from '../../logger/logger.instance';
 import { AndroidChannel } from '../channel/android-channel';
-import { Adb } from '../externals';
+import { Adb, AppiumAdb, createAppiumAdb } from '../externals';
 import { DOGU_ADB_SERVER_PORT } from '../externals/cli/adb/adb';
 import { DeviceChannel, DeviceChannelOpenParam, DeviceServerService } from '../public/device-channel';
 import { DeviceDriver, DeviceScanResult } from '../public/device-driver';
@@ -14,11 +14,12 @@ import { StreamingService } from '../services/streaming/streaming-service';
 export class AndroidDriver implements DeviceDriver {
   private channelMap = new Map<Serial, AndroidChannel>();
 
-  private constructor(private readonly streamingService: StreamingService, private readonly deviceServerService: DeviceServerService) {}
+  private constructor(private readonly streamingService: StreamingService, private readonly deviceServerService: DeviceServerService, private readonly appiumAdb: AppiumAdb) {}
 
   static async create(deviceServerService: DeviceServerService): Promise<AndroidDriver> {
     const streaming = await PionStreamingService.create(Platform.PLATFORM_ANDROID, env.DOGU_DEVICE_SERVER_PORT, createGdcLogger(Platform.PLATFORM_ANDROID));
-    const driver = new AndroidDriver(streaming, deviceServerService);
+    const appiumAdb = await createAppiumAdb();
+    const driver = new AndroidDriver(streaming, deviceServerService, appiumAdb);
     await driver.reset();
     return driver;
   }
@@ -33,7 +34,8 @@ export class AndroidDriver implements DeviceDriver {
   }
 
   async openChannel(initParam: DeviceChannelOpenParam): Promise<DeviceChannel> {
-    const channel = await AndroidChannel.create(initParam, this.streamingService, this.deviceServerService);
+    const cloneAppiumAdb = this.appiumAdb.clone({ udid: initParam.serial, curDeviceId: initParam.serial, adbExecTimeout: 1000 * 60 });
+    const channel = await AndroidChannel.create(initParam, this.streamingService, this.deviceServerService, cloneAppiumAdb);
     this.channelMap.set(initParam.serial, channel);
     return channel;
   }

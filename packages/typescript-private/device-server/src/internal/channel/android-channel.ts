@@ -31,11 +31,12 @@ import { env } from '../../env';
 import { GamiumContext } from '../../gamium/gamium.context';
 import { createAdaLogger } from '../../logger/logger.instance';
 import { pathMap } from '../../path-map';
-import { Adb } from '../externals';
+import { Adb, AppiumAdb } from '../externals';
 import { DeviceChannel, DeviceChannelOpenParam, DeviceHealthStatus, DeviceServerService, LogHandler } from '../public/device-channel';
 import { AndroidDeviceAgentService } from '../services/device-agent/android-device-agent-service';
 import { AndroidAdbProfileService, AndroidDisplayProfileService } from '../services/profile/android-profiler';
 import { ProfileServices } from '../services/profile/profile-service';
+import { AndroidResetService } from '../services/reset/android-reset';
 import { AndroidSharedDeviceService } from '../services/shared-device/android-shared-device';
 import { StreamingService } from '../services/streaming/streaming-service';
 import { AndroidSystemInfoService } from '../services/system-info/android-system-info-service';
@@ -84,13 +85,14 @@ export class AndroidChannel implements DeviceChannel {
     private _appiumContext: AppiumContextProxy,
     private readonly _appiumDeviceWebDriverHandler: AppiumDeviceWebDriverHandler,
     private readonly _sharedDevice: AndroidSharedDeviceService,
+    private readonly appiumAdb: AppiumAdb,
     private readonly logger: FilledPrintable,
     readonly browserInstallations: BrowserInstallation[],
   ) {
     this.logger.info(`AndroidChannel created: ${this.serial}`);
   }
 
-  public static async create(param: DeviceChannelOpenParam, streaming: StreamingService, deviceServerService: DeviceServerService): Promise<AndroidChannel> {
+  public static async create(param: DeviceChannelOpenParam, streaming: StreamingService, deviceServerService: DeviceServerService, appiumAdb: AppiumAdb): Promise<AndroidChannel> {
     ZombieServiceInstance.deleteAllComponentsIfExist((zombieable: Zombieable): boolean => {
       return zombieable.serial === param.serial && zombieable.platform === Platform.PLATFORM_ANDROID;
     }, 'kill previous zombie');
@@ -156,6 +158,7 @@ export class AndroidChannel implements DeviceChannel {
       appiumContextProxy,
       appiumDeviceWebDriverHandler,
       sharedDevice,
+      appiumAdb,
       logger,
       findAllBrowserInstallationsResult.browserInstallations,
     );
@@ -267,15 +270,8 @@ export class AndroidChannel implements DeviceChannel {
   }
 
   async reset(): Promise<void> {
-    try {
-      const version = semver.coerce(this._info.version);
-      if (version && semver.lt(version, '11.0.0')) {
-        throw new Error(`Android version must be 11 or higher. to use testharness`);
-      }
-      await Adb.resetWithTestHarness(this.serial);
-    } catch (e) {
-      await Adb.resetManual(this.serial, this.logger);
-    }
+    const appiumContext = await this.switchAppiumContext('builtin');
+    await AndroidResetService.resetDevice(this.serial, this.info.version, this.appiumAdb, appiumContext, this.logger);
   }
 
   async killOnPort(port: number): Promise<void> {

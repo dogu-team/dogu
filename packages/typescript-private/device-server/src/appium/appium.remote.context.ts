@@ -19,10 +19,7 @@ export class AppiumRemoteContext implements AppiumContext {
 
   openingState: 'opening' | 'openingSucceeded' | 'openingFailed' = 'opening';
 
-  constructor(
-    public readonly options: AppiumContextOptions,
-    public readonly printable: Logger,
-  ) {}
+  constructor(public readonly options: AppiumContextOptions, public readonly printable: Logger) {}
 
   get name(): string {
     return 'AppiumRemoteContext';
@@ -188,5 +185,9 @@ export class AppiumRemoteContext implements AppiumContext {
   async select(selector: string): Promise<WDIOElement | undefined> {
     this.printable.error('AppiumRemoteContext.findByText is not implemented');
     return Promise.resolve(undefined);
+  }
+
+  driver(): undefined {
+    return;
   }
 }

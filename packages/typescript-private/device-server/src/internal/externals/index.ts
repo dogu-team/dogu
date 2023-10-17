@@ -1,5 +1,6 @@
 export * as Adb from './cli/adb/adb';
 export * as AdbUtil from './cli/adb/adb-util';
+export * from './cli/adb/appium-adb';
 export * from './cli/adb/info';
 export * as DesktopCapturer from './cli/desktop-capturer';
 export * as IdeviceDiagnostics from './cli/idevicediagnostics';

@@ -298,6 +298,14 @@ export async function runApp(serial: Serial, packageName: string, launchableActi
   return rv;
 }
 
+export async function runActivity(serial: Serial, activityName: string, printable: Printable = adbLogger): Promise<child_process.ChildProcess> {
+  const random = Math.random();
+  adbLogger.verbose('adb.runActivity begin', { serial, activityName, random });
+  const rv = await ChildProcess.spawnAndWait(adbBinary(), ['-P', `${DOGU_ADB_SERVER_PORT}`, '-s', serial, 'shell', 'am', 'start', '-a', `${activityName}`], {}, printable);
+  adbLogger.verbose('adb.runActivity end', { serial, activityName, random });
+  return rv;
+}
+
 export async function getPidOf(serial: Serial, appName: string, printable?: Printable): Promise<string> {
   const random = Math.random();
   adbLogger.verbose('adb.getPidOf begin', { serial, appName, random });
@@ -824,13 +832,18 @@ export async function getEmulatorName(serial: Serial): Promise<string> {
 }
 
 /**
+ * reset
+ *
+ */
+
+/**
  * @requires Android 10+
  * @note It takes about three minutes.
  * @link https://developer.android.com/tools/adb#test_harness
  */
-export async function resetWithTestHarness(serial: Serial): Promise<void> {
+export async function enableTestharness(serial: Serial): Promise<void> {
   const random = Math.random();
-  adbLogger.verbose('adb.resetWithTestHarness begin', { serial, random });
+  adbLogger.verbose('adb.enableTestharness begin', { serial, random });
   return new Promise((resolve, reject) => {
     execFile(
       adbBinary(),
@@ -841,12 +854,12 @@ export async function resetWithTestHarness(serial: Serial): Promise<void> {
       },
       (error, stdout, stderr) => {
         if (error) {
-          adbLogger.error('adb.resetWithTestHarness error', { serial, random, error: errorify(error) });
+          adbLogger.error('adb.enableTestharness error', { serial, random, error: errorify(error) });
           reject(error);
         } else {
-          adbLogger.verbose('adb.resetWithTestHarness stdout', { serial, random, stdout });
-          adbLogger.verbose('adb.resetWithTestHarness stderr', { serial, random, stderr });
-          adbLogger.verbose('adb.resetWithTestHarness end', { serial, random });
+          adbLogger.verbose('adb.enableTestharness stdout', { serial, random, stdout });
+          adbLogger.verbose('adb.enableTestharness stderr', { serial, random, stderr });
+          adbLogger.verbose('adb.enableTestharness end', { serial, random });
           resolve();
         }
       },
@@ -854,9 +867,9 @@ export async function resetWithTestHarness(serial: Serial): Promise<void> {
   });
 }
 
-export async function resetManual(serial: Serial, logger: Printable): Promise<void> {
+export async function resetPackages(serial: Serial, logger: Printable): Promise<void> {
   const random = Math.random();
-  adbLogger.verbose('adb.resetManual begin', { serial, random });
+  adbLogger.verbose('adb.resetPackages begin', { serial, random });
   const allApps = await getIntalledPackages(serial);
   const userApps = await getNonSystemIntalledPackages(serial);
   const promises = allApps.map(async (app): Promise<void> => {
@@ -864,36 +877,42 @@ export async function resetManual(serial: Serial, logger: Printable): Promise<vo
       return;
     }
     await clearApp(serial, app.packageName, logger).catch((err) => {
-      logger.error(`adb.resetManual failed to clear ${app.packageName}`, { error: stringify(err) });
+      logger.error(`adb.resetPackages failed to clear`, { error: stringify(err), package: app.packageName, serial, random });
     });
     await resetAppPermission(serial, app.packageName, logger).catch((err) => {
-      logger.error(`adb.resetManual failed to reset permission ${app.packageName}`, { error: stringify(err) });
+      logger.error(`adb.resetPackages failed to reset permission`, { error: stringify(err), package: app.packageName, serial, random });
     });
     await uninstallApp(serial, app.packageName, false, logger).catch((err) => {
-      logger.error(`adb.resetManual failed to uninstall ${app.packageName}`, { error: stringify(err) });
+      logger.error(`adb.resetPackages failed to uninstall`, { error: stringify(err), package: app.packageName, serial, random });
     });
     return Promise.resolve();
   });
-  adbLogger.verbose('adb.resetManual end', { serial, random });
+  adbLogger.verbose('adb.resetPackages end', { serial, random });
   await Promise.all(promises);
+}
 
+export async function resetSdcard(serial: Serial, logger: Printable): Promise<void> {
+  const random = Math.random();
+  adbLogger.verbose('adb.resetSdcard begin', { serial, random });
   const mkdirLists = ['Alarms', 'DCIM', 'Documents', 'Download', 'Movies', 'Music', 'Notifications', 'Pictures', 'Podcasts', 'Ringtones'];
   const files = await readDir(serial, '/storage/emulated/0');
-  const promises2 = files.map(async (file): Promise<void> => {
-    await shellIgnoreError(serial, `rm -rf /storage/emulated/0/${file.name}`).catch((err) => {
-      logger.error(`adb.resetManual failed to remove directory ${file.name}`, { error: stringify(err) });
+  const promises = files.map(async (file): Promise<void> => {
+    let dirPath = `/storage/emulated/0/${file.name}`;
+    if (file.name === 'Android') {
+      dirPath = `/storage/emulated/0/Android/data`;
+    }
+    await shellIgnoreError(serial, `rm -rf ${dirPath}`).catch((err) => {
+      logger.error(`adb.resetSdcard failed to remove directory`, { error: stringify(err), path: dirPath, serial, random });
     });
     if (mkdirLists.includes(file.name)) {
-      await shellIgnoreError(serial, `mkdir /storage/emulated/0/${file.name}`).catch((err) => {
-        logger.error(`adb.resetManual failed to make directory ${file.name}`, { error: stringify(err) });
+      await shellIgnoreError(serial, `mkdir ${dirPath}`).catch((err) => {
+        logger.error(`adb.resetSdcard failed to make directory`, { error: stringify(err), path: dirPath, serial, random });
       });
     }
     return Promise.resolve();
   });
-  await Promise.all(promises2);
-  await logcatClear(serial, logger);
-
-  await reboot(serial);
+  adbLogger.verbose('adb.resetSdcard end', { serial, random });
+  await Promise.all(promises);
 }
 
 export interface AndroidSystemBarVisibility {
