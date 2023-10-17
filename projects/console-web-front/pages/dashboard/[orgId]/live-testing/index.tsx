@@ -18,6 +18,7 @@ import CloudDeviceFilter from '../../../../src/components/cloud/CloudDeviceFilte
 import LiveTestingSessionList from '../../../../src/components/cloud/LiveTestingSessionList';
 import { swrAuthFetcher } from '../../../../src/api';
 import useRefresh from '../../../../src/hooks/useRefresh';
+import { LoadingOutlined } from '@ant-design/icons';
 
 const OrganizationLiveTestingPage: NextPageWithLayout<OrganizationServerSideProps> = ({ user, organization }) => {
   const { data, isLoading, mutate } = useSWR<LiveSessionBase[]>(
@@ -31,7 +32,11 @@ const OrganizationLiveTestingPage: NextPageWithLayout<OrganizationServerSideProp
   );
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <Centered>
+        <LoadingOutlined style={{ fontSize: '2rem' }} />
+      </Centered>
+    );
   }
 
   return (
@@ -97,4 +102,11 @@ export default OrganizationLiveTestingPage;
 
 const FlexBox = styled.div`
   ${flexRowSpaceBetweenStyle}
+`;
+
+const Centered = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
 `;
