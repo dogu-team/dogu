@@ -2,6 +2,7 @@ import { Platform, Serial } from '@dogu-private/types';
 import { delay, FilledPrintable, stringify } from '@dogu-tech/common';
 import { killChildProcess } from '@dogu-tech/node';
 import child_process from 'child_process';
+import { env } from '../../../env';
 import { Adb } from '../../externals/index';
 import { Zombieable, ZombieProps, ZombieQueriable } from '../zombie/zombie-component';
 import { ZombieServiceInstance } from '../zombie/zombie-service';
@@ -41,6 +42,9 @@ export class AndroidSharedDeviceService implements Zombieable {
   }
 
   async revive(): Promise<void> {
+    if (!env.DOGU_IS_DEVICE_SHARE) {
+      return;
+    }
     await Adb.stayOnWhilePluggedIn(this.serial);
     for (const app of BlockAppList) {
       await Adb.disablePackage(this.serial, app, UserId, this.printable).catch((e) => {
@@ -53,7 +57,9 @@ export class AndroidSharedDeviceService implements Zombieable {
   }
 
   async update(): Promise<void> {
-    await delay(3000);
+    if (!env.DOGU_IS_DEVICE_SHARE) {
+      return;
+    }
     const appInfos = await Adb.getForegroundPackage(this.serial);
     const filteredList = appInfos.filter((app) => app.displayId === 0 && BlockAppList.includes(app.packageName));
     for (const filtered of filteredList) {
@@ -61,6 +67,7 @@ export class AndroidSharedDeviceService implements Zombieable {
         this.printable.error(`AndroidSharedDeviceService. update. killPackage failed.`, { e });
       });
     }
+    await delay(3000);
   }
 
   onDie(): void | Promise<void> {
@@ -76,7 +83,6 @@ export class AndroidSharedDeviceService implements Zombieable {
             Adb.killPackage(serial, app).catch((e) => {
               logger.error(e);
             });
-            this.killLogcatProcess();
           }
         }
       };
