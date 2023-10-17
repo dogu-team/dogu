@@ -6,6 +6,7 @@ import { InjectDataSource } from '@nestjs/typeorm';
 import Redis from 'ioredis';
 import { DataSource, EntityManager, In } from 'typeorm';
 import { v4 } from 'uuid';
+
 import { config } from '../../config';
 import { Device } from '../../db/entity/device.entity';
 import { LiveSession } from '../../db/entity/live-session.entity';
@@ -119,8 +120,9 @@ export class LiveSessionService {
   }
 
   async isLiveSessionExists(liveSessionId: LiveSessionId): Promise<boolean> {
-    const exists = await this.redis.exists(config.redis.key.liveSessionHeartbeat(liveSessionId));
-    return exists !== 0;
+    const heartbeatExists = await this.redis.exists(config.redis.key.liveSessionHeartbeat(liveSessionId));
+    const participantsCount = await this.redis.get(config.redis.key.liveSessionParticipantsCount(liveSessionId));
+    return heartbeatExists !== 0 && Number(participantsCount) > 0;
   }
 
   /**
