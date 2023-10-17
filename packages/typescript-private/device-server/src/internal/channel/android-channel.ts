@@ -266,9 +266,9 @@ export class AndroidChannel implements DeviceChannel {
 
   async reset(): Promise<void> {
     try {
-      const version = this._info.version;
-      if (version && semver.lt(version, '10.0.0')) {
-        throw new Error(`Android version must be 10 or higher. to use testharness`);
+      const version = semver.coerce(this._info.version);
+      if (version && semver.lt(version, '11.0.0')) {
+        throw new Error(`Android version must be 11 or higher. to use testharness`);
       }
       await Adb.resetWithTestHarness(this.serial);
     } catch (e) {

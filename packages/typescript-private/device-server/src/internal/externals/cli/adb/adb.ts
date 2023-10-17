@@ -812,7 +812,7 @@ export async function getEmulatorName(serial: Serial): Promise<string> {
  */
 export async function resetWithTestHarness(serial: Serial): Promise<void> {
   const random = Math.random();
-  adbLogger.verbose('adb.reset begin', { serial, random });
+  adbLogger.verbose('adb.resetWithTestHarness begin', { serial, random });
   return new Promise((resolve, reject) => {
     execFile(
       adbBinary(),
@@ -823,12 +823,12 @@ export async function resetWithTestHarness(serial: Serial): Promise<void> {
       },
       (error, stdout, stderr) => {
         if (error) {
-          adbLogger.error('adb.reset error', { serial, random, error: errorify(error) });
+          adbLogger.error('adb.resetWithTestHarness error', { serial, random, error: errorify(error) });
           reject(error);
         } else {
-          adbLogger.verbose('adb.reset stdout', { serial, random, stdout });
-          adbLogger.verbose('adb.reset stderr', { serial, random, stderr });
-          adbLogger.verbose('adb.reset end', { serial, random });
+          adbLogger.verbose('adb.resetWithTestHarness stdout', { serial, random, stdout });
+          adbLogger.verbose('adb.resetWithTestHarness stderr', { serial, random, stderr });
+          adbLogger.verbose('adb.resetWithTestHarness end', { serial, random });
           resolve();
         }
       },
@@ -837,6 +837,8 @@ export async function resetWithTestHarness(serial: Serial): Promise<void> {
 }
 
 export async function resetManual(serial: Serial, logger: Printable): Promise<void> {
+  const random = Math.random();
+  adbLogger.verbose('adb.resetManual begin', { serial, random });
   const allApps = await getIntalledPackages(serial);
   const userApps = await getNonSystemIntalledPackages(serial);
   const promises = allApps.map(async (app): Promise<void> => {
@@ -844,16 +846,17 @@ export async function resetManual(serial: Serial, logger: Printable): Promise<vo
       return;
     }
     await clearApp(serial, app.packageName, logger).catch((err) => {
-      logger.error(`adb.Failed to clear app ${app.packageName}`, { error: stringify(err) });
+      logger.error(`adb.resetManual failed to clear ${app.packageName}`, { error: stringify(err) });
     });
     await resetAppPermission(serial, app.packageName, logger).catch((err) => {
-      logger.error(`adb.Failed to reset app permission ${app.packageName}`, { error: stringify(err) });
+      logger.error(`adb.resetManual failed to reset permission ${app.packageName}`, { error: stringify(err) });
     });
     await uninstallApp(serial, app.packageName, false, logger).catch((err) => {
-      logger.error(`adb.Failed to uninstall app ${app.packageName}`, { error: stringify(err) });
+      logger.error(`adb.resetManual failed to uninstall ${app.packageName}`, { error: stringify(err) });
     });
     return Promise.resolve();
   });
+  adbLogger.verbose('adb.resetManual end', { serial, random });
   await Promise.all(promises);
 
   const mkdirLists = ['Alarms', 'DCIM', 'Documents', 'Download', 'Movies', 'Music', 'Notifications', 'Pictures', 'Podcasts', 'Ringtones'];
@@ -863,11 +866,11 @@ export async function resetManual(serial: Serial, logger: Printable): Promise<vo
       return Promise.resolve();
     }
     await shellIgnoreError(serial, `rm -rf /storage/emulated/0/${file.name}`).catch((err) => {
-      logger.error(`adb.Failed to remove directory ${file.name}`, { error: stringify(err) });
+      logger.error(`adb.resetManual failed to remove directory ${file.name}`, { error: stringify(err) });
     });
     if (mkdirLists.includes(file.name)) {
       await shellIgnoreError(serial, `mkdir /storage/emulated/0/${file.name}`).catch((err) => {
-        logger.error(`adb.Failed to make directory ${file.name}`, { error: stringify(err) });
+        logger.error(`adb.resetManual failed to make directory ${file.name}`, { error: stringify(err) });
       });
     }
     return Promise.resolve();
