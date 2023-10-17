@@ -48,7 +48,7 @@ const SelectItem: React.FC<{ item: CloudDeviceByModelResponse; platform: Platfor
         </OneSpan>
         <ButtonWrapper>
           <Button type="primary" disabled={!isAvailable} onClick={handleStart}>
-            Start
+            {isAvailable ? `Start` : 'Busy'}
           </Button>
         </ButtonWrapper>
       </ItemInner>

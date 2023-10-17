@@ -77,10 +77,14 @@ export type EventName =
   // license
   | 'onLicenseUpdated'
 
+  // streaming
+  | 'onDeviceInput'
+
   // cloud
   | 'onCloudLiveTestingSessionCreated'
   | 'onCloudLiveTestingSessionClosed'
-  | 'onCloudHeartbeatSocketClosed';
+  | 'onCloudHeartbeatSocketClosed'
+  | 'onCloudHeartbeatSocketMessage';
 
 interface EventStore {
   eventName: EventName | null;

@@ -4,6 +4,7 @@ import Head from 'next/head';
 import { Divider } from 'antd';
 import useSWR from 'swr';
 import { GetServerSideProps } from 'next';
+import { LoadingOutlined } from '@ant-design/icons';
 
 import { NextPageWithLayout } from 'pages/_app';
 import ConsoleLayout from 'src/components/layouts/ConsoleLayout';
@@ -18,7 +19,6 @@ import CloudDeviceFilter from '../../../../src/components/cloud/CloudDeviceFilte
 import LiveTestingSessionList from '../../../../src/components/cloud/LiveTestingSessionList';
 import { swrAuthFetcher } from '../../../../src/api';
 import useRefresh from '../../../../src/hooks/useRefresh';
-import { LoadingOutlined } from '@ant-design/icons';
 
 const OrganizationLiveTestingPage: NextPageWithLayout<OrganizationServerSideProps> = ({ user, organization }) => {
   const { data, isLoading, mutate } = useSWR<LiveSessionBase[]>(
@@ -49,7 +49,9 @@ const OrganizationLiveTestingPage: NextPageWithLayout<OrganizationServerSideProp
           <TableListView
             top={
               <FlexBox>
-                <div></div>
+                <div>
+                  <Description>Devices under tests in your organization.</Description>
+                </div>
                 <RefreshButton />
               </FlexBox>
             }
@@ -60,12 +62,17 @@ const OrganizationLiveTestingPage: NextPageWithLayout<OrganizationServerSideProp
       )}
       <TableListView
         top={
-          <FlexBox>
-            <div>
-              <CloudDeviceFilter />
-            </div>
-            <RefreshButton />
-          </FlexBox>
+          <>
+            <DescriptionWrapper>
+              <Description>Select devices from the list</Description>
+            </DescriptionWrapper>
+            <FlexBox>
+              <div>
+                <CloudDeviceFilter />
+              </div>
+              <RefreshButton />
+            </FlexBox>
+          </>
         }
         table={<LiveTestingCloudDeviceList />}
       />
@@ -109,4 +116,13 @@ const Centered = styled.div`
   justify-content: center;
   align-items: center;
   height: 100%;
+`;
+
+const DescriptionWrapper = styled.div`
+  margin-bottom: 0.5rem;
+`;
+
+const Description = styled.p`
+  line-height: 1.5;
+  color: #666;
 `;

@@ -7,14 +7,12 @@ import {
   PoweroffOutlined,
   RollbackOutlined,
   UnlockOutlined,
-  AlignLeftOutlined,
 } from '@ant-design/icons';
 import React from 'react';
 import { Platform } from '@dogu-private/types';
 
 import { DeviceToolBarMenu } from 'src/utils/streaming/streaming';
 import resources from 'src/resources';
-import useDeviceInput from '../../hooks/streaming/useDeviceInput';
 import useDeviceStreamingContext from '../../hooks/streaming/useDeviceStreamingContext';
 
 interface ToolbarButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {

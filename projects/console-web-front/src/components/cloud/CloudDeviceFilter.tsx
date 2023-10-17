@@ -27,7 +27,7 @@ const VersionSelect: React.FC = () => {
 
   return (
     <Select<string>
-      options={[{ label: 'Versions', value: '' }].concat(
+      options={[{ label: 'Version', value: '' }].concat(
         data?.map((version) => ({ label: version, value: version })) || [],
       )}
       dropdownMatchSelectWidth={false}

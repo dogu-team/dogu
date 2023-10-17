@@ -1,8 +1,7 @@
 import { LiveSessionState, Platform } from '@dogu-private/types';
 import { LiveSessionBase } from '@dogu-private/console';
-import { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { List, Button } from 'antd';
+import { List, Button, Space } from 'antd';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { shallow } from 'zustand/shallow';
@@ -13,45 +12,12 @@ import { deviceBrandMapper } from '../../resources/device/brand';
 import PlatformIcon from '../device/PlatformIcon';
 import { sendSuccessNotification } from '../../utils/antd';
 import LiveTestingCloseSessionButton from './LiveTestingCloseSessionButton';
-import { stringifyDurationAsTimer } from '../../utils/date';
 import useEventStore from '../../stores/events';
+import CountUpTimer from '../common/CountUpTimer';
+import CountDownTimer from '../common/CountDownTimer';
 
 const SessionState: React.FC<{ session: LiveSessionBase }> = ({ session }) => {
-  const countDuration = useCallback(() => {
-    const now = new Date();
-    if (session.state === LiveSessionState.CREATED) {
-      return now.getTime() - new Date(session.createdAt).getTime();
-    }
-
-    if (session.closeWaitAt) {
-      const closeWaitAt = new Date(session.closeWaitAt).getTime();
-      const THREE_MIN = 3 * 60 * 1000;
-      return THREE_MIN - (now.getTime() - closeWaitAt);
-    }
-
-    return 0;
-  }, [session.state, session.createdAt, session.closeWaitAt]);
-  const [duration, setDuration] = useState<number>(() => {
-    return countDuration();
-  });
   const fireEvent = useEventStore((state) => state.fireEvent, shallow);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setDuration(countDuration());
-    }, 1000);
-
-    return () => {
-      clearInterval(interval);
-    };
-  }, [countDuration]);
-
-  useEffect(() => {
-    if (duration <= 0) {
-      setDuration(0);
-      fireEvent('onRefreshClicked');
-    }
-  }, [duration]);
 
   if (session.state === LiveSessionState.CLOSED) {
     return <div>Closed</div>;
@@ -61,7 +27,7 @@ const SessionState: React.FC<{ session: LiveSessionBase }> = ({ session }) => {
     return (
       <div>
         <CheckCircleTwoTone twoToneColor="#52c41a" />
-        &nbsp;Started {stringifyDurationAsTimer(duration)}
+        &nbsp;Started <CountUpTimer startedAt={new Date(session.createdAt)} />
       </div>
     );
   }
@@ -69,7 +35,12 @@ const SessionState: React.FC<{ session: LiveSessionBase }> = ({ session }) => {
   return (
     <div>
       <WarningTwoTone twoToneColor="#e99957" />
-      &nbsp;Close after {stringifyDurationAsTimer(duration)}
+      &nbsp;Close after{' '}
+      <CountDownTimer
+        startedAt={session.closeWaitAt ? new Date(session.closeWaitAt) : new Date()}
+        endMs={3 * 60 * 1000}
+        onEnd={() => fireEvent('onRefreshClicked')}
+      />
     </div>
   );
 };
@@ -97,19 +68,21 @@ const SessionItem: React.FC<ItemProps> = ({ session }) => {
           <SessionState session={session} />
         </OneSpan>
         <ButtonWrapper>
-          <Link
-            href={`/dashboard/${session.organizationId}/live-testing/${session.liveSessionId}/${session.deviceId}`}
-            target="_blank"
-          >
-            <Button type="primary">Enter</Button>
-          </Link>
-          <LiveTestingCloseSessionButton
-            sessionId={session.liveSessionId}
-            organizationId={session.organizationId}
-            onClose={() => sendSuccessNotification('Session closed!')}
-          >
-            Close
-          </LiveTestingCloseSessionButton>
+          <Space.Compact>
+            <Link
+              href={`/dashboard/${session.organizationId}/live-testing/${session.liveSessionId}/${session.deviceId}`}
+              target="_blank"
+            >
+              <Button type="primary">Enter</Button>
+            </Link>
+            <LiveTestingCloseSessionButton
+              sessionId={session.liveSessionId}
+              organizationId={session.organizationId}
+              onClose={() => sendSuccessNotification('Session closed!')}
+            >
+              Close
+            </LiveTestingCloseSessionButton>
+          </Space.Compact>
         </ButtonWrapper>
       </ItemInner>
     </Item>

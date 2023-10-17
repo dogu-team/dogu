@@ -1,7 +1,7 @@
 import { Code, CodeUtil, input, PrivateProtocol } from '@dogu-private/types';
 import { DeviceRTCCaller } from '@dogu-private/webrtc';
-import { useRouter } from 'next/router';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
+import { shallow } from 'zustand/shallow';
 
 import useStreamingOptionStore from 'src/stores/streaming-option';
 import {
@@ -11,10 +11,8 @@ import {
   mapWebKeyboardToDeviceKeyboard,
   mapWebMetaKeyToDeviceMetaState,
 } from 'src/utils/streaming/streaming';
-import { shallow } from 'zustand/shallow';
 import useEventStore from '../../stores/events';
 import { sendErrorNotification } from '../../utils/antd';
-import useWebSocket from '../useWebSocket';
 
 type DeviceControlType = PrivateProtocol.DeviceControlType;
 const DeviceControlType = PrivateProtocol.DeviceControlType;
@@ -32,32 +30,9 @@ export interface DeviceInputOption {
   isDoubleClicked?: boolean;
 }
 
-const useDeviceInput = (deviceRTCCaller: DeviceRTCCaller | undefined, isCloudDevice: boolean) => {
+const useDeviceInput = (deviceRTCCaller: DeviceRTCCaller | undefined) => {
   const [isPressing, setIsPressing] = useState(false);
-  const router = useRouter();
-  const cloudHeartbeatSocketRef = useWebSocket(
-    isCloudDevice
-      ? `/live-session-heartbeat?organizationId=${router.query.orgId}&liveSessionId=${router.query.sessionId}`
-      : null,
-  );
   const fireEvent = useEventStore((state) => state.fireEvent, shallow);
-
-  useEffect(() => {
-    if (cloudHeartbeatSocketRef.current) {
-      const handleClose = () => {
-        fireEvent('onCloudHeartbeatSocketClosed');
-      };
-
-      cloudHeartbeatSocketRef.current.onclose = handleClose;
-      cloudHeartbeatSocketRef.current.onerror = handleClose;
-
-      return () => {
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        cloudHeartbeatSocketRef.current?.close();
-      };
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const handleControlResult = useCallback((result: CfGdcDaControlResult | null) => {
     if (result === null) {
@@ -108,7 +83,7 @@ const useDeviceInput = (deviceRTCCaller: DeviceRTCCaller | undefined, isCloudDev
         const result = await deviceRTCCaller.call('cfGdcDaControlParam', 'cfGdcDaControlResult', {
           control: c,
         });
-        cloudHeartbeatSocketRef.current?.send('input');
+        fireEvent('onDeviceInput', result);
         handleControlResult(result);
       } catch (e) {}
     },
@@ -157,7 +132,7 @@ const useDeviceInput = (deviceRTCCaller: DeviceRTCCaller | undefined, isCloudDev
         const result = await deviceRTCCaller?.call('cfGdcDaControlParam', 'cfGdcDaControlResult', {
           control: c,
         });
-        cloudHeartbeatSocketRef.current?.send('input');
+        fireEvent('onDeviceInput', result);
         handleControlResult(result);
       } catch (e) {}
     },
@@ -191,7 +166,7 @@ const useDeviceInput = (deviceRTCCaller: DeviceRTCCaller | undefined, isCloudDev
           const result = await deviceRTCCaller.call('cfGdcDaControlParam', 'cfGdcDaControlResult', {
             control: c,
           });
-          cloudHeartbeatSocketRef.current?.send('input');
+          fireEvent('onDeviceInput', result);
           handleControlResult(result);
         } catch (e) {}
       }
@@ -284,10 +259,10 @@ const useDeviceInput = (deviceRTCCaller: DeviceRTCCaller | undefined, isCloudDev
         } else {
           console.debug(`e2e handleToolMenuInput code: ${DeviceControlKeycode[c.keycode]} success`);
         }
+        fireEvent('onDeviceInput', result);
         handleControlResult(result);
       }
 
-      cloudHeartbeatSocketRef.current?.send('input');
       return;
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -295,14 +270,13 @@ const useDeviceInput = (deviceRTCCaller: DeviceRTCCaller | undefined, isCloudDev
   );
 
   const handleKeyDown = useCallback(
-    (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    async (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
       if (event.currentTarget === null) {
         return;
       }
 
       try {
-        cloudHeartbeatSocketRef.current?.send('input');
-        handleKeyboardInput(event, false);
+        await handleKeyboardInput(event, false);
       } catch (e) {}
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -310,14 +284,13 @@ const useDeviceInput = (deviceRTCCaller: DeviceRTCCaller | undefined, isCloudDev
   );
 
   const handleKeyUp = useCallback(
-    (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    async (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
       if (event.currentTarget === null) {
         return;
       }
 
       try {
-        cloudHeartbeatSocketRef.current?.send('input');
-        handleKeyboardInput(event, true);
+        await handleKeyboardInput(event, true);
       } catch (e) {}
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -325,14 +298,13 @@ const useDeviceInput = (deviceRTCCaller: DeviceRTCCaller | undefined, isCloudDev
   );
 
   const handleWheel = useCallback(
-    (event: React.WheelEvent<HTMLTextAreaElement>, videoSize: { width: number; height: number }) => {
+    async (event: React.WheelEvent<HTMLTextAreaElement>, videoSize: { width: number; height: number }) => {
       if (event.currentTarget === null) {
         return;
       }
 
       try {
-        cloudHeartbeatSocketRef.current?.send('input');
-        handleScrollInput(event, videoSize);
+        await handleScrollInput(event, videoSize);
       } catch (e) {}
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -340,7 +312,7 @@ const useDeviceInput = (deviceRTCCaller: DeviceRTCCaller | undefined, isCloudDev
   );
 
   const handleMouseDown = useCallback(
-    (event: React.MouseEvent<HTMLTextAreaElement, MouseEvent>, videoSize: { width: number; height: number }) => {
+    async (event: React.MouseEvent<HTMLTextAreaElement, MouseEvent>, videoSize: { width: number; height: number }) => {
       if (event.currentTarget === null) {
         return;
       }
@@ -348,8 +320,7 @@ const useDeviceInput = (deviceRTCCaller: DeviceRTCCaller | undefined, isCloudDev
       try {
         deviceRTCCaller?.setSendThrottleMs(33);
         setIsPressing(true);
-        cloudHeartbeatSocketRef.current?.send('input');
-        handleTouchInput(event, {
+        await handleTouchInput(event, {
           type: DeviceControlType.DEVICE_CONTROL_TYPE_AOS_INJECT_TOUCH_EVENT,
           action: DeviceControlAction.DEVICE_CONTROL_ACTION_DESKTOP_ACTION_DOWN_UNSPECIFIED,
           originSize: videoSize,
@@ -361,7 +332,7 @@ const useDeviceInput = (deviceRTCCaller: DeviceRTCCaller | undefined, isCloudDev
   );
 
   const handleMouseUp = useCallback(
-    (event: React.MouseEvent<HTMLTextAreaElement, MouseEvent>, videoSize: { width: number; height: number }) => {
+    async (event: React.MouseEvent<HTMLTextAreaElement, MouseEvent>, videoSize: { width: number; height: number }) => {
       if (event.currentTarget === null) {
         return;
       }
@@ -369,8 +340,7 @@ const useDeviceInput = (deviceRTCCaller: DeviceRTCCaller | undefined, isCloudDev
       try {
         deviceRTCCaller?.setSendThrottleMs(33);
         setIsPressing(false);
-        cloudHeartbeatSocketRef.current?.send('input');
-        handleTouchInput(event, {
+        await handleTouchInput(event, {
           type: DeviceControlType.DEVICE_CONTROL_TYPE_AOS_INJECT_TOUCH_EVENT,
           action: DeviceControlAction.DEVICE_CONTROL_ACTION_DESKTOP_ACTION_UP,
           originSize: videoSize,
@@ -382,7 +352,7 @@ const useDeviceInput = (deviceRTCCaller: DeviceRTCCaller | undefined, isCloudDev
   );
 
   const handleMouseMove = useCallback(
-    (event: React.MouseEvent<HTMLTextAreaElement, MouseEvent>, videoSize: { width: number; height: number }) => {
+    async (event: React.MouseEvent<HTMLTextAreaElement, MouseEvent>, videoSize: { width: number; height: number }) => {
       if (event.currentTarget === null) {
         return;
       }
@@ -390,8 +360,8 @@ const useDeviceInput = (deviceRTCCaller: DeviceRTCCaller | undefined, isCloudDev
       if (isPressing) {
         try {
           deviceRTCCaller?.setSendThrottleMs(33);
-          cloudHeartbeatSocketRef.current?.send('input');
-          handleTouchInput(event, {
+
+          await handleTouchInput(event, {
             type: DeviceControlType.DEVICE_CONTROL_TYPE_AOS_INJECT_TOUCH_EVENT,
             action: DeviceControlAction.DEVICE_CONTROL_ACTION_AOS_MOTIONEVENT_ACTION_MOVE,
             originSize: videoSize,
@@ -404,15 +374,14 @@ const useDeviceInput = (deviceRTCCaller: DeviceRTCCaller | undefined, isCloudDev
   );
 
   const handleMouseLeave = useCallback(
-    (event: React.MouseEvent<HTMLTextAreaElement, MouseEvent>, videoSize: { width: number; height: number }) => {
+    async (event: React.MouseEvent<HTMLTextAreaElement, MouseEvent>, videoSize: { width: number; height: number }) => {
       if (event.currentTarget === null) {
         return;
       }
 
       try {
         setIsPressing(false);
-        cloudHeartbeatSocketRef.current?.send('input');
-        handleTouchInput(event, {
+        await handleTouchInput(event, {
           type: DeviceControlType.DEVICE_CONTROL_TYPE_AOS_INJECT_TOUCH_EVENT,
           action: DeviceControlAction.DEVICE_CONTROL_ACTION_AOS_KEYEVENT_ACTION_UP,
           originSize: videoSize,
@@ -424,14 +393,13 @@ const useDeviceInput = (deviceRTCCaller: DeviceRTCCaller | undefined, isCloudDev
   );
 
   const handleDoubleClick = useCallback(
-    (event: React.MouseEvent<HTMLTextAreaElement, MouseEvent>, videoSize: { width: number; height: number }) => {
+    async (event: React.MouseEvent<HTMLTextAreaElement, MouseEvent>, videoSize: { width: number; height: number }) => {
       if (event.currentTarget === null) {
         return;
       }
 
       try {
-        cloudHeartbeatSocketRef.current?.send('input');
-        handleTouchInput(event, {
+        await handleTouchInput(event, {
           type: DeviceControlType.DEVICE_CONTROL_TYPE_AOS_INJECT_TOUCH_EVENT,
           action: DeviceControlAction.DEVICE_CONTROL_ACTION_DESKTOP_ACTION_DOWNUP,
           originSize: videoSize,
@@ -464,10 +432,10 @@ const useDeviceInput = (deviceRTCCaller: DeviceRTCCaller | undefined, isCloudDev
           timeStamp: event.timeStamp,
         };
 
-        cloudHeartbeatSocketRef.current?.send('input');
         const result = await deviceRTCCaller.call('cfGdcDaControlParam', 'cfGdcDaControlResult', {
           control: c,
         });
+        fireEvent('onDeviceInput', result);
       } catch (e) {
         console.error(e);
       }
@@ -497,10 +465,10 @@ const useDeviceInput = (deviceRTCCaller: DeviceRTCCaller | undefined, isCloudDev
           timeStamp: event.timeStamp,
         };
 
-        cloudHeartbeatSocketRef.current?.send('input');
         const result = await deviceRTCCaller.call('cfGdcDaControlParam', 'cfGdcDaControlResult', {
           control: c,
         });
+        fireEvent('onDeviceInput', result);
       } catch (e) {
         console.error(e);
       }

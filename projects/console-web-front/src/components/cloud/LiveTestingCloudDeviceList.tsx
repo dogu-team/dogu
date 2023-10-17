@@ -46,7 +46,7 @@ const DeviceItem: React.FC<{ device: CloudDeviceMetadataBase }> = ({ device }) =
           <OneSpan>{Number(device.memory) ? `${ceilDeviceMemory(Number(device.memory))}` : '-'}</OneSpan>
           <ButtonWrapper>
             <Button type="primary" onClick={() => openModal()} disabled={!isAvailable}>
-              Start
+              {isAvailable ? `Start` : 'Busy'}
             </Button>
           </ButtonWrapper>
         </ItemInner>
