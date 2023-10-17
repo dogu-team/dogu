@@ -102,7 +102,9 @@ function DefaultPackageInfo(): PackageInfo {
   };
 }
 
-// network
+/**
+ * network
+ */
 export async function startServer(): Promise<void> {
   await exec(`${adbPrefix()} start-server`);
 }
@@ -203,7 +205,10 @@ export async function getPackageOnPort(serial: Serial, port: number): Promise<Pa
   return rv;
 }
 
-// app control
+/**
+ * app control
+ */
+
 export async function uninstallApp(serial: Serial, appName: string, keep = false, printable: Printable = adbLogger): Promise<void> {
   const random = Math.random();
   adbLogger.verbose('adb.uninstallApp begin', { serial, appName, keep, random });
@@ -358,7 +363,16 @@ export async function runAppProcess(serial: Serial, localPath: string, destPath:
   return rv;
 }
 
-// device info
+export async function disablePackage(serial: Serial, packageName: string, userId: number, printable: Printable): Promise<void> {
+  const random = Math.random();
+  adbLogger.verbose('adb.disablePackage begin', { serial, packageName, random });
+  await shell(serial, `pm disable-user ${userId} ${packageName}`);
+  adbLogger.verbose('adb.disablePackage end', { serial, packageName, random });
+}
+
+/**
+ * device info
+ */
 export async function serials(): Promise<DeviceScanResult[]> {
   const random = Math.random();
   adbLogger.verbose('adb.serials begin', { random });
@@ -638,7 +652,9 @@ export async function getInstalledPackageInfo(serial: Serial, packageName: strin
   return result;
 }
 
-// display
+/**
+ * display
+ */
 
 export async function isScreenOn(serial: Serial): Promise<boolean> {
   const random = Math.random();
@@ -737,7 +753,9 @@ export async function stayOnWhilePluggedIn(serial: Serial): Promise<void> {
   adbLogger.verbose('adb.stayOnWhilePluggedIn end', { serial, random });
 }
 
-// security
+/**
+ *  security
+ */
 export async function unlock(serial: Serial): Promise<void> {
   const random = Math.random();
   adbLogger.verbose('adb.unlock begin', { serial, random });
@@ -862,9 +880,6 @@ export async function resetManual(serial: Serial, logger: Printable): Promise<vo
   const mkdirLists = ['Alarms', 'DCIM', 'Documents', 'Download', 'Movies', 'Music', 'Notifications', 'Pictures', 'Podcasts', 'Ringtones'];
   const files = await readDir(serial, '/storage/emulated/0');
   const promises2 = files.map(async (file): Promise<void> => {
-    if (file.name === 'Android') {
-      return Promise.resolve();
-    }
     await shellIgnoreError(serial, `rm -rf /storage/emulated/0/${file.name}`).catch((err) => {
       logger.error(`adb.resetManual failed to remove directory ${file.name}`, { error: stringify(err) });
     });

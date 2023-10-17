@@ -36,6 +36,7 @@ import { DeviceChannel, DeviceChannelOpenParam, DeviceHealthStatus, DeviceServer
 import { AndroidDeviceAgentService } from '../services/device-agent/android-device-agent-service';
 import { AndroidAdbProfileService, AndroidDisplayProfileService } from '../services/profile/android-profiler';
 import { ProfileServices } from '../services/profile/profile-service';
+import { AndroidSharedDeviceService } from '../services/shared-device/android-shared-device';
 import { StreamingService } from '../services/streaming/streaming-service';
 import { AndroidSystemInfoService } from '../services/system-info/android-system-info-service';
 import { Zombieable } from '../services/zombie/zombie-component';
@@ -82,6 +83,7 @@ export class AndroidChannel implements DeviceChannel {
     private readonly _streaming: StreamingService,
     private _appiumContext: AppiumContextProxy,
     private readonly _appiumDeviceWebDriverHandler: AppiumDeviceWebDriverHandler,
+    private readonly _sharedDevice: AndroidSharedDeviceService,
     private readonly logger: FilledPrintable,
     readonly browserInstallations: BrowserInstallation[],
   ) {
@@ -140,6 +142,8 @@ export class AndroidChannel implements DeviceChannel {
       deviceSerial: serial,
       browserPlatform: 'android',
     });
+    const sharedDevice = new AndroidSharedDeviceService(serial, logger);
+    await sharedDevice.wait();
 
     const deviceChannel = new AndroidChannel(
       serial,
@@ -151,6 +155,7 @@ export class AndroidChannel implements DeviceChannel {
       streaming,
       appiumContextProxy,
       appiumDeviceWebDriverHandler,
+      sharedDevice,
       logger,
       findAllBrowserInstallationsResult.browserInstallations,
     );
@@ -181,6 +186,7 @@ export class AndroidChannel implements DeviceChannel {
     });
     ZombieServiceInstance.deleteComponent(this._appiumContext);
     this._deviceAgent.delete();
+    this._sharedDevice.delete();
     ZombieServiceInstance.deleteAllComponentsIfExist((zombieable: Zombieable): boolean => {
       return zombieable.serial === this.serial && zombieable.platform === Platform.PLATFORM_ANDROID;
     }, 'kill serial bound zombies');

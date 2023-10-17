@@ -154,11 +154,12 @@ export class BlockDeveloperOptionsProfiler implements AndroidAdbProfiler {
   }
 
   private killLogcatProcess(): void {
-    if (this.logcatProc) {
-      killChildProcess(this.logcatProc).catch((e) => {
-        console.error(e);
-      });
-      this.logcatProc = undefined;
+    if (!this.logcatProc) {
+      return;
     }
+    killChildProcess(this.logcatProc).catch((e) => {
+      console.error(e);
+    });
+    this.logcatProc = undefined;
   }
 }

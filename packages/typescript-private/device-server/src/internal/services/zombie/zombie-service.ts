@@ -58,7 +58,7 @@ export class ZombieService {
           await ret.component
             .tryRevive()
             .catch((e: Error) => {
-              logger.error(`ZombieComponent ${ret.component.impl.name} reviveCheck failed error:${stringify(e, { compact: true })}`);
+              logger.error(`ZombieComponent ${ret.component.impl.name} revive failed error:${stringify(e, { compact: true })}`);
             })
             .finally(() => {
               ret.isReviving = false;
