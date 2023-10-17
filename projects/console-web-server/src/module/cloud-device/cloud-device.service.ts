@@ -139,8 +139,10 @@ export class CloudDeviceService {
   async findCloudDeviceVersions(platform?: Platform): Promise<string[]> {
     const platformFilterClause = platform ? `device.${DevicePropCamel.platform} = :platform` : '1=1';
 
-    const query = this.createCloudDeviceDefaultQuery().andWhere(platformFilterClause, { platform });
-
+    const query = this.createCloudDeviceDefaultQuery()
+      .andWhere(platformFilterClause, { platform })
+      .distinctOn([`device.${DevicePropCamel.version}`])
+      .orderBy(`device.${DevicePropCamel.version}`, 'ASC');
     const devices = await query.getMany();
 
     return devices.map((device) => device.version);

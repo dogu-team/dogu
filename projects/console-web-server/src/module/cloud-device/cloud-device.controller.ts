@@ -13,10 +13,16 @@ import { CloudDeviceService } from './cloud-device.service';
 export class CloudDeviceController {
   constructor(private readonly cloudDeviceService: CloudDeviceService) {}
 
-  @Get()
+  @Get('')
   @EmailVerification(EMAIL_VERIFICATION.VERIFIED)
   async getCloudDevices(@User() user: UserPayload, @Query() dto: FindCloudDevicesDto): Promise<Page<CloudDeviceMetadataBase>> {
     return await this.cloudDeviceService.findCloudDevices(dto);
+  }
+
+  @Get('versions')
+  @EmailVerification(EMAIL_VERIFICATION.VERIFIED)
+  async getCloudDeviceVersions(@User() user: UserPayload, @Query('platform') platform?: Platform): Promise<string[]> {
+    return await this.cloudDeviceService.findCloudDeviceVersions(platform);
   }
 
   @Get(':model/versions')
@@ -29,11 +35,5 @@ export class CloudDeviceController {
   @EmailVerification(EMAIL_VERIFICATION.VERIFIED)
   async findCloudDeviceById(@User() user: UserPayload, @Param('deviceId') deviceId: DeviceId): Promise<Device> {
     return await this.cloudDeviceService.findCloudDeviceById(deviceId);
-  }
-
-  @Get('versions')
-  @EmailVerification(EMAIL_VERIFICATION.VERIFIED)
-  async getCloudDeviceVersions(@User() user: UserPayload, @Query('platform') platform?: Platform): Promise<string[]> {
-    return await this.cloudDeviceService.findCloudDeviceVersions(platform);
   }
 }
