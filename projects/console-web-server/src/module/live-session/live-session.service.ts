@@ -99,6 +99,26 @@ export class LiveSessionService {
     await this.redis.expire(config.redis.key.liveSessionHeartbeat(liveSessionId), config.liveSession.heartbeat.allowedSeconds);
   }
 
+  async subscribeCloseWaitEvent(liveSessionId: LiveSessionId, onMessage: (message: string) => void): Promise<() => Promise<void>> {
+    const thisChannel = config.redis.key.liveSessionCloseWaitEvent(liveSessionId);
+    const onMessageImpl = (channel: string, message: string) => {
+      if (channel === thisChannel) {
+        onMessage(message);
+      }
+    };
+    this.subscriber.on('message', onMessageImpl);
+    await this.subscriber.subscribe(config.redis.key.liveSessionCloseWaitEvent(liveSessionId));
+    const unsubscribe = async () => {
+      await this.subscriber.unsubscribe(config.redis.key.liveSessionCloseWaitEvent(liveSessionId));
+      this.subscriber.removeListener('message', onMessageImpl);
+    };
+    return unsubscribe;
+  }
+
+  async publishCloseWaitEvent(liveSessionId: LiveSessionId, message: string): Promise<void> {
+    await this.redis.publish(config.redis.key.liveSessionCloseWaitEvent(liveSessionId), message);
+  }
+
   async subscribeCloseEvent(liveSessionId: LiveSessionId, onMessage: (message: string) => void): Promise<() => Promise<void>> {
     const thisChannel = config.redis.key.liveSessionCloseEvent(liveSessionId);
     const onMessageImpl = (channel: string, message: string) => {

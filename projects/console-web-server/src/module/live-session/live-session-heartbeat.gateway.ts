@@ -1,4 +1,4 @@
-import { LiveSessionState } from '@dogu-private/types';
+import { LiveSessionState, LiveSessionWsMessage } from '@dogu-private/types';
 import { closeWebSocketWithTruncateReason, errorify } from '@dogu-tech/common';
 import { Inject } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
@@ -6,6 +6,7 @@ import { OnGatewayConnection, WebSocketGateway } from '@nestjs/websockets';
 import { IncomingMessage } from 'http';
 import { DataSource } from 'typeorm';
 import WebSocket from 'ws';
+import { config } from '../../config';
 
 import { LiveSession } from '../../db/entity/live-session.entity';
 import { WsCommonService } from '../../ws/common/ws-common.service';
@@ -89,13 +90,24 @@ export class LiveSessionHeartbeatGateway implements OnGatewayConnection {
         this.logger.debug('LiveSessionHeartbeatGateway.handleConnection.toCreated', { liveSession });
       }
 
-      const unsubscribe = await this.liveSessionService.subscribeCloseEvent(liveSessionId, (message) => {
+      const unsubscribeCloseWaitEvent = await this.liveSessionService.subscribeCloseWaitEvent(liveSessionId, (message) => {
+        const msg: LiveSessionWsMessage = {
+          type: LiveSessionState.CLOSE_WAIT,
+          message: `${config.liveSession.closeWait.allowedMilliseconds}`,
+        };
+        webSocket.send(JSON.stringify(msg));
+        this.logger.debug('LiveSessionHeartbeatGateway.onClose.subscribeCloseWaitEvent', { liveSessionId, message });
+      });
+
+      const unsubscribeCloseEvent = await this.liveSessionService.subscribeCloseEvent(liveSessionId, (message) => {
         webSocket.close(1003, 'closed');
         this.logger.debug('LiveSessionHeartbeatGateway.onClose.subscribeCloseEvent', { liveSessionId, message });
       });
+
       webSocket.on('close', () => {
         (async () => {
-          await unsubscribe();
+          await unsubscribeCloseEvent();
+          await unsubscribeCloseWaitEvent();
         })().catch((error) => {
           this.logger.error('LiveSessionHeartbeatGateway.onClose.unsubscribe.catch', { error: errorify(error) });
         });

@@ -60,7 +60,7 @@ export class LiveSessionUpdater implements OnModuleInit, OnModuleDestroy {
   }
 
   private async createdToCloseWait(): Promise<void> {
-    await this.dataSource.manager.transaction(async (manager) => {
+    const closeWaitSessions = await this.dataSource.manager.transaction(async (manager) => {
       const createds = await manager.getRepository(LiveSession).find({
         where: {
           state: LiveSessionState.CREATED,
@@ -85,12 +85,21 @@ export class LiveSessionUpdater implements OnModuleInit, OnModuleDestroy {
       }
 
       if (newCloseWaits.length > 0) {
-        await manager.save(newCloseWaits);
+        const rv = await manager.save(newCloseWaits);
         this.logger.debug('LiveSessionUpdater: createdToCloseWait', {
           newCloseWaits,
         });
+        return rv;
       }
     });
+
+    if (!!closeWaitSessions && closeWaitSessions.length > 0) {
+      await Promise.all(
+        closeWaitSessions.map(async (liveSession) => {
+          await this.liveSessionService.publishCloseWaitEvent(liveSession.liveSessionId, `closeWait!`);
+        }),
+      );
+    }
   }
 
   private async closeWaitToCreatedOrClosed(): Promise<void> {
