@@ -144,7 +144,7 @@ export class AndroidChannel implements DeviceChannel {
       deviceSerial: serial,
       browserPlatform: 'android',
     });
-    const sharedDevice = new AndroidSharedDeviceService(serial, logger);
+    const sharedDevice = new AndroidSharedDeviceService(serial, appiumAdb, await Adb.getProps(serial), logger);
     await sharedDevice.wait();
 
     const deviceChannel = new AndroidChannel(
@@ -271,7 +271,7 @@ export class AndroidChannel implements DeviceChannel {
 
   async reset(): Promise<void> {
     const appiumContext = await this.switchAppiumContext('builtin');
-    await AndroidResetService.resetDevice(this.serial, this.info.version, this.appiumAdb, appiumContext, this.logger);
+    await AndroidResetService.resetDevice(this.serial, this.info, this.appiumAdb, appiumContext, this.logger);
   }
 
   async killOnPort(port: number): Promise<void> {

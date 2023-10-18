@@ -444,6 +444,14 @@ export async function getProps(serial: Serial): Promise<AndroidPropInfo> {
   return rv;
 }
 
+export async function getProp(serial: Serial, key: string): Promise<string> {
+  const random = Math.random();
+  adbLogger.verbose('adb.getProp begin', { serial, key, random });
+  const cmdret = await shellIgnoreError(serial, `getprop ${key}`);
+  adbLogger.verbose('adb.getProp end', { serial, key, random });
+  return cmdret.stdout;
+}
+
 // Profile GPU Rendering (https://stackoverflow.com/questions/42492191/how-to-show-hide-profile-gpu-rendering-as-bars-using-adb-command)
 export async function setProfileGPURendering(serial: Serial, value: string): Promise<void> {
   const random = Math.random();

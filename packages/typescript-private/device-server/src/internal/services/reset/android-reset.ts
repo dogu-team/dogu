@@ -1,13 +1,13 @@
-import { Serial } from '@dogu-private/types';
+import { DeviceSystemInfo, Serial } from '@dogu-private/types';
 import { delay, filterAsync, loop, Printable, stringify } from '@dogu-tech/common';
 import semver from 'semver';
 import { AppiumContext } from '../../../appium/appium.context';
 import { Adb, AppiumAdb } from '../../externals/index';
 
 export class AndroidResetService {
-  static async resetDevice(serial: Serial, osVersion: string, appiumAdb: AppiumAdb, appiumContext: AppiumContext, logger: Printable): Promise<void> {
+  static async resetDevice(serial: Serial, systemInfo: DeviceSystemInfo, appiumAdb: AppiumAdb, appiumContext: AppiumContext, logger: Printable): Promise<void> {
     try {
-      const version = semver.coerce(osVersion);
+      const version = semver.coerce(systemInfo.version);
       if (version && semver.lt(version, '11.0.0')) {
         throw new Error(`AndroidResetService.resetDevice Android version must be 11 or higher. to use testharness`);
       }
@@ -21,16 +21,34 @@ export class AndroidResetService {
     await AndroidResetService.resetAccounts(serial, appiumAdb, appiumContext, logger);
 
     // should delete appium after you are finished using it.
-    await Adb.resetPackages(serial, logger);
-    await Adb.resetSdcard(serial, logger);
-    await AndroidResetService.resetIMEList(serial, logger);
-    await Adb.logcatClear(serial, logger);
+    await AndroidResetService.resetBeforeConnected(serial, logger);
 
     await Adb.reboot(serial);
   }
 
+  static async resetBeforeConnected(serial: Serial, logger: Printable): Promise<void> {
+    await Adb.resetPackages(serial, logger);
+    await Adb.resetSdcard(serial, logger);
+    await AndroidResetService.resetIMEList(serial, logger);
+    await Adb.logcatClear(serial, logger);
+  }
+
+  static async resetIMEList(serial: Serial, logger: Printable): Promise<void> {
+    const imes = await Adb.getIMEList(serial);
+    for (const ime of imes) {
+      await Adb.clearApp(serial, ime.packageName, logger).catch((err) => {
+        logger.error(`AndroidResetService.resetIMEList adb.resetPackages failed to clear`, { error: stringify(err), package: ime.packageName, serial });
+      });
+      await Adb.putIMESecure(serial, ime).catch((err) => {
+        logger.error(`AndroidResetService.resetIMEList adb.resetPackages failed to put`, { error: stringify(err), package: ime.packageName, serial });
+      });
+    }
+    await Adb.resetIME(serial).catch((err) => {
+      logger.error(`AndroidResetService.resetIMEList adb.resetPackages failed to resetIME`, { error: stringify(err), serial });
+    });
+  }
+
   private static async resetAccounts(serial: Serial, appiumAdb: AppiumAdb, appiumContext: AppiumContext, logger: Printable): Promise<void> {
-    appiumAdb.availableIMEs;
     const newAppiumAdb = appiumAdb.clone({ adbExecTimeout: 1000 * 60 * 10 });
     await newAppiumAdb.setDeviceLocale('ko-KR'); // prevent setDeviceLocale passing
     await delay(1000);
@@ -88,20 +106,5 @@ export class AndroidResetService {
       }
       await removeWidgetButton.click();
     }
-  }
-
-  private static async resetIMEList(serial: Serial, logger: Printable) {
-    const imes = await Adb.getIMEList(serial);
-    for (const ime of imes) {
-      await Adb.clearApp(serial, ime.packageName, logger).catch((err) => {
-        logger.error(`AndroidResetService.resetIMEList adb.resetPackages failed to clear`, { error: stringify(err), package: ime.packageName, serial });
-      });
-      await Adb.putIMESecure(serial, ime).catch((err) => {
-        logger.error(`AndroidResetService.resetIMEList adb.resetPackages failed to put`, { error: stringify(err), package: ime.packageName, serial });
-      });
-    }
-    await Adb.resetIME(serial).catch((err) => {
-      logger.error(`AndroidResetService.resetIMEList adb.resetPackages failed to resetIME`, { error: stringify(err), serial });
-    });
   }
 }

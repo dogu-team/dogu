@@ -247,6 +247,7 @@ export interface AndroidPropInfo {
   ro_product_locale: string; // locale
   ro_build_characteristics: 'emulator' | 'phone' | string; // emulator or phone
   persist_sys_locale: string; // language-locale
+  persist_sys_test_harness: string; // is test harness enabled
   debug_hwui_profile: string; // Profile GPU Rendering (https://stackoverflow.com/questions/42492191/how-to-show-hide-profile-gpu-rendering-as-bars-using-adb-command)
 }
 
@@ -263,6 +264,7 @@ export function DefaultAndroidPropInfo(): AndroidPropInfo {
     ro_product_locale: '',
     ro_build_characteristics: 'phone',
     persist_sys_locale: '',
+    persist_sys_test_harness: '',
     debug_hwui_profile: '',
   };
 }
