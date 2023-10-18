@@ -449,7 +449,7 @@ export async function setProfileGPURendering(serial: Serial, value: string): Pro
   adbLogger.verbose('adb.setProfileGPURendering end', { serial, value, random });
 }
 
-async function setProp(serial: Serial, propName: string, propValue: string): Promise<void> {
+export async function setProp(serial: Serial, propName: string, propValue: string): Promise<void> {
   const random = Math.random();
   adbLogger.verbose('adb.setProp begin', { serial, propName, propValue, random });
   await shell(serial, `setprop ${propName} ${propValue}`);

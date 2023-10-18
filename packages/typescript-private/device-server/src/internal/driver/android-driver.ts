@@ -34,7 +34,8 @@ export class AndroidDriver implements DeviceDriver {
   }
 
   async openChannel(initParam: DeviceChannelOpenParam): Promise<DeviceChannel> {
-    const cloneAppiumAdb = this.appiumAdb.clone({ udid: initParam.serial, curDeviceId: initParam.serial, adbExecTimeout: 1000 * 60 });
+    const cloneAppiumAdb = this.appiumAdb.clone({ adbExecTimeout: 1000 * 60 });
+    cloneAppiumAdb.setDeviceId(initParam.serial);
     const channel = await AndroidChannel.create(initParam, this.streamingService, this.deviceServerService, cloneAppiumAdb);
     this.channelMap.set(initParam.serial, channel);
     return channel;
