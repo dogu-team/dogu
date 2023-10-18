@@ -1,4 +1,4 @@
-import { AndroidLocale, createAndroidLocale, RuntimeInfo, Serial } from '@dogu-private/types';
+import { AndroidFullLocale, createAndroidFullLocale, RuntimeInfo, Serial } from '@dogu-private/types';
 import { DuplicatedCallGuarder, FilledPrintable, loop, stringify } from '@dogu-tech/common';
 import { killChildProcess } from '@dogu-tech/node';
 import child_process from 'child_process';
@@ -73,7 +73,7 @@ const SwitchingToFragmentKeyword = 'Switching to fragment';
 export class BlockDeveloperOptionsProfiler implements AndroidAdbProfiler {
   private readonly onUpdateGuarder = new DuplicatedCallGuarder();
   private logcatProc: child_process.ChildProcess | undefined = undefined;
-  private locale: AndroidLocale | undefined = undefined;
+  private locale: AndroidFullLocale | undefined = undefined;
   async profile(params: AndroidAdbProfilerParams): Promise<Partial<RuntimeInfo>> {
     if (!env.DOGU_IS_DEVICE_SHARE) {
       return {};
@@ -88,9 +88,9 @@ export class BlockDeveloperOptionsProfiler implements AndroidAdbProfiler {
       await this.startLogcatProcess(serial, settingsAppInfo.packageName, logger);
     }
     const props = await context.queryProp();
-    this.locale = createAndroidLocale(props.persist_sys_locale);
+    this.locale = createAndroidFullLocale(props.persist_sys_locale);
     if (!this.locale) {
-      this.locale = createAndroidLocale(props.ro_product_locale);
+      this.locale = createAndroidFullLocale(props.ro_product_locale);
     }
 
     this.onUpdateGuarder

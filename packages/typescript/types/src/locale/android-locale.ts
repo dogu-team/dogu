@@ -1,6 +1,6 @@
 // ref: https://developer.android.com/guide/topics/resources/app-languages#sample-config
 // some fixs are applied
-export const AndroidLocaleCandidates = [
+export const AndroidFullLocaleCandidates = [
   'af', // Afrikaans
   'am', // Amharic
   'ar', // Arabic
@@ -93,13 +93,13 @@ export const AndroidLocaleCandidates = [
   'zu', // Zulu ;
 ] as const;
 
-export type AndroidLocale = (typeof AndroidLocaleCandidates)[number];
+export type AndroidFullLocale = (typeof AndroidFullLocaleCandidates)[number];
 
-export function createAndroidLocale(rawString: string): AndroidLocale | undefined {
-  if (AndroidLocaleCandidates.includes(rawString as AndroidLocale)) {
-    return rawString as AndroidLocale;
+export function createAndroidFullLocale(rawString: string): AndroidFullLocale | undefined {
+  if (AndroidFullLocaleCandidates.includes(rawString as AndroidFullLocale)) {
+    return rawString as AndroidFullLocale;
   }
-  const startswith = AndroidLocaleCandidates.find((candidate) => {
+  const startswith = AndroidFullLocaleCandidates.find((candidate) => {
     if (rawString.startsWith(candidate)) {
       return candidate;
     }
