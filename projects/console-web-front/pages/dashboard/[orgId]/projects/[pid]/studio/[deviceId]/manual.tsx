@@ -2,7 +2,7 @@ import { GetServerSideProps } from 'next';
 import styled from 'styled-components';
 
 import { NextPageWithLayout } from 'pages/_app';
-import ManualTesting from 'src/components/studio/ManualTesting';
+import ManualTesting from 'src/components/studio/LiveTesting';
 import {
   getStudioTestingLayout,
   getStudioTestingServerSideProps,

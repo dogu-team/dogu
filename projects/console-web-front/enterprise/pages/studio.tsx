@@ -9,6 +9,8 @@ import { getOrganizationInServerSide } from '../../src/api/organization';
 import { getProjectInServerSide } from '../../src/api/project';
 import { getUserInServerSide } from '../../src/api/registery';
 import LiveTestingCloseSessionButton from '../../src/components/cloud/LiveTestingCloseSessionButton';
+import ParticipantGroup from '../../src/components/studio/ParticipantGroup';
+import StudioDeviceSelector from '../../src/components/studio/StudioDeviceSelector';
 import { getFeatureConfigInServerSide } from '../api/feature';
 import StudioLayout from '../components/studio/StudioLayout';
 
@@ -22,29 +24,72 @@ export interface StudioTestingPageProps {
 
 export interface CloudStudioTestingPageProps extends Omit<StudioTestingPageProps, 'project'> {}
 
-export const getStudioTestingLayout = (
-  page: React.ReactElement<StudioTestingPageProps | CloudStudioTestingPageProps>,
-) => {
-  return <StudioLayout device={page.props.device}>{page}</StudioLayout>;
-};
-
-export const getCloudStudioTestingLayout = (
-  page: React.ReactElement<StudioTestingPageProps | CloudStudioTestingPageProps>,
-) => {
+export const getStudioTestingLayout = (page: React.ReactElement<StudioTestingPageProps>) => {
   const router = useRouter();
 
   return (
     <StudioLayout
       device={page.props.device}
       headerRight={
-        <LiveTestingCloseSessionButton
-          organizationId={page.props.organization.organizationId}
-          sessionId={router.query.sessionId as LiveSessionId}
-          onClose={() => window.close()}
-          type="primary"
-        >
-          Close session
-        </LiveTestingCloseSessionButton>
+        <>
+          <div style={{ marginRight: '1rem' }}>
+            <ParticipantGroup
+              organizationId={page.props.organization.organizationId}
+              deviceId={page.props.device.deviceId}
+              userId={page.props.me.userId}
+            />
+          </div>
+          <StudioDeviceSelector
+            selectedDevice={page.props.device ?? undefined}
+            organizationId={page.props.organization.organizationId}
+            projectId={page.props.project.projectId}
+            onSelectedDeviceChanged={(device) => {
+              if (device) {
+                router.push({
+                  query: {
+                    orgId: router.query.orgId,
+                    pid: router.query.pid,
+                    deviceId: device?.deviceId,
+                    tab: router.query.tab,
+                  },
+                });
+              } else {
+                router.push(`/dashboard/${router.query.orgId}/projects/${router.query.pid}/studio`);
+              }
+            }}
+          />
+        </>
+      }
+    >
+      {page}
+    </StudioLayout>
+  );
+};
+
+export const getCloudStudioTestingLayout = (page: React.ReactElement<CloudStudioTestingPageProps>) => {
+  const router = useRouter();
+
+  return (
+    <StudioLayout
+      device={page.props.device}
+      headerRight={
+        <>
+          <div style={{ marginRight: '1rem' }}>
+            <ParticipantGroup
+              organizationId={page.props.organization.organizationId}
+              deviceId={page.props.device.deviceId}
+              userId={page.props.me.userId}
+            />
+          </div>
+          <LiveTestingCloseSessionButton
+            organizationId={page.props.organization.organizationId}
+            sessionId={router.query.sessionId as LiveSessionId}
+            onClose={() => window.close()}
+            type="primary"
+          >
+            Close session
+          </LiveTestingCloseSessionButton>
+        </>
       }
     >
       {page}

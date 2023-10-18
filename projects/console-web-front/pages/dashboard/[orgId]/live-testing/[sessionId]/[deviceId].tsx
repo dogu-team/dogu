@@ -8,7 +8,7 @@ import { useRouter } from 'next/router';
 import { shallow } from 'zustand/shallow';
 
 import { NextPageWithLayout } from 'pages/_app';
-import ManualTesting from 'src/components/studio/ManualTesting';
+import ManualTesting from 'src/components/studio/LiveTesting';
 import {
   getCloudDeviceStudioTestingServerSideProps,
   CloudStudioTestingPageProps,

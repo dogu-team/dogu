@@ -11,7 +11,6 @@ export type VideoSize = { width: number; height: number };
 
 interface Props {
   videoId?: string;
-  rightSidebar?: React.ReactNode;
   children?: React.ReactNode;
   style?: React.CSSProperties;
   onResize?: (e: UIEvent) => void | Promise<void>;
@@ -31,7 +30,6 @@ interface Props {
 }
 
 const StreamingVideo = ({
-  rightSidebar,
   videoId,
   children,
   style,
@@ -112,39 +110,6 @@ const StreamingVideo = ({
       }
     };
   }, []);
-
-  // const handleMouseDownVideo = useCallback(
-  //   (e: React.MouseEvent<HTMLTextAreaElement>, videoSize: { width: number; height: number }) => {
-  //     if (mode === 'inspect') {
-  //       inspector?.updateInspectingNodeByPos(e);
-  //       inspector?.updateSelectedNodeFromInspectingNode();
-  //       inspector?.updateHitPoint(e);
-  //       updateMode('input');
-  //       inspector?.clearInspectingNode();
-  //     } else {
-  //       handleMouseDown(e, videoSize);
-  //     }
-  //   },
-  //   [handleMouseDown, mode, inspector, updateMode],
-  // );
-
-  // const handleMouseMoveVideo = useCallback(
-  //   (e: React.MouseEvent<HTMLTextAreaElement>, videoSize: { width: number; height: number }) => {
-  //     if (mode === 'inspect') {
-  //       inspector?.updateInspectingNodeByPos(e);
-  //     }
-  //     handleMouseMove(e, videoSize);
-  //   },
-  //   [handleMouseMove, mode, inspector],
-  // );
-
-  // const handleMouseLeaveVideo = useCallback(
-  //   (e: React.MouseEvent<HTMLTextAreaElement>, videoSize: { width: number; height: number }) => {
-  //     inspector?.clearInspectingNode();
-  //     handleMouseLeave(e, videoSize);
-  //   },
-  //   [handleMouseLeave, inspector],
-  // );
 
   const focusInputForKeyboardEvent = () => inputRef.current?.focus({ preventScroll: true });
 
@@ -255,7 +220,6 @@ const StreamingVideo = ({
         {children}
         <CustomPointer ref={cursorRef} />
       </InputWrapper>
-      {rightSidebar}
     </VideoWrapper>
   );
 };

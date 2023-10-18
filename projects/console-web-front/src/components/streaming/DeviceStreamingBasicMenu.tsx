@@ -9,9 +9,11 @@ import PlatformIcon from '../device/PlatformIcon';
 import { flexRowBaseStyle } from '../../styles/box';
 import useDeviceStreamingContext from '../../hooks/streaming/useDeviceStreamingContext';
 
-interface Props {}
+interface Props {
+  hideDeviceName?: boolean;
+}
 
-const DeviceStreamingBasicMenu = ({}: Props) => {
+const DeviceStreamingBasicMenu = ({ hideDeviceName }: Props) => {
   const { device, peerConnection } = useDeviceStreamingContext();
   const { t } = useTranslation();
 
@@ -23,10 +25,12 @@ const DeviceStreamingBasicMenu = ({}: Props) => {
             <Title>{t('device-streaming:infoTabDeviceInfoTitle')}</Title>
           </TitleWrapper>
           <div>
-            <InfoDescription style={{ alignItems: 'flex-start' }}>
-              <b>{t('device-streaming:deviceName')}:</b>
-              {device.name}
-            </InfoDescription>
+            {!hideDeviceName && (
+              <InfoDescription style={{ alignItems: 'flex-start' }}>
+                <b>{t('device-streaming:deviceName')}:</b>
+                {device.name}
+              </InfoDescription>
+            )}
             <InfoDescription>
               <b>{t('device-streaming:devicePlatform')}:</b>
               <PlatformIcon platform={device.platform} />
@@ -112,6 +116,7 @@ const Box = styled.div`
   max-width: 400px;
   margin-right: 20px;
   flex-shrink: 0;
+  line-height: 1.4;
 `;
 
 const Section = styled.div`
@@ -119,7 +124,7 @@ const Section = styled.div`
 `;
 
 const TitleWrapper = styled.div`
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.5rem;
 `;
 
 const Title = styled.p`
@@ -163,6 +168,7 @@ const FrameBox = styled.div``;
 const InfoDescription = styled.p`
   ${flexRowBaseStyle}
   margin: .25rem 0;
+  font-size: 0.9rem;
 
   b {
     font-weight: 700;

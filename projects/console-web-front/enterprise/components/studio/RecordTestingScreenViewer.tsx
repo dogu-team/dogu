@@ -38,8 +38,7 @@ const RecordTestingScreenViewer = ({ project, caseId, stepId }: Props) => {
     handleWheel,
     handleBlur,
     handleFocus,
-    handleToolMenuInput,
-  } = useDeviceInput(deviceRTCCaller ?? undefined, false);
+  } = useDeviceInput(deviceRTCCaller ?? undefined);
   const fireEvent = useEventStore((state) => state.fireEvent, shallow);
 
   const handleClick = useCallback(
@@ -77,7 +76,6 @@ const RecordTestingScreenViewer = ({ project, caseId, stepId }: Props) => {
       </div>
       <VideoWrapper>
         <DeviceStreaming.Video
-          rightSidebar={null}
           onKeyPress={(e) => {
             if (isRecording) {
               return;
@@ -177,7 +175,7 @@ const VideoWrapper = styled.div`
   position: relative;
   flex: 1;
   width: 100%;
-  height: 95%;
+  height: 100%;
 `;
 
 const ScreenLoadingWrapper = styled.div`

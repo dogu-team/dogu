@@ -72,7 +72,9 @@ const StreamingOptionController = () => {
 
 export default React.memo(StreamingOptionController);
 
-const Box = styled.div``;
+const Box = styled.div`
+  font-size: 0.9rem;
+`;
 
 const Content = styled.div`
   margin-bottom: 1rem;

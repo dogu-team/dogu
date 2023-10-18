@@ -30,7 +30,6 @@ const RecordTesting = ({ organization, me, project, device }: Props) => {
       organization={organization}
       device={device}
       right={caseId ? <RecordTestingEditor /> : <RecordTestingEntry project={project} />}
-      title="Record Testing"
       screenViewer={<RecordTestingScreenViewer project={project} caseId={caseId} stepId={stepId} />}
       hideDeviceSelector
       userId={me.userId}

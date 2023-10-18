@@ -105,7 +105,7 @@ const Side = styled.aside`
 
 const Main = styled.main`
   display: flex;
-  padding: 1rem;
+  /* padding: 1rem; */
   width: 100%;
   flex: 1;
 `;

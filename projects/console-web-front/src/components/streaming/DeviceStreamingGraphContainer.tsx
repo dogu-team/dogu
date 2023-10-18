@@ -23,9 +23,10 @@ const DeviceStreamingGraphContainer = ({ infos }: Props) => {
 
   return (
     <>
-      <div style={{ padding: '0 0 1rem 2rem' }}>
+      <div>
         <CurrentProcessDesc>
-          <b>Current foreground process:</b>&nbsp;
+          <b>Current foreground process:</b>
+          <br />
           {currentForegroundProc?.name ?? 'None'}
         </CurrentProcessDesc>
       </div>
@@ -35,7 +36,7 @@ const DeviceStreamingGraphContainer = ({ infos }: Props) => {
         </Collapse.Panel>
         <Collapse.Panel header={<PanelHeader>Memory</PanelHeader>} key="2">
           {memoryInfos.length > 0 && (
-            <div style={{ padding: '0 0 1rem 2rem' }}>
+            <div>
               <p>Device memory: {memoryInfos[0].total}GB</p>
             </div>
           )}
@@ -55,6 +56,7 @@ const PanelHeader = styled.p`
 
 const CurrentProcessDesc = styled.p`
   line-height: 1.4;
+  font-size: 0.9rem;
 
   b {
     font-weight: 700;

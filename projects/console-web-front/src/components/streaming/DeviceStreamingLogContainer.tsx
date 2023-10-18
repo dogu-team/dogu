@@ -42,12 +42,6 @@ const DeviceStreamingLogContainer = ({
     <Box>
       <MenuBox>
         <div style={{ marginRight: '.5rem', flex: 1 }}>
-          <MenuTitle>
-            {t('device-streaming:deviceLogFilterMenuTitle')}{' '}
-            <Tooltip title={t('device-streaming:deviceLogFilterMenuHelp')}>
-              <QuestionCircleFilled />
-            </Tooltip>
-          </MenuTitle>
           <Input.Search
             placeholder={t('device-streaming:deviceLogFilterInputPlaceholder')}
             value={value}
@@ -100,7 +94,7 @@ const MenuBox = styled.div`
   width: 100%;
   ${flexRowBaseStyle}
   background-color: #fff;
-  padding: 0 1rem 1rem 1rem;
+  padding: 0 0 1rem;
   align-items: flex-end;
 `;
 

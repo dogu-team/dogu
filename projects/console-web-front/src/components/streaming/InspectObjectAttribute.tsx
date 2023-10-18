@@ -53,6 +53,7 @@ export default InspectObjectAttribute;
 
 const FlexRow = styled.div`
   ${flexRowBaseStyle}
+  line-height: 1.3;
 `;
 
 const StyledTitle = styled.b`

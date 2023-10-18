@@ -37,5 +37,6 @@ const Box = styled.div`
 `;
 
 const Title = styled.p`
+  font-size: 0.9rem;
   margin-right: 0.5rem;
 `;
