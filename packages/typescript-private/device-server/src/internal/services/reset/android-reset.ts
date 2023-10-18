@@ -30,25 +30,24 @@ export class AndroidResetService {
 
   private static async resetAccounts(serial: Serial, appiumAdb: AppiumAdb, appiumContext: AppiumContext, logger: Printable): Promise<void> {
     const newAppiumAdb = appiumAdb.clone({ adbExecTimeout: 1000 * 60 * 10 });
-    const befLocale = await newAppiumAdb.getDeviceLocale();
-    await Adb.setProp(serial, 'persist.sys.locale', 'ko-KR'); // prevent setDeviceLocale passing
+    await newAppiumAdb.setDeviceLocale('ko-KR'); // prevent setDeviceLocale passing
     await delay(1000);
     await newAppiumAdb.setDeviceLocale('en-US');
-    if (!(await newAppiumAdb.ensureCurrentLocale('en', 'US'))) {
-      throw new Error(`Failed to set en-US`);
-    }
     const driver = appiumContext.driver();
     if (!driver) {
       throw new Error(`Appium Driver is not found`);
     }
-    const ignoreButtons = ['Add account', 'Auto sync data'];
+    const ignoreButtons = [
+      'Add account',
+      'Auto sync data', // galaxy
+      'Google', // pixel
+      'Automatically sync app data', // pixel
+    ];
     let count = 0;
     for await (const _ of loop(300, 100)) {
+      await newAppiumAdb.setDeviceLocale('en-US');
       await Adb.runActivity(serial, 'android.settings.SYNC_SETTINGS', logger);
       await delay(3000);
-      if (!(await newAppiumAdb.ensureCurrentLocale('en', 'US'))) {
-        throw new Error(`language is not en-US`);
-      }
       const title = await driver.$(`android=new UiSelector().resourceId("com.android.settings:id/action_bar")`);
       if (!title) {
         throw new Error('Account title not found');
@@ -57,7 +56,7 @@ export class AndroidResetService {
       const titlesThatHaveAccount = await filterAsync(titles, async (title) => {
         const text = await title.getText();
         for (const ignoreButton of ignoreButtons) {
-          if (text.includes(ignoreButton)) {
+          if (text === ignoreButton) {
             return false;
           }
         }
@@ -87,7 +86,5 @@ export class AndroidResetService {
       }
       await removeWidgetButton.click();
     }
-
-    await appiumAdb.setDeviceLocale(befLocale);
   }
 }

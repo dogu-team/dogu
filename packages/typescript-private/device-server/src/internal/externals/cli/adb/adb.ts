@@ -374,7 +374,8 @@ export async function runAppProcess(serial: Serial, localPath: string, destPath:
 export async function disablePackage(serial: Serial, packageName: string, userId: number, printable: Printable): Promise<void> {
   const random = Math.random();
   adbLogger.verbose('adb.disablePackage begin', { serial, packageName, random });
-  await shell(serial, `pm disable-user ${userId} ${packageName}`);
+  await shellIgnoreError(serial, `pm disable-user ${userId} ${packageName}`);
+  await shellIgnoreError(serial, `pm disable-user ${packageName}`);
   adbLogger.verbose('adb.disablePackage end', { serial, packageName, random });
 }
 

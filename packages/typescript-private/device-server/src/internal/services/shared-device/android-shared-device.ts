@@ -8,7 +8,12 @@ import { Zombieable, ZombieProps, ZombieQueriable } from '../zombie/zombie-compo
 import { ZombieServiceInstance } from '../zombie/zombie-service';
 
 const UserId = 0;
-const BlockAppList = ['com.skt.prod.dialer', 'com.samsung.android.dialer', 'com.samsung.android.app.telephonyui'];
+const BlockAppList = [
+  'com.skt.prod.dialer', // block galaxy dialer
+  'com.samsung.android.dialer', // block galaxy dialer
+  'com.samsung.android.app.telephonyui', // block galaxy emergency dialer
+  'com.samsung.android.mobileservice', // block galaxy samsung login
+];
 const StartActivityLogKeyword = `START u${UserId}`;
 
 export class AndroidSharedDeviceService implements Zombieable {
@@ -46,11 +51,11 @@ export class AndroidSharedDeviceService implements Zombieable {
       return;
     }
     await Adb.stayOnWhilePluggedIn(this.serial);
-    for (const app of BlockAppList) {
-      await Adb.disablePackage(this.serial, app, UserId, this.printable).catch((e) => {
-        this.printable.error(`AndroidSharedDeviceService. revive. disablePackage failed.`, { e });
-      });
-    }
+    // for (const app of BlockAppList) {
+    //   await Adb.disablePackage(this.serial, app, UserId, this.printable).catch((e) => {
+    //     this.printable.error(`AndroidSharedDeviceService. revive. disablePackage failed.`, { e });
+    //   });
+    // }
     this.startLogcatProcess(this.serial, this.printable).catch((e) => {
       this.printable.error(e);
     });
