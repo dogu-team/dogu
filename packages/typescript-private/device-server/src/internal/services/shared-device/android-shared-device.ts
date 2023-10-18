@@ -59,6 +59,7 @@ const PreinstallApps: PreinstallAppInfo[] = [GboardAppInfo];
 export class AndroidSharedDeviceService implements Zombieable {
   private logcatProc: child_process.ChildProcess | undefined = undefined;
   private zombieWaiter: ZombieQueriable;
+  private state: string = 'none';
   private isSetupDone = false;
 
   constructor(public serial: Serial, private appiumAdb: AppiumAdb, public androidProps: AndroidPropInfo, public printable: FilledPrintable) {
@@ -84,6 +85,7 @@ export class AndroidSharedDeviceService implements Zombieable {
   get props(): ZombieProps {
     return {
       serial: this.serial,
+      state: this.state,
     };
   }
 
@@ -91,18 +93,23 @@ export class AndroidSharedDeviceService implements Zombieable {
     if (!env.DOGU_IS_DEVICE_SHARE) {
       return;
     }
+    this.state = 'reviving';
     if (!this.isSetupDone) {
+      this.state = 'resetting';
       await AndroidResetService.resetBeforeConnected(this.serial, this.printable);
+      this.state = 'preinstalling';
       await this.preInstallApps();
       await this.setGboardAsDefaultKeyboard();
-      await this.appiumAdb.setDeviceLocale('ko-KR');
+      this.state = 'changing-locale';
       await this.appiumAdb.setDeviceLocale('en-US');
       this.isSetupDone = true;
+      this.state = 'setup-done';
     }
     await Adb.stayOnWhilePluggedIn(this.serial);
     this.startLogcatProcess(this.serial, this.printable).catch((e) => {
       this.printable.error(e);
     });
+    this.state = 'alive';
   }
 
   async update(): Promise<void> {
@@ -120,6 +127,7 @@ export class AndroidSharedDeviceService implements Zombieable {
   }
 
   onDie(): void | Promise<void> {
+    this.state = 'dead';
     this.killLogcatProcess();
   }
 
