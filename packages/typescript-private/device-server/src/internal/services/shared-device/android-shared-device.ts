@@ -3,6 +3,7 @@ import { delay, FilledPrintable, loop, stringify } from '@dogu-tech/common';
 import { HostPaths, killChildProcess } from '@dogu-tech/node';
 import child_process from 'child_process';
 import fs from 'fs';
+import { DeviceControlKeycode } from '../../../../../types/src/protocol/generated';
 import { env } from '../../../env';
 import { Adb, AndroidPropInfo, AppiumAdb } from '../../externals/index';
 import { AndroidResetService } from '../reset/android-reset';
@@ -100,6 +101,7 @@ export class AndroidSharedDeviceService implements Zombieable {
       this.state = 'preinstalling';
       await this.preInstallApps();
       await this.setGboardAsDefaultKeyboard();
+      await this.mute();
       this.state = 'changing-locale';
       await this.appiumAdb.setDeviceLocale('en-US');
       this.isSetupDone = true;
@@ -220,6 +222,14 @@ export class AndroidSharedDeviceService implements Zombieable {
     const imeId = `${targetIme.packageName}/${targetIme.service}`;
     await this.appiumAdb.enableIME(imeId);
     await this.appiumAdb.setIME(imeId);
+  }
+
+  private async mute(): Promise<void> {
+    for await (const _ of loop(100, 20)) {
+      await Adb.keyevent(this.serial, DeviceControlKeycode.DEVICE_CONTROL_KEYCODE_VOLUME_DOWN);
+    }
+    await Adb.keyevent(this.serial, DeviceControlKeycode.DEVICE_CONTROL_KEYCODE_VOLUME_MUTE);
+    await Adb.keyevent(this.serial, DeviceControlKeycode.DEVICE_CONTROL_KEYCODE_MUTE);
   }
 
   private killLogcatProcess(): void {
