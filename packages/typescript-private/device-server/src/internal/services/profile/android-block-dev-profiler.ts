@@ -10,7 +10,7 @@ import { Adb } from '../../externals/index';
 import { AndroidAdbProfiler, AndroidAdbProfilerParams } from './android-profiler';
 
 interface Fragment {
-  type: 'developer-options' | 'lock-screen' | 'reset';
+  type: 'developer-options' | 'lock-screen' | 'reset' | 'software-update';
   vender: 'samsung' | 'google' | 'unknown';
   fragmentName: string;
 }
@@ -60,6 +60,11 @@ const blockFragments: Fragment[] = [
     type: 'reset',
     vender: 'unknown',
     fragmentName: 'com.android.settings.MainClear',
+  },
+  {
+    type: 'software-update',
+    vender: 'samsung',
+    fragmentName: 'com.samsung.android.settings.SoftwareUpdateSettings',
   },
 ];
 

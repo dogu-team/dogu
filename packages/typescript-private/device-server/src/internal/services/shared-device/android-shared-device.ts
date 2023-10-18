@@ -13,6 +13,7 @@ const BlockAppList = [
   'com.samsung.android.dialer', // block galaxy dialer
   'com.samsung.android.app.telephonyui', // block galaxy emergency dialer
   'com.samsung.android.mobileservice', // block galaxy samsung login
+  'com.google.android.gms/.update.SystemUpdateActivity', // block pixel system update, not tested
 ];
 const StartActivityLogKeyword = `START u${UserId}`;
 
