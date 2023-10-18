@@ -621,8 +621,22 @@ export async function getNonSystemIntalledPackages(serial: Serial): Promise<Inst
 }
 
 export async function getIMEList(serial: Serial): Promise<ImeInfo[]> {
+  const random = Math.random();
+  adbLogger.verbose('adb.getIMEList begin', { serial, random });
   const { stdout } = await shell(serial, `ime list -a`);
-  return parseIMEList(stdout);
+  const ret = parseIMEList(stdout);
+  adbLogger.verbose('adb.getIMEList end', { serial, random });
+  return ret;
+}
+
+/*
+ * ref: https://stackoverflow.com/a/33480790
+ */
+export async function putIMESecure(serial: Serial, ime: ImeInfo): Promise<void> {
+  const random = Math.random();
+  adbLogger.verbose('adb.putIMESecure begin', { serial, random });
+  await shell(serial, `settings put secure enabled_input_methods ${ime.packageName}/${ime.service}`);
+  adbLogger.verbose('adb.putIMESecure end', { serial, random });
 }
 
 const packageVersionLinePattern = /^\s*versionName=(?<versionName>.*)\s*$/;
@@ -921,6 +935,16 @@ export async function resetSdcard(serial: Serial, logger: Printable): Promise<vo
   });
   adbLogger.verbose('adb.resetSdcard end', { serial, random });
   await Promise.all(promises);
+}
+
+/*
+ * Does this works?
+ */
+export async function resetIME(serial: Serial): Promise<void> {
+  const random = Math.random();
+  adbLogger.verbose('adb.resetIME begin', { serial, random });
+  await shell(serial, `ime reset`);
+  adbLogger.verbose('adb.resetIME end', { serial, random });
 }
 
 export interface AndroidSystemBarVisibility {

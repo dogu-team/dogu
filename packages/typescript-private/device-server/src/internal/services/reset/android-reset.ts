@@ -9,7 +9,7 @@ export class AndroidResetService {
     try {
       const version = semver.coerce(osVersion);
       if (version && semver.lt(version, '11.0.0')) {
-        throw new Error(`Android version must be 11 or higher. to use testharness`);
+        throw new Error(`AndroidResetService.resetDevice Android version must be 11 or higher. to use testharness`);
       }
       await Adb.enableTestharness(serial);
     } catch (e) {
@@ -37,7 +37,7 @@ export class AndroidResetService {
     await newAppiumAdb.setDeviceLocale('en-US');
     const driver = appiumContext.driver();
     if (!driver) {
-      throw new Error(`Appium Driver is not found`);
+      throw new Error(`AndroidResetService.resetAccounts Appium Driver is not found`);
     }
     const ignoreButtons = [
       'Add account',
@@ -65,12 +65,12 @@ export class AndroidResetService {
         return true;
       });
       if (0 === titlesThatHaveAccount.length) {
-        logger.info('No account');
+        logger.info('AndroidResetService.resetAccounts No account');
         break;
       }
       count += 1;
       if (50 < count) {
-        throw new Error(`Try to remove account more than 50 times`);
+        throw new Error(`AndroidResetService.resetAccounts Try to remove account more than 50 times`);
       }
 
       const target = titlesThatHaveAccount[0];
@@ -78,13 +78,13 @@ export class AndroidResetService {
 
       const removeButton = await driver.$(`android=new UiSelector().resourceId("com.android.settings:id/button").text("Remove account")`);
       if (!removeButton) {
-        throw new Error('Remove button not found');
+        throw new Error('AndroidResetService.resetAccounts Remove button not found');
       }
       await removeButton.click();
 
       const removeWidgetButton = await driver.$(`android=new UiSelector().className("android.widget.Button").text("Remove account")`);
       if (!removeWidgetButton) {
-        throw new Error('Remove widget button not found');
+        throw new Error('AndroidResetService.resetAccounts Remove widget button not found');
       }
       await removeWidgetButton.click();
     }
@@ -94,8 +94,14 @@ export class AndroidResetService {
     const imes = await Adb.getIMEList(serial);
     for (const ime of imes) {
       await Adb.clearApp(serial, ime.packageName, logger).catch((err) => {
-        logger.error(`adb.resetPackages failed to clear`, { error: stringify(err), package: ime.packageName, serial });
+        logger.error(`AndroidResetService.resetIMEList adb.resetPackages failed to clear`, { error: stringify(err), package: ime.packageName, serial });
+      });
+      await Adb.putIMESecure(serial, ime).catch((err) => {
+        logger.error(`AndroidResetService.resetIMEList adb.resetPackages failed to put`, { error: stringify(err), package: ime.packageName, serial });
       });
     }
+    await Adb.resetIME(serial).catch((err) => {
+      logger.error(`AndroidResetService.resetIMEList adb.resetPackages failed to resetIME`, { error: stringify(err), serial });
+    });
   }
 }
