@@ -14,6 +14,7 @@ import { parseRecord } from '../../../util/parse';
 import { AndroidDfInfo, AndroidProcCpuInfo, AndroidProcDiskstats, AndroidProcMemInfo, AndroidPropInfo, AndroidShellTopInfo } from './info';
 import {
   AndroidFileEntry,
+  ImeInfo,
   parseAndroidLs,
   parseAndroidProcCpuInfo,
   parseAndroidProcDiskstats,
@@ -21,6 +22,7 @@ import {
   parseAndroidShellDf,
   parseAndroidShellProp,
   parseAndroidShellTop,
+  parseIMEList,
 } from './parse';
 
 export const DOGU_ADB_SERVER_PORT = 5037;
@@ -616,6 +618,11 @@ export async function getIntalledPackages(serial: Serial, flags = ''): Promise<I
 
 export async function getNonSystemIntalledPackages(serial: Serial): Promise<InstalledPackage[]> {
   return getIntalledPackages(serial, '-3');
+}
+
+export async function getIMEList(serial: Serial): Promise<ImeInfo[]> {
+  const { stdout } = await shell(serial, `ime list -a`);
+  return parseIMEList(stdout);
 }
 
 const packageVersionLinePattern = /^\s*versionName=(?<versionName>.*)\s*$/;

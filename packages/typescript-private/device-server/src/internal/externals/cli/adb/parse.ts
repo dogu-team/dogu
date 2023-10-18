@@ -311,3 +311,29 @@ export function parseAndroidLs(contents: string): AndroidFileEntry[] {
 
   return ret;
 }
+export interface ImeInfo {
+  packageName: string;
+  service: string;
+}
+
+export function parseIMEList(input: string): ImeInfo[] {
+  const pattern = /(?<packageName>\S+)\/(?<service>\S+):/;
+  const lines = input.split('\n');
+  const imes: ImeInfo[] = [];
+
+  let section = '';
+  for (const line of lines) {
+    if (line.startsWith(' ')) {
+      continue;
+    }
+    const match = line.match(pattern);
+    if (match) {
+      const { packageName, service } = match.groups!;
+      imes.push({
+        packageName,
+        service,
+      });
+    }
+  }
+  return imes;
+}

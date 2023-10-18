@@ -1,5 +1,5 @@
 import { Serial } from '@dogu-private/types';
-import { delay, filterAsync, loop, Printable } from '@dogu-tech/common';
+import { delay, filterAsync, loop, Printable, stringify } from '@dogu-tech/common';
 import semver from 'semver';
 import { AppiumContext } from '../../../appium/appium.context';
 import { Adb, AppiumAdb } from '../../externals/index';
@@ -23,12 +23,14 @@ export class AndroidResetService {
     // should delete appium after you are finished using it.
     await Adb.resetPackages(serial, logger);
     await Adb.resetSdcard(serial, logger);
+    await AndroidResetService.resetIMEList(serial, logger);
     await Adb.logcatClear(serial, logger);
 
     await Adb.reboot(serial);
   }
 
   private static async resetAccounts(serial: Serial, appiumAdb: AppiumAdb, appiumContext: AppiumContext, logger: Printable): Promise<void> {
+    appiumAdb.availableIMEs;
     const newAppiumAdb = appiumAdb.clone({ adbExecTimeout: 1000 * 60 * 10 });
     await newAppiumAdb.setDeviceLocale('ko-KR'); // prevent setDeviceLocale passing
     await delay(1000);
@@ -85,6 +87,15 @@ export class AndroidResetService {
         throw new Error('Remove widget button not found');
       }
       await removeWidgetButton.click();
+    }
+  }
+
+  private static async resetIMEList(serial: Serial, logger: Printable) {
+    const imes = await Adb.getIMEList(serial);
+    for (const ime of imes) {
+      await Adb.clearApp(serial, ime.packageName, logger).catch((err) => {
+        logger.error(`adb.resetPackages failed to clear`, { error: stringify(err), package: ime.packageName, serial });
+      });
     }
   }
 }
