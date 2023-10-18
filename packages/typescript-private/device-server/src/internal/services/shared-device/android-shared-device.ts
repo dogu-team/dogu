@@ -1,7 +1,8 @@
 import { Platform, Serial } from '@dogu-private/types';
-import { delay, FilledPrintable, stringify } from '@dogu-tech/common';
-import { killChildProcess } from '@dogu-tech/node';
+import { delay, FilledPrintable, loop, stringify } from '@dogu-tech/common';
+import { HostPaths, killChildProcess } from '@dogu-tech/node';
 import child_process from 'child_process';
+import fs from 'fs';
 import { env } from '../../../env';
 import { Adb, AndroidPropInfo, AppiumAdb } from '../../externals/index';
 import { AndroidResetService } from '../reset/android-reset';
@@ -44,6 +45,17 @@ const BlockAppList: BlockAppInfo[] = [
 ];
 const StartActivityLogKeyword = `START u${UserId}`;
 
+interface PreinstallAppInfo {
+  packageName: string;
+  filePath: () => string;
+}
+
+const GboardAppInfo: PreinstallAppInfo = {
+  packageName: 'com.google.android.inputmethod.latin',
+  filePath: () => HostPaths.external.preInstall.gboard.apk(),
+};
+const PreinstallApps: PreinstallAppInfo[] = [GboardAppInfo];
+
 export class AndroidSharedDeviceService implements Zombieable {
   private logcatProc: child_process.ChildProcess | undefined = undefined;
   private zombieWaiter: ZombieQueriable;
@@ -80,13 +92,11 @@ export class AndroidSharedDeviceService implements Zombieable {
       return;
     }
     if (!this.isSetupDone) {
-      if (this.androidProps.persist_sys_test_harness === '1') {
-        // noop
-      } else {
-        await AndroidResetService.resetBeforeConnected(this.serial, this.printable);
-        await this.appiumAdb.setDeviceLocale('ko-KR');
-        await this.appiumAdb.setDeviceLocale('en-US');
-      }
+      await AndroidResetService.resetBeforeConnected(this.serial, this.printable);
+      await this.preInstallApps();
+      await this.setGboardAsDefaultKeyboard();
+      await this.appiumAdb.setDeviceLocale('ko-KR');
+      await this.appiumAdb.setDeviceLocale('en-US');
       this.isSetupDone = true;
     }
     await Adb.stayOnWhilePluggedIn(this.serial);
@@ -112,6 +122,10 @@ export class AndroidSharedDeviceService implements Zombieable {
   onDie(): void | Promise<void> {
     this.killLogcatProcess();
   }
+
+  /*
+   *block
+   */
 
   private async startLogcatProcess(serial: Serial, logger: FilledPrintable): Promise<void> {
     const openTime = await Adb.getTime(serial);
@@ -152,6 +166,52 @@ export class AndroidSharedDeviceService implements Zombieable {
       }
     }
     return ret;
+  }
+
+  /*
+   * PreInstall
+   */
+
+  private async preInstallApps(): Promise<void> {
+    for (const app of PreinstallApps) {
+      await Adb.uninstallApp(this.serial, app.packageName, false, this.printable).catch((e) => {
+        this.printable.error(`AndroidSharedDeviceService.preInstallApps. uninstallApp failed.`, { e });
+      });
+      if (!fs.existsSync(app.filePath())) {
+        this.printable.warn(`AndroidSharedDeviceService.preInstallApps. file not exists.`, { app });
+        continue;
+      }
+      await Adb.installApp(this.serial, app.filePath(), this.printable);
+    }
+  }
+
+  private async setGboardAsDefaultKeyboard(): Promise<void> {
+    for await (const _ of loop(1000, 10)) {
+      const filteredPackages = (await Adb.getIntalledPackages(this.serial)).filter((pkg) => pkg.packageName.includes(GboardAppInfo.packageName));
+      if (0 < filteredPackages.length) {
+        break;
+      }
+    }
+    const filteredPackages = (await Adb.getIntalledPackages(this.serial)).filter((pkg) => pkg.packageName.includes(GboardAppInfo.packageName));
+    if (0 === filteredPackages.length) {
+      this.printable.warn(`AndroidSharedDeviceService.setGboardAsDefaultKeyboard. gboard is not installed.`, { filteredPackages });
+      return;
+    }
+    for await (const _ of loop(1000, 10)) {
+      const targetIme = (await Adb.getIMEList(this.serial)).find((ime) => ime.packageName.includes(GboardAppInfo.packageName));
+      if (targetIme) {
+        break;
+      }
+    }
+    const targetIme = (await Adb.getIMEList(this.serial)).find((ime) => ime.packageName.includes(GboardAppInfo.packageName));
+    if (!targetIme) {
+      this.printable.warn(`AndroidSharedDeviceService.setGboardAsDefaultKeyboard. gboard is not in ime.`, { targetIme });
+      return;
+    }
+
+    const imeId = `${targetIme.packageName}/${targetIme.service}`;
+    await this.appiumAdb.enableIME(imeId);
+    await this.appiumAdb.setIME(imeId);
   }
 
   private killLogcatProcess(): void {

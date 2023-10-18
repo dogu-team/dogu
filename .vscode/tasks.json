@@ -410,6 +410,13 @@
       "dependsOn": ["Debug: Dost(1)", "Debug: Dost(2)"]
     },
     {
+      "label": "Debug: Build: Dost",
+      "type": "shell",
+      "problemMatcher": [],
+      "dependsOrder": "sequence",
+      "dependsOn": ["Build: packages", "Newbie: NM Space", "Debug: Dost"]
+    },
+    {
       "label": "Debug: DS device-server(1)",
       "command": "${command:extension.js-debug.createDebuggerTerminal}",
       "problemMatcher": []
