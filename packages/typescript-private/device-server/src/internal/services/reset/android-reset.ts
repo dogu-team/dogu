@@ -68,7 +68,7 @@ export class AndroidResetService {
       }
       count += 1;
       if (50 < count) {
-        throw new Error(`Try to remove account more than 30 times`);
+        throw new Error(`Try to remove account more than 50 times`);
       }
 
       const target = titlesThatHaveAccount[0];
