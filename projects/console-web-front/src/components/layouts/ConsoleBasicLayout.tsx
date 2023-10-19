@@ -1,4 +1,4 @@
-import { CloseOutlined, GithubOutlined, SlackOutlined } from '@ant-design/icons';
+import { CloseOutlined, SlackOutlined } from '@ant-design/icons';
 import { LicenseResponse, UserBase } from '@dogu-private/console';
 import { Tooltip } from 'antd';
 import Trans from 'next-translate/Trans';

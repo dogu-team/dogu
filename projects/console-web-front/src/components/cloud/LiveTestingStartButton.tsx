@@ -35,8 +35,8 @@ const LiveTestingStartButton: React.FC<Props> = ({ device, ...props }) => {
 export default LiveTestingStartButton;
 
 const Dot = styled.div`
-  width: 6px;
-  height: 6px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
   margin-right: 0.5rem;
 `;
