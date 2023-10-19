@@ -1,5 +1,6 @@
 import { Platform } from '@dogu-private/types';
 import { Input, Select, SelectProps } from 'antd';
+import useTranslation from 'next-translate/useTranslation';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import useSWR from 'swr';
@@ -17,17 +18,18 @@ const VersionSelect: React.FC = () => {
     state.updateFilter,
   ]);
   const [isOpen, setIsOpen] = useState(false);
-  const { data, isLoading, mutate } = useSWR<string[]>(
+  const { data, isLoading } = useSWR<string[]>(
     isOpen && `/cloud-devices/versions?platform=${platform || ''}`,
     swrAuthFetcher,
     {
       revalidateOnFocus: false,
     },
   );
+  const { t } = useTranslation('cloud-device');
 
   return (
     <Select<string>
-      options={[{ label: 'Version', value: '' }].concat(
+      options={[{ label: t('cloudDeviceFilterVersionDefaultLabel'), value: '' }].concat(
         data?.map((version) => ({ label: version, value: version })) || [],
       )}
       dropdownMatchSelectWidth={false}
@@ -49,6 +51,7 @@ const CloudDeviceFilter: React.FC = () => {
     handleChangeValues: handleChangekeyword,
   } = useDebouncedInputValues();
   const [updateFilter, resetFilter] = useCloudDeviceFilterStore((state) => [state.updateFilter, state.resetFilter]);
+  const { t } = useTranslation('cloud-device');
 
   useEffect(() => {
     return () => {
@@ -62,7 +65,11 @@ const CloudDeviceFilter: React.FC = () => {
 
   const platformOptions: SelectProps['options'] = [
     {
-      label: <FlexRow style={{ justifyContent: 'center', height: '100%' }}>Platform</FlexRow>,
+      label: (
+        <FlexRow style={{ justifyContent: 'center', height: '100%' }}>
+          {t('cloudDeviceFilterPlatformDefaultLabel')}
+        </FlexRow>
+      ),
       value: Platform.PLATFORM_UNSPECIFIED,
     },
     {
@@ -94,7 +101,7 @@ const CloudDeviceFilter: React.FC = () => {
       />
       <VersionSelect />
       <Input.Search
-        placeholder="Brand or name"
+        placeholder={t('cloudDeviceFilterSearchInputPlaceholder')}
         allowClear
         value={keyword}
         onChange={(e) => handleChangekeyword(e.target.value)}

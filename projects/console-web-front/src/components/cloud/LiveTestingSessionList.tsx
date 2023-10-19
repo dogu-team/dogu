@@ -2,10 +2,11 @@ import { LiveSessionState, Platform } from '@dogu-private/types';
 import { LiveSessionBase } from '@dogu-private/console';
 import styled from 'styled-components';
 import { List, Button, Space } from 'antd';
-import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { shallow } from 'zustand/shallow';
 import { CheckCircleTwoTone, WarningTwoTone } from '@ant-design/icons';
+import Trans from 'next-translate/Trans';
+import useTranslation from 'next-translate/useTranslation';
 
 import { flexRowBaseStyle, listItemStyle, tableCellStyle, tableHeaderStyle } from '../../styles/box';
 import { deviceBrandMapper } from '../../resources/device/brand';
@@ -18,16 +19,17 @@ import CountDownTimer from '../common/CountDownTimer';
 
 const SessionState: React.FC<{ session: LiveSessionBase }> = ({ session }) => {
   const fireEvent = useEventStore((state) => state.fireEvent, shallow);
+  const { t } = useTranslation('cloud-device');
 
   if (session.state === LiveSessionState.CLOSED) {
-    return <div>Closed</div>;
+    return <div>{t('liveSessionClosedStatusText')}</div>;
   }
 
   if (session.state === LiveSessionState.CREATED) {
     return (
       <div>
         <CheckCircleTwoTone twoToneColor="#52c41a" />
-        &nbsp;Started <CountUpTimer startedAt={new Date(session.createdAt)} />
+        &nbsp;{t('liveSessionInProgressStatusText')}: <CountUpTimer startedAt={new Date(session.createdAt)} />
       </div>
     );
   }
@@ -35,11 +37,18 @@ const SessionState: React.FC<{ session: LiveSessionBase }> = ({ session }) => {
   return (
     <div>
       <WarningTwoTone twoToneColor="#e99957" />
-      &nbsp;Close after{' '}
-      <CountDownTimer
-        startedAt={session.closeWaitAt ? new Date(session.closeWaitAt) : new Date()}
-        endMs={3 * 60 * 1000}
-        onEnd={() => fireEvent('onRefreshClicked')}
+      &nbsp;
+      <Trans
+        i18nKey="cloud-device:liveSessionCloseWaitStatusText"
+        components={{
+          timer: (
+            <CountDownTimer
+              startedAt={session.closeWaitAt ? new Date(session.closeWaitAt) : new Date()}
+              endMs={3 * 60 * 1000}
+              onEnd={() => fireEvent('onRefreshClicked')}
+            />
+          ),
+        }}
       />
     </div>
   );
@@ -50,6 +59,7 @@ interface ItemProps {
 }
 
 const SessionItem: React.FC<ItemProps> = ({ session }) => {
+  const { t } = useTranslation('cloud-device');
   const brand = session.device?.manufacturer
     ? deviceBrandMapper[session.device.manufacturer] ?? session.device.manufacturer
     : null;
@@ -73,14 +83,14 @@ const SessionItem: React.FC<ItemProps> = ({ session }) => {
               href={`/dashboard/${session.organizationId}/live-testing/${session.liveSessionId}/${session.deviceId}`}
               target="_blank"
             >
-              <Button type="primary">Enter</Button>
+              <Button type="primary">{t('liveSessionEnterButtonText')}</Button>
             </Link>
             <LiveTestingCloseSessionButton
               sessionId={session.liveSessionId}
               organizationId={session.organizationId}
               onClose={() => sendSuccessNotification('Session closed!')}
             >
-              Close
+              {t('liveSessionCloseButtonText')}
             </LiveTestingCloseSessionButton>
           </Space.Compact>
         </ButtonWrapper>
@@ -94,16 +104,16 @@ interface Props {
 }
 
 const LiveTestingSessionList: React.FC<Props> = ({ data }) => {
-  const router = useRouter();
+  const { t } = useTranslation('cloud-device');
 
   return (
     <>
       <Header>
         <ItemInner>
-          <OneSpan>Brand</OneSpan>
-          <OneSpan>Name</OneSpan>
-          <OneSpan>Platform & Version</OneSpan>
-          <OneSpan>Status</OneSpan>
+          <OneSpan>{t('liveSessionListBrandColumn')}</OneSpan>
+          <OneSpan>{t('liveSessionListNameColumn')}</OneSpan>
+          <OneSpan>{t('liveSessionListPlatformAndVersionColumn')}</OneSpan>
+          <OneSpan>{t('liveSessionListStatusColumn')}</OneSpan>
           <ButtonWrapper />
         </ItemInner>
       </Header>
@@ -136,7 +146,7 @@ const OneSpan = styled.div`
 `;
 
 const ButtonWrapper = styled.div`
-  width: 160px;
+  width: 180px;
   display: flex;
   justify-content: flex-end;
 `;

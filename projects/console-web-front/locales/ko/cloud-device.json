@@ -1,1 +1,35 @@
-{}
+{
+  "cloudDeviceListBrandColumn": "제조사",
+  "cloudDeviceListNameColumn": "이름",
+  "cloudDeviceListPlatformColumn": "플랫폼",
+  "cloudDeviceListScreenColumn": "화면",
+  "cloudDeviceListMemoryColumn": "메모리",
+
+  "cloudDeviceListStartButtonTitle": "시작하기",
+  "cloudDeviceListBusyButtonTitle": "사용중",
+  "cloudDeviceListPrepareButtonTitle": "준비중",
+
+  "cloudDeviceFilterPlatformDefaultLabel": "플랫폼",
+  "cloudDeviceFilterVersionDefaultLabel": "버전",
+  "cloudDeviceFilterSearchInputPlaceholder": "제조사 또는 이름",
+
+  "cloudDeviceListDescription": "클라우드 팜에서 디바이스를 선택하세요",
+
+  "cloudDeviceSelectModalTitle": "디바이스를 선택하세요",
+  "cloudDeviceSelectListVersionColumn": "버전",
+  "cloudDeviceSelectListLocationColumn": "위치",
+
+  "liveSessionListBrandColumn": "제조사",
+  "liveSessionListNameColumn": "이름",
+  "liveSessionListPlatformAndVersionColumn": "플랫폼 & 버전",
+  "liveSessionListStatusColumn": "상태",
+
+  "liveSessionListDescription": "테스트 진행중인 디바이스",
+
+  "liveSessionInProgressStatusText": "진행중",
+  "liveSessionClosedStatusText": "종료",
+  "liveSessionCloseWaitStatusText": "<timer></timer> 뒤 종료",
+
+  "liveSessionEnterButtonText": "참여하기",
+  "liveSessionCloseButtonText": "종료하기"
+}

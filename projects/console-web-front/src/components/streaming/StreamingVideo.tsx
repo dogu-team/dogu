@@ -150,67 +150,67 @@ const StreamingVideo = ({
             ref={inputRef}
             autoFocus
             onKeyPress={(e) => {
-              // e.preventDefault();
+              e.preventDefault();
               // e.stopPropagation();
               onKeyDown?.(e);
             }}
             onKeyDown={(e) => {
-              // e.preventDefault();
+              e.preventDefault();
               // e.stopPropagation();
               onKeyPress?.(e);
             }}
             onKeyUp={(e) => {
-              // e.preventDefault();
+              e.preventDefault();
               // e.stopPropagation();
               onKeyUp?.(e);
             }}
             value={`\n`.repeat(1000)}
             onWheel={(e) => {
               e.currentTarget.scrollTop = 1000;
-              // e.stopPropagation();
+              e.stopPropagation();
               onWheel?.(e, videoSize);
             }}
             onMouseDown={(e) => {
-              // e.preventDefault();
+              e.preventDefault();
               // e.stopPropagation();
               onMouseDown?.(e, videoSize);
             }}
             onMouseUp={(e) => {
-              // e.preventDefault();
+              e.preventDefault();
               // e.stopPropagation();
               onMouseUp?.(e, videoSize);
             }}
             onMouseMove={(e) => {
-              // e.preventDefault();
+              e.preventDefault();
               // e.stopPropagation();
               onMouseMove?.(e, videoSize);
               focusInputForKeyboardEvent();
             }}
             onMouseLeave={(e) => {
-              // e.preventDefault();
+              e.preventDefault();
               // e.stopPropagation();
               onMouseLeave?.(e, videoSize);
               focusInputForKeyboardEvent();
             }}
             onDoubleClick={(e) => {
-              // e.preventDefault();
+              e.preventDefault();
               // e.stopPropagation();
               onDoubleClick?.(e, videoSize);
               focusInputForKeyboardEvent();
             }}
             onClick={(e) => {
-              // e.preventDefault();
+              e.preventDefault();
               // e.stopPropagation();
               onClick?.(e, videoSize);
               focusInputForKeyboardEvent();
             }}
             onFocus={(e) => {
-              // e.preventDefault();
+              e.preventDefault();
               // e.stopPropagation();
               onFocus?.(e);
             }}
             onBlur={(e) => {
-              // e.preventDefault();
+              e.preventDefault();
               // e.stopPropagation();
               onBlur?.(e);
             }}

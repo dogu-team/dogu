@@ -1,11 +1,13 @@
 import { WarningTwoTone } from '@ant-design/icons';
 import { GetServerSideProps } from 'next';
 import styled from 'styled-components';
-import { LiveSessionState, LiveSessionWsMessage } from '@dogu-private/types';
+import { LiveSessionId, LiveSessionState, LiveSessionWsMessage } from '@dogu-private/types';
 import { useEffect } from 'react';
-import { Modal } from 'antd';
+import { Button, Modal } from 'antd';
 import { useRouter } from 'next/router';
 import { shallow } from 'zustand/shallow';
+import Trans from 'next-translate/Trans';
+import useTranslation from 'next-translate/useTranslation';
 
 import { NextPageWithLayout } from 'pages/_app';
 import ManualTesting from 'src/components/studio/LiveTesting';
@@ -18,6 +20,7 @@ import useEventStore from '../../../../../src/stores/events';
 import useModal from '../../../../../src/hooks/useModal';
 import useWebSocket from '../../../../../src/hooks/useWebSocket';
 import CountDownTimer from '../../../../../src/components/common/CountDownTimer';
+import LiveTestingCloseSessionButton from '../../../../../src/components/cloud/LiveTestingCloseSessionButton';
 
 const CloudLiveTestingStudioPage: NextPageWithLayout<CloudStudioTestingPageProps> = ({ organization, me, device }) => {
   const [isOpen, openModal, closeModal, payload] = useModal<string>();
@@ -26,6 +29,7 @@ const CloudLiveTestingStudioPage: NextPageWithLayout<CloudStudioTestingPageProps
     `/live-session-heartbeat?organizationId=${organization.organizationId}&liveSessionId=${router.query.sessionId}`,
   );
   const fireEvent = useEventStore((state) => state.fireEvent, shallow);
+  const { t } = useTranslation('device-streaming');
 
   useEffect(() => {
     if (cloudHeartbeatSocketRef.current) {
@@ -72,20 +76,49 @@ const CloudLiveTestingStudioPage: NextPageWithLayout<CloudStudioTestingPageProps
         title={
           <>
             <WarningTwoTone twoToneColor="#e99957" />
-            &nbsp;Your session will be closed!
+            &nbsp;{t('liveSessionToCloseWaitModalTitle')}
           </>
         }
         open={isOpen}
-        onCancel={closeModal}
-        footer={null}
+        closable={false}
+        footer={
+          <>
+            <LiveTestingCloseSessionButton
+              onClose={() => {
+                closeModal();
+                window.close();
+              }}
+              organizationId={organization.organizationId}
+              sessionId={router.query.sessionId as LiveSessionId}
+            >
+              Close session
+            </LiveTestingCloseSessionButton>
+            <Button
+              type="primary"
+              onClick={() => {
+                fireEvent('onDeviceInput', {});
+                closeModal();
+              }}
+            >
+              Keep using
+            </Button>
+          </>
+        }
         destroyOnClose
         centered
       >
         <p style={{ lineHeight: '1.5' }}>
-          There is no interaction for 20 minutes.
-          <br />
-          Your session will be closed in{' '}
-          {isOpen && <CountDownTimer startedAt={new Date()} endMs={Number(payload) || 3 * 60 * 1000} />}
+          <Trans
+            i18nKey="device-streaming:liveSessionToCloseWaitModalContent"
+            components={{
+              br: <br />,
+              timer: isOpen ? (
+                <CountDownTimer startedAt={new Date()} endMs={Number(payload) || 3 * 60 * 1000} />
+              ) : (
+                <></>
+              ),
+            }}
+          />
         </p>
       </Modal>
     </Box>

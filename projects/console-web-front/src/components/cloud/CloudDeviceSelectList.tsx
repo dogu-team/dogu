@@ -1,11 +1,12 @@
-import { CloudDeviceMetadataBase, CloudDeviceByModelResponse, DeviceUsageState } from '@dogu-private/console';
+import { CloudDeviceMetadataBase, CloudDeviceByModelResponse } from '@dogu-private/console';
 import { OrganizationId, Platform } from '@dogu-private/types';
 import useSWR from 'swr';
 import styled from 'styled-components';
-import { List, Button } from 'antd';
+import { List } from 'antd';
 import { useRouter } from 'next/router';
 import { isAxiosError } from 'axios';
 import { shallow } from 'zustand/shallow';
+import useTranslation from 'next-translate/useTranslation';
 
 import { swrAuthFetcher } from '../../api/index';
 import { flexRowBaseStyle, listItemStyle, tableCellStyle, tableHeaderStyle } from '../../styles/box';
@@ -14,14 +15,13 @@ import { sendErrorNotification } from '../../utils/antd';
 import { getErrorMessageFromAxios } from '../../utils/error';
 import { createLiveTestingSession } from '../../api/live-session';
 import useEventStore from '../../stores/events';
-import { isCloudDeviceAvailable } from '../../utils/device';
+import LiveTestingStartButton from './LiveTestingStartButton';
 
 const SelectItem: React.FC<{ item: CloudDeviceByModelResponse; platform: Platform }> = ({ item, platform }) => {
   const fireEvent = useEventStore((state) => state.fireEvent, shallow);
   const router = useRouter();
 
   const organizationId = router.query.orgId as OrganizationId;
-  const isAvailable = isCloudDeviceAvailable(item);
 
   const handleStart = async () => {
     try {
@@ -31,7 +31,10 @@ const SelectItem: React.FC<{ item: CloudDeviceByModelResponse; platform: Platfor
         deviceVersion: item.version,
       });
       fireEvent('onCloudLiveTestingSessionCreated', session);
-      window.open(`/dashboard/${organizationId}/live-testing/${session.liveSessionId}/${session.deviceId}`, '_blank');
+      window.open(
+        `${location.origin}/${router.locale}/dashboard/${organizationId}/live-testing/${session.liveSessionId}/${session.deviceId}`,
+        '_blank',
+      );
     } catch (e) {
       if (isAxiosError(e)) {
         sendErrorNotification(`Cannot start device: ${getErrorMessageFromAxios(e)}`);
@@ -48,9 +51,7 @@ const SelectItem: React.FC<{ item: CloudDeviceByModelResponse; platform: Platfor
         </OneSpan>
         <OneSpan>Korea</OneSpan>
         <ButtonWrapper>
-          <Button type="primary" disabled={!isAvailable} onClick={handleStart}>
-            {isAvailable ? `Start` : 'Busy'}
-          </Button>
+          <LiveTestingStartButton device={item} onClick={handleStart} />
         </ButtonWrapper>
       </ItemInner>
     </Item>
@@ -69,13 +70,14 @@ const CloudDeviceVersionList: React.FC<Props> = ({ device }) => {
       revalidateOnFocus: false,
     },
   );
+  const { t } = useTranslation('cloud-device');
 
   return (
     <>
       <Header>
         <ItemInner>
-          <OneSpan>Version</OneSpan>
-          <OneSpan>Location</OneSpan>
+          <OneSpan>{t('cloudDeviceSelectListVersionColumn')}</OneSpan>
+          <OneSpan>{t('cloudDeviceSelectListLocationColumn')}</OneSpan>
           <ButtonWrapper />
         </ItemInner>
       </Header>

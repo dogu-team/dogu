@@ -1,0 +1,35 @@
+{
+  "cloudDeviceListBrandColumn": "Brand",
+  "cloudDeviceListNameColumn": "Name",
+  "cloudDeviceListPlatformColumn": "Platform",
+  "cloudDeviceListScreenColumn": "Screen",
+  "cloudDeviceListMemoryColumn": "Memory",
+
+  "cloudDeviceListStartButtonTitle": "Start",
+  "cloudDeviceListBusyButtonTitle": "Busy",
+  "cloudDeviceListPrepareButtonTitle": "Preparing",
+
+  "cloudDeviceFilterPlatformDefaultLabel": "Platform",
+  "cloudDeviceFilterVersionDefaultLabel": "Version",
+  "cloudDeviceFilterSearchInputPlaceholder": "Brand or name",
+
+  "cloudDeviceListDescription": "Select devices from the farm",
+
+  "cloudDeviceSelectModalTitle": "Select device",
+  "cloudDeviceSelectListVersionColumn": "Version",
+  "cloudDeviceSelectListLocationColumn": "Location",
+
+  "liveSessionListBrandColumn": "Brand",
+  "liveSessionListNameColumn": "Name",
+  "liveSessionListPlatformAndVersionColumn": "Platform & Version",
+  "liveSessionListStatusColumn": "Status",
+
+  "liveSessionListDescription": "Devices under tests in your organization",
+
+  "liveSessionInProgressStatusText": "In progress",
+  "liveSessionClosedStatusText": "Closed",
+  "liveSessionCloseWaitStatusText": "Close after <timer></timer>",
+
+  "liveSessionEnterButtonText": "Enter",
+  "liveSessionCloseButtonText": "Close"
+}

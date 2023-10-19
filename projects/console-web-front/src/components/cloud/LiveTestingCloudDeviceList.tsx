@@ -1,13 +1,12 @@
-import { CloudDeviceMetadataBase, PageBase, ceilDeviceMemory } from '@dogu-private/console';
-import { List, Button, Modal } from 'antd';
+import { CloudDeviceMetadataBase, ceilDeviceMemory } from '@dogu-private/console';
+import { List, Modal } from 'antd';
 import { useRouter } from 'next/router';
-import useSWR from 'swr';
 import styled from 'styled-components';
 import Image from 'next/image';
 import { shallow } from 'zustand/shallow';
 import { useEffect } from 'react';
+import useTranslation from 'next-translate/useTranslation';
 
-import { swrAuthFetcher } from '../../api';
 import { flexRowBaseStyle, listItemStyle, tableCellStyle, tableHeaderStyle } from '../../styles/box';
 import { deviceBrandMapper } from '../../resources/device/brand';
 import useRefresh from '../../hooks/useRefresh';
@@ -15,14 +14,13 @@ import useModal from '../../hooks/useModal';
 import PlatformIcon from '../device/PlatformIcon';
 import CloudDeviceVersionList from './CloudDeviceSelectList';
 import useCloudDeviceFilterStore from '../../stores/cloud-device-filter';
-import { isCloudDeviceAvailable } from '../../utils/device';
 import useEventStore from '../../stores/events';
 import usePaginationSWR from '../../hooks/usePaginationSWR';
+import LiveTestingStartButton from './LiveTestingStartButton';
 
 const DeviceItem: React.FC<{ device: CloudDeviceMetadataBase }> = ({ device }) => {
   const [isOpen, openModal, closeModal] = useModal();
-
-  const isAvailable = isCloudDeviceAvailable(device);
+  const { t } = useTranslation('cloud-device');
 
   useEffect(() => {
     useEventStore.subscribe(({ eventName }) => {
@@ -46,14 +44,20 @@ const DeviceItem: React.FC<{ device: CloudDeviceMetadataBase }> = ({ device }) =
           </OneSpan>
           <OneSpan>{Number(device.memory) ? `${ceilDeviceMemory(Number(device.memory))}` : '-'}</OneSpan>
           <ButtonWrapper>
-            <Button type="primary" onClick={() => openModal()} disabled={!isAvailable}>
-              {isAvailable ? `Start` : 'Busy'}
-            </Button>
+            <LiveTestingStartButton device={device} onClick={() => openModal()} />
           </ButtonWrapper>
         </ItemInner>
       </Item>
 
-      <Modal open={isOpen} closable onCancel={closeModal} footer={null} centered destroyOnClose title="Select version">
+      <Modal
+        open={isOpen}
+        closable
+        onCancel={closeModal}
+        footer={null}
+        centered
+        destroyOnClose
+        title={t('cloudDeviceSelectModalTitle')}
+      >
         <DeviceInfoWrapper>
           <div>
             <Image
@@ -88,6 +92,7 @@ const LiveTestingCloudDeviceList: React.FC<Props> = () => {
     { skipQuestionMark: true, offset: 12 },
     { keepPreviousData: true },
   );
+  const { t } = useTranslation('cloud-device');
 
   useRefresh(['onRefreshClicked'], () => mutate());
 
@@ -95,11 +100,11 @@ const LiveTestingCloudDeviceList: React.FC<Props> = () => {
     <>
       <Header>
         <ItemInner>
-          <OneSpan>Brand</OneSpan>
-          <OneSpan>Name</OneSpan>
-          <OneSpan>Platform</OneSpan>
-          <OneSpan>Screen</OneSpan>
-          <OneSpan>Memory</OneSpan>
+          <OneSpan>{t('cloudDeviceListBrandColumn')}</OneSpan>
+          <OneSpan>{t('cloudDeviceListNameColumn')}</OneSpan>
+          <OneSpan>{t('cloudDeviceListPlatformColumn')}</OneSpan>
+          <OneSpan>{t('cloudDeviceListScreenColumn')}</OneSpan>
+          <OneSpan>{t('cloudDeviceListMemoryColumn')}</OneSpan>
           <ButtonWrapper />
         </ItemInner>
       </Header>
@@ -141,7 +146,7 @@ const OneSpan = styled.div`
 `;
 
 const ButtonWrapper = styled.div`
-  width: 80px;
+  width: 100px;
   display: flex;
   justify-content: flex-end;
 `;
@@ -156,6 +161,7 @@ const DeviceName = styled.b`
   font-weight: 700;
   line-height: 1.5;
 `;
+
 const DeviceModel = styled.div`
   font-size: 0.8rem;
   font-weight: 400;

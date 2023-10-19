@@ -5,6 +5,7 @@ import { Divider } from 'antd';
 import useSWR from 'swr';
 import { GetServerSideProps } from 'next';
 import { LoadingOutlined } from '@ant-design/icons';
+import useTranslation from 'next-translate/useTranslation';
 
 import { NextPageWithLayout } from 'pages/_app';
 import ConsoleLayout from 'src/components/layouts/ConsoleLayout';
@@ -26,6 +27,7 @@ const OrganizationLiveTestingPage: NextPageWithLayout<OrganizationServerSideProp
     swrAuthFetcher,
     { keepPreviousData: true },
   );
+  const { t } = useTranslation();
 
   useRefresh(['onRefreshClicked', 'onCloudLiveTestingSessionCreated', 'onCloudLiveTestingSessionClosed'], () =>
     mutate(),
@@ -50,7 +52,7 @@ const OrganizationLiveTestingPage: NextPageWithLayout<OrganizationServerSideProp
             top={
               <FlexBox>
                 <div>
-                  <Description>Devices under tests in your organization.</Description>
+                  <Description>{t('cloud-device:liveSessionListDescription')}</Description>
                 </div>
                 <RefreshButton />
               </FlexBox>
@@ -64,7 +66,7 @@ const OrganizationLiveTestingPage: NextPageWithLayout<OrganizationServerSideProp
         top={
           <>
             <DescriptionWrapper>
-              <Description>Select devices from the list</Description>
+              <Description>{t('cloud-device:cloudDeviceListDescription')}</Description>
             </DescriptionWrapper>
             <FlexBox>
               <div>
