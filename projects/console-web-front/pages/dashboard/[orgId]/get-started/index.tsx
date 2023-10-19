@@ -8,9 +8,7 @@ import { useCallback, useState } from 'react';
 import styled from 'styled-components';
 
 import { getOrganizationInServerSide } from '../../../../src/api/organization';
-import DoguText from '../../../../src/components/common/DoguText';
 import ConsoleBasicLayout from '../../../../src/components/layouts/ConsoleBasicLayout';
-import CloudUserTutorial from '../../../../src/components/tutorial/CloudUserTutorial';
 import DeviceFarmTutorial from '../../../../src/components/tutorial/DeviceFarmTutorial';
 import SkipTutorialButton from '../../../../src/components/tutorial/SkipTutorialButton';
 import { TutorialContext } from '../../../../src/hooks/context/useTutorialContext';
@@ -48,17 +46,6 @@ const OrganizationTutorialPage: NextPageWithLayout<ServerSideProps> = ({ organiz
           <HeaderContent>
             <div>
               <StyledTitle>
-                {/* {IS_CLOUD ? (
-                  <>
-                    Welcome to&nbsp;
-                    <DoguText />!
-                  </>
-                ) : (
-                  <Trans
-                    i18nKey="tutorial:deviceFarmTutorialTitle"
-                    components={{ icon: <ClusterOutlined style={{ margin: '0 0.35rem' }} /> }}
-                  />
-                )} */}
                 <Trans
                   i18nKey="tutorial:deviceFarmTutorialTitle"
                   components={{ icon: <ClusterOutlined style={{ margin: '0 0.35rem' }} /> }}
@@ -69,7 +56,6 @@ const OrganizationTutorialPage: NextPageWithLayout<ServerSideProps> = ({ organiz
               <SkipTutorialButton>{t('skipTutorialLinkTitle')}</SkipTutorialButton>
             </div>
           </HeaderContent>
-          {/* {IS_CLOUD ? <CloudUserTutorial /> : <DeviceFarmTutorial />} */}
           <DeviceFarmTutorial />
           <FlexEndBox>
             <SkipTutorialButton>{t('closeTutorialLinkTitle')}</SkipTutorialButton>

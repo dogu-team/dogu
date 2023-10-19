@@ -5,6 +5,7 @@ import { UserAndVerificationToken } from '../../db/entity/relations/user-and-ver
 import { UserEmailPreference } from '../../db/entity/user-email-preference.entity';
 import { UserSns } from '../../db/entity/user-sns.entity';
 import { User } from '../../db/entity/user.entity';
+import { env } from '../../env';
 import { FEATURE_CONFIG } from '../../feature.config';
 import { TokenService } from '../token/token.service';
 
@@ -29,11 +30,14 @@ export async function createUser(manager: EntityManager, email: string, password
     }
   }
 
+  const isTutorialCompleted = env.DOGU_RUN_TYPE === 'production' || env.DOGU_RUN_TYPE === 'development' ? 1 : 0;
+
   const userData = manager.getRepository(User).create({
     email,
     name,
     password: savePassword,
     isRoot: isRootUser,
+    isTutorialCompleted,
   });
   const user = await manager.getRepository(User).save(userData);
   return user;
