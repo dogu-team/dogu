@@ -10,6 +10,7 @@ import useInspector from '../../hooks/streaming/useInspector';
 import useLocalDeviceDetect from '../../hooks/streaming/useLocalDeviceDetect';
 import useRTCConnection from '../../hooks/streaming/useRTCConnection';
 import { StreamingMode } from '../../types/device';
+import { StreamingErrorType } from '../../types/streaming';
 import ErrorBox from '../common/boxes/ErrorBox';
 import ApplicationUploader from './ApplicationUploader';
 import DeviceControlToolbar from './DeviceControlToolbar';
@@ -21,11 +22,12 @@ interface Props {
   device: DeviceBase | undefined;
   children: React.ReactNode;
   pid?: number;
+  isCloudDevice?: boolean;
 }
 
 const THROTTLE_MS = 33;
 
-const DeviceStreaming = ({ device, children, pid }: Props) => {
+const DeviceStreaming = ({ device, children, pid, isCloudDevice }: Props) => {
   const [mode, setMode] = useState<StreamingMode>('input');
   const isSelf = useLocalDeviceDetect(device);
   const { loading, deviceRTCCaller, peerConnection, videoRef, error } = useRTCConnection({ device, pid }, THROTTLE_MS);
@@ -41,15 +43,21 @@ const DeviceStreaming = ({ device, children, pid }: Props) => {
   const { t } = useTranslation();
 
   if (error) {
-    return (
-      <>
+    if (error.type === StreamingErrorType.CONNECTION_REFUSED) {
+      return (
         <div style={{ flex: 1 }}>
-          <ErrorBox
-            title={t('device-streaming:deviceStreamingStreamingErrorTitle')}
-            desc={t('device-streaming:deviceRTCStreamingDisconnectedErrorMessage')}
-          />
+          <ErrorBox title={'Your session has been expired'} desc={''} />
         </div>
-      </>
+      );
+    }
+
+    return (
+      <div style={{ flex: 1 }}>
+        <ErrorBox
+          title={t('device-streaming:deviceStreamingStreamingErrorTitle')}
+          desc={t('device-streaming:deviceRTCStreamingDisconnectedErrorMessage')}
+        />
+      </div>
     );
   }
 
@@ -94,6 +102,7 @@ const DeviceStreaming = ({ device, children, pid }: Props) => {
         videoRef,
         inspector,
         updateMode: setMode,
+        isCloudDevice,
       }}
     >
       <Box visible={!!device}>{children}</Box>

@@ -20,12 +20,12 @@ import {
   UserPropCamel,
   UserPropSnake,
 } from '@dogu-private/console';
-import { OrganizationId, UserId, UserPayload, USER_INVITATION_STATUS } from '@dogu-private/types';
+import { LiveSessionState, OrganizationId, UserId, UserPayload, USER_INVITATION_STATUS } from '@dogu-private/types';
 import { notEmpty } from '@dogu-tech/common';
 import { HttpException, HttpStatus, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import crypto from 'crypto';
-import { DataSource, DeepPartial, EntityManager, In } from 'typeorm';
+import { DataSource, DeepPartial, EntityManager, In, IsNull } from 'typeorm';
 import { v4 } from 'uuid';
 
 import {
@@ -50,6 +50,7 @@ import {
   Token,
   User,
 } from '../../db/entity';
+import { LiveSession } from '../../db/entity/live-session.entity';
 import { OrganizationAccessToken } from '../../db/entity/organization-access-token.entity';
 import { UserAndInvitationToken } from '../../db/entity/relations/user-and-invitation-token.entity';
 import { Routine } from '../../db/entity/routine.entity';
@@ -691,5 +692,44 @@ export class OrganizationService {
       await manager.getRepository(OrganizationAccessToken).update({ organizationAccessTokenId: orgApiToken.organizationAccessTokenId }, { revokerId });
       await manager.getRepository(OrganizationAccessToken).softDelete({ organizationAccessTokenId: orgApiToken.organizationAccessTokenId });
     });
+  }
+
+  async findUsingCloudDevicesByOrganizationId(organizationId: OrganizationId): Promise<LiveSession[]> {
+    const sessions = await this.dataSource.getRepository(LiveSession).find({
+      where: {
+        organizationId,
+        state: In([LiveSessionState.CREATED, LiveSessionState.CLOSE_WAIT]),
+        closedAt: IsNull(),
+      },
+      relations: ['device'],
+      order: {
+        device: {
+          modelName: 'ASC',
+          model: 'ASC',
+        },
+      },
+      select: {
+        liveSessionId: true,
+        organizationId: true,
+        deviceId: true,
+        state: true,
+        closeWaitAt: true,
+        createdAt: true,
+        device: {
+          deviceId: true,
+          platform: true,
+          model: true,
+          modelName: true,
+          version: true,
+          manufacturer: true,
+          resolutionWidth: true,
+          resolutionHeight: true,
+          memory: true,
+          usageState: true,
+        },
+      },
+    });
+
+    return sessions;
   }
 }

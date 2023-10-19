@@ -1,13 +1,15 @@
+import { FindCloudDevicesDtoBase } from '@dogu-private/console';
+import { Platform } from '@dogu-private/types';
 import { create } from 'zustand';
 
 import { FilterStore, filterUpdatorFunc } from '.';
 
-export interface CloudDeviceFilter {
-  keyword: string;
-}
+export interface CloudDeviceFilter extends Omit<Required<FindCloudDevicesDtoBase>, 'page' | 'offset'> {}
 
 export const defaultCloudDeviceFilter: CloudDeviceFilter = {
   keyword: '',
+  platform: Platform.PLATFORM_UNSPECIFIED,
+  version: '',
 };
 
 interface CloudDeviceFilterStore extends FilterStore<CloudDeviceFilter> {}

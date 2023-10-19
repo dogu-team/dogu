@@ -1,4 +1,4 @@
-import { OrganizationBase, ProjectBase, UserBase } from '@dogu-private/console';
+import { DeviceBase, OrganizationBase, ProjectBase, UserBase } from '@dogu-private/console';
 import { DeviceId, RecordTestCaseId, RecordTestStepId } from '@dogu-private/types';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
@@ -16,11 +16,11 @@ const DeviceStreamingLayout = dynamic<DeviceStreamingLayoutProps>(
 interface Props {
   organization: OrganizationBase;
   project: ProjectBase;
-  deviceId: DeviceId;
+  device: DeviceBase;
   me: UserBase;
 }
 
-const RecordTesting = ({ organization, me, project, deviceId }: Props) => {
+const RecordTesting = ({ organization, me, project, device }: Props) => {
   const router = useRouter();
   const caseId = router.query.caseId as RecordTestCaseId | undefined;
   const stepId = router.query.step as RecordTestStepId | undefined;
@@ -28,9 +28,8 @@ const RecordTesting = ({ organization, me, project, deviceId }: Props) => {
   return (
     <DeviceStreamingLayout
       organization={organization}
-      deviceId={deviceId}
+      device={device}
       right={caseId ? <RecordTestingEditor /> : <RecordTestingEntry project={project} />}
-      title="Record Testing"
       screenViewer={<RecordTestingScreenViewer project={project} caseId={caseId} stepId={stepId} />}
       hideDeviceSelector
       userId={me.userId}

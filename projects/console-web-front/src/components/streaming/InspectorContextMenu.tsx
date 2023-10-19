@@ -1,5 +1,6 @@
 import { Select, SelectProps } from 'antd';
 import styled from 'styled-components';
+
 import { flexRowBaseStyle } from '../../styles/box';
 
 interface Props {
@@ -37,5 +38,6 @@ const Box = styled.div`
 `;
 
 const Title = styled.p`
+  font-size: 0.9rem;
   margin-right: 0.5rem;
 `;

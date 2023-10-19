@@ -28,6 +28,10 @@ on:
 env:
   YARN_CHECKSUM_BEHAVIOR: update yarn
   CSC_FOR_PULL_REQUEST: true
+  
+concurrency:
+  group: ci-dogu-agent
+  cancel-in-progress: true
 
 concurrency:
   group: ci-dogu-agent
@@ -46,8 +50,6 @@ jobs:
           - runner: windows-2019
             arch: arm64
     runs-on: ['${{ matrix.runner }}']
-
-
     # https://github.com/orgs/community/discussions/63731#discussioncomment-7304058
     environment: stage 
     env:

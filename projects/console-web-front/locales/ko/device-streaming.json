@@ -25,7 +25,7 @@
   "maxFPS": "최대 FPS",
   "maxFPSCaution": "디바이스가 느려질 수 있습니다",
   "resolution": "해상도",
-  "scrollSensitivity": "스크롤 민감도",
+  "scrollSensitivity": "마우스 휠 민감도",
   "infoTabKeyboardTitle": "단축키",
   "pasteToClipboard": "붙여넣기",
   "inspectorInitializingText": "초기화 중...",
@@ -49,7 +49,7 @@
 
   "deviceLogFilterMenuTitle": "로그 필터값",
   "deviceLogFilterMenuHelp": "이후 로그부터 해당 문자열이 포함된 로그만 가져옵니다.",
-  "deviceLogFilterInputPlaceholder": "텍스트",
+  "deviceLogFilterInputPlaceholder": "필터 텍스트",
   "deviceLogFilterSetButtonText": "적용",
 
   "inspectorEmptyTreeText": "발견된 요소가 없습니다.<br></br>UI 인스펙터에 대한 가이드를 보려면 <link>문서</link>를 참고하세요."

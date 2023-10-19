@@ -75,7 +75,16 @@ export type EventName =
   | 'onRecordStepDeleted'
 
   // license
-  | 'onLicenseUpdated';
+  | 'onLicenseUpdated'
+
+  // streaming
+  | 'onDeviceInput'
+
+  // cloud
+  | 'onCloudLiveTestingSessionCreated'
+  | 'onCloudLiveTestingSessionClosed'
+  | 'onCloudHeartbeatSocketClosed'
+  | 'onCloudHeartbeatSocketMessage';
 
 interface EventStore {
   eventName: EventName | null;

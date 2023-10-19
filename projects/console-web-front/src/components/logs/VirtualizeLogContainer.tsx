@@ -81,10 +81,8 @@ const VirtualizeLogContainer = <I,>({
   }, [scrollEndOnInit]);
 
   useEffect(() => {
-    if (isRefVisible && scrollEndOnUpdate) {
-      if (maxHeight) {
-        ref.current?.scroll(0, 99999999);
-      }
+    if (isRefVisible && scrollEndOnUpdate && ref.current) {
+      ref.current.scrollTop = ref.current.scrollHeight;
     }
   }, [scrollEndOnUpdate, items, isRefVisible]);
 

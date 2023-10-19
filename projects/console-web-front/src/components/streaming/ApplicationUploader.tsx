@@ -24,11 +24,12 @@ interface Props {
 }
 
 const ApplicationUploader = ({}: Props) => {
-  const { device, deviceService, loading } = useDeviceStreamingContext();
+  const { device, deviceService, loading, isCloudDevice } = useDeviceStreamingContext();
   const { uploadApp, cancelUpload, runApp, isInstalling, progress, app, result } = useDeviceAppInstall(
     device?.serial,
     deviceService?.deviceHostClient,
     deviceService?.deviceClient,
+    { isCloudDevice: isCloudDevice ?? false },
   );
   const [shouldRun, setShouldRun] = useState(false);
   const { t } = useTranslation();
@@ -54,7 +55,7 @@ const ApplicationUploader = ({}: Props) => {
           <Switch onChange={setShouldRun} checked={shouldRun} disabled={loading} />
         </FlexRow>
       </div>
-      <Divider />
+      <Divider style={{ margin: '.5rem 0' }} />
       <StyledUpload
         name="app"
         accept={availableExtension}
@@ -70,8 +71,10 @@ const ApplicationUploader = ({}: Props) => {
         <p className="ant-upload-drag-icon">
           <InboxOutlined />
         </p>
-        <p className="ant-upload-text">{t('device-streaming:uploadApplicationDescription')}</p>
-        <p className="ant-upload-hint">
+        <p className="ant-upload-text" style={{ fontSize: '.8rem' }}>
+          {t('device-streaming:uploadApplicationDescription')}
+        </p>
+        <p className="ant-upload-hint" style={{ fontSize: '.8rem' }}>
           {t('device-streaming:uploadApplicationHint', { extension: availableExtension })}
         </p>
       </StyledUpload>

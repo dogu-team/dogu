@@ -20,7 +20,10 @@ export class AndroidAdbProfileContext {
   private focusedAppInfosContext: QueryContext<FocusedAppInfo[]>;
   private propContext: QueryContext<AndroidPropInfo>;
 
-  constructor(private readonly serial: Serial, private readonly logger: FilledPrintable) {
+  constructor(
+    private readonly serial: Serial,
+    private readonly logger: FilledPrintable,
+  ) {
     this.shellTopInfoContext = {
       name: 'shell top info',
       querying: false,

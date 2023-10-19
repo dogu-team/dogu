@@ -8,12 +8,14 @@ import {
   UserPropCamel,
   UserPropSnake,
 } from '@dogu-private/console';
-import { DeviceId, HostId, HostPayload, OrganizationId, ProjectId, UserId } from '@dogu-private/types';
+import { DeviceId, HostId, HostPayload, LiveSessionId, LiveSessionState, OrganizationId, ProjectId, UserId } from '@dogu-private/types';
 import { notEmpty } from '@dogu-tech/common';
 import { Inject, Injectable } from '@nestjs/common';
 import { IncomingMessage } from 'http';
 import { DataSource } from 'typeorm';
+
 import { Device, OrganizationAndUserAndOrganizationRole, ProjectAndUserAndProjectRole } from '../../db/entity/index';
+import { LiveSession } from '../../db/entity/live-session.entity';
 import { User } from '../../db/entity/user.entity';
 import { HOST_ACTION_TYPE, ORGANIZATION_ROLE, PROJECT_ROLE } from '../../module/auth/auth.types';
 import { UserPermission } from '../../module/auth/guard/common';
@@ -209,6 +211,34 @@ export class WsCommonService {
         message: `This Device is not found in the user's project.`,
         userId,
       };
+    }
+
+    return { result: true, resultCode: 1000, message: 'success', userId };
+  }
+
+  async validateCloudDeviceAccessPermission(
+    incomingMessage: IncomingMessage,
+    dataSource: DataSource,
+    organizationId: OrganizationId,
+    sessionId: LiveSessionId,
+  ): Promise<ValidationResult> {
+    const userId = await this.validateUserAuthToken(incomingMessage);
+    if (!userId) {
+      return { result: true, resultCode: 1003, message: 'Unauthorized', userId: null };
+    }
+
+    const liveSession = await dataSource.getRepository(LiveSession).findOne({ where: { liveSessionId: sessionId, organizationId } });
+    if (!liveSession) {
+      return { result: false, resultCode: 1003, message: `The live session is not found. ${sessionId}`, userId };
+    }
+
+    if (liveSession.state === LiveSessionState.CLOSED) {
+      return { result: false, resultCode: 1003, message: `The live session is closed. ${sessionId}`, userId };
+    }
+
+    const userOrgRole = await dataSource.getRepository(OrganizationAndUserAndOrganizationRole).findOne({ where: { userId, organizationId } });
+    if (!userOrgRole) {
+      return { result: false, resultCode: 1003, message: `The user is not a member of the organization. UserId: ${userId}, OrganizationId: ${organizationId} }`, userId };
     }
 
     return { result: true, resultCode: 1000, message: 'success', userId };

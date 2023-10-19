@@ -12,27 +12,29 @@ import WindowsIcon from 'public/resources/icons/platforms/windows.svg';
 
 interface Props {
   platform: Platform;
+  hideTooltip?: boolean;
 }
 
-const PlatformIcon = ({ platform }: Props) => {
+const PlatformIcon = ({ platform, hideTooltip }: Props) => {
   const iconStyle: React.CSSProperties = { fontSize: '18px' };
+  const tooltipOpenProp = hideTooltip ? false : undefined;
 
   switch (platform) {
     case Platform.PLATFORM_ANDROID:
       return (
-        <Tooltip title="Android">
+        <Tooltip title="Android" open={tooltipOpenProp}>
           <AndroidIcon width={20} height={20} icon-id="android-icon" />
         </Tooltip>
       );
     case Platform.PLATFORM_IOS:
       return (
-        <Tooltip title="iOS">
+        <Tooltip title="iOS" open={tooltipOpenProp}>
           <IosIcon width={20} height={20} icon-id="ios-icon" />
         </Tooltip>
       );
     case Platform.PLATFORM_LINUX:
       return (
-        <Tooltip title="Linux">
+        <Tooltip title="Linux" open={tooltipOpenProp}>
           <Box>
             <Image src={resources.icons.linux} width={20} height={20} alt="linux" style={iconStyle} />
           </Box>
@@ -40,7 +42,7 @@ const PlatformIcon = ({ platform }: Props) => {
       );
     case Platform.PLATFORM_MACOS:
       return (
-        <Tooltip title="MacOS">
+        <Tooltip title="MacOS" open={tooltipOpenProp}>
           <Box>
             <MacIcon width={20} height={20} icon-id="mac-icon" />
           </Box>
@@ -48,7 +50,7 @@ const PlatformIcon = ({ platform }: Props) => {
       );
     case Platform.PLATFORM_PS4:
       return (
-        <Tooltip title="PS4">
+        <Tooltip title="PS4" open={tooltipOpenProp}>
           <Box>
             <Image src={resources.icons.ps4} width={20} height={20} alt="ps4" style={iconStyle} />
           </Box>
@@ -56,13 +58,13 @@ const PlatformIcon = ({ platform }: Props) => {
       );
     case Platform.PLATFORM_WINDOWS:
       return (
-        <Tooltip title="Windows">
+        <Tooltip title="Windows" open={tooltipOpenProp}>
           <WindowsIcon width={20} height={20} icon-id="windows-icon" />
         </Tooltip>
       );
     case Platform.PLATFORM_XBOX:
       return (
-        <Tooltip title="Xbox">
+        <Tooltip title="Xbox" open={tooltipOpenProp}>
           <Box>
             <Image src={resources.icons.xbox} width={20} height={20} alt="xbox" style={iconStyle} />
           </Box>

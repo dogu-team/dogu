@@ -5,3 +5,8 @@ export enum LiveSessionState {
 }
 
 export type LiveSessionId = string;
+
+export interface LiveSessionWsMessage {
+  type: LiveSessionState;
+  message: string;
+}

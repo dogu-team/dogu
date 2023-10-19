@@ -12,7 +12,18 @@ import { LogHandler } from '../../../public/device-channel';
 import { DeviceScanResult, DeviceScanStatus } from '../../../public/device-driver';
 import { parseRecord } from '../../../util/parse';
 import { AndroidDfInfo, AndroidProcCpuInfo, AndroidProcDiskstats, AndroidProcMemInfo, AndroidPropInfo, AndroidShellTopInfo } from './info';
-import { parseAndroidProcCpuInfo, parseAndroidProcDiskstats, parseAndroidProcMemInfo, parseAndroidShellDf, parseAndroidShellProp, parseAndroidShellTop } from './parse';
+import {
+  AndroidFileEntry,
+  ImeInfo,
+  parseAndroidLs,
+  parseAndroidProcCpuInfo,
+  parseAndroidProcDiskstats,
+  parseAndroidProcMemInfo,
+  parseAndroidShellDf,
+  parseAndroidShellProp,
+  parseAndroidShellTop,
+  parseIMEList,
+} from './parse';
 
 export const DOGU_ADB_SERVER_PORT = 5037;
 
@@ -93,7 +104,9 @@ function DefaultPackageInfo(): PackageInfo {
   };
 }
 
-// network
+/**
+ * network
+ */
 export async function startServer(): Promise<void> {
   await exec(`${adbPrefix()} start-server`);
 }
@@ -194,7 +207,10 @@ export async function getPackageOnPort(serial: Serial, port: number): Promise<Pa
   return rv;
 }
 
-// app control
+/**
+ * app control
+ */
+
 export async function uninstallApp(serial: Serial, appName: string, keep = false, printable: Printable = adbLogger): Promise<void> {
   const random = Math.random();
   adbLogger.verbose('adb.uninstallApp begin', { serial, appName, keep, random });
@@ -208,6 +224,28 @@ export async function uninstallApp(serial: Serial, appName: string, keep = false
     return;
   });
   adbLogger.verbose('adb.uninstallApp end', { serial, appName, keep, random });
+}
+
+export async function clearApp(serial: Serial, appName: string, printable: Printable = adbLogger): Promise<void> {
+  const random = Math.random();
+  adbLogger.verbose('adb.clearApp begin', { serial, appName, random });
+  const command = ['-P', DOGU_ADB_SERVER_PORT.toString(), '-s', serial, 'shell', 'pm', 'clear', appName];
+  await ChildProcess.spawnAndWait(adbBinary(), command, { timeout: 60000 * 5 }, printable).catch((err) => {
+    printable.error?.(`ChildProcess.clearApp failed`, { error: stringify(err) });
+    return;
+  });
+  adbLogger.verbose('adb.clearApp end', { serial, appName, random });
+}
+
+export async function resetAppPermission(serial: Serial, appName: string, printable: Printable = adbLogger): Promise<void> {
+  const random = Math.random();
+  adbLogger.verbose('adb.resetAppPermission begin', { serial, appName, random });
+  const command = ['-P', DOGU_ADB_SERVER_PORT.toString(), '-s', serial, 'shell', 'pm', 'reset-permissions', appName];
+  await ChildProcess.spawnAndWait(adbBinary(), command, { timeout: 60000 * 5 }, printable).catch((err) => {
+    printable.error?.(`ChildProcess.resetAppPermission failed`, { error: stringify(err) });
+    return;
+  });
+  adbLogger.verbose('adb.resetAppPermission end', { serial, appName, random });
 }
 
 function installAppArgsInternal(serial: Serial, apkPath: string): { command: string; args: string[] } {
@@ -259,6 +297,14 @@ export async function runApp(serial: Serial, packageName: string, launchableActi
     printable,
   );
   adbLogger.verbose('adb.runApp end', { serial, packageName, launchableActivityName, random });
+  return rv;
+}
+
+export async function runActivity(serial: Serial, activityName: string, printable: Printable = adbLogger): Promise<child_process.ChildProcess> {
+  const random = Math.random();
+  adbLogger.verbose('adb.runActivity begin', { serial, activityName, random });
+  const rv = await ChildProcess.spawnAndWait(adbBinary(), ['-P', `${DOGU_ADB_SERVER_PORT}`, '-s', serial, 'shell', 'am', 'start', '-a', `${activityName}`], {}, printable);
+  adbLogger.verbose('adb.runActivity end', { serial, activityName, random });
   return rv;
 }
 
@@ -327,7 +373,17 @@ export async function runAppProcess(serial: Serial, localPath: string, destPath:
   return rv;
 }
 
-// device info
+export async function disablePackage(serial: Serial, packageName: string, userId: number, printable: Printable): Promise<void> {
+  const random = Math.random();
+  adbLogger.verbose('adb.disablePackage begin', { serial, packageName, random });
+  await shellIgnoreError(serial, `pm disable-user ${userId} ${packageName}`);
+  await shellIgnoreError(serial, `pm disable-user ${packageName}`);
+  adbLogger.verbose('adb.disablePackage end', { serial, packageName, random });
+}
+
+/**
+ * device info
+ */
 export async function serials(): Promise<DeviceScanResult[]> {
   const random = Math.random();
   adbLogger.verbose('adb.serials begin', { random });
@@ -388,6 +444,14 @@ export async function getProps(serial: Serial): Promise<AndroidPropInfo> {
   return rv;
 }
 
+export async function getProp(serial: Serial, key: string): Promise<string> {
+  const random = Math.random();
+  adbLogger.verbose('adb.getProp begin', { serial, key, random });
+  const cmdret = await shellIgnoreError(serial, `getprop ${key}`);
+  adbLogger.verbose('adb.getProp end', { serial, key, random });
+  return cmdret.stdout;
+}
+
 // Profile GPU Rendering (https://stackoverflow.com/questions/42492191/how-to-show-hide-profile-gpu-rendering-as-bars-using-adb-command)
 export async function setProfileGPURendering(serial: Serial, value: string): Promise<void> {
   const random = Math.random();
@@ -396,7 +460,7 @@ export async function setProfileGPURendering(serial: Serial, value: string): Pro
   adbLogger.verbose('adb.setProfileGPURendering end', { serial, value, random });
 }
 
-async function setProp(serial: Serial, propName: string, propValue: string): Promise<void> {
+export async function setProp(serial: Serial, propName: string, propValue: string): Promise<void> {
   const random = Math.random();
   adbLogger.verbose('adb.setProp begin', { serial, propName, propValue, random });
   await shell(serial, `setprop ${propName} ${propValue}`);
@@ -522,8 +586,8 @@ export interface InstalledPackage {
   packageName: string;
 }
 
-export async function getIntalledPackages(serial: Serial): Promise<InstalledPackage[]> {
-  const { stdout } = await shell(serial, 'pm list packages -f');
+export async function getIntalledPackages(serial: Serial, flags = ''): Promise<InstalledPackage[]> {
+  const { stdout } = await shell(serial, `pm list packages -f ${flags}`);
   const installedPackages = stdout
     .split('\n')
     .map((line) => ({
@@ -558,6 +622,29 @@ export async function getIntalledPackages(serial: Serial): Promise<InstalledPack
         } as InstalledPackage),
     );
   return installedPackages;
+}
+
+export async function getNonSystemIntalledPackages(serial: Serial): Promise<InstalledPackage[]> {
+  return getIntalledPackages(serial, '-3');
+}
+
+export async function getIMEList(serial: Serial): Promise<ImeInfo[]> {
+  const random = Math.random();
+  adbLogger.verbose('adb.getIMEList begin', { serial, random });
+  const { stdout } = await shell(serial, `ime list -a`);
+  const ret = parseIMEList(stdout);
+  adbLogger.verbose('adb.getIMEList end', { serial, random });
+  return ret;
+}
+
+/*
+ * ref: https://stackoverflow.com/a/33480790
+ */
+export async function putIMESecure(serial: Serial, ime: ImeInfo): Promise<void> {
+  const random = Math.random();
+  adbLogger.verbose('adb.putIMESecure begin', { serial, random });
+  await shell(serial, `settings put secure enabled_input_methods ${ime.packageName}/${ime.service}`);
+  adbLogger.verbose('adb.putIMESecure end', { serial, random });
 }
 
 const packageVersionLinePattern = /^\s*versionName=(?<versionName>.*)\s*$/;
@@ -603,7 +690,9 @@ export async function getInstalledPackageInfo(serial: Serial, packageName: strin
   return result;
 }
 
-// display
+/**
+ * display
+ */
 
 export async function isScreenOn(serial: Serial): Promise<boolean> {
   const random = Math.random();
@@ -702,7 +791,9 @@ export async function stayOnWhilePluggedIn(serial: Serial): Promise<void> {
   adbLogger.verbose('adb.stayOnWhilePluggedIn end', { serial, random });
 }
 
-// security
+/**
+ *  security
+ */
 export async function unlock(serial: Serial): Promise<void> {
   const random = Math.random();
   adbLogger.verbose('adb.unlock begin', { serial, random });
@@ -740,6 +831,19 @@ export async function getTime(serial: Serial): Promise<string | undefined> {
 }
 
 /**
+ * FileSystem
+ */
+
+export async function readDir(serial: Serial, path: string): Promise<AndroidFileEntry[]> {
+  const random = Math.random();
+  adbLogger.verbose('adb.readDir begin', { serial, path, random });
+  const result = await shellIgnoreError(serial, `ls -l "${path}"`);
+  const rv = parseAndroidLs(result.stdout);
+  adbLogger.verbose('adb.readDir end', { serial, path, random });
+  return rv;
+}
+
+/**
  *  emulator
  *
  */
@@ -758,13 +862,18 @@ export async function getEmulatorName(serial: Serial): Promise<string> {
 }
 
 /**
+ * reset
+ *
+ */
+
+/**
  * @requires Android 10+
  * @note It takes about three minutes.
  * @link https://developer.android.com/tools/adb#test_harness
  */
-export async function reset(serial: Serial): Promise<void> {
+export async function enableTestharness(serial: Serial): Promise<void> {
   const random = Math.random();
-  adbLogger.verbose('adb.reset begin', { serial, random });
+  adbLogger.verbose('adb.enableTestharness begin', { serial, random });
   return new Promise((resolve, reject) => {
     execFile(
       adbBinary(),
@@ -775,17 +884,75 @@ export async function reset(serial: Serial): Promise<void> {
       },
       (error, stdout, stderr) => {
         if (error) {
-          adbLogger.error('adb.reset error', { serial, random, error: errorify(error) });
+          adbLogger.error('adb.enableTestharness error', { serial, random, error: errorify(error) });
           reject(error);
         } else {
-          adbLogger.verbose('adb.reset stdout', { serial, random, stdout });
-          adbLogger.verbose('adb.reset stderr', { serial, random, stderr });
-          adbLogger.verbose('adb.reset end', { serial, random });
+          adbLogger.verbose('adb.enableTestharness stdout', { serial, random, stdout });
+          adbLogger.verbose('adb.enableTestharness stderr', { serial, random, stderr });
+          adbLogger.verbose('adb.enableTestharness end', { serial, random });
           resolve();
         }
       },
     );
   });
+}
+
+export async function resetPackages(serial: Serial, logger: Printable): Promise<void> {
+  const random = Math.random();
+  adbLogger.verbose('adb.resetPackages begin', { serial, random });
+  const allApps = await getIntalledPackages(serial);
+  const userApps = await getNonSystemIntalledPackages(serial);
+  const promises = allApps.map(async (app): Promise<void> => {
+    if (!userApps.find((targetApp) => targetApp.packageName === app.packageName)) {
+      return;
+    }
+    await clearApp(serial, app.packageName, logger).catch((err) => {
+      logger.error(`adb.resetPackages failed to clear`, { error: stringify(err), package: app.packageName, serial, random });
+    });
+    await resetAppPermission(serial, app.packageName, logger).catch((err) => {
+      logger.error(`adb.resetPackages failed to reset permission`, { error: stringify(err), package: app.packageName, serial, random });
+    });
+    await uninstallApp(serial, app.packageName, false, logger).catch((err) => {
+      logger.error(`adb.resetPackages failed to uninstall`, { error: stringify(err), package: app.packageName, serial, random });
+    });
+    return Promise.resolve();
+  });
+  adbLogger.verbose('adb.resetPackages end', { serial, random });
+  await Promise.all(promises);
+}
+
+export async function resetSdcard(serial: Serial, logger: Printable): Promise<void> {
+  const random = Math.random();
+  adbLogger.verbose('adb.resetSdcard begin', { serial, random });
+  const mkdirLists = ['Alarms', 'DCIM', 'Documents', 'Download', 'Movies', 'Music', 'Notifications', 'Pictures', 'Podcasts', 'Ringtones'];
+  const files = await readDir(serial, '/storage/emulated/0');
+  const promises = files.map(async (file): Promise<void> => {
+    let dirPath = `/storage/emulated/0/${file.name}`;
+    if (file.name === 'Android') {
+      dirPath = `/storage/emulated/0/Android/data`;
+    }
+    await shellIgnoreError(serial, `rm -rf ${dirPath}`).catch((err) => {
+      logger.error(`adb.resetSdcard failed to remove directory`, { error: stringify(err), path: dirPath, serial, random });
+    });
+    if (mkdirLists.includes(file.name)) {
+      await shellIgnoreError(serial, `mkdir ${dirPath}`).catch((err) => {
+        logger.error(`adb.resetSdcard failed to make directory`, { error: stringify(err), path: dirPath, serial, random });
+      });
+    }
+    return Promise.resolve();
+  });
+  adbLogger.verbose('adb.resetSdcard end', { serial, random });
+  await Promise.all(promises);
+}
+
+/*
+ * Does this works?
+ */
+export async function resetIME(serial: Serial): Promise<void> {
+  const random = Math.random();
+  adbLogger.verbose('adb.resetIME begin', { serial, random });
+  await shell(serial, `ime reset`);
+  adbLogger.verbose('adb.resetIME end', { serial, random });
 }
 
 export interface AndroidSystemBarVisibility {

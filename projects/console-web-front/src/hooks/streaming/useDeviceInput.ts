@@ -1,6 +1,7 @@
 import { Code, CodeUtil, input, PrivateProtocol } from '@dogu-private/types';
 import { DeviceRTCCaller } from '@dogu-private/webrtc';
-import { useCallback, useState } from 'react';
+import { useCallback, useRef } from 'react';
+import { shallow } from 'zustand/shallow';
 
 import useStreamingOptionStore from 'src/stores/streaming-option';
 import {
@@ -10,6 +11,7 @@ import {
   mapWebKeyboardToDeviceKeyboard,
   mapWebMetaKeyToDeviceMetaState,
 } from 'src/utils/streaming/streaming';
+import useEventStore from '../../stores/events';
 import { sendErrorNotification } from '../../utils/antd';
 
 type DeviceControlType = PrivateProtocol.DeviceControlType;
@@ -29,7 +31,8 @@ export interface DeviceInputOption {
 }
 
 const useDeviceInput = (deviceRTCCaller: DeviceRTCCaller | undefined) => {
-  const [isPressing, setIsPressing] = useState(false);
+  const isPressing = useRef<boolean>(false);
+  const fireEvent = useEventStore((state) => state.fireEvent, shallow);
 
   const handleControlResult = useCallback((result: CfGdcDaControlResult | null) => {
     if (result === null) {
@@ -80,9 +83,11 @@ const useDeviceInput = (deviceRTCCaller: DeviceRTCCaller | undefined) => {
         const result = await deviceRTCCaller.call('cfGdcDaControlParam', 'cfGdcDaControlResult', {
           control: c,
         });
+        fireEvent('onDeviceInput', result);
         handleControlResult(result);
       } catch (e) {}
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [deviceRTCCaller, handleControlResult],
   );
 
@@ -127,9 +132,11 @@ const useDeviceInput = (deviceRTCCaller: DeviceRTCCaller | undefined) => {
         const result = await deviceRTCCaller?.call('cfGdcDaControlParam', 'cfGdcDaControlResult', {
           control: c,
         });
+        fireEvent('onDeviceInput', result);
         handleControlResult(result);
       } catch (e) {}
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [deviceRTCCaller, handleControlResult],
   );
 
@@ -159,6 +166,7 @@ const useDeviceInput = (deviceRTCCaller: DeviceRTCCaller | undefined) => {
           const result = await deviceRTCCaller.call('cfGdcDaControlParam', 'cfGdcDaControlResult', {
             control: c,
           });
+          fireEvent('onDeviceInput', result);
           handleControlResult(result);
         } catch (e) {}
       }
@@ -179,6 +187,7 @@ const useDeviceInput = (deviceRTCCaller: DeviceRTCCaller | undefined) => {
         control: c,
       });
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [deviceRTCCaller, handleControlResult],
   );
 
@@ -241,109 +250,157 @@ const useDeviceInput = (deviceRTCCaller: DeviceRTCCaller | undefined) => {
         /**
          * @note e2e test comment
          */
-        if (null === result || null == result.error) {
+        if (null === result || null === result.error) {
           console.debug(`e2e handleToolMenuInput code: ${DeviceControlKeycode[c.keycode]} failed result: ${result}`);
-        } else if (CodeUtil.isNotSuccess(result.error.code)) {
+        } else if (CodeUtil.isNotSuccess(result.error?.code)) {
           console.debug(
-            `e2e handleToolMenuInput code: ${DeviceControlKeycode[c.keycode]} failed error: ${result.error.code}`,
+            `e2e handleToolMenuInput code: ${DeviceControlKeycode[c.keycode]} failed error: ${result.error?.code}`,
           );
         } else {
           console.debug(`e2e handleToolMenuInput code: ${DeviceControlKeycode[c.keycode]} success`);
         }
+        fireEvent('onDeviceInput', result);
         handleControlResult(result);
       }
+
       return;
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [deviceRTCCaller, handleControlResult],
   );
 
+  const sendAndroidKeycode = useCallback(
+    async (action: DeviceControlAction, keycode: DeviceControlKeycode) => {
+      if (!deviceRTCCaller) {
+        return;
+      }
+
+      if (deviceRTCCaller.channel.readyState !== 'open') {
+        return undefined;
+      }
+
+      const control: DeviceControl = {
+        ...input.DefaultDeviceControl(),
+        action,
+        type: DeviceControlType.DEVICE_CONTROL_TYPE_AOS_INJECT_KEYCODE,
+        keycode,
+        timeStamp: Date.now(),
+      };
+
+      try {
+        const result = await deviceRTCCaller.call('cfGdcDaControlParam', 'cfGdcDaControlResult', {
+          control,
+        });
+
+        if (result === null || result?.error === null) {
+          console.debug(`e2e handleToolMenuInput code: ${DeviceControlKeycode[keycode]} failed result: ${result}`);
+        } else if (CodeUtil.isNotSuccess(result.error?.code)) {
+          console.debug(
+            `e2e handleToolMenuInput code: ${DeviceControlKeycode[keycode]} failed error: ${result.error?.code}`,
+          );
+        } else {
+          console.debug(`e2e handleToolMenuInput code: ${DeviceControlKeycode[keycode]} success`);
+        }
+        fireEvent('onDeviceInput', result);
+        handleControlResult(result);
+      } catch (e) {}
+    },
+    [deviceRTCCaller],
+  );
+
   const handleKeyDown = useCallback(
-    (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    async (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
       if (event.currentTarget === null) {
         return;
       }
 
       try {
-        handleKeyboardInput(event, false);
+        await handleKeyboardInput(event, false);
       } catch (e) {}
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [handleKeyboardInput],
   );
 
   const handleKeyUp = useCallback(
-    (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    async (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
       if (event.currentTarget === null) {
         return;
       }
 
       try {
-        handleKeyboardInput(event, true);
+        await handleKeyboardInput(event, true);
       } catch (e) {}
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [handleKeyboardInput],
   );
 
   const handleWheel = useCallback(
-    (event: React.WheelEvent<HTMLTextAreaElement>, videoSize: { width: number; height: number }) => {
+    async (event: React.WheelEvent<HTMLTextAreaElement>, videoSize: { width: number; height: number }) => {
       if (event.currentTarget === null) {
         return;
       }
 
       try {
-        handleScrollInput(event, videoSize);
+        await handleScrollInput(event, videoSize);
       } catch (e) {}
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [handleScrollInput],
   );
 
   const handleMouseDown = useCallback(
-    (event: React.MouseEvent<HTMLTextAreaElement, MouseEvent>, videoSize: { width: number; height: number }) => {
+    async (event: React.MouseEvent<HTMLTextAreaElement, MouseEvent>, videoSize: { width: number; height: number }) => {
       if (event.currentTarget === null) {
         return;
       }
 
       try {
         deviceRTCCaller?.setSendThrottleMs(33);
-        setIsPressing(true);
-        handleTouchInput(event, {
+        isPressing.current = true;
+        await handleTouchInput(event, {
           type: DeviceControlType.DEVICE_CONTROL_TYPE_AOS_INJECT_TOUCH_EVENT,
           action: DeviceControlAction.DEVICE_CONTROL_ACTION_DESKTOP_ACTION_DOWN_UNSPECIFIED,
           originSize: videoSize,
         });
       } catch (e) {}
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [deviceRTCCaller, handleTouchInput],
   );
 
   const handleMouseUp = useCallback(
-    (event: React.MouseEvent<HTMLTextAreaElement, MouseEvent>, videoSize: { width: number; height: number }) => {
+    async (event: React.MouseEvent<HTMLTextAreaElement, MouseEvent>, videoSize: { width: number; height: number }) => {
       if (event.currentTarget === null) {
         return;
       }
 
       try {
         deviceRTCCaller?.setSendThrottleMs(33);
-        setIsPressing(false);
-        handleTouchInput(event, {
+        isPressing.current = false;
+        await handleTouchInput(event, {
           type: DeviceControlType.DEVICE_CONTROL_TYPE_AOS_INJECT_TOUCH_EVENT,
           action: DeviceControlAction.DEVICE_CONTROL_ACTION_DESKTOP_ACTION_UP,
           originSize: videoSize,
         });
       } catch (e) {}
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [deviceRTCCaller, handleTouchInput],
   );
 
   const handleMouseMove = useCallback(
-    (event: React.MouseEvent<HTMLTextAreaElement, MouseEvent>, videoSize: { width: number; height: number }) => {
+    async (event: React.MouseEvent<HTMLTextAreaElement, MouseEvent>, videoSize: { width: number; height: number }) => {
       if (event.currentTarget === null) {
         return;
       }
 
-      if (isPressing) {
+      if (isPressing.current) {
         try {
           deviceRTCCaller?.setSendThrottleMs(33);
-          handleTouchInput(event, {
+
+          await handleTouchInput(event, {
             type: DeviceControlType.DEVICE_CONTROL_TYPE_AOS_INJECT_TOUCH_EVENT,
             action: DeviceControlAction.DEVICE_CONTROL_ACTION_AOS_MOTIONEVENT_ACTION_MOVE,
             originSize: videoSize,
@@ -351,35 +408,37 @@ const useDeviceInput = (deviceRTCCaller: DeviceRTCCaller | undefined) => {
         } catch (e) {}
       }
     },
-    [deviceRTCCaller, handleTouchInput, isPressing],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [deviceRTCCaller, handleTouchInput],
   );
 
   const handleMouseLeave = useCallback(
-    (event: React.MouseEvent<HTMLTextAreaElement, MouseEvent>, videoSize: { width: number; height: number }) => {
+    async (event: React.MouseEvent<HTMLTextAreaElement, MouseEvent>, videoSize: { width: number; height: number }) => {
       if (event.currentTarget === null) {
         return;
       }
 
       try {
-        setIsPressing(false);
-        handleTouchInput(event, {
+        isPressing.current = false;
+        await handleTouchInput(event, {
           type: DeviceControlType.DEVICE_CONTROL_TYPE_AOS_INJECT_TOUCH_EVENT,
           action: DeviceControlAction.DEVICE_CONTROL_ACTION_AOS_KEYEVENT_ACTION_UP,
           originSize: videoSize,
         });
       } catch (e) {}
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [handleTouchInput],
   );
 
   const handleDoubleClick = useCallback(
-    (event: React.MouseEvent<HTMLTextAreaElement, MouseEvent>, videoSize: { width: number; height: number }) => {
+    async (event: React.MouseEvent<HTMLTextAreaElement, MouseEvent>, videoSize: { width: number; height: number }) => {
       if (event.currentTarget === null) {
         return;
       }
 
       try {
-        handleTouchInput(event, {
+        await handleTouchInput(event, {
           type: DeviceControlType.DEVICE_CONTROL_TYPE_AOS_INJECT_TOUCH_EVENT,
           action: DeviceControlAction.DEVICE_CONTROL_ACTION_DESKTOP_ACTION_DOWNUP,
           originSize: videoSize,
@@ -387,6 +446,7 @@ const useDeviceInput = (deviceRTCCaller: DeviceRTCCaller | undefined) => {
         });
       } catch (e) {}
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [handleTouchInput],
   );
 
@@ -414,10 +474,12 @@ const useDeviceInput = (deviceRTCCaller: DeviceRTCCaller | undefined) => {
         const result = await deviceRTCCaller.call('cfGdcDaControlParam', 'cfGdcDaControlResult', {
           control: c,
         });
+        fireEvent('onDeviceInput', result);
       } catch (e) {
         console.error(e);
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [deviceRTCCaller],
   );
 
@@ -445,14 +507,17 @@ const useDeviceInput = (deviceRTCCaller: DeviceRTCCaller | undefined) => {
         const result = await deviceRTCCaller.call('cfGdcDaControlParam', 'cfGdcDaControlResult', {
           control: c,
         });
+        fireEvent('onDeviceInput', result);
       } catch (e) {
         console.error(e);
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [deviceRTCCaller],
   );
 
   return {
+    sendAndroidKeycode,
     handleKeyDown,
     handleKeyUp,
     handleWheel,

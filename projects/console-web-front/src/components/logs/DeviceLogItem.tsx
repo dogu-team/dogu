@@ -52,7 +52,7 @@ const LogInner = styled.div`
 `;
 
 const Prefix = styled(LogInner)`
-  width: 280px;
+  width: 150px;
   flex-shrink: 0;
 `;
 

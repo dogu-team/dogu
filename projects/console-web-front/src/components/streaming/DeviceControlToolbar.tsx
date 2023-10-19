@@ -1,151 +1,166 @@
 import styled from 'styled-components';
-import Image from 'next/image';
 import {
+  BulbOutlined,
+  DownloadOutlined,
   HomeOutlined,
-  LockOutlined,
   MenuOutlined,
-  PoweroffOutlined,
+  RightOutlined,
   RollbackOutlined,
-  UnlockOutlined,
-  AlignLeftOutlined,
 } from '@ant-design/icons';
 import React from 'react';
 import { Platform } from '@dogu-private/types';
+import { Divider, Tooltip } from 'antd';
 
 import { DeviceToolBarMenu } from 'src/utils/streaming/streaming';
-import resources from 'src/resources';
-import useDeviceInput from '../../hooks/streaming/useDeviceInput';
 import useDeviceStreamingContext from '../../hooks/streaming/useDeviceStreamingContext';
+import useDeviceInput from '../../hooks/streaming/useDeviceInput';
+import { flexRowBaseStyle, flexRowSpaceBetweenStyle } from '../../styles/box';
+import ApplicationUploader from './ApplicationUploader';
+import DeviceHelperButtonGroup from './DeviceHelperButtonGroup';
 
-interface ToolbarButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface ToolbarButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'children'> {
   workingPlatforms?: Platform[];
+  icon: React.ReactNode;
+  text: React.ReactNode;
+  content?: React.ReactNode;
 }
 
-const ToolbarButton = ({ workingPlatforms, ...props }: ToolbarButtonProps) => {
+const ToolbarButton = ({ workingPlatforms, icon, text, content, ...props }: ToolbarButtonProps) => {
   const { device } = useDeviceStreamingContext();
+  const tooltipRef = React.useRef<HTMLDivElement>(null);
 
   if (!device || (workingPlatforms && !workingPlatforms.includes(device.platform))) {
     return null;
   }
 
-  return <StyledToolbarButton tabIndex={-1} {...props} />;
+  return (
+    <Tooltip
+      trigger="click"
+      ref={tooltipRef}
+      open={!!content ? undefined : false}
+      placement="rightTop"
+      title={<div style={{ color: '#000' }}>{content}</div>}
+      color="#fff"
+    >
+      <StyledToolbarButton tabIndex={-1} {...props}>
+        <SpaceBetween>
+          <FlexBox style={{ marginRight: '.5rem' }}>
+            <FlexBox style={{ marginRight: '.5rem' }}>{icon}</FlexBox>
+            <p>{text}</p>
+          </FlexBox>
+          {!!content && (
+            <FlexBox>
+              <RightOutlined />
+            </FlexBox>
+          )}
+        </SpaceBetween>
+      </StyledToolbarButton>
+    </Tooltip>
+  );
 };
 
-const DeviceControlToolbar = () => {
-  const { deviceRTCCaller, device } = useDeviceStreamingContext();
+interface Props {}
+
+const DeviceControlToolbar: React.FC<Props> = () => {
+  const { deviceRTCCaller } = useDeviceStreamingContext();
   const { handleToolMenuInput } = useDeviceInput(deviceRTCCaller ?? undefined);
 
   return (
     <ToolbarBox>
-      {/* volume buttons */}
-      <ToolbarButton onClick={(e) => handleToolMenuInput(e, DeviceToolBarMenu.VOLUME_UP)}>
-        <Image src={resources.icons.volumeUp} width={32} height={32} alt="volume up" />
-      </ToolbarButton>
-      <ToolbarButton onClick={(e) => handleToolMenuInput(e, DeviceToolBarMenu.VOLUME_DOWN)}>
-        <Image src={resources.icons.volumeDown} width={32} height={32} alt="volume down" />
-      </ToolbarButton>
-      <ToolbarButton
-        workingPlatforms={[Platform.PLATFORM_ANDROID, Platform.PLATFORM_WINDOWS]}
-        onClick={(e) => handleToolMenuInput(e, DeviceToolBarMenu.VOLUME_MUTE)}
-      >
-        <Image src={resources.icons.volumeMute} width={32} height={32} alt="volume mute" />
-      </ToolbarButton>
+      <TitleWrapper>
+        <Title>Menu</Title>
+      </TitleWrapper>
 
-      {/* lock, power buttons */}
+      <ToolbarButton
+        workingPlatforms={[Platform.PLATFORM_ANDROID, Platform.PLATFORM_IOS]}
+        icon={<DownloadOutlined />}
+        text="Install app"
+        content={
+          <div>
+            <ApplicationUploader />
+          </div>
+        }
+      />
+
       <ToolbarButton
         workingPlatforms={[Platform.PLATFORM_ANDROID]}
-        onClick={(e) => {
-          handleToolMenuInput(e, DeviceToolBarMenu.LOCK);
-        }}
-      >
-        <LockOutlined width={32} height={32} style={{ fontSize: '20px' }} />
-      </ToolbarButton>
-      <ToolbarButton
-        workingPlatforms={[Platform.PLATFORM_ANDROID]}
-        onClick={(e) => {
-          handleToolMenuInput(e, DeviceToolBarMenu.UNLOCK);
-        }}
-      >
-        <UnlockOutlined width={32} height={32} style={{ fontSize: '20px' }} />
-      </ToolbarButton>
-      <ToolbarButton
-        workingPlatforms={[Platform.PLATFORM_ANDROID]}
-        onClick={(e) => {
-          handleToolMenuInput(e, DeviceToolBarMenu.POWER);
-        }}
-      >
-        <PoweroffOutlined width={32} height={32} style={{ fontSize: '20px' }} />
-      </ToolbarButton>
+        icon={<BulbOutlined />}
+        text="Helpers"
+        content={
+          <div>
+            <DeviceHelperButtonGroup />
+          </div>
+        }
+      />
 
-      {/* screenshot button */}
-      <ToolbarButton
-        workingPlatforms={[Platform.PLATFORM_ANDROID]}
-        onClick={(e) => {
-          handleToolMenuInput(e, DeviceToolBarMenu.SCREENSHOT);
-        }}
-      >
-        <Image src={resources.icons.screenshot} width={32} height={32} alt="screen shot" />
-      </ToolbarButton>
-
-      <Divider />
-
-      {/* back, home, switch buttons */}
+      <Divider style={{ margin: '.8rem 0' }} />
 
       <ToolbarButton
         workingPlatforms={[Platform.PLATFORM_ANDROID]}
         onClick={(e) => {
           handleToolMenuInput(e, DeviceToolBarMenu.BACK);
         }}
-      >
-        <RollbackOutlined width={32} height={32} style={{ fontSize: '20px' }} />
-      </ToolbarButton>
+        icon={<RollbackOutlined />}
+        text="Back"
+      />
       <ToolbarButton
         workingPlatforms={[Platform.PLATFORM_ANDROID, Platform.PLATFORM_IOS]}
         onClick={(e) => {
           handleToolMenuInput(e, DeviceToolBarMenu.HOME);
         }}
-      >
-        <HomeOutlined width={32} height={32} style={{ fontSize: '20px' }} />
-      </ToolbarButton>
+        icon={<HomeOutlined />}
+        text="Home"
+      />
       <ToolbarButton
         workingPlatforms={[Platform.PLATFORM_ANDROID]}
         onClick={(e) => {
           handleToolMenuInput(e, DeviceToolBarMenu.SWITCH);
         }}
-      >
-        <MenuOutlined width={32} height={32} style={{ fontSize: '20px', transform: 'rotate(90deg)' }} />
-      </ToolbarButton>
+        icon={<MenuOutlined style={{ transform: 'rotate(90deg)' }} />}
+        text="Switch"
+      />
     </ToolbarBox>
   );
 };
 
 export default React.memo(DeviceControlToolbar);
 
-const ToolbarBox = styled.div`
-  display: flex;
-  width: 40px;
-  padding: 4px;
-  background-color: ${(props) => props.theme.colors.gray3};
-  border-radius: 0 4px 4px 0;
-  flex-direction: column;
-  align-items: center;
+const ToolbarBox = styled.div``;
+
+const TitleWrapper = styled.div`
+  background-color: #ddd;
+  padding: 0.25rem 1rem;
+`;
+
+const Title = styled.span`
+  font-size: 0.8rem;
+  font-weight: 700;
+  line-height: 1.5;
 `;
 
 const StyledToolbarButton = styled.button`
-  background-color: inherit;
-  width: 32px;
-  height: 32px;
-  margin: 2px 0;
+  display: flex;
+  width: 100%;
+  height: 3rem;
+  padding: 0 1rem;
+  background-color: #fff;
+  align-items: center;
 
   &:hover {
-    background-color: ${(props) => props.theme.colors.gray4};
+    background-color: ${(props) => props.theme.colors.gray2};
+  }
+
+  p {
+    font-size: 0.9rem;
+    line-height: 1.5;
   }
 `;
 
-const Divider = styled.hr`
-  display: block;
+const FlexBox = styled.div`
+  ${flexRowBaseStyle}
+`;
+
+const SpaceBetween = styled.div`
   width: 100%;
-  height: 0;
-  margin: 8px 0;
-  border-bottom: 2px dashed ${(props) => props.theme.colors.gray6};
+  ${flexRowSpaceBetweenStyle}
 `;

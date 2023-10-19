@@ -25,6 +25,7 @@ export class IosSystemInfoService implements SystemInfoService {
       idcLogger.error(error);
       return 'unknown';
     });
+    info.system.manufacturer = 'Apple Inc.';
     const deviceAgentInfo = await this.service.sendWithProtobuf('dcIdaGetSystemInfoParam', 'dcIdaGetSystemInfoResult', {});
     info.graphics.displays.push({
       vendor: '',

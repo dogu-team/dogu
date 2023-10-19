@@ -1,10 +1,11 @@
-import { CloudDeviceMetadataBase, DeviceUsageState, PageBase, ceilDeviceMemory } from '@dogu-private/console';
+import { CloudDeviceMetadataBase, PageBase, ceilDeviceMemory } from '@dogu-private/console';
 import { List, Button, Modal } from 'antd';
 import { useRouter } from 'next/router';
 import useSWR from 'swr';
 import styled from 'styled-components';
 import Image from 'next/image';
 import { shallow } from 'zustand/shallow';
+import { useEffect } from 'react';
 
 import { swrAuthFetcher } from '../../api';
 import { flexRowBaseStyle, listItemStyle, tableCellStyle, tableHeaderStyle } from '../../styles/box';
@@ -14,30 +15,39 @@ import useModal from '../../hooks/useModal';
 import PlatformIcon from '../device/PlatformIcon';
 import CloudDeviceVersionList from './CloudDeviceSelectList';
 import useCloudDeviceFilterStore from '../../stores/cloud-device-filter';
+import { isCloudDeviceAvailable } from '../../utils/device';
+import useEventStore from '../../stores/events';
+import usePaginationSWR from '../../hooks/usePaginationSWR';
 
 const DeviceItem: React.FC<{ device: CloudDeviceMetadataBase }> = ({ device }) => {
   const [isOpen, openModal, closeModal] = useModal();
+
+  const isAvailable = isCloudDeviceAvailable(device);
+
+  useEffect(() => {
+    useEventStore.subscribe(({ eventName }) => {
+      if (eventName === 'onCloudLiveTestingSessionCreated') {
+        closeModal();
+      }
+    });
+  }, [closeModal]);
 
   return (
     <>
       <Item>
         <ItemInner>
           <OneSpan>{deviceBrandMapper[device.manufacturer] ?? device.manufacturer}</OneSpan>
-          <OneSpan>{device.modelName}</OneSpan>
+          <OneSpan>{device.modelName ?? device.model}</OneSpan>
           <OneSpan>
             <PlatformIcon platform={device.platform} />
           </OneSpan>
           <OneSpan>
-            {device.resolutionWidth} * {device.resolutionHeight}
+            {device.resolutionHeight} * {device.resolutionWidth}
           </OneSpan>
           <OneSpan>{Number(device.memory) ? `${ceilDeviceMemory(Number(device.memory))}` : '-'}</OneSpan>
           <ButtonWrapper>
-            <Button
-              type="primary"
-              onClick={() => openModal()}
-              disabled={device.usageState !== DeviceUsageState.AVAILABLE}
-            >
-              Start
+            <Button type="primary" onClick={() => openModal()} disabled={!isAvailable}>
+              {isAvailable ? `Start` : 'Busy'}
             </Button>
           </ButtonWrapper>
         </ItemInner>
@@ -72,12 +82,11 @@ interface Props {}
 
 const LiveTestingCloudDeviceList: React.FC<Props> = () => {
   const router = useRouter();
-  const { keyword } = useCloudDeviceFilterStore((state) => state.filterValue, shallow);
-  console.log(keyword);
-  const { data, error, isLoading, mutate } = useSWR<PageBase<CloudDeviceMetadataBase>>(
-    `/cloud-devices?page=${Number(router.query.page) || 1}&keyword=${keyword}`,
-    swrAuthFetcher,
-    { keepPreviousData: true, revalidateOnFocus: false },
+  const { keyword, platform, version } = useCloudDeviceFilterStore((state) => state.filterValue, shallow);
+  const { data, error, isLoading, mutate } = usePaginationSWR<CloudDeviceMetadataBase>(
+    `/cloud-devices?keyword=${keyword}${platform ? `&platform=${platform}` : ''}&version=${version}`,
+    { skipQuestionMark: true, offset: 12 },
+    { keepPreviousData: true },
   );
 
   useRefresh(['onRefreshClicked'], () => mutate());

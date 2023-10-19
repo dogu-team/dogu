@@ -5,6 +5,7 @@ export enum StreamingErrorType {
   WS_DISCONNECT,
   RTC_DISCONNECT,
   RTC_FAILED,
+  CONNECTION_REFUSED,
 }
 
 export class StreamingError {

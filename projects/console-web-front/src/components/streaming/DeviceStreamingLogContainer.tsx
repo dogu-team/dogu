@@ -1,6 +1,6 @@
-import { CaretRightFilled, DeleteOutlined, PauseOutlined, QuestionCircleFilled } from '@ant-design/icons';
+import { CaretRightFilled, DeleteOutlined, PauseOutlined } from '@ant-design/icons';
 import { Log } from '@dogu-tech/common';
-import { Button, Input, Tooltip } from 'antd';
+import { Button, Input } from 'antd';
 import useTranslation from 'next-translate/useTranslation';
 import React, { useCallback, useState } from 'react';
 import styled from 'styled-components';
@@ -42,12 +42,6 @@ const DeviceStreamingLogContainer = ({
     <Box>
       <MenuBox>
         <div style={{ marginRight: '.5rem', flex: 1 }}>
-          <MenuTitle>
-            {t('device-streaming:deviceLogFilterMenuTitle')}{' '}
-            <Tooltip title={t('device-streaming:deviceLogFilterMenuHelp')}>
-              <QuestionCircleFilled />
-            </Tooltip>
-          </MenuTitle>
           <Input.Search
             placeholder={t('device-streaming:deviceLogFilterInputPlaceholder')}
             value={value}
@@ -100,7 +94,7 @@ const MenuBox = styled.div`
   width: 100%;
   ${flexRowBaseStyle}
   background-color: #fff;
-  padding: 0 1rem 1rem 1rem;
+  padding: 0 0 1rem;
   align-items: flex-end;
 `;
 

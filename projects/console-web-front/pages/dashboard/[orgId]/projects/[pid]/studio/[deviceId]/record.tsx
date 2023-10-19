@@ -1,20 +1,15 @@
 import { GetServerSideProps } from 'next';
 
 import RecordTesting from '../../../../../../../enterprise/components/studio/RecordTesting';
-import {
-  getStudioTestingLayout,
-  getStudioTestingServerSideProps,
-  StudioTestingPageProps,
-} from '../../../../../../../enterprise/pages/studio';
+import { getStudioTestingLayout, StudioTestingPageProps } from '../../../../../../../enterprise/pages/studio';
 import { NextPageWithLayout } from '../../../../../../_app';
 
-const RecordTestingPage: NextPageWithLayout<StudioTestingPageProps> = ({ organization, project, me, deviceId }) => {
-  return <RecordTesting organization={organization} project={project} deviceId={deviceId} me={me} />;
+const RecordTestingPage: NextPageWithLayout<StudioTestingPageProps> = ({ organization, project, me, device }) => {
+  return <RecordTesting organization={organization} project={project} device={device} me={me} />;
 };
 
 RecordTestingPage.getLayout = getStudioTestingLayout;
 
-// export const getServerSideProps: GetServerSideProps<StudioTestingPageProps> = getStudioTestingServerSideProps;
 export const getServerSideProps: GetServerSideProps<StudioTestingPageProps> = async (context) => {
   return {
     notFound: true,

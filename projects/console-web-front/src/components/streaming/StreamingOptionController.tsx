@@ -1,11 +1,10 @@
-import { Dropdown, InputNumber, MenuProps, Slider } from 'antd';
-import React, { useMemo, useState } from 'react';
+import { Dropdown, MenuProps, Slider } from 'antd';
+import React from 'react';
 import styled from 'styled-components';
-import { CaretDownOutlined, WarningOutlined } from '@ant-design/icons';
-import { debounce } from 'lodash';
+import { CaretDownOutlined } from '@ant-design/icons';
+import useTranslation from 'next-translate/useTranslation';
 
 import useStreamingOptionStore from 'src/stores/streaming-option';
-import useTranslation from 'next-translate/useTranslation';
 
 const StreamingOptionController = () => {
   const { option, updateOption } = useStreamingOptionStore();
@@ -72,7 +71,9 @@ const StreamingOptionController = () => {
 
 export default React.memo(StreamingOptionController);
 
-const Box = styled.div``;
+const Box = styled.div`
+  font-size: 0.9rem;
+`;
 
 const Content = styled.div`
   margin-bottom: 1rem;

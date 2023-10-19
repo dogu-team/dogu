@@ -1,4 +1,4 @@
-import { deviceModels } from '../db/devices/models';
+import { deviceModels } from '../resources/device-models';
 
 export const findDeviceModelNameByModelId = (modelId: string | null): string | null => {
   if (!modelId) {

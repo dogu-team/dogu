@@ -45,7 +45,10 @@ import { ZombieServiceInstance } from '../services/zombie/zombie-service';
 type DeviceControl = PrivateProtocol.DeviceControl;
 
 export class IosLogClosable implements Closable {
-  constructor(private readonly childProcess: ChildProcess, private readonly printable?: Printable) {}
+  constructor(
+    private readonly childProcess: ChildProcess,
+    private readonly printable?: Printable,
+  ) {}
 
   close(): void {
     killChildProcess(this.childProcess).catch((error) => {

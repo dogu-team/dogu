@@ -36,6 +36,8 @@ const RecordTestingScreenViewer = ({ project, caseId, stepId }: Props) => {
     handleMouseMove,
     handleMouseUp,
     handleWheel,
+    handleBlur,
+    handleFocus,
   } = useDeviceInput(deviceRTCCaller ?? undefined);
   const fireEvent = useEventStore((state) => state.fireEvent, shallow);
 
@@ -74,7 +76,6 @@ const RecordTestingScreenViewer = ({ project, caseId, stepId }: Props) => {
       </div>
       <VideoWrapper>
         <DeviceStreaming.Video
-          rightSidebar={null}
           onKeyPress={(e) => {
             if (isRecording) {
               return;
@@ -135,6 +136,18 @@ const RecordTestingScreenViewer = ({ project, caseId, stepId }: Props) => {
               return;
             }
           }}
+          onFocus={(e) => {
+            if (isRecording) {
+              return;
+            }
+            handleFocus(e);
+          }}
+          onBlur={(e) => {
+            if (isRecording) {
+              return;
+            }
+            handleBlur(e);
+          }}
         >
           {requestLoading && (
             <ScreenLoadingWrapper>
@@ -162,7 +175,7 @@ const VideoWrapper = styled.div`
   position: relative;
   flex: 1;
   width: 100%;
-  height: 95%;
+  height: 100%;
 `;
 
 const ScreenLoadingWrapper = styled.div`

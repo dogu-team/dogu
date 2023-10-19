@@ -186,4 +186,8 @@ export class AppiumRemoteContext implements AppiumContext {
     this.printable.error('AppiumRemoteContext.findByText is not implemented');
     return Promise.resolve(undefined);
   }
+
+  driver(): undefined {
+    return;
+  }
 }

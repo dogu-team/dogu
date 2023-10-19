@@ -86,6 +86,12 @@ export const HostPaths = {
       seleniumServerPath: (): string => path.resolve(HostPaths.external.externalsPath(), 'selenium/selenium-server.jar'),
     },
 
+    preInstall: {
+      gboard: {
+        apk: (): string => path.resolve(HostPaths.external.externalsPath(), 'preinstall/Gboard.apk'),
+      },
+    },
+
     /**
      * @note use to avoid appium xcodebuild process cleanup patterns.
      */

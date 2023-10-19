@@ -31,11 +31,13 @@ import { env } from '../../env';
 import { GamiumContext } from '../../gamium/gamium.context';
 import { createAdaLogger } from '../../logger/logger.instance';
 import { pathMap } from '../../path-map';
-import { Adb } from '../externals';
+import { Adb, AppiumAdb } from '../externals';
 import { DeviceChannel, DeviceChannelOpenParam, DeviceHealthStatus, DeviceServerService, LogHandler } from '../public/device-channel';
 import { AndroidDeviceAgentService } from '../services/device-agent/android-device-agent-service';
 import { AndroidAdbProfileService, AndroidDisplayProfileService } from '../services/profile/android-profiler';
 import { ProfileServices } from '../services/profile/profile-service';
+import { AndroidResetService } from '../services/reset/android-reset';
+import { AndroidSharedDeviceService } from '../services/shared-device/android-shared-device';
 import { StreamingService } from '../services/streaming/streaming-service';
 import { AndroidSystemInfoService } from '../services/system-info/android-system-info-service';
 import { Zombieable } from '../services/zombie/zombie-component';
@@ -82,13 +84,15 @@ export class AndroidChannel implements DeviceChannel {
     private readonly _streaming: StreamingService,
     private _appiumContext: AppiumContextProxy,
     private readonly _appiumDeviceWebDriverHandler: AppiumDeviceWebDriverHandler,
+    private readonly _sharedDevice: AndroidSharedDeviceService,
+    private readonly appiumAdb: AppiumAdb,
     private readonly logger: FilledPrintable,
     readonly browserInstallations: BrowserInstallation[],
   ) {
     this.logger.info(`AndroidChannel created: ${this.serial}`);
   }
 
-  public static async create(param: DeviceChannelOpenParam, streaming: StreamingService, deviceServerService: DeviceServerService): Promise<AndroidChannel> {
+  public static async create(param: DeviceChannelOpenParam, streaming: StreamingService, deviceServerService: DeviceServerService, appiumAdb: AppiumAdb): Promise<AndroidChannel> {
     ZombieServiceInstance.deleteAllComponentsIfExist((zombieable: Zombieable): boolean => {
       return zombieable.serial === param.serial && zombieable.platform === Platform.PLATFORM_ANDROID;
     }, 'kill previous zombie');
@@ -140,6 +144,8 @@ export class AndroidChannel implements DeviceChannel {
       deviceSerial: serial,
       browserPlatform: 'android',
     });
+    const sharedDevice = new AndroidSharedDeviceService(serial, appiumAdb, await Adb.getProps(serial), logger);
+    await sharedDevice.wait();
 
     const deviceChannel = new AndroidChannel(
       serial,
@@ -151,6 +157,8 @@ export class AndroidChannel implements DeviceChannel {
       streaming,
       appiumContextProxy,
       appiumDeviceWebDriverHandler,
+      sharedDevice,
+      appiumAdb,
       logger,
       findAllBrowserInstallationsResult.browserInstallations,
     );
@@ -167,10 +175,6 @@ export class AndroidChannel implements DeviceChannel {
     const gamiumContext = deviceServerService.gamiumService.openGamiumContext(deviceChannel);
     deviceChannel.gamiumContext = gamiumContext;
 
-    if (env.DOGU_IS_DEVICE_SHARE) {
-      await deviceChannel.setupForSharedDevice();
-    }
-
     return deviceChannel;
   }
 
@@ -181,6 +185,7 @@ export class AndroidChannel implements DeviceChannel {
     });
     ZombieServiceInstance.deleteComponent(this._appiumContext);
     this._deviceAgent.delete();
+    this._sharedDevice.delete();
     ZombieServiceInstance.deleteAllComponentsIfExist((zombieable: Zombieable): boolean => {
       return zombieable.serial === this.serial && zombieable.platform === Platform.PLATFORM_ANDROID;
     }, 'kill serial bound zombies');
@@ -264,12 +269,9 @@ export class AndroidChannel implements DeviceChannel {
     return { isHealthy: true, message: '' };
   }
 
-  /**
-   * @note reset android
-   * adb -s $DOGU_DEVICE_SERIAL shell cmd testharness enable
-   */
   async reset(): Promise<void> {
-    await Adb.reset(this.serial);
+    const appiumContext = await this.switchAppiumContext('builtin');
+    await AndroidResetService.resetDevice(this.serial, this.info, this.appiumAdb, appiumContext, this.logger);
   }
 
   async killOnPort(port: number): Promise<void> {
@@ -450,10 +452,6 @@ export class AndroidChannel implements DeviceChannel {
 
   getWebDriverHandler(): DeviceWebDriverHandler | null {
     return this._appiumDeviceWebDriverHandler;
-  }
-
-  private async setupForSharedDevice(): Promise<void> {
-    await Adb.stayOnWhilePluggedIn(this.serial);
   }
 }
 

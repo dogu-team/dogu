@@ -1,85 +1,32 @@
-import { MobileOutlined } from '@ant-design/icons';
-import { DeviceBase, OrganizationBase, ProjectBase, UserBase } from '@dogu-private/console';
-import { DeviceId, OrganizationId, ProjectId } from '@dogu-private/types';
-import { Avatar, Tag, Tooltip } from 'antd';
-import { isAxiosError } from 'axios';
+import { DeviceBase, OrganizationBase, UserBase } from '@dogu-private/console';
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import useSWR from 'swr';
 
-import { swrAuthFetcher } from '../../api';
-import useWebSocket from '../../hooks/useWebSocket';
-import useAuthStore from '../../stores/auth';
-import { flexRowBaseStyle, flexRowCenteredStyle } from '../../styles/box';
-import { theme } from '../../styles/theme';
-import { getErrorMessageFromAxios } from '../../utils/error';
+import { flexRowCenteredStyle } from '../../styles/box';
 import ErrorBox from '../common/boxes/ErrorBox';
-import ProfileImage from '../ProfileImage';
+import DeviceControlToolbar from '../streaming/DeviceControlToolbar';
 import DeviceStreaming from '../streaming/DeviceStreaming';
-import StudioDeviceSelector from './StudioDeviceSelector';
 
 export interface DeviceStreamingLayoutProps {
   organization: OrganizationBase;
   userId: UserBase['userId'];
-  deviceId: DeviceId;
+  device: DeviceBase;
   right: React.ReactNode;
-  title: string;
   screenViewer: React.ReactNode;
   hideDeviceSelector?: boolean;
+  isCloudDevice?: boolean;
 }
 
 const DeviceStreamingLayout = ({
   organization,
   userId,
-  deviceId,
+  device,
   right,
-  title,
   screenViewer,
   hideDeviceSelector,
+  isCloudDevice,
 }: DeviceStreamingLayoutProps) => {
   const router = useRouter();
-  const {
-    data: device,
-    error: deviceError,
-    isLoading: deviceIsLoading,
-  } = useSWR<DeviceBase>(
-    !hideDeviceSelector && `/organizations/${organization.organizationId}/devices/${deviceId}`,
-    swrAuthFetcher,
-    {
-      revalidateOnFocus: false,
-    },
-  );
-  const socketRef = useWebSocket(
-    `/ws/device-streaming-session?organizationId=${organization.organizationId}&deviceId=${deviceId}`,
-  );
-  const [users, setUsers] = useState<UserBase[]>([]);
-
-  useEffect(() => {
-    if (socketRef.current) {
-      socketRef.current.onmessage = (event) => {
-        const data: { users: UserBase[] } = JSON.parse(event.data);
-        setUsers(data.users);
-      };
-    }
-
-    return () => {
-      if (socketRef.current) {
-        socketRef.current?.close();
-      }
-    };
-  }, [socketRef]);
-
-  if (deviceError) {
-    return (
-      <Box style={{ justifyContent: 'center' }}>
-        <ErrorBox
-          title="Something went wrong"
-          desc={isAxiosError(deviceError) ? getErrorMessageFromAxios(deviceError) : 'Cannot find device information'}
-        />
-      </Box>
-    );
-  }
 
   if (device && device.displayError !== null) {
     return (
@@ -90,54 +37,12 @@ const DeviceStreamingLayout = ({
   }
 
   return (
-    <DeviceStreaming device={device}>
+    <DeviceStreaming device={device} isCloudDevice={isCloudDevice}>
       <Box>
-        <ScreenBox>
-          <TitleBox>
-            <h3>{title}</h3>
-            <Avatar.Group>
-              {users.map((user) => (
-                <Tooltip key={user.userId} title={user.name}>
-                  <ProfileImage
-                    name={user.name}
-                    profileImageUrl={user.profileImageUrl}
-                    size={32}
-                    style={{
-                      border: userId === user.userId ? `2px solid ${theme.colorPrimary}` : undefined,
-                    }}
-                  />
-                </Tooltip>
-              ))}
-            </Avatar.Group>
-          </TitleBox>
-          {!hideDeviceSelector && (
-            <SelectorBox>
-              <Tag color="geekblue" icon={<MobileOutlined />}>
-                Device
-              </Tag>
-              <StudioDeviceSelector
-                selectedDevice={device ?? undefined}
-                organizationId={router.query.orgId as OrganizationId}
-                projectId={router.query.pid as ProjectId}
-                onSelectedDeviceChanged={(device) => {
-                  if (device) {
-                    router.push({
-                      query: {
-                        orgId: router.query.orgId,
-                        pid: router.query.pid,
-                        deviceId: device?.deviceId,
-                        tab: router.query.tab,
-                      },
-                    });
-                  } else {
-                    router.push(`/dashboard/${router.query.orgId}/projects/${router.query.pid}/studio`);
-                  }
-                }}
-              />
-            </SelectorBox>
-          )}
-          {screenViewer}
-        </ScreenBox>
+        <LeftBox>
+          <DeviceControlToolbar />
+        </LeftBox>
+        <ScreenBox>{screenViewer}</ScreenBox>
         <ToolBox>
           <RightWrapper>{right}</RightWrapper>
         </ToolBox>
@@ -156,19 +61,29 @@ const Box = styled.div`
   position: relative;
 `;
 
+const LeftBox = styled.div`
+  width: 12rem;
+`;
+
 const ScreenBox = styled.div`
-  width: 50%;
-  padding: 1rem;
+  padding: 2rem;
   ${flexRowCenteredStyle}
   flex-direction: column;
   height: 100%;
-
-  border-right: 1px solid #e5e5e5;
+  background-color: #ededed;
+  flex: 1;
 `;
 
 const ToolBox = styled.div`
-  padding: 1rem;
-  width: 50%;
+  width: 450px;
+
+  @media screen and (max-width: 1279px) {
+    width: 350px;
+  }
+
+  @media screen and (max-width: 1023px) {
+    width: 300px;
+  }
 `;
 
 const RightWrapper = styled.div`
@@ -193,8 +108,4 @@ const TitleBox = styled.div`
     font-weight: 600;
     line-height: 1.5;
   }
-`;
-
-const FlexRow = styled.div`
-  ${flexRowBaseStyle}
 `;

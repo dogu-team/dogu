@@ -12,6 +12,8 @@ import { Body, Controller, Delete, Get, HttpException, HttpStatus, Inject, Param
 import { FileInterceptor } from '@nestjs/platform-express';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
+
+import { LiveSession } from '../../db/entity/live-session.entity';
 import { FEATURE_CONFIG } from '../../feature.config';
 import { EMAIL_VERIFICATION, ORGANIZATION_ROLE } from '../../module/auth/auth.types';
 import { EmailVerification, OrganizationPermission, User } from '../../module/auth/decorators';
@@ -202,5 +204,15 @@ export class OrganizationController {
 
     await this.userService.softRemoveUserFromOrganization(organizationId, userId);
     return;
+  }
+
+  @Get(':organizationId/live-sessions')
+  @OrganizationPermission(ORGANIZATION_ROLE.MEMBER)
+  async findUsingCloudDevicesByOrganizationId(
+    @User() userPayload: UserPayload, //
+    @Param(OrganizationPropCamel.organizationId) organizationId: OrganizationId,
+  ): Promise<LiveSession[]> {
+    const rv = await this.organizationService.findUsingCloudDevicesByOrganizationId(organizationId);
+    return rv;
   }
 }

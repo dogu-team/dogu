@@ -57,34 +57,36 @@ const OrganizationSideBar = () => {
             <SideBarTitle profileImageUrl={organization.profileImageUrl} name={organization.name} accessId="sb-title" />
           ),
     },
-    {
-      type: 'group',
-      label: collapsed ? null : 'Cloud Farm',
-      children: [
-        {
-          key: 'live-testing',
-          icon: collapsed ? (
-            <StyledIconLink
-              selected={router.asPath === `/dashboard/${orgId}/live-testing`}
-              href={`/dashboard/${orgId}/live-testing`}
-            >
-              <IoIosTimer />
-            </StyledIconLink>
-          ) : undefined,
-          label: collapsed ? (
-            t('organization:liveTestingPageTitle')
-          ) : (
-            <SideBarMenu
-              icon={<IoIosTimer style={{ fontSize: '1.2rem' }} />}
-              path={`/dashboard/${orgId}/live-testing`}
-              text={t('organization:liveTestingPageTitle')}
-              accessId={process.env.NEXT_PUBLIC_ENV !== 'production' ? 'side-bar-live-testing' : undefined}
-            />
-          ),
-          style: { borderRadius: '6px' },
-        },
-      ],
-    },
+    process.env.NEXT_PUBLIC_ENV !== 'self-hosted'
+      ? {
+          type: 'group',
+          label: collapsed ? null : 'Cloud Farm',
+          children: [
+            {
+              key: 'live-testing',
+              icon: collapsed ? (
+                <StyledIconLink
+                  selected={router.asPath === `/dashboard/${orgId}/live-testing`}
+                  href={`/dashboard/${orgId}/live-testing`}
+                >
+                  <IoIosTimer />
+                </StyledIconLink>
+              ) : undefined,
+              label: collapsed ? (
+                t('organization:liveTestingPageTitle')
+              ) : (
+                <SideBarMenu
+                  icon={<IoIosTimer style={{ fontSize: '1.2rem' }} />}
+                  path={`/dashboard/${orgId}/live-testing`}
+                  text={t('organization:liveTestingPageTitle')}
+                  accessId={process.env.NEXT_PUBLIC_ENV !== 'production' ? 'side-bar-live-testing' : undefined}
+                />
+              ),
+              style: { borderRadius: '6px' },
+            },
+          ],
+        }
+      : null,
     {
       type: 'group',
       label: collapsed ? null : 'Self Device',

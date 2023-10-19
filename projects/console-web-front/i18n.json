@@ -32,6 +32,7 @@
     "/dashboard/[orgId]/device-farm/hosts": ["organization", "device-farm"],
     "/dashboard/[orgId]/device-farm/tags": ["organization", "device-farm"],
     "/dashboard/[orgId]/live-testing": ["organization"],
+    "/dashboard/[orgId]/live-testing/[sessionId]/[deviceId]": ["organization", "device-streaming"],
 
     "/dashboard/[orgId]/projects/[pid]": ["project"],
     "/dashboard/[orgId]/projects/[pid]/members": ["project", "project-member"],

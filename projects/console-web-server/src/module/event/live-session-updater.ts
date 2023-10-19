@@ -4,6 +4,7 @@ import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import Redis from 'ioredis';
 import { DataSource } from 'typeorm';
+
 import { config } from '../../config';
 import { LiveSession } from '../../db/entity/live-session.entity';
 import { LiveSessionService } from '../live-session/live-session.service';
@@ -59,7 +60,7 @@ export class LiveSessionUpdater implements OnModuleInit, OnModuleDestroy {
   }
 
   private async createdToCloseWait(): Promise<void> {
-    await this.dataSource.manager.transaction(async (manager) => {
+    const closeWaitSessions = await this.dataSource.manager.transaction(async (manager) => {
       const createds = await manager.getRepository(LiveSession).find({
         where: {
           state: LiveSessionState.CREATED,
@@ -84,16 +85,25 @@ export class LiveSessionUpdater implements OnModuleInit, OnModuleDestroy {
       }
 
       if (newCloseWaits.length > 0) {
-        await manager.save(newCloseWaits);
+        const rv = await manager.save(newCloseWaits);
         this.logger.debug('LiveSessionUpdater: createdToCloseWait', {
           newCloseWaits,
         });
+        return rv;
       }
     });
+
+    if (!!closeWaitSessions && closeWaitSessions.length > 0) {
+      await Promise.all(
+        closeWaitSessions.map(async (liveSession) => {
+          await this.liveSessionService.publishCloseWaitEvent(liveSession.liveSessionId, `closeWait!`);
+        }),
+      );
+    }
   }
 
   private async closeWaitToCreatedOrClosed(): Promise<void> {
-    await this.dataSource.manager.transaction(async (manager) => {
+    const closedSessions = await this.dataSource.manager.transaction(async (manager) => {
       const closeWaits = await manager //
         .getRepository(LiveSession)
         .find({
@@ -115,7 +125,7 @@ export class LiveSessionUpdater implements OnModuleInit, OnModuleDestroy {
       }
 
       if (toCreateds.length > 0) {
-        await manager.save(toCreateds);
+        await manager.getRepository(LiveSession).save(toCreateds);
         this.logger.debug('LiveSessionUpdater: closeWaitToCreatedOrClosed', {
           toCreateds,
         });
@@ -134,8 +144,16 @@ export class LiveSessionUpdater implements OnModuleInit, OnModuleDestroy {
         });
 
       if (toCloses.length > 0) {
-        await this.liveSessionService.closeInTransaction(manager, toCloses);
+        return await this.liveSessionService.closeInTransaction(manager, toCloses);
       }
     });
+
+    if (!!closedSessions && closedSessions.length > 0) {
+      await Promise.all(
+        closedSessions.map(async (liveSession) => {
+          await this.liveSessionService.publishCloseEvent(liveSession.liveSessionId, 'closed!');
+        }),
+      );
+    }
   }
 }

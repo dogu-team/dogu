@@ -1,11 +1,12 @@
 import { DevicePropCamel, DeviceUsageState, LiveSessionCreateRequestBodyDto, LiveSessionFindQueryDto, OrganizationPropCamel } from '@dogu-private/console';
 import { LiveSessionId, LiveSessionState } from '@dogu-private/types';
 import { InjectRedis } from '@liaoliaots/nestjs-redis';
-import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import Redis from 'ioredis';
 import { DataSource, EntityManager, In } from 'typeorm';
 import { v4 } from 'uuid';
+
 import { config } from '../../config';
 import { Device } from '../../db/entity/device.entity';
 import { LiveSession } from '../../db/entity/live-session.entity';
@@ -98,6 +99,26 @@ export class LiveSessionService {
     await this.redis.expire(config.redis.key.liveSessionHeartbeat(liveSessionId), config.liveSession.heartbeat.allowedSeconds);
   }
 
+  async subscribeCloseWaitEvent(liveSessionId: LiveSessionId, onMessage: (message: string) => void): Promise<() => Promise<void>> {
+    const thisChannel = config.redis.key.liveSessionCloseWaitEvent(liveSessionId);
+    const onMessageImpl = (channel: string, message: string) => {
+      if (channel === thisChannel) {
+        onMessage(message);
+      }
+    };
+    this.subscriber.on('message', onMessageImpl);
+    await this.subscriber.subscribe(config.redis.key.liveSessionCloseWaitEvent(liveSessionId));
+    const unsubscribe = async () => {
+      await this.subscriber.unsubscribe(config.redis.key.liveSessionCloseWaitEvent(liveSessionId));
+      this.subscriber.removeListener('message', onMessageImpl);
+    };
+    return unsubscribe;
+  }
+
+  async publishCloseWaitEvent(liveSessionId: LiveSessionId, message: string): Promise<void> {
+    await this.redis.publish(config.redis.key.liveSessionCloseWaitEvent(liveSessionId), message);
+  }
+
   async subscribeCloseEvent(liveSessionId: LiveSessionId, onMessage: (message: string) => void): Promise<() => Promise<void>> {
     const thisChannel = config.redis.key.liveSessionCloseEvent(liveSessionId);
     const onMessageImpl = (channel: string, message: string) => {
@@ -119,8 +140,9 @@ export class LiveSessionService {
   }
 
   async isLiveSessionExists(liveSessionId: LiveSessionId): Promise<boolean> {
-    const exists = await this.redis.exists(config.redis.key.liveSessionHeartbeat(liveSessionId));
-    return exists !== 0;
+    const heartbeatExists = await this.redis.exists(config.redis.key.liveSessionHeartbeat(liveSessionId));
+    const participantsCount = await this.redis.get(config.redis.key.liveSessionParticipantsCount(liveSessionId));
+    return heartbeatExists !== 0 && Number(participantsCount) > 0;
   }
 
   /**
@@ -131,12 +153,8 @@ export class LiveSessionService {
       liveSession.state = LiveSessionState.CLOSED;
       liveSession.closedAt = new Date();
     });
-    const closeds = await manager.save(liveSessions);
-    await Promise.all(
-      liveSessions.map(async (liveSession) => {
-        await this.publishCloseEvent(liveSession.liveSessionId, 'closed!');
-      }),
-    );
+    const closeds = await manager.getRepository(LiveSession).save(liveSessions);
+
     this.logger.debug('LiveSessionService.close.liveSessions', {
       liveSessions,
     });
@@ -150,35 +168,40 @@ export class LiveSessionService {
     devices.forEach((device) => {
       device.usageState = DeviceUsageState.PREPARING;
     });
-    await manager.save(devices);
+    await manager.getRepository(Device).save(devices);
     this.logger.debug('LiveSessionService.close.devices', {
       devices,
     });
 
     devices.forEach((device) => {
-      this.deviceCommandService.reboot(device.organizationId, device.deviceId, device.serial);
+      this.deviceCommandService.resetAndJoinWifi(device.organizationId, device.deviceId, device.serial).catch((error) => {
+        this.logger.error('LiveSessionService.close.resetAndJoinWifi error', {
+          error,
+          device,
+        });
+      });
     });
 
     return closeds;
   }
 
   async closeByLiveSessionId(liveSessionId: LiveSessionId): Promise<LiveSession> {
-    return await this.dataSource.transaction(async (manager) => {
-      const liveSession = await manager.getRepository(LiveSession).findOne({ where: { liveSessionId } });
-      if (!liveSession) {
-        throw new NotFoundException(`LiveSession not found for liveSessionId: ${liveSessionId}`);
-      }
+    const liveSession = await this.dataSource.getRepository(LiveSession).findOne({ where: { liveSessionId } });
 
-      if (liveSession.state === LiveSessionState.CLOSED) {
-        return liveSession;
-      }
+    if (!liveSession) {
+      throw new NotFoundException(`LiveSession not found for liveSessionId: ${liveSessionId}`);
+    }
 
-      const closeds = await this.closeInTransaction(manager, [liveSession]);
-      if (closeds.length !== 1) {
-        throw new InternalServerErrorException(`LiveSession close failed for liveSessionId: ${liveSessionId}`);
-      }
+    if (liveSession.state === LiveSessionState.CLOSED) {
+      return liveSession;
+    }
 
-      return closeds[0];
+    const closedSession = await this.dataSource.transaction(async (manager) => {
+      const rv = await this.closeInTransaction(manager, [liveSession]);
+      return rv[0];
     });
+
+    await this.publishCloseEvent(closedSession.liveSessionId, 'closed!');
+    return closedSession;
   }
 }

@@ -1,9 +1,9 @@
-import { AndroidLocale } from '@dogu-private/types';
+import { AndroidFullLocale } from '@dogu-private/types';
 
 // ref: https://sourcegraph.com/search?q=context%3Aglobal+repo%3A%5Egithub%5C.com%2FLineageOS%2Fandroid_frameworks_base%24+development_settings_title&patternType=standard&sm=1&groupBy=path
 // some fixs are applied (ms, id-Id, jp, zh-Hans, zh-Hant)
 export const DeveloperOptionsString: {
-  [key in AndroidLocale]: string[];
+  [key in AndroidFullLocale]: string[];
 } = {
   nb: ['Utvikleralternativer'],
   af: ['Ontwikkelaaropsies'],

@@ -6,6 +6,7 @@ import { HttpAdapterHost, NestFactory, Reflector } from '@nestjs/core';
 import * as Sentry from '@sentry/node';
 import { json } from 'body-parser';
 import cookieParser from 'cookie-parser';
+import { Server } from 'http';
 import { WinstonModule } from 'nest-winston';
 import { env } from './env';
 import { AllExceptionsFilter } from './filter/exception.filter';
@@ -47,7 +48,10 @@ async function bootstrap(): Promise<void> {
     }),
   });
   const httpAdapterHost = app.get(HttpAdapterHost);
-
+  const httpServer: Server = httpAdapterHost.httpAdapter.getHttpServer();
+  // ref: https://ivorycirrus.github.io/TIL/aws-alb-502-bad-gateway/
+  httpServer.keepAliveTimeout = 65000;
+  httpServer.headersTimeout = 65000;
   app
     .use(cookieParser())
     .use(json({ limit: '1024mb' }))

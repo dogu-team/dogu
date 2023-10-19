@@ -10,7 +10,7 @@
     "dev": "node ./prebuild.mjs && node ./prerun.mjs start && next dev -p 3001",
     "lint": "next lint",
     "rebuild": "yarn run clean && yarn run build",
-    "start": "node ./prerun.mjs start && cross-env NODE_OPTIONS=\"--max-old-space-size=8192 $NODE_OPTIONS\" next start -p 3001"
+    "start": "node ./prerun.mjs start && cross-env NODE_OPTIONS=\"--max-old-space-size=8192 $NODE_OPTIONS\" next start -p 3001 --keepAliveTimeout 65000"
   },
   "dependencies": {
     "@ant-design/cssinjs": "1.9.1",

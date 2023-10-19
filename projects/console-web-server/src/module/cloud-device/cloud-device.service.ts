@@ -1,10 +1,11 @@
-import { CloudDeviceMetadataBase, DevicePropCamel, DeviceUsageState } from '@dogu-private/console';
-import { DeviceConnectionState } from '@dogu-private/types';
-import { Injectable } from '@nestjs/common';
+import { CloudDeviceByModelResponse, CloudDeviceMetadataBase, DevicePropCamel } from '@dogu-private/console';
+import { DeviceConnectionState, DeviceId, Platform } from '@dogu-private/types';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 
 import { Device } from '../../db/entity/device.entity';
+import { retinaDisplayRatio } from '../../resources/retina-display-ratio';
 import { Page } from '../common/dto/pagination/page';
 import { FindCloudDevicesDto } from './cloud-device.dto';
 
@@ -16,22 +17,65 @@ export class CloudDeviceService {
   ) {}
 
   async findCloudDevices(dto: FindCloudDevicesDto): Promise<Page<CloudDeviceMetadataBase>> {
-    const { keyword } = dto;
+    const { keyword, platform, version } = dto;
 
     const modelFilterClause = keyword ? `device.${DevicePropCamel.model} ~* :keyword` : '1=1';
     const modelNameFilterClause = keyword ? `device.${DevicePropCamel.modelName} ~* :keyword` : '1=1';
     const manufacturerFilterClause = keyword ? `device.${DevicePropCamel.manufacturer} ~* :keyword` : '1=1';
 
+    const platformFilterClause = platform ? `device.${DevicePropCamel.platform} = :platform` : '1=1';
+    const versionFilterClause = version ? `device.${DevicePropCamel.version} LIKE :version` : '1=1';
+
+    // pick representative device for each model
+    const cloudDevices = await this.createCloudDeviceDefaultQuery().getMany();
+
+    const deviceMap = new Map<string, Device>();
+    cloudDevices.forEach((device) => {
+      const key = `${device.model}`;
+      const existingDevice = deviceMap.get(key);
+
+      if (!existingDevice) {
+        deviceMap.set(key, device);
+        return;
+      }
+
+      if (device.usageState < existingDevice.usageState) {
+        deviceMap.set(key, device);
+        return;
+      }
+
+      if (device.usageState === existingDevice.usageState) {
+        if (device.connectionState === DeviceConnectionState.DEVICE_CONNECTION_STATE_CONNECTED) {
+          deviceMap.set(key, device);
+          return;
+        }
+      }
+    });
+    const representativeDevices = Array.from(deviceMap.values());
+    const deviceIds = representativeDevices.map((device) => device.deviceId);
+
     const query = this.createCloudDeviceDefaultQuery()
-      .andWhere(`device.${DevicePropCamel.model} IN (SELECT DISTINCT device.${DevicePropCamel.model} FROM device)`) // Subquery to select distinct models
+      .where('device.device_id IN (:...deviceIds)', { deviceIds })
       .andWhere(`(${modelFilterClause} OR ${modelNameFilterClause} OR ${manufacturerFilterClause})`, { keyword: `.*${keyword}.*` })
+      .andWhere(platformFilterClause, { platform })
+      .andWhere(versionFilterClause, { version: `${version}%` })
+      .orderBy(`device.${DevicePropCamel.modelName}`, 'ASC')
+      .addOrderBy(`device.${DevicePropCamel.model}`, 'ASC')
       .skip(dto.getDBOffset())
       .take(dto.getDBLimit());
 
     const [devices, totalCount] = await query.getManyAndCount();
-    const usageStates = await Promise.all(devices.map((device) => this.mergeDeviceUsageState({ model: device.model })));
 
-    const metaInfos: CloudDeviceMetadataBase[] = devices.map((device, i) => {
+    devices.forEach((device) => {
+      const ratio = retinaDisplayRatio[device.model];
+
+      if (ratio) {
+        device.resolutionWidth = device.resolutionWidth * ratio;
+        device.resolutionHeight = device.resolutionHeight * ratio;
+      }
+    });
+
+    const metaInfos: CloudDeviceMetadataBase[] = devices.map((device) => {
       return {
         model: device.model,
         modelName: device.modelName,
@@ -41,24 +85,67 @@ export class CloudDeviceService {
         memory: device.memory,
         platform: device.platform,
         location: device.location,
-        usageState: usageStates[i],
+        connectionState: device.connectionState,
+        usageState: device.usageState,
       };
     });
 
     return new Page<CloudDeviceMetadataBase>(dto.page, dto.offset, totalCount, metaInfos);
   }
 
-  async findCloudDevicesByModel(model: string): Promise<Device[]> {
-    const query = this.createCloudDeviceDefaultQuery().andWhere(`device.model = :model`, { model: model }).select(['device.version', 'device.model']);
-
+  async findCloudDeviceVersionsByModel(model: string): Promise<CloudDeviceByModelResponse[]> {
+    const query = this.createCloudDeviceDefaultQuery()
+      .andWhere(`device.model = :model`, { model: model })
+      .select([`device.${DevicePropCamel.version}`, `device.${DevicePropCamel.model}`, `device.${DevicePropCamel.usageState}`, `device.${DevicePropCamel.connectionState}`]);
     const devices = await query.getMany();
-    const usageStates = await Promise.all(devices.map((device) => this.mergeDeviceUsageState({ model: device.model, version: device.version })));
 
-    devices.forEach((device, i) => {
-      device.usageState = usageStates[i];
+    // pick representative device for each version
+    const deviceMap = new Map<string, Device>();
+    devices.forEach((device) => {
+      const key = `${device.version}`;
+      const existingDevice = deviceMap.get(key);
+
+      if (!existingDevice) {
+        deviceMap.set(key, device);
+        return;
+      }
+
+      if (device.usageState < existingDevice.usageState) {
+        deviceMap.set(key, device);
+        return;
+      }
+
+      if (device.usageState === existingDevice.usageState) {
+        if (device.connectionState === DeviceConnectionState.DEVICE_CONNECTION_STATE_CONNECTED) {
+          deviceMap.set(key, device);
+          return;
+        }
+      }
     });
 
-    return devices;
+    return Array.from(deviceMap.values());
+  }
+
+  async findCloudDeviceById(deviceId: DeviceId): Promise<Device> {
+    const device = await this.createCloudDeviceDefaultQuery().andWhere(`device.${DevicePropCamel.deviceId} = :deviceId`, { deviceId }).getOne();
+
+    if (!device) {
+      throw new NotFoundException(`Device not found. id: ${deviceId}`);
+    }
+
+    return device;
+  }
+
+  async findCloudDeviceVersions(platform?: Platform): Promise<string[]> {
+    const platformFilterClause = platform ? `device.${DevicePropCamel.platform} = :platform` : '1=1';
+
+    const query = this.createCloudDeviceDefaultQuery()
+      .andWhere(platformFilterClause, { platform })
+      .distinctOn([`device.${DevicePropCamel.version}`])
+      .orderBy(`device.${DevicePropCamel.version}`, 'ASC');
+    const devices = await query.getMany();
+
+    return devices.map((device) => device.version);
   }
 
   private createCloudDeviceDefaultQuery() {
@@ -68,29 +155,6 @@ export class CloudDeviceService {
       .leftJoin('device.organization', 'organization')
       .where(`device.${DevicePropCamel.isHost} = :isHost`, { isHost: 0 })
       .andWhere(`device.${DevicePropCamel.isGlobal} = :isGlobal`, { isGlobal: 1 })
-      .andWhere(`device.${DevicePropCamel.connectionState} = :connectionState`, { connectionState: DeviceConnectionState.DEVICE_CONNECTION_STATE_CONNECTED })
       .andWhere(`organization.shareable = :shareable`, { shareable: true });
-  }
-
-  private async mergeDeviceUsageState(options: { model: string; version?: string }): Promise<DeviceUsageState> {
-    const versionFilterClause = options.version ? `device.${DevicePropCamel.version} = :version` : '1=1';
-    const query = this.createCloudDeviceDefaultQuery()
-      .andWhere(`device.${DevicePropCamel.model} = :model`, { model: options.model })
-      .andWhere(versionFilterClause, { version: options.version })
-      .select(['device.usageState']);
-
-    const devices = await query.getMany();
-
-    const hasAvailableDevice = devices.some((device) => device.usageState === DeviceUsageState.AVAILABLE);
-    if (hasAvailableDevice) {
-      return DeviceUsageState.AVAILABLE;
-    }
-
-    const hasPreparingDevice = devices.some((device) => device.usageState === DeviceUsageState.PREPARING);
-    if (hasPreparingDevice) {
-      return DeviceUsageState.PREPARING;
-    }
-
-    return DeviceUsageState.IN_USE;
   }
 }
