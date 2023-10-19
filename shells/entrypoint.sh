@@ -55,7 +55,12 @@ fi
 
 
 echo "Start console"
-yarn run start:console
+if [ "$DOGU_INSPECT" == "true" ]; then
+  yarn run start:console:inspect
+else
+  yarn run start:console
+fi
+
 if [ $? -eq 0 ]; then
   echo "Console start success"
 else

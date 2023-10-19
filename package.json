@@ -32,6 +32,7 @@
     "reset": "yarn run clean-lock && yarn install && yarn run rebuild",
     "show": "yarn workspaces list",
     "start:console": "yarn workspace console-web-server run start & yarn workspace console-web-front run start",
+    "start:console:inspect": "yarn workspace console-web-server run start:inspect & yarn workspace console-web-front run start",
     "test": "turbo run test",
     "third-party:download": "ts-node scripts/third-parties/download",
     "third-party:download:build": "yarn run third-party:download && yarn run rebuild:archive",
