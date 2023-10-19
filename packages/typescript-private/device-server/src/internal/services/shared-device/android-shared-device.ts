@@ -176,7 +176,7 @@ export class AndroidSharedDeviceService implements Zombieable {
     const ret: BlockAppInfo[] = [];
     for (const app of BlockAppList) {
       if (msg.includes(app.keyword)) {
-        if (app.isBlockOnTestHarness && this.androidProps.persist_sys_test_harness === '1') {
+        if (!app.isBlockOnTestHarness && this.androidProps.persist_sys_test_harness === '1') {
           continue;
         }
         ret.push(app);
