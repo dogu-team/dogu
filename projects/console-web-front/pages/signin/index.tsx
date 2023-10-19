@@ -71,7 +71,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     }
 
     return {
-      redirect: redirectWithLocale(context, '/account/organizations', false),
+      redirect: redirectWithLocale(context, '/', false),
     };
   }
 

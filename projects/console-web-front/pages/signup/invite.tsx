@@ -79,7 +79,7 @@ const InviteSignupPage: NextPageWithLayout<Props> = ({ email, token, invitation 
             You&apos;re invited to join <b>{invitation.organization?.name}</b> organization
           </StyledTitle>
         </FlexColumnCentered>
-        <div style={{ marginTop: '2rem' }}>
+        <div style={{ margin: '1rem 0' }}>
           <p style={{ textAlign: 'center' }}>New to Dogu? Create an account</p>
         </div>
         <SignUpForm onSubmit={handleSignUp} defaultEmail={email} />
@@ -138,6 +138,8 @@ const FlexColumnCentered = styled.div`
 const StyledTitle = styled.p`
   margin-top: 0.5rem;
   font-size: 1.1rem;
+  text-align: center;
+  line-height: 1.4;
 
   b {
     font-weight: 700;

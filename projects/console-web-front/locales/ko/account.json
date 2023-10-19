@@ -35,14 +35,6 @@
   "leaveOrganizationSuccessMessage": "성공함",
   "leaveOrganizationFailureMessage": "나가기 실패\n{{reason}}",
 
-  "createOrganizationButtonText": "조직 생성하기",
-  "createOrganizationModalTitle": "새 조직 생성하기",
-  "createOrganizaitonNameLabelText": "조직 이름",
-  "createOrganizationNameInputPlaceholder": "이름",
-  "createOrganizationNaameInputErrorMesssage": "이름을 입력해 주세요.",
-  "createOrganizationSuccessMessage": "생성됨",
-  "createOrganizationFailureMessage": "조직 생성 실패\n{{reason}}",
-
   "verifyEntryPageTitle": "이메일 인증을 완료하세요",
   "verifyEntryDescription": "안녕하세요 {{name}}!.\n\n원할한 Dogu 서비스 이용을 위해 먼저 이메일 인증을 완료해 주세요.",
   "verifyEntryEmailDescription": "이메일을 받지 못했나요?",

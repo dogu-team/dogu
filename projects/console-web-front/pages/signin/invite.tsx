@@ -101,6 +101,8 @@ const FlexColumnCentered = styled.div`
 const StyledTitle = styled.p`
   margin-top: 0.5rem;
   font-size: 1.1rem;
+  text-align: center;
+  line-height: 1.4;
 
   b {
     font-weight: 700;

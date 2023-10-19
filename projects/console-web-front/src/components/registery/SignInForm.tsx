@@ -45,7 +45,7 @@ const SignInForm = (props: Props) => {
             ? `${router.query.redirect}`
             : lastAccessOrganizationId
             ? `/dashboard/${lastAccessOrganizationId}`
-            : '/account/organizations',
+            : '/',
         );
       } catch (e) {
         if (e instanceof AxiosError) {

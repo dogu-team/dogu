@@ -1,8 +1,6 @@
 import { GetServerSideProps } from 'next';
 
-import { NextPageWithLayout } from 'pages/_app';
-import ConsoleLayout from 'src/components/layouts/ConsoleLayout';
-import OrganizationSideBar from 'src/components/layouts/OrganizationSideBar';
+import { IS_CLOUD, NextPageWithLayout } from 'pages/_app';
 import { redirectWithLocale } from '../../../src/ssr/locale';
 
 const OrganizationPage: NextPageWithLayout = () => {
@@ -16,7 +14,11 @@ OrganizationPage.getLayout = (page) => {
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   return {
-    redirect: redirectWithLocale(context, `/dashboard/${context.query.orgId}/projects`, true),
+    redirect: redirectWithLocale(
+      context,
+      IS_CLOUD ? `/dashboard/${context.query.orgId}/live-testing` : `/dashboard/${context.query.orgId}/projects`,
+      true,
+    ),
   };
 };
 

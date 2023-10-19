@@ -82,30 +82,24 @@ const AccountMenu = () => {
     {
       type: 'divider',
     },
-    {
-      type: 'group',
-      key: 'group-work',
-      label: <GroupTitle>{t('common:accountMenuWorksTitle')}</GroupTitle>,
-      children: [
-        {
-          label: (
-            <StyledItem onClick={() => router.push(`/account/organizations`)}>
-              {t('common:accountMenuMyOrgListButton')}
-            </StyledItem>
-          ),
-          key: '1',
-        },
-        process.env.NEXT_PUBLIC_ENV === 'self-hosted' && me.isRoot
-          ? {
+    process.env.NEXT_PUBLIC_ENV === 'self-hosted' && me.isRoot
+      ? {
+          type: 'group',
+          key: 'group-work',
+          label: <GroupTitle>{t('common:accountMenuWorksTitle')}</GroupTitle>,
+          children: [
+            {
               label: <StyledItem onClick={() => router.push(`/admin`)}>{t('common:accountAdminButton')}</StyledItem>,
-              key: '2',
-            }
-          : null,
-      ],
-    },
-    {
-      type: 'divider',
-    },
+              key: '1',
+            },
+          ],
+        }
+      : null,
+    process.env.NEXT_PUBLIC_ENV === 'self-hosted' && me.isRoot
+      ? {
+          type: 'divider',
+        }
+      : null,
     {
       label: (
         <StyledSignoutItem>

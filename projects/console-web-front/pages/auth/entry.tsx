@@ -44,7 +44,11 @@ const VerifyAccountEntryPage: NextPageWithLayout<Props> = ({ me }) => {
   };
 
   if (data?.userAndVerificationToken?.status === USER_VERIFICATION_STATUS.VERIFIED) {
-    router.push(router.query.redirect ? `${router.query.redirect}` : '/account/organizations');
+    router.push(
+      router.query.redirect
+        ? `${router.query.redirect}`
+        : `/dashboard/${data.organizationAndUserAndOrganizationRoles?.[0].organizationId}`,
+    );
     return null;
   }
 
@@ -106,13 +110,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     process.env.NEXT_PUBLIC_ENV === 'e2e' ||
     process.env.NEXT_PUBLIC_ENV === 'self-hosted'
   ) {
-    const cookie = new Cookies(context.req.cookies);
-    const organizationId = cookie.get('newOrgId');
-    context.res.setHeader('Set-Cookie', `newOrgId=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`);
     return {
       redirect: redirectWithLocale(
         context,
-        organizationId ? `/dashboard/${organizationId}` : '/account/organizations',
+        `/dashboard/${me.organizationAndUserAndOrganizationRoles?.[0].organizationId}`,
         false,
       ),
     };
@@ -120,7 +121,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   if (me.userAndVerificationToken?.status === USER_VERIFICATION_STATUS.VERIFIED) {
     return {
-      redirect: redirectWithLocale(context, '/account/organizations', false),
+      redirect: redirectWithLocale(
+        context,
+        `/dashboard/${me.organizationAndUserAndOrganizationRoles?.[0].organizationId}`,
+        false,
+      ),
     };
   }
 

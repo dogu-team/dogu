@@ -65,7 +65,7 @@ const InviteConfirmPage: NextPageWithLayout<Props> = ({ email, token, invitation
         </FlexColumnBox>
 
         <FlexRowBox>
-          <Button danger onClick={() => router.push('/account/organizations')} style={{ flex: 1 }}>
+          <Button danger onClick={() => router.push('/')} style={{ flex: 1 }}>
             Reject
           </Button>
           <Button type="primary" loading={loading} onClick={handleAccept} style={{ flex: 1 }}>

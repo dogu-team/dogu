@@ -58,7 +58,7 @@ const ConsoleBasicLayout = ({ children, user, licenseInfo }: Props) => {
       return null;
     }
 
-    router.push(`/account/organizations`);
+    router.push(`/dashboard/${me.organizationAndUserAndOrganizationRoles?.[0].organizationId}`);
     return null;
   }
 

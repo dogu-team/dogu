@@ -35,14 +35,6 @@
   "leaveOrganizationSuccessMessage": "Leaved!",
   "leaveOrganizationFailureMessage": "Failed to leave\n{{reason}}",
 
-  "createOrganizationButtonText": "Create organization",
-  "createOrganizationModalTitle": "Create new organization",
-  "createOrganizaitonNameLabelText": "Organization name",
-  "createOrganizationNameInputPlaceholder": "Name",
-  "createOrganizationNaameInputErrorMesssage": "Inpue organization name.",
-  "createOrganizationSuccessMessage": "Created!",
-  "createOrganizationFailureMessage": "Failed to create.\n{{reason}}",
-
   "verifyEntryPageTitle": "Verify your email",
   "verifyEntryDescription": "Hi, {{name}}!\n\nTo use Dogu, please verify your email first.",
   "verifyEntryEmailDescription": "Didn't get an email?",
