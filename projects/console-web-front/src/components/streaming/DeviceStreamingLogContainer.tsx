@@ -1,6 +1,6 @@
-import { CaretRightFilled, DeleteOutlined, PauseOutlined, QuestionCircleFilled } from '@ant-design/icons';
+import { CaretRightFilled, DeleteOutlined, PauseOutlined } from '@ant-design/icons';
 import { Log } from '@dogu-tech/common';
-import { Button, Input, Tooltip } from 'antd';
+import { Button, Input } from 'antd';
 import useTranslation from 'next-translate/useTranslation';
 import React, { useCallback, useState } from 'react';
 import styled from 'styled-components';

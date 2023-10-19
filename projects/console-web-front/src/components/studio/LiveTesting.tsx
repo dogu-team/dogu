@@ -1,8 +1,8 @@
-import { DeviceBase, OrganizationBase, ProjectBase, UserBase } from '@dogu-private/console';
-import { DeviceId, Platform } from '@dogu-private/types';
+import { AreaChartOutlined, CodeOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import { DeviceBase, OrganizationBase, UserBase } from '@dogu-private/console';
+import { Platform } from '@dogu-private/types';
 import styled from 'styled-components';
 import dynamic from 'next/dynamic';
-import { TabsProps } from 'antd';
 import { useRouter } from 'next/router';
 import useTranslation from 'next-translate/useTranslation';
 import { LuInspect } from 'react-icons/lu';
@@ -16,7 +16,6 @@ import useDeviceStreamingProfile from '../../hooks/streaming/useDeviceStreamingP
 import DeviceStreamingLogContainer from '../streaming/DeviceStreamingLogContainer';
 import useDeviceLog from '../../hooks/streaming/useDeviceLog';
 import LiveTestingScreenViewer from './LIveTestingScreenViewer';
-import { AreaChartOutlined, CodeOutlined, InfoCircleOutlined } from '@ant-design/icons';
 // @ts-ignore
 const DeviceStreamingLayout = dynamic<DeviceStreamingLayoutProps>(() => import('./DeviceStreamingLayout'), {
   ssr: false,

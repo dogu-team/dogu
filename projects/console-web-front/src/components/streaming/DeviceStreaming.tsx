@@ -1,6 +1,6 @@
 import { DeviceBase } from '@dogu-private/console';
 import useTranslation from 'next-translate/useTranslation';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 
 import useDeviceClient from '../../hooks/streaming/useDeviceClient';

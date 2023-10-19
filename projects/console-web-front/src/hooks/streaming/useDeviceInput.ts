@@ -250,11 +250,11 @@ const useDeviceInput = (deviceRTCCaller: DeviceRTCCaller | undefined) => {
         /**
          * @note e2e test comment
          */
-        if (null === result || null == result.error) {
+        if (null === result || null === result.error) {
           console.debug(`e2e handleToolMenuInput code: ${DeviceControlKeycode[c.keycode]} failed result: ${result}`);
-        } else if (CodeUtil.isNotSuccess(result.error.code)) {
+        } else if (CodeUtil.isNotSuccess(result.error?.code)) {
           console.debug(
-            `e2e handleToolMenuInput code: ${DeviceControlKeycode[c.keycode]} failed error: ${result.error.code}`,
+            `e2e handleToolMenuInput code: ${DeviceControlKeycode[c.keycode]} failed error: ${result.error?.code}`,
           );
         } else {
           console.debug(`e2e handleToolMenuInput code: ${DeviceControlKeycode[c.keycode]} success`);
@@ -267,6 +267,45 @@ const useDeviceInput = (deviceRTCCaller: DeviceRTCCaller | undefined) => {
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [deviceRTCCaller, handleControlResult],
+  );
+
+  const sendAndroidKeycode = useCallback(
+    async (action: DeviceControlAction, keycode: DeviceControlKeycode) => {
+      if (!deviceRTCCaller) {
+        return;
+      }
+
+      if (deviceRTCCaller.channel.readyState !== 'open') {
+        return undefined;
+      }
+
+      const control: DeviceControl = {
+        ...input.DefaultDeviceControl(),
+        action,
+        type: DeviceControlType.DEVICE_CONTROL_TYPE_AOS_INJECT_KEYCODE,
+        keycode,
+        timeStamp: Date.now(),
+      };
+
+      try {
+        const result = await deviceRTCCaller.call('cfGdcDaControlParam', 'cfGdcDaControlResult', {
+          control,
+        });
+
+        if (result === null || result?.error === null) {
+          console.debug(`e2e handleToolMenuInput code: ${DeviceControlKeycode[keycode]} failed result: ${result}`);
+        } else if (CodeUtil.isNotSuccess(result.error?.code)) {
+          console.debug(
+            `e2e handleToolMenuInput code: ${DeviceControlKeycode[keycode]} failed error: ${result.error?.code}`,
+          );
+        } else {
+          console.debug(`e2e handleToolMenuInput code: ${DeviceControlKeycode[keycode]} success`);
+        }
+        fireEvent('onDeviceInput', result);
+        handleControlResult(result);
+      } catch (e) {}
+    },
+    [deviceRTCCaller],
   );
 
   const handleKeyDown = useCallback(
@@ -478,6 +517,7 @@ const useDeviceInput = (deviceRTCCaller: DeviceRTCCaller | undefined) => {
   );
 
   return {
+    sendAndroidKeycode,
     handleKeyDown,
     handleKeyUp,
     handleWheel,

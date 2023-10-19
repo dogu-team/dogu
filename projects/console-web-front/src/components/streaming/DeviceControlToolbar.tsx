@@ -1,6 +1,13 @@
 import styled from 'styled-components';
-import { DownloadOutlined, HomeOutlined, MenuOutlined, RightOutlined, RollbackOutlined } from '@ant-design/icons';
-import React, { useEffect } from 'react';
+import {
+  BulbOutlined,
+  DownloadOutlined,
+  HomeOutlined,
+  MenuOutlined,
+  RightOutlined,
+  RollbackOutlined,
+} from '@ant-design/icons';
+import React from 'react';
 import { Platform } from '@dogu-private/types';
 import { Divider, Tooltip } from 'antd';
 
@@ -9,6 +16,7 @@ import useDeviceStreamingContext from '../../hooks/streaming/useDeviceStreamingC
 import useDeviceInput from '../../hooks/streaming/useDeviceInput';
 import { flexRowBaseStyle, flexRowSpaceBetweenStyle } from '../../styles/box';
 import ApplicationUploader from './ApplicationUploader';
+import DeviceHelperButtonGroup from './DeviceHelperButtonGroup';
 
 interface ToolbarButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'children'> {
   workingPlatforms?: Platform[];
@@ -19,7 +27,6 @@ interface ToolbarButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonE
 
 const ToolbarButton = ({ workingPlatforms, icon, text, content, ...props }: ToolbarButtonProps) => {
   const { device } = useDeviceStreamingContext();
-  // const [isOpen, setIsOpen] = React.useState(false);
   const tooltipRef = React.useRef<HTMLDivElement>(null);
 
   if (!device || (workingPlatforms && !workingPlatforms.includes(device.platform))) {
@@ -30,6 +37,7 @@ const ToolbarButton = ({ workingPlatforms, icon, text, content, ...props }: Tool
     <Tooltip
       trigger="click"
       ref={tooltipRef}
+      open={!!content ? undefined : false}
       placement="rightTop"
       title={<div style={{ color: '#000' }}>{content}</div>}
       color="#fff"
@@ -62,6 +70,7 @@ const DeviceControlToolbar: React.FC<Props> = () => {
       <TitleWrapper>
         <Title>Menu</Title>
       </TitleWrapper>
+
       <ToolbarButton
         workingPlatforms={[Platform.PLATFORM_ANDROID, Platform.PLATFORM_IOS]}
         icon={<DownloadOutlined />}
@@ -69,6 +78,17 @@ const DeviceControlToolbar: React.FC<Props> = () => {
         content={
           <div>
             <ApplicationUploader />
+          </div>
+        }
+      />
+
+      <ToolbarButton
+        workingPlatforms={[Platform.PLATFORM_ANDROID]}
+        icon={<BulbOutlined />}
+        text="Helpers"
+        content={
+          <div>
+            <DeviceHelperButtonGroup />
           </div>
         }
       />

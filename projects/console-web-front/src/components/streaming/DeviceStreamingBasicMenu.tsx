@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { DeviceBase } from '@dogu-private/console';
 import useTranslation from 'next-translate/useTranslation';
 
 import resources from 'src/resources';

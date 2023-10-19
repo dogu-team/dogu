@@ -1,19 +1,11 @@
-import { MobileOutlined } from '@ant-design/icons';
 import { DeviceBase, OrganizationBase, UserBase } from '@dogu-private/console';
-import { OrganizationId, ProjectId } from '@dogu-private/types';
-import { Avatar, Tag, Tooltip } from 'antd';
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
-import useWebSocket from '../../hooks/useWebSocket';
 import { flexRowCenteredStyle } from '../../styles/box';
-import { theme } from '../../styles/theme';
 import ErrorBox from '../common/boxes/ErrorBox';
-import ProfileImage from '../ProfileImage';
 import DeviceControlToolbar from '../streaming/DeviceControlToolbar';
 import DeviceStreaming from '../streaming/DeviceStreaming';
-import StudioDeviceSelector from './StudioDeviceSelector';
 
 export interface DeviceStreamingLayoutProps {
   organization: OrganizationBase;
