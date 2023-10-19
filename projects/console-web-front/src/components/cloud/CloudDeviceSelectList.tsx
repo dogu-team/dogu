@@ -46,6 +46,7 @@ const SelectItem: React.FC<{ item: CloudDeviceByModelResponse; platform: Platfor
           <PlatformIcon platform={platform} />
           &nbsp;{item.version}
         </OneSpan>
+        <OneSpan>Korea</OneSpan>
         <ButtonWrapper>
           <Button type="primary" disabled={!isAvailable} onClick={handleStart}>
             {isAvailable ? `Start` : 'Busy'}
@@ -72,8 +73,11 @@ const CloudDeviceVersionList: React.FC<Props> = ({ device }) => {
   return (
     <>
       <Header>
-        <OneSpan>Version</OneSpan>
-        <ButtonWrapper />
+        <ItemInner>
+          <OneSpan>Version</OneSpan>
+          <OneSpan>Location</OneSpan>
+          <ButtonWrapper />
+        </ItemInner>
       </Header>
       <List<CloudDeviceByModelResponse>
         dataSource={data}
