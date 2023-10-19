@@ -94,9 +94,6 @@ const ConsoleBasicLayout = ({ children, user, licenseInfo }: Props) => {
           links={licenseInfoState ? <LicenseTag licenseInfo={licenseInfoState} me={me} /> : null}
           right={
             <FlexRow>
-              <StyledLink href={`https://github.com/dogu-team/dogu`} target="_blank">
-                <GithubOutlined />
-              </StyledLink>
               <Tooltip
                 title="Community"
                 arrow={false}
