@@ -1,36 +1,6 @@
 import { PlatformType } from '..';
 
-export const LanguageCodes = [
-  'ar',
-  'bg',
-  'ca',
-  'zh',
-  'hr',
-  'cs',
-  'da',
-  'de',
-  'nl',
-  'en',
-  'et',
-  'fil',
-  'fi',
-  'fr',
-  'el',
-  'he',
-  'hi',
-  'hu',
-  'is',
-  'in',
-  'it',
-  'ja',
-  'ko',
-  'lt',
-  'ms',
-  'no',
-] as const;
-export type LanguageCode = (typeof LanguageCodes)[number];
-
-export const LanguadeCodeToDescription: Record<LanguageCode, string> = {
+export const LanguadeCodeToDescription = {
   ar: 'Arabic',
   bg: 'Bulgarian',
   ca: 'Catalan',
@@ -57,38 +27,25 @@ export const LanguadeCodeToDescription: Record<LanguageCode, string> = {
   lt: 'Lithuanian',
   ms: 'Malay',
   no: 'Norwegian',
-};
+  pl: 'Polish',
+  pt: 'Portuguese',
+  ro: 'Romanian',
+  ru: 'Russian',
+  sr: 'Serbian',
+  sk: 'Slovak',
+  sl: 'Slovenian',
+  es: 'Spanish',
+  sv: 'Swedish',
+  th: 'Thai',
+  tr: 'Turkish',
+  uk: 'Ukrainian',
+  vi: 'Vietnamese',
+} as const;
 
-export const CountryCodes = [
-  'DZ',
-  'LY',
-  'MA',
-  'TN',
-  'BG',
-  'HK',
-  'TW',
-  'DK',
-  'DE',
-  'NL',
-  'AU',
-  'CA',
-  'IN',
-  'IE',
-  'ZA',
-  'GB',
-  'US',
-  'EE',
-  'PH',
-  'FR',
-  'IS',
-  'ID',
-  'LT',
-  'MY',
-  'NO',
-] as const;
-export type CountryCode = (typeof CountryCodes)[number];
+export type LanguageCode = keyof typeof LanguadeCodeToDescription;
+export const LanguageCodes = Object.keys(LanguadeCodeToDescription) as LanguageCode[];
 
-export const CounttryCodeToDescription: Record<CountryCode, string> = {
+export const RegionCodeToDescription = {
   DZ: 'Algeria',
   LY: 'Libya',
   MA: 'Morocco',
@@ -114,21 +71,51 @@ export const CounttryCodeToDescription: Record<CountryCode, string> = {
   LT: 'Lithuania',
   MY: 'Malaysia',
   NO: 'Norway',
-};
+  PL: 'Poland',
+  BR: 'Brazil',
+  PT: 'Portugal',
+  SI: 'Slovenia',
+  AR: 'Argentina',
+  ES: 'Spain',
+  SE: 'Sweden',
+  TH: 'Thailand',
+  UA: 'Ukraine',
+} as const;
 
-export const LocaleVariantCodes = ['Hans', 'Hant'] as const;
-export type LocaleVariantCode = (typeof LocaleVariantCodes)[number];
+export type RegionCode = keyof typeof RegionCodeToDescription;
+export const RegionCodes = Object.keys(RegionCodeToDescription) as RegionCode[];
 
-export const LocaleVariantCodeToDescription: Record<LocaleVariantCode, string> = {
+export const LocaleScriptCodeToDescription = {
   Hans: 'Simplified',
   Hant: 'Traditional',
-};
+} as const;
+
+export type LocaleScriptCode = keyof typeof LocaleScriptCodeToDescription;
+export const LocaleScriptCodes = Object.keys(LocaleScriptCodeToDescription) as LocaleScriptCode[];
+
+/*
+ * ref: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/Locale#description
+ */
+export interface LocaleCode {
+  language: LanguageCode;
+  script?: LocaleScriptCode;
+  region?: RegionCode;
+}
+
+export interface LocaleAvailability {
+  platforms: PlatformType[];
+}
+
+export interface LocaleInfo {
+  code: LocaleCode;
+  availability: LocaleAvailability;
+}
 
 export const LocaleInfos: LocaleInfo[] = [
   {
     code: {
       language: 'ar',
-      country: 'DZ',
+      region: 'DZ',
     },
     availability: {
       platforms: ['android'],
@@ -137,7 +124,7 @@ export const LocaleInfos: LocaleInfo[] = [
   {
     code: {
       language: 'ar',
-      country: 'LY',
+      region: 'LY',
     },
     availability: {
       platforms: ['android'],
@@ -146,7 +133,7 @@ export const LocaleInfos: LocaleInfo[] = [
   {
     code: {
       language: 'ar',
-      country: 'MA',
+      region: 'MA',
     },
     availability: {
       platforms: ['android'],
@@ -155,7 +142,7 @@ export const LocaleInfos: LocaleInfo[] = [
   {
     code: {
       language: 'ar',
-      country: 'TN',
+      region: 'TN',
     },
     availability: {
       platforms: ['android'],
@@ -164,7 +151,7 @@ export const LocaleInfos: LocaleInfo[] = [
   {
     code: {
       language: 'bg',
-      country: 'BG',
+      region: 'BG',
     },
     availability: {
       platforms: ['android'],
@@ -181,7 +168,7 @@ export const LocaleInfos: LocaleInfo[] = [
   {
     code: {
       language: 'zh',
-      variant: 'Hans',
+      script: 'Hans',
     },
     availability: {
       platforms: ['android'],
@@ -190,7 +177,7 @@ export const LocaleInfos: LocaleInfo[] = [
   {
     code: {
       language: 'zh',
-      variant: 'Hant',
+      script: 'Hant',
     },
     availability: {
       platforms: ['android'],
@@ -199,8 +186,8 @@ export const LocaleInfos: LocaleInfo[] = [
   {
     code: {
       language: 'zh',
-      variant: 'Hant',
-      country: 'HK',
+      script: 'Hant',
+      region: 'HK',
     },
     availability: {
       platforms: ['android'],
@@ -209,8 +196,8 @@ export const LocaleInfos: LocaleInfo[] = [
   {
     code: {
       language: 'zh',
-      variant: 'Hant',
-      country: 'TW',
+      script: 'Hant',
+      region: 'TW',
     },
     availability: {
       platforms: ['android'],
@@ -243,7 +230,7 @@ export const LocaleInfos: LocaleInfo[] = [
   {
     code: {
       language: 'de',
-      country: 'DE',
+      region: 'DE',
     },
     availability: {
       platforms: ['android'],
@@ -252,7 +239,7 @@ export const LocaleInfos: LocaleInfo[] = [
   {
     code: {
       language: 'nl',
-      country: 'NL',
+      region: 'NL',
     },
     availability: {
       platforms: ['android'],
@@ -261,7 +248,7 @@ export const LocaleInfos: LocaleInfo[] = [
   {
     code: {
       language: 'en',
-      country: 'AU',
+      region: 'AU',
     },
     availability: {
       platforms: ['android'],
@@ -270,7 +257,7 @@ export const LocaleInfos: LocaleInfo[] = [
   {
     code: {
       language: 'en',
-      country: 'CA',
+      region: 'CA',
     },
     availability: {
       platforms: ['android'],
@@ -279,7 +266,7 @@ export const LocaleInfos: LocaleInfo[] = [
   {
     code: {
       language: 'en',
-      country: 'IN',
+      region: 'IN',
     },
     availability: {
       platforms: ['android'],
@@ -289,7 +276,7 @@ export const LocaleInfos: LocaleInfo[] = [
   {
     code: {
       language: 'en',
-      country: 'IE',
+      region: 'IE',
     },
     availability: {
       platforms: ['android'],
@@ -298,7 +285,7 @@ export const LocaleInfos: LocaleInfo[] = [
   {
     code: {
       language: 'en',
-      country: 'ZA',
+      region: 'ZA',
     },
     availability: {
       platforms: ['android'],
@@ -307,7 +294,7 @@ export const LocaleInfos: LocaleInfo[] = [
   {
     code: {
       language: 'en',
-      country: 'GB',
+      region: 'GB',
     },
     availability: {
       platforms: ['android'],
@@ -316,7 +303,7 @@ export const LocaleInfos: LocaleInfo[] = [
   {
     code: {
       language: 'en',
-      country: 'US',
+      region: 'US',
     },
     availability: {
       platforms: ['android'],
@@ -325,7 +312,7 @@ export const LocaleInfos: LocaleInfo[] = [
   {
     code: {
       language: 'et',
-      country: 'EE',
+      region: 'EE',
     },
     availability: {
       platforms: ['android'],
@@ -334,7 +321,7 @@ export const LocaleInfos: LocaleInfo[] = [
   {
     code: {
       language: 'fil',
-      country: 'PH',
+      region: 'PH',
     },
     availability: {
       platforms: ['android'],
@@ -351,7 +338,7 @@ export const LocaleInfos: LocaleInfo[] = [
   {
     code: {
       language: 'fr',
-      country: 'CA',
+      region: 'CA',
     },
     availability: {
       platforms: ['android'],
@@ -360,7 +347,7 @@ export const LocaleInfos: LocaleInfo[] = [
   {
     code: {
       language: 'fr',
-      country: 'FR',
+      region: 'FR',
     },
     availability: {
       platforms: ['android'],
@@ -401,7 +388,7 @@ export const LocaleInfos: LocaleInfo[] = [
   {
     code: {
       language: 'is',
-      country: 'IS',
+      region: 'IS',
     },
     availability: {
       platforms: ['android'],
@@ -410,7 +397,7 @@ export const LocaleInfos: LocaleInfo[] = [
   {
     code: {
       language: 'in',
-      country: 'ID',
+      region: 'ID',
     },
     availability: {
       platforms: ['android'],
@@ -443,7 +430,7 @@ export const LocaleInfos: LocaleInfo[] = [
   {
     code: {
       language: 'lt',
-      country: 'LT',
+      region: 'LT',
     },
     availability: {
       platforms: ['android'],
@@ -452,7 +439,7 @@ export const LocaleInfos: LocaleInfo[] = [
   {
     code: {
       language: 'ms',
-      country: 'MY',
+      region: 'MY',
     },
     availability: {
       platforms: ['android'],
@@ -469,25 +456,146 @@ export const LocaleInfos: LocaleInfo[] = [
   {
     code: {
       language: 'no',
-      country: 'NO',
+      region: 'NO',
+    },
+    availability: {
+      platforms: ['android'],
+    },
+  },
+  {
+    code: {
+      language: 'pl',
+      region: 'PL',
+    },
+    availability: {
+      platforms: ['android'],
+    },
+  },
+  {
+    code: {
+      language: 'pt',
+      region: 'BR',
+    },
+    availability: {
+      platforms: ['android'],
+    },
+  },
+  {
+    code: {
+      language: 'pt',
+      region: 'PT',
+    },
+    availability: {
+      platforms: ['android'],
+    },
+  },
+  {
+    code: {
+      language: 'ro',
+    },
+    availability: {
+      platforms: ['android'],
+    },
+  },
+  {
+    code: {
+      language: 'ru',
+    },
+    availability: {
+      platforms: ['android'],
+    },
+  },
+  {
+    code: {
+      language: 'sr',
+    },
+    availability: {
+      platforms: ['android'],
+    },
+  },
+  {
+    code: {
+      language: 'sk',
+    },
+    availability: {
+      platforms: ['android'],
+    },
+  },
+  {
+    code: {
+      language: 'sl',
+      region: 'SI',
+    },
+    availability: {
+      platforms: ['android'],
+    },
+  },
+  {
+    code: {
+      language: 'es',
+    },
+    availability: {
+      platforms: ['android'],
+    },
+  },
+  {
+    code: {
+      language: 'es',
+      region: 'AR',
+    },
+    availability: {
+      platforms: ['android'],
+    },
+  },
+  {
+    code: {
+      language: 'es',
+      region: 'ES',
+    },
+    availability: {
+      platforms: ['android'],
+    },
+  },
+  {
+    code: {
+      language: 'sv',
+    },
+    availability: {
+      platforms: ['android'],
+    },
+  },
+  {
+    code: {
+      language: 'sv',
+      region: 'SE',
+    },
+    availability: {
+      platforms: ['android'],
+    },
+  },
+  {
+    code: {
+      language: 'tr',
+    },
+    availability: {
+      platforms: ['android'],
+    },
+  },
+  {
+    code: {
+      language: 'uk',
+      region: 'UA',
+    },
+    availability: {
+      platforms: ['android'],
+    },
+  },
+  {
+    code: {
+      language: 'vi',
     },
     availability: {
       platforms: ['android'],
     },
   },
 ];
-
-export interface LocaleCode {
-  language: LanguageCode;
-  country?: CountryCode;
-  variant?: LocaleVariantCode;
-}
-
-export interface LocaleAvailability {
-  platforms: PlatformType[];
-}
-
-export interface LocaleInfo {
-  code: LocaleCode;
-  availability: LocaleAvailability;
-}
