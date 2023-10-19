@@ -51,6 +51,25 @@ export class AndroidNodeAttributes {
   @Type(() => Number)
   index = 0;
 
+  @Type(() => ScreenPosition)
+  @Transform(({ value }: { value: string }) => {
+    const regex = /\[(\d+),(\d+)\]\[(\d+),(\d+)\]/;
+    const matches = value.match(regex);
+    if (matches) {
+      const [, startX, startY, endX, endY] = matches;
+      return { start: [Number(startX), Number(startY)], end: [Number(endX), Number(endY)] };
+    }
+  })
+  bounds?: ScreenPosition;
+
+  name?: string;
+  package?: string;
+  class?: string;
+  text?: string;
+  'resource-id'?: string;
+  'content-desc'?: string;
+  path?: string;
+
   @IsBoolean()
   @TransformBooleanString()
   @IsOptional()
@@ -104,25 +123,6 @@ export class AndroidNodeAttributes {
   @IsString()
   @IsOptional()
   password?: string;
-
-  @Type(() => ScreenPosition)
-  @Transform(({ value }: { value: string }) => {
-    const regex = /\[(\d+),(\d+)\]\[(\d+),(\d+)\]/;
-    const matches = value.match(regex);
-    if (matches) {
-      const [, startX, startY, endX, endY] = matches;
-      return { start: [Number(startX), Number(startY)], end: [Number(endX), Number(endY)] };
-    }
-  })
-  bounds?: ScreenPosition;
-
-  name?: string;
-  package?: string;
-  class?: string;
-  text?: string;
-  'resource-id'?: string;
-  'content-desc'?: string;
-  path?: string;
 }
 
 export type AndroidNodeAttributeFields = keyof AndroidNodeAttributes;
@@ -217,6 +217,11 @@ export class IosNodeAttributes {
   @Type(() => Number)
   index = 0;
 
+  path?: string;
+  type?: string;
+  name?: string;
+  label?: string;
+
   @IsBoolean()
   @TransformBooleanString()
   @IsOptional()
@@ -243,11 +248,6 @@ export class IosNodeAttributes {
 
   @Type(() => Number)
   height?: number;
-
-  type?: string;
-  name?: string;
-  label?: string;
-  path?: string;
 }
 
 export type IosNodeAttributeFields = keyof IosNodeAttributes;
