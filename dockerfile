@@ -8,6 +8,7 @@ RUN apt-get update \
     && npm install -g yarn \
     && apt update && apt install -y \
     openjdk-17-jre \
+    vim \
     aapt
 
 RUN install -m 0755 -d /etc/apt/keyrings \
