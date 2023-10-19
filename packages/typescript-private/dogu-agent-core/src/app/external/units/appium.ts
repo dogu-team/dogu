@@ -75,11 +75,13 @@ export class AppiumExternalUnit extends IExternalUnit {
     return this.appConfigService.set('external_is_agreed_appium', value);
   }
 
-  private async createAppiumPath(): Promise<void> {
+  private async resetAppiumPath(): Promise<void> {
     const appiumPath = HostPaths.external.nodePackage.appiumPath();
     const appiumPathStat = await fs.promises.stat(appiumPath).catch(() => null);
     if (!appiumPathStat || !appiumPathStat.isDirectory()) {
       await fs.promises.mkdir(appiumPath, { recursive: true });
+    } else {
+      await fs.promises.rm(appiumPath, { force: true, recursive: true });
     }
   }
 
@@ -191,7 +193,7 @@ export class AppiumExternalUnit extends IExternalUnit {
 
   async install(): Promise<void> {
     this.unitCallback.onInstallStarted();
-    await this.createAppiumPath();
+    await this.resetAppiumPath();
     const env = this.createEnv();
     await this.pnpmInit(env);
     await this.installAppium(env);

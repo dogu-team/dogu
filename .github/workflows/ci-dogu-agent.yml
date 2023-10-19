@@ -33,6 +33,10 @@ concurrency:
   group: ci-dogu-agent
   cancel-in-progress: true
 
+concurrency:
+  group: ci-dogu-agent
+  cancel-in-progress: true
+
 jobs:
   build:
     strategy:
@@ -46,7 +50,6 @@ jobs:
           - runner: windows-2019
             arch: arm64
     runs-on: ['${{ matrix.runner }}']
-
     # https://github.com/orgs/community/discussions/63731#discussioncomment-7304058
     environment: stage 
     env:
@@ -135,7 +138,7 @@ jobs:
         if: runner.os == 'macOS'
         env:
           BUILD_CERTIFICATE_BASE64: ${{ secrets.DOGU_MACOS_CERTIFICATE_BASE64 }}
-          BUILD_YOW_DEVELOPMENT_CERTIFICATE_BASE64: ${{ secrets.DOGU_MACOS_YOW_DEVELOPMENT_CERTIFICATE_BASE64 }}
+          BUILD_APPLE_DOGU_DEVELOPMENT_CERTIFICATE_BASE64: ${{ secrets.DOGU_MACOS_APPLE_DOGU_DEVELOPMENT_CERTIFICATE_BASE64 }}
           P12_PASSWORD: ${{ secrets.DOGU_MACOS_P12_PASSWORD }}
           BUILD_PROVISION_PROFILE_BASE64: ${{ secrets.DOGU_MACOS_WILDCARD_PROVISION_PROFILE_BASE64 }}
           KEYCHAIN_PASSWORD: ${{ secrets.DOGU_MACOS_KEYCHAIN_PASSWORD }}
@@ -148,7 +151,7 @@ jobs:
 
           # import certificate and provisioning profile from secrets
           echo -n "$BUILD_CERTIFICATE_BASE64" | base64 --decode -o $CERTIFICATE_PATH
-          echo -n "$BUILD_YOW_DEVELOPMENT_CERTIFICATE_BASE64" | base64 --decode -o $DEVELOPMENT_CERTIFICATE_PATH
+          echo -n "$BUILD_APPLE_DOGU_DEVELOPMENT_CERTIFICATE_BASE64" | base64 --decode -o $DEVELOPMENT_CERTIFICATE_PATH
           echo -n "$BUILD_PROVISION_PROFILE_BASE64" | base64 --decode -o $PP_PATH
 
           # create temporary keychain

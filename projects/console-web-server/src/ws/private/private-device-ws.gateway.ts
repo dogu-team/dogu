@@ -1,6 +1,6 @@
 import { PrivateDeviceWs, PrivateDeviceWsConnectionDto } from '@dogu-private/console-host-agent';
 import { closeWebSocketWithTruncateReason, errorify, Instance, loop, stringify, transformAndValidate } from '@dogu-tech/common';
-import { OnGatewayConnection, OnGatewayDisconnect, WebSocketGateway, WsException } from '@nestjs/websockets';
+import { OnGatewayConnection, WebSocketGateway, WsException } from '@nestjs/websockets';
 import { IncomingMessage } from 'http';
 import WebSocket from 'ws';
 import { config } from '../../config';
@@ -11,10 +11,11 @@ import { WsCommonService } from '../common/ws-common.service';
 import { DoguWsException } from '../common/ws-exception';
 
 @WebSocketGateway({ path: PrivateDeviceWs.pullDeviceParamDatas.path })
-export class PrivateDeviceWsGateway implements OnGatewayConnection, OnGatewayDisconnect {
+export class PrivateDeviceWsGateway implements OnGatewayConnection {
   constructor(private readonly wsCommonService: WsCommonService, private readonly deviceMessageQueue: DeviceMessageQueue, private readonly logger: DoguLogger) {}
 
   async handleConnection(webSocket: WebSocket, incomingMessage: IncomingMessage): Promise<void> {
+    this.logger.info('PrivateDeviceWsGateway.handleConnection', { remoteAddress: incomingMessage.socket.remoteAddress });
     try {
       this.setHandlers(webSocket);
       return await this.handleConnectionInternal(webSocket, incomingMessage);
@@ -76,9 +77,5 @@ export class PrivateDeviceWsGateway implements OnGatewayConnection, OnGatewayDis
       };
       webSocket.send(JSON.stringify(response));
     }
-  }
-
-  handleDisconnect(webSocket: WebSocket): void {
-    this.logger.info('PrivateDeviceWsGateway.handleDisconnect');
   }
 }
