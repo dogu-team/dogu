@@ -17,7 +17,6 @@ import fs from 'fs';
 import lodash from 'lodash';
 import path from 'path';
 import { Observable } from 'rxjs';
-import { DcGdcDeviceContext } from '../../../../../types/src/protocol/generated';
 import { makeWebmSeekable } from '../../externals/cli/ffmpeg';
 import { GoDeviceControllerProcess } from '../../externals/cli/go-device-controller';
 import { GoDeviceControllerGrpcClient } from '../../externals/network/go-device-controller-client';
@@ -25,12 +24,17 @@ import { delay } from '../../util/delay';
 import { getOriginFilePathFromTmp, makeTmpFilePath } from '../../util/files';
 import { StreamingService } from './streaming-service';
 
+type DcGdcDeviceContext = PrivateProtocol.DcGdcDeviceContext;
 type DcGdcStartStreamingParam = PrivateProtocol.DcGdcStartStreamingParam;
 type DcGdcStartStreamingResult = PrivateProtocol.DcGdcStartStreamingResult;
 type DcGdcGetSurfaceStatusResult = PrivateProtocol.DcGdcGetSurfaceStatusResult;
 
 export class PionStreamingService implements StreamingService {
-  private constructor(private readonly platform: Platform, private readonly grpcClient: GoDeviceControllerGrpcClient, private readonly logger: FilledPrintable) {}
+  private constructor(
+    private readonly platform: Platform,
+    private readonly grpcClient: GoDeviceControllerGrpcClient,
+    private readonly logger: FilledPrintable,
+  ) {}
 
   private port: number | null = null;
 

@@ -1,14 +1,16 @@
-import { Platform, Serial } from '@dogu-private/types';
+import { Platform, PrivateProtocol, Serial } from '@dogu-private/types';
 import { delay, FilledPrintable, loop, stringify } from '@dogu-tech/common';
 import { HostPaths, killChildProcess } from '@dogu-tech/node';
 import child_process from 'child_process';
 import fs from 'fs';
-import { DeviceControlKeycode } from '../../../../../types/src/protocol/generated';
 import { env } from '../../../env';
 import { Adb, AndroidPropInfo, AppiumAdb } from '../../externals/index';
 import { AndroidResetService } from '../reset/android-reset';
 import { Zombieable, ZombieProps, ZombieQueriable } from '../zombie/zombie-component';
 import { ZombieServiceInstance } from '../zombie/zombie-service';
+
+type DeviceControlKeycode = PrivateProtocol.DeviceControlKeycode;
+const DeviceControlKeycode = PrivateProtocol.DeviceControlKeycode;
 
 const UserId = 0;
 
@@ -63,7 +65,12 @@ export class AndroidSharedDeviceService implements Zombieable {
   private state: string = 'none';
   private isSetupDone = false;
 
-  constructor(public serial: Serial, private appiumAdb: AppiumAdb, public androidProps: AndroidPropInfo, public printable: FilledPrintable) {
+  constructor(
+    public serial: Serial,
+    private appiumAdb: AppiumAdb,
+    public androidProps: AndroidPropInfo,
+    public printable: FilledPrintable,
+  ) {
     this.zombieWaiter = ZombieServiceInstance.addComponent(this);
   }
 
