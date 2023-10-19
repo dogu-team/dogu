@@ -4,6 +4,7 @@ import {
   DeviceWindowInfo,
   ErrorResult,
   FilledRuntimeInfo,
+  LocaleCode,
   Platform,
   PrivateProtocol,
   ProfileMethod,
@@ -232,5 +233,9 @@ export class WindowsChannel implements DeviceChannel {
 
   getWebDriverHandler(): DeviceWebDriverHandler | null {
     return this._seleniumDeviceWebDriverHandler;
+  }
+
+  async chagneLocale(localeCode: LocaleCode): Promise<void> {
+    throw new Error('Method not implemented.');
   }
 }

@@ -1,5 +1,5 @@
 import { ControllerSpec, DefaultPathProvider } from '@dogu-tech/common';
-import { Serial } from '@dogu-tech/types';
+import { LocaleCodeDto, Serial } from '@dogu-tech/types';
 import { DeviceConfigDto } from '../../validations/types/device-configs';
 import { DeviceNotFoundErrorDetails, DeviceServerResponseDto } from '../../validations/types/responses';
 import { DeviceServerControllerMethodSpec } from '../types';
@@ -127,5 +127,17 @@ export const Device = {
     },
     responseBody: DeviceServerResponseDto,
     responseBodyData: GetSystemBarVisibility,
+  }),
+
+  changeLocale: new DeviceServerControllerMethodSpec({
+    controllerSpec: DeviceController,
+    method: 'POST',
+    path: '/:serial/locale',
+    pathProvider: class {
+      constructor(readonly serial: Serial) {}
+    },
+    requestBody: LocaleCodeDto,
+    responseBody: DeviceServerResponseDto,
+    responseBodyError: DeviceNotFoundErrorDetails,
   }),
 };

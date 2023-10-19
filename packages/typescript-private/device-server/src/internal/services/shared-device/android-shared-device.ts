@@ -65,12 +65,7 @@ export class AndroidSharedDeviceService implements Zombieable {
   private state: string = 'none';
   private isSetupDone = false;
 
-  constructor(
-    public serial: Serial,
-    private appiumAdb: AppiumAdb,
-    public androidProps: AndroidPropInfo,
-    public printable: FilledPrintable,
-  ) {
+  constructor(public serial: Serial, private appiumAdb: AppiumAdb, public androidProps: AndroidPropInfo, public printable: FilledPrintable) {
     this.zombieWaiter = ZombieServiceInstance.addComponent(this);
   }
 
@@ -235,7 +230,6 @@ export class AndroidSharedDeviceService implements Zombieable {
     for await (const _ of loop(100, 20)) {
       await Adb.keyevent(this.serial, DeviceControlKeycode.DEVICE_CONTROL_KEYCODE_VOLUME_DOWN);
     }
-    await Adb.keyevent(this.serial, DeviceControlKeycode.DEVICE_CONTROL_KEYCODE_VOLUME_MUTE);
     await Adb.keyevent(this.serial, DeviceControlKeycode.DEVICE_CONTROL_KEYCODE_MUTE);
   }
 

@@ -1,3 +1,5 @@
+import { IsFilledString } from '@dogu-tech/common';
+import { IsOptional, IsString } from 'class-validator';
 import { PlatformType } from '..';
 
 export const LanguadeCodeToDescription = {
@@ -99,6 +101,19 @@ export const LocaleScriptCodes = Object.keys(LocaleScriptCodeToDescription) as L
 export interface LocaleCode {
   language: LanguageCode;
   script?: LocaleScriptCode;
+  region?: RegionCode;
+}
+
+export class LocaleCodeDto implements LocaleCode {
+  @IsFilledString()
+  language!: LanguageCode;
+
+  @IsOptional()
+  @IsString()
+  script?: LocaleScriptCode;
+
+  @IsOptional()
+  @IsString()
   region?: RegionCode;
 }
 

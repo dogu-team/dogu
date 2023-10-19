@@ -8,7 +8,7 @@ import {
   RollbackOutlined,
 } from '@ant-design/icons';
 import React from 'react';
-import { Platform } from '@dogu-private/types';
+import { LocaleCodeDto, Platform } from '@dogu-private/types';
 import { Divider, Tooltip } from 'antd';
 
 import { DeviceToolBarMenu } from 'src/utils/streaming/streaming';
@@ -17,6 +17,7 @@ import useDeviceInput from '../../hooks/streaming/useDeviceInput';
 import { flexRowBaseStyle, flexRowSpaceBetweenStyle } from '../../styles/box';
 import ApplicationUploader from './ApplicationUploader';
 import DeviceHelperButtonGroup from './DeviceHelperButtonGroup';
+import useDeviceClient from '../../hooks/streaming/useDeviceClient';
 
 interface ToolbarButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'children'> {
   workingPlatforms?: Platform[];
@@ -62,7 +63,7 @@ const ToolbarButton = ({ workingPlatforms, icon, text, content, ...props }: Tool
 interface Props {}
 
 const DeviceControlToolbar: React.FC<Props> = () => {
-  const { deviceRTCCaller } = useDeviceStreamingContext();
+  const { deviceRTCCaller, device, deviceService } = useDeviceStreamingContext();
   const { handleToolMenuInput } = useDeviceInput(deviceRTCCaller ?? undefined);
 
   return (
@@ -91,6 +92,23 @@ const DeviceControlToolbar: React.FC<Props> = () => {
             <DeviceHelperButtonGroup />
           </div>
         }
+      />
+      <ToolbarButton
+        workingPlatforms={[Platform.PLATFORM_ANDROID]}
+        icon={<BulbOutlined />}
+        text="TexstKorean"
+        onClick={(e) => {
+          if (!device || !deviceService?.deviceClient) {
+            return;
+          }
+          deviceService.deviceClient
+            .changeDeviceLocale(device.serial, {
+              language: 'ko',
+            })
+            .catch((err) => {
+              console.error(err);
+            });
+        }}
       />
 
       <Divider style={{ margin: '.8rem 0' }} />

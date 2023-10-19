@@ -4,6 +4,7 @@ import {
   DeviceWindowInfo,
   ErrorResult,
   FilledRuntimeInfo,
+  LocaleCode,
   Platform,
   PrivateProtocol,
   ProfileMethod,
@@ -207,5 +208,9 @@ export class MacosChannel implements DeviceChannel {
 
   getWebDriverHandler(): DeviceWebDriverHandler | null {
     return this._seleniumDeviceWebDriverHandler;
+  }
+
+  async chagneLocale(localeCode: LocaleCode): Promise<void> {
+    throw new Error('Method not implemented.');
   }
 }

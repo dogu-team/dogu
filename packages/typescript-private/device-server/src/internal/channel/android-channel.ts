@@ -4,6 +4,7 @@ import {
   DeviceWindowInfo,
   ErrorResult,
   FilledRuntimeInfo,
+  LocaleCode,
   Platform,
   PrivateProtocol,
   ProfileMethod,
@@ -452,6 +453,10 @@ export class AndroidChannel implements DeviceChannel {
 
   getWebDriverHandler(): DeviceWebDriverHandler | null {
     return this._appiumDeviceWebDriverHandler;
+  }
+
+  async chagneLocale(localeCode: LocaleCode): Promise<void> {
+    await this.appiumAdb.setDeviceLanguageCountry(localeCode.language, localeCode.region, localeCode.script);
   }
 }
 
