@@ -99,31 +99,33 @@ const LiveTestingMenu = () => {
         )}
       </ButtonWrapper>
 
-      <TabContent isSelected={tab === StreamingTabMenuKey.INFO}>
-        <DeviceStreaming.BasicMenu hideDeviceName={isCloudDevice} />
-      </TabContent>
-      {tabMenus.includes(StreamingTabMenuKey.INSPECTOR) && (
-        <TabContent isSelected={tab === StreamingTabMenuKey.INSPECTOR}>
-          {device && inspector ? <DeviceStreaming.Inspector inspector={inspector} /> : null}
+      <div style={{ height: `calc(100% - 28px)` }}>
+        <TabContent isSelected={tab === StreamingTabMenuKey.INFO}>
+          <DeviceStreaming.BasicMenu hideDeviceName={isCloudDevice} />
         </TabContent>
-      )}
-      {tabMenus.includes(StreamingTabMenuKey.PROFILE) && (
-        <TabContent isSelected={tab === StreamingTabMenuKey.PROFILE}>
-          <DeviceStreamingGraphContainer infos={runtimeInfos} />
-        </TabContent>
-      )}
-      {tabMenus.includes(StreamingTabMenuKey.LOGS) && (
-        <TabContent isSelected={tab === StreamingTabMenuKey.LOGS}>
-          <DeviceStreamingLogContainer
-            filterValue={logFilterValue}
-            deviceLogs={deviceLogs}
-            onChangeFilterValue={handleChangeFilterValue}
-            isStopped={isLogStopped}
-            onTogglePlay={togglePlay}
-            clearLog={clearLog}
-          />
-        </TabContent>
-      )}
+        {tabMenus.includes(StreamingTabMenuKey.INSPECTOR) && (
+          <TabContent isSelected={tab === StreamingTabMenuKey.INSPECTOR}>
+            {device && inspector ? <DeviceStreaming.Inspector inspector={inspector} /> : null}
+          </TabContent>
+        )}
+        {tabMenus.includes(StreamingTabMenuKey.PROFILE) && (
+          <TabContent isSelected={tab === StreamingTabMenuKey.PROFILE}>
+            <DeviceStreamingGraphContainer infos={runtimeInfos} />
+          </TabContent>
+        )}
+        {tabMenus.includes(StreamingTabMenuKey.LOGS) && (
+          <TabContent isSelected={tab === StreamingTabMenuKey.LOGS}>
+            <DeviceStreamingLogContainer
+              filterValue={logFilterValue}
+              deviceLogs={deviceLogs}
+              onChangeFilterValue={handleChangeFilterValue}
+              isStopped={isLogStopped}
+              onTogglePlay={togglePlay}
+              clearLog={clearLog}
+            />
+          </TabContent>
+        )}
+      </div>
     </TabBox>
   );
 };
@@ -174,11 +176,14 @@ const TabBox = styled.div`
 
 const ButtonWrapper = styled.div`
   background-color: #f4f4f4;
+  flex: 0 1 auto;
+  height: 28px;
 `;
 
 const TabButton = styled.button<{ isSelected: boolean }>`
   display: inline-flex;
   font-size: 0.8rem;
+  height: 28px;
   line-height: 1.5;
   padding: 0.2rem 0.5rem;
   align-items: center;

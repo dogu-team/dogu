@@ -17,6 +17,7 @@ import CloudDeviceVersionList from './CloudDeviceSelectList';
 import useCloudDeviceFilterStore from '../../stores/cloud-device-filter';
 import { isCloudDeviceAvailable } from '../../utils/device';
 import useEventStore from '../../stores/events';
+import usePaginationSWR from '../../hooks/usePaginationSWR';
 
 const DeviceItem: React.FC<{ device: CloudDeviceMetadataBase }> = ({ device }) => {
   const [isOpen, openModal, closeModal] = useModal();
@@ -82,12 +83,10 @@ interface Props {}
 const LiveTestingCloudDeviceList: React.FC<Props> = () => {
   const router = useRouter();
   const { keyword, platform, version } = useCloudDeviceFilterStore((state) => state.filterValue, shallow);
-  const { data, error, isLoading, mutate } = useSWR<PageBase<CloudDeviceMetadataBase>>(
-    `/cloud-devices?page=${Number(router.query.page) || 1}&keyword=${keyword}${
-      platform ? `&platform=${platform}` : ''
-    }&version=${version}`,
-    swrAuthFetcher,
-    { keepPreviousData: true, revalidateOnFocus: false },
+  const { data, error, isLoading, mutate } = usePaginationSWR<CloudDeviceMetadataBase>(
+    `/cloud-devices?keyword=${keyword}${platform ? `&platform=${platform}` : ''}&version=${version}`,
+    { skipQuestionMark: true, offset: 12 },
+    { keepPreviousData: true },
   );
 
   useRefresh(['onRefreshClicked'], () => mutate());

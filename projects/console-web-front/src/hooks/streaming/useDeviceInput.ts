@@ -1,6 +1,6 @@
 import { Code, CodeUtil, input, PrivateProtocol } from '@dogu-private/types';
 import { DeviceRTCCaller } from '@dogu-private/webrtc';
-import { useCallback, useState } from 'react';
+import { useCallback, useRef } from 'react';
 import { shallow } from 'zustand/shallow';
 
 import useStreamingOptionStore from 'src/stores/streaming-option';
@@ -31,7 +31,7 @@ export interface DeviceInputOption {
 }
 
 const useDeviceInput = (deviceRTCCaller: DeviceRTCCaller | undefined) => {
-  const [isPressing, setIsPressing] = useState(false);
+  const isPressing = useRef<boolean>(false);
   const fireEvent = useEventStore((state) => state.fireEvent, shallow);
 
   const handleControlResult = useCallback((result: CfGdcDaControlResult | null) => {
@@ -358,7 +358,7 @@ const useDeviceInput = (deviceRTCCaller: DeviceRTCCaller | undefined) => {
 
       try {
         deviceRTCCaller?.setSendThrottleMs(33);
-        setIsPressing(true);
+        isPressing.current = true;
         await handleTouchInput(event, {
           type: DeviceControlType.DEVICE_CONTROL_TYPE_AOS_INJECT_TOUCH_EVENT,
           action: DeviceControlAction.DEVICE_CONTROL_ACTION_DESKTOP_ACTION_DOWN_UNSPECIFIED,
@@ -378,7 +378,7 @@ const useDeviceInput = (deviceRTCCaller: DeviceRTCCaller | undefined) => {
 
       try {
         deviceRTCCaller?.setSendThrottleMs(33);
-        setIsPressing(false);
+        isPressing.current = false;
         await handleTouchInput(event, {
           type: DeviceControlType.DEVICE_CONTROL_TYPE_AOS_INJECT_TOUCH_EVENT,
           action: DeviceControlAction.DEVICE_CONTROL_ACTION_DESKTOP_ACTION_UP,
@@ -396,7 +396,7 @@ const useDeviceInput = (deviceRTCCaller: DeviceRTCCaller | undefined) => {
         return;
       }
 
-      if (isPressing) {
+      if (isPressing.current) {
         try {
           deviceRTCCaller?.setSendThrottleMs(33);
 
@@ -409,7 +409,7 @@ const useDeviceInput = (deviceRTCCaller: DeviceRTCCaller | undefined) => {
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [deviceRTCCaller, handleTouchInput, isPressing],
+    [deviceRTCCaller, handleTouchInput],
   );
 
   const handleMouseLeave = useCallback(
@@ -419,7 +419,7 @@ const useDeviceInput = (deviceRTCCaller: DeviceRTCCaller | undefined) => {
       }
 
       try {
-        setIsPressing(false);
+        isPressing.current = false;
         await handleTouchInput(event, {
           type: DeviceControlType.DEVICE_CONTROL_TYPE_AOS_INJECT_TOUCH_EVENT,
           action: DeviceControlAction.DEVICE_CONTROL_ACTION_AOS_KEYEVENT_ACTION_UP,

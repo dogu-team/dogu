@@ -39,8 +39,6 @@ const CountDownTimer: React.FC<Props> = ({ startedAt, endMs, intervalMs = 1000, 
     }
   }, [duration]);
 
-  console.log(duration);
-
   return <>{stringifyDurationAsTimer(duration)}</>;
 };
 
