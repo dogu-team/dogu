@@ -1,5 +1,5 @@
 import { IsFilledString } from '@dogu-tech/common';
-import { DeviceSystemInfo, ErrorDevice, LocalDeviceDetectToken, Platform, PlatformSerial, Serial } from '@dogu-tech/types';
+import { DeviceSystemInfo, ErrorDevice, LocalDeviceDetectToken, LocaleCodeDto, Platform, PlatformSerial, Serial } from '@dogu-tech/types';
 import { Type } from 'class-transformer';
 import { IsArray, IsBoolean, IsIn, IsNumber, IsObject, IsOptional, IsString, ValidateNested } from 'class-validator';
 
@@ -267,4 +267,10 @@ export class GetSystemBarVisibility {
 
   @IsBoolean()
   navigationBar!: boolean;
+}
+
+export class GetDeviceLocaleResponse {
+  @ValidateNested()
+  @Type(() => LocaleCodeDto)
+  localeCode!: LocaleCodeDto;
 }

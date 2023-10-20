@@ -7,6 +7,7 @@ import {
   CreateLocalDeviceDetectTokenRequest,
   GetAppiumCapabilitiesResponse,
   GetAppiumContextInfoResponse,
+  GetDeviceLocaleResponse,
   GetDevicePlatformSerialsResponse,
   GetDeviceSerialsResponse,
   GetDeviceSystemInfoResponse,
@@ -129,6 +130,18 @@ export const Device = {
     responseBodyData: GetSystemBarVisibility,
   }),
 
+  getLocale: new DeviceServerControllerMethodSpec({
+    controllerSpec: DeviceController,
+    method: 'GET',
+    path: '/:serial/locale',
+    pathProvider: class {
+      constructor(readonly serial: Serial) {}
+    },
+    responseBody: DeviceServerResponseDto,
+    responseBodyData: GetDeviceLocaleResponse,
+    responseBodyError: DeviceNotFoundErrorDetails,
+  }),
+
   changeLocale: new DeviceServerControllerMethodSpec({
     controllerSpec: DeviceController,
     method: 'POST',
@@ -138,6 +151,7 @@ export const Device = {
     },
     requestBody: LocaleCodeDto,
     responseBody: DeviceServerResponseDto,
+    responseBodyData: GetDeviceLocaleResponse,
     responseBodyError: DeviceNotFoundErrorDetails,
   }),
 };

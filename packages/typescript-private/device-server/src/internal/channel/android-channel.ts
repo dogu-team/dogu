@@ -1,4 +1,5 @@
 import {
+  createLocaleCode,
   DefaultScreenCaptureOption,
   DeviceSystemInfo,
   DeviceWindowInfo,
@@ -453,6 +454,12 @@ export class AndroidChannel implements DeviceChannel {
 
   getWebDriverHandler(): DeviceWebDriverHandler | null {
     return this._appiumDeviceWebDriverHandler;
+  }
+
+  async getLocale(): Promise<LocaleCode> {
+    const locale = await this.appiumAdb.getDeviceLocale();
+    const localeCode = createLocaleCode(locale);
+    return localeCode;
   }
 
   async chagneLocale(localeCode: LocaleCode): Promise<void> {

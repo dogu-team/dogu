@@ -235,6 +235,10 @@ export class WindowsChannel implements DeviceChannel {
     return this._seleniumDeviceWebDriverHandler;
   }
 
+  async getLocale(): Promise<LocaleCode> {
+    throw new Error('Method not implemented.');
+  }
+
   async chagneLocale(localeCode: LocaleCode): Promise<void> {
     throw new Error('Method not implemented.');
   }

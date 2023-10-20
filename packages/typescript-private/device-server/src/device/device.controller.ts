@@ -220,6 +220,24 @@ export class DeviceController {
     }
   }
 
+  @Get(Device.getLocale.path)
+  async getLocale(@Param('serial') serial: Serial): Promise<Instance<typeof Device.getLocale.responseBody>> {
+    const channel = this.scanService.findChannel(serial);
+    if (channel === null) {
+      return deviceNotFoundError(serial);
+    }
+
+    const localeCode = await channel.getLocale();
+    return {
+      value: {
+        $case: 'data',
+        data: {
+          localeCode,
+        },
+      },
+    };
+  }
+
   @Post(Device.changeLocale.path)
   async changeLocale(@Param('serial') serial: Serial, @Body() localeCodeDto: LocaleCodeDto): Promise<Instance<typeof Device.changeLocale.responseBody>> {
     const device = this.scanService.findChannel(serial);
@@ -227,10 +245,13 @@ export class DeviceController {
       return deviceNotFoundError(serial);
     }
     await device.chagneLocale(localeCodeDto);
+    const localeCode = await device.getLocale();
     return {
       value: {
         $case: 'data',
-        data: {},
+        data: {
+          localeCode,
+        },
       },
     };
   }

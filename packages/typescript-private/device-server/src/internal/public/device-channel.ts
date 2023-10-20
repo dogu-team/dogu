@@ -101,5 +101,6 @@ export interface DeviceChannel {
   getWebDriverHandler(): DeviceWebDriverHandler | null;
 
   // locale
+  getLocale(): PromiseOrValue<LocaleCode>;
   chagneLocale(localeCode: LocaleCode): PromiseOrValue<void>;
 }

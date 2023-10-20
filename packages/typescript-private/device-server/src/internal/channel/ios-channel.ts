@@ -490,6 +490,10 @@ export class IosChannel implements DeviceChannel {
     return this._appiumDeviceWebDriverHandler;
   }
 
+  async getLocale(): Promise<LocaleCode> {
+    throw new Error('Method not implemented.');
+  }
+
   async chagneLocale(localeCode: LocaleCode): Promise<void> {
     throw new Error('Method not implemented.');
   }

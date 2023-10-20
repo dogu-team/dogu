@@ -6,82 +6,98 @@ export const LanguadeCodeToDescription = {
   ar: 'Arabic',
   bg: 'Bulgarian',
   ca: 'Catalan',
-  zh: 'Chinese',
-  hr: 'Croatian',
   cs: 'Czech',
   da: 'Dansk', // Danish
   de: 'Deutsch', // German
-  nl: 'Dutch',
-  en: 'English',
-  et: 'Estonian',
-  fil: 'Filipino',
-  fi: 'Finnish',
-  fr: 'French',
   el: 'Greek',
+  en: 'English',
+  es: 'Spanish',
+  et: 'Estonian',
+  fi: 'Finnish',
+  fil: 'Filipino',
+  fr: 'French',
   he: 'Hebrew',
   hi: 'Hindi',
+  hr: 'Croatian',
   hu: 'Hungarian',
-  is: 'Icelandic',
   in: 'Indonesian',
+  is: 'Icelandic',
   it: 'Italiano', // Italian
   ja: 'Japanese',
   ko: 'Korean',
   lt: 'Lithuanian',
   ms: 'Malay',
+  nl: 'Dutch',
   no: 'Norwegian',
   pl: 'Polish',
   pt: 'Portuguese',
   ro: 'Romanian',
   ru: 'Russian',
-  sr: 'Serbian',
   sk: 'Slovak',
   sl: 'Slovenian',
-  es: 'Spanish',
+  sr: 'Serbian',
   sv: 'Swedish',
   th: 'Thai',
   tr: 'Turkish',
   uk: 'Ukrainian',
   vi: 'Vietnamese',
+  zh: 'Chinese',
 } as const;
 
 export type LanguageCode = keyof typeof LanguadeCodeToDescription;
 export const LanguageCodes = Object.keys(LanguadeCodeToDescription) as LanguageCode[];
 
 export const RegionCodeToDescription = {
+  AR: 'Argentina',
+  AU: 'Australia',
+  BG: 'Bulgaria',
+  BR: 'Brazil',
+  CA: 'Canada',
+  CN: 'China',
+  CZ: 'Czech Republic',
+  DE: 'Germany',
+  DK: 'Denmark',
   DZ: 'Algeria',
+  EE: 'Estonia',
+  ES: 'Spain',
+  FI: 'Finland',
+  FR: 'France',
+  GB: 'United Kingdom',
+  GR: 'Greece',
+  HK: 'Hong Kong',
+  HR: 'Croatia',
+  HU: 'Hungary',
+  ID: 'Indonesia',
+  IE: 'Ireland',
+  IL: 'Israel',
+  IT: 'Italy',
+  IN: 'India',
+  IS: 'Iceland',
+  JP: 'Japan',
+  KR: 'South Korea',
+  LT: 'Lithuania',
   LY: 'Libya',
   MA: 'Morocco',
-  TN: 'Tunisia',
-  BG: 'Bulgaria',
-  HK: 'Hong Kong',
-  TW: 'Taiwan',
-  DK: 'Denmark',
-  DE: 'Germany',
-  NL: 'Netherlands',
-  AU: 'Australia',
-  CA: 'Canada',
-  IN: 'India',
-  IE: 'Ireland',
-  ZA: 'South Africa',
-  GB: 'United Kingdom',
-  US: 'United States',
-  EE: 'Estonia',
-  PH: 'Philippines',
-  FR: 'France',
-  IS: 'Iceland',
-  ID: 'Indonesia',
-  LT: 'Lithuania',
   MY: 'Malaysia',
+  NL: 'Netherlands',
   NO: 'Norway',
+  PH: 'Philippines',
   PL: 'Poland',
-  BR: 'Brazil',
   PT: 'Portugal',
-  SI: 'Slovenia',
-  AR: 'Argentina',
-  ES: 'Spain',
+  RO: 'Romania',
+  RS: 'Serbia',
+  RU: 'Russia',
   SE: 'Sweden',
+  SI: 'Slovenia',
+  SK: 'Slovakia',
   TH: 'Thailand',
+  TN: 'Tunisia',
+  TR: 'Turkey',
+  TW: 'Taiwan',
   UA: 'Ukraine',
+  US: 'United States',
+  VN: 'Vietnam',
+  ZA: 'South Africa',
 } as const;
 
 export type RegionCode = keyof typeof RegionCodeToDescription;
@@ -95,6 +111,48 @@ export const LocaleScriptCodeToDescription = {
 export type LocaleScriptCode = keyof typeof LocaleScriptCodeToDescription;
 export const LocaleScriptCodes = Object.keys(LocaleScriptCodeToDescription) as LocaleScriptCode[];
 
+export const LanguageToDefaultRegionMap: Record<LanguageCode, RegionCode> = {
+  ar: 'DZ',
+  bg: 'BG',
+  ca: 'ES',
+  zh: 'CN',
+  hr: 'HR',
+  cs: 'CZ',
+  da: 'DK',
+  de: 'DE',
+  nl: 'NL',
+  en: 'US',
+  et: 'EE',
+  fil: 'PH',
+  fi: 'FI',
+  fr: 'FR',
+  el: 'GR',
+  he: 'IL',
+  hi: 'IN',
+  hu: 'HU',
+  is: 'IS',
+  in: 'ID',
+  it: 'IT',
+  ja: 'JP',
+  ko: 'KR',
+  lt: 'LT',
+  ms: 'MY',
+  no: 'NO',
+  pl: 'PL',
+  pt: 'PT',
+  ro: 'RO',
+  ru: 'RU',
+  sr: 'RS',
+  sk: 'SK',
+  sl: 'SI',
+  es: 'ES',
+  sv: 'SE',
+  th: 'TH',
+  tr: 'TR',
+  uk: 'UA',
+  vi: 'VN',
+};
+
 /*
  * ref: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/Locale#description
  */
@@ -102,6 +160,31 @@ export interface LocaleCode {
   language: LanguageCode;
   script?: LocaleScriptCode;
   region?: RegionCode;
+}
+
+export function createLocaleCode(localeString: string): LocaleCode {
+  const locale = new Intl.Locale(localeString);
+  const language = locale.language as LanguageCode;
+  const script = locale.script as LocaleScriptCode | undefined;
+  const region = locale.region as RegionCode | undefined;
+
+  return {
+    language,
+    script,
+    region,
+  };
+}
+
+export function validateLocaleCode(code: LocaleCode): void {
+  if (!LanguageCodes.includes(code.language)) {
+    throw new Error(`Invalid language code: ${code.language}`);
+  }
+  if (code.script && !LocaleScriptCodes.includes(code.script)) {
+    throw new Error(`Invalid script code: ${code.script}`);
+  }
+  if (code.region && !RegionCodes.includes(code.region)) {
+    throw new Error(`Invalid region code: ${code.region}`);
+  }
 }
 
 export class LocaleCodeDto implements LocaleCode {
