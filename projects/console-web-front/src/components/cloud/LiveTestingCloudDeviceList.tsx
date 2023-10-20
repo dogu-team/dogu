@@ -87,7 +87,7 @@ interface Props {}
 const LiveTestingCloudDeviceList: React.FC<Props> = () => {
   const router = useRouter();
   const { keyword, platform, version } = useCloudDeviceFilterStore((state) => state.filterValue, shallow);
-  const { data, error, isLoading, mutate } = usePaginationSWR<CloudDeviceMetadataBase>(
+  const { data, error, isLoading, mutate, page, updatePage } = usePaginationSWR<CloudDeviceMetadataBase>(
     `/cloud-devices?keyword=${keyword}${platform ? `&platform=${platform}` : ''}&version=${version}`,
     { skipQuestionMark: true, offset: 12 },
     { keepPreviousData: true },
@@ -114,11 +114,11 @@ const LiveTestingCloudDeviceList: React.FC<Props> = () => {
         renderItem={(device) => <DeviceItem device={device} />}
         rowKey={(device) => device.model}
         pagination={{
-          current: data?.page,
-          pageSize: 10,
+          current: page,
+          pageSize: 12,
           total: data?.totalCount,
           onChange: (page) => {
-            router.push({ query: { page } });
+            updatePage(page);
           },
         }}
       />
