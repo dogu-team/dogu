@@ -8,7 +8,7 @@ import {
   RollbackOutlined,
 } from '@ant-design/icons';
 import React from 'react';
-import { Platform, RegionCodeToDescription } from '@dogu-private/types';
+import { Platform } from '@dogu-private/types';
 import { Divider, Tooltip } from 'antd';
 
 import { DeviceToolBarMenu } from 'src/utils/streaming/streaming';
