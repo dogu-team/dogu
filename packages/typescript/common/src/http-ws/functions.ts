@@ -1,7 +1,7 @@
 import { stringify } from '../strings/functions';
 
 export interface WebSocketCloseable {
-  readonly readyState: number;
+  readonly readyState?: number;
   close(code?: number | undefined, reason?: string | undefined): void;
 }
 
