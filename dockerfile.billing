@@ -16,6 +16,6 @@ COPY ./shells/billing-server-entrypoint.sh ./billing-server-entrypoint.sh
 
 EXPOSE 4001
 
-ENTRYPOINT ["sh" ,"-c", "./dogu-client-admin-server-entrypoint.sh"]
+ENTRYPOINT ["sh" ,"-c", "./billing-server-entrypoint.sh"]
 
 
