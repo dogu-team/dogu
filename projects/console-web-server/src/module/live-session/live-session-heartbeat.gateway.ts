@@ -96,7 +96,7 @@ export class LiveSessionHeartbeatGateway implements OnGatewayConnection {
           message: `${config.liveSession.closeWait.allowedMilliseconds}`,
         };
         webSocket.send(JSON.stringify(msg));
-        this.logger.debug('LiveSessionHeartbeatGateway.onClose.subscribeCloseWaitEvent', { liveSessionId, message });
+        this.logger.debug('LiveSessionHeartbeatGateway.onMessage.subscribeCloseWaitEvent', { liveSessionId, message });
       });
 
       const unsubscribeCloseEvent = await this.liveSessionService.subscribeCloseEvent(liveSessionId, (message) => {
