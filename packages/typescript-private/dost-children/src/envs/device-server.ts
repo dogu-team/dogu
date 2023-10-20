@@ -49,4 +49,10 @@ export class DeviceServerEnv extends PreloadDeviceServerEnv {
 
   @IsString()
   DOGU_LINUX_DEVICE_SERIAL = '';
+
+  @IsString()
+  DOGU_WIFI_SSID = '';
+
+  @IsString()
+  DOGU_WIFI_PASSWORD = '';
 }

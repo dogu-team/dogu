@@ -11,6 +11,7 @@ import { pathMap } from '../../../../path-map';
 import { LogHandler } from '../../../public/device-channel';
 import { DeviceScanResult, DeviceScanStatus } from '../../../public/device-driver';
 import { parseRecord } from '../../../util/parse';
+import { getManifestFromApp } from '../../apk/apk-util';
 import { AndroidDfInfo, AndroidProcCpuInfo, AndroidProcDiskstats, AndroidProcMemInfo, AndroidPropInfo, AndroidShellTopInfo } from './info';
 import {
   AndroidFileEntry,
@@ -261,7 +262,50 @@ export async function installApp(serial: Serial, apkPath: string, printable: Pri
   return rv;
 }
 
-export async function installAppWithReturningStdoutStderr(serial: Serial, apkPath: string, timeout: number, printable: Printable): Promise<ChildProcess.ExecResult> {
+/**
+ * @note if install failed with INSTALL_FAILED_UPDATE_INCOMPATIBLE then uninstall with keep data and install again
+ */
+export async function installAppForce(serial: string, appPath: string, printable?: Printable): Promise<void> {
+  const logger = printable ?? adbLogger;
+  logger.info(`installing app: ${appPath}`);
+  const stat = await fs.promises.stat(appPath).catch(() => null);
+  if (!stat) {
+    throw new Error(`app not found: ${appPath}`);
+  } else {
+    logger.info(`app size: ${stat.size}`);
+  }
+  const { error, stdout, stderr } = await installAppWithReturningStdoutStderr(serial, appPath, 5 * 60 * 1000, logger)
+    .then(({ stdout, stderr }) => {
+      return { error: null, stdout, stderr };
+    })
+    .catch((error) => {
+      return { error: errorify(error), stdout: '', stderr: '' };
+    });
+  const FallbackKeyward = 'INSTALL_FAILED_UPDATE_INCOMPATIBLE';
+  const hasFallbackKeyward = stringify(error).includes(FallbackKeyward) || stdout.includes(FallbackKeyward) || stderr.includes(FallbackKeyward);
+  if (!hasFallbackKeyward) {
+    if (error) {
+      throw error;
+    } else {
+      if (stdout) {
+        logger.info(`adb install stdout: ${stdout}`);
+      }
+      if (stderr) {
+        logger.info(`adb install stderr: ${stderr}`);
+      }
+      return;
+    }
+  }
+  logger.info(`adb install failed with ${FallbackKeyward}. uninstall with keep data and install again`);
+  const menifest = await getManifestFromApp(appPath);
+  if (!menifest.package) {
+    throw new Error(`Unexpected value. app path: ${appPath}, ${stringify(menifest)}`);
+  }
+  await uninstallApp(serial, menifest.package, true, logger);
+  await installApp(serial, appPath, logger);
+}
+
+async function installAppWithReturningStdoutStderr(serial: Serial, apkPath: string, timeout: number, printable: Printable): Promise<ChildProcess.ExecResult> {
   const random = Math.random();
   adbLogger.verbose('adb.installAppWithReturningStdoutStderr begin', { serial, apkPath, timeout, random });
   const { command, args } = installAppArgsInternal(serial, apkPath);
@@ -789,6 +833,15 @@ export async function stayOnWhilePluggedIn(serial: Serial): Promise<void> {
   adbLogger.verbose('adb.stayOnWhilePluggedIn begin', { serial, random });
   await shellIgnoreError(serial, 'settings put global stay_on_while_plugged_in 3');
   adbLogger.verbose('adb.stayOnWhilePluggedIn end', { serial, random });
+}
+
+export type AdbBrightness = 0 | 50 | 100 | 150 | 200 | 255;
+
+export async function setBrightness(serial: Serial, value: number): Promise<void> {
+  const random = Math.random();
+  adbLogger.verbose('adb.setBrightness begin', { serial, value, random });
+  await shellIgnoreError(serial, `settings put system screen_brightness ${value}`);
+  adbLogger.verbose('adb.setBrightness end', { serial, value, random });
 }
 
 /**

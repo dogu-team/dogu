@@ -1,7 +1,11 @@
 import { DeviceSystemInfo, Serial } from '@dogu-private/types';
-import { delay, filterAsync, loop, Printable, stringify } from '@dogu-tech/common';
+import { delay, errorify, filterAsync, loop, Printable, stringify } from '@dogu-tech/common';
+import { HostPaths } from '@dogu-tech/node';
+import { execFile } from 'child_process';
 import semver from 'semver';
 import { AppiumContext } from '../../../appium/appium.context';
+import { env } from '../../../env';
+import { pathMap } from '../../../path-map';
 import { Adb, AppiumAdb } from '../../externals/index';
 
 export class AndroidResetService {
@@ -19,6 +23,7 @@ export class AndroidResetService {
 
   static async resetManual(serial: Serial, appiumAdb: AppiumAdb, appiumContext: AppiumContext, logger: Printable): Promise<void> {
     await AndroidResetService.resetAccounts(serial, appiumAdb, appiumContext, logger);
+    appiumAdb.install;
 
     // should delete appium after you are finished using it.
     await AndroidResetService.resetBeforeConnected(serial, logger);
@@ -48,6 +53,57 @@ export class AndroidResetService {
     });
   }
 
+  /**
+   * @note connect to wifi script
+   * adb -s $DOGU_DEVICE_SERIAL install $DOGU_ADB_JOIN_WIFI_APK
+   * adb -s $DOGU_DEVICE_SERIAL shell am start -n com.steinwurf.adbjoinwifi/.MainActivity -e ssid $DOGU_WIFI_SSID -e password_type WPA -e password $DOGU_WIFI_PASSWORD
+   */
+
+  static async joinWifi(serial: string, ssid: string, password: string, logger: Printable): Promise<void> {
+    if (0 === ssid.length) {
+      throw new Error(`AndroidResetService.joinWifi failed. serial: ${serial}, ssid: ${ssid}`);
+    }
+    await Adb.installAppForce(serial, pathMap().common.adbJoinWifiApk);
+    /**
+     * @note Adb.Shell() is not used because password can remain in the log.
+     */
+    const appName = 'com.steinwurf.adbjoinwifi';
+    await new Promise<void>((resolve, reject) => {
+      execFile(
+        HostPaths.android.adbPath(env.ANDROID_HOME),
+        ['-s', serial, 'shell', `am start -n ${appName}/.MainActivity -e ssid ${ssid} -e password_type WPA -e password ${password}`],
+        (error, stdout, stderr) => {
+          if (error) {
+            reject(error);
+          } else {
+            logger.info(`AndroidResetService.joinWifi stdout: ${stdout} stderr: ${stderr}`);
+            resolve();
+          }
+        },
+      );
+    });
+    let isWifiEnabled = false;
+    for (let tryCount = 0; tryCount < 10; tryCount++) {
+      const { stdout } = await Adb.shell(serial, 'dumpsys wifi', {
+        windowsVerbatimArguments: true,
+        encoding: 'utf8',
+        maxBuffer: 1024 * 1024 * 10,
+      });
+      if (stdout.includes('Wi-Fi is enabled')) {
+        logger.info(`AndroidResetService.joinWifi success. serial: ${serial}, ssid: ${ssid}`);
+        isWifiEnabled = true;
+        break;
+      }
+      await delay(3 * 1000);
+    }
+    if (!isWifiEnabled) {
+      throw new Error(`AndroidResetService.joinWifi failed. serial: ${serial}, ssid: ${ssid}`);
+    }
+    await Adb.shell(serial, `am force-stop ${appName}`).catch((error) => {
+      logger.error('AndroidResetService.joinWifi failed adb.joinWifi.force-stop', { error: errorify(error) });
+    });
+  }
+
   private static async resetAccounts(serial: Serial, appiumAdb: AppiumAdb, appiumContext: AppiumContext, logger: Printable): Promise<void> {
     const newAppiumAdb = appiumAdb.clone({ adbExecTimeout: 1000 * 60 * 10 });
     await newAppiumAdb.setDeviceLocale('ko-KR'); // prevent setDeviceLocale passing
@@ -70,7 +126,7 @@ export class AndroidResetService {
       await delay(3000);
       const title = await driver.$(`android=new UiSelector().resourceId("com.android.settings:id/action_bar")`);
       if (!title) {
-        throw new Error('Account title not found');
+        throw new Error('AndroidResetService.resetAccounts Account title not found');
       }
       const titles = await driver.$$(`android=new UiSelector().resourceId("com.android.settings:id/list").resourceId("android:id/title")`);
       const titlesThatHaveAccount = await filterAsync(titles, async (title) => {

@@ -140,14 +140,6 @@ export class Env {
   @IsString()
   DOGU_PUBLIC_BUCKET!: string | undefined;
 
-  @IsOptional()
-  @IsString()
-  DOGU_WIFI_SSID?: string;
-
-  @IsOptional()
-  @IsString()
-  DOGU_WIFI_PASSWORD?: string;
-
   @IsFilledString()
   DOGU_NEXUS_PROTOCOL!: string;
 

@@ -15,11 +15,10 @@ import {
   Serial,
   StreamingAnswer,
 } from '@dogu-private/types';
-import { Closable, delay, errorify, FilledPrintable, Printable, stringify } from '@dogu-tech/common';
+import { Closable, errorify, FilledPrintable, Printable, stringify } from '@dogu-tech/common';
 import { AppiumCapabilities, BrowserInstallation, StreamingOfferDto } from '@dogu-tech/device-client-common';
-import { HostPaths, killChildProcess, killProcessOnPort } from '@dogu-tech/node';
-import { Manifest, open } from 'adbkit-apkreader';
-import { ChildProcess, execFile } from 'child_process';
+import { killChildProcess, killProcessOnPort } from '@dogu-tech/node';
+import { ChildProcess } from 'child_process';
 import fs from 'fs';
 import lodash from 'lodash';
 import { Observable } from 'rxjs';
@@ -29,11 +28,10 @@ import { createAppiumCapabilities } from '../../appium/appium.capabilites';
 import { AppiumContext, AppiumContextKey, AppiumContextProxy } from '../../appium/appium.context';
 import { AppiumDeviceWebDriverHandler } from '../../device-webdriver/appium.device-webdriver.handler';
 import { DeviceWebDriverHandler } from '../../device-webdriver/device-webdriver.common';
-import { env } from '../../env';
 import { GamiumContext } from '../../gamium/gamium.context';
 import { createAdaLogger } from '../../logger/logger.instance';
-import { pathMap } from '../../path-map';
 import { Adb, AppiumAdb } from '../externals';
+import { getManifestFromApp } from '../externals/apk/apk-util';
 import { DeviceChannel, DeviceChannelOpenParam, DeviceHealthStatus, DeviceServerService, LogHandler } from '../public/device-channel';
 import { AndroidDeviceAgentService } from '../services/device-agent/android-device-agent-service';
 import { AndroidAdbProfileService, AndroidDisplayProfileService } from '../services/profile/android-profiler';
@@ -309,18 +307,12 @@ export class AndroidChannel implements DeviceChannel {
     return new AndroidLogClosable(child, printable);
   }
 
-  private async getManifestFromApp(appPath: string): Promise<Manifest> {
-    const reader = await open(appPath);
-    const manifest = await reader.readManifest();
-    return manifest;
-  }
-
   async uninstallApp(appPath: string, printable?: Printable): Promise<void> {
     const stat = await fs.promises.stat(appPath).catch(() => null);
     if (!stat) {
       throw new Error(`app not found: ${appPath}`);
     }
-    const manifest = await this.getManifestFromApp(appPath);
+    const manifest = await getManifestFromApp(appPath);
     if (!manifest.package) {
       throw new Error(`Unexpected value. app path: ${appPath}, ${stringify(manifest)}`);
     }
@@ -331,50 +323,14 @@ export class AndroidChannel implements DeviceChannel {
    * @note if install failed with INSTALL_FAILED_UPDATE_INCOMPATIBLE then uninstall with keep data and install again
    */
   async installApp(appPath: string, printable?: Printable): Promise<void> {
-    const logger = printable ? printable : this.logger;
-    logger.info(`installing app: ${appPath}`);
-    const stat = await fs.promises.stat(appPath).catch(() => null);
-    if (!stat) {
-      throw new Error(`app not found: ${appPath}`);
-    } else {
-      logger.info(`app size: ${stat.size}`);
-    }
-    const { error, stdout, stderr } = await Adb.installAppWithReturningStdoutStderr(this.serial, appPath, 5 * 60 * 1000, logger)
-      .then(({ stdout, stderr }) => {
-        return { error: null, stdout, stderr };
-      })
-      .catch((error) => {
-        return { error: errorify(error), stdout: '', stderr: '' };
-      });
-    const FallbackKeyward = 'INSTALL_FAILED_UPDATE_INCOMPATIBLE';
-    const hasFallbackKeyward = stringify(error).includes(FallbackKeyward) || stdout.includes(FallbackKeyward) || stderr.includes(FallbackKeyward);
-    if (!hasFallbackKeyward) {
-      if (error) {
-        throw error;
-      } else {
-        if (stdout) {
-          logger.info(`adb install stdout: ${stdout}`);
-        }
-        if (stderr) {
-          logger.info(`adb install stderr: ${stderr}`);
-        }
-        return;
-      }
-    }
-    logger.info(`adb install failed with ${FallbackKeyward}. uninstall with keep data and install again`);
-    const menifest = await this.getManifestFromApp(appPath);
-    if (!menifest.package) {
-      throw new Error(`Unexpected value. app path: ${appPath}, ${stringify(menifest)}`);
-    }
-    await Adb.uninstallApp(this.serial, menifest.package, true, printable);
-    await Adb.installApp(this.serial, appPath, printable);
+    await Adb.installAppForce(this.serial, appPath, printable);
   }
 
   async runApp(appPath: string, printable?: Printable): Promise<void> {
     await Adb.turnOnScreen(this.serial).catch((error) => {
       this.logger.error('adb.runApp.turnOnScreen', { error: errorify(error) });
     });
-    const manifest = await this.getManifestFromApp(appPath);
+    const manifest = await getManifestFromApp(appPath);
     if (!manifest.package || !manifest.application?.launcherActivities || manifest.application.launcherActivities.length < 1) {
       throw new Error(`Unexpected value. app path: ${appPath}, ${stringify(manifest)}`);
     }
@@ -391,41 +347,7 @@ export class AndroidChannel implements DeviceChannel {
    * adb -s $DOGU_DEVICE_SERIAL shell am start -n com.steinwurf.adbjoinwifi/.MainActivity -e ssid $DOGU_WIFI_SSID -e password_type WPA -e password $DOGU_WIFI_PASSWORD
    */
   async joinWifi(ssid: string, password: string): Promise<void> {
-    await this.installApp(pathMap().common.adbJoinWifiApk);
-    /**
-     * @note Adb.Shell() is not used because password can remain in the log.
-     */
-    const appName = 'com.steinwurf.adbjoinwifi';
-    await new Promise<void>((resolve, reject) => {
-      execFile(
-        HostPaths.android.adbPath(env.ANDROID_HOME),
-        ['-s', this.serial, 'shell', `am start -n ${appName}/.MainActivity -e ssid ${ssid} -e password_type WPA -e password ${password}`],
-        (error, stdout, stderr) => {
-          if (error) {
-            reject(error);
-          } else {
-            this.logger.info(`join wifi stdout: ${stdout} stderr: ${stderr}`);
-            resolve();
-          }
-        },
-      );
-    });
-    let isWifiEnabled = false;
-    for (let tryCount = 0; tryCount < 10; tryCount++) {
-      const { stdout } = await Adb.shell(this.serial, 'dumpsys wifi');
-      if (stdout.includes('Wi-Fi is enabled')) {
-        this.logger.info(`join wifi success. serial: ${this.serial}, ssid: ${ssid}`);
-        isWifiEnabled = true;
-        break;
-      }
-      await delay(3 * 1000);
-    }
-    if (!isWifiEnabled) {
-      throw new Error(`join wifi failed. serial: ${this.serial}, ssid: ${ssid}`);
-    }
-    await Adb.shell(this.serial, `am force-stop ${appName}`).catch((error) => {
-      this.logger.error('adb.joinWifi.force-stop', { error: errorify(error) });
-    });
+    await AndroidResetService.joinWifi(this.serial, ssid, password, this.logger);
   }
 
   getAppiumContext(): AppiumContext {

@@ -4,7 +4,6 @@ import { HeaderRecord, stringify } from '@dogu-tech/common';
 import {
   Device,
   DeviceInstallApp,
-  DeviceJoinWifi,
   DeviceReset,
   DeviceRunApp,
   DeviceStreaming,
@@ -16,7 +15,6 @@ import {
   TcpRelayResponse,
 } from '@dogu-tech/device-client-common';
 import { Injectable } from '@nestjs/common';
-import { env } from '../../../env';
 import { DeviceMessageRelayer, WebSocketProxy } from '../../device-message/device-message.relayer';
 import { DoguLogger } from '../../logger/logger';
 import { DeviceStreamingOfferDto } from './dto/device.dto';
@@ -79,33 +77,19 @@ export class DeviceCommandService {
     return res.tokens;
   }
 
-  async resetAndJoinWifi(organizationId: OrganizationId, deviceId: DeviceId, serial: Serial): Promise<void> {
-    if (!env.DOGU_WIFI_SSID || !env.DOGU_WIFI_PASSWORD) {
-      throw new Error(`DOGU_WIFI_SSID or DOGU_WIFI_PASSWORD is not set`);
-    }
+  async reset(organizationId: OrganizationId, deviceId: DeviceId, serial: Serial): Promise<void> {
     const resetProxy = await this.deviceMessageRelayer.connectWebSocket(organizationId, deviceId, DeviceReset);
     await resetProxy.send({
       serial,
     });
-    this.logger.info(`DeviceCommandService.resetAndJoinWifi. reset sent`);
+    this.logger.info(`DeviceCommandService.reset. reset sent`);
     try {
       for await (const _ of resetProxy.receive()) {
       }
     } catch (error) {
-      this.logger.error(`DeviceCommandService.resetAndJoinWifi. reset error: ${stringify(error)}`);
+      this.logger.error(`DeviceCommandService.reset. reset error: ${stringify(error)}`);
     }
-    this.logger.info(`DeviceCommandService.resetAndJoinWifi. reset done`);
-    const joinWifiProxy = await this.deviceMessageRelayer.connectWebSocket(organizationId, deviceId, DeviceJoinWifi);
-    this.logger.info(`DeviceCommandService.resetAndJoinWifi. joinWifi connecting`);
-    await joinWifiProxy.send({
-      serial,
-      ssid: env.DOGU_WIFI_SSID,
-      password: env.DOGU_WIFI_PASSWORD,
-    });
-    this.logger.info(`DeviceCommandService.resetAndJoinWifi. joinWifi sent`);
-    for await (const _ of joinWifiProxy.receive()) {
-    }
-    this.logger.info(`DeviceCommandService.resetAndJoinWifi. joinWifi done`);
+    this.logger.info(`DeviceCommandService.reset. reset done`);
   }
 
   async relayTcp(organizationId: OrganizationId, deviceId: DeviceId, serial: Serial, port: number): Promise<WebSocketProxy<typeof TcpRelayRequest, typeof TcpRelayResponse>> {
