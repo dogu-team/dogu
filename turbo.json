@@ -24,21 +24,15 @@
       "cache": false,
       "persistent": true
     },
-    "publish:github": {
-      "dependsOn": ["build"]
-    },
-    "publish:npm": {
-      "dependsOn": ["build"]
-    },
+    "publish:github": {},
+    "publish:npm": {},
     "clean": {
       "cache": false
     },
     "clean:archive": {
       "cache": false
     },
-    "test": {
-      "dependsOn": ["build"]
-    },
+    "test": {},
     "printenv": {
       "cache": false
     }
