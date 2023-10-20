@@ -425,6 +425,17 @@ export async function disablePackage(serial: Serial, packageName: string, userId
   adbLogger.verbose('adb.disablePackage end', { serial, packageName, random });
 }
 
+export async function allowNonMarketApps(serial: Serial, printable: Printable): Promise<void> {
+  const random = Math.random();
+  adbLogger.verbose('adb.allowNonMarketApps begin', { serial, random });
+  await shellIgnoreError(
+    serial,
+    `settings put global install_non_market_apps 1
+  `,
+  );
+  adbLogger.verbose('adb.allowNonMarketApps end', { serial, random });
+}
+
 /**
  * device info
  */

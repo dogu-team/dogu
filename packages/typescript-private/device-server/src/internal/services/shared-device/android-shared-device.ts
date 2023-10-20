@@ -104,6 +104,9 @@ export class AndroidSharedDeviceService implements Zombieable {
         throw e;
       });
       this.state = 'preinstalling';
+      await Adb.allowNonMarketApps(this.serial, this.printable).catch((e) => {
+        this.printable.error(`AndroidSharedDeviceService.revive.allowNonMarketApps failed.`, { error: errorify(e) });
+      });
       await this.preInstallApps().catch((e) => {
         this.printable.error(`AndroidSharedDeviceService.revive.preInstallApps failed.`, { error: errorify(e) });
       });
