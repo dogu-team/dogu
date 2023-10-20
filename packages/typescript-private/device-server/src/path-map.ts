@@ -1,9 +1,8 @@
 import { PlatformAbility } from '@dogu-private/dost-children';
-import { PathMap, PlatformType } from '@dogu-private/types';
+import { PathMap } from '@dogu-private/types';
 import { errorify } from '@dogu-tech/common';
 import { HostPaths } from '@dogu-tech/node';
 import fs from 'fs';
-import _ from 'lodash';
 
 async function validatePathMap(pathMap: PathMap, platformAbility: PlatformAbility): Promise<void> {
   const paths: string[] = [];
@@ -21,17 +20,17 @@ async function validatePathMap(pathMap: PathMap, platformAbility: PlatformAbilit
   /**
    * @note currently linux platform's third party is installed from docker
    */
-  if (!platformAbility.isLinuxEnabled) {
-    addToPaths(pathMap.common);
-  }
+  // if (!platformAbility.isLinuxEnabled) {
+  //   addToPaths(pathMap.common);
+  // }
 
-  if (platformAbility.isAndroidEnabled) {
-    addToPaths(pathMap.android);
-  }
+  // if (platformAbility.isAndroidEnabled) {
+  //   addToPaths(pathMap.android);
+  // }
 
-  if (platformAbility.isIosEnabled) {
-    addToPaths(pathMap.macos);
-  }
+  // if (platformAbility.isIosEnabled) {
+  //   addToPaths(pathMap.macos);
+  // }
 
   try {
     await Promise.all(paths.map((path) => fs.promises.stat(path)));
