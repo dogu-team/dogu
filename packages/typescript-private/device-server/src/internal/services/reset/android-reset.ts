@@ -23,7 +23,6 @@ export class AndroidResetService {
 
   static async resetManual(serial: Serial, appiumAdb: AppiumAdb, appiumContext: AppiumContext, logger: Printable): Promise<void> {
     await AndroidResetService.resetAccounts(serial, appiumAdb, appiumContext, logger);
-    appiumAdb.install;
 
     // should delete appium after you are finished using it.
     await AndroidResetService.resetBeforeConnected(serial, logger);
