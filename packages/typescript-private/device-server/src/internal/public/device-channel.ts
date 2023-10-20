@@ -3,6 +3,7 @@ import {
   DeviceWindowInfo,
   ErrorResult,
   FilledRuntimeInfo,
+  LocaleCode,
   Platform,
   PrivateProtocol,
   ProfileMethod,
@@ -98,4 +99,8 @@ export interface DeviceChannel {
 
   // remote test handlers
   getWebDriverHandler(): DeviceWebDriverHandler | null;
+
+  // locale
+  getLocale(): PromiseOrValue<LocaleCode>;
+  chagneLocale(localeCode: LocaleCode): PromiseOrValue<void>;
 }

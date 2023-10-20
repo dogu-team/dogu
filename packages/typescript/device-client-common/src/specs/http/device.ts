@@ -1,5 +1,5 @@
 import { ControllerSpec, DefaultPathProvider } from '@dogu-tech/common';
-import { Serial } from '@dogu-tech/types';
+import { LocaleCodeDto, Serial } from '@dogu-tech/types';
 import { DeviceConfigDto } from '../../validations/types/device-configs';
 import { DeviceNotFoundErrorDetails, DeviceServerResponseDto } from '../../validations/types/responses';
 import { DeviceServerControllerMethodSpec } from '../types';
@@ -7,6 +7,7 @@ import {
   CreateLocalDeviceDetectTokenRequest,
   GetAppiumCapabilitiesResponse,
   GetAppiumContextInfoResponse,
+  GetDeviceLocaleResponse,
   GetDevicePlatformSerialsResponse,
   GetDeviceSerialsResponse,
   GetDeviceSystemInfoResponse,
@@ -127,5 +128,30 @@ export const Device = {
     },
     responseBody: DeviceServerResponseDto,
     responseBodyData: GetSystemBarVisibility,
+  }),
+
+  getLocale: new DeviceServerControllerMethodSpec({
+    controllerSpec: DeviceController,
+    method: 'GET',
+    path: '/:serial/locale',
+    pathProvider: class {
+      constructor(readonly serial: Serial) {}
+    },
+    responseBody: DeviceServerResponseDto,
+    responseBodyData: GetDeviceLocaleResponse,
+    responseBodyError: DeviceNotFoundErrorDetails,
+  }),
+
+  changeLocale: new DeviceServerControllerMethodSpec({
+    controllerSpec: DeviceController,
+    method: 'POST',
+    path: '/:serial/locale',
+    pathProvider: class {
+      constructor(readonly serial: Serial) {}
+    },
+    requestBody: LocaleCodeDto,
+    responseBody: DeviceServerResponseDto,
+    responseBodyData: GetDeviceLocaleResponse,
+    responseBodyError: DeviceNotFoundErrorDetails,
   }),
 };

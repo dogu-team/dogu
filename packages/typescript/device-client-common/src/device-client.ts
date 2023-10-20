@@ -1,6 +1,6 @@
 import { Class, Closable, errorify, Instance, Log, stringify, transformAndValidate, WebSocketSpec } from '@dogu-tech/common';
 import { DeviceInterface } from '@dogu-tech/device-interface';
-import { DeviceSystemInfo, FilledRuntimeInfo, PlatformSerial, Serial } from '@dogu-tech/types';
+import { DeviceSystemInfo, FilledRuntimeInfo, LocaleCode, PlatformSerial, Serial } from '@dogu-tech/types';
 import { DeviceClientOptions, DeviceCloser, DeviceService, DeviceWebSocket } from './bases';
 import { DeviceHttpClient } from './device-http-client';
 import { Device } from './specs/http/device';
@@ -58,6 +58,15 @@ export class DeviceClient extends DeviceHttpClient implements DeviceInterface {
   async getDeviceSystemInfo(serial: Serial): Promise<DeviceSystemInfo> {
     const response = await this.httpRequest(Device.getDeviceSystemInfo, new Device.getDeviceSystemInfo.pathProvider(serial));
     return response;
+  }
+
+  async getLocale(serial: Serial): Promise<LocaleCode> {
+    const response = await this.httpRequest(Device.getLocale, new Device.getLocale.pathProvider(serial));
+    return response.localeCode;
+  }
+
+  async changeDeviceLocale(serial: Serial, localeCode: LocaleCode): Promise<void> {
+    await this.httpRequest(Device.changeLocale, new Device.changeLocale.pathProvider(serial), undefined, localeCode);
   }
 
   installApp(serial: Serial, appPath: string): Promise<void> {

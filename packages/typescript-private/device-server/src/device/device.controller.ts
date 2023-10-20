@@ -1,4 +1,4 @@
-import { Code, Platform, platformTypeFromPlatform, Serial } from '@dogu-private/types';
+import { Code, LocaleCodeDto, Platform, platformTypeFromPlatform, Serial } from '@dogu-private/types';
 import { Instance } from '@dogu-tech/common';
 import { CreateLocalDeviceDetectTokenRequest, Device, DeviceConfigDto } from '@dogu-tech/device-client-common';
 import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
@@ -218,5 +218,41 @@ export class DeviceController {
         },
       };
     }
+  }
+
+  @Get(Device.getLocale.path)
+  async getLocale(@Param('serial') serial: Serial): Promise<Instance<typeof Device.getLocale.responseBody>> {
+    const channel = this.scanService.findChannel(serial);
+    if (channel === null) {
+      return deviceNotFoundError(serial);
+    }
+
+    const localeCode = await channel.getLocale();
+    return {
+      value: {
+        $case: 'data',
+        data: {
+          localeCode,
+        },
+      },
+    };
+  }
+
+  @Post(Device.changeLocale.path)
+  async changeLocale(@Param('serial') serial: Serial, @Body() localeCodeDto: LocaleCodeDto): Promise<Instance<typeof Device.changeLocale.responseBody>> {
+    const device = this.scanService.findChannel(serial);
+    if (device === null) {
+      return deviceNotFoundError(serial);
+    }
+    await device.chagneLocale(localeCodeDto);
+    const localeCode = await device.getLocale();
+    return {
+      value: {
+        $case: 'data',
+        data: {
+          localeCode,
+        },
+      },
+    };
   }
 }

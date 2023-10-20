@@ -4,6 +4,7 @@ import {
   DeviceWindowInfo,
   ErrorResult,
   FilledRuntimeInfo,
+  LocaleCode,
   Platform,
   PrivateProtocol,
   ProfileMethod,
@@ -45,10 +46,7 @@ import { ZombieServiceInstance } from '../services/zombie/zombie-service';
 type DeviceControl = PrivateProtocol.DeviceControl;
 
 export class IosLogClosable implements Closable {
-  constructor(
-    private readonly childProcess: ChildProcess,
-    private readonly printable?: Printable,
-  ) {}
+  constructor(private readonly childProcess: ChildProcess, private readonly printable?: Printable) {}
 
   close(): void {
     killChildProcess(this.childProcess).catch((error) => {
@@ -490,5 +488,13 @@ export class IosChannel implements DeviceChannel {
 
   getWebDriverHandler(): DeviceWebDriverHandler | null {
     return this._appiumDeviceWebDriverHandler;
+  }
+
+  async getLocale(): Promise<LocaleCode> {
+    throw new Error('Method not implemented.');
+  }
+
+  async chagneLocale(localeCode: LocaleCode): Promise<void> {
+    throw new Error('Method not implemented.');
   }
 }
