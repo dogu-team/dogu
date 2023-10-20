@@ -8,6 +8,7 @@ import WebSocket from 'ws';
 import { ConsoleClientService } from '../console-client/console-client.service';
 import { env } from '../env';
 import { DoguLogger } from '../logger/logger';
+import { DeviceWebSocketMap } from '../types';
 import { OnDeviceRegisteredEvent } from './device.events';
 import { DeviceRegistry } from './device.registry';
 
@@ -18,8 +19,12 @@ export class DeviceRuntimeInfoSubscriber {
   @OnEvent(OnDeviceRegisteredEvent.key)
   onDeviceRegistered(value: Instance<typeof OnDeviceRegisteredEvent.value>): void {
     const { organizationId, deviceId, serial } = value;
+    this.registerWebSocket(value.webSocketMap, organizationId, deviceId, serial);
+  }
+
+  private registerWebSocket(webSocketMap: DeviceWebSocketMap, organizationId: OrganizationId, deviceId: DeviceId, serial: Serial): void {
     const webSocket = this.subscribeRuntimeInfo(organizationId, deviceId, serial);
-    value.webSocketMap.register(DeviceRuntimeInfoSubscriber.name, webSocket, {
+    webSocketMap.register(DeviceRuntimeInfoSubscriber.name, webSocket, {
       onUnregister: (webSocket) => {
         closeWebSocketWithTruncateReason(webSocket, 1000, 'Device disconnected');
       },
@@ -40,6 +45,11 @@ export class DeviceRuntimeInfoSubscriber {
     });
     webSocket.on('close', (code, reason) => {
       this.logger.info('deviceRuntimeInfoSubscribe.close', { code, reason: reason.toString() });
+      const registryValue = this.deviceRegistry.get(serial);
+      if (registryValue) {
+        registryValue.webSocketMap.unregister(DeviceRuntimeInfoSubscriber.name);
+        this.registerWebSocket(registryValue.webSocketMap, organizationId, deviceId, serial);
+      }
     });
     webSocket.on('message', (data, isBinary) => {
       (async (): Promise<void> => {
