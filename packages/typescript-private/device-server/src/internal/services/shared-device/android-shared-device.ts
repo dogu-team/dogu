@@ -104,6 +104,7 @@ export class AndroidSharedDeviceService implements Zombieable {
         throw e;
       });
       this.state = 'preinstalling';
+      await this.appiumAdb.setDeviceLocale('en-US');
       await Adb.allowNonMarketApps(this.serial, this.printable).catch((e) => {
         this.printable.error(`AndroidSharedDeviceService.revive.allowNonMarketApps failed.`, { error: errorify(e) });
       });
@@ -123,13 +124,15 @@ export class AndroidSharedDeviceService implements Zombieable {
         this.printable.error(`AndroidSharedDeviceService.revive.joinWifi failed.`, { error: errorify(e) });
       });
       this.state = 'changing-locale';
-      await this.appiumAdb.setDeviceLocale('en-US');
+      await Adb.stayOnWhilePluggedIn(this.serial).catch((e) => {
+        this.printable.error(`AndroidSharedDeviceService.revive.stayOnWhilePluggedIn failed.`, { error: errorify(e) });
+      });
+      await this.closeDialog().catch((e) => {
+        this.printable.error(`AndroidSharedDeviceService.revive.closeDialog failed.`, { error: errorify(e) });
+      });
       this.isSetupDone = true;
       this.state = 'setup-done';
     }
-    await Adb.stayOnWhilePluggedIn(this.serial).catch((e) => {
-      this.printable.error(`AndroidSharedDeviceService.revive.stayOnWhilePluggedIn failed.`, { error: errorify(e) });
-    });
     this.startLogcatProcess(this.serial, this.printable).catch((e) => {
       this.printable.error(e);
     });
@@ -248,6 +251,12 @@ export class AndroidSharedDeviceService implements Zombieable {
       await Adb.keyevent(this.serial, DeviceControlKeycode.DEVICE_CONTROL_KEYCODE_VOLUME_DOWN);
     }
     await Adb.keyevent(this.serial, DeviceControlKeycode.DEVICE_CONTROL_KEYCODE_MUTE);
+  }
+
+  private async closeDialog(): Promise<void> {
+    for await (const _ of loop(30, 5)) {
+      await Adb.keyevent(this.serial, DeviceControlKeycode.DEVICE_CONTROL_KEYCODE_BACK);
+    }
   }
 
   private killLogcatProcess(): void {

@@ -610,9 +610,9 @@ func (ldc *DeviceServerWebSocketLabeledDatachannel) onMessage(msg webrtc.DataCha
 		log.Inst.Error("DeviceServerWebSocketLabeledDatachannel connection is nil", zap.String("name", ldc.label().Name))
 		return
 	}
-	name := ldc.label().Name
-	path := connection.GetPath()
-	log.Inst.Info("DeviceServerWebSocketLabeledDatachannel datachannel omMessage", zap.String("name", name), zap.String("path", path))
+	// name := ldc.label().Name
+	// path := connection.GetPath()
+	// log.Inst.Debug("DeviceServerWebSocketLabeledDatachannel datachannel omMessage", zap.String("name", name), zap.String("path", path))
 
 	if nil == ldc.conn {
 		log.Inst.Error("DeviceServerWebSocketLabeledDatachannel connection is nil")
