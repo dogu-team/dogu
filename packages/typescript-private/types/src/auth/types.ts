@@ -54,6 +54,20 @@ export interface OAuthPayLoad {
   name?: string;
 }
 
+export type LicensePayload = {
+  licenseToken: string;
+  organizationId: OrganizationId | null;
+  companyName: string | null;
+};
+
+export function isLicensePayload(payload: any): payload is LicensePayload {
+  const isObject = typeof payload === 'object' && payload !== null;
+  const existLicenseToken = 'licenseToken' in payload;
+  const existData = 'organizationId' in payload && 'companyName' in payload;
+
+  return isObject && existLicenseToken && existData;
+}
+
 export interface GoogleOAuthPayload extends OAuthPayLoad {}
 
 export function isGoogleOAuthPayload(payload: any): payload is GoogleOAuthPayload {

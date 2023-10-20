@@ -1,0 +1,6 @@
+export const LICENSE_ACTION_KEY = 'LICENSE_ACTION';
+export enum LICENSE_ACTION {
+  CREATE = 'CREATE',
+  RENEW = 'UPDATE',
+  GET = 'GET',
+}
