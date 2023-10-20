@@ -38,6 +38,8 @@ export class DeviceServerChild implements Child {
     const DOGU_IS_DEVICE_SHARE = appConfigService.getOrDefault<boolean>('DOGU_IS_DEVICE_SHARE', false);
     const DOGU_DEVICE_IOS_IS_IDAPROJECT_VALIDATED = await checkProjectEqual(this.logger).catch(() => false);
     const DOGU_LINUX_DEVICE_SERIAL = appConfigService.getOrDefault<string>('DOGU_LINUX_DEVICE_SERIAL', '');
+    const DOGU_WIFI_SSID = appConfigService.getOrDefault<string>('DOGU_WIFI_SSID', '');
+    const DOGU_WIFI_PASSWORD = appConfigService.getOrDefault<string>('DOGU_WIFI_PASSWORD', '');
 
     if (!isValidDoguRunType(DOGU_RUN_TYPE)) {
       throw new Error(`Invalid DOGU_RUN_TYPE: ${DOGU_RUN_TYPE}`);
@@ -69,6 +71,8 @@ export class DeviceServerChild implements Child {
           DOGU_DEVICE_IOS_IS_IDAPROJECT_VALIDATED: DOGU_DEVICE_IOS_IS_IDAPROJECT_VALIDATED ? 'true' : 'false',
           DOGU_IS_DEVICE_SHARE: DOGU_IS_DEVICE_SHARE ? 'true' : 'false',
           DOGU_LINUX_DEVICE_SERIAL,
+          DOGU_WIFI_SSID,
+          DOGU_WIFI_PASSWORD,
         },
       },
       childLogger: this.logger,

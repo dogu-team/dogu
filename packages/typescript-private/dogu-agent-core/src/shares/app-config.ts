@@ -41,6 +41,12 @@ export const AppConfigSchema = {
   DOGU_IS_DEVICE_SHARE: {
     type: 'boolean',
   },
+  DOGU_WIFI_SSID: {
+    type: 'string',
+  },
+  DOGU_WIFI_PASSWORD: {
+    type: 'string',
+  },
   is_show_devui: {
     type: 'boolean',
   },

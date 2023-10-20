@@ -1,5 +1,5 @@
 import { Platform, PrivateProtocol, Serial } from '@dogu-private/types';
-import { delay, FilledPrintable, loop, stringify } from '@dogu-tech/common';
+import { delay, errorify, FilledPrintable, loop, stringify } from '@dogu-tech/common';
 import { HostPaths, killChildProcess } from '@dogu-tech/node';
 import child_process from 'child_process';
 import fs from 'fs';
@@ -99,17 +99,37 @@ export class AndroidSharedDeviceService implements Zombieable {
     this.state = 'reviving';
     if (!this.isSetupDone) {
       this.state = 'resetting';
-      await AndroidResetService.resetBeforeConnected(this.serial, this.printable);
+      await AndroidResetService.resetBeforeConnected(this.serial, this.printable).catch((e) => {
+        this.printable.error(`AndroidSharedDeviceService.revive.resetBeforeConnected failed.`, { error: errorify(e) });
+        throw e;
+      });
       this.state = 'preinstalling';
-      await this.preInstallApps();
-      await this.setGboardAsDefaultKeyboard();
-      await this.mute();
+      await Adb.allowNonMarketApps(this.serial, this.printable).catch((e) => {
+        this.printable.error(`AndroidSharedDeviceService.revive.allowNonMarketApps failed.`, { error: errorify(e) });
+      });
+      await this.preInstallApps().catch((e) => {
+        this.printable.error(`AndroidSharedDeviceService.revive.preInstallApps failed.`, { error: errorify(e) });
+      });
+      await this.setGboardAsDefaultKeyboard().catch((e) => {
+        this.printable.error(`AndroidSharedDeviceService.revive.setGboardAsDefaultKeyboard failed.`, { error: errorify(e) });
+      });
+      await this.mute().catch((e) => {
+        this.printable.error(`AndroidSharedDeviceService.revive.mute failed.`, { error: errorify(e) });
+      });
+      await Adb.setBrightness(this.serial, 50).catch((e) => {
+        this.printable.error(`AndroidSharedDeviceService.revive.setBrightness failed.`, { error: errorify(e) });
+      });
+      await AndroidResetService.joinWifi(this.serial, env.DOGU_WIFI_SSID, env.DOGU_WIFI_PASSWORD, this.printable).catch((e) => {
+        this.printable.error(`AndroidSharedDeviceService.revive.joinWifi failed.`, { error: errorify(e) });
+      });
       this.state = 'changing-locale';
       await this.appiumAdb.setDeviceLocale('en-US');
       this.isSetupDone = true;
       this.state = 'setup-done';
     }
-    await Adb.stayOnWhilePluggedIn(this.serial);
+    await Adb.stayOnWhilePluggedIn(this.serial).catch((e) => {
+      this.printable.error(`AndroidSharedDeviceService.revive.stayOnWhilePluggedIn failed.`, { error: errorify(e) });
+    });
     this.startLogcatProcess(this.serial, this.printable).catch((e) => {
       this.printable.error(e);
     });
@@ -186,14 +206,11 @@ export class AndroidSharedDeviceService implements Zombieable {
 
   private async preInstallApps(): Promise<void> {
     for (const app of PreinstallApps) {
-      await Adb.uninstallApp(this.serial, app.packageName, false, this.printable).catch((e) => {
-        this.printable.error(`AndroidSharedDeviceService.preInstallApps. uninstallApp failed.`, { e });
-      });
       if (!fs.existsSync(app.filePath())) {
         this.printable.warn(`AndroidSharedDeviceService.preInstallApps. file not exists.`, { app });
         continue;
       }
-      await Adb.installApp(this.serial, app.filePath(), this.printable);
+      await Adb.installAppForce(this.serial, app.filePath(), this.printable);
     }
   }
 
@@ -227,7 +244,7 @@ export class AndroidSharedDeviceService implements Zombieable {
   }
 
   private async mute(): Promise<void> {
-    for await (const _ of loop(100, 20)) {
+    for await (const _ of loop(30, 20)) {
       await Adb.keyevent(this.serial, DeviceControlKeycode.DEVICE_CONTROL_KEYCODE_VOLUME_DOWN);
     }
     await Adb.keyevent(this.serial, DeviceControlKeycode.DEVICE_CONTROL_KEYCODE_MUTE);
