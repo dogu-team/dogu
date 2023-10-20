@@ -27,6 +27,7 @@ COPY .dogu-workspace ./.dogu-workspace
 COPY .yarnrc.yml package.json tsconfig.json tsconfig.eslint.json .pnp.cjs .pnp.loader.mjs yarn.lock ./
 COPY .yarn ./.yarn
 COPY .husky ./.husky
+COPY .turbo.json ./.turbo.json
 COPY packages/typescript ./packages/typescript
 COPY packages/typescript-private ./packages/typescript-private
 COPY packages/typescript-dev-private ./packages/typescript-dev-private
