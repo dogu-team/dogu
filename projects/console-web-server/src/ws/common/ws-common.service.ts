@@ -161,7 +161,20 @@ export class WsCommonService {
     dataSource: DataSource,
     organizationId: OrganizationId,
     deviceId: DeviceId,
-    logger: DoguLogger,
+    liveSessionId: LiveSessionId | null,
+  ) {
+    if (liveSessionId) {
+      return await this.validateCloudDeviceAccessPermission(incomingMessage, dataSource, organizationId, liveSessionId);
+    } else {
+      return await this.validateOrganizationDeviceAccessPermission(incomingMessage, dataSource, organizationId, deviceId);
+    }
+  }
+
+  async validateOrganizationDeviceAccessPermission(
+    incomingMessage: IncomingMessage,
+    dataSource: DataSource,
+    organizationId: OrganizationId,
+    deviceId: DeviceId,
   ): Promise<ValidationResult> {
     // get jwt token from header
     const userId = await this.validateUserAuthToken(incomingMessage);

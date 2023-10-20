@@ -2,6 +2,7 @@ import { DeviceStreamingOffer } from '@dogu-private/console';
 import {
   DefaultScreenCaptureOption,
   DeviceId,
+  LiveSessionId,
   OrganizationId,
   Platform,
   Serial,
@@ -19,6 +20,7 @@ export interface WebRtcExchanger {
   startExchange(
     organizationId: OrganizationId,
     deviceId: DeviceId,
+    liveSessionId: LiveSessionId | null,
     serial: Serial,
     peerConnection: RTCPeerConnection,
     platform: Platform,
@@ -35,25 +37,34 @@ export class WebRtcTrickleExchanger implements WebRtcExchanger {
   startExchange(
     organizationId: OrganizationId,
     deviceId: DeviceId,
+    liveSessionId: LiveSessionId | null,
     serial: Serial,
     peerConnection: RTCPeerConnection,
     platform: Platform,
     option?: StreamingOption,
     onError?: (error: StreamingError) => PromiseOrValue<void>,
   ): void {
-    this.startExchangeInternal(organizationId, deviceId, serial, peerConnection, platform, option, onError).catch(
-      async (error) => {
-        if (onError !== undefined) {
-          await onError(error);
-        }
-        console.debug('startExchangeInternal error', error);
-      },
-    );
+    this.startExchangeInternal(
+      organizationId,
+      deviceId,
+      liveSessionId,
+      serial,
+      peerConnection,
+      platform,
+      option,
+      onError,
+    ).catch(async (error) => {
+      if (onError !== undefined) {
+        await onError(error);
+      }
+      console.debug('startExchangeInternal error', error);
+    });
   }
 
   private async startExchangeInternal(
     organizationId: OrganizationId,
     deviceId: DeviceId,
+    liveSessionId: LiveSessionId | null,
     serial: Serial,
     peerConnection: RTCPeerConnection,
     platform: Platform,
@@ -69,7 +80,9 @@ export class WebRtcTrickleExchanger implements WebRtcExchanger {
     });
 
     const url = new WebSocketUrlResolver().resolve(
-      `/ws/device-streaming-trickle-exchanger?organizationId=${organizationId}&deviceId=${deviceId}`,
+      `/ws/device-streaming-trickle-exchanger?organizationId=${organizationId}&deviceId=${deviceId}&liveSessionId=${
+        liveSessionId ?? ''
+      }`,
     );
     const webSocket = new WebSocket(url);
     if (this.webSocket) {

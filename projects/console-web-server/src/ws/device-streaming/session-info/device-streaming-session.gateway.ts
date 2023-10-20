@@ -71,6 +71,7 @@ export class DeviceStreamingSessionGateway implements OnGatewayConnection, OnGat
     const url = new URL(`http:${incomingMessage.url ?? ''}`);
     const organizationQuery = url.searchParams.get('organizationId');
     const deviceQuery = url.searchParams.get('deviceId');
+    const liveSessionQuery = url.searchParams.get('liveSessionId');
 
     const deviceStreamingQueryDto = await transformAndValidate(DeviceStreamingQueryDto, {
       organizationId: organizationQuery,
@@ -78,7 +79,7 @@ export class DeviceStreamingSessionGateway implements OnGatewayConnection, OnGat
     });
     const { deviceId, organizationId } = deviceStreamingQueryDto;
 
-    const rv = await this.wsCommonService.validateDeviceAccessPermission(incomingMessage, this.dataSource, organizationId, deviceId, this.logger);
+    const rv = await this.wsCommonService.validateDeviceAccessPermission(incomingMessage, this.dataSource, organizationId, deviceId, liveSessionQuery);
     if (rv.result === false) {
       this.logger.info(`DeviceStreamingGateway. handleConnection. ${rv.message}`);
       closeWebSocketWithTruncateReason(webSocket, 1003, 'Unauthorized');
