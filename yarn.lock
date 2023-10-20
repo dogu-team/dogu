@@ -7577,6 +7577,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/cheerio@npm:^0.22.31":
+  version: 0.22.33
+  resolution: "@types/cheerio@npm:0.22.33"
+  dependencies:
+    "@types/node": "*"
+  checksum: da4745b4d431b79c0ea046ae831a65f948d889bac5c7fe8b50b38055401e7c736e97c0f499e6506941b3ed4d80e4c5b8736b34fc7ecdcae48be7353eb24230be
+  languageName: node
+  linkType: hard
+
 "@types/cli-table@npm:0":
   version: 0.3.1
   resolution: "@types/cli-table@npm:0.3.1"
@@ -8248,6 +8257,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/lodash@npm:^4.14.195":
+  version: 4.14.200
+  resolution: "@types/lodash@npm:4.14.200"
+  checksum: 6471f8bb5da692a6ecf03a8da4935bfbc341e67ee9bcb4f5730bfacff0c367232548f0a01e8ac5ea18c6fe78fb085d502494e33ccb47a7ee87cbdee03b47d00d
+  languageName: node
+  linkType: hard
+
 "@types/long@npm:4.0.1":
   version: 4.0.1
   resolution: "@types/long@npm:4.0.1"
@@ -8363,6 +8379,15 @@ __metadata:
   version: 20.4.2
   resolution: "@types/node@npm:20.4.2"
   checksum: 99e544ea7560d51f01f95627fc40394c24a13da8f041121a0da13e4ef0a2aa332932eaf9a5e8d0e30d1c07106e96a183be392cbba62e8cf0bf6a085d5c0f4149
+  languageName: node
+  linkType: hard
+
+"@types/node@npm:^20.4.2":
+  version: 20.8.7
+  resolution: "@types/node@npm:20.8.7"
+  dependencies:
+    undici-types: ~5.25.1
+  checksum: 2173c0c03daefcb60c03a61b1371b28c8fe412e7a40dc6646458b809d14a85fbc7aeb369d957d57f0aaaafd99964e77436f29b3b579232d8f2b20c58abbd1d25
   languageName: node
   linkType: hard
 
@@ -8701,6 +8726,15 @@ __metadata:
   dependencies:
     "@types/ws": "*"
   checksum: a1b4c2cd365dc43b2a2df3b12eedb2daef4f8bc0b4a1d96960dd95269f83dfff14a078a4e2daa9d56b89ab006c6ccd39b4f724263fe3a5df71fa806e58612035
+  languageName: node
+  linkType: hard
+
+"@types/selenium-webdriver@npm:^4.1.15":
+  version: 4.1.19
+  resolution: "@types/selenium-webdriver@npm:4.1.19"
+  dependencies:
+    "@types/ws": "*"
+  checksum: 03ca8deb50b06c8d0b05a60aef4422de07d6b7e91170479c409d08fa7b117ae0b65cbc56d7a3eb58f9c7690d3d326fe932eb64d5b36feae624816704bc020a40
   languageName: node
   linkType: hard
 
@@ -10614,6 +10648,15 @@ __metadata:
     form-data: ^4.0.0
     proxy-from-env: ^1.1.0
   checksum: 7fb6a4313bae7f45e89d62c70a800913c303df653f19eafec88e56cea2e3821066b8409bc68be1930ecca80e861c52aa787659df0ffec6ad4d451c7816b9386b
+  languageName: node
+  linkType: hard
+
+"axios@npm:^0.26.0":
+  version: 0.26.1
+  resolution: "axios@npm:0.26.1"
+  dependencies:
+    follow-redirects: ^1.14.8
+  checksum: d9eb58ff4bc0b36a04783fc9ff760e9245c829a5a1052ee7ca6013410d427036b1d10d04e7380c02f3508c5eaf3485b1ae67bd2adbfec3683704745c8d7a6e1a
   languageName: node
   linkType: hard
 
@@ -15942,6 +15985,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"follow-redirects@npm:^1.14.8":
+  version: 1.15.3
+  resolution: "follow-redirects@npm:1.15.3"
+  peerDependenciesMeta:
+    debug:
+      optional: true
+  checksum: 584da22ec5420c837bd096559ebfb8fe69d82512d5585004e36a3b4a6ef6d5905780e0c74508c7b72f907d1fa2b7bd339e613859e9c304d0dc96af2027fd0231
+  languageName: node
+  linkType: hard
+
 "follow-redirects@npm:^1.14.9, follow-redirects@npm:^1.15.0":
   version: 1.15.2
   resolution: "follow-redirects@npm:1.15.2"
@@ -20258,7 +20311,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jszip@npm:^3.10.0":
+"jszip@npm:^3.10.0, jszip@npm:^3.10.1":
   version: 3.10.1
   resolution: "jszip@npm:3.10.1"
   dependencies:
@@ -24176,6 +24229,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"openai@npm:^3.3.0":
+  version: 3.3.0
+  resolution: "openai@npm:3.3.0"
+  dependencies:
+    axios: ^0.26.0
+    form-data: ^4.0.0
+  checksum: 28ccff8c09b6f47828c9583bb3bafc38a8459c76ea10eb9e08ca880f65523c5a9cc6c5f3c7669dded6f4c93e7cf49dd5c4dbfd12732a0f958c923117740d677b
+  languageName: node
+  linkType: hard
+
 "opencv-bindings@npm:4.5.5":
   version: 4.5.5
   resolution: "opencv-bindings@npm:4.5.5"
@@ -25118,6 +25181,30 @@ __metadata:
   bin:
     playwright-core: cli.js
   checksum: be91857b1bb56890b3929ed8cd529f5f5abe4b748f709abc8dbe5b0ee4c0e158247c3958fbccec6a52394dafe4619bc0e69c93d1b129a71b31ab3697771e4c5a
+  languageName: node
+  linkType: hard
+
+"playwright-core@npm:1.39.0":
+  version: 1.39.0
+  resolution: "playwright-core@npm:1.39.0"
+  bin:
+    playwright-core: cli.js
+  checksum: 556e78dee4f9890facf2af8249972e0d6e01a5ae98737b0f6b0166c660a95ffee4cb79350335b1ef96430a0ef01d3669daae9099fa46c8d403d11c623988238b
+  languageName: node
+  linkType: hard
+
+"playwright@npm:^1.37.1":
+  version: 1.39.0
+  resolution: "playwright@npm:1.39.0"
+  dependencies:
+    fsevents: 2.3.2
+    playwright-core: 1.39.0
+  dependenciesMeta:
+    fsevents:
+      optional: true
+  bin:
+    playwright: cli.js
+  checksum: 96d8ca5aa25465c1c5d554d0d6071981d55e22477800ff8f5d47a53ca75193d60ece2df538a01b7165b3277dd5493c67603a5acda713029df7fbd95ce2417bc9
   languageName: node
   linkType: hard
 
@@ -27962,6 +28049,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"selenium-webdriver@npm:^4.11.1":
+  version: 4.14.0
+  resolution: "selenium-webdriver@npm:4.14.0"
+  dependencies:
+    jszip: ^3.10.1
+    tmp: ^0.2.1
+    ws: ">=8.14.2"
+  checksum: 9ffc4c9e0f04814d348cce8b2a864ac64993837e3d25ac64c715b7856776aecbb55618d344e35e190c52e2613d5c56b23da51ebcad1a0727534d1c2d0c84977f
+  languageName: node
+  linkType: hard
+
 "semver@npm:2 || 3 || 4 || 5, semver@npm:^5.3.0, semver@npm:^5.5.0, semver@npm:^5.6.0, semver@npm:^5.7.1":
   version: 5.7.1
   resolution: "semver@npm:5.7.1"
@@ -28171,6 +28269,23 @@ __metadata:
     tar-fs: ^3.0.4
     tunnel-agent: ^0.6.0
   checksum: 3cd6dc037c9ba126a30af90ac94043c4418bbb4228e15fd446638ff43fc9b14eabb553037988e484162c318f7baff21d896a5bef7dcc453f608e247d468f41e0
+  languageName: node
+  linkType: hard
+
+"sharp@npm:^0.32.4":
+  version: 0.32.6
+  resolution: "sharp@npm:0.32.6"
+  dependencies:
+    color: ^4.2.3
+    detect-libc: ^2.0.2
+    node-addon-api: ^6.1.0
+    node-gyp: latest
+    prebuild-install: ^7.1.1
+    semver: ^7.5.4
+    simple-get: ^4.0.1
+    tar-fs: ^3.0.4
+    tunnel-agent: ^0.6.0
+  checksum: 0cca1d16b1920800c0e22d27bc6305f4c67c9ebe44f67daceb30bf645ae39e7fb7dfbd7f5d6cd9f9eebfddd87ac3f7e2695f4eb906d19b7a775286238e6a29fc
   languageName: node
   linkType: hard
 
@@ -29608,6 +29723,25 @@ __metadata:
   languageName: node
   linkType: hard
 
+"test-codeless@workspace:projects/test-codeless":
+  version: 0.0.0-use.local
+  resolution: "test-codeless@workspace:projects/test-codeless"
+  dependencies:
+    "@types/cheerio": ^0.22.31
+    "@types/lodash": ^4.14.195
+    "@types/node": ^20.4.2
+    "@types/selenium-webdriver": ^4.1.15
+    cheerio: ^1.0.0-rc.12
+    lodash: ^4.17.21
+    openai: ^3.3.0
+    playwright: ^1.37.1
+    selenium-webdriver: ^4.11.1
+    sharp: ^0.32.4
+    ts-node: ^10.9.1
+    typescript: ^5.1.6
+  languageName: unknown
+  linkType: soft
+
 "test-exclude@npm:^6.0.0":
   version: 6.0.0
   resolution: "test-exclude@npm:6.0.0"
@@ -30028,7 +30162,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ts-node@npm:10.9.1":
+"ts-node@npm:10.9.1, ts-node@npm:^10.9.1":
   version: 10.9.1
   resolution: "ts-node@npm:10.9.1"
   dependencies:
@@ -30542,6 +30676,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"typescript@npm:^5.1.6":
+  version: 5.2.2
+  resolution: "typescript@npm:5.2.2"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: 7912821dac4d962d315c36800fe387cdc0a6298dba7ec171b350b4a6e988b51d7b8f051317786db1094bd7431d526b648aba7da8236607febb26cf5b871d2d3c
+  languageName: node
+  linkType: hard
+
 "typescript@patch:typescript@4.5.2#~builtin<compat/typescript>":
   version: 4.5.2
   resolution: "typescript@patch:typescript@npm%3A4.5.2#~builtin<compat/typescript>::version=4.5.2&hash=bcec9a"
@@ -30559,6 +30703,16 @@ __metadata:
     tsc: bin/tsc
     tsserver: bin/tsserver
   checksum: 9096d8f6c16cb80ef3bf96fcbbd055bf1c4a43bd14f3b7be45a9fbe7ada46ec977f604d5feed3263b4f2aa7d4c7477ce5f9cd87de0d6feedec69a983f3a4f93e
+  languageName: node
+  linkType: hard
+
+"typescript@patch:typescript@^5.1.6#~builtin<compat/typescript>":
+  version: 5.2.2
+  resolution: "typescript@patch:typescript@npm%3A5.2.2#~builtin<compat/typescript>::version=5.2.2&hash=ad5954"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: 07106822b4305de3f22835cbba949a2b35451cad50888759b6818421290ff95d522b38ef7919e70fb381c5fe9c1c643d7dea22c8b31652a717ddbd57b7f4d554
   languageName: node
   linkType: hard
 
@@ -30637,6 +30791,13 @@ __metadata:
   version: 1.13.6
   resolution: "underscore@npm:1.13.6"
   checksum: d5cedd14a9d0d91dd38c1ce6169e4455bb931f0aaf354108e47bd46d3f2da7464d49b2171a5cf786d61963204a42d01ea1332a903b7342ad428deaafaf70ec36
+  languageName: node
+  linkType: hard
+
+"undici-types@npm:~5.25.1":
+  version: 5.25.3
+  resolution: "undici-types@npm:5.25.3"
+  checksum: ec9d2cc36520cbd9fbe3b3b6c682a87fe5be214699e1f57d1e3d9a2cb5be422e62735f06e0067dc325fd3dd7404c697e4d479f9147dc8a804e049e29f357f2ff
   languageName: node
   linkType: hard
 
@@ -31728,6 +31889,21 @@ __metadata:
     utf-8-validate:
       optional: true
   checksum: 23aa0f021b2eb65c108ec4c3e08c0d81ba01f82b500432dfe327fd6be36079c1d81fdb0eac6464d2a0eb49904d34a9ab8c59619d673fa07b8346f83aeb0cbf12
+  languageName: node
+  linkType: hard
+
+"ws@npm:>=8.14.2":
+  version: 8.14.2
+  resolution: "ws@npm:8.14.2"
+  peerDependencies:
+    bufferutil: ^4.0.1
+    utf-8-validate: ">=5.0.2"
+  peerDependenciesMeta:
+    bufferutil:
+      optional: true
+    utf-8-validate:
+      optional: true
+  checksum: 3ca0dad26e8cc6515ff392b622a1467430814c463b3368b0258e33696b1d4bed7510bc7030f7b72838b9fdeb8dbd8839cbf808367d6aae2e1d668ce741d4308b
   languageName: node
   linkType: hard
 
