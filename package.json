@@ -54,6 +54,7 @@
     "prebuilds/*",
     "samples/*",
     "e2e",
+    "env-generator",
     "validators",
     "dogu-actions/*",
     "user-templates/*"

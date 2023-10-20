@@ -1,0 +1,53 @@
+{
+  "name": "env-generator",
+  "version": "0.0.3",
+  "description": "",
+  "license": "ISC",
+  "author": "",
+  "main": "build/src/index.js",
+  "bin": "build/src/cli.js",
+  "files": [
+    "build"
+  ],
+  "scripts": {
+    "build": "tsc -b",
+    "clean": "shx rm -rf build generated",
+    "cli": "ts-node src/cli.ts",
+    "dev": "nodemon",
+    "dist": "npm run rebuild && shx rm -rf bin && pkg . --compress GZip && shx mv bin/env-generator-win.exe bin/env-generator.exe && shx mv bin/env-generator-macos bin/env-generator",
+    "rebuild": "npm run clean && npm run build",
+    "start": "ts-node src/index.ts",
+    "watch": "clear; echo @dogu-dev-private/env-generator Watching... && nodemon"
+  },
+  "types": "build/src/index.d.ts",
+  "dependencies": {
+    "@google-cloud/local-auth": "^2.0.1",
+    "class-transformer": "0.5.1",
+    "class-validator": "0.14.0",
+    "commander": "^11.0.0",
+    "dotenv": "16.0.3",
+    "google-auth-library": "^8.7.0",
+    "googleapis": "112.0.0",
+    "lodash": "4.17.21",
+    "pkg": "^5.8.1",
+    "reflect-metadata": "0.1.13",
+    "winston": "3.8.2"
+  },
+  "devDependencies": {
+    "@types/lodash": "4.14.186",
+    "@types/node": "18.15.11",
+    "@types/yargs": "17.0.23",
+    "nodemon": "2.0.22",
+    "shx": "0.3.4",
+    "ts-node": "10.9.1",
+    "typescript": "4.7.4"
+  },
+  "pkg": {
+    "targets": [
+      "node16-macos-x64",
+      "node16-win-x64",
+      "node16-linux-x64"
+    ],
+    "outputPath": "bin"
+  }
+}
