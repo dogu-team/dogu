@@ -1,8 +1,9 @@
 import { PrivateHostToken } from '@dogu-private/console-host-agent';
 import { Device, Platform, ThirdPartyPathMap } from '@dogu-private/types';
-import { Class, Instance, KindHavable } from '@dogu-tech/common';
+import { Class, Instance, KindHavable, Registry } from '@dogu-tech/common';
 import { BrowserInstallation } from '@dogu-tech/device-client';
 import { MessageHandler, MessagePattern } from '@nestjs/microservices';
+import WebSocket from 'ws';
 import { MessageTransportId } from './message/message.microservice';
 import { MessageContext } from './message/message.types';
 
@@ -18,7 +19,10 @@ export interface HostResolutionInfo extends HostConnectionInfo {
   pathMap: ThirdPartyPathMap;
 }
 
-export type DeviceConnectionInfo = Pick<Device, 'serial' | 'serialUnique' | 'platform' | 'model' | 'version' | 'organizationId' | 'hostId' | 'isVirtual' | 'memory'> & {
+export type DeviceConnectionInfo = Pick<
+  Device,
+  'serial' | 'serialUnique' | 'platform' | 'model' | 'version' | 'organizationId' | 'hostId' | 'isVirtual' | 'memory' | 'manufacturer' | 'resolutionWidth' | 'resolutionHeight'
+> & {
   browserInstallations: BrowserInstallation[];
 };
 export interface DeviceResolutionInfo extends DeviceConnectionInfo, Pick<Device, 'deviceId'> {
@@ -45,3 +49,35 @@ export function OnConsoleMessage<P extends Class<P>, R extends Class<R>>(param: 
 
 export type ResolveValue<T> = T | PromiseLike<T>;
 export type Resolve<T> = (value: ResolveValue<T>) => void;
+
+export interface DeviceWebSocketHandler {
+  onUnregister(webSocket: WebSocket): void;
+}
+
+export class DeviceWebSocketMap {
+  private readonly map: Registry<string, { webSocket: WebSocket; handler: DeviceWebSocketHandler }>;
+
+  constructor(name: string) {
+    this.map = new Registry(name);
+  }
+
+  register(key: string, webSocket: WebSocket, handler: DeviceWebSocketHandler): void {
+    this.map.register(key, { webSocket, handler });
+  }
+
+  unregister(key: string): void {
+    const value = this.map.unregister(key);
+    if (!value) {
+      return;
+    }
+
+    const { webSocket, handler } = value;
+    handler.onUnregister(webSocket);
+  }
+
+  unregisterAll(): void {
+    for (const key of this.map.keys()) {
+      this.unregister(key);
+    }
+  }
+}

@@ -37,7 +37,12 @@ export class DeviceJobLogProcessRegistry {
     const { organizationId, deviceId, routineDeviceJobId, serial } = value;
     const webSocket = new WebSocket(`ws://${env.DOGU_DEVICE_SERVER_HOST_PORT}${DeviceLogSubscribe.path}`);
     const key = this.createKey(organizationId, deviceId, routineDeviceJobId);
+
+    if (this.webSockets.has(key)) {
+      throw new Error(`device log already exists: ${key}`);
+    }
     this.webSockets.set(key, { webSocket, serial, organizationId, deviceId, routineDeviceJobId });
+
     webSocket.addEventListener('open', () => {
       this.logger.info('startDeviceLogSubscribe open');
       const sendMessage: Instance<typeof DeviceLogSubscribe.sendMessage> = {

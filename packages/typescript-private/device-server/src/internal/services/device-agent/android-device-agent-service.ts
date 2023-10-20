@@ -1,5 +1,5 @@
 import { DeviceSystemInfo, Platform, PrivateProtocol, Serial } from '@dogu-private/types';
-import { delay, FilledPrintable, Milisecond, Printable, stringifyError } from '@dogu-tech/common';
+import { closeWebSocketWithTruncateReason, delay, FilledPrintable, Milisecond, Printable, stringifyError } from '@dogu-tech/common';
 import { isFreePort, killChildProcess } from '@dogu-tech/node';
 import child_process from 'child_process';
 import { EventEmitter } from 'stream';
@@ -202,6 +202,11 @@ export class AndroidDeviceAgentService implements DeviceAgentService, Zombieable
       killChildProcess(this.proc).catch((error) => {
         this.logger.error('AndroidDeviceAgentService killChildProcess', { error });
       });
+    }
+
+    if (this.protoWs) {
+      closeWebSocketWithTruncateReason(this.protoWs, 1000, 'Device disconnected');
+      this.protoWs = undefined;
     }
   }
 

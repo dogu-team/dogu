@@ -2,8 +2,8 @@ import { DeviceId, HostId, OrganizationId, Platform, Serial, ThirdPartyPathMap }
 import { createEventDefinition, IsFilledString } from '@dogu-tech/common';
 import { BrowserInstallation } from '@dogu-tech/device-client';
 import { Type } from 'class-transformer';
-import { IsArray, IsEnum, IsNotEmpty, IsNotEmptyObject, IsNumber, IsString, IsUUID, Max, Min, ValidateNested } from 'class-validator';
-import { DeviceConnectionInfo, DeviceResolutionInfo } from '../types';
+import { IsArray, IsEnum, IsNotEmpty, IsNotEmptyObject, IsNumber, IsObject, IsString, IsUUID, Max, Min, ValidateNested } from 'class-validator';
+import { DeviceConnectionInfo, DeviceResolutionInfo, DeviceWebSocketMap } from '../types';
 
 export class OnDeviceConnectedEventValue implements DeviceConnectionInfo {
   @IsFilledString()
@@ -87,3 +87,10 @@ export const OnDeviceResolvedEvent = createEventDefinition('OnDeviceResolved', O
 
 export class OnDeviceConnectionSubscriberDisconnectedEventValue {}
 export const OnDeviceConnectionSubscriberDisconnectedEvent = createEventDefinition('OnDeviceConnectionSubscriberDisconnected', OnDeviceConnectionSubscriberDisconnectedEventValue);
+
+export class OnDeviceRegisteredEventValue extends OnDeviceResolvedEventValue {
+  @IsObject()
+  webSocketMap!: DeviceWebSocketMap;
+}
+
+export const OnDeviceRegisteredEvent = createEventDefinition('OnDeviceRegistered', OnDeviceRegisteredEventValue);

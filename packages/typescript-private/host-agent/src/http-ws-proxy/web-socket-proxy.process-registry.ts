@@ -38,6 +38,9 @@ export class WebSocketProxyProcessRegistry {
     const { deviceId, organizationId } = info;
     const webSocket = new WebSocket(`ws://${env.DOGU_DEVICE_SERVER_HOST_PORT}${path}`, { headers });
     const webSocketProxyInfo: WebSocketProxyInfo = { webSocket, organizationId, deviceId, webSocketProxyId };
+    if (this.webSockets.has(webSocketProxyId)) {
+      throw new Error(`Device webSocket already exists. ${webSocketProxyId}`);
+    }
     this.webSockets.set(webSocketProxyId, webSocketProxyInfo);
     const canceler: MessageCanceler = {
       cancel: () => {

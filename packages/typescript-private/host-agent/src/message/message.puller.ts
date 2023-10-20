@@ -1,13 +1,13 @@
 import { ErrorResult, Param, ParamValue, PrivateDevice, PrivateDeviceWs, Result, ResultValue } from '@dogu-private/console-host-agent';
-import { Code, createConsoleApiAuthHeader, DeviceId, OrganizationId, Serial } from '@dogu-private/types';
-import { closeWebSocketWithTruncateReason, DuplicatedCallGuarder, errorify, Instance, stringify, transformAndValidate } from '@dogu-tech/common';
+import { Code, createConsoleApiAuthHeader, DeviceId, OrganizationId } from '@dogu-private/types';
+import { closeWebSocketWithTruncateReason, errorify, Instance, stringify, transformAndValidate } from '@dogu-tech/common';
 import { MultiPlatformEnvironmentVariableReplacer } from '@dogu-tech/node';
 import { Injectable } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import WebSocket from 'ws';
 import { ConsoleClientService } from '../console-client/console-client.service';
 import { getConsoleBaseUrlWs } from '../console-client/console-url';
-import { OnDeviceDisconnectedEvent, OnDeviceResolvedEvent } from '../device/device.events';
+import { OnDeviceRegisteredEvent } from '../device/device.events';
 import { DeviceRegistry } from '../device/device.registry';
 import { env } from '../env';
 import { DoguLogger } from '../logger/logger';
@@ -18,43 +18,29 @@ import { MessageContext, NullMessageEventHandler } from './message.types';
 type Value = DeviceResolutionInfo & { webSocket: WebSocket };
 @Injectable()
 export class MessagePuller {
-  private readonly pullDuplicatedCallGuader = new DuplicatedCallGuarder();
   private messageHandlers: MessageHandlers | null = null;
-  private readonly _devices = new Map<Serial, Value>();
 
   constructor(private readonly consoleClientService: ConsoleClientService, private readonly deviceRegistry: DeviceRegistry, private readonly logger: DoguLogger) {}
 
-  @OnEvent(OnDeviceResolvedEvent.key)
-  onDeviceResolved(value: Instance<typeof OnDeviceResolvedEvent.value>): void {
-    const { serial } = value;
-    if (this._devices.has(serial)) {
-      throw new Error(`MessagePuller.device ${serial} already exists`);
-    }
+  @OnEvent(OnDeviceRegisteredEvent.key)
+  onDeviceRegisteredEvent(value: Instance<typeof OnDeviceRegisteredEvent.value>): void {
     this.subscribeDevice(value);
   }
 
-  subscribeDevice(value: Instance<typeof OnDeviceResolvedEvent.value>): void {
+  subscribeDevice(value: Instance<typeof OnDeviceRegisteredEvent.value>): void {
     const webSocket = this.subscribeParamDatas(value);
-    this._devices.set(value.serial, { ...value, webSocket });
-  }
-
-  @OnEvent(OnDeviceDisconnectedEvent.key)
-  onDeviceDisconnected(value: Instance<typeof OnDeviceDisconnectedEvent.value>): void {
-    const { serial } = value;
-    const device = this._devices.get(serial);
-    if (!device) {
-      throw new Error(`MessagePuller.device ${serial} not exists`);
-    }
-    const { webSocket } = device;
-    this._devices.delete(serial);
-    closeWebSocketWithTruncateReason(webSocket, 1000, 'Device disconnected');
+    value.webSocketMap.register(MessagePuller.name, webSocket, {
+      onUnregister: (webSocket) => {
+        closeWebSocketWithTruncateReason(webSocket, 1000, 'Device disconnected');
+      },
+    });
   }
 
   setMessageHandlers(handlers: MessageHandlers): void {
     this.messageHandlers = handlers;
   }
 
-  private subscribeParamDatas(value: Instance<typeof OnDeviceResolvedEvent.value>): WebSocket {
+  private subscribeParamDatas(value: Instance<typeof OnDeviceRegisteredEvent.value>): WebSocket {
     const { organizationId, hostId, deviceId } = value;
 
     const webSocket = new WebSocket(
@@ -69,7 +55,9 @@ export class MessagePuller {
     });
     webSocket.on('close', (code, reason) => {
       this.logger.info('MemssagePuller.subscribeParaDatas.close', { serial: value.serial, code, reason: reason.toString() });
-      if (this._devices.has(value.serial)) {
+      const registryValue = this.deviceRegistry.get(value.serial);
+      if (registryValue) {
+        registryValue.webSocketMap.unregister(MessagePuller.name);
         setTimeout(() => {
           this.logger.info('MemssagePuller.subscribeParaDatas.reconnect', { serial: value.serial });
           this.subscribeDevice(value);

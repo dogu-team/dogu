@@ -8,42 +8,22 @@ import WebSocket from 'ws';
 import { ConsoleClientService } from '../console-client/console-client.service';
 import { env } from '../env';
 import { DoguLogger } from '../logger/logger';
-import { DeviceResolutionInfo } from '../types';
-import { OnDeviceConnectionSubscriberDisconnectedEvent, OnDeviceDisconnectedEvent, OnDeviceResolvedEvent } from './device.events';
-
-type Value = DeviceResolutionInfo & { webSocket: WebSocket };
+import { OnDeviceRegisteredEvent } from './device.events';
+import { DeviceRegistry } from './device.registry';
 
 @Injectable()
 export class DeviceRuntimeInfoSubscriber {
-  private readonly _devices = new Map<Serial, Value>();
+  constructor(private readonly logger: DoguLogger, private readonly consoleClientService: ConsoleClientService, private readonly deviceRegistry: DeviceRegistry) {}
 
-  constructor(private readonly logger: DoguLogger, private readonly consoleClientService: ConsoleClientService) {}
-
-  @OnEvent(OnDeviceConnectionSubscriberDisconnectedEvent.key)
-  onDeviceConnectionSubscriberDisconnected(value: Instance<typeof OnDeviceConnectionSubscriberDisconnectedEvent.value>): void {
-    this._devices.clear();
-  }
-
-  @OnEvent(OnDeviceResolvedEvent.key)
-  onDeviceResolved(value: Instance<typeof OnDeviceResolvedEvent.value>): void {
+  @OnEvent(OnDeviceRegisteredEvent.key)
+  onDeviceRegistered(value: Instance<typeof OnDeviceRegisteredEvent.value>): void {
     const { organizationId, deviceId, serial } = value;
-    if (this._devices.has(serial)) {
-      throw new Error(`device ${serial} already exists`);
-    }
     const webSocket = this.subscribeRuntimeInfo(organizationId, deviceId, serial);
-    this._devices.set(serial, { ...value, webSocket });
-  }
-
-  @OnEvent(OnDeviceDisconnectedEvent.key)
-  onDeviceDisconnected(value: Instance<typeof OnDeviceDisconnectedEvent.value>): void {
-    const { serial } = value;
-    const device = this._devices.get(serial);
-    if (!device) {
-      throw new Error(`device ${serial} not exists`);
-    }
-    const { webSocket } = device;
-    closeWebSocketWithTruncateReason(webSocket, 1000, 'Device disconnected');
-    this._devices.delete(serial);
+    value.webSocketMap.register(DeviceRuntimeInfoSubscriber.name, webSocket, {
+      onUnregister: (webSocket) => {
+        closeWebSocketWithTruncateReason(webSocket, 1000, 'Device disconnected');
+      },
+    });
   }
 
   private subscribeRuntimeInfo(organizationId: OrganizationId, deviceId: DeviceId, serial: Serial): WebSocket {
