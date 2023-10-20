@@ -19,7 +19,19 @@ export async function emitEventAsync<Key extends string, Value extends Class<Val
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let results: any[] = [];
   try {
-    results = await eventEmitter.emitAsync(eventDefinition.key, value);
+    const listeners = eventEmitter.listeners(eventDefinition.key);
+    if (listeners.length === 0) {
+      return [];
+    }
+
+    for (const listener of listeners) {
+      try {
+        const result = await Promise.resolve(listener(value));
+        results.push(result);
+      } catch (error) {
+        results.push(error);
+      }
+    }
   } catch (error) {
     console.debug('eventEmitter.emitAsync failed', error);
     throw error;

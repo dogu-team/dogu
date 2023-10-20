@@ -72,6 +72,10 @@ export class WebRtcTrickleExchanger implements WebRtcExchanger {
       `/ws/device-streaming-trickle-exchanger?organizationId=${organizationId}&deviceId=${deviceId}`,
     );
     const webSocket = new WebSocket(url);
+    if (this.webSocket) {
+      this.webSocket.close();
+      this.webSocket = null;
+    }
     this.webSocket = webSocket;
 
     webSocket.addEventListener('open', (event) => {

@@ -13,12 +13,18 @@ export class Registry<Key, Value> {
     this.map.set(key, value);
   }
 
-  unregister(key: Key): void {
+  unregister(key: Key): Value | undefined {
     if (!this.map.has(key)) {
-      return;
+      return undefined;
     }
 
+    const value = this.map.get(key);
     this.map.delete(key);
+    return value;
+  }
+
+  keys(): Key[] {
+    return Array.from(this.map.keys());
   }
 
   get(key: Key): Value {
@@ -38,5 +44,9 @@ export class Registry<Key, Value> {
 
   forEach(callback: (value: Value, key: Key, map: Map<Key, Value>) => void): void {
     this.map.forEach(callback);
+  }
+
+  clear(): void {
+    this.map.clear();
   }
 }

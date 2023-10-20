@@ -7,19 +7,19 @@ import { ConsoleClientService } from '../console-client/console-client.service';
 import { env } from '../env';
 import { DoguLogger } from '../logger/logger';
 import { logger } from '../logger/logger.instance';
-import { OnDeviceResolvedEvent } from './device.events';
+import { OnDeviceRegisteredEvent } from './device.events';
 
 @Injectable()
 export class DeviceUpdater {
   constructor(private readonly consoleClientService: ConsoleClientService, private readonly logger: DoguLogger) {}
 
-  @OnEvent(OnDeviceResolvedEvent.key)
-  async onDeviceResolved(value: Instance<typeof OnDeviceResolvedEvent.value>): Promise<void> {
+  @OnEvent(OnDeviceRegisteredEvent.key)
+  async onDeviceRegisteredEvent(value: Instance<typeof OnDeviceRegisteredEvent.value>): Promise<void> {
     await this.updateDevice(value);
   }
 
   @Retry({ printable: logger })
-  private async updateDevice(value: Instance<typeof OnDeviceResolvedEvent.value>): Promise<void> {
+  private async updateDevice(value: Instance<typeof OnDeviceRegisteredEvent.value>): Promise<void> {
     const {
       organizationId, //
       deviceId,

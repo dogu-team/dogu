@@ -56,6 +56,7 @@ export class DeviceJobRecordingProcessRegistry {
       return;
     }
     const key = this.createKey(organizationId, deviceId, routineDeviceJobId);
+
     const fileName = toISOStringWithTimezone(new Date(), '-');
     const filePath = path.resolve(recordDeviceRunnerPath, `${fileName}${getRecordExt(platform)}`);
     const webSocket = this.record.connectAndUploadRecordWs(value, filePath, {
@@ -63,6 +64,10 @@ export class DeviceJobRecordingProcessRegistry {
         this.webSockets.delete(key);
       },
     });
+
+    if (this.webSockets.has(key)) {
+      throw new Error(`device recording already exists: ${key}`);
+    }
 
     this.webSockets.set(key, { webSocket, serial, organizationId, deviceId, routineDeviceJobId, filePath });
   }
@@ -80,10 +85,6 @@ export class DeviceJobRecordingProcessRegistry {
       return;
     }
     const { webSocket } = deviceRecordingInfo;
-    if (webSocket.readyState === WebSocket.CLOSING || webSocket.readyState === WebSocket.CLOSED) {
-      this.logger.warn('onDeviceJobCancelRequested: webSocket is already closing or closed', { organizationId, deviceId, routineDeviceJobId });
-      return;
-    }
     closeWebSocketWithTruncateReason(webSocket, 1001, 'Cancel requested');
   }
 

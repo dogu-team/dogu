@@ -1,5 +1,5 @@
 import { DeviceSystemInfo, Platform, PrivateProtocol, Serial } from '@dogu-private/types';
-import { delay, FilledPrintable, Milisecond, Printable, stringifyError } from '@dogu-tech/common';
+import { closeWebSocketWithTruncateReason, delay, FilledPrintable, Milisecond, Printable, stringifyError } from '@dogu-tech/common';
 import { isFreePort, killChildProcess } from '@dogu-tech/node';
 import child_process from 'child_process';
 import { EventEmitter } from 'stream';
@@ -57,11 +57,18 @@ export class AndroidDeviceAgentService implements DeviceAgentService, Zombieable
     await this.zombieWaiter?.waitUntilAlive();
   }
 
+  private closeProtoWs(): void {
+    if (!this.protoWs) return;
+    closeWebSocketWithTruncateReason(this.protoWs, 1000, 'Device disconnected');
+    this.protoWs = undefined;
+  }
+
   private async connect(): Promise<void> {
     const ws = new WebSocket(`ws://127.0.0.1:${this.port}/proto`);
     this.logger.info(`AndroidDeviceAgentService.connect serial: ${this.serial}, ws connecting...`);
 
     ws.on('open', () => {
+      this.closeProtoWs();
       this.protoWs = ws;
       this.protoWs.on('message', (data) => this.onMessage(data));
       const seq = this.getSeq();
@@ -203,6 +210,8 @@ export class AndroidDeviceAgentService implements DeviceAgentService, Zombieable
         this.logger.error('AndroidDeviceAgentService killChildProcess', { error });
       });
     }
+
+    this.closeProtoWs();
   }
 
   async update(): Promise<void> {
