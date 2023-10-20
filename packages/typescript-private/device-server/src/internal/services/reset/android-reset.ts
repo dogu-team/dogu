@@ -21,35 +21,11 @@ export class AndroidResetService {
     }
   }
 
-  static async resetManual(serial: Serial, appiumAdb: AppiumAdb, appiumContext: AppiumContext, logger: Printable): Promise<void> {
-    await AndroidResetService.resetAccounts(serial, appiumAdb, appiumContext, logger);
-
-    // should delete appium after you are finished using it.
-    await AndroidResetService.resetBeforeConnected(serial, logger);
-
-    await Adb.reboot(serial);
-  }
-
   static async resetBeforeConnected(serial: Serial, logger: Printable): Promise<void> {
     await Adb.resetPackages(serial, logger);
     await Adb.resetSdcard(serial, logger);
     await AndroidResetService.resetIMEList(serial, logger);
     await Adb.logcatClear(serial, logger);
-  }
-
-  static async resetIMEList(serial: Serial, logger: Printable): Promise<void> {
-    const imes = await Adb.getIMEList(serial);
-    for (const ime of imes) {
-      await Adb.clearApp(serial, ime.packageName, logger).catch((err) => {
-        logger.error(`AndroidResetService.resetIMEList adb.resetPackages failed to clear`, { error: stringify(err), package: ime.packageName, serial });
-      });
-      await Adb.putIMESecure(serial, ime).catch((err) => {
-        logger.error(`AndroidResetService.resetIMEList adb.resetPackages failed to put`, { error: stringify(err), package: ime.packageName, serial });
-      });
-    }
-    await Adb.resetIME(serial).catch((err) => {
-      logger.error(`AndroidResetService.resetIMEList adb.resetPackages failed to resetIME`, { error: stringify(err), serial });
-    });
   }
 
   /**
@@ -101,6 +77,30 @@ export class AndroidResetService {
     await Adb.shell(serial, `am force-stop ${appName}`).catch((error) => {
       logger.error('AndroidResetService.joinWifi failed adb.joinWifi.force-stop', { error: errorify(error) });
     });
+  }
+
+  private static async resetIMEList(serial: Serial, logger: Printable): Promise<void> {
+    const imes = await Adb.getIMEList(serial);
+    for (const ime of imes) {
+      await Adb.clearApp(serial, ime.packageName, logger).catch((err) => {
+        logger.error(`AndroidResetService.resetIMEList adb.resetPackages failed to clear`, { error: stringify(err), package: ime.packageName, serial });
+      });
+      await Adb.putIMESecure(serial, ime).catch((err) => {
+        logger.error(`AndroidResetService.resetIMEList adb.resetPackages failed to put`, { error: stringify(err), package: ime.packageName, serial });
+      });
+    }
+    await Adb.resetIME(serial).catch((err) => {
+      logger.error(`AndroidResetService.resetIMEList adb.resetPackages failed to resetIME`, { error: stringify(err), serial });
+    });
+  }
+
+  private static async resetManual(serial: Serial, appiumAdb: AppiumAdb, appiumContext: AppiumContext, logger: Printable): Promise<void> {
+    await AndroidResetService.resetAccounts(serial, appiumAdb, appiumContext, logger);
+
+    // should delete appium after you are finished using it.
+    await AndroidResetService.resetBeforeConnected(serial, logger);
+
+    await Adb.reboot(serial);
   }
 
   private static async resetAccounts(serial: Serial, appiumAdb: AppiumAdb, appiumContext: AppiumContext, logger: Printable): Promise<void> {
