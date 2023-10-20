@@ -9,7 +9,6 @@
     "build": "turbo run build --filter='./packages/**' --filter='./projects/**'",
     "build:actions": "turbo run build --filter='./dogu-actions/**'",
     "build:archive": "turbo run build:archive",
-    "build:docs": "turbo run build --filter='./docs/**",
     "build:packages": "turbo run build --filter='./packages/**'",
     "build:python": "turbo run build:python",
     "clean": "shx rm -rf node_modules/.cache/turbo && turbo run clean",
@@ -56,7 +55,6 @@
     "samples/*",
     "e2e",
     "validators",
-    "docs",
     "dogu-actions/*",
     "user-templates/*"
   ],
