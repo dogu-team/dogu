@@ -15,7 +15,6 @@ import { DeviceResolutionInfo, MessageHandlers, MessageInfo } from '../types';
 import { MessageRouter } from './message.router';
 import { MessageContext, NullMessageEventHandler } from './message.types';
 
-type Value = DeviceResolutionInfo & { webSocket: WebSocket };
 @Injectable()
 export class MessagePuller {
   private messageHandlers: MessageHandlers | null = null;
