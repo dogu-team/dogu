@@ -1,0 +1,36 @@
+version: '3.7'
+
+services:
+  dev-billing-server:
+    container_name: dev-billing-server
+    image: 290423440349.dkr.ecr.ap-northeast-2.amazonaws.com/dev-billing-server:latest
+    pull_policy: always
+    restart: always
+    ports:
+      - '4001:4001'
+    environment:
+      - DOGU_CLIENT_ADMIN_RDS_HOST=
+      - DOGU_CLIENT_ADMIN_RDS_PORT=
+      - DOGU_CLIENT_ADMIN_RDS_SCHEMA=
+      - DOGU_CLIENT_ADMIN_RDS_USERNAME=
+      - DOGU_CLIENT_ADMIN_RDS_PASSWORD=
+      - DOGU_CLIENT_ADMIN_RDS_SSL_CONNECTION=
+      - DOGU_CLIENT_ADMIN_RUN_TYPE=
+      - DOGU_CLIENT_ADMIN_API_TOKEN=
+
+  prod-billing-server:
+    container_name: prod-billing-server
+    image: 910027912039.dkr.ecr.ap-northeast-2.amazonaws.com/prod-billing-server:latest
+    pull_policy: always
+    restart: always
+    ports:
+      - '4001:4001'
+    environment:
+      - DOGU_CLIENT_ADMIN_RDS_HOST=
+      - DOGU_CLIENT_ADMIN_RDS_PORT=
+      - DOGU_CLIENT_ADMIN_RDS_SCHEMA=
+      - DOGU_CLIENT_ADMIN_RDS_USERNAME=
+      - DOGU_CLIENT_ADMIN_RDS_PASSWORD=
+      - DOGU_CLIENT_ADMIN_RDS_SSL_CONNECTION=
+      - DOGU_CLIENT_ADMIN_RUN_TYPE=
+      - DOGU_CLIENT_ADMIN_API_TOKEN=
