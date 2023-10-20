@@ -35,7 +35,7 @@ jobs:
 
   start-dogu:
     needs: input_validation
-    runs-on: prod-cloud-dogu
+    runs-on: prod-dogu
 
     steps:
       - name: Checkout

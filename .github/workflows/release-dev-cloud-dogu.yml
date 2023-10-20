@@ -49,7 +49,7 @@ jobs:
 
   start-rc-dogu:
     needs: input_validation
-    runs-on: dev-cloud-dogu
+    runs-on: dev-dogu
 
     steps:
       - name: Checkout
