@@ -17,16 +17,16 @@ export const config = {
       logging: false,
     },
   },
-  runType: env.DOGU_CLIENT_ADMIN_RUN_TYPE,
+  runType: env.DOGU_BILLING_RUN_TYPE,
   rds: {
-    host: env.DOGU_CLIENT_ADMIN_RDS_HOST,
-    port: env.DOGU_CLIENT_ADMIN_RDS_PORT,
-    username: env.DOGU_CLIENT_ADMIN_RDS_USERNAME,
-    password: env.DOGU_CLIENT_ADMIN_RDS_PASSWORD,
-    schema: env.DOGU_CLIENT_ADMIN_RDS_SCHEMA,
-    ssl: env.DOGU_CLIENT_ADMIN_RDS_SSL_CONNECTION ? { rejectUnauthorized: false } : false,
+    host: env.DOGU_BILLING_RDS_HOST,
+    port: env.DOGU_BILLING_RDS_PORT,
+    username: env.DOGU_BILLING_RDS_USERNAME,
+    password: env.DOGU_BILLING_RDS_PASSWORD,
+    schema: env.DOGU_BILLING_RDS_SCHEMA,
+    ssl: env.DOGU_BILLING_RDS_SSL_CONNECTION ? { rejectUnauthorized: false } : false,
   },
-  apiToken: env.DOGU_CLIENT_ADMIN_API_TOKEN,
+  apiToken: env.DOGU_BILLING_API_TOKEN,
 };
 
 export const dataSourceConfig: DataSourceOptions = {

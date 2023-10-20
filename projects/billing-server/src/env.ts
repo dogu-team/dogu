@@ -13,30 +13,30 @@ export class Env {
   NODE_ENV!: NodeEnvType;
 
   @IsIn(DoguRunType)
-  DOGU_CLIENT_ADMIN_RUN_TYPE!: DoguRunType;
+  DOGU_BILLING_RUN_TYPE!: DoguRunType;
 
   @IsBoolean()
   @TransformBooleanString()
-  DOGU_CLIENT_ADMIN_RDS_SSL_CONNECTION!: boolean;
+  DOGU_BILLING_RDS_SSL_CONNECTION!: boolean;
 
   @IsFilledString()
-  DOGU_CLIENT_ADMIN_RDS_HOST!: string;
+  DOGU_BILLING_RDS_HOST!: string;
 
   @IsNumber()
   @Type(() => Number)
-  DOGU_CLIENT_ADMIN_RDS_PORT!: number;
+  DOGU_BILLING_RDS_PORT!: number;
 
   @IsFilledString()
-  DOGU_CLIENT_ADMIN_RDS_USERNAME!: string;
+  DOGU_BILLING_RDS_USERNAME!: string;
 
   @IsFilledString()
-  DOGU_CLIENT_ADMIN_RDS_PASSWORD!: string;
+  DOGU_BILLING_RDS_PASSWORD!: string;
 
   @IsFilledString()
-  DOGU_CLIENT_ADMIN_RDS_SCHEMA!: string;
+  DOGU_BILLING_RDS_SCHEMA!: string;
 
   @IsFilledString()
-  DOGU_CLIENT_ADMIN_API_TOKEN!: string;
+  DOGU_BILLING_API_TOKEN!: string;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
