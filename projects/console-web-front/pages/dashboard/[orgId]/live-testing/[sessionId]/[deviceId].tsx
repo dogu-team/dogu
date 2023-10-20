@@ -48,8 +48,14 @@ const CloudLiveTestingStudioPage: NextPageWithLayout<CloudStudioTestingPageProps
         }
       };
 
-      cloudHeartbeatSocketRef.current.onclose = handleClose;
-      cloudHeartbeatSocketRef.current.onerror = handleClose;
+      cloudHeartbeatSocketRef.current.onclose = (e) => {
+        console.debug('livesession heartbeat closed');
+        handleClose();
+      };
+      cloudHeartbeatSocketRef.current.onerror = (e) => {
+        console.debug('livesession heartbeat error', e);
+        handleClose();
+      };
       cloudHeartbeatSocketRef.current.onmessage = handleMessage;
 
       return () => {
