@@ -3,6 +3,7 @@ WORKDIR /dogu
 COPY .dogu-workspace ./.dogu-workspace
 COPY .yarnrc.yml yarn.lock .pnp.cjs .pnp.loader.mjs package.json tsconfig.json tsconfig.eslint.json ./
 COPY .yarn ./.yarn
+COPY turbo.json ./turbo.json
 COPY packages/typescript ./packages/typescript
 COPY packages/typescript-private ./packages/typescript-private
 COPY packages/typescript-dev-private ./packages/typescript-dev-private
