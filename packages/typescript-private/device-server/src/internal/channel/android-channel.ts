@@ -144,7 +144,7 @@ export class AndroidChannel implements DeviceChannel {
       deviceSerial: serial,
       browserPlatform: 'android',
     });
-    const sharedDevice = new AndroidSharedDeviceService(serial, appiumAdb, await Adb.getProps(serial), logger);
+    const sharedDevice = new AndroidSharedDeviceService(serial, appiumAdb, await Adb.getProps(serial), systemInfo, logger);
     await sharedDevice.wait();
 
     const deviceChannel = new AndroidChannel(
