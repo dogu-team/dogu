@@ -34,6 +34,7 @@ const resources = {
     safari: '/resources/icons/browsers/safari.svg',
     edge: '/resources/icons/browsers/edge.svg',
     samsungIntenet: '/resources/icons/browsers/samsung-internet.svg',
+    reactNative: '/resources/icons/react-native.svg',
   },
   images: {},
 };

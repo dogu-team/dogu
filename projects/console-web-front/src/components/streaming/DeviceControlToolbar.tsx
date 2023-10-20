@@ -1,11 +1,11 @@
 import styled from 'styled-components';
 import {
-  BulbOutlined,
   DownloadOutlined,
   HomeOutlined,
   MenuOutlined,
   RightOutlined,
   RollbackOutlined,
+  SettingOutlined,
 } from '@ant-design/icons';
 import React from 'react';
 import { Platform } from '@dogu-private/types';
@@ -82,17 +82,6 @@ const DeviceControlToolbar: React.FC<Props> = () => {
         }
       />
 
-      <ToolbarButton
-        workingPlatforms={[Platform.PLATFORM_ANDROID]}
-        icon={<BulbOutlined />}
-        text="Helpers"
-        content={
-          <div>
-            <DeviceHelperButtonGroup />
-          </div>
-        }
-      />
-
       <Divider style={{ margin: '.8rem 0' }} />
 
       <ToolbarButton
@@ -119,6 +108,19 @@ const DeviceControlToolbar: React.FC<Props> = () => {
         icon={<MenuOutlined style={{ transform: 'rotate(90deg)' }} />}
         text="Switch"
       />
+
+      <Divider style={{ margin: '.8rem 0' }} />
+
+      <ToolbarButton
+        workingPlatforms={[Platform.PLATFORM_ANDROID]}
+        icon={<SettingOutlined />}
+        text="Advanced"
+        content={
+          <div>
+            <DeviceHelperButtonGroup />
+          </div>
+        }
+      />
     </ToolbarBox>
   );
 };
@@ -128,7 +130,7 @@ export default React.memo(DeviceControlToolbar);
 const ToolbarBox = styled.div``;
 
 const TitleWrapper = styled.div`
-  background-color: #ddd;
+  background-color: #f4f4f4;
   padding: 0.25rem 1rem;
 `;
 
