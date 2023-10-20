@@ -1,10 +1,10 @@
-import { Platform, PrivateProtocol, Serial } from '@dogu-private/types';
+import { DeviceSystemInfo, Platform, PrivateProtocol, Serial } from '@dogu-private/types';
 import { delay, errorify, FilledPrintable, loop, stringify } from '@dogu-tech/common';
 import { HostPaths, killChildProcess } from '@dogu-tech/node';
 import child_process from 'child_process';
 import fs from 'fs';
 import { env } from '../../../env';
-import { Adb, AndroidPropInfo, AppiumAdb } from '../../externals/index';
+import { Adb, AndroidPropInfo, AppiumAdb, isHarnessEnabled } from '../../externals/index';
 import { AndroidResetService } from '../reset/android-reset';
 import { Zombieable, ZombieProps, ZombieQueriable } from '../zombie/zombie-component';
 import { ZombieServiceInstance } from '../zombie/zombie-service';
@@ -65,7 +65,7 @@ export class AndroidSharedDeviceService implements Zombieable {
   private state: string = 'none';
   private isSetupDone = false;
 
-  constructor(public serial: Serial, private appiumAdb: AppiumAdb, public androidProps: AndroidPropInfo, public printable: FilledPrintable) {
+  constructor(public serial: Serial, private appiumAdb: AppiumAdb, public androidProps: AndroidPropInfo, public systemInfo: DeviceSystemInfo, public printable: FilledPrintable) {
     this.zombieWaiter = ZombieServiceInstance.addComponent(this);
   }
 
@@ -99,6 +99,12 @@ export class AndroidSharedDeviceService implements Zombieable {
     this.state = 'reviving';
     if (!this.isSetupDone) {
       this.state = 'resetting';
+      if (AndroidResetService.isHarnessAvailable(this.systemInfo) && !isHarnessEnabled(this.androidProps)) {
+        await Adb.enableTestharness(this.serial).catch((e) => {
+          this.printable.error(`AndroidSharedDeviceService.revive.enableTestharness failed.`, { error: errorify(e) });
+        });
+        // device will be restarted
+      }
       await AndroidResetService.resetBeforeConnected(this.serial, this.printable).catch((e) => {
         this.printable.error(`AndroidSharedDeviceService.revive.resetBeforeConnected failed.`, { error: errorify(e) });
         throw e;
@@ -194,7 +200,7 @@ export class AndroidSharedDeviceService implements Zombieable {
     const ret: BlockAppInfo[] = [];
     for (const app of BlockAppList) {
       if (msg.includes(app.keyword)) {
-        if (!app.isBlockOnTestHarness && this.androidProps.persist_sys_test_harness === '1') {
+        if (!app.isBlockOnTestHarness && isHarnessEnabled(this.androidProps)) {
           continue;
         }
         ret.push(app);

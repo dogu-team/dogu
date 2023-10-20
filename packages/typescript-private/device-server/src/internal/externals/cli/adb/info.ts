@@ -268,3 +268,7 @@ export function DefaultAndroidPropInfo(): AndroidPropInfo {
     debug_hwui_profile: '',
   };
 }
+
+export function isHarnessEnabled(props: AndroidPropInfo): boolean {
+  return props.persist_sys_test_harness === '1';
+}

@@ -9,10 +9,16 @@ import { pathMap } from '../../../path-map';
 import { Adb, AppiumAdb } from '../../externals/index';
 
 export class AndroidResetService {
+  static isHarnessAvailable(systemInfo: DeviceSystemInfo): boolean {
+    const version = semver.coerce(systemInfo.version);
+    if (!version) {
+      return false;
+    }
+    return semver.gte(version, '10.0.0');
+  }
   static async resetDevice(serial: Serial, systemInfo: DeviceSystemInfo, appiumAdb: AppiumAdb, appiumContext: AppiumContext, logger: Printable): Promise<void> {
     try {
-      const version = semver.coerce(systemInfo.version);
-      if (version && semver.lt(version, '11.0.0')) {
+      if (!AndroidResetService.isHarnessAvailable(systemInfo)) {
         throw new Error(`AndroidResetService.resetDevice Android version must be 11 or higher. to use testharness`);
       }
       await Adb.enableTestharness(serial);
