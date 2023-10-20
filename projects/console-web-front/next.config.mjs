@@ -33,12 +33,7 @@ const nextConfig = {
     return config;
   },
   images: {
-    domains: [
-      's3.ap-northeast-2.amazonaws.com',
-      'localhost',
-      '127.0.0.1',
-      `${process.env.NEXT_PUBLIC_FILE_SERVER_HOST}`,
-    ],
+    domains: ['localhost', '127.0.0.1', `${process.env.NEXT_PUBLIC_FILE_SERVER_HOST}`],
     minimumCacheTTL: 20,
   },
   experimental: {

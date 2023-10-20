@@ -15,7 +15,10 @@ import { DoguLogger } from '../logger/logger';
 
 @Injectable()
 export class DownloadService {
-  constructor(private readonly publicFileService: PublicFileService, private readonly logger: DoguLogger) {}
+  constructor(
+    private readonly publicFileService: PublicFileService,
+    private readonly logger: DoguLogger,
+  ) {}
 
   async getDoguAgentS3Latest(): Promise<DownloadablePackageResult[]> {
     const { mac, windows } = await this.parseLatestYaml();
@@ -170,11 +173,11 @@ export class DownloadService {
   }
 
   private async getDoguAgentGithubPackages(): Promise<DownloadablePackageResult[]> {
-    // list all release that has dogu-agent asset at https://github.com/dogu-team/dogu/releases
+    // list all release that has dogu-agent asset at https://github.com/dogu-team/dogu-self-hosted/releases
     const octokit = new Octokit();
     const response = await octokit.repos.listReleases({
       owner: 'dogu-team',
-      repo: 'dogu',
+      repo: 'dogu-self-hosted',
     });
     const releases = response.data.filter((item) => item.assets.length > 0);
     const result: DownloadablePackageResult[] = [];

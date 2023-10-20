@@ -120,7 +120,7 @@ jobs:
         if: runner.os == 'macOS'
         env:
           BUILD_CERTIFICATE_BASE64: ${{ secrets.DOGU_MACOS_CERTIFICATE_BASE64 }}
-          BUILD_YOW_DEVELOPMENT_CERTIFICATE_BASE64: ${{ secrets.DOGU_MACOS_YOW_DEVELOPMENT_CERTIFICATE_BASE64 }}
+          BUILD_APPLE_DOGU_DEVELOPMENT_CERTIFICATE_BASE64: ${{ secrets.DOGU_MACOS_APPLE_DOGU_DEVELOPMENT_CERTIFICATE_BASE64 }}
           P12_PASSWORD: ${{ secrets.DOGU_MACOS_P12_PASSWORD }}
           BUILD_PROVISION_PROFILE_BASE64: ${{ secrets.DOGU_MACOS_WILDCARD_PROVISION_PROFILE_BASE64 }}
           KEYCHAIN_PASSWORD: ${{ secrets.DOGU_MACOS_KEYCHAIN_PASSWORD }}
@@ -133,7 +133,7 @@ jobs:
 
           # import certificate and provisioning profile from secrets
           echo -n "$BUILD_CERTIFICATE_BASE64" | base64 --decode -o $CERTIFICATE_PATH
-          echo -n "$BUILD_YOW_DEVELOPMENT_CERTIFICATE_BASE64" | base64 --decode -o $DEVELOPMENT_CERTIFICATE_PATH
+          echo -n "$BUILD_APPLE_DOGU_DEVELOPMENT_CERTIFICATE_BASE64" | base64 --decode -o $DEVELOPMENT_CERTIFICATE_PATH
           echo -n "$BUILD_PROVISION_PROFILE_BASE64" | base64 --decode -o $PP_PATH
 
           # create temporary keychain
@@ -196,8 +196,8 @@ jobs:
           echo "DOGU_APPLE_API_KEY_ID=${{ secrets.DOGU_APPLE_API_KEY_ID }}" >> .env.deploy-secret
           echo "DOGU_APPLE_API_ISSUER_ID=${{ secrets.DOGU_APPLE_API_ISSUER_ID }}" >> .env.deploy-secret
           echo "DOGU_APPLE_API_PRIVATEKEY=${{ secrets.DOGU_APPLE_API_PRIVATEKEY }}" >> .env.deploy-secret
-          echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> .env.deploy-secret
-          echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> .env.deploy-secret
+          echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_PROD_ACCESS_KEY_ID }}" >> .env.deploy-secret
+          echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_PROD_SECRET_ACCESS_KEY }}" >> .env.deploy-secret
         working-directory: ./nm-space/projects/dost
 
       - name: create dotEnv self-hosted
