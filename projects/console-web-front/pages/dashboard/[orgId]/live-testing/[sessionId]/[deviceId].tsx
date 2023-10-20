@@ -59,6 +59,7 @@ const CloudLiveTestingStudioPage: NextPageWithLayout<CloudStudioTestingPageProps
       cloudHeartbeatSocketRef.current.onmessage = handleMessage;
 
       return () => {
+        console.debug('livesession heartbeat closing');
         // eslint-disable-next-line react-hooks/exhaustive-deps
         cloudHeartbeatSocketRef.current?.close();
       };
