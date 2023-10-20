@@ -57,11 +57,18 @@ export class AndroidDeviceAgentService implements DeviceAgentService, Zombieable
     await this.zombieWaiter?.waitUntilAlive();
   }
 
+  private closeProtoWs(): void {
+    if (!this.protoWs) return;
+    closeWebSocketWithTruncateReason(this.protoWs, 1000, 'Device disconnected');
+    this.protoWs = undefined;
+  }
+
   private async connect(): Promise<void> {
     const ws = new WebSocket(`ws://127.0.0.1:${this.port}/proto`);
     this.logger.info(`AndroidDeviceAgentService.connect serial: ${this.serial}, ws connecting...`);
 
     ws.on('open', () => {
+      this.closeProtoWs();
       this.protoWs = ws;
       this.protoWs.on('message', (data) => this.onMessage(data));
       const seq = this.getSeq();
@@ -204,10 +211,7 @@ export class AndroidDeviceAgentService implements DeviceAgentService, Zombieable
       });
     }
 
-    if (this.protoWs) {
-      closeWebSocketWithTruncateReason(this.protoWs, 1000, 'Device disconnected');
-      this.protoWs = undefined;
-    }
+    this.closeProtoWs();
   }
 
   async update(): Promise<void> {
