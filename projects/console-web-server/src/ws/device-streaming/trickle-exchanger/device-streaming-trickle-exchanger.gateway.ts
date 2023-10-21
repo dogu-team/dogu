@@ -65,7 +65,7 @@ export class DeviceStreamingTrickleExchangerGateway implements OnGatewayConnecti
   }
 
   handleDisconnect(webSocket: WebSocket): void {
-    this.logger.info('handleDisconnect');
+    this.logger.info('DeviceStreamingGateway.handleDisconnect');
   }
 
   async onMessage(webSocket: WebSocket, data: string): Promise<void> {

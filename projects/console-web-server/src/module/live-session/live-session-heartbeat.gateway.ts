@@ -30,18 +30,20 @@ export class LiveSessionHeartbeatGateway implements OnGatewayConnection {
     const liveSessionId = url.searchParams.get('liveSessionId');
 
     if (!organizationId) {
+      this.logger.error(`LiveSessionHeartbeatGateway.handleConnection organizationId is required`);
       webSocket.close(1003, `organizationId is required`);
       return;
     }
 
     if (!liveSessionId) {
+      this.logger.error(`LiveSessionHeartbeatGateway.handleConnection liveSessionId is required`);
       webSocket.close(1003, `liveSessionId is required`);
       return;
     }
 
     const validateResult = await this.wsCommonService.validateCloudDeviceAccessPermission(incomingMessage, this.dataSource, organizationId, liveSessionId);
     if (!validateResult.result) {
-      this.logger.info(`LiveSessionHeartbeatGateway. handleConnection. ${validateResult.message}`);
+      this.logger.info(`LiveSessionHeartbeatGateway.handleConnection ${validateResult.message}`);
       closeWebSocketWithTruncateReason(webSocket, 1003, 'Unauthorized');
     }
 
@@ -70,16 +72,19 @@ export class LiveSessionHeartbeatGateway implements OnGatewayConnection {
     await this.dataSource.transaction(async (manager) => {
       const liveSession = await manager.getRepository(LiveSession).findOne({ where: { liveSessionId } });
       if (!liveSession) {
+        this.logger.error(`LiveSessionHeartbeatGateway.handleConnection liveSession not found`, { liveSessionId });
         webSocket.close(1003, `not found`);
         return;
       }
 
       if (liveSession.organizationId !== organizationId) {
+        this.logger.error(`LiveSessionHeartbeatGateway.handleConnection invalid organization`, { liveSessionId, organizationId });
         webSocket.close(1003, `invalid organization`);
         return;
       }
 
       if (liveSession.state === LiveSessionState.CLOSED) {
+        this.logger.error(`LiveSessionHeartbeatGateway.handleConnection already closed`, { liveSessionId });
         webSocket.close(1003, `already closed`);
         return;
       }
