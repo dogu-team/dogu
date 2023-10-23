@@ -93,6 +93,7 @@ export class AndroidSharedDeviceService implements Zombieable {
   }
 
   async revive(): Promise<void> {
+    this.printable.info(`AndroidSharedDeviceService.revive. serial: ${this.serial}, state: ${this.state}`);
     if (!env.DOGU_IS_DEVICE_SHARE) {
       return;
     }

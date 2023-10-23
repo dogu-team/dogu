@@ -17,6 +17,7 @@ export class AndroidResetService {
     return semver.gte(version, '10.0.0');
   }
   static async resetDevice(serial: Serial, systemInfo: DeviceSystemInfo, appiumAdb: AppiumAdb, appiumContext: AppiumContext, logger: Printable): Promise<void> {
+    logger.info(`AndroidResetService.resetDevice serial: ${serial}, systemInfo: ${stringify(systemInfo)}`);
     try {
       if (!AndroidResetService.isHarnessAvailable(systemInfo)) {
         throw new Error(`AndroidResetService.resetDevice Android version must be 11 or higher. to use testharness`);

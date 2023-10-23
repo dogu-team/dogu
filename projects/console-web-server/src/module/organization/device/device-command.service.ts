@@ -82,14 +82,14 @@ export class DeviceCommandService {
     await resetProxy.send({
       serial,
     });
-    this.logger.info(`DeviceCommandService.reset. reset sent`);
+    this.logger.info(`DeviceCommandService.reset. reset sent`, { deviceId, serial });
     try {
       for await (const _ of resetProxy.receive()) {
       }
     } catch (error) {
-      this.logger.error(`DeviceCommandService.reset. reset error: ${stringify(error)}`);
+      this.logger.error(`DeviceCommandService.reset. reset failed `, { deviceId, serial, error });
     }
-    this.logger.info(`DeviceCommandService.reset. reset done`);
+    this.logger.info(`DeviceCommandService.reset. reset done`, { deviceId, serial });
   }
 
   async relayTcp(organizationId: OrganizationId, deviceId: DeviceId, serial: Serial, port: number): Promise<WebSocketProxy<typeof TcpRelayRequest, typeof TcpRelayResponse>> {
