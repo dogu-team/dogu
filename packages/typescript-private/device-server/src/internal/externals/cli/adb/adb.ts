@@ -961,7 +961,7 @@ export async function enableTestharness(serial: Serial): Promise<void> {
   });
 }
 
-export async function resetPackages(serial: Serial, logger: Printable): Promise<void> {
+export async function resetPackages(serial: Serial, ignorePackages: string[], logger: Printable): Promise<void> {
   const random = Math.random();
   adbLogger.verbose('adb.resetPackages begin', { serial, random });
   const allApps = await getIntalledPackages(serial);
@@ -970,19 +970,19 @@ export async function resetPackages(serial: Serial, logger: Printable): Promise<
     if (!userApps.find((targetApp) => targetApp.packageName === app.packageName)) {
       return;
     }
+    if (ignorePackages.includes(app.packageName)) {
+      return;
+    }
     await clearApp(serial, app.packageName, logger).catch((err) => {
       logger.error(`adb.resetPackages failed to clear`, { error: stringify(err), package: app.packageName, serial, random });
-    });
-    await resetAppPermission(serial, app.packageName, logger).catch((err) => {
-      logger.error(`adb.resetPackages failed to reset permission`, { error: stringify(err), package: app.packageName, serial, random });
     });
     await uninstallApp(serial, app.packageName, false, logger).catch((err) => {
       logger.error(`adb.resetPackages failed to uninstall`, { error: stringify(err), package: app.packageName, serial, random });
     });
     return Promise.resolve();
   });
-  adbLogger.verbose('adb.resetPackages end', { serial, random });
   await Promise.all(promises);
+  adbLogger.verbose('adb.resetPackages end', { serial, random });
 }
 
 export async function resetSdcard(serial: Serial, logger: Printable): Promise<void> {

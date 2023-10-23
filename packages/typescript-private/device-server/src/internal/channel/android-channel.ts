@@ -25,7 +25,7 @@ import { Observable } from 'rxjs';
 import semver from 'semver';
 import systeminformation from 'systeminformation';
 import { createAppiumCapabilities } from '../../appium/appium.capabilites';
-import { AppiumContext, AppiumContextKey, AppiumContextProxy } from '../../appium/appium.context';
+import { AppiumContext, AppiumContextImpl, AppiumContextKey, AppiumContextProxy } from '../../appium/appium.context';
 import { AppiumDeviceWebDriverHandler } from '../../device-webdriver/appium.device-webdriver.handler';
 import { DeviceWebDriverHandler } from '../../device-webdriver/device-webdriver.common';
 import { GamiumContext } from '../../gamium/gamium.context';
@@ -128,7 +128,8 @@ export class AndroidChannel implements DeviceChannel {
       'builtin',
       await deviceServerService.devicePortService.createOrGetHostPort(serial, 'AndroidAppiumServer'),
     );
-    ZombieServiceInstance.addComponent(appiumContextProxy);
+    const appiumWaiter = ZombieServiceInstance.addComponent(appiumContextProxy);
+    await appiumWaiter.waitUntilAlive();
 
     const appiumDeviceWebDriverHandler = new AppiumDeviceWebDriverHandler(
       platform,
@@ -144,7 +145,8 @@ export class AndroidChannel implements DeviceChannel {
       deviceSerial: serial,
       browserPlatform: 'android',
     });
-    const sharedDevice = new AndroidSharedDeviceService(serial, appiumAdb, await Adb.getProps(serial), systemInfo, logger);
+    const appiumContextImpl = appiumContextProxy.getImpl(AppiumContextImpl);
+    const sharedDevice = new AndroidSharedDeviceService(serial, appiumAdb, await Adb.getProps(serial), systemInfo, appiumContextImpl, logger);
     await sharedDevice.wait();
 
     const deviceChannel = new AndroidChannel(
@@ -270,8 +272,20 @@ export class AndroidChannel implements DeviceChannel {
   }
 
   async reset(): Promise<void> {
-    const appiumContext = await this.switchAppiumContext('builtin');
-    await AndroidResetService.resetDevice(this.serial, this.info, this.appiumAdb, appiumContext, this.logger);
+    this.logger.info(`AndroidResetService.resetDevice begin`, { serial: this.serial, systemInfo: this.info });
+    try {
+      if (!AndroidResetService.isHarnessAvailable(this.info)) {
+        throw new Error(`AndroidResetService.resetDevice Android version must be 11 or higher. to use testharness`);
+      }
+      await Adb.enableTestharness(this.serial);
+    } catch (e) {
+      await this.switchAppiumContext('builtin');
+      const appiumContextImpl = this._appiumContext.getImpl(AppiumContextImpl);
+      await AndroidResetService.resetAccounts(this.serial, this.appiumAdb, appiumContextImpl, this.logger);
+      await AndroidResetService.resetCommon(this.serial, { ignorePackages: [] }, this.logger);
+      await Adb.reboot(this.serial);
+    }
+    this.logger.info(`AndroidResetService.resetDevice end`, { serial: this.serial, systemInfo: this.info });
   }
 
   async killOnPort(port: number): Promise<void> {

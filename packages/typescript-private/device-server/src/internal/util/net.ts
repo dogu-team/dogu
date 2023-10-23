@@ -3,7 +3,11 @@ import { isFreePort } from '@dogu-tech/node';
 import { findFreePorts } from 'find-free-ports';
 
 const startPort = 20000;
-const endPort = 60000;
+/*
+ * exclude windows Administered port exclusions
+ * https://www.sysnet.pe.kr/2/0/12293
+ */
+const endPort = process.platform === 'win32' ? 49000 : 60000;
 const accessBlockTime = 3 * 60 * 1000;
 
 const usedportToAccessTime: Map<number, number> = new Map();
