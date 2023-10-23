@@ -8,7 +8,6 @@ import H2 from 'src/components/common/headings/H2';
 import H3 from 'src/components/common/headings/H3';
 import Footer from './Footer';
 import resources from '../../resources';
-import useWebview from '../../hooks/useWebview';
 import { flexRowBaseStyle } from '../../styles/box';
 import DoguText from '../common/DoguText';
 import { getLocaledLink } from '../../utils/locale';
@@ -20,7 +19,6 @@ interface Props {
 
 const SmallBoxCenteredLayout = (props: Props) => {
   const { t } = useTranslation();
-  const isWebview = useWebview();
   const router = useRouter();
 
   return (
@@ -28,17 +26,10 @@ const SmallBoxCenteredLayout = (props: Props) => {
       <Inner>
         <NameWrapper>
           <H2>
-            {isWebview ? (
-              <FlexRowBox>
-                <Image src={resources.icons.logo} width={48} height={48} alt="Dogu" style={{ marginRight: '.5rem' }} />
-                <DoguText />
-              </FlexRowBox>
-            ) : (
-              <StyledLink href={`${process.env.NEXT_PUBLIC_LANDING_URL}${getLocaledLink(router.locale, '')}`}>
-                <Image src={resources.icons.logo} width={48} height={48} alt="Dogu" style={{ marginRight: '.5rem' }} />
-                <DoguText />
-              </StyledLink>
-            )}
+            <StyledLink href={`${process.env.NEXT_PUBLIC_LANDING_URL}${getLocaledLink(router.locale, '')}`}>
+              <Image src={resources.icons.logo} width={48} height={48} alt="Dogu" style={{ marginRight: '.5rem' }} />
+              <DoguText />
+            </StyledLink>
           </H2>
         </NameWrapper>
         <ContentBox>
