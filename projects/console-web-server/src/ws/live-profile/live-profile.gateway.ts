@@ -117,6 +117,8 @@ export class LiveProfileGateway implements OnGatewayConnection, OnGatewayDisconn
       return;
     }
 
+    this.wsCommonService.sendPing(client, 'LiveProfileGateway');
+
     try {
       const rv = await this.sendDeviceJobProfile(client, organizationId, deviceJob);
       this.logger.info(`LiveProfileGateway. sendDeviceJobProfile. ${rv.message}`);

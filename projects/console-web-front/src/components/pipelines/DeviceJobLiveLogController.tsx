@@ -1,4 +1,5 @@
-import { RoutineDeviceJobBase, DeviceJobLogInfo, RuntimeInfoResponse, TestLogResponse } from '@dogu-private/console';
+import { RoutineDeviceJobBase, DeviceJobLogInfo, TestLogResponse } from '@dogu-private/console';
+import { WS_PING_MESSAGE } from '@dogu-private/types';
 import { Tabs, TabsProps } from 'antd';
 import useTranslation from 'next-translate/useTranslation';
 import { useRouter } from 'next/router';
@@ -31,6 +32,10 @@ const DeviceJobLiveLogController = ({ deviceJob }: Props) => {
     setLiveLogs([]);
     if (logSocketRef.current) {
       logSocketRef.current.onmessage = (e) => {
+        if (e.data === WS_PING_MESSAGE) {
+          return;
+        }
+
         const data: TestLogResponse = JSON.parse(e.data);
         setLiveLogs((prev) => [...prev, data]);
       };

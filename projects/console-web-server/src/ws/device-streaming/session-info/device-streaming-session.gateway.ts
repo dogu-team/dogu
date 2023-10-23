@@ -73,6 +73,8 @@ export class DeviceStreamingSessionGateway implements OnGatewayConnection, OnGat
     const deviceQuery = url.searchParams.get('deviceId');
     const liveSessionQuery = url.searchParams.get('liveSessionId');
 
+    this.wsCommonService.sendPing(webSocket, 'DeviceStreamingSession');
+
     const deviceStreamingQueryDto = await transformAndValidate(DeviceStreamingQueryDto, {
       organizationId: organizationQuery,
       deviceId: deviceQuery,

@@ -147,6 +147,8 @@ export class LiveLogGateway implements OnGatewayConnection, OnGatewayDisconnect 
       return;
     }
 
+    this.wsCommonService.sendPing(client, 'LiveLogGateway');
+
     try {
       const rv = await this.sendDeviceJobLogs(client, organizationId, deviceJob);
       closeWebSocketWithTruncateReason(client, rv.resultCode, rv.message);

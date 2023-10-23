@@ -7,6 +7,7 @@ import {
   Platform,
   Serial,
   StreamingOption,
+  WS_PING_MESSAGE,
 } from '@dogu-private/types';
 import { sdpExt } from '@dogu-private/webrtc';
 import { PromiseOrValue, transformAndValidate } from '@dogu-tech/common';
@@ -170,6 +171,10 @@ export class WebRtcTrickleExchanger implements WebRtcExchanger {
   }
 
   private async onMessage(peerConnection: RTCPeerConnection, event: MessageEvent): Promise<void> {
+    if (event.data === WS_PING_MESSAGE) {
+      return;
+    }
+
     const result = await transformAndValidate(StreamingAnswerDto, JSON.parse(event.data));
     await this.processAnswer(peerConnection, result);
   }

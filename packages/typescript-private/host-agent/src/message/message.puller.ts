@@ -1,10 +1,11 @@
 import { ErrorResult, Param, ParamValue, PrivateDevice, PrivateDeviceWs, Result, ResultValue } from '@dogu-private/console-host-agent';
-import { Code, createConsoleApiAuthHeader, DeviceId, OrganizationId } from '@dogu-private/types';
+import { Code, createConsoleApiAuthHeader, DeviceId, OrganizationId, WS_PING_MESSAGE } from '@dogu-private/types';
 import { closeWebSocketWithTruncateReason, errorify, Instance, stringify, transformAndValidate } from '@dogu-tech/common';
 import { MultiPlatformEnvironmentVariableReplacer } from '@dogu-tech/node';
 import { Injectable } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import WebSocket from 'ws';
+
 import { ConsoleClientService } from '../console-client/console-client.service';
 import { getConsoleBaseUrlWs } from '../console-client/console-url';
 import { OnDeviceRegisteredEvent } from '../device/device.events';
@@ -65,6 +66,10 @@ export class MessagePuller {
     });
     webSocket.on('message', (data, isBinary) => {
       (async (): Promise<void> => {
+        if (data.toString() === WS_PING_MESSAGE) {
+          return;
+        }
+
         const response = await transformAndValidate(PrivateDeviceWs.pullDeviceParamDatas.receiveMessage, JSON.parse(data.toString()));
         const { datas } = response;
         datas.forEach((data) => {

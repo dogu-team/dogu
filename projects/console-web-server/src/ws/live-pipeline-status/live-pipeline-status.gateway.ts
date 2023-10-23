@@ -107,6 +107,8 @@ export class LivePipelineStatusGateway implements OnGatewayConnection, OnGateway
       return;
     }
 
+    this.wsCommonService.sendPing(client, 'LivePipelineStatusGateway');
+
     try {
       client.send(JSON.stringify(lastPipeline));
       await this.sendPipelineStatus(client, lastPipeline, pipelineId);
