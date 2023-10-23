@@ -98,11 +98,11 @@ OrganizationLiveTestingPage.getLayout = (page) => {
 };
 
 export const getServerSideProps: GetServerSideProps<OrganizationServerSideProps> = async (context) => {
-  if (process.env.DOGU_RUN_TYPE === 'self-hosted') {
-    return {
-      notFound: true,
-    };
-  }
+  // if (process.env.DOGU_RUN_TYPE === 'self-hosted') {
+  //   return {
+  //     notFound: true,
+  //   };
+  // }
 
   return await getOrganizationPageServerSideProps(context);
 };
