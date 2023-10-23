@@ -30,7 +30,7 @@ export class AndroidResetService {
       return true;
     }
     try {
-      const { stdout } = await Adb.shell(serial, 'cat /data/local/tmp/dirty');
+      const { stdout } = await Adb.shell(serial, `cat ${DirtyPath}`);
       return stdout.includes('dirty');
     } catch (e) {
       return false;
