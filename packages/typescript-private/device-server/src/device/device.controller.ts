@@ -1,4 +1,4 @@
-import { Code, LocaleCodeDto, Platform, platformTypeFromPlatform, Serial } from '@dogu-private/types';
+import { Code, GeoLocationDto, LocaleCodeDto, Platform, platformTypeFromPlatform, Serial } from '@dogu-private/types';
 import { Instance } from '@dogu-tech/common';
 import { CreateLocalDeviceDetectTokenRequest, Device, DeviceConfigDto } from '@dogu-tech/device-client-common';
 import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
@@ -238,19 +238,55 @@ export class DeviceController {
     };
   }
 
-  @Post(Device.changeLocale.path)
-  async changeLocale(@Param('serial') serial: Serial, @Body() localeCodeDto: LocaleCodeDto): Promise<Instance<typeof Device.changeLocale.responseBody>> {
+  @Post(Device.setLocale.path)
+  async setLocale(@Param('serial') serial: Serial, @Body() localeCodeDto: LocaleCodeDto): Promise<Instance<typeof Device.setLocale.responseBody>> {
     const device = this.scanService.findChannel(serial);
     if (device === null) {
       return deviceNotFoundError(serial);
     }
-    await device.chagneLocale(localeCodeDto);
+    await device.setLocale(localeCodeDto);
     const localeCode = await device.getLocale();
     return {
       value: {
         $case: 'data',
         data: {
           localeCode,
+        },
+      },
+    };
+  }
+
+  @Get(Device.getGeoLocation.path)
+  async getGeoLocation(@Param('serial') serial: Serial): Promise<Instance<typeof Device.getGeoLocation.responseBody>> {
+    const channel = this.scanService.findChannel(serial);
+    if (channel === null) {
+      return deviceNotFoundError(serial);
+    }
+
+    const location = await channel.getGeoLocation();
+    return {
+      value: {
+        $case: 'data',
+        data: {
+          location,
+        },
+      },
+    };
+  }
+
+  @Post(Device.setGeoLocation.path)
+  async setGeoLocation(@Param('serial') serial: Serial, @Body() geoLocationDto: GeoLocationDto): Promise<Instance<typeof Device.setGeoLocation.responseBody>> {
+    const device = this.scanService.findChannel(serial);
+    if (device === null) {
+      return deviceNotFoundError(serial);
+    }
+    await device.setGeoLocation(geoLocationDto);
+    const location = await device.getGeoLocation();
+    return {
+      value: {
+        $case: 'data',
+        data: {
+          location,
         },
       },
     };
