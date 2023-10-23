@@ -1,5 +1,5 @@
 import { ControllerSpec, DefaultPathProvider } from '@dogu-tech/common';
-import { LocaleCodeDto, Serial } from '@dogu-tech/types';
+import { GeoLocationDto, LocaleCodeDto, Serial } from '@dogu-tech/types';
 import { DeviceConfigDto } from '../../validations/types/device-configs';
 import { DeviceNotFoundErrorDetails, DeviceServerResponseDto } from '../../validations/types/responses';
 import { DeviceServerControllerMethodSpec } from '../types';
@@ -7,6 +7,7 @@ import {
   CreateLocalDeviceDetectTokenRequest,
   GetAppiumCapabilitiesResponse,
   GetAppiumContextInfoResponse,
+  GetDeviceGeoLocationResponse,
   GetDeviceLocaleResponse,
   GetDevicePlatformSerialsResponse,
   GetDeviceSerialsResponse,
@@ -142,7 +143,7 @@ export const Device = {
     responseBodyError: DeviceNotFoundErrorDetails,
   }),
 
-  changeLocale: new DeviceServerControllerMethodSpec({
+  setLocale: new DeviceServerControllerMethodSpec({
     controllerSpec: DeviceController,
     method: 'POST',
     path: '/:serial/locale',
@@ -152,6 +153,31 @@ export const Device = {
     requestBody: LocaleCodeDto,
     responseBody: DeviceServerResponseDto,
     responseBodyData: GetDeviceLocaleResponse,
+    responseBodyError: DeviceNotFoundErrorDetails,
+  }),
+
+  getGeoLocation: new DeviceServerControllerMethodSpec({
+    controllerSpec: DeviceController,
+    method: 'GET',
+    path: '/:serial/geo-location',
+    pathProvider: class {
+      constructor(readonly serial: Serial) {}
+    },
+    responseBody: DeviceServerResponseDto,
+    responseBodyData: GetDeviceGeoLocationResponse,
+    responseBodyError: DeviceNotFoundErrorDetails,
+  }),
+
+  setGeoLocation: new DeviceServerControllerMethodSpec({
+    controllerSpec: DeviceController,
+    method: 'POST',
+    path: '/:serial/geo-location',
+    pathProvider: class {
+      constructor(readonly serial: Serial) {}
+    },
+    requestBody: GeoLocationDto,
+    responseBody: DeviceServerResponseDto,
+    responseBodyData: GetDeviceGeoLocationResponse,
     responseBodyError: DeviceNotFoundErrorDetails,
   }),
 };

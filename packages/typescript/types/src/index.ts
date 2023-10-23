@@ -13,6 +13,7 @@ export * from './host-paths';
 export * from './host/types';
 export * from './locale/android-locale';
 export * from './locale/locale';
+export * from './location/geo-location';
 export * from './organization/types';
 export * from './platforms';
 export * from './project-application/types';

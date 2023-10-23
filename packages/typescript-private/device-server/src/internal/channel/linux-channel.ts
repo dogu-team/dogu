@@ -4,6 +4,7 @@ import {
   DeviceWindowInfo,
   ErrorResult,
   FilledRuntimeInfo,
+  GeoLocation,
   LocaleCode,
   Platform,
   PrivateProtocol,
@@ -214,7 +215,15 @@ export class LinuxChannel implements DeviceChannel {
     throw new Error('Method not implemented.');
   }
 
-  async chagneLocale(localeCode: LocaleCode): Promise<void> {
+  async setLocale(localeCode: LocaleCode): Promise<void> {
+    throw new Error('Method not implemented.');
+  }
+
+  async getGeoLocation(): Promise<GeoLocation> {
+    throw new Error('Method not implemented.');
+  }
+
+  async setGeoLocation(geoLocation: GeoLocation): Promise<void> {
     throw new Error('Method not implemented.');
   }
 }

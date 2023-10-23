@@ -5,6 +5,7 @@ import {
   DeviceWindowInfo,
   ErrorResult,
   FilledRuntimeInfo,
+  GeoLocation,
   LocaleCode,
   Platform,
   PrivateProtocol,
@@ -391,8 +392,23 @@ export class AndroidChannel implements DeviceChannel {
     return localeCode;
   }
 
-  async chagneLocale(localeCode: LocaleCode): Promise<void> {
+  async setLocale(localeCode: LocaleCode): Promise<void> {
     await this.appiumAdb.setDeviceLanguageCountry(localeCode.language, localeCode.region, localeCode.script);
+  }
+
+  async getGeoLocation(): Promise<GeoLocation> {
+    const location = await this.appiumAdb.getGeoLocation();
+    return {
+      longitude: typeof location.longitude === 'string' ? parseFloat(location.longitude) : location.longitude,
+      latitude: typeof location.latitude === 'string' ? parseFloat(location.latitude) : location.latitude,
+      altitude: typeof location.altitude === 'string' ? parseFloat(location.altitude) : location.altitude ?? 0,
+      satellites: typeof location.satellites === 'string' ? parseInt(location.satellites, 10) : location.satellites ?? 0,
+      speed: typeof location.speed === 'string' ? parseFloat(location.speed) : location.speed ?? 0,
+    };
+  }
+
+  async setGeoLocation(geoLocation: GeoLocation): Promise<void> {
+    await this.appiumAdb.setGeoLocation(geoLocation);
   }
 }
 

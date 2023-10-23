@@ -23,33 +23,40 @@ const DeviceControlMetaState = PrivateProtocol.DeviceControlMetaState;
 const UserId = 0;
 
 interface BlockAppInfo {
-  isBlockOnTestHarness: boolean;
   keyword: string;
   packageName: string;
+  skipOnTestHarness?: true;
+  disable?: true;
 }
 const BlockAppList: BlockAppInfo[] = [
   {
-    isBlockOnTestHarness: true,
     keyword: 'com.skt.prod.dialer', // block galaxy dialer
     packageName: 'com.skt.prod.dialer',
   },
   {
-    isBlockOnTestHarness: true,
     keyword: 'com.samsung.android.dialer', // block galaxy dialer
     packageName: 'com.samsung.android.dialer',
   },
   {
-    isBlockOnTestHarness: true,
     keyword: 'com.samsung.android.app.telephonyui', // block galaxy emergency dialer
     packageName: 'com.samsung.android.app.telephonyui',
   },
   {
-    isBlockOnTestHarness: false,
+    skipOnTestHarness: true,
     keyword: 'com.samsung.android.mobileservice', // block galaxy samsung login
     packageName: 'com.samsung.android.mobileservice',
   },
   {
-    isBlockOnTestHarness: true,
+    keyword: 'com.sec.android.soagent', // block galaxy software update
+    packageName: 'com.sec.android.soagent',
+    disable: true,
+  },
+  {
+    keyword: 'com.wssyncmldm', // block galaxy software update
+    packageName: 'com.wssyncmldm',
+    disable: true,
+  },
+  {
     keyword: 'com.google.android.gms/.update.SystemUpdateActivity', // block pixel system update, not tested
     packageName: 'com.google.android.gms',
   },
@@ -162,6 +169,13 @@ export class AndroidSharedDeviceService implements Zombieable {
     await this.closeDialog().catch((e) => {
       this.printable.error(`AndroidSharedDeviceService.revive.closeDialog failed.`, { serial, error: errorify(e) });
     });
+
+    const disableAppList = BlockAppList.filter((app) => app.disable);
+    for (const app of disableAppList) {
+      await Adb.disablePackage(this.serial, app.packageName, 0, this.printable).catch((e) => {
+        this.printable.error(`AndroidSharedDeviceService.revive.disablePackage failed.`, { error: errorify(e) });
+      });
+    }
     await this.reset.makeDirty();
 
     this.setupState = 'setup-done';
@@ -231,7 +245,7 @@ export class AndroidSharedDeviceService implements Zombieable {
     const ret: BlockAppInfo[] = [];
     for (const app of BlockAppList) {
       if (msg.includes(app.keyword)) {
-        if (!app.isBlockOnTestHarness && isHarnessEnabled(this.androidProps)) {
+        if (app.skipOnTestHarness && isHarnessEnabled(this.androidProps)) {
           continue;
         }
         ret.push(app);
