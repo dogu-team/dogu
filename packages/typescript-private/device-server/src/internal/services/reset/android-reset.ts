@@ -1,15 +1,63 @@
 import { DeviceSystemInfo, Serial } from '@dogu-private/types';
-import { delay, errorify, filterAsync, loop, Printable, stringify } from '@dogu-tech/common';
-import { HostPaths } from '@dogu-tech/node';
-import { execFile } from 'child_process';
+import { delay, FilledPrintable, filterAsync, loop, Printable, stringify } from '@dogu-tech/common';
 import semver from 'semver';
 import { AppiumContextImpl } from '../../../appium/appium.context';
-import { env } from '../../../env';
-import { pathMap } from '../../../path-map';
 import { Adb, AppiumAdb } from '../../externals/index';
 
+export interface AndroidResetInfo {
+  lastResetTime: number;
+}
+
+const ResetExpireTime = 10 * 60 * 1000;
+const DirtyPath = '/data/local/tmp/dirty';
+
 export class AndroidResetService {
-  static isHarnessAvailable(systemInfo: DeviceSystemInfo): boolean {
+  private static map: Map<Serial, AndroidResetInfo> = new Map(); // Hold for process lifetime
+  constructor(private serial: Serial, private logger: FilledPrintable) {}
+
+  async makeDirty(): Promise<void> {
+    await Adb.shell(this.serial, `echo dirty > ${DirtyPath}`);
+  }
+
+  async isDirty(): Promise<boolean> {
+    const { serial } = this;
+    const lastResetInfo = AndroidResetService.map.get(serial);
+    if (!lastResetInfo) {
+      return true;
+    }
+    const { lastResetTime } = lastResetInfo;
+    if (Date.now() - lastResetTime > ResetExpireTime) {
+      return true;
+    }
+    try {
+      const { stdout } = await Adb.shell(serial, `cat ${DirtyPath}`);
+      return stdout.includes('dirty');
+    } catch (e) {
+      return false;
+    }
+  }
+
+  /*
+   * Reset device and reboot
+   */
+  async reset(info: DeviceSystemInfo, appiumAdb: AppiumAdb, appiumContext: AppiumContextImpl): Promise<void> {
+    const { serial, logger } = this;
+    logger.info(`AndroidResetService.resetDevice begin`, { serial, info });
+    try {
+      if (!this.isHarnessAvailable(info)) {
+        throw new Error(`AndroidResetService.resetDevice Android version must be 10 or higher. to use testharness`);
+      }
+      await Adb.enableTestharness(serial);
+    } catch (e) {
+      await this.resetAccounts(appiumAdb, appiumContext);
+      await this.resetCommon({ ignorePackages: [] });
+      await Adb.reboot(this.serial);
+    }
+    AndroidResetService.map.set(serial, { lastResetTime: Date.now() });
+    this.logger.info(`AndroidResetService.resetDevice end`, { serial, info });
+  }
+
+  private isHarnessAvailable(systemInfo: DeviceSystemInfo): boolean {
     const version = semver.coerce(systemInfo.version);
     if (!version) {
       return false;
@@ -17,65 +65,21 @@ export class AndroidResetService {
     return semver.gte(version, '10.0.0');
   }
 
-  static async resetCommon(serial: Serial, option: { ignorePackages: string[] }, logger: Printable): Promise<void> {
+  private async resetCommon(option: { ignorePackages: string[] }): Promise<void> {
+    const { serial, logger } = this;
     await Adb.resetPackages(serial, option.ignorePackages, logger);
     await Adb.resetSdcard(serial, logger);
-    await AndroidResetService.resetIMEList(serial, logger);
+    await this.resetIMEList(logger);
     await Adb.logcatClear(serial, logger);
+    await this.resetDirty();
   }
 
-  /**
-   * @note connect to wifi script
-   * adb -s $DOGU_DEVICE_SERIAL install $DOGU_ADB_JOIN_WIFI_APK
-   * adb -s $DOGU_DEVICE_SERIAL shell am start -n com.steinwurf.adbjoinwifi/.MainActivity -e ssid $DOGU_WIFI_SSID -e password_type WPA -e password $DOGU_WIFI_PASSWORD
-   */
-
-  static async joinWifi(serial: string, ssid: string, password: string, logger: Printable): Promise<void> {
-    if (0 === ssid.length) {
-      throw new Error(`AndroidResetService.joinWifi failed. serial: ${serial}, ssid: ${ssid}`);
-    }
-    await Adb.installAppForce(serial, pathMap().common.adbJoinWifiApk);
-    /**
-     * @note Adb.Shell() is not used because password can remain in the log.
-     */
-    const appName = 'com.steinwurf.adbjoinwifi';
-    await new Promise<void>((resolve, reject) => {
-      execFile(
-        HostPaths.android.adbPath(env.ANDROID_HOME),
-        ['-s', serial, 'shell', `am start -n ${appName}/.MainActivity -e ssid ${ssid} -e password_type WPA -e password ${password}`],
-        (error, stdout, stderr) => {
-          if (error) {
-            reject(error);
-          } else {
-            logger.info(`AndroidResetService.joinWifi stdout: ${stdout} stderr: ${stderr}`);
-            resolve();
-          }
-        },
-      );
-    });
-    let isWifiEnabled = false;
-    for (let tryCount = 0; tryCount < 10; tryCount++) {
-      const { stdout } = await Adb.shell(serial, 'dumpsys wifi', {
-        windowsVerbatimArguments: true,
-        encoding: 'utf8',
-        maxBuffer: 1024 * 1024 * 10,
-      });
-      if (stdout.includes('Wi-Fi is enabled')) {
-        logger.info(`AndroidResetService.joinWifi success. serial: ${serial}, ssid: ${ssid}`);
-        isWifiEnabled = true;
-        break;
-      }
-      await delay(3 * 1000);
-    }
-    if (!isWifiEnabled) {
-      throw new Error(`AndroidResetService.joinWifi failed. serial: ${serial}, ssid: ${ssid}`);
-    }
-    await Adb.shell(serial, `am force-stop ${appName}`).catch((error) => {
-      logger.error('AndroidResetService.joinWifi failed adb.joinWifi.force-stop', { error: errorify(error) });
-    });
+  private async resetDirty(): Promise<void> {
+    await Adb.shell(this.serial, `rm -f ${DirtyPath}`);
   }
 
-  private static async resetIMEList(serial: Serial, logger: Printable): Promise<void> {
+  private async resetIMEList(logger: Printable): Promise<void> {
+    const { serial } = this;
     const imes = await Adb.getIMEList(serial);
     for (const ime of imes) {
       await Adb.clearApp(serial, ime.packageName, logger).catch((err) => {
@@ -90,7 +94,8 @@ export class AndroidResetService {
     });
   }
 
-  static async resetAccounts(serial: Serial, appiumAdb: AppiumAdb, appiumContext: AppiumContextImpl, logger: Printable): Promise<void> {
+  private async resetAccounts(appiumAdb: AppiumAdb, appiumContext: AppiumContextImpl): Promise<void> {
+    const { serial, logger } = this;
     if (appiumContext.openingState !== 'openingSucceeded') {
       throw new Error(`AndroidResetService.resetAccounts Appium Context is not opened`);
     }

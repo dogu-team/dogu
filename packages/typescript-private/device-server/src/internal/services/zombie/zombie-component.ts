@@ -23,7 +23,7 @@ export interface Zombieable {
 }
 
 export class ZombieComponent {
-  constructor(public readonly impl: Zombieable, private isAliveSelf = false, private dieReason = '') {}
+  constructor(public readonly impl: Zombieable, private isAliveSelf = false, public dieReason = '') {}
 
   async tryRevive(): Promise<void> {
     try {
