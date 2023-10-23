@@ -5,7 +5,7 @@ export class typeormMigration1698050794638 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
       `INSERT INTO "change_log" ("change_log_id", "title", "content", "tags") VALUES (gen_random_uuid(), 'Dogu v2.1.0 has been released!🚀',
-''Dogu has been updated to v2.1.0! Read on to discover what''s new:
+'Dogu has been updated to v2.1.0! Read on to discover what''s new:
 
 1. **Live testing with Cloud device farm is now on beta!**
 2. **Dogu Studio UI has been improved**
