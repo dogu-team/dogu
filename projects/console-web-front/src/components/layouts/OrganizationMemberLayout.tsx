@@ -36,7 +36,13 @@ const OrganizationMemberLayout = (props: Props) => {
       sidebar={<OrganizationSideBar />}
     >
       <div style={{ marginBottom: '1rem' }}>
-        <MenuLinkTabs tabs={tabs} />
+        {process.env.NEXT_PUBLIC_ENV !== 'self-hosted' ? (
+          <MenuLinkTabs tabs={tabs} />
+        ) : (
+          <p style={{ lineHeight: '1.5', fontSize: '.8rem', color: '#888' }}>
+            Members will be automatically joined when sign up
+          </p>
+        )}
       </div>
       {props.children}
     </ConsoleLayout>
