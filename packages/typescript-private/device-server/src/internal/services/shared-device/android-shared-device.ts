@@ -323,6 +323,9 @@ export class AndroidSharedDeviceService implements Zombieable {
     // }
     await Adb.keyevent(this.serial, DeviceControlKeycode.DEVICE_CONTROL_KEYCODE_VOLUME_UP);
     await Adb.keyevent(this.serial, DeviceControlKeycode.DEVICE_CONTROL_KEYCODE_VOLUME_MUTE);
+    await Adb.keyevent(this.serial, DeviceControlKeycode.DEVICE_CONTROL_KEYCODE_VOLUME_DOWN);
+    await Adb.keyevent(this.serial, DeviceControlKeycode.DEVICE_CONTROL_KEYCODE_VOLUME_DOWN);
+    await Adb.keyevent(this.serial, DeviceControlKeycode.DEVICE_CONTROL_KEYCODE_VOLUME_DOWN);
     await Adb.keyevent(this.serial, DeviceControlKeycode.DEVICE_CONTROL_KEYCODE_MUTE);
   }
 
