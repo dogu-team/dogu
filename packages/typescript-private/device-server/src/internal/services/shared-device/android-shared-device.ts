@@ -128,7 +128,8 @@ export class AndroidSharedDeviceService implements Zombieable {
     }
 
     this.setupState = 'change-locale';
-    await this.appiumAdb.setDeviceLocale('en-US');
+    const newAppiumAdb = this.appiumAdb.clone({ adbExecTimeout: 1000 * 60 * 3 });
+    await newAppiumAdb.setDeviceLocale('en-US');
 
     this.setupState = 'allow-non-market-apps';
     await Adb.allowNonMarketApps(serial, logger).catch((e) => {

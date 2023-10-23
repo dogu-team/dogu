@@ -393,7 +393,8 @@ export class AndroidChannel implements DeviceChannel {
   }
 
   async setLocale(localeCode: LocaleCode): Promise<void> {
-    await this.appiumAdb.setDeviceLanguageCountry(localeCode.language, localeCode.region, localeCode.script);
+    const newAppiumAdb = this.appiumAdb.clone({ adbExecTimeout: 1000 * 60 * 3 });
+    await newAppiumAdb.setDeviceLanguageCountry(localeCode.language, localeCode.region, localeCode.script);
   }
 
   async getGeoLocation(): Promise<GeoLocation> {
@@ -408,7 +409,8 @@ export class AndroidChannel implements DeviceChannel {
   }
 
   async setGeoLocation(geoLocation: GeoLocation): Promise<void> {
-    await this.appiumAdb.setGeoLocation(geoLocation);
+    const newAppiumAdb = this.appiumAdb.clone({ adbExecTimeout: 1000 * 60 * 3 });
+    await newAppiumAdb.setGeoLocation(geoLocation);
   }
 }
 
