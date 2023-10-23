@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+
 import { WebSocketUrlResolver } from '../utils/web-socket';
 
 const useWebSocket = (pathWithQuery: string | null) => {

@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+
 import useEventStore, { EventName } from 'src/stores/events';
 
 const useRefresh = (events: EventName[], refresher: (payload?: unknown) => any) => {
