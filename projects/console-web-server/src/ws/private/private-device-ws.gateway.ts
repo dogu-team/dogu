@@ -12,10 +12,17 @@ import { DoguWsException } from '../common/ws-exception';
 
 @WebSocketGateway({ path: PrivateDeviceWs.pullDeviceParamDatas.path })
 export class PrivateDeviceWsGateway implements OnGatewayConnection {
-  constructor(private readonly wsCommonService: WsCommonService, private readonly deviceMessageQueue: DeviceMessageQueue, private readonly logger: DoguLogger) {}
+  constructor(
+    private readonly wsCommonService: WsCommonService,
+    private readonly deviceMessageQueue: DeviceMessageQueue,
+    private readonly logger: DoguLogger,
+  ) {}
 
   async handleConnection(webSocket: WebSocket, incomingMessage: IncomingMessage): Promise<void> {
     this.logger.info('PrivateDeviceWsGateway.handleConnection', { remoteAddress: incomingMessage.socket.remoteAddress });
+
+    this.wsCommonService.sendPing(webSocket, 'PrivateDeviceWsGateway');
+
     try {
       this.setHandlers(webSocket);
       return await this.handleConnectionInternal(webSocket, incomingMessage);

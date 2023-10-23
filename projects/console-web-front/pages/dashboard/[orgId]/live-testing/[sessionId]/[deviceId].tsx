@@ -1,7 +1,7 @@
 import { WarningTwoTone } from '@ant-design/icons';
 import { GetServerSideProps } from 'next';
 import styled from 'styled-components';
-import { LiveSessionId, LiveSessionState, LiveSessionWsMessage } from '@dogu-private/types';
+import { LiveSessionId, LiveSessionState, LiveSessionWsMessage, WS_PING_MESSAGE } from '@dogu-private/types';
 import { useEffect } from 'react';
 import { Button, Modal } from 'antd';
 import { useRouter } from 'next/router';
@@ -38,6 +38,10 @@ const CloudLiveTestingStudioPage: NextPageWithLayout<CloudStudioTestingPageProps
       };
 
       const handleMessage = (event: MessageEvent) => {
+        if (event.data === WS_PING_MESSAGE) {
+          return;
+        }
+
         try {
           const data = JSON.parse(event.data) as LiveSessionWsMessage;
           if (data.type === LiveSessionState.CLOSE_WAIT) {
@@ -49,7 +53,7 @@ const CloudLiveTestingStudioPage: NextPageWithLayout<CloudStudioTestingPageProps
       };
 
       cloudHeartbeatSocketRef.current.onclose = (e) => {
-        console.debug('livesession heartbeat closed');
+        console.debug('livesession heartbeat closed', e);
         handleClose();
       };
       cloudHeartbeatSocketRef.current.onerror = (e) => {

@@ -41,6 +41,8 @@ export class LiveSessionHeartbeatGateway implements OnGatewayConnection {
       return;
     }
 
+    this.wsCommonService.sendPing(webSocket, 'LiveSessionHeartbeatGateway');
+
     const validateResult = await this.wsCommonService.validateCloudDeviceAccessPermission(incomingMessage, this.dataSource, organizationId, liveSessionId);
     if (!validateResult.result) {
       this.logger.info(`LiveSessionHeartbeatGateway.handleConnection ${validateResult.message}`);

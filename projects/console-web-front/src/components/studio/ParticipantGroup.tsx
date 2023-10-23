@@ -1,5 +1,5 @@
 import { UserBase } from '@dogu-private/console';
-import { DeviceId, OrganizationId } from '@dogu-private/types';
+import { DeviceId, OrganizationId, WS_PING_MESSAGE } from '@dogu-private/types';
 import { Avatar, Tooltip } from 'antd';
 import { useState, useEffect } from 'react';
 
@@ -20,6 +20,10 @@ const ParticipantGroup: React.FC<Props> = ({ organizationId, deviceId, userId })
   useEffect(() => {
     if (socketRef.current) {
       socketRef.current.onmessage = (event) => {
+        if (event.data === WS_PING_MESSAGE) {
+          return;
+        }
+
         const data: { users: UserBase[] } = JSON.parse(event.data);
         setUsers(data.users);
       };

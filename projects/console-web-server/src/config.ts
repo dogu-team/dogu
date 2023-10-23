@@ -158,6 +158,11 @@ export const config = {
       allowedSeconds: 24 * 60 * 60,
     },
   },
+  ws: {
+    ping: {
+      intervalMilliseconds: 5 * 60 * 1000,
+    },
+  },
 };
 
 export const dataSourceConfig: DataSourceOptions = {

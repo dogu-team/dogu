@@ -37,6 +37,8 @@ export class DeviceStreamingTrickleExchangerGateway implements OnGatewayConnecti
     });
     const { deviceId, organizationId } = deviceStreamingQueryDto;
 
+    this.wsCommonService.sendPing(webSocket, 'DeviceStreamingGateway');
+
     webSocket.addEventListener('open', async (event) => {
       this.logger.verbose('open');
     });
