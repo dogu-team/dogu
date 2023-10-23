@@ -7,6 +7,10 @@ on:
         type: string
         description: 'exclude to build (ex. windows-2019 or macos-latest)'
         default: 'macos-latest'
+      clean:
+        type: boolean
+        description: 'clean git repo'
+        default: false
 
   push:
     branches: ['main']
@@ -55,7 +59,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
         with:
-          clean: true
+          clean: ${{ github.event.inputs.clean }}
           fetch-depth: 0
 
       - name: Cache Yarn Unplugged
