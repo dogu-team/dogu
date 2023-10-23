@@ -13,7 +13,7 @@ import _ from 'lodash';
 import WebDriverIO, { remote } from 'webdriverio';
 import { DevicePortService } from '../device-port/device-port.service';
 import { Adb } from '../internal/externals/index';
-import { Zombieable, ZombieProps } from '../internal/services/zombie/zombie-component';
+import { Zombieable, ZombieProps, ZombieQueriable } from '../internal/services/zombie/zombie-component';
 import { ZombieServiceInstance } from '../internal/services/zombie/zombie-service';
 import { createAppiumLogger, logger } from '../logger/logger.instance';
 import { createAppiumCapabilities } from './appium.capabilites';
@@ -217,7 +217,7 @@ export class AppiumContextImpl implements AppiumContext {
     return this.options.serial;
   }
   get props(): ZombieProps {
-    return { srvPort: this.options.serverPort, cliSessId: this._data?.client.driver.sessionId };
+    return { srvPort: this.options.serverPort, cliSessId: this._data?.client.driver.sessionId, openingState: this.openingState };
   }
 
   getInfo(): AppiumContextInfo {
@@ -564,14 +564,16 @@ export class AppiumContextProxy implements AppiumContext, Zombieable {
   private next: AppiumContext | null = null;
   private nullContext: NullAppiumContext;
   private contextLock = new AsyncLock();
+  private implWaiter: ZombieQueriable;
 
   constructor(public readonly options: AppiumContextOptions) {
     this.logger = createAppiumLogger(options.serial);
     this.nullContext = new NullAppiumContext(options, this.logger);
 
     this.impl = AppiumContextProxy.createAppiumContext(options, this.logger);
-    ZombieServiceInstance.addComponent(this.impl);
+    this.implWaiter = ZombieServiceInstance.addComponent(this.impl);
   }
+
   get name(): string {
     return 'AppiumContextProxy';
   }
@@ -589,8 +591,8 @@ export class AppiumContextProxy implements AppiumContext, Zombieable {
     return {};
   }
 
-  revive(): Promise<void> {
-    return Promise.resolve();
+  async revive(): Promise<void> {
+    await this.implWaiter.waitUntilAlive();
   }
 
   async update(): Promise<void> {

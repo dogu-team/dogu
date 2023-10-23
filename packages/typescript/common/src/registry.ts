@@ -1,3 +1,4 @@
+import { CustomInspectSymbol } from './logs';
 import { stringifyShort } from './strings/functions';
 
 export class Registry<Key, Value> {
@@ -48,5 +49,10 @@ export class Registry<Key, Value> {
 
   clear(): void {
     this.map.clear();
+  }
+
+  [CustomInspectSymbol](depth: number, inspectOptions: unknown, inspect: unknown): string {
+    const entries = Array.from(this.map.entries());
+    return entries.map(([key, value]) => `${stringifyShort(key)} => ${stringifyShort(value)}`).join('\n');
   }
 }

@@ -3,6 +3,7 @@ import { delay, errorify, FilledPrintable, loop, stringify } from '@dogu-tech/co
 import { HostPaths, killChildProcess } from '@dogu-tech/node';
 import child_process from 'child_process';
 import fs from 'fs';
+import { AppiumContextImpl } from '../../../appium/appium.context';
 import { env } from '../../../env';
 import { Adb, AndroidPropInfo, AppiumAdb, isHarnessEnabled } from '../../externals/index';
 import { AndroidResetService } from '../reset/android-reset';
@@ -46,6 +47,8 @@ const BlockAppList: BlockAppInfo[] = [
     packageName: 'com.google.android.gms',
   },
 ];
+
+const UninstallPassApps = ['io.appium.settings', 'io.appium.uiautomator2.server', 'io.appium.uiautomator2.server.test'];
 const StartActivityLogKeyword = `START u${UserId}`;
 
 interface PreinstallAppInfo {
@@ -65,7 +68,14 @@ export class AndroidSharedDeviceService implements Zombieable {
   private state: string = 'none';
   private isSetupDone = false;
 
-  constructor(public serial: Serial, private appiumAdb: AppiumAdb, public androidProps: AndroidPropInfo, public systemInfo: DeviceSystemInfo, public printable: FilledPrintable) {
+  constructor(
+    public serial: Serial,
+    private appiumAdb: AppiumAdb,
+    public androidProps: AndroidPropInfo,
+    public systemInfo: DeviceSystemInfo,
+    public appiumContext: AppiumContextImpl,
+    public printable: FilledPrintable,
+  ) {
     this.zombieWaiter = ZombieServiceInstance.addComponent(this);
   }
 
@@ -93,47 +103,71 @@ export class AndroidSharedDeviceService implements Zombieable {
   }
 
   async revive(): Promise<void> {
-    this.printable.info(`AndroidSharedDeviceService.revive. serial: ${this.serial}, state: ${this.state}`);
+    this.printable.info(`AndroidSharedDeviceService.revive. begin `, { serial: this.serial });
     if (!env.DOGU_IS_DEVICE_SHARE) {
       return;
     }
     this.state = 'reviving';
     if (!this.isSetupDone) {
       this.state = 'resetting';
-      if (AndroidResetService.isHarnessAvailable(this.systemInfo) && !isHarnessEnabled(this.androidProps)) {
-        await Adb.enableTestharness(this.serial).catch((e) => {
-          this.printable.error(`AndroidSharedDeviceService.revive.enableTestharness failed.`, { error: errorify(e) });
-        });
-        // device will be restarted
+      try {
+        if (AndroidResetService.isHarnessAvailable(this.systemInfo) && !isHarnessEnabled(this.androidProps)) {
+          this.state = 'enable-testharness';
+          await Adb.enableTestharness(this.serial);
+          // If testharness is enabled, device is rebooted automatically.
+        } else {
+          throw Error(`AndroidSharedDeviceService.revive testharness is not available. so try manual reset`);
+        }
+      } catch (e) {
+        this.state = 'reset-accounts';
+        await AndroidResetService.resetAccounts(this.serial, this.appiumAdb, this.appiumContext, this.printable);
       }
-      await AndroidResetService.resetBeforeConnected(this.serial, this.printable).catch((e) => {
-        this.printable.error(`AndroidSharedDeviceService.revive.resetBeforeConnected failed.`, { error: errorify(e) });
+
+      this.state = 'reset-common';
+      await AndroidResetService.resetCommon(this.serial, { ignorePackages: UninstallPassApps }, this.printable).catch((e) => {
+        this.printable.error(`AndroidSharedDeviceService.revive.resetCommon failed.`, { error: errorify(e) });
         throw e;
       });
-      this.state = 'preinstalling';
+
+      this.state = 'change-locale';
       await this.appiumAdb.setDeviceLocale('en-US');
+
+      this.state = 'allow-non-market-apps';
       await Adb.allowNonMarketApps(this.serial, this.printable).catch((e) => {
         this.printable.error(`AndroidSharedDeviceService.revive.allowNonMarketApps failed.`, { error: errorify(e) });
       });
+
+      this.state = 'preinstalling';
       await this.preInstallApps().catch((e) => {
         this.printable.error(`AndroidSharedDeviceService.revive.preInstallApps failed.`, { error: errorify(e) });
       });
+
+      this.state = 'set-gboard-as-default-keyboard';
       await this.setGboardAsDefaultKeyboard().catch((e) => {
         this.printable.error(`AndroidSharedDeviceService.revive.setGboardAsDefaultKeyboard failed.`, { error: errorify(e) });
       });
+
+      this.state = 'mute';
       await this.mute().catch((e) => {
         this.printable.error(`AndroidSharedDeviceService.revive.mute failed.`, { error: errorify(e) });
       });
+
+      this.state = 'set-brightness';
       await Adb.setBrightness(this.serial, 50).catch((e) => {
         this.printable.error(`AndroidSharedDeviceService.revive.setBrightness failed.`, { error: errorify(e) });
       });
+
+      this.state = 'join-wifi';
       await AndroidResetService.joinWifi(this.serial, env.DOGU_WIFI_SSID, env.DOGU_WIFI_PASSWORD, this.printable).catch((e) => {
         this.printable.error(`AndroidSharedDeviceService.revive.joinWifi failed.`, { error: errorify(e) });
       });
-      this.state = 'changing-locale';
+
+      this.state = 'stay-on-while-plugged-in';
       await Adb.stayOnWhilePluggedIn(this.serial).catch((e) => {
         this.printable.error(`AndroidSharedDeviceService.revive.stayOnWhilePluggedIn failed.`, { error: errorify(e) });
       });
+
+      this.state = 'close-dialog';
       await this.closeDialog().catch((e) => {
         this.printable.error(`AndroidSharedDeviceService.revive.closeDialog failed.`, { error: errorify(e) });
       });
@@ -144,6 +178,7 @@ export class AndroidSharedDeviceService implements Zombieable {
       this.printable.error(e);
     });
     this.state = 'alive';
+    this.printable.info(`AndroidSharedDeviceService.revive. env `, { serial: this.serial });
   }
 
   async update(): Promise<void> {

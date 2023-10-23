@@ -3,7 +3,7 @@ import { delay, errorify, filterAsync, loop, Printable, stringify } from '@dogu-
 import { HostPaths } from '@dogu-tech/node';
 import { execFile } from 'child_process';
 import semver from 'semver';
-import { AppiumContext } from '../../../appium/appium.context';
+import { AppiumContextImpl } from '../../../appium/appium.context';
 import { env } from '../../../env';
 import { pathMap } from '../../../path-map';
 import { Adb, AppiumAdb } from '../../externals/index';
@@ -16,20 +16,9 @@ export class AndroidResetService {
     }
     return semver.gte(version, '10.0.0');
   }
-  static async resetDevice(serial: Serial, systemInfo: DeviceSystemInfo, appiumAdb: AppiumAdb, appiumContext: AppiumContext, logger: Printable): Promise<void> {
-    logger.info(`AndroidResetService.resetDevice serial: ${serial}, systemInfo: ${stringify(systemInfo)}`);
-    try {
-      if (!AndroidResetService.isHarnessAvailable(systemInfo)) {
-        throw new Error(`AndroidResetService.resetDevice Android version must be 11 or higher. to use testharness`);
-      }
-      await Adb.enableTestharness(serial);
-    } catch (e) {
-      await AndroidResetService.resetManual(serial, appiumAdb, appiumContext, logger);
-    }
-  }
 
-  static async resetBeforeConnected(serial: Serial, logger: Printable): Promise<void> {
-    await Adb.resetPackages(serial, logger);
+  static async resetCommon(serial: Serial, option: { ignorePackages: string[] }, logger: Printable): Promise<void> {
+    await Adb.resetPackages(serial, option.ignorePackages, logger);
     await Adb.resetSdcard(serial, logger);
     await AndroidResetService.resetIMEList(serial, logger);
     await Adb.logcatClear(serial, logger);
@@ -101,16 +90,10 @@ export class AndroidResetService {
     });
   }
 
-  private static async resetManual(serial: Serial, appiumAdb: AppiumAdb, appiumContext: AppiumContext, logger: Printable): Promise<void> {
-    await AndroidResetService.resetAccounts(serial, appiumAdb, appiumContext, logger);
-
-    // should delete appium after you are finished using it.
-    await AndroidResetService.resetBeforeConnected(serial, logger);
-
-    await Adb.reboot(serial);
-  }
-
-  private static async resetAccounts(serial: Serial, appiumAdb: AppiumAdb, appiumContext: AppiumContext, logger: Printable): Promise<void> {
+  static async resetAccounts(serial: Serial, appiumAdb: AppiumAdb, appiumContext: AppiumContextImpl, logger: Printable): Promise<void> {
+    if (appiumContext.openingState !== 'openingSucceeded') {
+      throw new Error(`AndroidResetService.resetAccounts Appium Context is not opened`);
+    }
     const newAppiumAdb = appiumAdb.clone({ adbExecTimeout: 1000 * 60 * 10 });
     await newAppiumAdb.setDeviceLocale('ko-KR'); // prevent setDeviceLocale passing
     await delay(1000);
