@@ -86,6 +86,7 @@ export class AndroidChannel implements DeviceChannel {
     private readonly _appiumDeviceWebDriverHandler: AppiumDeviceWebDriverHandler,
     private readonly _sharedDevice: AndroidSharedDeviceService,
     private readonly appiumAdb: AppiumAdb,
+    private readonly _reset: AndroidResetService,
     private readonly logger: FilledPrintable,
     readonly browserInstallations: BrowserInstallation[],
   ) {
@@ -146,7 +147,9 @@ export class AndroidChannel implements DeviceChannel {
       browserPlatform: 'android',
     });
     const appiumContextImpl = appiumContextProxy.getImpl(AppiumContextImpl);
-    const sharedDevice = new AndroidSharedDeviceService(serial, appiumAdb, await Adb.getProps(serial), systemInfo, appiumContextImpl, logger);
+    const reset = new AndroidResetService(serial, logger);
+    const sharedDevice = new AndroidSharedDeviceService(serial, appiumAdb, await Adb.getProps(serial), systemInfo, appiumContextImpl, reset, deviceAgent, logger);
+    await sharedDevice.setup();
     await sharedDevice.wait();
 
     const deviceChannel = new AndroidChannel(
@@ -161,6 +164,7 @@ export class AndroidChannel implements DeviceChannel {
       appiumDeviceWebDriverHandler,
       sharedDevice,
       appiumAdb,
+      reset,
       logger,
       findAllBrowserInstallationsResult.browserInstallations,
     );
@@ -272,20 +276,9 @@ export class AndroidChannel implements DeviceChannel {
   }
 
   async reset(): Promise<void> {
-    this.logger.info(`AndroidResetService.resetDevice begin`, { serial: this.serial, systemInfo: this.info });
-    try {
-      if (!AndroidResetService.isHarnessAvailable(this.info)) {
-        throw new Error(`AndroidResetService.resetDevice Android version must be 11 or higher. to use testharness`);
-      }
-      await Adb.enableTestharness(this.serial);
-    } catch (e) {
-      await this.switchAppiumContext('builtin');
-      const appiumContextImpl = this._appiumContext.getImpl(AppiumContextImpl);
-      await AndroidResetService.resetAccounts(this.serial, this.appiumAdb, appiumContextImpl, this.logger);
-      await AndroidResetService.resetCommon(this.serial, { ignorePackages: [] }, this.logger);
-      await Adb.reboot(this.serial);
-    }
-    this.logger.info(`AndroidResetService.resetDevice end`, { serial: this.serial, systemInfo: this.info });
+    await this.switchAppiumContext('builtin');
+    const appiumContextImpl = this._appiumContext.getImpl(AppiumContextImpl);
+    await this._reset.reset(this.info, this.appiumAdb, appiumContextImpl);
   }
 
   async killOnPort(port: number): Promise<void> {
@@ -361,7 +354,7 @@ export class AndroidChannel implements DeviceChannel {
    * adb -s $DOGU_DEVICE_SERIAL shell am start -n com.steinwurf.adbjoinwifi/.MainActivity -e ssid $DOGU_WIFI_SSID -e password_type WPA -e password $DOGU_WIFI_PASSWORD
    */
   async joinWifi(ssid: string, password: string): Promise<void> {
-    await AndroidResetService.joinWifi(this.serial, ssid, password, this.logger);
+    await Adb.joinWifi(this.serial, ssid, password, this.logger);
   }
 
   getAppiumContext(): AppiumContext {

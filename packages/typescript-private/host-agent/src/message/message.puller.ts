@@ -20,11 +20,7 @@ import { MessageContext, NullMessageEventHandler } from './message.types';
 export class MessagePuller {
   private messageHandlers: MessageHandlers | null = null;
 
-  constructor(
-    private readonly consoleClientService: ConsoleClientService,
-    private readonly deviceRegistry: DeviceRegistry,
-    private readonly logger: DoguLogger,
-  ) {}
+  constructor(private readonly consoleClientService: ConsoleClientService, private readonly deviceRegistry: DeviceRegistry, private readonly logger: DoguLogger) {}
 
   @OnEvent(OnDeviceRegisteredEvent.key)
   onDeviceRegisteredEvent(value: Instance<typeof OnDeviceRegisteredEvent.value>): void {
