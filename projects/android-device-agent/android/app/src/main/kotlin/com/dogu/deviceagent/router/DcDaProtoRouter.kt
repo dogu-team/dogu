@@ -11,6 +11,7 @@ val dcDaProtoHandlers: Map<DcDa.DcDaParam.ValueCase, IDcDaProtoAPIHandler> = map
     DcDa.DcDaParam.ValueCase.DC_DA_CONNECTION_PARAM to ConnectionAPIHandler(),
     DcDa.DcDaParam.ValueCase.DC_DA_QUERY_PROFILE_PARAM to QueryProfileAPIHandler(),
     DcDa.DcDaParam.ValueCase.DC_DA_APPLY_STREAMING_OPTION_PARAM to ApplyStreamingOptionAPIHandler(),
+    DcDa.DcDaParam.ValueCase.DC_DA_CONTROL_PARAM to ControlAPIHandler(),
 )
 
 suspend fun DefaultWebSocketServerSession.routeDcDaProto(appContext: AppContext): Unit {
