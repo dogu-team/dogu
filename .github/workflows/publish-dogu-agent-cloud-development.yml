@@ -176,7 +176,7 @@ jobs:
 
       - name: Build Packages
         run: |
-          yarn workspace dogu run rebuild:packages
+          yarn workspace dogu run build:packages
 
       - name: Download, Build third-party
         run: |
