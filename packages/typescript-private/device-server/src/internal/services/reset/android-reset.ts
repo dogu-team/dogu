@@ -96,6 +96,7 @@ export class AndroidResetService {
 
   private async resetAccounts(appiumAdb: AppiumAdb, appiumContext: AppiumContextImpl): Promise<void> {
     const { serial, logger } = this;
+    logger.info(`AndroidResetService.resetAccounts begin`, { serial });
     if (appiumContext.openingState !== 'openingSucceeded') {
       throw new Error(`AndroidResetService.resetAccounts Appium Context is not opened`);
     }
@@ -156,5 +157,7 @@ export class AndroidResetService {
       }
       await removeWidgetButton.click();
     }
+
+    logger.info(`AndroidResetService.resetAccounts end`, { serial });
   }
 }

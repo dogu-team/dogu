@@ -136,6 +136,11 @@ export class AndroidSharedDeviceService implements Zombieable {
       this.printable.error(`AndroidSharedDeviceService.revive.allowNonMarketApps failed.`, { serial, error: errorify(e) });
     });
 
+    this.setupState = 'disable-google-play-protect';
+    await Adb.disableGooglePlayProtect(this.serial, this.printable).catch((e) => {
+      this.printable.error(`AndroidSharedDeviceService.revive.disableGooglePlayProtect failed.`, { serial, error: errorify(e) });
+    });
+
     this.setupState = 'preinstalling';
     await this.preInstallApps().catch((e) => {
       this.printable.error(`AndroidSharedDeviceService.revive.preInstallApps failed.`, { serial, error: errorify(e) });
