@@ -1,4 +1,4 @@
-import { DeviceSystemInfo, input, Platform, PrivateProtocol, Serial } from '@dogu-private/types';
+import { DeviceSystemInfo, Platform, PrivateProtocol, Serial } from '@dogu-private/types';
 import { delay, errorify, FilledPrintable, loop, stringify } from '@dogu-tech/common';
 import { HostPaths, killChildProcess } from '@dogu-tech/node';
 import child_process from 'child_process';
@@ -299,28 +299,30 @@ export class AndroidSharedDeviceService implements Zombieable {
   }
 
   private async mute(): Promise<void> {
-    for await (const _ of loop(30, 20)) {
-      await this.deviceAgent.sendWithProtobuf('dcDaControlParam', 'dcDaControlReturn', {
-        control: {
-          ...input.DefaultDeviceControl(),
-          type: DeviceControlType.DEVICE_CONTROL_TYPE_AOS_INJECT_KEYCODE,
-          text: '',
-          action: DeviceControlAction.DEVICE_CONTROL_ACTION_AOS_KEYEVENT_ACTION_DOWN_UNSPECIFIED,
-          metaState: DeviceControlMetaState.DEVICE_CONTROL_META_STATE_UNSPECIFIED,
-          keycode: DeviceControlKeycode.DEVICE_CONTROL_KEYCODE_VOLUME_DOWN,
-        },
-      });
-      await this.deviceAgent.sendWithProtobuf('dcDaControlParam', 'dcDaControlReturn', {
-        control: {
-          ...input.DefaultDeviceControl(),
-          type: DeviceControlType.DEVICE_CONTROL_TYPE_AOS_INJECT_KEYCODE,
-          text: '',
-          action: DeviceControlAction.DEVICE_CONTROL_ACTION_AOS_KEYEVENT_ACTION_UP,
-          metaState: DeviceControlMetaState.DEVICE_CONTROL_META_STATE_UNSPECIFIED,
-          keycode: DeviceControlKeycode.DEVICE_CONTROL_KEYCODE_VOLUME_DOWN,
-        },
-      });
-    }
+    // for await (const _ of loop(30, 20)) { <- hang error
+    //   await this.deviceAgent.sendWithProtobuf('dcDaControlParam', 'dcDaControlReturn', {
+    //     control: {
+    //       ...input.DefaultDeviceControl(),
+    //       type: DeviceControlType.DEVICE_CONTROL_TYPE_AOS_INJECT_KEYCODE,
+    //       text: '',
+    //       action: DeviceControlAction.DEVICE_CONTROL_ACTION_AOS_KEYEVENT_ACTION_DOWN_UNSPECIFIED,
+    //       metaState: DeviceControlMetaState.DEVICE_CONTROL_META_STATE_UNSPECIFIED,
+    //       keycode: DeviceControlKeycode.DEVICE_CONTROL_KEYCODE_VOLUME_DOWN,
+    //     },
+    //   });
+    //   await this.deviceAgent.sendWithProtobuf('dcDaControlParam', 'dcDaControlReturn', {
+    //     control: {
+    //       ...input.DefaultDeviceControl(),
+    //       type: DeviceControlType.DEVICE_CONTROL_TYPE_AOS_INJECT_KEYCODE,
+    //       text: '',
+    //       action: DeviceControlAction.DEVICE_CONTROL_ACTION_AOS_KEYEVENT_ACTION_UP,
+    //       metaState: DeviceControlMetaState.DEVICE_CONTROL_META_STATE_UNSPECIFIED,
+    //       keycode: DeviceControlKeycode.DEVICE_CONTROL_KEYCODE_VOLUME_DOWN,
+    //     },
+    //   });
+    // }
+    await Adb.keyevent(this.serial, DeviceControlKeycode.DEVICE_CONTROL_KEYCODE_VOLUME_UP);
+    await Adb.keyevent(this.serial, DeviceControlKeycode.DEVICE_CONTROL_KEYCODE_VOLUME_MUTE);
     await Adb.keyevent(this.serial, DeviceControlKeycode.DEVICE_CONTROL_KEYCODE_MUTE);
   }
 

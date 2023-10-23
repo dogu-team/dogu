@@ -54,7 +54,6 @@ export class ZombieService {
           }
 
           ret.isReviving = true;
-          ret.reviveCount++;
           await ret.component
             .tryRevive()
             .catch((e: Error) => {
@@ -62,6 +61,7 @@ export class ZombieService {
             })
             .finally(() => {
               ret.isReviving = false;
+              ret.reviveCount = ret.component.reviveCount;
             });
         });
       },
