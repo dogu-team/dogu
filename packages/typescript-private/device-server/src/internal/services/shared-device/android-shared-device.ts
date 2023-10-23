@@ -169,6 +169,13 @@ export class AndroidSharedDeviceService implements Zombieable {
     await this.closeDialog().catch((e) => {
       this.printable.error(`AndroidSharedDeviceService.revive.closeDialog failed.`, { serial, error: errorify(e) });
     });
+
+    const disableAppList = BlockAppList.filter((app) => app.disable);
+    for (const app of disableAppList) {
+      await Adb.disablePackage(this.serial, app.packageName, 0, this.printable).catch((e) => {
+        this.printable.error(`AndroidSharedDeviceService.revive.disablePackage failed.`, { error: errorify(e) });
+      });
+    }
     await this.reset.makeDirty();
 
     this.setupState = 'setup-done';
