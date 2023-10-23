@@ -99,7 +99,7 @@ export class AndroidResetService {
     if (appiumContext.openingState !== 'openingSucceeded') {
       throw new Error(`AndroidResetService.resetAccounts Appium Context is not opened`);
     }
-    const newAppiumAdb = appiumAdb.clone({ adbExecTimeout: 1000 * 60 * 10 });
+    const newAppiumAdb = appiumAdb.clone({ adbExecTimeout: 1000 * 60 * 3 });
     await newAppiumAdb.setDeviceLocale('ko-KR'); // prevent setDeviceLocale passing
     await delay(1000);
     await newAppiumAdb.setDeviceLocale('en-US');
