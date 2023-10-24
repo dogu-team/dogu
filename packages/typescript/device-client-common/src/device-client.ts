@@ -1,8 +1,8 @@
 import { Class, Closable, errorify, Instance, Log, stringify, transformAndValidate, WebSocketSpec } from '@dogu-tech/common';
-import { DeviceInterface } from '@dogu-tech/device-interface';
 import { DeviceSystemInfo, FilledRuntimeInfo, GeoLocation, LocaleCode, PlatformSerial, Serial } from '@dogu-tech/types';
 import { DeviceClientOptions, DeviceCloser, DeviceService, DeviceWebSocket } from './bases';
 import { DeviceHttpClient } from './device-http-client';
+import { DeviceInterface } from './interface';
 import { Device } from './specs/http/device';
 import { AppiumContextInfo } from './specs/http/device-dtos';
 import { DeviceForward } from './specs/ws/device/forward';

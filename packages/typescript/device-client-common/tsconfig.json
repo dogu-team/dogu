@@ -12,9 +12,6 @@
       "path": "../common"
     },
     {
-      "path": "../device-interface"
-    },
-    {
       "path": "../../typescript-dev-private/publish-package"
     }
   ]

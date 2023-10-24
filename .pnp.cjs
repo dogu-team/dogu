@@ -140,10 +140,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:packages/typescript/device-client-common"\
       },\
       {\
-        "name": "@dogu-tech/device-interface",\
-        "reference": "workspace:packages/typescript/device-interface"\
-      },\
-      {\
         "name": "@dogu-tech/env-tools",\
         "reference": "workspace:packages/typescript/env-tools"\
       },\
@@ -250,7 +246,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@dogu-tech/dest", ["workspace:packages/typescript/dest"]],\
       ["@dogu-tech/device-client", ["workspace:packages/typescript/device-client"]],\
       ["@dogu-tech/device-client-common", ["workspace:packages/typescript/device-client-common"]],\
-      ["@dogu-tech/device-interface", ["workspace:packages/typescript/device-interface"]],\
       ["@dogu-tech/env-tools", ["workspace:packages/typescript/env-tools"]],\
       ["@dogu-tech/jest-environment", ["workspace:packages/typescript/jest-environment"]],\
       ["@dogu-tech/node", ["workspace:packages/typescript/node"]],\
@@ -8224,7 +8219,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@dogu-tech/device-client-common", "workspace:packages/typescript/device-client-common"],\
             ["@dogu-dev-private/publish-package", "workspace:packages/typescript-dev-private/publish-package"],\
             ["@dogu-tech/common", "workspace:packages/typescript/common"],\
-            ["@dogu-tech/device-interface", "workspace:packages/typescript/device-interface"],\
             ["@dogu-tech/types", "workspace:packages/typescript/types"],\
             ["@types/lodash", "npm:4.14.186"],\
             ["@types/node", "npm:18.15.11"],\
@@ -8237,24 +8231,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["nodemon", "npm:2.0.22"],\
             ["reflect-metadata", "npm:0.1.13"],\
             ["shelljs", "npm:0.8.5"],\
-            ["shx", "npm:0.3.4"],\
-            ["ts-node", "virtual:f2635a2fcff48218c189c72f8ec68a58c0c9a493231eeb25fc0d4d97932a237dd3a38bfaa7c8a6d4be36984c08b243589188d7525f771fc6d7018c6cf79aeba1#npm:10.9.1"],\
-            ["typescript", "patch:typescript@npm%3A4.7.4#~builtin<compat/typescript>::version=4.7.4&hash=65a307"]\
-          ],\
-          "linkType": "SOFT"\
-        }]\
-      ]],\
-      ["@dogu-tech/device-interface", [\
-        ["workspace:packages/typescript/device-interface", {\
-          "packageLocation": "./packages/typescript/device-interface/",\
-          "packageDependencies": [\
-            ["@dogu-tech/device-interface", "workspace:packages/typescript/device-interface"],\
-            ["@dogu-dev-private/publish-package", "workspace:packages/typescript-dev-private/publish-package"],\
-            ["@dogu-tech/common", "workspace:packages/typescript/common"],\
-            ["@dogu-tech/types", "workspace:packages/typescript/types"],\
-            ["@types/node", "npm:18.15.11"],\
-            ["cross-env", "npm:7.0.3"],\
-            ["nodemon", "npm:2.0.22"],\
             ["shx", "npm:0.3.4"],\
             ["ts-node", "virtual:f2635a2fcff48218c189c72f8ec68a58c0c9a493231eeb25fc0d4d97932a237dd3a38bfaa7c8a6d4be36984c08b243589188d7525f771fc6d7018c6cf79aeba1#npm:10.9.1"],\
             ["typescript", "patch:typescript@npm%3A4.7.4#~builtin<compat/typescript>::version=4.7.4&hash=65a307"]\
