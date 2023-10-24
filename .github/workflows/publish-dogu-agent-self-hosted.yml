@@ -186,7 +186,7 @@ jobs:
       - name: Dogu Agent - Newbie nm-space
         run: |
           yarn workspace dogu run newbie:nm-space
-d
+
       - name: create dotEnv deploy
         run: |
           echo "DOGU_GITHUB_TOKEN=${{ secrets.DOGU_GITHUB_TOKEN }}" > .env.deploy-secret
