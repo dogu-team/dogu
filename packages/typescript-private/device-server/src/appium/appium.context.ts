@@ -252,6 +252,7 @@ export class AppiumContextImpl implements AppiumContext {
     try {
       const serverData = await this.openServer();
       const clientData = await this.openClient(serverData.port);
+      await clientData.driver.getWindowSize();
       this._data = {
         server: serverData,
         client: clientData,
@@ -561,17 +562,16 @@ const constructorMap = {
 export class AppiumContextProxy implements AppiumContext, Zombieable {
   private readonly logger: Logger;
   private impl: AppiumContext;
-  private next: AppiumContext | null = null;
   private nullContext: NullAppiumContext;
   private contextLock = new AsyncLock();
-  private implWaiter: ZombieQueriable;
+  private zombieImpl: ZombieQueriable;
 
   constructor(public readonly options: AppiumContextOptions) {
     this.logger = createAppiumLogger(options.serial);
     this.nullContext = new NullAppiumContext(options, this.logger);
 
     this.impl = AppiumContextProxy.createAppiumContext(options, this.logger);
-    this.implWaiter = ZombieServiceInstance.addComponent(this.impl);
+    this.zombieImpl = ZombieServiceInstance.addComponent(this.impl);
   }
 
   get name(): string {
@@ -591,19 +591,15 @@ export class AppiumContextProxy implements AppiumContext, Zombieable {
     return {};
   }
 
-  async revive(): Promise<void> {
-    await this.implWaiter.waitUntilAlive();
+  private get implOrNull(): AppiumContext {
+    if (this.zombieImpl.isAlive()) {
+      return this.impl;
+    }
+    return this.nullContext;
   }
 
-  async update(): Promise<void> {
-    if (this.impl.key !== 'null' && false === ZombieServiceInstance.isAlive(this.impl)) {
-      this.next = this.impl;
-      this.impl = this.nullContext;
-      return;
-    }
-    if (this.impl.key === 'null' && this.next && ZombieServiceInstance.isAlive(this.next)) {
-      this.impl = this.next;
-    }
+  async revive(): Promise<void> {
+    await this.zombieImpl.waitUntilAlive();
   }
 
   onDie(): void {
@@ -615,47 +611,47 @@ export class AppiumContextProxy implements AppiumContext, Zombieable {
   }
 
   get key(): AppiumContextKey {
-    return this.impl.key;
+    return this.implOrNull.key;
   }
 
   get openingState(): AppiumOpeningState {
-    return this.impl.openingState;
+    return this.implOrNull.openingState;
   }
 
   getInfo(): AppiumContextInfo {
-    return this.impl.getInfo();
+    return this.implOrNull.getInfo();
   }
 
   async getAndroid(): Promise<Android | undefined> {
-    return this.impl.getAndroid();
+    return this.implOrNull.getAndroid();
   }
 
   async getScreenSize(): Promise<ScreenSize> {
-    return this.impl.getScreenSize();
+    return this.implOrNull.getScreenSize();
   }
 
   async switchContext(contextId: string): Promise<void> {
-    return this.impl.switchContext(contextId);
+    return this.implOrNull.switchContext(contextId);
   }
 
   async getContext(): Promise<string> {
-    return this.impl.getContext();
+    return this.implOrNull.getContext();
   }
 
   async getContexts(): Promise<string[]> {
-    return this.impl.getContexts();
+    return this.implOrNull.getContexts();
   }
 
   async getPageSource(): Promise<string> {
-    return this.impl.getPageSource();
+    return this.implOrNull.getPageSource();
   }
 
   async switchContextAndGetPageSource(contextId: string): Promise<string> {
-    return this.impl.switchContextAndGetPageSource(contextId);
+    return this.implOrNull.switchContextAndGetPageSource(contextId);
   }
 
   async getContextPageSources(): Promise<ContextPageSource[]> {
-    return this.impl.getContextPageSources();
+    return this.implOrNull.getContextPageSources();
   }
 
   async switchAppiumContext(key: AppiumContextKey): Promise<void> {
@@ -665,7 +661,6 @@ export class AppiumContextProxy implements AppiumContext, Zombieable {
       }
       const befImplKey = this.impl.key;
       this.logger.info(`switching appium context: from: ${befImplKey}, to: ${key} start`);
-      this.impl = this.nullContext;
       ZombieServiceInstance.deleteAllComponentsIfExist((zombieable) => {
         if (zombieable.serial !== this.options.serial) {
           return false;
@@ -685,10 +680,10 @@ export class AppiumContextProxy implements AppiumContext, Zombieable {
   }
 
   async select(selector: string): Promise<WDIOElement | undefined> {
-    return this.impl.select(selector);
+    return this.implOrNull.select(selector);
   }
   driver(): Browser | undefined {
-    return this.impl.driver();
+    return this.implOrNull.driver();
   }
 
   getImpl<T extends Class<T>>(constructor: T): Instance<T> {
@@ -699,6 +694,9 @@ export class AppiumContextProxy implements AppiumContext, Zombieable {
   }
 
   private static createAppiumContext(options: AppiumContextOptions, logger: Logger): AppiumContext {
+    if (options.key === 'null') {
+      throw new Error('AppiumContextProxy.createAppiumContext failed. options.key is null');
+    }
     const constructor = constructorMap[options.key];
     return new constructor(options, logger);
   }

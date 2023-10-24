@@ -4,10 +4,9 @@ import { ChildProcess, HostPaths } from '@dogu-tech/node';
 import child_process from 'child_process';
 import fs from 'fs';
 import { registerBootstrapHandler } from '../../../bootstrap/bootstrap.service';
-import { idcLogger } from '../../../logger/logger.instance';
 
 class IdeviceInstallerImpl {
-  async uninstallApp(udid: string, appName: string, printable: Printable = idcLogger): Promise<child_process.ChildProcess> {
+  async uninstallApp(udid: string, appName: string, printable: Printable): Promise<child_process.ChildProcess> {
     this.tryAccessAndFix();
     const exe = HostPaths.external.libimobiledevice.ideviceinstaller();
     const args = ['-u', udid, '--uninstall', appName];
@@ -25,7 +24,7 @@ class IdeviceInstallerImpl {
     );
   }
 
-  async installApp(udid: string, appPath: string, printable: Printable = idcLogger): Promise<child_process.ChildProcess> {
+  async installApp(udid: string, appPath: string, printable: Printable): Promise<child_process.ChildProcess> {
     this.tryAccessAndFix();
     const exe = HostPaths.external.libimobiledevice.ideviceinstaller();
     const args = ['-u', udid, '--install', appPath];

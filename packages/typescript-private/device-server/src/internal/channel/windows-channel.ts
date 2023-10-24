@@ -23,7 +23,7 @@ import { AppiumContext, AppiumContextKey } from '../../appium/appium.context';
 import { DeviceWebDriverHandler } from '../../device-webdriver/device-webdriver.common';
 import { SeleniumDeviceWebDriverHandler } from '../../device-webdriver/selenium.device-webdriver.handler';
 import { GamiumContext } from '../../gamium/gamium.context';
-import { logger } from '../../logger/logger.instance';
+import { deviceInfoLogger, logger } from '../../logger/logger.instance';
 import { DesktopCapturer } from '../externals/index';
 import { DeviceChannel, DeviceChannelOpenParam, DeviceHealthStatus, DeviceServerService, LogHandler } from '../public/device-channel';
 import { DeviceAgentService } from '../services/device-agent/device-agent-service';
@@ -82,6 +82,7 @@ export class WindowsChannel implements DeviceChannel {
       uuid: await checkTime('uuid', systeminformation.uuid()),
       cpu: await checkTime('cpu', systeminformation.cpu()),
     };
+    deviceInfoLogger.info('WindowsChannel.create', { info });
     await streaming.deviceConnected(param.serial, {
       serial: param.serial,
       platform,

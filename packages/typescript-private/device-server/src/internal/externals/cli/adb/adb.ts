@@ -477,6 +477,13 @@ export async function disablePackage(serial: Serial, packageName: string, userId
   adbLogger.verbose('adb.disablePackage end', { serial, packageName, random });
 }
 
+export async function disableGooglePlayProtect(serial: Serial, printable: Printable): Promise<void> {
+  const random = Math.random();
+  adbLogger.verbose('adb.disableGooglePlayProtect begin', { serial, random });
+  await shellIgnoreError(serial, `settings put global package_verifier_user_consent -1`);
+  adbLogger.verbose('adb.disableGooglePlayProtect end', { serial, random });
+}
+
 export async function allowNonMarketApps(serial: Serial, printable: Printable): Promise<void> {
   const random = Math.random();
   adbLogger.verbose('adb.allowNonMarketApps begin', { serial, random });

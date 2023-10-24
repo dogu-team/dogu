@@ -1,7 +1,7 @@
 import { Platform, Serial } from '@dogu-private/types';
 import systeminformation from 'systeminformation';
 import { env } from '../../env';
-import { createGdcLogger, idcLogger } from '../../logger/logger.instance';
+import { createGdcLogger, logger } from '../../logger/logger.instance';
 import { LinuxChannel } from '../channel/linux-channel';
 import { DeviceChannel, DeviceChannelOpenParam, DeviceServerService } from '../public/device-channel';
 import { DeviceDriver, DeviceScanResult } from '../public/device-driver';
@@ -45,7 +45,7 @@ export class LinuxDriver implements DeviceDriver {
   }
 
   async reset(): Promise<void> {
-    idcLogger.warn('LinuxDriver.reset is not implemented');
+    logger.warn('LinuxDriver.reset is not implemented');
     return await Promise.resolve();
   }
 }

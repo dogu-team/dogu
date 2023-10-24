@@ -10,7 +10,7 @@ import { WinstonModule } from 'nest-winston';
 
 import { AppModule } from './app/app.module';
 import { env } from './env';
-import { adbLogger, idcLogger, logger } from './logger/logger.instance';
+import { adbLogger, logger } from './logger/logger.instance';
 import { openPathMap } from './path-map';
 import { addProcessEventHandler } from './process-event';
 export { onErrorToExit } from './child-utils';
@@ -20,7 +20,6 @@ export async function bootstrap(): Promise<void> {
   addProcessEventHandler();
 
   logger.addFileTransports();
-  idcLogger.addFileTransports();
   adbLogger.addFileTransports();
   /**
    * @note load env lazy
@@ -37,7 +36,7 @@ export async function bootstrap(): Promise<void> {
       instance: logger.winstonLogger(),
     }),
   });
-  
+
   app
     .useWebSocketAdapter(new WsAdapter(app))
     .useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }))
