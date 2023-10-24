@@ -43,7 +43,7 @@ export class ZombieComponent {
       this.isAliveSelf = true;
       await this.impl.afterRevive?.();
     } catch (e: unknown) {
-      this.impl.printable.error(`${this.impl.name}.reviveCheck failed  error:${stringify(e)}`);
+      this.impl.printable.error(`${this.impl.name}.revive failed  error:${stringify(e)}`);
       this._lastError = errorify(e);
       this.isAliveSelf = false;
     }

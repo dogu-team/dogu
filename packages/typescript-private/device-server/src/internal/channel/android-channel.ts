@@ -30,7 +30,7 @@ import { AppiumContext, AppiumContextImpl, AppiumContextKey, AppiumContextProxy 
 import { AppiumDeviceWebDriverHandler } from '../../device-webdriver/appium.device-webdriver.handler';
 import { DeviceWebDriverHandler } from '../../device-webdriver/device-webdriver.common';
 import { GamiumContext } from '../../gamium/gamium.context';
-import { createAdaLogger } from '../../logger/logger.instance';
+import { createAndroidLogger, deviceInfoLogger } from '../../logger/logger.instance';
 import { Adb, AppiumAdb } from '../externals';
 import { getManifestFromApp } from '../externals/apk/apk-util';
 import { DeviceChannel, DeviceChannelOpenParam, DeviceHealthStatus, DeviceServerService, LogHandler } from '../public/device-channel';
@@ -43,6 +43,7 @@ import { StreamingService } from '../services/streaming/streaming-service';
 import { AndroidSystemInfoService } from '../services/system-info/android-system-info-service';
 import { Zombieable } from '../services/zombie/zombie-component';
 import { ZombieServiceInstance } from '../services/zombie/zombie-service';
+import { checkTime } from '../util/check-time';
 
 type DeviceControl = PrivateProtocol.DeviceControl;
 
@@ -100,6 +101,7 @@ export class AndroidChannel implements DeviceChannel {
     }, 'kill previous zombie');
 
     const { serial } = param;
+    const logger = createAndroidLogger(param.serial);
     await Adb.unforwardall(serial).catch((error) => {
       deviceServerService.doguLogger.error('Adb.unforwardall failed', { error: errorify(error) });
     });
@@ -107,13 +109,13 @@ export class AndroidChannel implements DeviceChannel {
 
     const systemInfoService = new AndroidSystemInfoService();
     const systemInfo = await systemInfoService.createSystemInfo(serial);
+    deviceInfoLogger.info(`AndroidChannel.create`, { serial, systemInfo });
 
     const version = semver.coerce(systemInfo.version);
     if (version && semver.lt(version, '8.0.0')) {
       throw new Error(`Android version must be 8 or higher. current version: ${stringify(version)}`);
     }
 
-    const logger = createAdaLogger(param.serial);
     const deviceAgent = new AndroidDeviceAgentService(
       serial,
       systemInfo,
@@ -277,9 +279,10 @@ export class AndroidChannel implements DeviceChannel {
   }
 
   async reset(): Promise<void> {
-    await this.switchAppiumContext('builtin');
+    const { logger } = this;
+    await checkTime(`AndroidChannel.reset.switchAppiumContext`, this.switchAppiumContext('builtin'), logger);
     const appiumContextImpl = this._appiumContext.getImpl(AppiumContextImpl);
-    await this._reset.reset(this.info, this.appiumAdb, appiumContextImpl);
+    await checkTime(`AndroidChannel.reset.reset`, this._reset.reset(this.info, this.appiumAdb, appiumContextImpl), logger);
   }
 
   async killOnPort(port: number): Promise<void> {

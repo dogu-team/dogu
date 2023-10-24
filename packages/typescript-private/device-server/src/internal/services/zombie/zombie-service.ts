@@ -1,5 +1,5 @@
 import { DuplicatedCallGuarder, stringify } from '@dogu-tech/common';
-import { logger } from '../../../logger/logger.instance';
+import { zombieLogger } from '../../../logger/logger.instance';
 import { Zombieable, ZombieComponent, ZombieQueriable } from './zombie-component';
 import { makeLogs } from './zombie-log';
 
@@ -19,7 +19,7 @@ export class ZombieService {
   update(): void {
     for (const checker of this.checkers) {
       checker.check().catch((e: Error) => {
-        logger.error(`ZombieService.update ${checker.component.impl.name} check failed  error:${stringify(e)}`);
+        zombieLogger.error(`ZombieService.update ${checker.component.impl.name} check failed  error:${stringify(e)}`);
       });
     }
 
@@ -28,7 +28,7 @@ export class ZombieService {
     }
     this.befTime = Date.now();
     if (0 < this.checkers.length) {
-      logger.info(makeLogs(this.checkers));
+      zombieLogger.info(makeLogs(this.checkers));
     }
   }
 
@@ -44,7 +44,7 @@ export class ZombieService {
               ret.updateCount++;
               await Promise.resolve(ret.component.impl.update?.())
                 .catch((e: Error) => {
-                  logger.error(`ZombieComponent ${ret.component.impl.name} update failed error:${stringify(e, { compact: true })}`);
+                  zombieLogger.error(`ZombieComponent ${ret.component.impl.name} update failed error:${stringify(e, { compact: true })}`);
                 })
                 .finally(() => {
                   ret.isUpdating = false;
@@ -57,7 +57,7 @@ export class ZombieService {
           await ret.component
             .tryRevive()
             .catch((e: Error) => {
-              logger.error(`ZombieComponent ${ret.component.impl.name} revive failed error:${stringify(e, { compact: true })}`);
+              zombieLogger.error(`ZombieComponent ${ret.component.impl.name} revive failed error:${stringify(e, { compact: true })}`);
             })
             .finally(() => {
               ret.isReviving = false;
@@ -81,7 +81,7 @@ export class ZombieService {
       return;
     }
     target.component.onDie(closeReason).catch((e: Error) => {
-      logger.error(`ZombieComponent ${target.component.impl.name} onDie failed error:${stringify(e, { compact: true })}`);
+      zombieLogger.error(`ZombieComponent ${target.component.impl.name} onDie failed error:${stringify(e, { compact: true })}`);
     });
   }
   isAlive(zombie: Zombieable): boolean {
@@ -111,10 +111,10 @@ export class ZombieService {
       return false;
     }
     target.component.onDie(closeReason).catch((e: Error) => {
-      logger.error(`ZombieComponent ${target.component.impl.name} onDie failed error:${stringify(e, { compact: true })}`);
+      zombieLogger.error(`ZombieComponent ${target.component.impl.name} onDie failed error:${stringify(e, { compact: true })}`);
     });
     target.component.onComponentDeleted().catch((e: Error) => {
-      logger.error(`ZombieComponent ${target.component.impl.name} onComponentDeleted failed error:${stringify(e, { compact: true })}`);
+      zombieLogger.error(`ZombieComponent ${target.component.impl.name} onComponentDeleted failed error:${stringify(e, { compact: true })}`);
     });
 
     const index = this.checkers.indexOf(target);

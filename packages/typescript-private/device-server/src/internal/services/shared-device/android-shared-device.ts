@@ -6,6 +6,7 @@ import fs from 'fs';
 import { AppiumContextImpl } from '../../../appium/appium.context';
 import { env } from '../../../env';
 import { Adb, AndroidPropInfo, AppiumAdb, isHarnessEnabled } from '../../externals/index';
+import { checkTime } from '../../util/check-time';
 import { AndroidDeviceAgentService } from '../device-agent/android-device-agent-service';
 import { AndroidResetService } from '../reset/android-reset';
 import { Zombieable, ZombieProps, ZombieQueriable } from '../zombie/zombie-component';
@@ -123,56 +124,56 @@ export class AndroidSharedDeviceService implements Zombieable {
     const { serial, printable: logger } = this;
     this.setupState = 'resetting';
     if (await this.reset.isDirty()) {
-      await this.reset.reset(this.systemInfo, this.appiumAdb, this.appiumContext);
+      await checkTime(`AndroidSharedDeviceService.setup.reset`, this.reset.reset(this.systemInfo, this.appiumAdb, this.appiumContext), logger);
       throw new Error(`AndroidSharedDeviceService.revive. device is dirty. so trigger reset ${serial}`);
     }
 
     this.setupState = 'change-locale';
     const newAppiumAdb = this.appiumAdb.clone({ adbExecTimeout: 1000 * 60 * 3 });
-    await newAppiumAdb.setDeviceLocale('en-US');
+    await checkTime(`AndroidSharedDeviceService.setup.setDeviceLocale`, newAppiumAdb.setDeviceLocale('en-US'), logger);
 
     this.setupState = 'allow-non-market-apps';
-    await Adb.allowNonMarketApps(serial, logger).catch((e) => {
+    await checkTime(`AndroidSharedDeviceService.setup.allowNonMarketApps`, Adb.allowNonMarketApps(serial, logger), logger).catch((e) => {
       this.printable.error(`AndroidSharedDeviceService.revive.allowNonMarketApps failed.`, { serial, error: errorify(e) });
     });
 
     this.setupState = 'disable-google-play-protect';
-    await Adb.disableGooglePlayProtect(this.serial, this.printable).catch((e) => {
+    await checkTime(`AndroidSharedDeviceService.setup.disableGooglePlayProtect`, Adb.disableGooglePlayProtect(this.serial, this.printable), logger).catch((e) => {
       this.printable.error(`AndroidSharedDeviceService.revive.disableGooglePlayProtect failed.`, { serial, error: errorify(e) });
     });
 
     this.setupState = 'preinstalling';
-    await this.preInstallApps().catch((e) => {
+    await checkTime(`AndroidSharedDeviceService.setup.preInstallApps`, this.preInstallApps(), logger).catch((e) => {
       this.printable.error(`AndroidSharedDeviceService.revive.preInstallApps failed.`, { serial, error: errorify(e) });
     });
 
     this.setupState = 'set-gboard-as-default-keyboard';
-    await this.setGboardAsDefaultKeyboard().catch((e) => {
+    await checkTime(`AndroidSharedDeviceService.setup.setGboardAsDefaultKeyboard`, this.setGboardAsDefaultKeyboard(), logger).catch((e) => {
       this.printable.error(`AndroidSharedDeviceService.revive.setGboardAsDefaultKeyboard failed.`, { serial, error: errorify(e) });
     });
 
     this.setupState = 'mute';
-    await this.mute().catch((e) => {
+    await checkTime(`AndroidSharedDeviceService.setup.mute`, this.mute(), logger).catch((e) => {
       this.printable.error(`AndroidSharedDeviceService.revive.mute failed.`, { serial, error: errorify(e) });
     });
 
     this.setupState = 'set-brightness';
-    await Adb.setBrightness(serial, 50).catch((e) => {
+    await checkTime(`AndroidSharedDeviceService.setup.setBrightness`, Adb.setBrightness(serial, 50), logger).catch((e) => {
       this.printable.error(`AndroidSharedDeviceService.revive.setBrightness failed.`, { serial, error: errorify(e) });
     });
 
     this.setupState = 'join-wifi';
-    await Adb.joinWifi(serial, env.DOGU_WIFI_SSID, env.DOGU_WIFI_PASSWORD, logger).catch((e) => {
+    await checkTime(`AndroidSharedDeviceService.setup.joinWifi`, Adb.joinWifi(serial, env.DOGU_WIFI_SSID, env.DOGU_WIFI_PASSWORD, logger), logger).catch((e) => {
       this.printable.error(`AndroidSharedDeviceService.revive.joinWifi failed.`, { serial, error: errorify(e) });
     });
 
     this.setupState = 'stay-on-while-plugged-in';
-    await Adb.stayOnWhilePluggedIn(serial).catch((e) => {
+    await checkTime(`AndroidSharedDeviceService.setup.stayOnWhilePluggedIn`, Adb.stayOnWhilePluggedIn(serial), logger).catch((e) => {
       this.printable.error(`AndroidSharedDeviceService.revive.stayOnWhilePluggedIn failed.`, { serial, error: errorify(e) });
     });
 
     this.setupState = 'close-dialog';
-    await this.closeDialog().catch((e) => {
+    await checkTime(`AndroidSharedDeviceService.setup.closeDialog`, this.closeDialog(), logger).catch((e) => {
       this.printable.error(`AndroidSharedDeviceService.revive.closeDialog failed.`, { serial, error: errorify(e) });
     });
 

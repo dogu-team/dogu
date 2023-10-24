@@ -29,7 +29,7 @@ import { AppiumDeviceWebDriverHandler } from '../../device-webdriver/appium.devi
 import { DeviceWebDriverHandler } from '../../device-webdriver/device-webdriver.common';
 import { env } from '../../env';
 import { GamiumContext } from '../../gamium/gamium.context';
-import { createIdaLogger } from '../../logger/logger.instance';
+import { createIosLogger, deviceInfoLogger } from '../../logger/logger.instance';
 import { IdeviceDiagnostics, IdeviceSyslog, MobileDevice, Xctrace } from '../externals';
 import { IdeviceInstaller } from '../externals/cli/ideviceinstaller';
 import { IosDeviceAgentProcess } from '../externals/cli/ios-device-agent';
@@ -104,7 +104,9 @@ export class IosChannel implements DeviceChannel {
     const { serial } = param;
     const platform = Platform.PLATFORM_IOS;
 
-    const productVersion = await IosSystemInfoService.getVersion(serial);
+    const logger = createIosLogger(param.serial);
+
+    const productVersion = await IosSystemInfoService.getVersion(serial, logger);
     if (productVersion) {
       const version = semver.coerce(productVersion);
       if (version && semver.lt(version, '14.0.0')) {
@@ -134,8 +136,6 @@ export class IosChannel implements DeviceChannel {
     if (!env.DOGU_DEVICE_IOS_IS_IDAPROJECT_VALIDATED) {
       throw new Error('iOSDeviceAgent build is not latest. Please clean and build iOSDeviceAgent.xcodeproj');
     }
-
-    const logger = createIdaLogger(param.serial);
 
     await IosChannel.restartIfAvailiable(serial, logger);
 
@@ -180,11 +180,12 @@ export class IosChannel implements DeviceChannel {
     logger.verbose('ios device agent service started');
 
     logger.verbose('ios system info service starting');
-    const systemInfoService = new IosSystemInfoService(deviceAgent);
+    const systemInfoService = new IosSystemInfoService(deviceAgent, logger);
     const systemInfo = await systemInfoService.createSystemInfo(serial).catch((error) => {
       logger.error('SystemInfoService createSystemInfo failed.', { error: errorify(error) });
       throw error;
     });
+    deviceInfoLogger.info('iOSChannel.create', { serial, systemInfo });
     logger.verbose('ios system info service started');
 
     logger.verbose('appium device web driver handler service starting');
@@ -345,7 +346,7 @@ export class IosChannel implements DeviceChannel {
 
   async reboot(): Promise<void> {
     this.logger.verbose?.(`IosChannel.reboot ${this.serial}`);
-    await IdeviceDiagnostics.restart(this.serial);
+    await IdeviceDiagnostics.restart(this.serial, this.logger);
   }
 
   checkHealth(): DeviceHealthStatus {
@@ -411,13 +412,15 @@ export class IosChannel implements DeviceChannel {
   }
 
   async uninstallApp(appPath: string, printable?: Printable): Promise<void> {
+    const { logger } = this;
     const dotAppPath = await this.findDotAppPath(appPath);
-    const appName = await MobileDevice.getBundleId(dotAppPath);
-    await IdeviceInstaller.uninstallApp(this.serial, appName, printable);
+    const appName = await MobileDevice.getBundleId(dotAppPath, logger);
+    await IdeviceInstaller.uninstallApp(this.serial, appName, logger);
   }
 
   async installApp(appPath: string, printable?: Printable): Promise<void> {
-    const result = await IdeviceInstaller.installApp(this.serial, appPath, printable).catch((error) => {
+    const { logger } = this;
+    const result = await IdeviceInstaller.installApp(this.serial, appPath, logger).catch((error) => {
       if (!(error instanceof ChildProcessError)) {
         throw error;
       }
@@ -429,14 +432,15 @@ export class IosChannel implements DeviceChannel {
     });
     if ('errorType' in result && result.errorType === 'MismatchedApplicationIdentifierEntitlement') {
       await this.uninstallApp(appPath, printable);
-      await IdeviceInstaller.installApp(this.serial, appPath, printable);
+      await IdeviceInstaller.installApp(this.serial, appPath, logger);
     }
   }
 
   async runApp(appPath: string, printable?: Printable): Promise<void> {
-    const installedAppNames = await MobileDevice.listApps(this.serial);
+    const { logger } = this;
+    const installedAppNames = await MobileDevice.listApps(this.serial, logger);
     const dotAppPath = await this.findDotAppPath(appPath);
-    const bundleId = await MobileDevice.getBundleId(dotAppPath);
+    const bundleId = await MobileDevice.getBundleId(dotAppPath, logger);
     const result = await this.deviceAgent.sendWithProtobuf('dcIdaRunappParam', 'dcIdaRunappResult', {
       appPath,
       installedAppNames,
