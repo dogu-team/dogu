@@ -6,8 +6,7 @@
     "baseUrl": ".",
     "outDir": "build",
     "incremental": true,
-    "removeComments": true,
-    "isolatedModules": true
+    "removeComments": true
   },
   "exclude": ["node_modules", "test", "build", "**/*spec.ts"],
   "include": ["src", "scripts"],

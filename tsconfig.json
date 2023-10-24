@@ -24,6 +24,7 @@
     "strictBindCallApply": true,
     "strictNullChecks": true,
     "target": "ES2022",
-    "incremental": true
+    "incremental": true,
+    "isolatedModules": true
   }
 }

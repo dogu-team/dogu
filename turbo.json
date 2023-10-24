@@ -3,7 +3,8 @@
   "pipeline": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": [".next/**", "!.next/cache/**", "build/**"]
+      "outputs": [".next/**", "!.next/cache/**", "build/**"],
+      "outputMode": "new-only"
     },
     "build:archive": {
       "cache": false
