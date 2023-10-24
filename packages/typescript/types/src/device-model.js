@@ -1,4 +1,4 @@
-export const DeviceModels = {
+const DeviceModels = {
   1: 'mu 1',
   2: '2',
   3: '3',
@@ -32385,7 +32385,7 @@ export const DeviceModels = {
   'MacPro7,1': 'Mac Pro 2019',
 };
 
-export function findDeviceModelNameByModelId(modelId) {
+function findDeviceModelNameByModelId(modelId) {
   if (!modelId) {
     return null;
   }
