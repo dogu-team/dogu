@@ -9,13 +9,12 @@ import {
   WriteDeviceRunTimeInfosRequestBody,
 } from '@dogu-private/console-host-agent';
 import { FindDeviceBySerialQuery, UpdateDeviceRequestBody } from '@dogu-private/console-host-agent/src/http-specs/private-device';
-import { DeviceId, DEVICE_DISPLAY_ERROR_MAX_LENGTH, OrganizationId } from '@dogu-private/types';
+import { DeviceId, DEVICE_DISPLAY_ERROR_MAX_LENGTH, findDeviceModelNameByModelId, OrganizationId } from '@dogu-private/types';
 import { Instance, transformAndValidate } from '@dogu-tech/common';
 import { Body, ConflictException, Controller, Get, NotFoundException, Param, Patch, Post, Query } from '@nestjs/common';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { Device, DEVICE_DEFAULT_MAX_PARALLEL_JOBS_IF_IS_HOST } from '../../db/entity/device.entity';
-import { findDeviceModelNameByModelId } from '../../utils/device';
 import { HOST_ACTION_TYPE } from '../auth/auth.types';
 import { HostPermission } from '../auth/decorators';
 import { DeviceMessageQueue } from '../device-message/device-message.queue';

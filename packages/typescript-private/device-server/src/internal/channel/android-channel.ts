@@ -5,6 +5,7 @@ import {
   DeviceWindowInfo,
   ErrorResult,
   FilledRuntimeInfo,
+  findDeviceModelNameByModelId,
   GeoLocation,
   LocaleCode,
   Platform,
@@ -109,7 +110,7 @@ export class AndroidChannel implements DeviceChannel {
 
     const systemInfoService = new AndroidSystemInfoService();
     const systemInfo = await systemInfoService.createSystemInfo(serial);
-    deviceInfoLogger.info(`AndroidChannel.create`, { serial, systemInfo });
+    deviceInfoLogger.info(`AndroidChannel.create`, { serial, systemInfo, modelName: findDeviceModelNameByModelId(systemInfo.system.model) });
 
     const version = semver.coerce(systemInfo.version);
     if (version && semver.lt(version, '8.0.0')) {

@@ -4,6 +4,7 @@ import {
   DeviceWindowInfo,
   ErrorResult,
   FilledRuntimeInfo,
+  findDeviceModelNameByModelId,
   GeoLocation,
   LocaleCode,
   Platform,
@@ -185,7 +186,7 @@ export class IosChannel implements DeviceChannel {
       logger.error('SystemInfoService createSystemInfo failed.', { error: errorify(error) });
       throw error;
     });
-    deviceInfoLogger.info('iOSChannel.create', { serial, systemInfo });
+    deviceInfoLogger.info('iOSChannel.create', { serial, systemInfo, modelName: findDeviceModelNameByModelId(systemInfo.system.model) });
     logger.verbose('ios system info service started');
 
     logger.verbose('appium device web driver handler service starting');
