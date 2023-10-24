@@ -43,11 +43,26 @@ export function isWindowsEnabled(enabledPlatforms: PlatformType[]): boolean {
   return enabledPlatforms.includes('windows');
 }
 
+function getAvailablePlatformsByProcessPlatform(): PlatformType[] {
+  switch (process.platform) {
+    case 'darwin':
+      return ['macos', 'android', 'ios'];
+    case 'linux':
+      return ['linux', 'android'];
+    case 'win32':
+      return ['windows', 'android'];
+    default:
+      return [];
+  }
+}
+
 export class PlatformAbility {
   enabledPlatforms: PlatformType[] = [];
 
   constructor(DOGU_DEVICE_PLATFORM_ENABLED?: string) {
-    this.enabledPlatforms = parseEnv_DOGU_DEVICE_PLATFORM_ENABLED(DOGU_DEVICE_PLATFORM_ENABLED);
+    const enabledPlatforms = parseEnv_DOGU_DEVICE_PLATFORM_ENABLED(DOGU_DEVICE_PLATFORM_ENABLED);
+    const availablePlatforms = getAvailablePlatformsByProcessPlatform();
+    this.enabledPlatforms = enabledPlatforms.filter((platform) => availablePlatforms.includes(platform));
   }
 
   get isDesktopEnabled(): boolean {

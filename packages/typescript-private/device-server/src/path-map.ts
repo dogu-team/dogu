@@ -20,17 +20,17 @@ async function validatePathMap(pathMap: PathMap, platformAbility: PlatformAbilit
   /**
    * @note currently linux platform's third party is installed from docker
    */
-  // if (!platformAbility.isLinuxEnabled) {
-  //   addToPaths(pathMap.common);
-  // }
+  if (!platformAbility.isLinuxEnabled) {
+    addToPaths(pathMap.common);
+  }
 
-  // if (platformAbility.isAndroidEnabled) {
-  //   addToPaths(pathMap.android);
-  // }
+  if (platformAbility.isAndroidEnabled) {
+    addToPaths(pathMap.android);
+  }
 
-  // if (platformAbility.isIosEnabled) {
-  //   addToPaths(pathMap.macos);
-  // }
+  if (platformAbility.isIosEnabled) {
+    addToPaths(pathMap.macos);
+  }
 
   try {
     await Promise.all(paths.map((path) => fs.promises.stat(path)));
