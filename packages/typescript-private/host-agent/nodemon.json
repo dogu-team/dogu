@@ -9,7 +9,6 @@
     "../../typescript/types/src",
     "../../typescript-private/console-host-agent/src",
     "../../typescript-private/dost-children/src",
-    "../../typescript-private/env-tools/src",
     "../../typescript-dev-private/build-tools/src",
     "../../typescript/device-client/src"
   ],

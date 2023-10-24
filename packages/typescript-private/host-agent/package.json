@@ -16,7 +16,6 @@
   "dependencies": {
     "@dogu-private/console-host-agent": "workspace:^",
     "@dogu-private/dost-children": "workspace:^",
-    "@dogu-private/env-tools": "workspace:^",
     "@dogu-private/types": "workspace:^",
     "@dogu-tech/action-kit": "workspace:^",
     "@dogu-tech/common": "workspace:^",

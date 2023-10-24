@@ -14,10 +14,10 @@
     "util:install-chromedriver": "ts-node scripts/install-chromedriver"
   },
   "dependencies": {
-    "@dogu-private/env-tools": "workspace:^",
     "@dogu-private/types": "workspace:^",
     "@dogu-tech/common": "workspace:^",
     "@dogu-tech/dest": "workspace:^",
+    "@dogu-tech/env-tools": "workspace:^",
     "@dogu-tech/node": "workspace:^",
     "@jest/globals": "29.1.2",
     "@playwright/test": "1.37.0",

@@ -27,8 +27,8 @@
   "dependencies": {
     "@dogu-private/device-server": "workspace:^",
     "@dogu-private/dost-children": "workspace:^",
-    "@dogu-private/env-tools": "workspace:^",
     "@dogu-private/host-agent": "workspace:^",
+    "@dogu-private/types": "workspace:^",
     "@dogu-tech/common": "workspace:^",
     "@dogu-tech/node": "workspace:^",
     "@dogu-tech/types": "workspace:^",

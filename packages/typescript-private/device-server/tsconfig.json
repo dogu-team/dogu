@@ -15,9 +15,7 @@
     {
       "path": "../../typescript-private/dost-children"
     },
-    {
-      "path": "../../typescript-private/env-tools"
-    },
+
     {
       "path": "../../typescript-private/nestjs-common"
     },

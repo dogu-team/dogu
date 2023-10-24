@@ -35,9 +35,7 @@
     {
       "path": "../../typescript-private/dost-children"
     },
-    {
-      "path": "../../typescript-private/env-tools"
-    },
+
     {
       "path": "../../typescript-dev-private/build-tools"
     }

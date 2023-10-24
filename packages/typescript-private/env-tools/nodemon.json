@@ -1,7 +1,0 @@
-{
-  "verbose": true,
-  "watch": ["./src", "../../typescript-private/types/src", "../../typescript/common/src", "../../typescript/env-tools/src", "../../typescript/node/src"],
-  "exec": "yarn run build",
-  "ext": "ts",
-  "delay": 3000
-}

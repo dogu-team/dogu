@@ -16,7 +16,6 @@
   "types": "./build/src/index.d.ts",
   "dependencies": {
     "@dogu-private/dost-children": "workspace:^",
-    "@dogu-private/env-tools": "workspace:^",
     "@dogu-private/nestjs-common": "workspace:^",
     "@dogu-private/types": "workspace:^",
     "@dogu-tech/common": "workspace:^",

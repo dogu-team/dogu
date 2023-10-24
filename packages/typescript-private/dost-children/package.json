@@ -13,7 +13,6 @@
   },
   "types": "./build/src/index.d.ts",
   "dependencies": {
-    "@dogu-private/env-tools": "workspace:^",
     "@dogu-private/types": "workspace:^",
     "@dogu-tech/common": "workspace:^",
     "@dogu-tech/node": "workspace:^",

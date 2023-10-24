@@ -4,16 +4,12 @@
     "rootDir": ".",
     "outDir": "build"
   },
-  "include": [
-    "scripts/**/*.ts"
-  ],
+  "include": ["scripts/**/*.ts"],
   "references": [
     {
       "path": "../../packages/typescript-private/types"
     },
-    {
-      "path": "../../packages/typescript-private/env-tools"
-    },
+
     {
       "path": "../../packages/typescript-dev-private/build-tools"
     },

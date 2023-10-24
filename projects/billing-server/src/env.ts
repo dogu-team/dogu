@@ -1,4 +1,4 @@
-import { DoguRunType, NodeEnvType } from '@dogu-private/env-tools';
+import { DoguRunType, NodeEnvType } from '@dogu-private/types';
 import { IsFilledString, TransformBooleanString } from '@dogu-tech/common';
 import { loadEnvLazySync } from '@dogu-tech/env-tools';
 import { Type } from 'class-transformer';

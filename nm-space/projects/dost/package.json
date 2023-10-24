@@ -32,7 +32,6 @@
     "@dogu-private/device-server": "workspace:^",
     "@dogu-private/dogu-agent-core": "workspace:^",
     "@dogu-private/dost-children": "workspace:^",
-    "@dogu-private/env-tools": "workspace:^",
     "@dogu-private/host-agent": "workspace:^",
     "@dogu-private/types": "workspace:^",
     "@dogu-tech/common": "workspace:^",

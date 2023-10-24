@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 
-import { DoguRunType, NodeEnvType } from '@dogu-private/env-tools';
+import { DoguRunType, NodeEnvType } from '@dogu-private/types';
 import { IsFilledString } from '@dogu-tech/common';
 import { Type } from 'class-transformer';
 import { IsIn, IsNumber } from 'class-validator';

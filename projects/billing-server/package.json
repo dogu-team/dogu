@@ -35,7 +35,6 @@
   "dependencies": {
     "@dogu-dev-private/build-tools": "workspace:^",
     "@dogu-private/console": "workspace:^",
-    "@dogu-private/env-tools": "workspace:^",
     "@dogu-private/types": "workspace:^",
     "@dogu-tech/common": "workspace:^",
     "@dogu-tech/env-tools": "workspace:^",
@@ -60,7 +59,6 @@
     "uuidv4": "6.2.13"
   },
   "devDependencies": {
-    "@dogu-private/env-tools": "workspace:^",
     "@dogu-tech/env-tools": "workspace:^",
     "@dogu-tech/node": "workspace:^",
     "@nestjs/cli": "^10.0.0",

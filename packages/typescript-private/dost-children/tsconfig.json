@@ -12,9 +12,6 @@
   "include": ["src", "scripts"],
   "references": [
     {
-      "path": "../../typescript-private/env-tools"
-    },
-    {
       "path": "../../typescript-private/types"
     },
     {

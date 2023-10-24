@@ -1,13 +1,6 @@
 {
   "verbose": true,
-  "watch": [
-    "./src",
-    "../packages/typescript-private/env-tools/src",
-    "../packages/typescript/common/src",
-    "../packages/typescript/dest/src",
-    "../packages/typescript/node/src",
-    "../packages/typescript-private/types/src"
-  ],
+  "watch": ["./src", "../packages/typescript/common/src", "../packages/typescript/dest/src", "../packages/typescript/node/src", "../packages/typescript-private/types/src"],
   "exec": "yarn run build",
   "events": {
     "restart": ""
