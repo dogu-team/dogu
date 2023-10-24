@@ -16,7 +16,7 @@
   },
   "main": "./build/src/app/index.js",
   "scripts": {
-    "build": "yarn ts-node scripts/build.ts",
+    "build": "ts-node scripts/build.ts",
     "clean": "shx rm -rf build",
     "dev": "nodemon",
     "rebuild": "yarn run clean && yarn run build",
