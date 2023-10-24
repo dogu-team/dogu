@@ -19,9 +19,8 @@
   },
   "main": "build/src/index.js",
   "scripts": {
-    "build": "tsc -b && yarn run copyfiles",
+    "build": "tsc -b && copyfiles --all \"src/**/*.d.ts\" \"src/**/*.js\" \"src/**/**/*.yaml\" build",
     "clean": "shx rm -rf build generated",
-    "copyfiles": "copyfiles --all \"src/**/*.d.ts\" \"src/**/*.js\" \"src/**/**/*.yaml\" build",
     "dev": "nodemon",
     "rebuild": "yarn run clean && yarn run build",
     "start": "ts-node src/index.ts",

@@ -34,7 +34,7 @@
     "start:console:inspect": "yarn workspace console-web-server run start:inspect & yarn workspace console-web-front run start",
     "test": "turbo run test",
     "third-party:download": "ts-node scripts/third-parties/download",
-    "third-party:download:build": "yarn run third-party:download && yarn run build:archive",
+    "third-party:download:build": "yarn run third-party:download && turbo run build:archive",
     "util:multiple-proc": "ts-node scripts/util/multiple-proc detach",
     "util:parse-device": "ts-node scripts/device-csv-parser",
     "util:rename-files": "ts-node scripts/util/rename-files rename",
