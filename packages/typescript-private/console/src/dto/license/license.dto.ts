@@ -1,80 +1,81 @@
-import { OrganizationId } from '@dogu-private/types';
-import { Type } from 'class-transformer';
-import { Equals, IsIn, IsNumber, IsString, IsUUID, ValidateNested } from 'class-validator';
-import { LicenseBase, LicenseType, LicenseTypeKey } from '../../base/license';
+// import { OrganizationId } from '@dogu-private/types';
+// import { Type } from 'class-transformer';
+// import { Equals, IsIn, IsNumber, IsString, IsUUID, ValidateNested } from 'class-validator';
 
-export class LicenseDtoBase {
-  @IsIn([LicenseTypeKey])
-  licenseType!: LicenseType;
+import { SelfHostedLicenseBase } from '../..';
 
-  @IsNumber()
-  @Type(() => Number)
-  durationDate?: number | null;
+// export class LicenseDtoBase {
+//   @IsIn([LicenseTypeKey])
+//   licenseType!: LicenseType;
 
-  @IsString()
-  licenseTierName!: string;
-}
+//   @IsNumber()
+//   @Type(() => Number)
+//   durationDate?: number | null;
 
-export class CreateLicenseWithCloudDto extends LicenseDtoBase {
-  @Equals('cloud')
-  declare licenseType: 'cloud';
+//   @IsString()
+//   licenseTierName!: string;
+// }
 
-  @IsUUID()
-  organizationId!: OrganizationId;
-}
+// export class CreateLicenseWithCloudDto extends LicenseDtoBase {
+//   @Equals('cloud')
+//   declare licenseType: 'cloud';
 
-export class CreateLicenseWithSelfHostedDto extends LicenseDtoBase {
-  @Equals('self-hosted')
-  declare licenseType: 'self-hosted';
+//   @IsUUID()
+//   organizationId!: OrganizationId;
+// }
 
-  @IsString()
-  companyName!: string;
+// export class CreateLicenseWithSelfHostedDto extends LicenseDtoBase {
+//   @Equals('self-hosted')
+//   declare licenseType: 'self-hosted';
 
-  @IsNumber()
-  @Type(() => Number)
-  enabledMobileCount!: number;
+//   @IsString()
+//   companyName!: string;
 
-  @IsNumber()
-  @Type(() => Number)
-  enabledBrowserCount!: number;
-}
+//   @IsNumber()
+//   @Type(() => Number)
+//   enabledMobileCount!: number;
 
-export class CreateLicenseDto {
-  @ValidateNested()
-  @Type(() => LicenseDtoBase, {
-    discriminator: {
-      property: 'licenseType',
-      subTypes: [
-        { value: CreateLicenseWithCloudDto, name: 'cloud' },
-        { value: CreateLicenseWithSelfHostedDto, name: 'self-hosted' },
-      ],
-    },
-    keepDiscriminatorProperty: true,
-  })
-  licenseInfo!: CreateLicenseWithCloudDto | CreateLicenseWithSelfHostedDto;
-}
+//   @IsNumber()
+//   @Type(() => Number)
+//   enabledBrowserCount!: number;
+// }
 
-export class FindLicenseDtoBase {
-  @IsString()
-  licenseToken!: string;
-}
+// export class CreateLicenseDto {
+//   @ValidateNested()
+//   @Type(() => LicenseDtoBase, {
+//     discriminator: {
+//       property: 'licenseType',
+//       subTypes: [
+//         { value: CreateLicenseWithCloudDto, name: 'cloud' },
+//         { value: CreateLicenseWithSelfHostedDto, name: 'self-hosted' },
+//       ],
+//     },
+//     keepDiscriminatorProperty: true,
+//   })
+//   licenseInfo!: CreateLicenseWithCloudDto | CreateLicenseWithSelfHostedDto;
+// }
 
-export class FindLicenseWithCloudDto extends FindLicenseDtoBase {
-  @IsUUID()
-  organizationId!: OrganizationId;
-}
+// export class FindLicenseDtoBase {
+//   @IsString()
+//   licenseToken!: string;
+// }
 
-export class FindLicenseWithSelfHostedDto extends FindLicenseDtoBase {
-  @IsString()
-  companyName!: string;
-}
+// export class FindLicenseWithCloudDto extends FindLicenseDtoBase {
+//   @IsUUID()
+//   organizationId!: OrganizationId;
+// }
+
+// export class FindLicenseWithSelfHostedDto extends FindLicenseDtoBase {
+//   @IsString()
+//   companyName!: string;
+// }
 
 export interface LicenseErrorInfo {
   isTokenInValid: boolean;
   isLicenseServerDisConnected: boolean;
   unKnownError: boolean;
 }
-export interface LicenseResponse extends LicenseBase {
+export interface SelfHostedLicenseResponse extends SelfHostedLicenseBase {
   errorInfo: LicenseErrorInfo | null;
   isCommunityEdition: boolean;
   consoleRegisteredToken: string | null;

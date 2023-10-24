@@ -2,14 +2,16 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { dataSourceConfig } from '../../config';
 import { AuthModule } from '../auth/auth.module';
-import { LicenseModule } from '../license/license.module';
+import { CloudLicenseModule } from '../cloud-license/cloud-license.module';
+import { SelfHostedLicenseModule } from '../self-hosted-license/self-hosted-license.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot(dataSourceConfig), //
-    LicenseModule,
+    CloudLicenseModule,
+    SelfHostedLicenseModule,
     AuthModule,
   ],
   controllers: [AppController],

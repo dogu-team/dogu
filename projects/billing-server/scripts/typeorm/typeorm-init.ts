@@ -2,7 +2,7 @@ import { node_package } from '@dogu-dev-private/build-tools';
 import { PromiseOrValue, retry } from '@dogu-tech/common';
 import process from 'process';
 import { config } from '../../src/config';
-import { createDbSchema, createFakeDbMigrations, createSeedData } from '../common/common';
+import { createDbSchema, createFakeDbMigrations } from '../common/common';
 import { PostgreSql } from '../utils/pgsql';
 import { exec } from '../utils/utils';
 
@@ -62,7 +62,6 @@ async function runDbMigration(): Promise<void> {
     console.log('Database need to initaialize...');
     await createDbSchema();
     await createFakeDbMigrations();
-    await createSeedData(pgsqlConnectionOptions);
   } else {
     console.log('Database already initaialized');
     await runDbMigration();

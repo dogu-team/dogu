@@ -1,11 +1,11 @@
-import { LicensePayload, OrganizationId } from '@dogu-private/types';
+import { LicensePayload } from '@dogu-private/types';
 import { CanActivate, ExecutionContext, HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { Request, Response } from 'express';
 import { DataSource } from 'typeorm';
+
 import { config } from '../../../config';
-import { LicenseToken } from '../../../db/entity/license-token.enitiy';
 import { LICENSE_ACTION, LICENSE_ACTION_KEY } from '../auth.types';
 
 @Injectable()
@@ -81,35 +81,35 @@ export class LicenseGuard implements CanActivate {
   }
 
   async validateGetLicense(ctx: ExecutionContext): Promise<LicensePayload> {
-    const orgIdQuery = ctx.switchToHttp().getRequest<{ query: { organizationId: OrganizationId } }>().query.organizationId;
-    const companyNameQuery = ctx.switchToHttp().getRequest<{ query: { companyName: string } }>().query.companyName;
+    // const orgIdQuery = ctx.switchToHttp().getRequest<{ query: { organizationId: OrganizationId } }>().query.organizationId;
+    // const companyNameQuery = ctx.switchToHttp().getRequest<{ query: { companyName: string } }>().query.companyName;
 
-    const req = ctx.switchToHttp().getRequest<Request>();
+    // const req = ctx.switchToHttp().getRequest<Request>();
 
-    const authHeader = req.headers.authorization;
-    if (!authHeader) {
-      throw new HttpException(`token is required.`, HttpStatus.BAD_REQUEST);
-    }
-    const licenseToken = authHeader.split(' ')[1];
-    if (!licenseToken) {
-      throw new HttpException(`token is required.`, HttpStatus.BAD_REQUEST);
-    }
+    // const authHeader = req.headers.authorization;
+    // if (!authHeader) {
+    //   throw new HttpException(`token is required.`, HttpStatus.BAD_REQUEST);
+    // }
+    // const licenseToken = authHeader.split(' ')[1];
+    // if (!licenseToken) {
+    //   throw new HttpException(`token is required.`, HttpStatus.BAD_REQUEST);
+    // }
 
-    if (companyNameQuery && orgIdQuery) {
-      throw new HttpException(`companyName and organizationId are mutually exclusive. companyName: ${companyNameQuery}, organizationId: ${orgIdQuery}`, HttpStatus.BAD_REQUEST);
-    } else if (!companyNameQuery && !orgIdQuery) {
-      throw new HttpException(`companyName or organizationId is required.`, HttpStatus.BAD_REQUEST);
-    }
+    // if (companyNameQuery && orgIdQuery) {
+    //   throw new HttpException(`companyName and organizationId are mutually exclusive. companyName: ${companyNameQuery}, organizationId: ${orgIdQuery}`, HttpStatus.BAD_REQUEST);
+    // } else if (!companyNameQuery && !orgIdQuery) {
+    //   throw new HttpException(`companyName or organizationId is required.`, HttpStatus.BAD_REQUEST);
+    // }
 
-    const token = await this.dataSource.manager.getRepository(LicenseToken).findOne({ where: { token: licenseToken } });
-    if (!token) {
-      throw new HttpException(`license not found. licenseToken: ${licenseToken}`, HttpStatus.UNAUTHORIZED);
-    }
+    // const token = await this.dataSource.manager.getRepository(LicenseToken).findOne({ where: { token: licenseToken } });
+    // if (!token) {
+    //   throw new HttpException(`license not found. licenseToken: ${licenseToken}`, HttpStatus.UNAUTHORIZED);
+    // }
 
     return {
-      licenseToken: token.token,
-      companyName: companyNameQuery,
-      organizationId: orgIdQuery,
+      licenseToken: '',
+      companyName: null,
+      organizationId: null,
     };
   }
 }
