@@ -28,6 +28,7 @@ import { DeviceConnectionUpdater } from './heartbeat/device-connection-updater';
 import { HeartBeatSystemProcessor } from './heartbeat/heartbeat-system.processor';
 import { HostConnectionUpdater } from './heartbeat/host-connection-updater';
 import { LiveSessionUpdater } from './live-session-updater';
+import { MonitoringUpdater } from './monitoring-updater';
 import { DestUpdater } from './pipeline/dest-updater';
 import { DeviceJobUpdater } from './pipeline/device-job-updater';
 import { ExternalEventUpdater } from './pipeline/external-event-updater';
@@ -108,6 +109,7 @@ import { UpdateProducer } from './update-producer';
 
     LicenseUpdater,
     LiveSessionUpdater,
+    MonitoringUpdater,
   ],
   exports: [CancelPipelineQueue, UpdateStepStatusQueue, UpdateDeviceJobStatusQueue, UpdateDestStateQueue, UpdateRemoteDestStateQueue],
 })
