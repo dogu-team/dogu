@@ -71,6 +71,9 @@ export class DeviceStreamingSessionGateway implements OnGatewayConnection, OnGat
     const url = new URL(`http:${incomingMessage.url ?? ''}`);
     const organizationQuery = url.searchParams.get('organizationId');
     const deviceQuery = url.searchParams.get('deviceId');
+    const liveSessionQuery = url.searchParams.get('liveSessionId');
+
+    this.wsCommonService.sendPing(webSocket, 'DeviceStreamingSession');
 
     const deviceStreamingQueryDto = await transformAndValidate(DeviceStreamingQueryDto, {
       organizationId: organizationQuery,
@@ -78,23 +81,23 @@ export class DeviceStreamingSessionGateway implements OnGatewayConnection, OnGat
     });
     const { deviceId, organizationId } = deviceStreamingQueryDto;
 
-    const rv = await this.wsCommonService.validateDeviceAccessPermission(incomingMessage, this.dataSource, organizationId, deviceId, this.logger);
+    const rv = await this.wsCommonService.validateDeviceAccessPermission(incomingMessage, this.dataSource, organizationId, deviceId, liveSessionQuery);
     if (rv.result === false) {
-      this.logger.info(`DeviceStreamingGateway. handleConnection. ${rv.message}`);
+      this.logger.info(`DeviceStreamingSession.handleConnection. ${rv.message}`);
       closeWebSocketWithTruncateReason(webSocket, 1003, 'Unauthorized');
     }
 
     try {
       await this.sendDeviceStreamingSession(webSocket, deviceId, rv.userId!);
-      closeWebSocketWithTruncateReason(webSocket, 1000, `DeviceStreamingGateway. Pipeline is completed`);
+      closeWebSocketWithTruncateReason(webSocket, 1000, `DeviceStreamingSession.sendDeviceStreamingSession end while loop`);
     } catch (e) {
-      this.logger.error(`DeviceStreamingGateway. sendDeviceStreamingSession. ${stringify(e)}`);
+      this.logger.error(`DeviceStreamingSession.sendDeviceStreamingSession. ${stringify(e)}`);
       closeWebSocketWithTruncateReason(webSocket, 1003, e);
       return;
     }
   }
 
   handleDisconnect(webSocket: WebSocket): void {
-    this.logger.info('handleDisconnect');
+    this.logger.info('DeviceStreamingSession.handleDisconnect');
   }
 }

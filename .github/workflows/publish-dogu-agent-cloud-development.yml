@@ -11,6 +11,10 @@ on:
         type: string
         description: 'Dogu Agent app version'
         default: '0.0.1'
+      clean:
+        type: boolean
+        description: 'clean git repo'
+        default: false
 
 env:
   YARN_CHECKSUM_BEHAVIOR: update yarn
@@ -41,7 +45,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
         with:
-          clean: true
+          clean: ${{ github.event.inputs.clean }}
           fetch-depth: 0
 
       - name: Cache Yarn Unplugged
@@ -172,7 +176,7 @@ jobs:
 
       - name: Build Packages
         run: |
-          yarn workspace dogu run rebuild:packages
+          yarn workspace dogu run build:packages
 
       - name: Download, Build third-party
         run: |

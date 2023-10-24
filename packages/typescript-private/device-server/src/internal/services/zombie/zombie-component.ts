@@ -1,5 +1,6 @@
 import { Platform, Serial } from '@dogu-private/types';
-import { loop, Printable, stringify } from '@dogu-tech/common';
+import { errorify, loop, Printable, stringify } from '@dogu-tech/common';
+import { logger } from '../../../logger/logger.instance';
 
 export interface ZombieProps {
   [key: string]: unknown;
@@ -23,16 +24,27 @@ export interface Zombieable {
 }
 
 export class ZombieComponent {
-  constructor(public readonly impl: Zombieable, private isAliveSelf = false, private dieReason = '') {}
+  private _reviveCount = 0;
+  private _lastError?: Error;
+  constructor(public readonly impl: Zombieable, private isAliveSelf = false) {}
+
+  get reviveCount(): number {
+    return this._reviveCount;
+  }
+
+  get lastError(): Error | undefined {
+    return this._lastError;
+  }
 
   async tryRevive(): Promise<void> {
     try {
+      this._reviveCount++;
       await this.impl.revive();
       this.isAliveSelf = true;
       await this.impl.afterRevive?.();
     } catch (e: unknown) {
-      this.impl.printable.error(`${this.impl.name}.reviveCheck failed  error:${stringify(e)}`);
-      this.dieReason = `reviveCheck failed error:${stringify(e)}`;
+      this.impl.printable.error(`${this.impl.name}.revive failed  error:${stringify(e)}`);
+      this._lastError = errorify(e);
       this.isAliveSelf = false;
     }
   }
@@ -40,7 +52,7 @@ export class ZombieComponent {
   async onDie(dieReason = 'unknown'): Promise<void> {
     await this.impl.onDie();
     this.isAliveSelf = false;
-    this.dieReason = dieReason;
+    this._lastError = new Error(dieReason);
   }
   async onComponentDeleted(): Promise<void> {
     await this.impl.onComponentDeleted?.();
@@ -49,23 +61,23 @@ export class ZombieComponent {
   isAlive(): boolean {
     return this.isAliveSelf;
   }
-
-  async waitUntilAlive(): Promise<void> {
-    for await (const _ of loop(1000)) {
-      if (this.isAlive()) {
-        return;
-      }
-    }
-  }
 }
+
+const MaxWaitReviveCount = 5;
 
 export class ZombieQueriable {
   constructor(private readonly zombieComponent: ZombieComponent) {}
 
-  async waitUntilAlive(): Promise<void> {
+  async waitUntilAlive(maxReviveCount = MaxWaitReviveCount): Promise<void> {
+    const befReviveCount = this.zombieComponent.reviveCount;
     for await (const _ of loop(1000)) {
       if (this.zombieComponent.isAlive()) {
         return;
+      }
+      const diffReviveCount = this.zombieComponent.reviveCount - befReviveCount;
+      if (diffReviveCount > maxReviveCount) {
+        logger.error(`ZombieComponent ${this.zombieComponent.impl.name} waitUntilAlive failed`, { maxReviveCount, error: this.zombieComponent.lastError });
+        throw this.zombieComponent.lastError ?? new Error('unknown');
       }
     }
   }

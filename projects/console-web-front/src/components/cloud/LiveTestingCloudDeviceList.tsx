@@ -90,7 +90,7 @@ const LiveTestingCloudDeviceList: React.FC<Props> = () => {
   const { data, error, isLoading, mutate, page, updatePage } = usePaginationSWR<CloudDeviceMetadataBase>(
     `/cloud-devices?keyword=${keyword}${platform ? `&platform=${platform}` : ''}&version=${version}`,
     { skipQuestionMark: true, offset: 12 },
-    { keepPreviousData: true },
+    { keepPreviousData: true, refreshInterval: 10000 },
   );
   const { t } = useTranslation('cloud-device');
 

@@ -16,6 +16,9 @@ export class PrivateDeviceWsGateway implements OnGatewayConnection {
 
   async handleConnection(webSocket: WebSocket, incomingMessage: IncomingMessage): Promise<void> {
     this.logger.info('PrivateDeviceWsGateway.handleConnection', { remoteAddress: incomingMessage.socket.remoteAddress });
+
+    this.wsCommonService.sendPing(webSocket, 'PrivateDeviceWsGateway');
+
     try {
       this.setHandlers(webSocket);
       return await this.handleConnectionInternal(webSocket, incomingMessage);

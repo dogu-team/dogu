@@ -8,12 +8,14 @@ import {
   UserPropCamel,
   UserPropSnake,
 } from '@dogu-private/console';
-import { DeviceId, HostId, HostPayload, LiveSessionId, LiveSessionState, OrganizationId, ProjectId, UserId } from '@dogu-private/types';
+import { DeviceId, HostId, HostPayload, LiveSessionId, LiveSessionState, OrganizationId, ProjectId, UserId, WS_PING_MESSAGE } from '@dogu-private/types';
 import { notEmpty } from '@dogu-tech/common';
 import { Inject, Injectable } from '@nestjs/common';
 import { IncomingMessage } from 'http';
 import { DataSource } from 'typeorm';
+import WebSocket from 'ws';
 
+import { config } from '../../config';
 import { Device, OrganizationAndUserAndOrganizationRole, ProjectAndUserAndProjectRole } from '../../db/entity/index';
 import { LiveSession } from '../../db/entity/live-session.entity';
 import { User } from '../../db/entity/user.entity';
@@ -161,7 +163,20 @@ export class WsCommonService {
     dataSource: DataSource,
     organizationId: OrganizationId,
     deviceId: DeviceId,
-    logger: DoguLogger,
+    liveSessionId: LiveSessionId | null,
+  ) {
+    if (liveSessionId) {
+      return await this.validateCloudDeviceAccessPermission(incomingMessage, dataSource, organizationId, liveSessionId);
+    } else {
+      return await this.validateOrganizationDeviceAccessPermission(incomingMessage, dataSource, organizationId, deviceId);
+    }
+  }
+
+  async validateOrganizationDeviceAccessPermission(
+    incomingMessage: IncomingMessage,
+    dataSource: DataSource,
+    organizationId: OrganizationId,
+    deviceId: DeviceId,
   ): Promise<ValidationResult> {
     // get jwt token from header
     const userId = await this.validateUserAuthToken(incomingMessage);
@@ -258,4 +273,15 @@ export class WsCommonService {
     }
     return this.authHostService.validateHost(organizationId, projectId, hostId, deviceId, authHeader, type);
   }
+
+  sendPing = (webSocket: WebSocket, name: string): void => {
+    const interval = setInterval(() => {
+      if (webSocket.readyState === WebSocket.CLOSED) {
+        this.logger.debug('clearInterval sendPing', { name, interval });
+        clearInterval(interval);
+        return;
+      }
+      webSocket.send(WS_PING_MESSAGE);
+    }, config.ws.ping.intervalMilliseconds);
+  };
 }

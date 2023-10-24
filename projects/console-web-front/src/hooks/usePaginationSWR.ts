@@ -1,7 +1,8 @@
 import { PageBase } from '@dogu-private/console';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { swrAuthFetcher } from 'src/api';
 import useSWR, { SWRConfiguration } from 'swr';
+
+import { swrAuthFetcher } from 'src/api';
 
 export interface PaginationSWROption {
   offset?: number;

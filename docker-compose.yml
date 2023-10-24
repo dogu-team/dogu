@@ -98,7 +98,7 @@ services:
 
   console:
     container_name: dogu-console
-    image: dogutechio/dogu:2.0.6
+    image: dogutechio/dogu:2.1.3
     restart: always
     depends_on:
       - influxdb
@@ -128,7 +128,7 @@ services:
       - DOGU_CONSOLE_DOMAIN=${DOGU_HOST}
       - DOGU_CONSOLE_URL=${DOGU_CONSOLE_URL}
       - DOGU_SECRET=${DOGU_CONSOLE_JWT_SECRET_KEY}
-      - DOGU_LICENSE_SERVER_URL=https://api-client-admin.dogutech.io
+      - DOGU_BILLING_SERVER_URL=https://billing.dogutech.io
       - NEXT_PUBLIC_TURN_SERVER_USERNAME=${TURN_SERVER_USERNAME}
       - NEXT_PUBLIC_TURN_SERVER_PASSWORD=${TURN_SERVER_PASSWORD}
       - NEXT_PUBLIC_DOGU_API_BASE_URL=http://${DOGU_HOST}:4000

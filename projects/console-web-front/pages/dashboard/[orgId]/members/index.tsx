@@ -19,15 +19,17 @@ const ManageUserPage: NextPageWithLayout<OrganizationServerSideProps> = ({ organ
       </Head>
       <TableListView
         top={
-          <InviteButtonBox>
-            <TopLeftWrapper>
-              <InviteUserButton />
-              <OrganizationMemberFilter />
-            </TopLeftWrapper>
-            <div>
-              <RefreshButton />
-            </div>
-          </InviteButtonBox>
+          <>
+            <InviteButtonBox>
+              <TopLeftWrapper>
+                {process.env.NEXT_PUBLIC_ENV !== 'self-hosted' && <InviteUserButton />}
+                <OrganizationMemberFilter />
+              </TopLeftWrapper>
+              <div>
+                <RefreshButton />
+              </div>
+            </InviteButtonBox>
+          </>
         }
         table={<OrganizationMemberListController />}
       />

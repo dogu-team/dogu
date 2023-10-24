@@ -1,28 +1,29 @@
 import { DefaultDeviceSystemInfo, DeviceSystemInfo, ProfileMethods, Serial } from '@dogu-private/types';
-import { idcLogger } from '../../../logger/logger.instance';
+import { Printable } from '@dogu-tech/common';
 import { MobileDevice } from '../../externals';
 import { IosDeviceAgentService } from '../device-agent/ios-device-agent-service';
 import { SystemInfoService } from './system-info-service-interface';
 
 export class IosSystemInfoService implements SystemInfoService {
-  constructor(private readonly service: IosDeviceAgentService) {}
+  constructor(private readonly service: IosDeviceAgentService, private readonly logger: Printable) {}
 
-  static async getVersion(serial: Serial): Promise<string | undefined> {
-    return await MobileDevice.getProductVersion(serial, idcLogger).catch((error) => {
-      idcLogger.error(error);
+  static async getVersion(serial: Serial, logger: Printable): Promise<string | undefined> {
+    return await MobileDevice.getProductVersion(serial, logger).catch((error) => {
+      logger.error(error);
       return undefined;
     });
   }
 
   async createSystemInfo(serial: Serial): Promise<DeviceSystemInfo> {
+    const { logger } = this;
     const udid = serial;
     const info = DefaultDeviceSystemInfo();
-    info.version = await MobileDevice.getProductVersion(udid, idcLogger).catch((error) => {
-      idcLogger.error(error);
+    info.version = await MobileDevice.getProductVersion(udid, logger).catch((error) => {
+      logger.error(error);
       return 'unknown';
     });
-    info.system.model = await MobileDevice.getProductType(udid, idcLogger).catch((error) => {
-      idcLogger.error(error);
+    info.system.model = await MobileDevice.getProductType(udid, logger).catch((error) => {
+      logger.error(error);
       return 'unknown';
     });
     info.system.manufacturer = 'Apple Inc.';

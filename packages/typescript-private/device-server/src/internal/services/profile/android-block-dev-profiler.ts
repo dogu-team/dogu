@@ -66,6 +66,11 @@ const blockFragments: Fragment[] = [
     vender: 'samsung',
     fragmentName: 'com.samsung.android.settings.SoftwareUpdateSettings',
   },
+  {
+    type: 'software-update',
+    vender: 'samsung',
+    fragmentName: 'com.samsung.android.settings.softwareupdate.SoftwareUpdateSettings',
+  },
 ];
 
 const SwitchingToFragmentKeyword = 'Switching to fragment';

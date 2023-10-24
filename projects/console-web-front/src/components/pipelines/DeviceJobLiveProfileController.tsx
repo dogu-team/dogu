@@ -1,5 +1,5 @@
 import { RoutineDeviceJobBase, RuntimeInfoResponse } from '@dogu-private/console';
-import moment from 'moment';
+import { WS_PING_MESSAGE } from '@dogu-private/types';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 
@@ -24,6 +24,10 @@ const DeviceJobLiveProfileController = ({ deviceJob }: Props) => {
     setLiveProfiles([]);
     if (profileWebsocketRef.current) {
       profileWebsocketRef.current.onmessage = (e) => {
+        if (e.data === WS_PING_MESSAGE) {
+          return;
+        }
+
         const data: RuntimeInfoResponse = JSON.parse(e.data);
         setLiveProfiles((prev) => [...prev, data]);
       };

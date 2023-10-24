@@ -1,4 +1,11 @@
-import { RegisterySignResult, RegisteryWithOrganizationIdResult, UserAndVerificationTokenPropCamel, UserAndVerificationTokenPropSnake, UserPropCamel } from '@dogu-private/console';
+import {
+  OrganizationBase,
+  RegisterySignResult,
+  RegisteryWithOrganizationIdResult,
+  UserAndVerificationTokenPropCamel,
+  UserAndVerificationTokenPropSnake,
+  UserPropCamel,
+} from '@dogu-private/console';
 import { OAuthPayLoad, OrganizationId, SNS_TYPE, UserId, USER_INVITATION_STATUS, USER_VERIFICATION_STATUS } from '@dogu-private/types';
 import { BadRequestException, HttpException, HttpStatus, Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
@@ -7,9 +14,10 @@ import * as bcrypt from 'bcrypt';
 import { DateTime } from 'luxon';
 import { DataSource, EntityManager } from 'typeorm';
 
-import { Token, User, UserEmailPreference } from '../../db/entity/index';
+import { Organization, Token, User, UserEmailPreference } from '../../db/entity/index';
 import { UserAndVerificationToken } from '../../db/entity/relations/user-and-verification-token.entity';
 import { UserSns } from '../../db/entity/user-sns.entity';
+import { FEATURE_CONFIG } from '../../feature.config';
 import { EmailService } from '../../module/email/email.service';
 import { SendVerifyEmailDto, VerifyEmailDto } from '../../module/registery/dto/registery.dto';
 import { TokenService } from '../../module/token/token.service';
@@ -76,8 +84,19 @@ export class RegisteryService {
         await entityManager.getRepository(User).update({ userId: user.userId }, { isTutorialCompleted: 1 });
       }
 
-      // create organization
-      const organization = await this.organizationService.createOrganization(entityManager, user.userId, { name: `${user.name}'s organization` });
+      let organization: OrganizationBase;
+      // create organization or join organization if self-hosted
+      if (FEATURE_CONFIG.get('licenseModule') === 'self-hosted' && !user.isRoot) {
+        const result = await entityManager.getRepository(Organization).createQueryBuilder('organization').orderBy('organization.createdAt', 'DESC').getMany();
+
+        if (result.length === 0) {
+          throw new HttpException(`Organization not found`, HttpStatus.NOT_FOUND);
+        }
+
+        organization = result[0];
+      } else {
+        organization = await this.organizationService.createOrganization(entityManager, user.userId, { name: `${user.name}'s organization` });
+      }
 
       // create user email preference
       await createUserEmailPreference(entityManager, user.userId, newsletter);

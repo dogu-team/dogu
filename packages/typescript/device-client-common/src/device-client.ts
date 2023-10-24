@@ -1,6 +1,6 @@
 import { Class, Closable, errorify, Instance, Log, stringify, transformAndValidate, WebSocketSpec } from '@dogu-tech/common';
 import { DeviceInterface } from '@dogu-tech/device-interface';
-import { DeviceSystemInfo, FilledRuntimeInfo, LocaleCode, PlatformSerial, Serial } from '@dogu-tech/types';
+import { DeviceSystemInfo, FilledRuntimeInfo, GeoLocation, LocaleCode, PlatformSerial, Serial } from '@dogu-tech/types';
 import { DeviceClientOptions, DeviceCloser, DeviceService, DeviceWebSocket } from './bases';
 import { DeviceHttpClient } from './device-http-client';
 import { Device } from './specs/http/device';
@@ -65,8 +65,17 @@ export class DeviceClient extends DeviceHttpClient implements DeviceInterface {
     return response.localeCode;
   }
 
-  async changeDeviceLocale(serial: Serial, localeCode: LocaleCode): Promise<void> {
-    await this.httpRequest(Device.changeLocale, new Device.changeLocale.pathProvider(serial), undefined, localeCode);
+  async setLocale(serial: Serial, localeCode: LocaleCode): Promise<void> {
+    await this.httpRequest(Device.setLocale, new Device.setLocale.pathProvider(serial), undefined, localeCode);
+  }
+
+  async getGeoLocation(serial: Serial): Promise<GeoLocation> {
+    const response = await this.httpRequest(Device.getGeoLocation, new Device.getGeoLocation.pathProvider(serial));
+    return response.location;
+  }
+
+  async setGeoLocation(serial: Serial, location: GeoLocation): Promise<void> {
+    await this.httpRequest(Device.setGeoLocation, new Device.setGeoLocation.pathProvider(serial), undefined, location);
   }
 
   installApp(serial: Serial, appPath: string): Promise<void> {

@@ -26,7 +26,7 @@ export class Env {
   DOGU_CONSOLE_DOMAIN!: string;
 
   @IsFilledString()
-  DOGU_LICENSE_SERVER_URL!: string;
+  DOGU_BILLING_SERVER_URL!: string;
 
   @IsOptional()
   @IsString()

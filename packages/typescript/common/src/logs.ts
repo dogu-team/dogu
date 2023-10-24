@@ -381,3 +381,5 @@ export class MixedLogger implements FilledPrintable {
     }
   }
 }
+
+export const CustomInspectSymbol = Symbol.for('nodejs.util.inspect.custom');

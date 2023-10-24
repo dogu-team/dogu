@@ -30,7 +30,10 @@ const THROTTLE_MS = 33;
 const DeviceStreaming = ({ device, children, pid, isCloudDevice }: Props) => {
   const [mode, setMode] = useState<StreamingMode>('input');
   const isSelf = useLocalDeviceDetect(device);
-  const { loading, deviceRTCCaller, peerConnection, videoRef, error } = useRTCConnection({ device, pid }, THROTTLE_MS);
+  const { loading, deviceRTCCaller, peerConnection, videoRef, error } = useRTCConnection(
+    { device, pid, isCloudDevice },
+    THROTTLE_MS,
+  );
   const deviceService = useDeviceClient(peerConnection, THROTTLE_MS);
   const gamiumService = useGamiumClient(
     peerConnection,

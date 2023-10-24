@@ -1,5 +1,5 @@
 import { DeviceBase } from '@dogu-private/console';
-import { OrganizationId, PrivateProtocol, StreamingOption } from '@dogu-private/types';
+import { LiveSessionId, OrganizationId, PrivateProtocol, StreamingOption } from '@dogu-private/types';
 import { DeviceRTCCaller } from '@dogu-private/webrtc';
 import { AxiosError } from 'axios';
 import { useRouter } from 'next/router';
@@ -18,9 +18,10 @@ type DataChannelLabel = PrivateProtocol.DataChannelLabel;
 type Option = {
   device?: DeviceBase;
   pid?: number;
+  isCloudDevice?: boolean;
 };
 
-const useRTCConnection = ({ device, pid }: Option, sendThrottleMs: number) => {
+const useRTCConnection = ({ device, pid, isCloudDevice }: Option, sendThrottleMs: number) => {
   const router = useRouter();
   const organizationId = router.query.orgId as OrganizationId;
   const { fps, resolution } = useStreamingOptionStore((state) => state.option);
@@ -191,6 +192,7 @@ const useRTCConnection = ({ device, pid }: Option, sendThrottleMs: number) => {
       webRtcExchanger.startExchange(
         organizationId,
         device.deviceId,
+        isCloudDevice ? (router.query.sessionId as LiveSessionId) : null,
         serial,
         pc,
         device.platform,

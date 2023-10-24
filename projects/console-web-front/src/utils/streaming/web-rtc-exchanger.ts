@@ -2,10 +2,12 @@ import { DeviceStreamingOffer } from '@dogu-private/console';
 import {
   DefaultScreenCaptureOption,
   DeviceId,
+  LiveSessionId,
   OrganizationId,
   Platform,
   Serial,
   StreamingOption,
+  WS_PING_MESSAGE,
 } from '@dogu-private/types';
 import { sdpExt } from '@dogu-private/webrtc';
 import { PromiseOrValue, transformAndValidate } from '@dogu-tech/common';
@@ -19,6 +21,7 @@ export interface WebRtcExchanger {
   startExchange(
     organizationId: OrganizationId,
     deviceId: DeviceId,
+    liveSessionId: LiveSessionId | null,
     serial: Serial,
     peerConnection: RTCPeerConnection,
     platform: Platform,
@@ -35,25 +38,34 @@ export class WebRtcTrickleExchanger implements WebRtcExchanger {
   startExchange(
     organizationId: OrganizationId,
     deviceId: DeviceId,
+    liveSessionId: LiveSessionId | null,
     serial: Serial,
     peerConnection: RTCPeerConnection,
     platform: Platform,
     option?: StreamingOption,
     onError?: (error: StreamingError) => PromiseOrValue<void>,
   ): void {
-    this.startExchangeInternal(organizationId, deviceId, serial, peerConnection, platform, option, onError).catch(
-      async (error) => {
-        if (onError !== undefined) {
-          await onError(error);
-        }
-        console.debug('startExchangeInternal error', error);
-      },
-    );
+    this.startExchangeInternal(
+      organizationId,
+      deviceId,
+      liveSessionId,
+      serial,
+      peerConnection,
+      platform,
+      option,
+      onError,
+    ).catch(async (error) => {
+      if (onError !== undefined) {
+        await onError(error);
+      }
+      console.debug('startExchangeInternal error', error);
+    });
   }
 
   private async startExchangeInternal(
     organizationId: OrganizationId,
     deviceId: DeviceId,
+    liveSessionId: LiveSessionId | null,
     serial: Serial,
     peerConnection: RTCPeerConnection,
     platform: Platform,
@@ -69,7 +81,9 @@ export class WebRtcTrickleExchanger implements WebRtcExchanger {
     });
 
     const url = new WebSocketUrlResolver().resolve(
-      `/ws/device-streaming-trickle-exchanger?organizationId=${organizationId}&deviceId=${deviceId}`,
+      `/ws/device-streaming-trickle-exchanger?organizationId=${organizationId}&deviceId=${deviceId}&liveSessionId=${
+        liveSessionId ?? ''
+      }`,
     );
     const webSocket = new WebSocket(url);
     if (this.webSocket) {
@@ -157,6 +171,10 @@ export class WebRtcTrickleExchanger implements WebRtcExchanger {
   }
 
   private async onMessage(peerConnection: RTCPeerConnection, event: MessageEvent): Promise<void> {
+    if (event.data === WS_PING_MESSAGE) {
+      return;
+    }
+
     const result = await transformAndValidate(StreamingAnswerDto, JSON.parse(event.data));
     await this.processAnswer(peerConnection, result);
   }

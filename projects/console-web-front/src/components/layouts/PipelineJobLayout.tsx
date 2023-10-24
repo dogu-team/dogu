@@ -1,6 +1,6 @@
 import { ExclamationCircleFilled, LoadingOutlined } from '@ant-design/icons';
-import { OrganizationBase, ProjectBase, RoutinePipelineBase } from '@dogu-private/console';
-import { PIPELINE_STATUS } from '@dogu-private/types';
+import { RoutinePipelineBase } from '@dogu-private/console';
+import { PIPELINE_STATUS, WS_PING_MESSAGE } from '@dogu-private/types';
 import { Divider } from 'antd';
 import { isAxiosError } from 'axios';
 import useTranslation from 'next-translate/useTranslation';
@@ -64,6 +64,9 @@ const PipelineJobLayout = ({ children, organization, project, user }: Props) => 
   useEffect(() => {
     if (pipeline && isPipelineInProgress(pipeline.status) && statusSocketRef.current) {
       statusSocketRef.current.onmessage = (e) => {
+        if (e.data === WS_PING_MESSAGE) {
+          return;
+        }
         const parsedData: RoutinePipelineBase = JSON.parse(e.data);
         updateLivePipeline(parsedData);
       };

@@ -1,85 +1,87 @@
 import { DeviceSystemInfo, Serial } from '@dogu-private/types';
-import { delay, errorify, filterAsync, loop, Printable, stringify } from '@dogu-tech/common';
-import { HostPaths } from '@dogu-tech/node';
-import { execFile } from 'child_process';
+import { delay, FilledPrintable, filterAsync, loop, Printable, stringify } from '@dogu-tech/common';
 import semver from 'semver';
-import { AppiumContext } from '../../../appium/appium.context';
-import { env } from '../../../env';
-import { pathMap } from '../../../path-map';
+import { AppiumContextImpl } from '../../../appium/appium.context';
 import { Adb, AppiumAdb } from '../../externals/index';
+import { checkTime } from '../../util/check-time';
+
+export interface AndroidResetInfo {
+  lastResetTime: number;
+}
+
+const ResetExpireTime = 10 * 60 * 1000;
+const DirtyPath = '/data/local/tmp/dirty';
 
 export class AndroidResetService {
-  static async resetDevice(serial: Serial, systemInfo: DeviceSystemInfo, appiumAdb: AppiumAdb, appiumContext: AppiumContext, logger: Printable): Promise<void> {
+  private static map: Map<Serial, AndroidResetInfo> = new Map(); // Hold for process lifetime
+  constructor(private serial: Serial, private logger: FilledPrintable) {}
+
+  async makeDirty(): Promise<void> {
+    await Adb.shell(this.serial, `echo dirty > ${DirtyPath}`);
+  }
+
+  async isDirty(): Promise<boolean> {
+    const { serial } = this;
+    const lastResetInfo = AndroidResetService.map.get(serial);
+    if (!lastResetInfo) {
+      return true;
+    }
+    const { lastResetTime } = lastResetInfo;
+    if (Date.now() - lastResetTime > ResetExpireTime) {
+      return true;
+    }
     try {
-      const version = semver.coerce(systemInfo.version);
-      if (version && semver.lt(version, '11.0.0')) {
-        throw new Error(`AndroidResetService.resetDevice Android version must be 11 or higher. to use testharness`);
-      }
-      await Adb.enableTestharness(serial);
+      const { stdout } = await Adb.shell(serial, `cat ${DirtyPath}`);
+      return stdout.includes('dirty');
     } catch (e) {
-      await AndroidResetService.resetManual(serial, appiumAdb, appiumContext, logger);
+      return false;
     }
   }
 
-  static async resetBeforeConnected(serial: Serial, logger: Printable): Promise<void> {
-    await Adb.resetPackages(serial, logger);
-    await Adb.resetSdcard(serial, logger);
-    await AndroidResetService.resetIMEList(serial, logger);
-    await Adb.logcatClear(serial, logger);
-  }
-
-  /**
-   * @note connect to wifi script
-   * adb -s $DOGU_DEVICE_SERIAL install $DOGU_ADB_JOIN_WIFI_APK
-   * adb -s $DOGU_DEVICE_SERIAL shell am start -n com.steinwurf.adbjoinwifi/.MainActivity -e ssid $DOGU_WIFI_SSID -e password_type WPA -e password $DOGU_WIFI_PASSWORD
+  /*
+   * Reset device and reboot
    */
-
-  static async joinWifi(serial: string, ssid: string, password: string, logger: Printable): Promise<void> {
-    if (0 === ssid.length) {
-      throw new Error(`AndroidResetService.joinWifi failed. serial: ${serial}, ssid: ${ssid}`);
-    }
-    await Adb.installAppForce(serial, pathMap().common.adbJoinWifiApk);
-    /**
-     * @note Adb.Shell() is not used because password can remain in the log.
-     */
-    const appName = 'com.steinwurf.adbjoinwifi';
-    await new Promise<void>((resolve, reject) => {
-      execFile(
-        HostPaths.android.adbPath(env.ANDROID_HOME),
-        ['-s', serial, 'shell', `am start -n ${appName}/.MainActivity -e ssid ${ssid} -e password_type WPA -e password ${password}`],
-        (error, stdout, stderr) => {
-          if (error) {
-            reject(error);
-          } else {
-            logger.info(`AndroidResetService.joinWifi stdout: ${stdout} stderr: ${stderr}`);
-            resolve();
-          }
-        },
-      );
-    });
-    let isWifiEnabled = false;
-    for (let tryCount = 0; tryCount < 10; tryCount++) {
-      const { stdout } = await Adb.shell(serial, 'dumpsys wifi', {
-        windowsVerbatimArguments: true,
-        encoding: 'utf8',
-        maxBuffer: 1024 * 1024 * 10,
-      });
-      if (stdout.includes('Wi-Fi is enabled')) {
-        logger.info(`AndroidResetService.joinWifi success. serial: ${serial}, ssid: ${ssid}`);
-        isWifiEnabled = true;
-        break;
+  async reset(info: DeviceSystemInfo, appiumAdb: AppiumAdb, appiumContext: AppiumContextImpl): Promise<void> {
+    const { serial, logger } = this;
+    logger.info(`AndroidResetService.resetDevice begin`, { serial, info });
+    try {
+      if (!this.isHarnessAvailable(info)) {
+        throw new Error(`AndroidResetService.resetDevice Android version must be 10 or higher. to use testharness, serial:${serial}. version:${info.version}`);
       }
-      await delay(3 * 1000);
+
+      await checkTime(`AndroidResetService.reset.enableTestharness`, Adb.enableTestharness(serial), logger);
+    } catch (e) {
+      await checkTime(`AndroidResetService.reset.resetAccounts`, this.resetAccounts(appiumAdb, appiumContext), logger);
+      await checkTime(`AndroidResetService.reset.resetCommon`, this.resetCommon({ ignorePackages: [] }), logger);
+      await checkTime(`AndroidResetService.reset.reboot`, Adb.reboot(this.serial), logger);
     }
-    if (!isWifiEnabled) {
-      throw new Error(`AndroidResetService.joinWifi failed. serial: ${serial}, ssid: ${ssid}`);
-    }
-    await Adb.shell(serial, `am force-stop ${appName}`).catch((error) => {
-      logger.error('AndroidResetService.joinWifi failed adb.joinWifi.force-stop', { error: errorify(error) });
-    });
+    AndroidResetService.map.set(serial, { lastResetTime: Date.now() });
+    this.logger.info(`AndroidResetService.resetDevice end`, { serial, info });
   }
 
-  private static async resetIMEList(serial: Serial, logger: Printable): Promise<void> {
+  private isHarnessAvailable(systemInfo: DeviceSystemInfo): boolean {
+    const version = semver.coerce(systemInfo.version);
+    if (!version) {
+      return false;
+    }
+    return semver.gte(version, '10.0.0');
+  }
+
+  private async resetCommon(option: { ignorePackages: string[] }): Promise<void> {
+    const { serial, logger } = this;
+    await checkTime(`AndroidResetService.resetCommon.resetPackages`, Adb.resetPackages(serial, option.ignorePackages, logger), logger);
+    await checkTime(`AndroidResetService.resetCommon.resetSdcard`, Adb.resetSdcard(serial, logger), logger);
+    await checkTime(`AndroidResetService.resetCommon.resetIMEList`, this.resetIMEList(logger), logger);
+    await checkTime(`AndroidResetService.resetCommon.logcatClear`, Adb.logcatClear(serial, logger), logger);
+    await checkTime(`AndroidResetService.resetCommon.resetDirty`, this.resetDirty(), logger);
+  }
+
+  private async resetDirty(): Promise<void> {
+    await Adb.shell(this.serial, `rm -f ${DirtyPath}`);
+  }
+
+  private async resetIMEList(logger: Printable): Promise<void> {
+    const { serial } = this;
     const imes = await Adb.getIMEList(serial);
     for (const ime of imes) {
       await Adb.clearApp(serial, ime.packageName, logger).catch((err) => {
@@ -94,20 +96,16 @@ export class AndroidResetService {
     });
   }
 
-  private static async resetManual(serial: Serial, appiumAdb: AppiumAdb, appiumContext: AppiumContext, logger: Printable): Promise<void> {
-    await AndroidResetService.resetAccounts(serial, appiumAdb, appiumContext, logger);
-
-    // should delete appium after you are finished using it.
-    await AndroidResetService.resetBeforeConnected(serial, logger);
-
-    await Adb.reboot(serial);
-  }
-
-  private static async resetAccounts(serial: Serial, appiumAdb: AppiumAdb, appiumContext: AppiumContext, logger: Printable): Promise<void> {
-    const newAppiumAdb = appiumAdb.clone({ adbExecTimeout: 1000 * 60 * 10 });
-    await newAppiumAdb.setDeviceLocale('ko-KR'); // prevent setDeviceLocale passing
+  private async resetAccounts(appiumAdb: AppiumAdb, appiumContext: AppiumContextImpl): Promise<void> {
+    const { serial, logger } = this;
+    logger.info(`AndroidResetService.resetAccounts begin`, { serial });
+    if (appiumContext.openingState !== 'openingSucceeded') {
+      throw new Error(`AndroidResetService.resetAccounts Appium Context is not opened`);
+    }
+    const newAppiumAdb = appiumAdb.clone({ adbExecTimeout: 1000 * 60 * 3 });
+    await checkTime(`AndroidResetService.resetAccounts.setDeviceLocale.ko-KR`, newAppiumAdb.setDeviceLocale('ko-KR'), logger); // prevent setDeviceLocale passing
     await delay(1000);
-    await newAppiumAdb.setDeviceLocale('en-US');
+    await checkTime(`AndroidResetService.resetAccounts.setDeviceLocale.en-US`, newAppiumAdb.setDeviceLocale('en-US'), logger);
     const driver = appiumContext.driver();
     if (!driver) {
       throw new Error(`AndroidResetService.resetAccounts Appium Driver is not found`);
@@ -120,14 +118,22 @@ export class AndroidResetService {
     ];
     let count = 0;
     for await (const _ of loop(300, 100)) {
-      await newAppiumAdb.setDeviceLocale('en-US');
-      await Adb.runActivity(serial, 'android.settings.SYNC_SETTINGS', logger);
+      await checkTime(`AndroidResetService.resetAccounts.setDeviceLocale.en-US`, newAppiumAdb.setDeviceLocale('en-US'), logger);
+      await checkTime(`AndroidResetService.resetAccounts.runActivity`, Adb.runActivity(serial, 'android.settings.SYNC_SETTINGS', logger), logger);
       await delay(3000);
-      const title = await driver.$(`android=new UiSelector().resourceId("com.android.settings:id/action_bar")`);
+      const title = await checkTime(
+        `AndroidResetService.resetAccounts.findActionBar`,
+        driver.$(`android=new UiSelector().resourceId("com.android.settings:id/action_bar")`),
+        logger,
+      );
       if (!title) {
         throw new Error('AndroidResetService.resetAccounts Account title not found');
       }
-      const titles = await driver.$$(`android=new UiSelector().resourceId("com.android.settings:id/list").resourceId("android:id/title")`);
+      const titles = await checkTime(
+        `AndroidResetService.resetAccounts.findTitleList`,
+        driver.$$(`android=new UiSelector().resourceId("com.android.settings:id/list").resourceId("android:id/title")`),
+        logger,
+      );
       const titlesThatHaveAccount = await filterAsync(titles, async (title) => {
         const text = await title.getText();
         for (const ignoreButton of ignoreButtons) {
@@ -149,17 +155,27 @@ export class AndroidResetService {
       const target = titlesThatHaveAccount[0];
       await target.click();
 
-      const removeButton = await driver.$(`android=new UiSelector().resourceId("com.android.settings:id/button").text("Remove account")`);
+      const removeButton = await checkTime(
+        `AndroidResetService.resetAccounts.clickRemoveAccount`,
+        driver.$(`android=new UiSelector().resourceId("com.android.settings:id/button").text("Remove account")`),
+        logger,
+      );
       if (!removeButton) {
         throw new Error('AndroidResetService.resetAccounts Remove button not found');
       }
       await removeButton.click();
 
-      const removeWidgetButton = await driver.$(`android=new UiSelector().className("android.widget.Button").text("Remove account")`);
+      const removeWidgetButton = await checkTime(
+        `AndroidResetService.resetAccounts.clickRemoveAccount`,
+        driver.$(`android=new UiSelector().className("android.widget.Button").text("Remove account")`),
+        logger,
+      );
       if (!removeWidgetButton) {
         throw new Error('AndroidResetService.resetAccounts Remove widget button not found');
       }
       await removeWidgetButton.click();
     }
+
+    logger.info(`AndroidResetService.resetAccounts end`, { serial });
   }
 }

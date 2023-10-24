@@ -1,6 +1,7 @@
 export * from './browsers';
 export * from './dest/types';
 export * from './device-browser-installation/types';
+export * from './device-model';
 export * from './device-runner/types';
 export * as ProfileMethods from './device/profile-methods';
 export * from './device/runtime-infos';
@@ -13,6 +14,7 @@ export * from './host-paths';
 export * from './host/types';
 export * from './locale/android-locale';
 export * from './locale/locale';
+export * from './location/geo-location';
 export * from './organization/types';
 export * from './platforms';
 export * from './project-application/types';

@@ -9,7 +9,6 @@ import Cookies from 'universal-cookie';
 import { CommonUIProps } from 'src/types/common';
 import { koreanP3Style, maxWidthInnerStyle } from '../../styles/main';
 import { flexRowSpaceBetweenStyle } from '../../styles/box';
-import useWebview from '../../hooks/useWebview';
 
 interface Props extends CommonUIProps {
   showCompanyInfo?: boolean;
@@ -18,7 +17,6 @@ interface Props extends CommonUIProps {
 const Footer = ({ showCompanyInfo = false, className }: Props) => {
   const router = useRouter();
   const { lang, t } = useTranslation();
-  const isWebview = useWebview();
 
   const items: MenuProps['items'] = [
     {
@@ -46,10 +44,6 @@ const Footer = ({ showCompanyInfo = false, className }: Props) => {
       },
     },
   ];
-
-  if (isWebview) {
-    return null;
-  }
 
   return (
     <Box className={className}>

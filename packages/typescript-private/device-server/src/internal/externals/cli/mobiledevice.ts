@@ -3,7 +3,6 @@ import { ChildProcess } from '@dogu-tech/node';
 import child_process from 'child_process';
 import fs from 'fs';
 import util from 'util';
-import { idcLogger } from '../../../logger/logger.instance';
 import { pathMap } from '../../../path-map';
 import { TunnelContext } from './mobiledevice-tunnel';
 
@@ -51,7 +50,7 @@ class MobileDeviceImpl {
     return this.getDeviceProp(udid, 'ProductVersion', printable);
   }
 
-  tunnel(udid: string, hostPort: number, devicePort: number, printable: Printable = idcLogger): TunnelContext {
+  tunnel(udid: string, hostPort: number, devicePort: number, printable: Printable): TunnelContext {
     const newPrintable = {
       error: function (message: unknown, details?: Record<string, unknown> | undefined): void {
         printable.error(newPrintable.prefixMessage(message), details);
@@ -71,25 +70,25 @@ class MobileDeviceImpl {
   }
 
   @Retry()
-  async getBundleId(dotAppPath: string): Promise<string> {
+  async getBundleId(dotAppPath: string, printable: Printable): Promise<string> {
     if (!dotAppPath.endsWith('.app')) {
       throw Error(`appPath must be end with .app: ${dotAppPath}`);
     }
-    const { stdout } = await ChildProcess.execIgnoreError(`${pathMap().macos.mobiledevice} get_bundle_id "${dotAppPath}"`, {}, idcLogger);
+    const { stdout } = await ChildProcess.execIgnoreError(`${pathMap().macos.mobiledevice} get_bundle_id "${dotAppPath}"`, {}, printable);
     return stdout.trim();
   }
 
-  // uninstallApp(udid: string, appName: string, printable: Printable = idcLogger): Promise<child_process.ChildProcess> {
+  // uninstallApp(udid: string, appName: string, printable: Printable ): Promise<child_process.ChildProcess> {
   //   return ChildProcess.spawnAndWait(pathMap().macos.mobiledevice, ['uninstall_app', '-u', udid, appName], {}, printable);
   // }
 
-  // installApp(udid: string, appPath: string, printable: Printable = idcLogger): Promise<child_process.ChildProcess> {
+  // installApp(udid: string, appPath: string, printable: Printable): Promise<child_process.ChildProcess> {
   //   return ChildProcess.spawnAndWait(pathMap().macos.mobiledevice, ['install_app', '-u', udid, appPath], {}, printable);
   // }
 
   @Retry()
-  async listApps(udid: string): Promise<string[]> {
-    const { stdout } = await ChildProcess.exec(`${pathMap().macos.mobiledevice} list_apps -u ${udid}`, {}, idcLogger);
+  async listApps(udid: string, printable: Printable): Promise<string[]> {
+    const { stdout } = await ChildProcess.exec(`${pathMap().macos.mobiledevice} list_apps -u ${udid}`, {}, printable);
     return stdout
       .trim()
       .split('\n')

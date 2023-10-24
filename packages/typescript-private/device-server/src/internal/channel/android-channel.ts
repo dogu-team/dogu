@@ -5,6 +5,8 @@ import {
   DeviceWindowInfo,
   ErrorResult,
   FilledRuntimeInfo,
+  findDeviceModelNameByModelId,
+  GeoLocation,
   LocaleCode,
   Platform,
   PrivateProtocol,
@@ -25,11 +27,11 @@ import { Observable } from 'rxjs';
 import semver from 'semver';
 import systeminformation from 'systeminformation';
 import { createAppiumCapabilities } from '../../appium/appium.capabilites';
-import { AppiumContext, AppiumContextKey, AppiumContextProxy } from '../../appium/appium.context';
+import { AppiumContext, AppiumContextImpl, AppiumContextKey, AppiumContextProxy } from '../../appium/appium.context';
 import { AppiumDeviceWebDriverHandler } from '../../device-webdriver/appium.device-webdriver.handler';
 import { DeviceWebDriverHandler } from '../../device-webdriver/device-webdriver.common';
 import { GamiumContext } from '../../gamium/gamium.context';
-import { createAdaLogger } from '../../logger/logger.instance';
+import { createAndroidLogger, deviceInfoLogger } from '../../logger/logger.instance';
 import { Adb, AppiumAdb } from '../externals';
 import { getManifestFromApp } from '../externals/apk/apk-util';
 import { DeviceChannel, DeviceChannelOpenParam, DeviceHealthStatus, DeviceServerService, LogHandler } from '../public/device-channel';
@@ -42,6 +44,7 @@ import { StreamingService } from '../services/streaming/streaming-service';
 import { AndroidSystemInfoService } from '../services/system-info/android-system-info-service';
 import { Zombieable } from '../services/zombie/zombie-component';
 import { ZombieServiceInstance } from '../services/zombie/zombie-service';
+import { checkTime } from '../util/check-time';
 
 type DeviceControl = PrivateProtocol.DeviceControl;
 
@@ -86,6 +89,7 @@ export class AndroidChannel implements DeviceChannel {
     private readonly _appiumDeviceWebDriverHandler: AppiumDeviceWebDriverHandler,
     private readonly _sharedDevice: AndroidSharedDeviceService,
     private readonly appiumAdb: AppiumAdb,
+    private readonly _reset: AndroidResetService,
     private readonly logger: FilledPrintable,
     readonly browserInstallations: BrowserInstallation[],
   ) {
@@ -98,6 +102,7 @@ export class AndroidChannel implements DeviceChannel {
     }, 'kill previous zombie');
 
     const { serial } = param;
+    const logger = createAndroidLogger(param.serial);
     await Adb.unforwardall(serial).catch((error) => {
       deviceServerService.doguLogger.error('Adb.unforwardall failed', { error: errorify(error) });
     });
@@ -105,13 +110,13 @@ export class AndroidChannel implements DeviceChannel {
 
     const systemInfoService = new AndroidSystemInfoService();
     const systemInfo = await systemInfoService.createSystemInfo(serial);
+    deviceInfoLogger.info(`AndroidChannel.create`, { serial, systemInfo, modelName: findDeviceModelNameByModelId(systemInfo.system.model) });
 
     const version = semver.coerce(systemInfo.version);
     if (version && semver.lt(version, '8.0.0')) {
       throw new Error(`Android version must be 8 or higher. current version: ${stringify(version)}`);
     }
 
-    const logger = createAdaLogger(param.serial);
     const deviceAgent = new AndroidDeviceAgentService(
       serial,
       systemInfo,
@@ -128,7 +133,8 @@ export class AndroidChannel implements DeviceChannel {
       'builtin',
       await deviceServerService.devicePortService.createOrGetHostPort(serial, 'AndroidAppiumServer'),
     );
-    ZombieServiceInstance.addComponent(appiumContextProxy);
+    const appiumWaiter = ZombieServiceInstance.addComponent(appiumContextProxy);
+    await appiumWaiter.waitUntilAlive();
 
     const appiumDeviceWebDriverHandler = new AppiumDeviceWebDriverHandler(
       platform,
@@ -144,7 +150,10 @@ export class AndroidChannel implements DeviceChannel {
       deviceSerial: serial,
       browserPlatform: 'android',
     });
-    const sharedDevice = new AndroidSharedDeviceService(serial, appiumAdb, await Adb.getProps(serial), logger);
+    const appiumContextImpl = appiumContextProxy.getImpl(AppiumContextImpl);
+    const reset = new AndroidResetService(serial, logger);
+    const sharedDevice = new AndroidSharedDeviceService(serial, appiumAdb, await Adb.getProps(serial), systemInfo, appiumContextImpl, reset, deviceAgent, logger);
+    await sharedDevice.setup();
     await sharedDevice.wait();
 
     const deviceChannel = new AndroidChannel(
@@ -159,6 +168,7 @@ export class AndroidChannel implements DeviceChannel {
       appiumDeviceWebDriverHandler,
       sharedDevice,
       appiumAdb,
+      reset,
       logger,
       findAllBrowserInstallationsResult.browserInstallations,
     );
@@ -270,8 +280,10 @@ export class AndroidChannel implements DeviceChannel {
   }
 
   async reset(): Promise<void> {
-    const appiumContext = await this.switchAppiumContext('builtin');
-    await AndroidResetService.resetDevice(this.serial, this.info, this.appiumAdb, appiumContext, this.logger);
+    const { logger } = this;
+    await checkTime(`AndroidChannel.reset.switchAppiumContext`, this.switchAppiumContext('builtin'), logger);
+    const appiumContextImpl = this._appiumContext.getImpl(AppiumContextImpl);
+    await checkTime(`AndroidChannel.reset.reset`, this._reset.reset(this.info, this.appiumAdb, appiumContextImpl), logger);
   }
 
   async killOnPort(port: number): Promise<void> {
@@ -347,7 +359,7 @@ export class AndroidChannel implements DeviceChannel {
    * adb -s $DOGU_DEVICE_SERIAL shell am start -n com.steinwurf.adbjoinwifi/.MainActivity -e ssid $DOGU_WIFI_SSID -e password_type WPA -e password $DOGU_WIFI_PASSWORD
    */
   async joinWifi(ssid: string, password: string): Promise<void> {
-    await AndroidResetService.joinWifi(this.serial, ssid, password, this.logger);
+    await Adb.joinWifi(this.serial, ssid, password, this.logger);
   }
 
   getAppiumContext(): AppiumContext {
@@ -384,8 +396,25 @@ export class AndroidChannel implements DeviceChannel {
     return localeCode;
   }
 
-  async chagneLocale(localeCode: LocaleCode): Promise<void> {
-    await this.appiumAdb.setDeviceLanguageCountry(localeCode.language, localeCode.region, localeCode.script);
+  async setLocale(localeCode: LocaleCode): Promise<void> {
+    const newAppiumAdb = this.appiumAdb.clone({ adbExecTimeout: 1000 * 60 * 3 });
+    await newAppiumAdb.setDeviceLanguageCountry(localeCode.language, localeCode.region, localeCode.script);
+  }
+
+  async getGeoLocation(): Promise<GeoLocation> {
+    const location = await this.appiumAdb.getGeoLocation();
+    return {
+      longitude: typeof location.longitude === 'string' ? parseFloat(location.longitude) : location.longitude,
+      latitude: typeof location.latitude === 'string' ? parseFloat(location.latitude) : location.latitude,
+      altitude: typeof location.altitude === 'string' ? parseFloat(location.altitude) : location.altitude ?? 0,
+      satellites: typeof location.satellites === 'string' ? parseInt(location.satellites, 10) : location.satellites ?? 0,
+      speed: typeof location.speed === 'string' ? parseFloat(location.speed) : location.speed ?? 0,
+    };
+  }
+
+  async setGeoLocation(geoLocation: GeoLocation): Promise<void> {
+    const newAppiumAdb = this.appiumAdb.clone({ adbExecTimeout: 1000 * 60 * 3 });
+    await newAppiumAdb.setGeoLocation(geoLocation);
   }
 }
 

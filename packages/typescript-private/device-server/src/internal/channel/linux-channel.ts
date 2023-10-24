@@ -4,6 +4,7 @@ import {
   DeviceWindowInfo,
   ErrorResult,
   FilledRuntimeInfo,
+  GeoLocation,
   LocaleCode,
   Platform,
   PrivateProtocol,
@@ -22,7 +23,7 @@ import { AppiumContext, AppiumContextKey } from '../../appium/appium.context';
 import { DeviceWebDriverHandler } from '../../device-webdriver/device-webdriver.common';
 import { SeleniumDeviceWebDriverHandler } from '../../device-webdriver/selenium.device-webdriver.handler';
 import { GamiumContext } from '../../gamium/gamium.context';
-import { logger } from '../../logger/logger.instance';
+import { deviceInfoLogger, logger } from '../../logger/logger.instance';
 import { DesktopCapturer } from '../externals/index';
 import { DeviceChannel, DeviceChannelOpenParam, DeviceHealthStatus, DeviceServerService, LogHandler } from '../public/device-channel';
 import { DeviceAgentService } from '../services/device-agent/device-agent-service';
@@ -79,6 +80,7 @@ export class LinuxChannel implements DeviceChannel {
       uuid: await checkTime('uuid', systeminformation.uuid()),
       cpu: await checkTime('cpu', systeminformation.cpu()),
     };
+    deviceInfoLogger.info('LinuxChannel.create', { info });
     await streaming.deviceConnected(param.serial, {
       serial: param.serial,
       platform,
@@ -214,7 +216,15 @@ export class LinuxChannel implements DeviceChannel {
     throw new Error('Method not implemented.');
   }
 
-  async chagneLocale(localeCode: LocaleCode): Promise<void> {
+  async setLocale(localeCode: LocaleCode): Promise<void> {
+    throw new Error('Method not implemented.');
+  }
+
+  async getGeoLocation(): Promise<GeoLocation> {
+    throw new Error('Method not implemented.');
+  }
+
+  async setGeoLocation(geoLocation: GeoLocation): Promise<void> {
     throw new Error('Method not implemented.');
   }
 }

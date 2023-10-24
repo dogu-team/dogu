@@ -1,7 +1,7 @@
+import { UserBase } from '@dogu-private/console';
 import { useEffect } from 'react';
 import useSWR from 'swr';
 
-import { UserBase } from '@dogu-private/console';
 import { swrAuthFetcher } from 'src/api';
 import useAuthStore from 'src/stores/auth';
 

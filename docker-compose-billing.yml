@@ -5,7 +5,6 @@ services:
     container_name: dev-billing-server
     image: 290423440349.dkr.ecr.ap-northeast-2.amazonaws.com/dev-billing-server:latest
     pull_policy: always
-    restart: always
     ports:
       - '4001:4001'
     environment:

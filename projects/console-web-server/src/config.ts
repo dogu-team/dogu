@@ -73,7 +73,7 @@ export const config = {
     url: `http://${env.DOGU_INFLUX_DB_HOST}:${env.DOGU_INFLUX_DB_PORT}`,
   },
   license: {
-    url: env.DOGU_LICENSE_SERVER_URL,
+    url: env.DOGU_BILLING_SERVER_URL,
     companyName: env.DOGU_LICENSE_COMPANY_NAME,
   },
   fileService: {
@@ -156,6 +156,11 @@ export const config = {
     },
     participantsCount: {
       allowedSeconds: 24 * 60 * 60,
+    },
+  },
+  ws: {
+    ping: {
+      intervalMilliseconds: 5 * 60 * 1000,
     },
   },
 };

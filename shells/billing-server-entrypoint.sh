@@ -1,6 +1,6 @@
 #!/bin/bash
 echo "Start rdb migration"
-yarn workspace dogu-client-admin-server run typeorm:init
+yarn workspace billing-server run typeorm:init
 if [ $? -eq 0 ]; then
   echo "DB migration success"
 else
@@ -9,7 +9,7 @@ else
 fi
 
 echo "Start Server"
-yarn workspace dogu-client-admin-server start
+yarn workspace billing-server start
 if [ $? -eq 0 ]; then
   echo "Console start success"
 else

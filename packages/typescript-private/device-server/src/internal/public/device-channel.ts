@@ -3,6 +3,7 @@ import {
   DeviceWindowInfo,
   ErrorResult,
   FilledRuntimeInfo,
+  GeoLocation,
   LocaleCode,
   Platform,
   PrivateProtocol,
@@ -102,5 +103,9 @@ export interface DeviceChannel {
 
   // locale
   getLocale(): PromiseOrValue<LocaleCode>;
-  chagneLocale(localeCode: LocaleCode): PromiseOrValue<void>;
+  setLocale(localeCode: LocaleCode): PromiseOrValue<void>;
+
+  // GeoLocation
+  getGeoLocation(): PromiseOrValue<GeoLocation>;
+  setGeoLocation(geoLocation: GeoLocation): PromiseOrValue<void>;
 }

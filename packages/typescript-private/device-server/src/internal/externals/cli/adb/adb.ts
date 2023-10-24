@@ -1,11 +1,12 @@
 import { PlatformAbility } from '@dogu-private/dost-children';
 import { PrivateProtocol, Serial } from '@dogu-private/types';
-import { errorify, Printable, stringify } from '@dogu-tech/common';
-import { ChildProcess } from '@dogu-tech/node';
+import { delay, errorify, Printable, stringify } from '@dogu-tech/common';
+import { ChildProcess, HostPaths } from '@dogu-tech/node';
 import child_process, { execFile, ExecFileOptionsWithStringEncoding, spawn } from 'child_process';
 import fs from 'fs';
 import util from 'util';
 import { registerBootstrapHandler } from '../../../../bootstrap/bootstrap.service';
+import { env } from '../../../../env';
 import { adbLogger } from '../../../../logger/logger.instance';
 import { pathMap } from '../../../../path-map';
 import { LogHandler } from '../../../public/device-channel';
@@ -206,6 +207,57 @@ export async function getPackageOnPort(serial: Serial, port: number): Promise<Pa
   const rv = await getPackageInfoFromUid(serial, uid);
   adbLogger.verbose('adb.getPackageOnPort end', { serial, port, random });
   return rv;
+}
+
+/**
+ * @note connect to wifi script
+ * adb -s $DOGU_DEVICE_SERIAL install $DOGU_ADB_JOIN_WIFI_APK
+ * adb -s $DOGU_DEVICE_SERIAL shell am start -n com.steinwurf.adbjoinwifi/.MainActivity -e ssid $DOGU_WIFI_SSID -e password_type WPA -e password $DOGU_WIFI_PASSWORD
+ */
+
+export async function joinWifi(serial: Serial, ssid: string, password: string, logger: Printable = adbLogger): Promise<void> {
+  if (0 === ssid.length) {
+    throw new Error(`AndroidSharedDeviceService.joinWifi failed. serial: ${serial}, ssid: ${ssid}`);
+  }
+  await installAppForce(serial, pathMap().common.adbJoinWifiApk);
+  /**
+   * @note Adb.Shell() is not used because password can remain in the log.
+   */
+  const appName = 'com.steinwurf.adbjoinwifi';
+  await new Promise<void>((resolve, reject) => {
+    execFile(
+      HostPaths.android.adbPath(env.ANDROID_HOME),
+      ['-s', serial, 'shell', `am start -n ${appName}/.MainActivity -e ssid ${ssid} -e password_type WPA -e password ${password}`],
+      (error, stdout, stderr) => {
+        if (error) {
+          reject(error);
+        } else {
+          logger.info(`AndroidSharedDeviceService.joinWifi stdout: ${stdout} stderr: ${stderr}`);
+          resolve();
+        }
+      },
+    );
+  });
+  let isWifiEnabled = false;
+  for (let tryCount = 0; tryCount < 10; tryCount++) {
+    const { stdout } = await shell(serial, 'dumpsys wifi', {
+      windowsVerbatimArguments: true,
+      encoding: 'utf8',
+      maxBuffer: 1024 * 1024 * 10,
+    });
+    if (stdout.includes('Wi-Fi is enabled')) {
+      logger.info(`AndroidSharedDeviceService.joinWifi success. serial: ${serial}, ssid: ${ssid}`);
+      isWifiEnabled = true;
+      break;
+    }
+    await delay(3 * 1000);
+  }
+  if (!isWifiEnabled) {
+    throw new Error(`AndroidSharedDeviceService.joinWifi failed. serial: ${serial}, ssid: ${ssid}`);
+  }
+  await shell(serial, `am force-stop ${appName}`).catch((error) => {
+    logger.error('AndroidSharedDeviceService.joinWifi failed adb.joinWifi.force-stop', { error: errorify(error) });
+  });
 }
 
 /**
@@ -423,6 +475,13 @@ export async function disablePackage(serial: Serial, packageName: string, userId
   await shellIgnoreError(serial, `pm disable-user ${userId} ${packageName}`);
   await shellIgnoreError(serial, `pm disable-user ${packageName}`);
   adbLogger.verbose('adb.disablePackage end', { serial, packageName, random });
+}
+
+export async function disableGooglePlayProtect(serial: Serial, printable: Printable): Promise<void> {
+  const random = Math.random();
+  adbLogger.verbose('adb.disableGooglePlayProtect begin', { serial, random });
+  await shellIgnoreError(serial, `settings put global package_verifier_user_consent -1`);
+  adbLogger.verbose('adb.disableGooglePlayProtect end', { serial, random });
 }
 
 export async function allowNonMarketApps(serial: Serial, printable: Printable): Promise<void> {
@@ -894,6 +953,21 @@ export async function getTime(serial: Serial): Promise<string | undefined> {
   }
 }
 
+export async function getUptimeSeconds(serial: Serial): Promise<number | undefined> {
+  const random = Math.random();
+  adbLogger.verbose('adb.getUptime begin', { serial, random });
+  try {
+    const result = await shellIgnoreError(serial, 'cat /proc/uptime');
+    const uptime = result.stdout.split(' ')[0];
+    const uptimeSeconds = parseFloat(uptime);
+    return uptimeSeconds;
+  } catch (e) {
+    return undefined;
+  } finally {
+    adbLogger.verbose('adb.getUptime end', { serial, random });
+  }
+}
+
 /**
  * FileSystem
  */
@@ -961,7 +1035,7 @@ export async function enableTestharness(serial: Serial): Promise<void> {
   });
 }
 
-export async function resetPackages(serial: Serial, logger: Printable): Promise<void> {
+export async function resetPackages(serial: Serial, ignorePackages: string[], logger: Printable): Promise<void> {
   const random = Math.random();
   adbLogger.verbose('adb.resetPackages begin', { serial, random });
   const allApps = await getIntalledPackages(serial);
@@ -970,19 +1044,19 @@ export async function resetPackages(serial: Serial, logger: Printable): Promise<
     if (!userApps.find((targetApp) => targetApp.packageName === app.packageName)) {
       return;
     }
+    if (ignorePackages.includes(app.packageName)) {
+      return;
+    }
     await clearApp(serial, app.packageName, logger).catch((err) => {
       logger.error(`adb.resetPackages failed to clear`, { error: stringify(err), package: app.packageName, serial, random });
-    });
-    await resetAppPermission(serial, app.packageName, logger).catch((err) => {
-      logger.error(`adb.resetPackages failed to reset permission`, { error: stringify(err), package: app.packageName, serial, random });
     });
     await uninstallApp(serial, app.packageName, false, logger).catch((err) => {
       logger.error(`adb.resetPackages failed to uninstall`, { error: stringify(err), package: app.packageName, serial, random });
     });
     return Promise.resolve();
   });
-  adbLogger.verbose('adb.resetPackages end', { serial, random });
   await Promise.all(promises);
+  adbLogger.verbose('adb.resetPackages end', { serial, random });
 }
 
 export async function resetSdcard(serial: Serial, logger: Printable): Promise<void> {

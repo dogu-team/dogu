@@ -17,15 +17,15 @@ const LiveTestingStartButton: React.FC<Props> = ({ device, ...props }) => {
     <Button type="primary" {...props} disabled={!isAvailable}>
       {isAvailable ? (
         t('cloudDeviceListStartButtonTitle')
-      ) : device.usageState === DeviceUsageState.PREPARING ? (
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          <Dot style={{ backgroundColor: '#f7d282' }} />
-          {t('cloudDeviceListPrepareButtonTitle')}
-        </div>
-      ) : (
+      ) : device.usageState === DeviceUsageState.IN_USE ? (
         <div style={{ display: 'flex', alignItems: 'center' }}>
           <Dot style={{ backgroundColor: '#f97651' }} />
           {t('cloudDeviceListBusyButtonTitle')}
+        </div>
+      ) : (
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <Dot style={{ backgroundColor: '#f7d282' }} />
+          {t('cloudDeviceListPrepareButtonTitle')}
         </div>
       )}
     </Button>
