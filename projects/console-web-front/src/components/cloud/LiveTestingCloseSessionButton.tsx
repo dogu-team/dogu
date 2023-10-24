@@ -51,7 +51,11 @@ const LiveTestingCloseSessionButton: React.FC<Props> = ({ organizationId, sessio
         okText="End session"
         cancelText="Keep session"
       >
-        <div>Are you sure you want to end the live session?</div>
+        <p style={{ lineHeight: '1.5' }}>
+          Are you sure you want to end the live session?
+          <br />
+          <span style={{ fontWeight: '600' }}>Your data will be fully removed.</span>
+        </p>
       </Modal>
     </>
   );
