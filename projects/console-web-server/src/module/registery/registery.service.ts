@@ -87,17 +87,13 @@ export class RegisteryService {
       let organization: OrganizationBase;
       // create organization or join organization if self-hosted
       if (FEATURE_CONFIG.get('licenseModule') === 'self-hosted' && !user.isRoot) {
-        const result = await entityManager.getRepository(Organization).findOne({
-          order: {
-            createdAt: 'DESC',
-          },
-        });
+        const result = await entityManager.getRepository(Organization).createQueryBuilder('organization').orderBy('organization.createdAt', 'DESC').getMany();
 
-        if (!result) {
+        if (result.length === 0) {
           throw new HttpException(`Organization not found`, HttpStatus.NOT_FOUND);
         }
 
-        organization = result;
+        organization = result[0];
       } else {
         organization = await this.organizationService.createOrganization(entityManager, user.userId, { name: `${user.name}'s organization` });
       }
