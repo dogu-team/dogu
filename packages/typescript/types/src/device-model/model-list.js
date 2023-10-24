@@ -1,4 +1,7 @@
-const DeviceModels = {
+'use strict';
+Object.defineProperty(exports, '__esModule', { value: true });
+exports.DeviceModels = void 0;
+exports.DeviceModels = {
   1: 'mu 1',
   2: '2',
   3: '3',
@@ -32105,7 +32108,6 @@ const DeviceModels = {
   ZT_216: 'ZT_216',
   ZA833: 'Zyrex  ZA833',
   ZT216_7: 'zyrex',
-
   // iOS series
   'iPhone1,1': 'iPhone',
   'iPhone1,2': 'iPhone 3G',
@@ -32162,7 +32164,6 @@ const DeviceModels = {
   'iPhone15,5': 'iPhone 15 Plus',
   'iPhone16,1': 'iPhone 15 Pro',
   'iPhone16,2': 'iPhone 15 Pro Max',
-
   // iPad
   'iPad1,1': 'iPad',
   'iPad2,1': 'iPad 2',
@@ -32241,7 +32242,6 @@ const DeviceModels = {
   'iPad13,9': 'iPad Pro 12.9" 5',
   'iPad13,10': 'iPad Pro 12.9" 5',
   'iPad13,11': 'iPad Pro 12.9" 5',
-
   // macbook
   'MacBookAir1,1': 'MacBook Air - Original',
   'MacBookAir2,1': 'MacBook Air (2008)',
@@ -32261,7 +32261,6 @@ const DeviceModels = {
   'MacBookAir10,1': 'MacBook Air M1 (2020)',
   'Mac14,1': 'MacBook Air M2 (2022)',
   'Mac14,2': 'MacBook Air M2 (2022)',
-
   'MacBookPro1,1': 'MacBook Pro (17", 2006)',
   'MacBookPro1,2': 'MacBook Pro (17", 2006)',
   'MacBookPro2,1': 'MacBook Pro (15", 2006)',
@@ -32313,7 +32312,6 @@ const DeviceModels = {
   'Mac14,5': 'MacBook M2 Max 14" (2023)',
   'Mac14,10': 'MacBook M2 Max 16" (2023)',
   'Mac14,6': 'MacBook M2 Pro 16" (2023)',
-
   'MacBook1,1': 'MacBook (2006)',
   'MacBook2,1': 'MacBook (2006 ~ 2007)',
   'MacBook3,1': 'MacBook (2007)',
@@ -32325,7 +32323,6 @@ const DeviceModels = {
   'MacBook8,1': 'MacBook (2015)',
   'MacBook9,1': 'MacBook (2016)',
   'MacBook10,1': 'MacBook (2017)',
-
   // imac
   'iMac9,1': 'iMac 20" 2009',
   'iMac10,1': 'iMac 21.5" 2009',
@@ -32350,9 +32347,7 @@ const DeviceModels = {
   'iMac20,1': 'iMac Retina 5K, 27" 2020',
   'iMac20,2': 'iMac Retina 5K, 27" 2020',
   'iMac21,1': 'iMac M1, 24" 2021',
-
   'iMacPro1,1': 'iMac Pro, 27" 2017',
-
   // mac mini
   'PowerMac10,1': 'Mac mini G4 2020',
   'Macmini1,1': 'Mac mini 2006',
@@ -32370,11 +32365,9 @@ const DeviceModels = {
   'Macmini9,1': 'Mac mini M1, 2020',
   'Mac14,3': 'Mac mini M2, 2023',
   'Mac14,12': 'Mac mini M2 Pro, 2023',
-
   // mac studio
   'Mac13,1': 'Mac Studio M1 Max, 2022',
   'Mac13,2': 'Mac Studio M1 Ultra, 2022',
-
   // mac pro
   'MacPro1,1': 'Mac Pro',
   'MacPro2,1': 'Mac Pro',
@@ -32384,17 +32377,3 @@ const DeviceModels = {
   'MacPro6,1': 'Mac Pro 2013',
   'MacPro7,1': 'Mac Pro 2019',
 };
-
-function findDeviceModelNameByModelId(modelId) {
-  if (!modelId) {
-    return null;
-  }
-
-  const key = Object.keys(DeviceModels).find((id) => modelId === id);
-
-  if (key) {
-    return DeviceModels[key];
-  }
-
-  return null;
-}

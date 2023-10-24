@@ -1,7 +1,8 @@
 export * from './browsers';
 export * from './dest/types';
 export * from './device-browser-installation/types';
-export * from './device-model';
+export * from './device-model/model-list';
+export * from './device-model/model-utils';
 export * from './device-runner/types';
 export * as ProfileMethods from './device/profile-methods';
 export * from './device/runtime-infos';

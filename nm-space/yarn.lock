@@ -4696,7 +4696,6 @@ __metadata:
   dependencies:
     "@dogu-dev-private/publish-package": "workspace:^"
     "@dogu-tech/common": "workspace:^"
-    "@dogu-tech/device-interface": "workspace:^"
     "@dogu-tech/types": "workspace:^"
     "@types/lodash": 4.14.186
     "@types/node": 18.15.11
@@ -4738,22 +4737,6 @@ __metadata:
     ts-node: 10.9.1
     typescript: 4.7.4
     ws: 8.13.0
-  languageName: unknown
-  linkType: soft
-
-"@dogu-tech/device-interface@workspace:^, @dogu-tech/device-interface@workspace:mirror/packages/@dogu-tech-device-interface":
-  version: 0.0.0-use.local
-  resolution: "@dogu-tech/device-interface@workspace:mirror/packages/@dogu-tech-device-interface"
-  dependencies:
-    "@dogu-dev-private/publish-package": "workspace:^"
-    "@dogu-tech/common": "workspace:^"
-    "@dogu-tech/types": "workspace:^"
-    "@types/node": 18.15.11
-    cross-env: 7.0.3
-    nodemon: 2.0.22
-    shx: 0.3.4
-    ts-node: 10.9.1
-    typescript: 4.7.4
   languageName: unknown
   linkType: soft
 
