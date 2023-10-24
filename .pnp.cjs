@@ -36960,7 +36960,9 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["protocol-exporter", "workspace:prebuilds/protocol-exporter"],\
             ["@dogu-dev-private/base-build-tools", "workspace:packages/typescript-dev-private/base-build-tools"],\
+            ["@grpc/grpc-js", "npm:1.7.3"],\
             ["@types/eslint", "npm:8.37.0"],\
+            ["@types/long", "npm:4.0.1"],\
             ["@types/node", "npm:18.15.11"],\
             ["@types/prettier", "npm:2.7.2"],\
             ["@types/shelljs", "npm:0.8.11"],\
@@ -36968,6 +36970,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@typescript-eslint/parser", "virtual:f2635a2fcff48218c189c72f8ec68a58c0c9a493231eeb25fc0d4d97932a237dd3a38bfaa7c8a6d4be36984c08b243589188d7525f771fc6d7018c6cf79aeba1#npm:5.36.2"],\
             ["dotenv", "npm:16.0.3"],\
             ["eslint", "npm:8.23.0"],\
+            ["long", "npm:4.0.0"],\
             ["nodemon", "npm:2.0.22"],\
             ["prettier", "npm:2.8.6"],\
             ["protobufjs", "npm:7.1.2"],\

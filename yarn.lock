@@ -27419,7 +27419,9 @@ __metadata:
   resolution: "protocol-exporter@workspace:prebuilds/protocol-exporter"
   dependencies:
     "@dogu-dev-private/base-build-tools": "workspace:^"
+    "@grpc/grpc-js": 1.7.3
     "@types/eslint": 8
+    "@types/long": 4.0.1
     "@types/node": 18.15.11
     "@types/prettier": 2
     "@types/shelljs": 0.8.11
@@ -27427,6 +27429,7 @@ __metadata:
     "@typescript-eslint/parser": 5.36.2
     dotenv: 16.0.3
     eslint: 8.23.0
+    long: 4.0.0
     nodemon: 2.0.22
     prettier: 2.8.6
     protobufjs: 7.1.2
