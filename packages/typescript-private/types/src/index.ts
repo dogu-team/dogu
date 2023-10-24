@@ -14,6 +14,7 @@ export * from './device-and-device-tag/index';
 export * from './device-tag/index';
 export * from './download';
 export * from './enum';
+export * from './env/types';
 export * from './host';
 export * from './influxdb';
 export * from './input';

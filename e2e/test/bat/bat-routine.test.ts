@@ -1,5 +1,5 @@
-import { loadEnvLazySync } from '@dogu-private/env-tools';
 import { afterAll, beforeAll, Dest, expect, job, test } from '@dogu-tech/dest';
+import { loadEnvLazySync } from '@dogu-tech/env-tools';
 import dotenv from 'dotenv';
 import path from 'path';
 

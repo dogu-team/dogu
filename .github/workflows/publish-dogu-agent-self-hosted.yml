@@ -8,6 +8,10 @@ on:
         type: string
         description: 'Dogu Agent app version'
         default: '0.0.1'
+      clean:
+        type: boolean
+        description: 'clean git repo'
+        default: false
 
 env:
   YARN_CHECKSUM_BEHAVIOR: update yarn
@@ -42,8 +46,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
         with:
-          clean: true
+          clean: ${{ github.event.inputs.clean }}
           fetch-depth: 0
+
+      - name: Cache Node.js environment
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16.20'
+          cache: 'yarn'
+          cache-dependency-path: '**/yarn.lock'
 
       - name: Cache Yarn Unplugged
         uses: actions/cache@v3
@@ -83,13 +94,6 @@ jobs:
         with:
           path: ${{ github.workspace }}/third-party
           key: ${{ runner.os }}-cache-thirdparty-${{ hashFiles('scripts/third-parties/download.ts') }}
-
-      - name: Cache NM Space node_modules
-        uses: actions/cache@v3
-        with:
-          path: |
-            ${{ github.workspace }}/nm-space/node_modules
-          key: ${{ runner.os }}-cache_nm_space_node_modules-${{ hashFiles('yarn.lock') }}
 
       - name: Windows - Msys2 - MIGW64 - Setup for cgo
         uses: msys2/setup-msys2@v2
@@ -173,7 +177,7 @@ jobs:
 
       - name: Build Packages
         run: |
-          yarn workspace dogu run rebuild:packages
+          yarn workspace dogu run build:packages
 
       - name: Download, Build third-party
         run: |
@@ -182,13 +186,6 @@ jobs:
       - name: Dogu Agent - Newbie nm-space
         run: |
           yarn workspace dogu run newbie:nm-space
-
-      - name: Dogu Agent - Install nm-space
-        run: |
-          yarn install
-        working-directory: ./nm-space
-        env:
-          YARN_ENABLE_IMMUTABLE_INSTALLS: false
 
       - name: create dotEnv deploy
         run: |

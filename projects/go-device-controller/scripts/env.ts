@@ -1,4 +1,4 @@
-import { EnvLoader } from '@dogu-private/env-tools';
+import { EnvLoader } from '@dogu-private/types';
 import { IsNotEmpty, IsString } from 'class-validator';
 
 export class Env {

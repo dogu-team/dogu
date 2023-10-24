@@ -1,5 +1,5 @@
 import { ChildCode, GetLatestVersionResponse, Status, UpdateLatestVersionRequest, UpdateLatestVersionResponse } from '@dogu-private/dost-children';
-import { isValidDoguRunType } from '@dogu-private/env-tools';
+import { isValidDoguRunType } from '@dogu-private/types';
 import { DefaultHttpOptions, delay, errorify, Instance, Printable, setAxiosErrorFilterToIntercepter } from '@dogu-tech/common';
 import { isFreePort, killProcessOnPort } from '@dogu-tech/node';
 import { Code } from '@dogu-tech/types';

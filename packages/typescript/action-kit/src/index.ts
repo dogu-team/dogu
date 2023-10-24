@@ -4,7 +4,7 @@ export * from '@dogu-tech/console-action';
 export * from '@dogu-tech/device-client';
 export * from '@dogu-tech/env-tools';
 export * from '@dogu-tech/node';
-export { Device as DeviceType } from '@dogu-tech/types';
+export type { Device as DeviceType } from '@dogu-tech/types';
 export * from './built-in-actions/checkout-project';
 export * from './built-in-actions/download-app';
 export * from './config/config';

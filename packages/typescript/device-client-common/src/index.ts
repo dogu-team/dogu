@@ -1,10 +1,10 @@
 import 'reflect-metadata';
 
-export * from '@dogu-tech/device-interface';
 export * from './bases';
 export * from './device-client';
 export * from './device-host-client';
 export * from './device-http-client';
+export * from './interface';
 export * from './specs/http/device';
 export * from './specs/http/device-dtos';
 export * from './specs/http/device-host';

@@ -7,7 +7,6 @@
     "outDir": "build",
     "incremental": true,
     "removeComments": true,
-    "isolatedModules": true,
     "types": ["webdriverio/async"]
   },
   "exclude": ["node_modules", "test", "build", "**/*spec.ts"],
@@ -16,9 +15,7 @@
     {
       "path": "../../typescript-private/dost-children"
     },
-    {
-      "path": "../../typescript-private/env-tools"
-    },
+
     {
       "path": "../../typescript-private/nestjs-common"
     },

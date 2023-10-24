@@ -20,28 +20,51 @@ const EXPORT_DIR = '.export';
 const EXPORT_GO_DIR = `${EXPORT_DIR}/go`;
 const EXPORT_GO_PROTO_DIR = `${EXPORT_GO_DIR}/proto`;
 const EXPORT_GO_ENV_DIR = `${EXPORT_GO_DIR}/env`;
-const EXPORT_TS_OUTER_DIR = `${EXPORT_DIR}/typescript`;
-const EXPORT_TS_OUTER_ENV_DIR = `${EXPORT_TS_OUTER_DIR}/env`;
-const EXPORT_TS_OUTER_TSPROTO_DIR = `${EXPORT_TS_OUTER_DIR}/tsproto`;
-const EXPORT_TS_INNER_DIR = `${EXPORT_DIR}/typescript-private`;
-const EXPORT_TS_INNER_TSPROTO_DIR = `${EXPORT_TS_INNER_DIR}/tsproto`;
-const EXPORT_TS_INNER_ENV_DIR = `${EXPORT_TS_INNER_DIR}/env`;
+
+const OUTER_TS_EXPORT_CONTEXT: ExportTsContext = {
+  dir: `${EXPORT_DIR}/typescript`,
+  envDir: `${EXPORT_DIR}/typescript/env`,
+  tsProtoDir: `${EXPORT_DIR}/typescript/tsproto`,
+  buildTsConfigPath: `${CURRENT_DIR}/tsconfig.exported-ts.public.json`,
+  buildTsInfoPath: `${CURRENT_DIR}/tsconfig.exported-ts.public.tsbuildinfo`,
+  buildOutputDir: `${EXPORT_DIR}/typescript-build`,
+  destDir: `${CURRENT_DIR}/../../packages/typescript/types/src/protocol/generated`,
+};
+
+const INNER_TS_EXPORT_CONTEXT: ExportTsContext = {
+  dir: `${EXPORT_DIR}/typescript-private`,
+  envDir: `${EXPORT_DIR}/typescript-private/env`,
+  tsProtoDir: `${EXPORT_DIR}/typescript-private/tsproto`,
+  buildTsConfigPath: `${CURRENT_DIR}/tsconfig.exported-ts.private.json`,
+  buildTsInfoPath: `${CURRENT_DIR}/tsconfig.exported-ts.private.tsbuildinfo`,
+  buildOutputDir: `${EXPORT_DIR}/typescript-private-build`,
+  destDir: `${CURRENT_DIR}/../../packages/typescript-private/types/src/protocol/generated`,
+};
+
 const EXPORT_JAVA_DIR = `${EXPORT_DIR}/java`;
 const EXPORT_KOTLIN_DIR = `${EXPORT_DIR}/kotlin`;
 const EXPORT_SWIFT_DIR = `${EXPORT_DIR}/swift`;
 
 const DOCKER_WORK_DIR = '/app/host';
 
-const DEST_TS_OUTER_TYPES_DIR = `${CURRENT_DIR}/../../packages/typescript/types/src/protocol/generated`;
-const DEST_TS_INNER_TYPES_DIR = `${CURRENT_DIR}/../../packages/typescript-private/types/src/protocol/generated`;
 const DEST_GO_TYPES_DIR = `${CURRENT_DIR}/../../projects/go-device-controller/types/protocol/generated`;
 const DEST_DEVICE_AGENT_ANDROID_JAVA_DIR = `${CURRENT_DIR}/../../projects/android-device-agent/android/app/src/main/java/`;
 const DEST_DEVICE_AGENT_ANDROID_KOTLIN_DIR = `${CURRENT_DIR}/../../projects/android-device-agent/android/app/src/main/kotlin/`;
 const DEST_SWIFT_TYPES_DIR = `${CURRENT_DIR}/../../projects/ios-device-agent/IOSDeviceAgent/IOSDeviceAgentLib/DoguTypes/protocol/generated`;
 
+interface ExportTsContext {
+  dir: string;
+  envDir: string;
+  tsProtoDir: string;
+  buildTsConfigPath: string;
+  buildTsInfoPath: string;
+  buildOutputDir: string;
+  destDir: string;
+}
+
 async function prepare(): Promise<void> {
   await filesystem.deleteDirs([EXPORT_DIR]);
-  await filesystem.createDirs([EXPORT_GO_DIR, EXPORT_JAVA_DIR, EXPORT_KOTLIN_DIR, EXPORT_SWIFT_DIR, EXPORT_TS_OUTER_DIR, EXPORT_TS_INNER_DIR]);
+  await filesystem.createDirs([EXPORT_GO_DIR, EXPORT_JAVA_DIR, EXPORT_KOTLIN_DIR, EXPORT_SWIFT_DIR, OUTER_TS_EXPORT_CONTEXT.dir, INNER_TS_EXPORT_CONTEXT.dir]);
 }
 
 async function pullExporter(): Promise<void> {
@@ -118,11 +141,18 @@ async function createIndexTs(dir: string): Promise<void> {
   process.chdir(currentDir);
 }
 
+async function buildTs(context: ExportTsContext): Promise<void> {
+  await fsPromises.rm(context.buildTsInfoPath, { force: true });
+  await buildToolsProcess.createProcess(`yarn run -- tsc -p ${context.buildTsConfigPath}`);
+  await fsPromises.rename(context.dir, `${context.dir}-src`);
+  await fsPromises.rename(context.buildOutputDir, context.dir);
+}
+
 async function exportEnvToTs(envs: string[], dir: string): Promise<void> {
   await filesystem.createDirs([dir]);
   const parseOptions: ParseOptions = {};
   const tsCreationOptions: TsCreationOptions = {};
-  const promises = envs.map((env) => {
+  const promises = envs.map(async (env) => {
     return tsExporter.export(env, dir, parseOptions, tsCreationOptions);
   });
   await Promise.all(promises);
@@ -135,7 +165,7 @@ async function exportEnvToGo(envs: string[]): Promise<void> {
   const goCreationOptions: GoCreationOptions = {
     packageName: 'env',
   };
-  const promises = envs.map((env) => {
+  const promises = envs.map(async (env) => {
     return goExporter.export(env, EXPORT_GO_ENV_DIR, parseOptions, goCreationOptions);
   });
   await Promise.all(promises);
@@ -144,8 +174,8 @@ async function exportEnvToGo(envs: string[]): Promise<void> {
 async function copyToProjects(): Promise<void> {
   await filesystem.deleteDirs([
     DEST_GO_TYPES_DIR,
-    DEST_TS_OUTER_TYPES_DIR,
-    DEST_TS_INNER_TYPES_DIR,
+    OUTER_TS_EXPORT_CONTEXT.destDir,
+    INNER_TS_EXPORT_CONTEXT.destDir,
     `${DEST_DEVICE_AGENT_ANDROID_JAVA_DIR}/com/dogu/protocol/generated`,
     `${DEST_DEVICE_AGENT_ANDROID_KOTLIN_DIR}/com/dogu//protocol/generated`,
     DEST_SWIFT_TYPES_DIR,
@@ -154,10 +184,10 @@ async function copyToProjects(): Promise<void> {
     fsPromises.cp(EXPORT_GO_DIR, DEST_GO_TYPES_DIR, {
       recursive: true,
     }),
-    fsPromises.cp(EXPORT_TS_OUTER_DIR, DEST_TS_OUTER_TYPES_DIR, {
+    fsPromises.cp(OUTER_TS_EXPORT_CONTEXT.dir, OUTER_TS_EXPORT_CONTEXT.destDir, {
       recursive: true,
     }),
-    fsPromises.cp(EXPORT_TS_INNER_DIR, DEST_TS_INNER_TYPES_DIR, {
+    fsPromises.cp(INNER_TS_EXPORT_CONTEXT.dir, INNER_TS_EXPORT_CONTEXT.destDir, {
       recursive: true,
     }),
     fsPromises.cp(EXPORT_JAVA_DIR, DEST_DEVICE_AGENT_ANDROID_JAVA_DIR, {
@@ -191,16 +221,23 @@ async function run(): Promise<void> {
     // all protos
     time.checkTime('exportGoJavaKotlinSwift', exportGoJavaKotlinSwift(allProtos)),
     time.checkTime('exportEnvToGo', exportEnvToGo(envs)),
-    time.checkTime('exportTypeScriptPrivate', exportTypeScript(allProtos, EXPORT_TS_INNER_TSPROTO_DIR)),
-    time.checkTime('exportEnvToTsPrivate', exportEnvToTs(envs, EXPORT_TS_INNER_ENV_DIR)),
+
+    (async (): Promise<void> => {
+      await time.checkTime('exportTypeScriptPrivate', exportTypeScript(allProtos, INNER_TS_EXPORT_CONTEXT.tsProtoDir));
+      await time.checkTime('exportEnvToTsPrivate', exportEnvToTs(envs, INNER_TS_EXPORT_CONTEXT.envDir));
+      await time.checkTime('createIndexTsPrivate', createIndexTs(INNER_TS_EXPORT_CONTEXT.dir));
+      await time.checkTime('buildTsPrivate', buildTs(INNER_TS_EXPORT_CONTEXT));
+    })(),
 
     // outer protos
-    time.checkTime('exportTypeScriptPublic', exportTypeScript(outerProtos, EXPORT_TS_OUTER_TSPROTO_DIR)),
-    time.checkTime('exportEnvToTsPublic', exportEnvToTs(envs, EXPORT_TS_OUTER_ENV_DIR)),
+    (async (): Promise<void> => {
+      await time.checkTime('exportTypeScriptPublic', exportTypeScript(outerProtos, OUTER_TS_EXPORT_CONTEXT.tsProtoDir));
+      await time.checkTime('exportEnvToTsPublic', exportEnvToTs(envs, OUTER_TS_EXPORT_CONTEXT.envDir));
+      await time.checkTime('createIndexTsPublic', createIndexTs(OUTER_TS_EXPORT_CONTEXT.dir));
+      await time.checkTime('buildTsPublic', buildTs(OUTER_TS_EXPORT_CONTEXT));
+    })(),
   ]);
 
-  await time.checkTime('createIndexTsPrivate', createIndexTs(EXPORT_TS_INNER_DIR));
-  await time.checkTime('createIndexTsPublic', createIndexTs(EXPORT_TS_OUTER_DIR));
   await time.checkTime('copyToProjects', copyToProjects());
 }
 

@@ -1,0 +1,11 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "rootDir": ".export/typescript-private",
+    "outDir": ".export/typescript-private-build",
+    "declaration": true,
+    "declarationMap": false,
+    "sourceMap": false
+  },
+  "include": [".export/typescript-private/**/*.ts"]
+}

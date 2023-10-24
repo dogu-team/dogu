@@ -1,4 +1,4 @@
-import { DoguRunType, NodeEnvType } from '@dogu-private/env-tools';
+import { DoguRunType, NodeEnvType } from '@dogu-private/types';
 import { IsFilledString, TransformBooleanString } from '@dogu-tech/common';
 import { HostPaths } from '@dogu-tech/node';
 import { Type } from 'class-transformer';

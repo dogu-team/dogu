@@ -19,7 +19,6 @@
   "types": "./build/src/index.d.ts",
   "dependencies": {
     "@dogu-tech/common": "workspace:^",
-    "@dogu-tech/device-interface": "workspace:^",
     "@dogu-tech/types": "workspace:^",
     "axios": "1.3.5",
     "class-transformer": "0.5.1",

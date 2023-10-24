@@ -4268,7 +4268,6 @@ __metadata:
   dependencies:
     "@dogu-dev-private/build-tools": "workspace:^"
     "@dogu-private/dost-children": "workspace:^"
-    "@dogu-private/env-tools": "workspace:^"
     "@dogu-private/nestjs-common": "workspace:^"
     "@dogu-private/types": "workspace:^"
     "@dogu-tech/common": "workspace:^"
@@ -4342,8 +4341,8 @@ __metadata:
   dependencies:
     "@dogu-private/device-server": "workspace:^"
     "@dogu-private/dost-children": "workspace:^"
-    "@dogu-private/env-tools": "workspace:^"
     "@dogu-private/host-agent": "workspace:^"
+    "@dogu-private/types": "workspace:^"
     "@dogu-tech/common": "workspace:^"
     "@dogu-tech/node": "workspace:^"
     "@dogu-tech/types": "workspace:^"
@@ -4373,30 +4372,12 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@dogu-private/dost-children@workspace:mirror/packages/@dogu-private-dost-children"
   dependencies:
-    "@dogu-private/env-tools": "workspace:^"
     "@dogu-private/types": "workspace:^"
     "@dogu-tech/common": "workspace:^"
     "@dogu-tech/node": "workspace:^"
     "@types/node": 18.15.11
     class-transformer: 0.5.1
     class-validator: 0.14.0
-    nodemon: 2.0.22
-    reflect-metadata: 0.1.13
-    shx: 0.3.4
-    ts-node: 10.9.1
-    typescript: 4.7.4
-  languageName: unknown
-  linkType: soft
-
-"@dogu-private/env-tools@workspace:^, @dogu-private/env-tools@workspace:mirror/packages/@dogu-private-env-tools":
-  version: 0.0.0-use.local
-  resolution: "@dogu-private/env-tools@workspace:mirror/packages/@dogu-private-env-tools"
-  dependencies:
-    "@dogu-private/types": "workspace:^"
-    "@dogu-tech/common": "workspace:^"
-    "@dogu-tech/env-tools": "workspace:^"
-    "@dogu-tech/node": "workspace:^"
-    "@types/node": 18.15.11
     nodemon: 2.0.22
     reflect-metadata: 0.1.13
     shx: 0.3.4
@@ -4412,7 +4393,6 @@ __metadata:
     "@dogu-dev-private/build-tools": "workspace:^"
     "@dogu-private/console-host-agent": "workspace:^"
     "@dogu-private/dost-children": "workspace:^"
-    "@dogu-private/env-tools": "workspace:^"
     "@dogu-private/types": "workspace:^"
     "@dogu-tech/action-kit": "workspace:^"
     "@dogu-tech/common": "workspace:^"
@@ -13357,7 +13337,6 @@ __metadata:
     "@dogu-private/device-server": "workspace:^"
     "@dogu-private/dogu-agent-core": "workspace:^"
     "@dogu-private/dost-children": "workspace:^"
-    "@dogu-private/env-tools": "workspace:^"
     "@dogu-private/host-agent": "workspace:^"
     "@dogu-private/types": "workspace:^"
     "@dogu-tech/common": "workspace:^"

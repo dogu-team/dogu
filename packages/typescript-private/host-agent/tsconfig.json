@@ -6,8 +6,7 @@
     "baseUrl": ".",
     "outDir": "build",
     "incremental": true,
-    "removeComments": true,
-    "isolatedModules": true
+    "removeComments": true
   },
   "exclude": ["node_modules", "test", "build", "**/*spec.ts"],
   "include": ["src", "scripts"],
@@ -36,9 +35,7 @@
     {
       "path": "../../typescript-private/dost-children"
     },
-    {
-      "path": "../../typescript-private/env-tools"
-    },
+
     {
       "path": "../../typescript-dev-private/build-tools"
     }

@@ -69,7 +69,6 @@
     "zustand": "4.3.6"
   },
   "devDependencies": {
-    "@dogu-private/env-tools": "workspace:^",
     "@svgr/webpack": "8.0.1",
     "@swc/core": "1.2.220",
     "@types/cookie": "0.5.1",

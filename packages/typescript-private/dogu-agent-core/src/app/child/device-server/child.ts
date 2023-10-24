@@ -1,5 +1,5 @@
 import { ChildCode } from '@dogu-private/dost-children';
-import { isValidDoguRunType } from '@dogu-private/env-tools';
+import { isValidDoguRunType } from '@dogu-private/types';
 import { delay, errorify, Printable, stringify } from '@dogu-tech/common';
 import { HostPaths, isFreePort, killProcessOnPort } from '@dogu-tech/node';
 import { Code } from '@dogu-tech/types';

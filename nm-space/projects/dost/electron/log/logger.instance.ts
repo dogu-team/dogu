@@ -1,4 +1,4 @@
-import { DoguRunType } from '@dogu-private/env-tools';
+import { DoguRunType } from '@dogu-private/types';
 import { LogLevel } from '@dogu-tech/common';
 import { LoggerFactory } from '@dogu-tech/node';
 import { AppConfigService } from '../app-config/app-config-service';

@@ -32,7 +32,6 @@
     "@dogu-private/console": "workspace:^",
     "@dogu-private/console-host-agent": "workspace:^",
     "@dogu-private/console-open-api": "workspace:^",
-    "@dogu-private/env-tools": "workspace:^",
     "@dogu-private/types": "workspace:^",
     "@dogu-tech/common": "workspace:^",
     "@dogu-tech/console-action": "workspace:^",

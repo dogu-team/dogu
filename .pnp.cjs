@@ -84,10 +84,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:packages/typescript-private/dost-children"\
       },\
       {\
-        "name": "@dogu-private/env-tools",\
-        "reference": "workspace:packages/typescript-private/env-tools"\
-      },\
-      {\
         "name": "@dogu-private/host-agent",\
         "reference": "workspace:packages/typescript-private/host-agent"\
       },\
@@ -142,10 +138,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       {\
         "name": "@dogu-tech/device-client-common",\
         "reference": "workspace:packages/typescript/device-client-common"\
-      },\
-      {\
-        "name": "@dogu-tech/device-interface",\
-        "reference": "workspace:packages/typescript/device-interface"\
       },\
       {\
         "name": "@dogu-tech/env-tools",\
@@ -240,7 +232,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@dogu-private/device-server", ["workspace:packages/typescript-private/device-server"]],\
       ["@dogu-private/dogu-agent-core", ["workspace:packages/typescript-private/dogu-agent-core"]],\
       ["@dogu-private/dost-children", ["workspace:packages/typescript-private/dost-children"]],\
-      ["@dogu-private/env-tools", ["workspace:packages/typescript-private/env-tools"]],\
       ["@dogu-private/host-agent", ["workspace:packages/typescript-private/host-agent"]],\
       ["@dogu-private/nestjs-common", ["workspace:packages/typescript-private/nestjs-common"]],\
       ["@dogu-private/types", ["workspace:packages/typescript-private/types"]],\
@@ -255,7 +246,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@dogu-tech/dest", ["workspace:packages/typescript/dest"]],\
       ["@dogu-tech/device-client", ["workspace:packages/typescript/device-client"]],\
       ["@dogu-tech/device-client-common", ["workspace:packages/typescript/device-client-common"]],\
-      ["@dogu-tech/device-interface", ["workspace:packages/typescript/device-interface"]],\
       ["@dogu-tech/env-tools", ["workspace:packages/typescript/env-tools"]],\
       ["@dogu-tech/jest-environment", ["workspace:packages/typescript/jest-environment"]],\
       ["@dogu-tech/node", ["workspace:packages/typescript/node"]],\
@@ -7728,7 +7718,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@dogu-private/device-server", "workspace:packages/typescript-private/device-server"],\
             ["@dogu-dev-private/build-tools", "workspace:packages/typescript-dev-private/build-tools"],\
             ["@dogu-private/dost-children", "workspace:packages/typescript-private/dost-children"],\
-            ["@dogu-private/env-tools", "workspace:packages/typescript-private/env-tools"],\
             ["@dogu-private/nestjs-common", "workspace:packages/typescript-private/nestjs-common"],\
             ["@dogu-private/types", "workspace:packages/typescript-private/types"],\
             ["@dogu-tech/common", "workspace:packages/typescript/common"],\
@@ -7804,8 +7793,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@dogu-private/dogu-agent-core", "workspace:packages/typescript-private/dogu-agent-core"],\
             ["@dogu-private/device-server", "workspace:packages/typescript-private/device-server"],\
             ["@dogu-private/dost-children", "workspace:packages/typescript-private/dost-children"],\
-            ["@dogu-private/env-tools", "workspace:packages/typescript-private/env-tools"],\
             ["@dogu-private/host-agent", "workspace:packages/typescript-private/host-agent"],\
+            ["@dogu-private/types", "workspace:packages/typescript-private/types"],\
             ["@dogu-tech/common", "workspace:packages/typescript/common"],\
             ["@dogu-tech/node", "workspace:packages/typescript/node"],\
             ["@dogu-tech/types", "workspace:packages/typescript/types"],\
@@ -7837,32 +7826,12 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./packages/typescript-private/dost-children/",\
           "packageDependencies": [\
             ["@dogu-private/dost-children", "workspace:packages/typescript-private/dost-children"],\
-            ["@dogu-private/env-tools", "workspace:packages/typescript-private/env-tools"],\
             ["@dogu-private/types", "workspace:packages/typescript-private/types"],\
             ["@dogu-tech/common", "workspace:packages/typescript/common"],\
             ["@dogu-tech/node", "workspace:packages/typescript/node"],\
             ["@types/node", "npm:18.15.11"],\
             ["class-transformer", "npm:0.5.1"],\
             ["class-validator", "npm:0.14.0"],\
-            ["nodemon", "npm:2.0.22"],\
-            ["reflect-metadata", "npm:0.1.13"],\
-            ["shx", "npm:0.3.4"],\
-            ["ts-node", "virtual:f2635a2fcff48218c189c72f8ec68a58c0c9a493231eeb25fc0d4d97932a237dd3a38bfaa7c8a6d4be36984c08b243589188d7525f771fc6d7018c6cf79aeba1#npm:10.9.1"],\
-            ["typescript", "patch:typescript@npm%3A4.7.4#~builtin<compat/typescript>::version=4.7.4&hash=65a307"]\
-          ],\
-          "linkType": "SOFT"\
-        }]\
-      ]],\
-      ["@dogu-private/env-tools", [\
-        ["workspace:packages/typescript-private/env-tools", {\
-          "packageLocation": "./packages/typescript-private/env-tools/",\
-          "packageDependencies": [\
-            ["@dogu-private/env-tools", "workspace:packages/typescript-private/env-tools"],\
-            ["@dogu-private/types", "workspace:packages/typescript-private/types"],\
-            ["@dogu-tech/common", "workspace:packages/typescript/common"],\
-            ["@dogu-tech/env-tools", "workspace:packages/typescript/env-tools"],\
-            ["@dogu-tech/node", "workspace:packages/typescript/node"],\
-            ["@types/node", "npm:18.15.11"],\
             ["nodemon", "npm:2.0.22"],\
             ["reflect-metadata", "npm:0.1.13"],\
             ["shx", "npm:0.3.4"],\
@@ -7880,7 +7849,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@dogu-dev-private/build-tools", "workspace:packages/typescript-dev-private/build-tools"],\
             ["@dogu-private/console-host-agent", "workspace:packages/typescript-private/console-host-agent"],\
             ["@dogu-private/dost-children", "workspace:packages/typescript-private/dost-children"],\
-            ["@dogu-private/env-tools", "workspace:packages/typescript-private/env-tools"],\
             ["@dogu-private/types", "workspace:packages/typescript-private/types"],\
             ["@dogu-tech/action-kit", "workspace:packages/typescript/action-kit"],\
             ["@dogu-tech/common", "workspace:packages/typescript/common"],\
@@ -8251,7 +8219,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@dogu-tech/device-client-common", "workspace:packages/typescript/device-client-common"],\
             ["@dogu-dev-private/publish-package", "workspace:packages/typescript-dev-private/publish-package"],\
             ["@dogu-tech/common", "workspace:packages/typescript/common"],\
-            ["@dogu-tech/device-interface", "workspace:packages/typescript/device-interface"],\
             ["@dogu-tech/types", "workspace:packages/typescript/types"],\
             ["@types/lodash", "npm:4.14.186"],\
             ["@types/node", "npm:18.15.11"],\
@@ -8264,24 +8231,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["nodemon", "npm:2.0.22"],\
             ["reflect-metadata", "npm:0.1.13"],\
             ["shelljs", "npm:0.8.5"],\
-            ["shx", "npm:0.3.4"],\
-            ["ts-node", "virtual:f2635a2fcff48218c189c72f8ec68a58c0c9a493231eeb25fc0d4d97932a237dd3a38bfaa7c8a6d4be36984c08b243589188d7525f771fc6d7018c6cf79aeba1#npm:10.9.1"],\
-            ["typescript", "patch:typescript@npm%3A4.7.4#~builtin<compat/typescript>::version=4.7.4&hash=65a307"]\
-          ],\
-          "linkType": "SOFT"\
-        }]\
-      ]],\
-      ["@dogu-tech/device-interface", [\
-        ["workspace:packages/typescript/device-interface", {\
-          "packageLocation": "./packages/typescript/device-interface/",\
-          "packageDependencies": [\
-            ["@dogu-tech/device-interface", "workspace:packages/typescript/device-interface"],\
-            ["@dogu-dev-private/publish-package", "workspace:packages/typescript-dev-private/publish-package"],\
-            ["@dogu-tech/common", "workspace:packages/typescript/common"],\
-            ["@dogu-tech/types", "workspace:packages/typescript/types"],\
-            ["@types/node", "npm:18.15.11"],\
-            ["cross-env", "npm:7.0.3"],\
-            ["nodemon", "npm:2.0.22"],\
             ["shx", "npm:0.3.4"],\
             ["ts-node", "virtual:f2635a2fcff48218c189c72f8ec68a58c0c9a493231eeb25fc0d4d97932a237dd3a38bfaa7c8a6d4be36984c08b243589188d7525f771fc6d7018c6cf79aeba1#npm:10.9.1"],\
             ["typescript", "patch:typescript@npm%3A4.7.4#~builtin<compat/typescript>::version=4.7.4&hash=65a307"]\
@@ -19571,7 +19520,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["billing-server", "workspace:projects/billing-server"],\
             ["@dogu-dev-private/build-tools", "workspace:packages/typescript-dev-private/build-tools"],\
             ["@dogu-private/console", "workspace:packages/typescript-private/console"],\
-            ["@dogu-private/env-tools", "workspace:packages/typescript-private/env-tools"],\
             ["@dogu-private/types", "workspace:packages/typescript-private/types"],\
             ["@dogu-tech/common", "workspace:packages/typescript/common"],\
             ["@dogu-tech/env-tools", "workspace:packages/typescript/env-tools"],\
@@ -21304,7 +21252,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@ant-design/icons", "virtual:28b444ca65aca9f6532815a467e94245056189ac01976539aa2f4fb241137b45c9697a2074b54444c9d1c779b8e60e1a1140c79b811d2daaa176852048e428eb#npm:5.0.1"],\
             ["@dogu-private/console", "workspace:packages/typescript-private/console"],\
             ["@dogu-private/console-ui", "workspace:packages/typescript-private/console-ui"],\
-            ["@dogu-private/env-tools", "workspace:packages/typescript-private/env-tools"],\
             ["@dogu-private/types", "workspace:packages/typescript-private/types"],\
             ["@dogu-private/webrtc", "workspace:packages/typescript-private/webrtc"],\
             ["@dogu-tech/action-common", "workspace:packages/typescript/action-common"],\
@@ -21398,7 +21345,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@dogu-private/console", "workspace:packages/typescript-private/console"],\
             ["@dogu-private/console-host-agent", "workspace:packages/typescript-private/console-host-agent"],\
             ["@dogu-private/console-open-api", "workspace:packages/typescript-private/console-open-api"],\
-            ["@dogu-private/env-tools", "workspace:packages/typescript-private/env-tools"],\
             ["@dogu-private/types", "workspace:packages/typescript-private/types"],\
             ["@dogu-tech/common", "workspace:packages/typescript/common"],\
             ["@dogu-tech/console-action", "workspace:packages/typescript/console-action"],\
@@ -23229,10 +23175,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./e2e/",\
           "packageDependencies": [\
             ["e2e", "workspace:e2e"],\
-            ["@dogu-private/env-tools", "workspace:packages/typescript-private/env-tools"],\
             ["@dogu-private/types", "workspace:packages/typescript-private/types"],\
             ["@dogu-tech/common", "workspace:packages/typescript/common"],\
             ["@dogu-tech/dest", "workspace:packages/typescript/dest"],\
+            ["@dogu-tech/env-tools", "workspace:packages/typescript/env-tools"],\
             ["@dogu-tech/node", "workspace:packages/typescript/node"],\
             ["@jest/globals", "npm:29.1.2"],\
             ["@playwright/test", "npm:1.37.0"],\
@@ -26575,7 +26521,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["go-device-controller", "workspace:projects/go-device-controller"],\
             ["@dogu-dev-private/base-build-tools", "workspace:packages/typescript-dev-private/base-build-tools"],\
             ["@dogu-dev-private/build-tools", "workspace:packages/typescript-dev-private/build-tools"],\
-            ["@dogu-private/env-tools", "workspace:packages/typescript-private/env-tools"],\
             ["@dogu-private/types", "workspace:packages/typescript-private/types"],\
             ["@dogu-tech/node", "workspace:packages/typescript/node"],\
             ["@types/node", "npm:18.15.11"],\
@@ -36960,7 +36905,9 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["protocol-exporter", "workspace:prebuilds/protocol-exporter"],\
             ["@dogu-dev-private/base-build-tools", "workspace:packages/typescript-dev-private/base-build-tools"],\
+            ["@grpc/grpc-js", "npm:1.7.3"],\
             ["@types/eslint", "npm:8.37.0"],\
+            ["@types/long", "npm:4.0.1"],\
             ["@types/node", "npm:18.15.11"],\
             ["@types/prettier", "npm:2.7.2"],\
             ["@types/shelljs", "npm:0.8.11"],\
@@ -36968,6 +36915,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@typescript-eslint/parser", "virtual:f2635a2fcff48218c189c72f8ec68a58c0c9a493231eeb25fc0d4d97932a237dd3a38bfaa7c8a6d4be36984c08b243589188d7525f771fc6d7018c6cf79aeba1#npm:5.36.2"],\
             ["dotenv", "npm:16.0.3"],\
             ["eslint", "npm:8.23.0"],\
+            ["long", "npm:4.0.0"],\
             ["nodemon", "npm:2.0.22"],\
             ["prettier", "npm:2.8.6"],\
             ["protobufjs", "npm:7.1.2"],\

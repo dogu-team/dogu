@@ -3,7 +3,6 @@
   "watch": [
     "./src",
     "../../typescript-private/dost-children/src",
-    "../../typescript-private/env-tools/src",
     "../../typescript-private/nestjs-common/src",
     "../../typescript/common/src",
     "../../typescript/device-client-common/src",

@@ -16,7 +16,7 @@
   },
   "main": "./build/src/app/index.js",
   "scripts": {
-    "build": "yarn ts-node scripts/build.ts",
+    "build": "ts-node scripts/build.ts",
     "clean": "shx rm -rf build",
     "dev": "nodemon",
     "rebuild": "yarn run clean && yarn run build",
@@ -27,8 +27,8 @@
   "dependencies": {
     "@dogu-private/device-server": "workspace:^",
     "@dogu-private/dost-children": "workspace:^",
-    "@dogu-private/env-tools": "workspace:^",
     "@dogu-private/host-agent": "workspace:^",
+    "@dogu-private/types": "workspace:^",
     "@dogu-tech/common": "workspace:^",
     "@dogu-tech/node": "workspace:^",
     "@dogu-tech/types": "workspace:^",
