@@ -35,6 +35,7 @@ import { ForbiddenException, forwardRef, HttpException, HttpStatus, Inject, Inje
 import { InjectDataSource } from '@nestjs/typeorm';
 import { BaseEntity, Brackets, DataSource, EntityManager, In, IsNull, Not, SelectQueryBuilder } from 'typeorm';
 import { v4 } from 'uuid';
+
 import { DeviceRunner } from '../../../db/entity/device-runner.entity';
 import { Device } from '../../../db/entity/device.entity';
 import { DeviceBrowserInstallation, DeviceTag, Organization, Project } from '../../../db/entity/index';
@@ -380,11 +381,17 @@ export class DeviceStatusService {
       }
     }
 
-    // if (device.isGlobal === 1 || (device.projectAndDevices && device.projectAndDevices.length > 0)) {
-    //   if (device.maxParallelJobs < maxParallelJobs) {
-    //     await LicenseValidator.validateBrowserEnableCount(manager, this.licenseService, organizationId, device, maxParallelJobs);
-    //   }
-    // }
+    if (device.isGlobal === 1 || (device.projectAndDevices && device.projectAndDevices.length > 0)) {
+      if (device.maxParallelJobs < maxParallelJobs) {
+        const license = await this.selfHostedLicenseService.getLicenseInfo(organizationId);
+        const enabledHostDevices = await DeviceStatusService.findEnabledHostDevices(this.dataSource.manager, organizationId);
+        const enabledHostRunnerCount = enabledHostDevices.map((device) => device.maxParallelJobs).reduce((a, b) => a + b, 0);
+
+        if (enabledHostRunnerCount + maxParallelJobs - device.maxParallelJobs > license.maximumEnabledBrowserCount) {
+          throw new HttpException(`License browser runner count is not enough. license browser runner count: ${license.maximumEnabledBrowserCount}`, HttpStatus.PAYMENT_REQUIRED);
+        }
+      }
+    }
 
     const newData = Object.assign(device, {
       maxParallelJobs,
