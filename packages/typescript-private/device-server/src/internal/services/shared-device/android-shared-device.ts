@@ -5,6 +5,7 @@ import child_process from 'child_process';
 import fs from 'fs';
 import { AppiumContextImpl } from '../../../appium/appium.context';
 import { env } from '../../../env';
+import { SerialPrintable } from '../../../logger/serial-logger.instance';
 import { Adb, AndroidPropInfo, AppiumAdb, isHarnessEnabled } from '../../externals/index';
 import { checkTime } from '../../util/check-time';
 import { AndroidDeviceAgentService } from '../device-agent/android-device-agent-service';
@@ -91,7 +92,7 @@ export class AndroidSharedDeviceService implements Zombieable {
     private appiumContext: AppiumContextImpl,
     private reset: AndroidResetService,
     private deviceAgent: AndroidDeviceAgentService,
-    public printable: FilledPrintable,
+    public printable: SerialPrintable,
   ) {
     this.zombieWaiter = ZombieServiceInstance.addComponent(this);
   }
@@ -224,15 +225,10 @@ export class AndroidSharedDeviceService implements Zombieable {
           });
         }
       };
-      this.logcatProc = Adb.logcat(
-        serial,
-        ['-e', StartActivityLogKeyword, '-T', `${openTime}`],
-        {
-          info: (msg) => killPackageIfContains(stringify(msg)),
-          error: (msg) => killPackageIfContains(stringify(msg)),
-        },
-        logger,
-      );
+      this.logcatProc = Adb.logcat(serial, ['-e', StartActivityLogKeyword, '-T', `${openTime}`], {
+        info: (msg) => killPackageIfContains(stringify(msg)),
+        error: (msg) => killPackageIfContains(stringify(msg)),
+      });
       this.logcatProc.on('close', (code, signal) => {
         logger.info(`logcat process closed.`, { code, signal });
         this.logcatProc = undefined;

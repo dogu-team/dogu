@@ -1,9 +1,10 @@
 import { DeviceSystemInfo, Platform, PrivateProtocol, Serial } from '@dogu-private/types';
-import { closeWebSocketWithTruncateReason, delay, FilledPrintable, Milisecond, Printable, stringifyError } from '@dogu-tech/common';
+import { closeWebSocketWithTruncateReason, delay, Milisecond, Printable, stringifyError } from '@dogu-tech/common';
 import { isFreePort, killChildProcess } from '@dogu-tech/node';
 import child_process from 'child_process';
 import { EventEmitter } from 'stream';
 import WebSocket from 'ws';
+import { SerialPrintable } from '../../../logger/serial-logger.instance';
 import { pathMap } from '../../../path-map';
 import { Adb, AdbUtil } from '../../externals/index';
 import { StreamingService } from '../streaming/streaming-service';
@@ -40,7 +41,7 @@ export class AndroidDeviceAgentService implements DeviceAgentService, Zombieable
     private readonly port: number,
     private readonly devicePort: number,
     private readonly streamingService: StreamingService,
-    private readonly logger: FilledPrintable,
+    private readonly logger: SerialPrintable,
   ) {
     this.zombieWaiter = ZombieServiceInstance.addComponent(this);
   }
@@ -181,25 +182,23 @@ export class AndroidDeviceAgentService implements DeviceAgentService, Zombieable
     return this.logger;
   }
   async revive(): Promise<void> {
-    const serial = this.serial;
-    const hostPort = this.port;
-    const devicePort = this.devicePort;
-    const pid = await Adb.getPidOf(serial, 'app_process');
+    const { serial, port: hostPort, devicePort, logger } = this;
+    const pid = await Adb.getPidOf(serial, 'app_process', logger);
     if (pid.length !== 0) {
       await Adb.kill(serial, pid);
     }
 
     this.logger.info(`AndroidDeviceAgentService.revive start.  id: ${serial}`);
 
-    await Adb.unforward(serial, hostPort, { ignore: true });
-    await Adb.forward(serial, hostPort, devicePort);
+    await Adb.unforward(serial, hostPort, { ignore: true }, logger);
+    await Adb.forward(serial, hostPort, devicePort, logger);
 
-    const proc = await Adb.runAppProcess(serial, pathMap().common.androidDeviceAgent, '/data/local/tmp/dogu-deviceagent', 'com.dogu.deviceagent.Entry', this.printable);
+    const proc = await Adb.runAppProcess(serial, pathMap().common.androidDeviceAgent, '/data/local/tmp/dogu-deviceagent', 'com.dogu.deviceagent.Entry', logger);
     proc.on('exit', (code: number, signal: string) => {
       this.printable.error(`AndroidDeviceAgentService.revive exit. code: ${code}, signal: ${signal}`);
       ZombieServiceInstance.notifyDie(this);
     });
-    await AdbUtil.waitPortOpenInternal(this.serial, this.devicePort);
+    await AdbUtil.waitPortOpenInternal(this.serial, this.devicePort, logger);
     await this.connect();
     this.healthFailCount = 0;
   }

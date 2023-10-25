@@ -1,7 +1,8 @@
 import { DeviceSystemInfo, Serial } from '@dogu-private/types';
-import { delay, FilledPrintable, filterAsync, loop, Printable, stringify } from '@dogu-tech/common';
+import { delay, filterAsync, loop, stringify } from '@dogu-tech/common';
 import semver from 'semver';
 import { AppiumContextImpl } from '../../../appium/appium.context';
+import { SerialPrintable } from '../../../logger/serial-logger.instance';
 import { Adb, AppiumAdb } from '../../externals/index';
 import { checkTime } from '../../util/check-time';
 
@@ -14,7 +15,7 @@ const DirtyPath = '/data/local/tmp/dirty';
 
 export class AndroidResetService {
   private static map: Map<Serial, AndroidResetInfo> = new Map(); // Hold for process lifetime
-  constructor(private serial: Serial, private logger: FilledPrintable) {}
+  constructor(private serial: Serial, private logger: SerialPrintable) {}
 
   async makeDirty(): Promise<void> {
     await Adb.shell(this.serial, `echo dirty > ${DirtyPath}`);
@@ -80,7 +81,7 @@ export class AndroidResetService {
     await Adb.shell(this.serial, `rm -f ${DirtyPath}`);
   }
 
-  private async resetIMEList(logger: Printable): Promise<void> {
+  private async resetIMEList(logger: SerialPrintable): Promise<void> {
     const { serial } = this;
     const imes = await Adb.getIMEList(serial);
     for (const ime of imes) {

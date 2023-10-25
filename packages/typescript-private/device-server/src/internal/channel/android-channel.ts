@@ -17,7 +17,7 @@ import {
   Serial,
   StreamingAnswer,
 } from '@dogu-private/types';
-import { Closable, errorify, FilledPrintable, MixedLogger, Printable, stringify } from '@dogu-tech/common';
+import { Closable, errorify, MixedLogger, Printable, stringify } from '@dogu-tech/common';
 import { AppiumCapabilities, BrowserInstallation, StreamingOfferDto } from '@dogu-tech/device-client-common';
 import { killChildProcess, killProcessOnPort } from '@dogu-tech/node';
 import { ChildProcess } from 'child_process';
@@ -31,7 +31,8 @@ import { AppiumContext, AppiumContextImpl, AppiumContextKey, AppiumContextProxy 
 import { AppiumDeviceWebDriverHandler } from '../../device-webdriver/appium.device-webdriver.handler';
 import { DeviceWebDriverHandler } from '../../device-webdriver/device-webdriver.common';
 import { GamiumContext } from '../../gamium/gamium.context';
-import { createAndroidLogger, deviceInfoLogger } from '../../logger/logger.instance';
+import { deviceInfoLogger } from '../../logger/logger.instance';
+import { createAndroidLogger, SerialLogger, SerialPrintable } from '../../logger/serial-logger.instance';
 import { Adb, AppiumAdb } from '../externals';
 import { getManifestFromApp } from '../externals/apk/apk-util';
 import { DeviceChannel, DeviceChannelOpenParam, DeviceHealthStatus, DeviceServerService, LogHandler } from '../public/device-channel';
@@ -90,7 +91,7 @@ export class AndroidChannel implements DeviceChannel {
     private readonly _sharedDevice: AndroidSharedDeviceService,
     private readonly appiumAdb: AppiumAdb,
     private readonly _reset: AndroidResetService,
-    private readonly logger: FilledPrintable,
+    private readonly logger: SerialPrintable,
     readonly browserInstallations: BrowserInstallation[],
   ) {
     this.logger.info(`AndroidChannel created: ${this.serial}`);
@@ -103,7 +104,7 @@ export class AndroidChannel implements DeviceChannel {
 
     const { serial } = param;
     const logger = createAndroidLogger(param.serial);
-    await Adb.unforwardall(serial).catch((error) => {
+    await Adb.unforwardall(serial, logger).catch((error) => {
       deviceServerService.doguLogger.error('Adb.unforwardall failed', { error: errorify(error) });
     });
     const platform = Platform.PLATFORM_ANDROID;
@@ -292,17 +293,17 @@ export class AndroidChannel implements DeviceChannel {
 
   async forward(hostPort: number, devicePort: number, handler: LogHandler): Promise<void> {
     const { serial } = this;
-    const logger = new MixedLogger([this.logger, handler]);
+    const logger = new SerialLogger(serial, new MixedLogger([this.logger, handler]));
     await killProcessOnPort(hostPort, logger);
     await Adb.forward(serial, hostPort, devicePort, logger);
   }
 
   async unforward(hostPort: number): Promise<void> {
-    await Adb.unforward(this.serial, hostPort);
+    await Adb.unforward(this.serial, hostPort, { ignore: false }, this.logger);
   }
 
   async isPortListening(port: number): Promise<boolean> {
-    return Adb.isPortOpen(this.serial, port);
+    return Adb.isPortOpen(this.serial, port, this.logger);
   }
 
   getWindows(): DeviceWindowInfo[] {
@@ -318,13 +319,13 @@ export class AndroidChannel implements DeviceChannel {
     if (stderr) {
       logger.verbose?.(`adb logcat clear stderr: ${stderr}`);
     }
-    const child = Adb.logcat(this.serial, args, handler, logger);
+    const child = Adb.logcat(this.serial, args, handler);
     return new AndroidLogClosable(child, logger);
   }
 
   async uninstallApp(appPath: string, handler: LogHandler): Promise<void> {
     const { serial } = this;
-    const logger = new MixedLogger([this.logger, handler]);
+    const logger = new SerialLogger(serial, new MixedLogger([this.logger, handler]));
     const stat = await fs.promises.stat(appPath).catch(() => null);
     if (!stat) {
       throw new Error(`app not found: ${appPath}`);
@@ -341,13 +342,13 @@ export class AndroidChannel implements DeviceChannel {
    */
   async installApp(appPath: string, handler: LogHandler): Promise<void> {
     const { serial } = this;
-    const logger = new MixedLogger([this.logger, handler]);
+    const logger = new SerialLogger(serial, new MixedLogger([this.logger, handler]));
     await Adb.installAppForce(serial, appPath, logger);
   }
 
   async runApp(appPath: string, handler: LogHandler): Promise<void> {
     const { serial } = this;
-    const logger = new MixedLogger([this.logger, handler]);
+    const logger = new SerialLogger(serial, new MixedLogger([this.logger, handler]));
     await Adb.turnOnScreen(serial).catch((error) => {
       this.logger.error('adb.runApp.turnOnScreen', { error: errorify(error) });
     });

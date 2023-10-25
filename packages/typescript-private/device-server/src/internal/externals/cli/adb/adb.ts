@@ -8,6 +8,7 @@ import util from 'util';
 import { registerBootstrapHandler } from '../../../../bootstrap/bootstrap.service';
 import { env } from '../../../../env';
 import { adbLogger } from '../../../../logger/logger.instance';
+import { SerialPrintable } from '../../../../logger/serial-logger.instance';
 import { pathMap } from '../../../../path-map';
 import { LogHandler } from '../../../public/device-channel';
 import { DeviceScanResult, DeviceScanStatus } from '../../../public/device-driver';
@@ -137,14 +138,14 @@ export async function killServer(): Promise<void> {
   await exec(`${adbPrefix()} kill-server`);
 }
 
-export async function forward(serial: Serial, hostPort: number, devicePort: number, printable: Printable = adbLogger): Promise<void> {
+export async function forward(serial: Serial, hostPort: number, devicePort: number, printable: SerialPrintable): Promise<void> {
   await usingAsnyc(new AdbScope(forward, { serial, hostPort, devicePort }), async () => {
     await exec(`${adbPrefix()} -s ${serial} forward tcp:${hostPort} tcp:${devicePort}`);
     printable.verbose?.(`${serial} is forwarding from ${hostPort} to ${devicePort}`);
   });
 }
 
-export async function unforward(serial: Serial, hostPort: number, option?: { ignore: boolean }, printable: Printable = adbLogger): Promise<void> {
+export async function unforward(serial: Serial, hostPort: number, option: { ignore: boolean }, printable: SerialPrintable): Promise<void> {
   await usingAsnyc(new AdbScope(unforward, { serial, hostPort }), async () => {
     let func = exec;
     if (option?.ignore) {
@@ -155,19 +156,19 @@ export async function unforward(serial: Serial, hostPort: number, option?: { ign
   });
 }
 
-export async function unforwardall(serial: Serial, printable: Printable = adbLogger): Promise<void> {
+export async function unforwardall(serial: Serial, printable: SerialPrintable): Promise<void> {
   await usingAsnyc(new AdbScope(unforwardall, { serial }), async () => {
-    await exec(`${adbPrefix()} -s ${serial} forward --remove-all`);
+    await exec(`${adbPrefix()} -s ${serial} forward --remove-all`, {}, printable);
   });
 }
 
-export async function logcatClear(serial: Serial, printable?: Printable): ReturnType<typeof ChildProcess.exec> {
+export async function logcatClear(serial: Serial, printable: SerialPrintable): ReturnType<typeof ChildProcess.exec> {
   return await usingAsnyc(new AdbScope(logcatClear, { serial }), async () => {
     return await execIgnoreError(`${adbPrefix()} -s ${serial} logcat -c`, { timeout: 3 * 1000 }, printable);
   });
 }
 
-export function logcat(serial: Serial, args: string[], handler: LogHandler, printable?: Printable): child_process.ChildProcess {
+export function logcat(serial: Serial, args: string[], handler: LogHandler): child_process.ChildProcess {
   return using(new AdbScope(logcat, { serial }), () => {
     const child = spawn(adbBinary(), ['-P', DOGU_ADB_SERVER_PORT.toString(), '-s', serial, 'logcat', ...args]);
     child.stdout.setEncoding('utf8');
@@ -186,7 +187,7 @@ export function logcat(serial: Serial, args: string[], handler: LogHandler, prin
   });
 }
 
-export async function isPortOpen(serial: Serial, port: number, printable: Printable = adbLogger): Promise<boolean> {
+export async function isPortOpen(serial: Serial, port: number, printable: SerialPrintable): Promise<boolean> {
   return await usingAsnyc(new AdbScope(isPortOpen, { serial, port }), async () => {
     const result = await shell(serial, `netstat -eanut | grep LISTEN | grep tcp | grep :${port}`).catch((e) => {
       const stringified = stringify(e);
@@ -217,12 +218,12 @@ export async function getPackageOnPort(serial: Serial, port: number): Promise<Pa
  * adb -s $DOGU_DEVICE_SERIAL shell am start -n com.steinwurf.adbjoinwifi/.MainActivity -e ssid $DOGU_WIFI_SSID -e password_type WPA -e password $DOGU_WIFI_PASSWORD
  */
 
-export async function joinWifi(serial: Serial, ssid: string, password: string, logger: Printable = adbLogger): Promise<void> {
+export async function joinWifi(serial: Serial, ssid: string, password: string, logger: SerialPrintable): Promise<void> {
   return await usingAsnyc(new AdbScope(joinWifi, { serial, ssid }), async () => {
     if (0 === ssid.length) {
       throw new Error(`AndroidSharedDeviceService.joinWifi failed. serial: ${serial}, ssid: ${ssid}`);
     }
-    await installAppForce(serial, pathMap().common.adbJoinWifiApk);
+    await installAppForce(serial, pathMap().common.adbJoinWifiApk, logger);
     /**
      * @note Adb.Shell() is not used because password can remain in the log.
      */
@@ -268,7 +269,7 @@ export async function joinWifi(serial: Serial, ssid: string, password: string, l
  * app control
  */
 
-export async function uninstallApp(serial: Serial, appName: string, keep = false, printable: Printable = adbLogger): Promise<void> {
+export async function uninstallApp(serial: Serial, appName: string, keep = false, printable: SerialPrintable): Promise<void> {
   return await usingAsnyc(new AdbScope(uninstallApp, { serial, appName, keep }), async () => {
     const command = ['-P', DOGU_ADB_SERVER_PORT.toString(), '-s', serial, 'uninstall'];
     if (keep) {
@@ -282,7 +283,7 @@ export async function uninstallApp(serial: Serial, appName: string, keep = false
   });
 }
 
-export async function clearApp(serial: Serial, appName: string, printable: Printable = adbLogger): Promise<void> {
+export async function clearApp(serial: Serial, appName: string, printable: SerialPrintable): Promise<void> {
   return await usingAsnyc(new AdbScope(clearApp, { serial, appName }), async () => {
     const command = ['-P', DOGU_ADB_SERVER_PORT.toString(), '-s', serial, 'shell', 'pm', 'clear', appName];
     await ChildProcess.spawnAndWait(adbBinary(), command, { timeout: 60000 * 5 }, printable).catch((err) => {
@@ -292,7 +293,7 @@ export async function clearApp(serial: Serial, appName: string, printable: Print
   });
 }
 
-export async function resetAppPermission(serial: Serial, appName: string, printable: Printable = adbLogger): Promise<void> {
+export async function resetAppPermission(serial: Serial, appName: string, printable: SerialPrintable): Promise<void> {
   return await usingAsnyc(new AdbScope(resetAppPermission, { serial, appName }), async () => {
     const command = ['-P', DOGU_ADB_SERVER_PORT.toString(), '-s', serial, 'shell', 'pm', 'reset-permissions', appName];
     await ChildProcess.spawnAndWait(adbBinary(), command, { timeout: 60000 * 5 }, printable).catch((err) => {
@@ -306,7 +307,7 @@ function installAppArgsInternal(serial: Serial, apkPath: string): { command: str
   return { command: adbBinary(), args: ['-P', DOGU_ADB_SERVER_PORT.toString(), '-s', serial, 'install', '-r', '-d', '-t', '-g', apkPath] };
 }
 
-export async function installApp(serial: Serial, apkPath: string, printable: Printable = adbLogger): Promise<child_process.ChildProcess> {
+export async function installApp(serial: Serial, apkPath: string, printable: SerialPrintable): Promise<child_process.ChildProcess> {
   return await usingAsnyc(new AdbScope(installApp, { serial, apkPath }), async () => {
     const { command, args } = installAppArgsInternal(serial, apkPath);
     const rv = await ChildProcess.spawnAndWait(command, args, { timeout: 60000 * 5 }, printable);
@@ -317,7 +318,7 @@ export async function installApp(serial: Serial, apkPath: string, printable: Pri
 /**
  * @note if install failed with INSTALL_FAILED_UPDATE_INCOMPATIBLE then uninstall with keep data and install again
  */
-export async function installAppForce(serial: string, appPath: string, printable?: Printable): Promise<void> {
+export async function installAppForce(serial: string, appPath: string, printable: SerialPrintable): Promise<void> {
   return await usingAsnyc(new AdbScope(installAppForce, { serial, appPath }), async () => {
     const logger = printable ?? adbLogger;
     logger.info(`installing app: ${appPath}`);
@@ -359,7 +360,7 @@ export async function installAppForce(serial: string, appPath: string, printable
   });
 }
 
-async function installAppWithReturningStdoutStderr(serial: Serial, apkPath: string, timeout: number, printable: Printable): Promise<ChildProcess.ExecResult> {
+async function installAppWithReturningStdoutStderr(serial: Serial, apkPath: string, timeout: number, printable: SerialPrintable): Promise<ChildProcess.ExecResult> {
   return await usingAsnyc(new AdbScope(installAppWithReturningStdoutStderr, { serial, apkPath }), async () => {
     const { command, args } = installAppArgsInternal(serial, apkPath);
     printable.verbose?.('installAppWithReturningStdoutStderr start', { command: `${command} ${args.join(' ')}` });
@@ -384,7 +385,7 @@ async function installAppWithReturningStdoutStderr(serial: Serial, apkPath: stri
   });
 }
 
-export async function runApp(serial: Serial, packageName: string, launchableActivityName: string, printable: Printable = adbLogger): Promise<child_process.ChildProcess> {
+export async function runApp(serial: Serial, packageName: string, launchableActivityName: string, printable: SerialPrintable): Promise<child_process.ChildProcess> {
   return await usingAsnyc(new AdbScope(runApp, { serial, packageName }), async () => {
     const rv = await ChildProcess.spawnAndWait(
       adbBinary(),
@@ -396,14 +397,14 @@ export async function runApp(serial: Serial, packageName: string, launchableActi
   });
 }
 
-export async function runActivity(serial: Serial, activityName: string, printable: Printable = adbLogger): Promise<child_process.ChildProcess> {
+export async function runActivity(serial: Serial, activityName: string, printable: SerialPrintable): Promise<child_process.ChildProcess> {
   return await usingAsnyc(new AdbScope(runActivity, { serial, activityName }), async () => {
     const rv = await ChildProcess.spawnAndWait(adbBinary(), ['-P', `${DOGU_ADB_SERVER_PORT}`, '-s', serial, 'shell', 'am', 'start', '-a', `${activityName}`], {}, printable);
     return rv;
   });
 }
 
-export async function getPidOf(serial: Serial, appName: string, printable?: Printable): Promise<string> {
+export async function getPidOf(serial: Serial, appName: string, printable: SerialPrintable): Promise<string> {
   return await usingAsnyc(new AdbScope(getPidOf, { serial, appName }), async () => {
     const cmdret = await shellIgnoreError(serial, `pidof ${appName}`, {}, printable);
     const rv = cmdret.stdout.trim();
@@ -448,7 +449,7 @@ export async function killOnPort(serial: Serial, port: number): Promise<boolean>
   });
 }
 
-export async function runAppProcess(serial: Serial, localPath: string, destPath: string, main: string, printable: Printable): Promise<child_process.ChildProcess> {
+export async function runAppProcess(serial: Serial, localPath: string, destPath: string, main: string, printable: SerialPrintable): Promise<child_process.ChildProcess> {
   return await usingAsnyc(new AdbScope(runAppProcess, { serial, localPath, destPath }), async () => {
     const pushret = await exec(`${adbPrefix()} -s ${serial} push ${localPath} ${destPath}`);
     const chmodRet = await exec(`${adbPrefix()} -s ${serial} shell chmod 777 ${destPath}`);
@@ -462,20 +463,20 @@ export async function runAppProcess(serial: Serial, localPath: string, destPath:
   });
 }
 
-export async function disablePackage(serial: Serial, packageName: string, userId: number, printable: Printable): Promise<void> {
+export async function disablePackage(serial: Serial, packageName: string, userId: number, printable: SerialPrintable): Promise<void> {
   return await usingAsnyc(new AdbScope(disablePackage, { serial, packageName }), async () => {
     await shellIgnoreError(serial, `pm disable-user ${userId} ${packageName}`);
     await shellIgnoreError(serial, `pm disable-user ${packageName}`);
   });
 }
 
-export async function disableGooglePlayProtect(serial: Serial, printable: Printable): Promise<void> {
+export async function disableGooglePlayProtect(serial: Serial, printable: SerialPrintable): Promise<void> {
   return await usingAsnyc(new AdbScope(disableGooglePlayProtect, { serial }), async () => {
     await shellIgnoreError(serial, `settings put global package_verifier_user_consent -1`);
   });
 }
 
-export async function allowNonMarketApps(serial: Serial, printable: Printable): Promise<void> {
+export async function allowNonMarketApps(serial: Serial, printable: SerialPrintable): Promise<void> {
   return await usingAsnyc(new AdbScope(allowNonMarketApps, { serial }), async () => {
     await shellIgnoreError(
       serial,
@@ -999,7 +1000,7 @@ export async function enableTestharness(serial: Serial): Promise<void> {
   });
 }
 
-export async function resetPackages(serial: Serial, ignorePackages: string[], logger: Printable): Promise<void> {
+export async function resetPackages(serial: Serial, ignorePackages: string[], logger: SerialPrintable): Promise<void> {
   return await usingAsnyc(new AdbScope(resetPackages, { serial, ignorePackages }), async (scope: AdbScope) => {
     const { random } = scope;
     const allApps = await getIntalledPackages(serial);
@@ -1023,7 +1024,7 @@ export async function resetPackages(serial: Serial, ignorePackages: string[], lo
   });
 }
 
-export async function resetSdcard(serial: Serial, logger: Printable): Promise<void> {
+export async function resetSdcard(serial: Serial, logger: SerialPrintable): Promise<void> {
   return await usingAsnyc(new AdbScope(resetSdcard, { serial }), async (scope: AdbScope) => {
     const { random } = scope;
     const mkdirLists = ['Alarms', 'DCIM', 'Documents', 'Download', 'Movies', 'Music', 'Notifications', 'Pictures', 'Podcasts', 'Ringtones'];

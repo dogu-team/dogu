@@ -1,10 +1,11 @@
 import { AndroidFullLocale, createAndroidFullLocale, RuntimeInfo, Serial } from '@dogu-private/types';
-import { DuplicatedCallGuarder, FilledPrintable, loop, stringify } from '@dogu-tech/common';
+import { DuplicatedCallGuarder, loop, stringify } from '@dogu-tech/common';
 import { killChildProcess } from '@dogu-tech/node';
 import child_process from 'child_process';
 import { AppiumContext } from '../../../appium/appium.context';
 import { DeveloperOptionsString } from '../../../constants/developer-options-string';
 import { env } from '../../../env';
+import { SerialPrintable } from '../../../logger/serial-logger.instance';
 import { FocusedAppInfo } from '../../externals/cli/adb/adb';
 import { Adb } from '../../externals/index';
 import { AndroidAdbProfiler, AndroidAdbProfilerParams } from './android-profiler';
@@ -138,7 +139,7 @@ export class BlockDeveloperOptionsProfiler implements AndroidAdbProfiler {
     return filtered[0];
   }
 
-  private async startLogcatProcess(serial: Serial, packageName: string, logger: FilledPrintable): Promise<void> {
+  private async startLogcatProcess(serial: Serial, packageName: string, logger: SerialPrintable): Promise<void> {
     const openTime = await Adb.getTime(serial);
     if (openTime) {
       const killPackageIfContains = (msg: string): void => {
@@ -151,15 +152,10 @@ export class BlockDeveloperOptionsProfiler implements AndroidAdbProfiler {
           }
         }
       };
-      this.logcatProc = Adb.logcat(
-        serial,
-        ['-e', SwitchingToFragmentKeyword, '-T', `${openTime}`],
-        {
-          info: (msg) => killPackageIfContains(stringify(msg)),
-          error: (msg) => killPackageIfContains(stringify(msg)),
-        },
-        logger,
-      );
+      this.logcatProc = Adb.logcat(serial, ['-e', SwitchingToFragmentKeyword, '-T', `${openTime}`], {
+        info: (msg) => killPackageIfContains(stringify(msg)),
+        error: (msg) => killPackageIfContains(stringify(msg)),
+      });
     }
   }
 

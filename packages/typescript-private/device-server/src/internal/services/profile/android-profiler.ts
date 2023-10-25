@@ -1,6 +1,7 @@
 import { ProfileMethod, ProfileMethodKind, RuntimeInfo, Serial } from '@dogu-private/types';
 import { FilledPrintable, loop } from '@dogu-tech/common';
 import { AppiumContext } from '../../../appium/appium.context';
+import { SerialPrintable } from '../../../logger/serial-logger.instance';
 import { FocusedAppInfo } from '../../externals/cli/adb/adb';
 import { Adb, AndroidPropInfo, AndroidShellTopInfo, AndroidShellTopProcInfo, DefaultAndroidPropInfo, DefaultAndroidShellTopInfo } from '../../externals/index';
 import { AndroidDeviceAgentService } from '../device-agent/android-device-agent-service';
@@ -20,10 +21,7 @@ export class AndroidAdbProfileContext {
   private focusedAppInfosContext: QueryContext<FocusedAppInfo[]>;
   private propContext: QueryContext<AndroidPropInfo>;
 
-  constructor(
-    private readonly serial: Serial,
-    private readonly logger: FilledPrintable,
-  ) {
+  constructor(private readonly serial: Serial, private readonly logger: FilledPrintable) {
     this.shellTopInfoContext = {
       name: 'shell top info',
       querying: false,
@@ -81,7 +79,7 @@ export interface AndroidAdbProfilerParams {
   serial: Serial;
   context: AndroidAdbProfileContext;
   appium: AppiumContext;
-  logger: FilledPrintable;
+  logger: SerialPrintable;
 }
 
 export interface AndroidAdbProfiler {
@@ -220,7 +218,7 @@ export class AndroidAdbProfileService implements ProfileService {
 
   constructor(private readonly appium: AppiumContext) {}
 
-  async profile(serial: Serial, methods: ProfileMethod[], logger: FilledPrintable): Promise<Partial<RuntimeInfo>> {
+  async profile(serial: Serial, methods: ProfileMethod[], logger: SerialPrintable): Promise<Partial<RuntimeInfo>> {
     const profilers = methods
       .map((method) => {
         const { kind } = method;
