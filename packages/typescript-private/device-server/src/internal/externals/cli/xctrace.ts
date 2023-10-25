@@ -32,7 +32,7 @@ const XctraceListOutputGroup = ['Devices', 'Devices Offline', 'Simulators', 'unk
 type XctraceListOutputGroup = (typeof XctraceListOutputGroup)[number];
 
 export async function listDevices(printable: Printable, options: ExecOptions = {}): Promise<DeviceScanResult[]> {
-  const result = await ChildProcess.exec(`${XcTraceCommand} list devices`, options, printable);
+  const result = await ChildProcess.exec(`${XcTraceCommand} list devices`, options);
 
   const infos: DeviceScanResult[] = [];
   let firstDeviceLine = undefined; // macOs Self Device

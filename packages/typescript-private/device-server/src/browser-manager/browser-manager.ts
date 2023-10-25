@@ -19,7 +19,7 @@ import {
 import { HostPaths } from '@dogu-tech/node';
 import fs from 'fs';
 import path from 'path';
-import { Adb } from '../internal/externals/index';
+import { AdbSerial } from '../internal/externals/index';
 import { logger } from '../logger/logger.instance';
 import { Chrome, ChromeInstallablePlatform } from './chrome';
 import { chromeVersionUtils } from './chrome-version-utils';
@@ -64,7 +64,6 @@ export class BrowserManager {
   private readonly edgedriver = new Edgedriver();
   private readonly safari = new Safari();
   private readonly safaridriver = new Safaridriver();
-  private readonly adb = Adb;
 
   async getLatestBrowserVersion(options: GetLatestBrowserVersionOptions): Promise<BrowserVersion> {
     const { browserName, browserPlatform } = options;
@@ -834,15 +833,17 @@ export class BrowserManager {
       throw new Error('deviceSerial is required');
     }
 
+    const adb = new AdbSerial(deviceSerial, this.logger);
+
     const androidBrowserNameMap = new Map(Object.entries(AndroidBrowserPackageNameMap).map(([browserName, packageName]) => [packageName, browserName]));
-    const installedPackages = await this.adb.getIntalledPackages(deviceSerial);
+    const installedPackages = await adb.getIntalledPackages();
     const installedBrowserPackages = installedPackages.filter(({ packageName }) => {
       const androidBrowserName = androidBrowserNameMap.get(packageName);
       return browserName === androidBrowserName;
     });
     const installedPackageInfos = await Promise.allSettled(
       installedBrowserPackages.map(async ({ packageName }) => {
-        const info = await this.adb.getInstalledPackageInfo(deviceSerial, packageName, { versionName: true });
+        const info = await adb.getInstalledPackageInfo(packageName, { versionName: true });
         const browserName = androidBrowserNameMap.get(packageName);
         if (!browserName) {
           throw new Error(`Browser name not found for package name ${packageName}`);

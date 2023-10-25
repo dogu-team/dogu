@@ -1,12 +1,12 @@
-import { DeviceSystemInfo, Platform, PrivateProtocol, Serial } from '@dogu-private/types';
+import { DeviceSystemInfo, Platform, PrivateProtocol, Serial, SerialPrintable } from '@dogu-private/types';
 import { delay, errorify, FilledPrintable, loop, stringify } from '@dogu-tech/common';
 import { HostPaths, killChildProcess } from '@dogu-tech/node';
 import child_process from 'child_process';
 import fs from 'fs';
 import { AppiumContextImpl } from '../../../appium/appium.context';
 import { env } from '../../../env';
-import { Adb, AndroidPropInfo, AppiumAdb, isHarnessEnabled } from '../../externals/index';
-import { checkTime } from '../../util/check-time';
+import { AdbSerial, AndroidPropInfo, AppiumAdb, isHarnessEnabled } from '../../externals/index';
+import { CheckTimer } from '../../util/check-time';
 import { AndroidDeviceAgentService } from '../device-agent/android-device-agent-service';
 import { AndroidResetService } from '../reset/android-reset';
 import { Zombieable, ZombieProps, ZombieQueriable } from '../zombie/zombie-component';
@@ -82,6 +82,8 @@ export class AndroidSharedDeviceService implements Zombieable {
   private logcatProc: child_process.ChildProcess | undefined = undefined;
   private zombieWaiter: ZombieQueriable;
   private setupState = 'none';
+  private timer: CheckTimer;
+  private adb: AdbSerial;
 
   constructor(
     public serial: Serial,
@@ -91,9 +93,11 @@ export class AndroidSharedDeviceService implements Zombieable {
     private appiumContext: AppiumContextImpl,
     private reset: AndroidResetService,
     private deviceAgent: AndroidDeviceAgentService,
-    public printable: FilledPrintable,
+    public printable: SerialPrintable,
   ) {
     this.zombieWaiter = ZombieServiceInstance.addComponent(this);
+    this.timer = new CheckTimer(this.printable);
+    this.adb = new AdbSerial(serial, printable);
   }
 
   async wait(): Promise<void> {
@@ -114,65 +118,65 @@ export class AndroidSharedDeviceService implements Zombieable {
     if (!env.DOGU_IS_DEVICE_SHARE) {
       return;
     }
-    const { serial, printable: logger } = this;
+    const { serial, printable: logger, adb } = this;
     this.setupState = 'resetting';
     if (await this.reset.isDirty()) {
-      await checkTime(`AndroidSharedDeviceService.setup.reset`, this.reset.reset(this.systemInfo, this.appiumAdb, this.appiumContext), logger);
+      await this.timer.check(`AndroidSharedDeviceService.setup.reset`, this.reset.reset(this.systemInfo, this.appiumAdb, this.appiumContext));
       throw new Error(`AndroidSharedDeviceService.revive. device is dirty. so trigger reset ${serial}`);
     }
 
     this.setupState = 'change-locale';
     const newAppiumAdb = this.appiumAdb.clone({ adbExecTimeout: 1000 * 60 * 3 });
-    await checkTime(`AndroidSharedDeviceService.setup.setDeviceLocale`, newAppiumAdb.setDeviceLocale('en-US'), logger);
+    await this.timer.check(`AndroidSharedDeviceService.setup.setDeviceLocale`, newAppiumAdb.setDeviceLocale('en-US'));
 
     this.setupState = 'allow-non-market-apps';
-    await checkTime(`AndroidSharedDeviceService.setup.allowNonMarketApps`, Adb.allowNonMarketApps(serial, logger), logger).catch((e) => {
+    await this.timer.check(`AndroidSharedDeviceService.setup.allowNonMarketApps`, adb.allowNonMarketApps()).catch((e) => {
       this.printable.error(`AndroidSharedDeviceService.revive.allowNonMarketApps failed.`, { serial, error: errorify(e) });
     });
 
     this.setupState = 'disable-google-play-protect';
-    await checkTime(`AndroidSharedDeviceService.setup.disableGooglePlayProtect`, Adb.disableGooglePlayProtect(this.serial, this.printable), logger).catch((e) => {
+    await this.timer.check(`AndroidSharedDeviceService.setup.disableGooglePlayProtect`, adb.disableGooglePlayProtect()).catch((e) => {
       this.printable.error(`AndroidSharedDeviceService.revive.disableGooglePlayProtect failed.`, { serial, error: errorify(e) });
     });
 
     this.setupState = 'preinstalling';
-    await checkTime(`AndroidSharedDeviceService.setup.preInstallApps`, this.preInstallApps(), logger).catch((e) => {
+    await this.timer.check(`AndroidSharedDeviceService.setup.preInstallApps`, this.preInstallApps()).catch((e) => {
       this.printable.error(`AndroidSharedDeviceService.revive.preInstallApps failed.`, { serial, error: errorify(e) });
     });
 
     this.setupState = 'set-gboard-as-default-keyboard';
-    await checkTime(`AndroidSharedDeviceService.setup.setGboardAsDefaultKeyboard`, this.setGboardAsDefaultKeyboard(), logger).catch((e) => {
+    await this.timer.check(`AndroidSharedDeviceService.setup.setGboardAsDefaultKeyboard`, this.setGboardAsDefaultKeyboard()).catch((e) => {
       this.printable.error(`AndroidSharedDeviceService.revive.setGboardAsDefaultKeyboard failed.`, { serial, error: errorify(e) });
     });
 
     this.setupState = 'mute';
-    await checkTime(`AndroidSharedDeviceService.setup.mute`, this.mute(), logger).catch((e) => {
+    await this.timer.check(`AndroidSharedDeviceService.setup.mute`, this.mute()).catch((e) => {
       this.printable.error(`AndroidSharedDeviceService.revive.mute failed.`, { serial, error: errorify(e) });
     });
 
     this.setupState = 'set-brightness';
-    await checkTime(`AndroidSharedDeviceService.setup.setBrightness`, Adb.setBrightness(serial, 50), logger).catch((e) => {
+    await this.timer.check(`AndroidSharedDeviceService.setup.setBrightness`, adb.setBrightness(50)).catch((e) => {
       this.printable.error(`AndroidSharedDeviceService.revive.setBrightness failed.`, { serial, error: errorify(e) });
     });
 
     this.setupState = 'join-wifi';
-    await checkTime(`AndroidSharedDeviceService.setup.joinWifi`, Adb.joinWifi(serial, env.DOGU_WIFI_SSID, env.DOGU_WIFI_PASSWORD, logger), logger).catch((e) => {
+    await this.timer.check(`AndroidSharedDeviceService.setup.joinWifi`, adb.joinWifi(env.DOGU_WIFI_SSID, env.DOGU_WIFI_PASSWORD)).catch((e) => {
       this.printable.error(`AndroidSharedDeviceService.revive.joinWifi failed.`, { serial, error: errorify(e) });
     });
 
     this.setupState = 'stay-on-while-plugged-in';
-    await checkTime(`AndroidSharedDeviceService.setup.stayOnWhilePluggedIn`, Adb.stayOnWhilePluggedIn(serial), logger).catch((e) => {
+    await this.timer.check(`AndroidSharedDeviceService.setup.stayOnWhilePluggedIn`, adb.stayOnWhilePluggedIn()).catch((e) => {
       this.printable.error(`AndroidSharedDeviceService.revive.stayOnWhilePluggedIn failed.`, { serial, error: errorify(e) });
     });
 
     this.setupState = 'close-dialog';
-    await checkTime(`AndroidSharedDeviceService.setup.closeDialog`, this.closeDialog(), logger).catch((e) => {
+    await this.timer.check(`AndroidSharedDeviceService.setup.closeDialog`, this.closeDialog()).catch((e) => {
       this.printable.error(`AndroidSharedDeviceService.revive.closeDialog failed.`, { serial, error: errorify(e) });
     });
 
     const disableAppList = BlockAppList.filter((app) => app.disable);
     for (const app of disableAppList) {
-      await Adb.disablePackage(this.serial, app.packageName, 0, this.printable).catch((e) => {
+      await adb.disablePackage(app.packageName, 0).catch((e) => {
         this.printable.error(`AndroidSharedDeviceService.revive.disablePackage failed.`, { error: errorify(e) });
       });
     }
@@ -195,10 +199,11 @@ export class AndroidSharedDeviceService implements Zombieable {
     if (!env.DOGU_IS_DEVICE_SHARE) {
       return;
     }
-    const appInfos = await Adb.getForegroundPackage(this.serial);
+    const { adb } = this;
+    const appInfos = await adb.getForegroundPackage();
     const filteredList = appInfos.filter((app) => app.displayId === 0 && 0 < this.filterMsgThatContainsBlockApp(app.packageName).length);
     for (const filtered of filteredList) {
-      await Adb.killPackage(this.serial, filtered.packageName).catch((e) => {
+      await adb.killPackage(filtered.packageName).catch((e) => {
         this.printable.error(`AndroidSharedDeviceService. update. killPackage failed.`, { e });
       });
     }
@@ -214,25 +219,21 @@ export class AndroidSharedDeviceService implements Zombieable {
    */
 
   private async startLogcatProcess(serial: Serial, logger: FilledPrintable): Promise<void> {
-    const openTime = await Adb.getTime(serial);
+    const { adb } = this;
+    const openTime = await adb.getTime();
     if (openTime) {
       const killPackageIfContains = (msg: string): void => {
         const filtered = this.filterMsgThatContainsBlockApp(msg);
         for (const app of filtered) {
-          Adb.killPackage(serial, app.packageName).catch((e) => {
+          adb.killPackage(app.packageName).catch((e) => {
             logger.error(e);
           });
         }
       };
-      this.logcatProc = Adb.logcat(
-        serial,
-        ['-e', StartActivityLogKeyword, '-T', `${openTime}`],
-        {
-          info: (msg) => killPackageIfContains(stringify(msg)),
-          error: (msg) => killPackageIfContains(stringify(msg)),
-        },
-        logger,
-      );
+      this.logcatProc = adb.logcat(['-e', StartActivityLogKeyword, '-T', `${openTime}`], {
+        info: (msg) => killPackageIfContains(stringify(msg)),
+        error: (msg) => killPackageIfContains(stringify(msg)),
+      });
       this.logcatProc.on('close', (code, signal) => {
         logger.info(`logcat process closed.`, { code, signal });
         this.logcatProc = undefined;
@@ -259,34 +260,36 @@ export class AndroidSharedDeviceService implements Zombieable {
    */
 
   private async preInstallApps(): Promise<void> {
+    const { adb } = this;
     for (const app of PreinstallApps) {
       if (!fs.existsSync(app.filePath())) {
         this.printable.warn(`AndroidSharedDeviceService.preInstallApps. file not exists.`, { app });
         continue;
       }
-      await Adb.installAppForce(this.serial, app.filePath(), this.printable);
+      await adb.installAppForce(app.filePath());
     }
   }
 
   private async setGboardAsDefaultKeyboard(): Promise<void> {
+    const { adb } = this;
     for await (const _ of loop(1000, 10)) {
-      const filteredPackages = (await Adb.getIntalledPackages(this.serial)).filter((pkg) => pkg.packageName.includes(GboardAppInfo.packageName));
+      const filteredPackages = (await adb.getIntalledPackages()).filter((pkg) => pkg.packageName.includes(GboardAppInfo.packageName));
       if (0 < filteredPackages.length) {
         break;
       }
     }
-    const filteredPackages = (await Adb.getIntalledPackages(this.serial)).filter((pkg) => pkg.packageName.includes(GboardAppInfo.packageName));
+    const filteredPackages = (await adb.getIntalledPackages()).filter((pkg) => pkg.packageName.includes(GboardAppInfo.packageName));
     if (0 === filteredPackages.length) {
       this.printable.warn(`AndroidSharedDeviceService.setGboardAsDefaultKeyboard. gboard is not installed.`, { filteredPackages });
       return;
     }
     for await (const _ of loop(1000, 10)) {
-      const targetIme = (await Adb.getIMEList(this.serial)).find((ime) => ime.packageName.includes(GboardAppInfo.packageName));
+      const targetIme = (await adb.getIMEList()).find((ime) => ime.packageName.includes(GboardAppInfo.packageName));
       if (targetIme) {
         break;
       }
     }
-    const targetIme = (await Adb.getIMEList(this.serial)).find((ime) => ime.packageName.includes(GboardAppInfo.packageName));
+    const targetIme = (await adb.getIMEList()).find((ime) => ime.packageName.includes(GboardAppInfo.packageName));
     if (!targetIme) {
       this.printable.warn(`AndroidSharedDeviceService.setGboardAsDefaultKeyboard. gboard is not in ime.`, { targetIme });
       return;
@@ -320,17 +323,19 @@ export class AndroidSharedDeviceService implements Zombieable {
     //     },
     //   });
     // }
-    await Adb.keyevent(this.serial, DeviceControlKeycode.DEVICE_CONTROL_KEYCODE_VOLUME_UP);
-    await Adb.keyevent(this.serial, DeviceControlKeycode.DEVICE_CONTROL_KEYCODE_VOLUME_MUTE);
-    await Adb.keyevent(this.serial, DeviceControlKeycode.DEVICE_CONTROL_KEYCODE_VOLUME_DOWN);
-    await Adb.keyevent(this.serial, DeviceControlKeycode.DEVICE_CONTROL_KEYCODE_VOLUME_DOWN);
-    await Adb.keyevent(this.serial, DeviceControlKeycode.DEVICE_CONTROL_KEYCODE_VOLUME_DOWN);
-    await Adb.keyevent(this.serial, DeviceControlKeycode.DEVICE_CONTROL_KEYCODE_MUTE);
+    const { adb } = this;
+    await adb.keyevent(DeviceControlKeycode.DEVICE_CONTROL_KEYCODE_VOLUME_UP);
+    await adb.keyevent(DeviceControlKeycode.DEVICE_CONTROL_KEYCODE_VOLUME_MUTE);
+    await adb.keyevent(DeviceControlKeycode.DEVICE_CONTROL_KEYCODE_VOLUME_DOWN);
+    await adb.keyevent(DeviceControlKeycode.DEVICE_CONTROL_KEYCODE_VOLUME_DOWN);
+    await adb.keyevent(DeviceControlKeycode.DEVICE_CONTROL_KEYCODE_VOLUME_DOWN);
+    await adb.keyevent(DeviceControlKeycode.DEVICE_CONTROL_KEYCODE_MUTE);
   }
 
   private async closeDialog(): Promise<void> {
+    const { adb } = this;
     for await (const _ of loop(30, 5)) {
-      await Adb.keyevent(this.serial, DeviceControlKeycode.DEVICE_CONTROL_KEYCODE_BACK);
+      await adb.keyevent(DeviceControlKeycode.DEVICE_CONTROL_KEYCODE_BACK);
     }
   }
 

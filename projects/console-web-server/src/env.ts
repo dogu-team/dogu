@@ -162,6 +162,10 @@ export class Env {
   @IsOptional()
   @IsString()
   DOGU_SLACK_CLIENT_SECRET!: string;
+
+  @IsOptional()
+  @IsString()
+  DOGU_SLACK_BOT_TOKEN?: string;
 }
 
 export const env = loadEnvLazySync(Env, { printable: logger });

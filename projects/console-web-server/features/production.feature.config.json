@@ -6,5 +6,6 @@
   "cookieSecure": true,
   "forceInvitation": false,
   "thirdPartyLogin": true,
-  "doguAgentAppLocation": "s3"
+  "doguAgentAppLocation": "s3",
+  "slackNotification": true
 }

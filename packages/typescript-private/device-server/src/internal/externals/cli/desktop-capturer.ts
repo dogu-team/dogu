@@ -9,7 +9,7 @@ const binPath = (): string => HostPaths.thirdParty.pathMap().common.desktopCaptu
 
 export async function getWindows(printable: Printable): Promise<DeviceWindowInfo[]> {
   tryAccessAndFix();
-  const res = await ChildProcess.exec(`${binPath()} windows --info`, {}, printable);
+  const res = await ChildProcess.exec(`${binPath()} windows --info`, {});
   if (0 == res.stdout.length) {
     return [];
   }

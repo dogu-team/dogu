@@ -14,7 +14,7 @@ import {
   Serial,
   StreamingAnswer,
 } from '@dogu-private/types';
-import { Closable, Printable, PromiseOrValue, stringify } from '@dogu-tech/common';
+import { Closable, PromiseOrValue, stringify } from '@dogu-tech/common';
 import { BrowserInstallation, StreamingOfferDto } from '@dogu-tech/device-client-common';
 import { ChildProcess, isFreePort } from '@dogu-tech/node';
 import { Observable } from 'rxjs';
@@ -102,7 +102,7 @@ export class WindowsChannel implements DeviceChannel {
       deviceServerService.doguLogger,
     );
 
-    const deviceChannel = new WindowsChannel(param.serial, info, new DesktopProfileService(), streaming, deviceAgent, seleniumDeviceWebDriverHandler, []);
+    const deviceChannel = new WindowsChannel(param.serial, info, new DesktopProfileService(param.serial, logger), streaming, deviceAgent, seleniumDeviceWebDriverHandler, []);
 
     const gamiumContext = deviceServerService.gamiumService.openGamiumContext(deviceChannel);
     deviceChannel.gamiumContext = gamiumContext;
@@ -116,7 +116,7 @@ export class WindowsChannel implements DeviceChannel {
 
   async queryProfile(methods: ProfileMethod[] | ProfileMethod): Promise<FilledRuntimeInfo> {
     const methodList = Array.isArray(methods) ? methods : [methods];
-    const result = await this._profile.profile(this.serial, methodList, logger);
+    const result = await this._profile.profile(methodList);
     return {
       ...RuntimeInfo.fromPartial(result),
       platform: Platform.PLATFORM_WINDOWS,
@@ -156,7 +156,7 @@ export class WindowsChannel implements DeviceChannel {
       return;
     }
     const pid = splited[splited.length - 1];
-    await ChildProcess.exec(`taskkill /F /PID ${pid}`, {}, logger);
+    await ChildProcess.exec(`taskkill /F /PID ${pid}`, {});
   }
 
   reboot(): void {
@@ -167,7 +167,7 @@ export class WindowsChannel implements DeviceChannel {
     return { isHealthy: true, message: '' };
   }
 
-  forward(hostPort: number, devicePort: number, printable?: Printable): void {
+  forward(hostPort: number, devicePort: number, handler: LogHandler): void {
     logger.verbose('WindowsChannel.forward not need to implement');
   }
 
@@ -184,21 +184,21 @@ export class WindowsChannel implements DeviceChannel {
     return await DesktopCapturer.getWindows(logger);
   }
 
-  uninstallApp(appPath: string): void {
+  uninstallApp(appPath: string, handler: LogHandler): void {
     logger.warn('WindowsChannel.uninstallApp is not implemented yet');
   }
 
-  installApp(appPath: string): void {
+  installApp(appPath: string, handler: LogHandler): void {
     logger.warn('WindowsChannel.installApp is not implemented yet');
   }
 
-  runApp(appPath: string): void {
+  runApp(appPath: string, handler: LogHandler): void {
     ChildProcess.spawn(appPath, [], {}, logger).catch((err) => {
       logger.error(`failed to start app`, { error: stringify(err) });
     });
   }
 
-  subscribeLog(args: string[], handler: LogHandler, printable?: Printable | undefined): PromiseOrValue<Closable> {
+  subscribeLog(args: string[], handler: LogHandler): PromiseOrValue<Closable> {
     throw new Error('Method not implemented.');
   }
 

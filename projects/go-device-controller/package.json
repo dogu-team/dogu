@@ -15,6 +15,7 @@
     "@dogu-dev-private/base-build-tools": "workspace:^",
     "@dogu-dev-private/build-tools": "workspace:^",
     "@dogu-private/types": "workspace:^",
+    "@dogu-tech/env-tools": "workspace:^",
     "@dogu-tech/node": "workspace:^",
     "@types/node": "18.15.11",
     "@types/shelljs": "0.8.11",

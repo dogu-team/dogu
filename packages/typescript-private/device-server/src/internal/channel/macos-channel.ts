@@ -14,7 +14,7 @@ import {
   Serial,
   StreamingAnswer,
 } from '@dogu-private/types';
-import { Closable, Printable, PromiseOrValue, stringify } from '@dogu-tech/common';
+import { Closable, PromiseOrValue, stringify } from '@dogu-tech/common';
 import { BrowserInstallation, StreamingOfferDto } from '@dogu-tech/device-client-common';
 import { ChildProcess, isFreePort } from '@dogu-tech/node';
 import { Observable } from 'rxjs';
@@ -99,13 +99,13 @@ export class MacosChannel implements DeviceChannel {
       deviceServerService.doguLogger,
     );
 
-    const deviceChannel = new MacosChannel(param.serial, info, new DesktopProfileService(), streaming, deviceAgent, seleniumDeviceWebDriverHandler, []);
+    const deviceChannel = new MacosChannel(param.serial, info, new DesktopProfileService(param.serial, logger), streaming, deviceAgent, seleniumDeviceWebDriverHandler, []);
     return Promise.resolve(deviceChannel);
   }
 
   async queryProfile(methods: ProfileMethod[] | ProfileMethod): Promise<FilledRuntimeInfo> {
     const methodList = Array.isArray(methods) ? methods : [methods];
-    const result = await this._profile.profile(this.serial, methodList, logger);
+    const result = await this._profile.profile(methodList);
     return {
       ...RuntimeInfo.fromPartial(result),
       platform: Platform.PLATFORM_MACOS,
@@ -142,10 +142,10 @@ export class MacosChannel implements DeviceChannel {
   }
 
   async killOnPort(port: number): Promise<void> {
-    await ChildProcess.exec(`lsof -i tcp:${port} | grep LISTEN | awk '{print $2}' | xargs kill -9`, {}, logger);
+    await ChildProcess.exec(`lsof -i tcp:${port} | grep LISTEN | awk '{print $2}' | xargs kill -9`, {});
   }
 
-  forward(hostPort: number, devicePort: number, printable?: Printable): void {
+  forward(hostPort: number, devicePort: number, handler: LogHandler): void {
     // noop
   }
 
@@ -162,21 +162,21 @@ export class MacosChannel implements DeviceChannel {
     return await DesktopCapturer.getWindows(logger);
   }
 
-  uninstallApp(appPath: string): void {
+  uninstallApp(appPath: string, handler: LogHandler): void {
     throw new Error('Method not implemented.');
   }
 
-  installApp(appPath: string): void {
+  installApp(appPath: string, handler: LogHandler): void {
     throw new Error('Method not implemented.');
   }
 
-  runApp(appPath: string): void {
+  runApp(appPath: string, handler: LogHandler): void {
     ChildProcess.spawn(appPath, [], {}, logger).catch((err) => {
       logger.error(`failed to start app`, { error: stringify(err) });
     });
   }
 
-  subscribeLog(args: string[], handler: LogHandler, printable?: Printable | undefined): PromiseOrValue<Closable> {
+  subscribeLog(args: string[], handler: LogHandler): PromiseOrValue<Closable> {
     throw new Error('Method not implemented.');
   }
 

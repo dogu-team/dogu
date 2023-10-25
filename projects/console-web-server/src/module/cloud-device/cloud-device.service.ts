@@ -54,6 +54,10 @@ export class CloudDeviceService {
     const representativeDevices = Array.from(deviceMap.values());
     const deviceIds = representativeDevices.map((device) => device.deviceId);
 
+    if (deviceIds.length === 0) {
+      return new Page(dto.page, dto.offset, 0, []);
+    }
+
     const query = this.createCloudDeviceDefaultQuery()
       .where('device.device_id IN (:...deviceIds)', { deviceIds })
       .andWhere(`(${modelFilterClause} OR ${modelNameFilterClause} OR ${manufacturerFilterClause})`, { keyword: `.*${keyword}.*` })
