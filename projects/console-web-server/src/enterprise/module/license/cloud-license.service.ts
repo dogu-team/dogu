@@ -1,5 +1,6 @@
 import { CloudLicenseBase, CreateCloudLicenseDto } from '@dogu-private/console';
 import { OrganizationId } from '@dogu-private/types';
+import { setAxiosErrorFilterToIntercepter } from '@dogu-tech/common';
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
 
@@ -7,9 +8,14 @@ import { env } from '../../../env';
 
 @Injectable()
 export class CloudLicenseService {
-  private readonly api = axios.create({
-    baseURL: env.DOGU_BILLING_SERVER_URL,
-  });
+  private readonly api: axios.AxiosInstance;
+
+  constructor() {
+    this.api = axios.create({
+      baseURL: env.DOGU_BILLING_SERVER_URL,
+    });
+    setAxiosErrorFilterToIntercepter(this.api);
+  }
 
   async createLicense(dto: CreateCloudLicenseDto): Promise<CloudLicenseBase> {
     try {
