@@ -11,6 +11,13 @@ on:
         type: string
         description: 'Dogu Agent app version'
         default: '0.0.1'
+      maxos_runner:
+        type: choice
+        description: 'macos runner'
+        options:
+          - 'self-hosted-macos'
+          - 'macos-latest'
+        default: 'self-hosted-macos'
       clean:
         type: boolean
         description: 'clean git repo'
@@ -26,7 +33,7 @@ jobs:
       fail-fast: false
       max-parallel: 99
       matrix:
-        runner: [windows-2019, self-hosted-macos]
+        runner: [windows-2019, ${{ github.event.inputs.maxos_runner }}]
         include:
           - runner: windows-2019
             extension: exe

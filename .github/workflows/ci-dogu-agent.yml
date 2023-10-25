@@ -3,9 +3,12 @@ name: 🔄ci-dogu-agent
 on:
   workflow_dispatch:
     inputs:
-      exclude_runner:
-        type: string
-        description: 'exclude to build (ex. windows-2019 or self-hosted-macos)'
+      maxos_runner:
+        type: choice
+        description: 'macos runner'
+        options:
+          - 'self-hosted-macos'
+          - 'macos-latest'
         default: 'self-hosted-macos'
       clean:
         type: boolean
@@ -43,7 +46,7 @@ jobs:
       fail-fast: false
       max-parallel: 99
       matrix:
-        runner: [windows-2019, self-hosted-macos]
+        runner: [windows-2019, ${{ github.event.inputs.maxos_runner }}]
     runs-on: ['${{ matrix.runner }}']
 
     env:
