@@ -1,9 +1,8 @@
 import { ProfileMethod, ProfileMethodKind, RuntimeInfo, Serial } from '@dogu-private/types';
 import { FilledPrintable, loop } from '@dogu-tech/common';
 import { AppiumContext } from '../../../appium/appium.context';
-import { SerialPrintable } from '../../../logger/serial-logger.instance';
-import { FocusedAppInfo } from '../../externals/cli/adb/adb';
-import { Adb, AndroidPropInfo, AndroidShellTopInfo, AndroidShellTopProcInfo, DefaultAndroidPropInfo, DefaultAndroidShellTopInfo } from '../../externals/index';
+import { AdbSerial, FocusedAppInfo } from '../../externals/cli/adb/adb';
+import { AndroidPropInfo, AndroidShellTopInfo, AndroidShellTopProcInfo, DefaultAndroidPropInfo, DefaultAndroidShellTopInfo } from '../../externals/index';
 import { AndroidDeviceAgentService } from '../device-agent/android-device-agent-service';
 import { BlockDeveloperOptionsProfiler } from './android-block-dev-profiler';
 import { ProfileService } from './profile-service';
@@ -21,26 +20,26 @@ export class AndroidAdbProfileContext {
   private focusedAppInfosContext: QueryContext<FocusedAppInfo[]>;
   private propContext: QueryContext<AndroidPropInfo>;
 
-  constructor(private readonly serial: Serial, private readonly logger: FilledPrintable) {
+  constructor(private adb: AdbSerial) {
     this.shellTopInfoContext = {
       name: 'shell top info',
       querying: false,
       info: undefined,
-      func: async (): Promise<AndroidShellTopInfo> => Adb.getShellTopInfo(serial),
+      func: async (): Promise<AndroidShellTopInfo> => adb.getShellTopInfo(),
       default: DefaultAndroidShellTopInfo(),
     };
     this.focusedAppInfosContext = {
       name: 'focused app infos',
       querying: false,
       info: undefined,
-      func: async (): Promise<FocusedAppInfo[]> => Adb.getForegroundPackage(serial),
+      func: async (): Promise<FocusedAppInfo[]> => adb.getForegroundPackage(),
       default: [],
     };
     this.propContext = {
       name: 'prop',
       querying: false,
       info: undefined,
-      func: async (): Promise<AndroidPropInfo> => Adb.getProps(serial),
+      func: async (): Promise<AndroidPropInfo> => adb.getProps(),
       default: DefaultAndroidPropInfo(),
     };
   }
@@ -68,7 +67,7 @@ export class AndroidAdbProfileContext {
       }
     }
     if (!context.info) {
-      this.logger.warn(`AndroidAdbProfileContext.query ${context.name} is not available for ${this.serial}`);
+      this.adb.printable.warn?.(`AndroidAdbProfileContext.query ${context.name} is not available for ${this.adb.serial}`);
       return context.default;
     }
     return context.info;
@@ -77,9 +76,10 @@ export class AndroidAdbProfileContext {
 
 export interface AndroidAdbProfilerParams {
   serial: Serial;
+  adb: AdbSerial;
   context: AndroidAdbProfileContext;
   appium: AppiumContext;
-  logger: SerialPrintable;
+  logger: FilledPrintable;
 }
 
 export interface AndroidAdbProfiler {
@@ -109,8 +109,8 @@ export class CpuProfiler implements AndroidAdbProfiler {
 
 export class MemProfiler implements AndroidAdbProfiler {
   async profile(params: AndroidAdbProfilerParams): Promise<Partial<RuntimeInfo>> {
-    const { serial, context } = params;
-    const procMeminfo = await Adb.getProcMemInfo(serial);
+    const { adb } = params;
+    const procMeminfo = await adb.getProcMemInfo();
     return {
       mems: [
         {
@@ -132,9 +132,9 @@ export class MemProfiler implements AndroidAdbProfiler {
 
 export class FsProfiler implements AndroidAdbProfiler {
   async profile(params: AndroidAdbProfilerParams): Promise<Partial<RuntimeInfo>> {
-    const { serial, context } = params;
-    const dfInfos = (await Adb.getDfInfo(serial)).filter((x) => x.Mounted.startsWith('/data') || x.Mounted.startsWith('/storage'));
-    const procDiskstats = await Adb.getProcDiskstats(serial);
+    const { adb } = params;
+    const dfInfos = (await adb.getDfInfo()).filter((x) => x.Mounted.startsWith('/data') || x.Mounted.startsWith('/storage'));
+    const procDiskstats = await adb.getProcDiskstats();
     if (0 == procDiskstats.length) {
       return { fses: [] };
     }
@@ -216,14 +216,17 @@ export class AndroidAdbProfileService implements ProfileService {
     [ProfileMethodKind.PROFILE_METHOD_KIND_ANDROID_BLOCK_DEVELOPER_OPTIONS, new BlockDeveloperOptionsProfiler()],
   ]);
 
-  constructor(private readonly appium: AppiumContext) {}
+  constructor(private readonly appium: AppiumContext, private adb: AdbSerial) {}
 
-  async profile(serial: Serial, methods: ProfileMethod[], logger: SerialPrintable): Promise<Partial<RuntimeInfo>> {
+  async profile(methods: ProfileMethod[]): Promise<Partial<RuntimeInfo>> {
+    const { adb } = this;
+    const logger = adb.printable;
+    const serial = adb.serial;
     const profilers = methods
       .map((method) => {
         const { kind } = method;
         if (!kind) {
-          logger.warn('AndroidAdbProfileService.profile method kind is not specified');
+          logger.error('AndroidAdbProfileService.profile method kind is not specified');
           return undefined;
         }
         return kind;
@@ -238,13 +241,13 @@ export class AndroidAdbProfileService implements ProfileService {
         return profiler;
       })
       .filter((profiler) => profiler !== undefined) as AndroidAdbProfiler[];
-    const context = new AndroidAdbProfileContext(serial, logger);
-    const results = await Promise.allSettled(profilers.map((profiler) => profiler.profile({ serial, context, appium: this.appium, logger })));
+    const context = new AndroidAdbProfileContext(this.adb);
+    const results = await Promise.allSettled(profilers.map((profiler) => profiler.profile({ serial, context, appium: this.appium, logger, adb })));
     const result = results.reduce((acc, cur) => {
       if (cur.status === 'fulfilled') {
         return { ...acc, ...cur.value };
       } else {
-        logger.warn(`AndroidAdbProfileService.profile failed`, { reason: cur.reason });
+        logger.error(`AndroidAdbProfileService.profile failed`, { reason: cur.reason });
         return acc;
       }
     }, {});
@@ -255,20 +258,20 @@ export class AndroidAdbProfileService implements ProfileService {
 export class AndroidDeviceAgentProfileService implements ProfileService {
   constructor(private readonly deviceAgentService: AndroidDeviceAgentService) {}
 
-  async profile(serial: Serial, methods: ProfileMethod[]): Promise<Partial<RuntimeInfo>> {
+  async profile(methods: ProfileMethod[]): Promise<Partial<RuntimeInfo>> {
     const response = await this.deviceAgentService.sendWithProtobuf('dcDaQueryProfileParam', 'dcDaQueryProfileReturn', { profileMethods: methods }, 1000);
     return response?.info ?? {};
   }
 }
 
 export class AndroidDisplayProfileService implements ProfileService {
-  constructor(private readonly deviceAgentService: AndroidDeviceAgentService) {}
+  constructor(private readonly deviceAgentService: AndroidDeviceAgentService, private adb: AdbSerial) {}
 
-  async profile(serial: Serial, methods: ProfileMethod[]): Promise<Partial<RuntimeInfo>> {
+  async profile(methods: ProfileMethod[]): Promise<Partial<RuntimeInfo>> {
     const isIncludeType = methods.some((method) => method.kind === ProfileMethodKind.PROFILE_METHOD_KIND_ANDROID_DISPLAY);
     if (!isIncludeType) {
       return {};
     }
-    return { displays: [{ name: 'default', isScreenOn: await Adb.isScreenOn(serial), error: this.deviceAgentService.isAlive() ? undefined : 'agent not alive' }] };
+    return { displays: [{ name: 'default', isScreenOn: await this.adb.isScreenOn(), error: this.deviceAgentService.isAlive() ? undefined : 'agent not alive' }] };
   }
 }

@@ -1,23 +1,23 @@
-import { DeviceSystemInfo, Platform, Serial } from '@dogu-private/types';
-import { getEmulatorName } from '../../externals/cli/adb/adb';
-import { Adb } from '../../externals/index';
-import { SystemInfoService } from './system-info-service-interface';
+import { DeviceSystemInfo, Platform } from '@dogu-private/types';
+import { AdbSerial } from '../../externals/cli/adb/adb';
 
-export class AndroidSystemInfoService implements SystemInfoService {
-  async createSystemInfo(serial: Serial): Promise<DeviceSystemInfo> {
-    const deviceProp = await Adb.getProps(serial);
+export class AndroidSystemInfoService {
+  constructor(private adb: AdbSerial) {}
+  async createSystemInfo(): Promise<DeviceSystemInfo> {
+    const { adb } = this;
+    const deviceProp = await adb.getProps();
     const isVirtual = deviceProp.ro_build_characteristics === 'emulator';
-    const procCpuInfos = await Adb.getProcCpuInfo(serial);
-    const procMemInfo = await Adb.getProcMemInfo(serial);
-    const displaySize = await Adb.getDisplaySize(serial);
-    const dfInfos = (await Adb.getDfInfo(serial))
+    const procCpuInfos = await adb.getProcCpuInfo();
+    const procMemInfo = await adb.getProcMemInfo();
+    const displaySize = await adb.getDisplaySize();
+    const dfInfos = (await adb.getDfInfo())
       .filter((x) => x.Mounted.startsWith('/data') || x.Mounted.startsWith('/storage'))
       .map((x) => {
         return { name: x.Mounted, size: x._1K_blocks };
       });
     let modelName = deviceProp.ro_product_model;
     if (isVirtual) {
-      modelName = await getEmulatorName(serial);
+      modelName = await adb.getEmulatorName();
     }
     const info: DeviceSystemInfo = {
       version: deviceProp.ro_build_version_release,
@@ -100,9 +100,5 @@ export class AndroidSystemInfoService implements SystemInfoService {
     };
 
     return info;
-  }
-
-  async getEmulatorName(serial: Serial): Promise<string> {
-    return getEmulatorName(serial);
   }
 }

@@ -85,7 +85,10 @@ export class DesktopProfileService implements ProfileService {
     [ProfileMethodKind.PROFILE_METHOD_KIND_DESKTOP_DISPLAY, new DisplayProfiler()],
   ]);
 
-  async profile(serial: Serial, methods: ProfileMethod[], logger: FilledPrintable): Promise<RuntimeInfo> {
+  constructor(private serial: Serial, private logger: FilledPrintable) {}
+
+  async profile(methods: ProfileMethod[]): Promise<RuntimeInfo> {
+    const { serial, logger } = this;
     const profilers = methods
       .map((method) => {
         const { kind } = method;

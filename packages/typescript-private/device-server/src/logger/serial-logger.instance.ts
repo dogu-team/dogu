@@ -1,4 +1,4 @@
-import { Serial } from '@dogu-private/types';
+import { Serial, SerialPrintable } from '@dogu-private/types';
 import { FilledPrintable } from '@dogu-tech/common';
 import { LoggerFactory } from '@dogu-tech/node';
 
@@ -9,8 +9,6 @@ export function createAndroidLogger(serial: Serial): SerialLogger {
 export function createIosLogger(serial: Serial): SerialLogger {
   return new SerialLogger(serial, LoggerFactory.createLazy(`${serial}_ios`, { withFileTransports: true }));
 }
-
-export type SerialPrintable = FilledPrintable & { serial: Serial };
 
 export class SerialLogger implements SerialPrintable {
   constructor(public readonly serial: Serial, readonly logger: FilledPrintable) {}

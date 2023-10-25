@@ -102,7 +102,7 @@ export class WindowsChannel implements DeviceChannel {
       deviceServerService.doguLogger,
     );
 
-    const deviceChannel = new WindowsChannel(param.serial, info, new DesktopProfileService(), streaming, deviceAgent, seleniumDeviceWebDriverHandler, []);
+    const deviceChannel = new WindowsChannel(param.serial, info, new DesktopProfileService(param.serial, logger), streaming, deviceAgent, seleniumDeviceWebDriverHandler, []);
 
     const gamiumContext = deviceServerService.gamiumService.openGamiumContext(deviceChannel);
     deviceChannel.gamiumContext = gamiumContext;
@@ -116,7 +116,7 @@ export class WindowsChannel implements DeviceChannel {
 
   async queryProfile(methods: ProfileMethod[] | ProfileMethod): Promise<FilledRuntimeInfo> {
     const methodList = Array.isArray(methods) ? methods : [methods];
-    const result = await this._profile.profile(this.serial, methodList, logger);
+    const result = await this._profile.profile(methodList);
     return {
       ...RuntimeInfo.fromPartial(result),
       platform: Platform.PLATFORM_WINDOWS,

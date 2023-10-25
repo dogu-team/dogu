@@ -1,10 +1,9 @@
-import { DeviceSystemInfo, Serial } from '@dogu-private/types';
+import { DeviceSystemInfo, Serial, SerialPrintable } from '@dogu-private/types';
 import { delay, filterAsync, loop, stringify } from '@dogu-tech/common';
 import semver from 'semver';
 import { AppiumContextImpl } from '../../../appium/appium.context';
-import { SerialPrintable } from '../../../logger/serial-logger.instance';
-import { Adb, AppiumAdb } from '../../externals/index';
-import { checkTime } from '../../util/check-time';
+import { Adb, AdbSerial, AppiumAdb } from '../../externals/index';
+import { CheckTimer } from '../../util/check-time';
 
 export interface AndroidResetInfo {
   lastResetTime: number;
@@ -15,7 +14,13 @@ const DirtyPath = '/data/local/tmp/dirty';
 
 export class AndroidResetService {
   private static map: Map<Serial, AndroidResetInfo> = new Map(); // Hold for process lifetime
-  constructor(private serial: Serial, private logger: SerialPrintable) {}
+  private timer: CheckTimer;
+  private adb: AdbSerial;
+
+  constructor(private serial: Serial, private logger: SerialPrintable) {
+    this.timer = new CheckTimer(this.logger);
+    this.adb = new AdbSerial(serial, logger);
+  }
 
   async makeDirty(): Promise<void> {
     await Adb.shell(this.serial, `echo dirty > ${DirtyPath}`);
@@ -50,11 +55,11 @@ export class AndroidResetService {
         throw new Error(`AndroidResetService.resetDevice Android version must be 10 or higher. to use testharness, serial:${serial}. version:${info.version}`);
       }
 
-      await checkTime(`AndroidResetService.reset.enableTestharness`, Adb.enableTestharness(serial), logger);
+      await this.timer.check(`AndroidResetService.reset.enableTestharness`, this.adb.enableTestharness());
     } catch (e) {
-      await checkTime(`AndroidResetService.reset.resetAccounts`, this.resetAccounts(appiumAdb, appiumContext), logger);
-      await checkTime(`AndroidResetService.reset.resetCommon`, this.resetCommon({ ignorePackages: [] }), logger);
-      await checkTime(`AndroidResetService.reset.reboot`, Adb.reboot(this.serial), logger);
+      await this.timer.check(`AndroidResetService.reset.resetAccounts`, this.resetAccounts(appiumAdb, appiumContext));
+      await this.timer.check(`AndroidResetService.reset.resetCommon`, this.resetCommon({ ignorePackages: [] }));
+      await this.timer.check(`AndroidResetService.reset.reboot`, this.adb.reboot());
     }
     AndroidResetService.map.set(serial, { lastResetTime: Date.now() });
     this.logger.info(`AndroidResetService.resetDevice end`, { serial, info });
@@ -69,44 +74,43 @@ export class AndroidResetService {
   }
 
   private async resetCommon(option: { ignorePackages: string[] }): Promise<void> {
-    const { serial, logger } = this;
-    await checkTime(`AndroidResetService.resetCommon.resetPackages`, Adb.resetPackages(serial, option.ignorePackages, logger), logger);
-    await checkTime(`AndroidResetService.resetCommon.resetSdcard`, Adb.resetSdcard(serial, logger), logger);
-    await checkTime(`AndroidResetService.resetCommon.resetIMEList`, this.resetIMEList(logger), logger);
-    await checkTime(`AndroidResetService.resetCommon.logcatClear`, Adb.logcatClear(serial, logger), logger);
-    await checkTime(`AndroidResetService.resetCommon.resetDirty`, this.resetDirty(), logger);
+    await this.timer.check(`AndroidResetService.resetCommon.resetPackages`, this.adb.resetPackages(option.ignorePackages));
+    await this.timer.check(`AndroidResetService.resetCommon.resetSdcard`, this.adb.resetSdcard());
+    await this.timer.check(`AndroidResetService.resetCommon.resetIMEList`, this.resetIMEList());
+    await this.timer.check(`AndroidResetService.resetCommon.logcatClear`, this.adb.logcatClear());
+    await this.timer.check(`AndroidResetService.resetCommon.resetDirty`, this.resetDirty());
   }
 
   private async resetDirty(): Promise<void> {
     await Adb.shell(this.serial, `rm -f ${DirtyPath}`);
   }
 
-  private async resetIMEList(logger: SerialPrintable): Promise<void> {
-    const { serial } = this;
-    const imes = await Adb.getIMEList(serial);
+  private async resetIMEList(): Promise<void> {
+    const { serial, logger } = this;
+    const imes = await this.adb.getIMEList();
     for (const ime of imes) {
-      await Adb.clearApp(serial, ime.packageName, logger).catch((err) => {
+      await this.adb.clearApp(ime.packageName).catch((err) => {
         logger.error(`AndroidResetService.resetIMEList adb.resetPackages failed to clear`, { error: stringify(err), package: ime.packageName, serial });
       });
-      await Adb.putIMESecure(serial, ime).catch((err) => {
+      await this.adb.putIMESecure(ime).catch((err) => {
         logger.error(`AndroidResetService.resetIMEList adb.resetPackages failed to put`, { error: stringify(err), package: ime.packageName, serial });
       });
     }
-    await Adb.resetIME(serial).catch((err) => {
+    await this.adb.resetIME().catch((err) => {
       logger.error(`AndroidResetService.resetIMEList adb.resetPackages failed to resetIME`, { error: stringify(err), serial });
     });
   }
 
   private async resetAccounts(appiumAdb: AppiumAdb, appiumContext: AppiumContextImpl): Promise<void> {
-    const { serial, logger } = this;
+    const { serial, logger, adb } = this;
     logger.info(`AndroidResetService.resetAccounts begin`, { serial });
     if (appiumContext.openingState !== 'openingSucceeded') {
       throw new Error(`AndroidResetService.resetAccounts Appium Context is not opened`);
     }
     const newAppiumAdb = appiumAdb.clone({ adbExecTimeout: 1000 * 60 * 3 });
-    await checkTime(`AndroidResetService.resetAccounts.setDeviceLocale.ko-KR`, newAppiumAdb.setDeviceLocale('ko-KR'), logger); // prevent setDeviceLocale passing
+    await this.timer.check(`AndroidResetService.resetAccounts.setDeviceLocale.ko-KR`, newAppiumAdb.setDeviceLocale('ko-KR')); // prevent setDeviceLocale passing
     await delay(1000);
-    await checkTime(`AndroidResetService.resetAccounts.setDeviceLocale.en-US`, newAppiumAdb.setDeviceLocale('en-US'), logger);
+    await this.timer.check(`AndroidResetService.resetAccounts.setDeviceLocale.en-US`, newAppiumAdb.setDeviceLocale('en-US'));
     const driver = appiumContext.driver();
     if (!driver) {
       throw new Error(`AndroidResetService.resetAccounts Appium Driver is not found`);
@@ -119,21 +123,19 @@ export class AndroidResetService {
     ];
     let count = 0;
     for await (const _ of loop(300, 100)) {
-      await checkTime(`AndroidResetService.resetAccounts.setDeviceLocale.en-US`, newAppiumAdb.setDeviceLocale('en-US'), logger);
-      await checkTime(`AndroidResetService.resetAccounts.runActivity`, Adb.runActivity(serial, 'android.settings.SYNC_SETTINGS', logger), logger);
+      await this.timer.check(`AndroidResetService.resetAccounts.setDeviceLocale.en-US`, newAppiumAdb.setDeviceLocale('en-US'));
+      await this.timer.check(`AndroidResetService.resetAccounts.runActivity`, adb.runActivity('android.settings.SYNC_SETTINGS'));
       await delay(3000);
-      const title = await checkTime(
+      const title = await this.timer.check(
         `AndroidResetService.resetAccounts.findActionBar`,
         driver.$(`android=new UiSelector().resourceId("com.android.settings:id/action_bar")`),
-        logger,
       );
       if (!title) {
         throw new Error('AndroidResetService.resetAccounts Account title not found');
       }
-      const titles = await checkTime(
+      const titles = await this.timer.check(
         `AndroidResetService.resetAccounts.findTitleList`,
         driver.$$(`android=new UiSelector().resourceId("com.android.settings:id/list").resourceId("android:id/title")`),
-        logger,
       );
       const titlesThatHaveAccount = await filterAsync(titles, async (title) => {
         const text = await title.getText();
@@ -156,20 +158,18 @@ export class AndroidResetService {
       const target = titlesThatHaveAccount[0];
       await target.click();
 
-      const removeButton = await checkTime(
+      const removeButton = await this.timer.check(
         `AndroidResetService.resetAccounts.clickRemoveAccount`,
         driver.$(`android=new UiSelector().resourceId("com.android.settings:id/button").text("Remove account")`),
-        logger,
       );
       if (!removeButton) {
         throw new Error('AndroidResetService.resetAccounts Remove button not found');
       }
       await removeButton.click();
 
-      const removeWidgetButton = await checkTime(
+      const removeWidgetButton = await this.timer.check(
         `AndroidResetService.resetAccounts.clickRemoveAccount`,
         driver.$(`android=new UiSelector().className("android.widget.Button").text("Remove account")`),
-        logger,
       );
       if (!removeWidgetButton) {
         throw new Error('AndroidResetService.resetAccounts Remove widget button not found');

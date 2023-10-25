@@ -99,13 +99,13 @@ export class MacosChannel implements DeviceChannel {
       deviceServerService.doguLogger,
     );
 
-    const deviceChannel = new MacosChannel(param.serial, info, new DesktopProfileService(), streaming, deviceAgent, seleniumDeviceWebDriverHandler, []);
+    const deviceChannel = new MacosChannel(param.serial, info, new DesktopProfileService(param.serial, logger), streaming, deviceAgent, seleniumDeviceWebDriverHandler, []);
     return Promise.resolve(deviceChannel);
   }
 
   async queryProfile(methods: ProfileMethod[] | ProfileMethod): Promise<FilledRuntimeInfo> {
     const methodList = Array.isArray(methods) ? methods : [methods];
-    const result = await this._profile.profile(this.serial, methodList, logger);
+    const result = await this._profile.profile(methodList);
     return {
       ...RuntimeInfo.fromPartial(result),
       platform: Platform.PLATFORM_MACOS,

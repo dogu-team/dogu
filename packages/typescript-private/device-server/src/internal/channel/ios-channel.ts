@@ -13,6 +13,7 @@ import {
   RuntimeInfo,
   ScreenRecordOption,
   Serial,
+  SerialPrintable,
   StreamingAnswer,
 } from '@dogu-private/types';
 import { Closable, errorify, loopTime, Milisecond, MixedLogger, Printable, PromiseOrValue, stringify } from '@dogu-tech/common';
@@ -31,7 +32,7 @@ import { DeviceWebDriverHandler } from '../../device-webdriver/device-webdriver.
 import { env } from '../../env';
 import { GamiumContext } from '../../gamium/gamium.context';
 import { deviceInfoLogger } from '../../logger/logger.instance';
-import { createIosLogger, SerialPrintable } from '../../logger/serial-logger.instance';
+import { createIosLogger } from '../../logger/serial-logger.instance';
 import { IdeviceDiagnostics, IdeviceSyslog, MobileDevice, Xctrace } from '../externals';
 import { IdeviceInstaller } from '../externals/cli/ideviceinstaller';
 import { IosDeviceAgentProcess } from '../externals/cli/ios-device-agent';
@@ -286,7 +287,7 @@ export class IosChannel implements DeviceChannel {
 
   async queryProfile(methods: ProfileMethod[] | ProfileMethod): Promise<FilledRuntimeInfo> {
     const methodList = Array.isArray(methods) ? methods : [methods];
-    const results = await Promise.allSettled(this._profilers.map(async (profiler) => profiler.profile(this.serial, methodList, this.logger)));
+    const results = await Promise.allSettled(this._profilers.map(async (profiler) => profiler.profile(methodList)));
     const result = results.reduce((acc, result) => {
       if (result.status === 'fulfilled') {
         Object.keys(acc).forEach((key) => {

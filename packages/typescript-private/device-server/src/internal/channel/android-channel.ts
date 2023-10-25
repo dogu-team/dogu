@@ -15,6 +15,7 @@ import {
   ScreenCaptureOption,
   ScreenRecordOption,
   Serial,
+  SerialPrintable,
   StreamingAnswer,
 } from '@dogu-private/types';
 import { Closable, errorify, MixedLogger, Printable, stringify } from '@dogu-tech/common';
@@ -32,8 +33,8 @@ import { AppiumDeviceWebDriverHandler } from '../../device-webdriver/appium.devi
 import { DeviceWebDriverHandler } from '../../device-webdriver/device-webdriver.common';
 import { GamiumContext } from '../../gamium/gamium.context';
 import { deviceInfoLogger } from '../../logger/logger.instance';
-import { createAndroidLogger, SerialLogger, SerialPrintable } from '../../logger/serial-logger.instance';
-import { Adb, AppiumAdb } from '../externals';
+import { createAndroidLogger, SerialLogger } from '../../logger/serial-logger.instance';
+import { AdbSerial, AppiumAdb } from '../externals';
 import { getManifestFromApp } from '../externals/apk/apk-util';
 import { DeviceChannel, DeviceChannelOpenParam, DeviceHealthStatus, DeviceServerService, LogHandler } from '../public/device-channel';
 import { AndroidDeviceAgentService } from '../services/device-agent/android-device-agent-service';
@@ -89,6 +90,7 @@ export class AndroidChannel implements DeviceChannel {
     private _appiumContext: AppiumContextProxy,
     private readonly _appiumDeviceWebDriverHandler: AppiumDeviceWebDriverHandler,
     private readonly _sharedDevice: AndroidSharedDeviceService,
+    private readonly adb: AdbSerial,
     private readonly appiumAdb: AppiumAdb,
     private readonly _reset: AndroidResetService,
     private readonly logger: SerialPrintable,
@@ -104,13 +106,14 @@ export class AndroidChannel implements DeviceChannel {
 
     const { serial } = param;
     const logger = createAndroidLogger(param.serial);
-    await Adb.unforwardall(serial, logger).catch((error) => {
+    const adb = new AdbSerial(serial, logger);
+    await adb.unforwardall().catch((error) => {
       deviceServerService.doguLogger.error('Adb.unforwardall failed', { error: errorify(error) });
     });
     const platform = Platform.PLATFORM_ANDROID;
 
-    const systemInfoService = new AndroidSystemInfoService();
-    const systemInfo = await systemInfoService.createSystemInfo(serial);
+    const systemInfoService = new AndroidSystemInfoService(adb);
+    const systemInfo = await systemInfoService.createSystemInfo();
     deviceInfoLogger.info(`AndroidChannel.create`, { serial, systemInfo, modelName: findDeviceModelNameByModelId(systemInfo.system.model) });
 
     const version = semver.coerce(systemInfo.version);
@@ -153,7 +156,7 @@ export class AndroidChannel implements DeviceChannel {
     });
     const appiumContextImpl = appiumContextProxy.getImpl(AppiumContextImpl);
     const reset = new AndroidResetService(serial, logger);
-    const sharedDevice = new AndroidSharedDeviceService(serial, appiumAdb, await Adb.getProps(serial), systemInfo, appiumContextImpl, reset, deviceAgent, logger);
+    const sharedDevice = new AndroidSharedDeviceService(serial, appiumAdb, await adb.getProps(), systemInfo, appiumContextImpl, reset, deviceAgent, logger);
     await sharedDevice.setup();
     await sharedDevice.wait();
 
@@ -163,11 +166,12 @@ export class AndroidChannel implements DeviceChannel {
       systemInfo,
       systemInfoService,
       deviceAgent,
-      [new AndroidAdbProfileService(appiumContextProxy), new AndroidDisplayProfileService(deviceAgent)],
+      [new AndroidAdbProfileService(appiumContextProxy, adb), new AndroidDisplayProfileService(deviceAgent, adb)],
       streaming,
       appiumContextProxy,
       appiumDeviceWebDriverHandler,
       sharedDevice,
+      adb,
       appiumAdb,
       reset,
       logger,
@@ -204,7 +208,7 @@ export class AndroidChannel implements DeviceChannel {
 
   async queryProfile(methods: ProfileMethod[] | ProfileMethod): Promise<FilledRuntimeInfo> {
     const methodList = Array.isArray(methods) ? methods : [methods];
-    const results = await Promise.allSettled(this._profilers.map(async (profiler) => profiler.profile(this.serial, methodList, this.logger)));
+    const results = await Promise.allSettled(this._profilers.map(async (profiler) => profiler.profile(methodList)));
     const result = results.reduce((acc, result) => {
       if (result.status === 'fulfilled') {
         Object.keys(acc).forEach((key) => {
@@ -262,17 +266,17 @@ export class AndroidChannel implements DeviceChannel {
   }
 
   async turnScreen(isOn: boolean): Promise<void> {
-    if (isOn) await Adb.turnOnScreen(this.serial);
-    else await Adb.turnOffScreen(this.serial);
+    if (isOn) await this.adb.turnOnScreen();
+    else await this.adb.turnOffScreen();
   }
 
   async reboot(): Promise<void> {
-    await Adb.reboot(this.serial);
+    await this.adb.reboot();
   }
 
   async checkHealth(): Promise<DeviceHealthStatus> {
     if (this.isVirtual) {
-      const emulatorName = await this._systemInfoService.getEmulatorName(this.serial);
+      const emulatorName = await this.adb.getEmulatorName();
       if (emulatorName !== this.info.system.model) {
         return { isHealthy: false, message: `emulator name is changed. before: ${this.info.system.model}, actual: ${emulatorName}` };
       }
@@ -288,22 +292,24 @@ export class AndroidChannel implements DeviceChannel {
   }
 
   async killOnPort(port: number): Promise<void> {
-    await Adb.killOnPort(this.serial, port);
+    await this.adb.killOnPort(port);
   }
 
   async forward(hostPort: number, devicePort: number, handler: LogHandler): Promise<void> {
     const { serial } = this;
     const logger = new SerialLogger(serial, new MixedLogger([this.logger, handler]));
+    const adb = new AdbSerial(serial, logger);
+
     await killProcessOnPort(hostPort, logger);
-    await Adb.forward(serial, hostPort, devicePort, logger);
+    await adb.forward(hostPort, devicePort);
   }
 
   async unforward(hostPort: number): Promise<void> {
-    await Adb.unforward(this.serial, hostPort, { ignore: false }, this.logger);
+    await this.adb.unforward(hostPort, { ignore: false });
   }
 
   async isPortListening(port: number): Promise<boolean> {
-    return Adb.isPortOpen(this.serial, port, this.logger);
+    return this.adb.isPortOpen(port);
   }
 
   getWindows(): DeviceWindowInfo[] {
@@ -311,21 +317,23 @@ export class AndroidChannel implements DeviceChannel {
   }
 
   async subscribeLog(args: string[], handler: LogHandler): Promise<Closable> {
-    const { serial, logger } = this;
-    const { stdout, stderr } = await Adb.logcatClear(serial, logger);
+    const { logger } = this;
+    const { stdout, stderr } = await this.adb.logcatClear();
     if (stdout) {
       logger.verbose?.(`adb logcat clear stdout: ${stdout}`);
     }
     if (stderr) {
       logger.verbose?.(`adb logcat clear stderr: ${stderr}`);
     }
-    const child = Adb.logcat(this.serial, args, handler);
+    const child = this.adb.logcat(args, handler);
     return new AndroidLogClosable(child, logger);
   }
 
   async uninstallApp(appPath: string, handler: LogHandler): Promise<void> {
     const { serial } = this;
     const logger = new SerialLogger(serial, new MixedLogger([this.logger, handler]));
+    const adb = new AdbSerial(serial, logger);
+
     const stat = await fs.promises.stat(appPath).catch(() => null);
     if (!stat) {
       throw new Error(`app not found: ${appPath}`);
@@ -334,7 +342,7 @@ export class AndroidChannel implements DeviceChannel {
     if (!manifest.package) {
       throw new Error(`Unexpected value. app path: ${appPath}, ${stringify(manifest)}`);
     }
-    await Adb.uninstallApp(serial, manifest.package, false, logger);
+    await adb.uninstallApp(manifest.package, false);
   }
 
   /**
@@ -343,13 +351,17 @@ export class AndroidChannel implements DeviceChannel {
   async installApp(appPath: string, handler: LogHandler): Promise<void> {
     const { serial } = this;
     const logger = new SerialLogger(serial, new MixedLogger([this.logger, handler]));
-    await Adb.installAppForce(serial, appPath, logger);
+    const adb = new AdbSerial(serial, logger);
+
+    await adb.installAppForce(appPath);
   }
 
   async runApp(appPath: string, handler: LogHandler): Promise<void> {
     const { serial } = this;
     const logger = new SerialLogger(serial, new MixedLogger([this.logger, handler]));
-    await Adb.turnOnScreen(serial).catch((error) => {
+    const adb = new AdbSerial(serial, logger);
+
+    await adb.turnOnScreen().catch((error) => {
       this.logger.error('adb.runApp.turnOnScreen', { error: errorify(error) });
     });
     const manifest = await getManifestFromApp(appPath);
@@ -360,7 +372,7 @@ export class AndroidChannel implements DeviceChannel {
     if (!activityName) {
       throw new Error(`Unexpected value. app path: ${appPath}, ${stringify(manifest)}`);
     }
-    await Adb.runApp(serial, manifest.package, activityName, logger);
+    await adb.runApp(manifest.package, activityName);
   }
 
   /**
@@ -369,7 +381,7 @@ export class AndroidChannel implements DeviceChannel {
    * adb -s $DOGU_DEVICE_SERIAL shell am start -n com.steinwurf.adbjoinwifi/.MainActivity -e ssid $DOGU_WIFI_SSID -e password_type WPA -e password $DOGU_WIFI_PASSWORD
    */
   async joinWifi(ssid: string, password: string): Promise<void> {
-    await Adb.joinWifi(this.serial, ssid, password, this.logger);
+    await this.adb.joinWifi(ssid, password);
   }
 
   getAppiumContext(): AppiumContext {
