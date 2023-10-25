@@ -15,7 +15,7 @@ import {
   Serial,
   StreamingAnswer,
 } from '@dogu-private/types';
-import { Closable, errorify, FilledPrintable, loopTime, Milisecond, Printable, PromiseOrValue, stringify } from '@dogu-tech/common';
+import { Closable, errorify, FilledPrintable, loopTime, Milisecond, MixedLogger, Printable, PromiseOrValue, stringify } from '@dogu-tech/common';
 import { AppiumCapabilities, BrowserInstallation, StreamingOfferDto } from '@dogu-tech/device-client-common';
 import { ChildProcessError, killChildProcess } from '@dogu-tech/node';
 import { ChildProcess } from 'child_process';
@@ -40,6 +40,7 @@ import { DeviceChannel, DeviceChannelOpenParam, DeviceHealthStatus, DeviceServer
 import { IosDeviceAgentService } from '../services/device-agent/ios-device-agent-service';
 import { IosDisplayProfileService, IosProfileService } from '../services/profile/ios-profiler';
 import { ProfileServices } from '../services/profile/profile-service';
+import { IosSharedDeviceService } from '../services/shared-device/ios-shared-device';
 import { StreamingService } from '../services/streaming/streaming-service';
 import { IosSystemInfoService } from '../services/system-info/ios-system-info-service';
 import { Zombieable } from '../services/zombie/zombie-component';
@@ -218,6 +219,9 @@ export class IosChannel implements DeviceChannel {
       findAllBrowserInstallationsResult.browserInstallations,
     );
 
+    const shared = new IosSharedDeviceService(serial, systemInfo, deviceAgent, logger);
+    await shared.wait();
+
     logger.verbose('streaming service calling deviceConnected');
     await Promise.resolve(
       streaming.deviceConnected(serial, {
@@ -358,7 +362,9 @@ export class IosChannel implements DeviceChannel {
     this.logger.warn?.('IosChannel.killOnPort is not implemented yet');
   }
 
-  async forward(hostPort: number, devicePort: number, printable?: Printable): Promise<void> {
+  async forward(hostPort: number, devicePort: number, handler: LogHandler): Promise<void> {
+    const { serial } = this;
+    const logger = new MixedLogger([this.logger, handler]);
     const tunnel = this.tunnels.find((t) => t.devicePort === devicePort);
     if (tunnel) {
       this.logger.warn?.(
@@ -367,7 +373,7 @@ export class IosChannel implements DeviceChannel {
       this.unforward(tunnel.hostPort);
     }
 
-    const newTunnel = new ZombieTunnel(this.serial, hostPort, devicePort, this.logger);
+    const newTunnel = new ZombieTunnel(serial, hostPort, devicePort, logger);
     this.tunnels.push(newTunnel);
     await newTunnel.zombieWaiter.waitUntilAlive();
   }
@@ -412,16 +418,18 @@ export class IosChannel implements DeviceChannel {
     throw new Error('not found .app');
   }
 
-  async uninstallApp(appPath: string, printable?: Printable): Promise<void> {
-    const { logger } = this;
+  async uninstallApp(appPath: string, handler: LogHandler): Promise<void> {
+    const { serial } = this;
+    const logger = new MixedLogger([this.logger, handler]);
     const dotAppPath = await this.findDotAppPath(appPath);
     const appName = await MobileDevice.getBundleId(dotAppPath, logger);
-    await IdeviceInstaller.uninstallApp(this.serial, appName, logger);
+    await IdeviceInstaller.uninstallApp(serial, appName, logger);
   }
 
-  async installApp(appPath: string, printable?: Printable): Promise<void> {
-    const { logger } = this;
-    const result = await IdeviceInstaller.installApp(this.serial, appPath, logger).catch((error) => {
+  async installApp(appPath: string, handler: LogHandler): Promise<void> {
+    const { serial } = this;
+    const logger = new MixedLogger([this.logger, handler]);
+    const result = await IdeviceInstaller.installApp(serial, appPath, logger).catch((error) => {
       if (!(error instanceof ChildProcessError)) {
         throw error;
       }
@@ -432,14 +440,15 @@ export class IosChannel implements DeviceChannel {
       throw error;
     });
     if ('errorType' in result && result.errorType === 'MismatchedApplicationIdentifierEntitlement') {
-      await this.uninstallApp(appPath, printable);
-      await IdeviceInstaller.installApp(this.serial, appPath, logger);
+      await this.uninstallApp(appPath, handler);
+      await IdeviceInstaller.installApp(serial, appPath, logger);
     }
   }
 
-  async runApp(appPath: string, printable?: Printable): Promise<void> {
-    const { logger } = this;
-    const installedAppNames = await MobileDevice.listApps(this.serial, logger);
+  async runApp(appPath: string, handler: LogHandler): Promise<void> {
+    const { serial } = this;
+    const logger = new MixedLogger([this.logger, handler]);
+    const installedAppNames = await MobileDevice.listApps(serial, logger);
     const dotAppPath = await this.findDotAppPath(appPath);
     const bundleId = await MobileDevice.getBundleId(dotAppPath, logger);
     const result = await this.deviceAgent.sendWithProtobuf('dcIdaRunappParam', 'dcIdaRunappResult', {
@@ -455,9 +464,10 @@ export class IosChannel implements DeviceChannel {
     }
   }
 
-  subscribeLog(args: string[], handler: LogHandler, printable?: Printable | undefined): PromiseOrValue<Closable> {
-    const child = IdeviceSyslog.logcat(this.serial, args, handler, printable);
-    return new IosLogClosable(child, printable);
+  subscribeLog(args: string[], handler: LogHandler): PromiseOrValue<Closable> {
+    const { serial, logger } = this;
+    const child = IdeviceSyslog.logcat(serial, args, handler, logger);
+    return new IosLogClosable(child, logger);
   }
 
   reset(): PromiseOrValue<void> {

@@ -17,7 +17,7 @@ import {
   Serial,
   StreamingAnswer,
 } from '@dogu-private/types';
-import { Closable, errorify, FilledPrintable, Printable, stringify } from '@dogu-tech/common';
+import { Closable, errorify, FilledPrintable, MixedLogger, Printable, stringify } from '@dogu-tech/common';
 import { AppiumCapabilities, BrowserInstallation, StreamingOfferDto } from '@dogu-tech/device-client-common';
 import { killChildProcess, killProcessOnPort } from '@dogu-tech/node';
 import { ChildProcess } from 'child_process';
@@ -290,9 +290,11 @@ export class AndroidChannel implements DeviceChannel {
     await Adb.killOnPort(this.serial, port);
   }
 
-  async forward(hostPort: number, devicePort: number, printable?: Printable): Promise<void> {
-    await killProcessOnPort(hostPort, this.logger);
-    await Adb.forward(this.serial, hostPort, devicePort, printable);
+  async forward(hostPort: number, devicePort: number, handler: LogHandler): Promise<void> {
+    const { serial } = this;
+    const logger = new MixedLogger([this.logger, handler]);
+    await killProcessOnPort(hostPort, logger);
+    await Adb.forward(serial, hostPort, devicePort, logger);
   }
 
   async unforward(hostPort: number): Promise<void> {
@@ -307,19 +309,22 @@ export class AndroidChannel implements DeviceChannel {
     return [];
   }
 
-  async subscribeLog(args: string[], handler: LogHandler, printable?: Printable): Promise<Closable> {
-    const { stdout, stderr } = await Adb.logcatClear(this.serial, printable);
+  async subscribeLog(args: string[], handler: LogHandler): Promise<Closable> {
+    const { serial, logger } = this;
+    const { stdout, stderr } = await Adb.logcatClear(serial, logger);
     if (stdout) {
-      printable?.verbose?.(`adb logcat clear stdout: ${stdout}`);
+      logger.verbose?.(`adb logcat clear stdout: ${stdout}`);
     }
     if (stderr) {
-      printable?.verbose?.(`adb logcat clear stderr: ${stderr}`);
+      logger.verbose?.(`adb logcat clear stderr: ${stderr}`);
     }
-    const child = Adb.logcat(this.serial, args, handler, printable);
-    return new AndroidLogClosable(child, printable);
+    const child = Adb.logcat(this.serial, args, handler, logger);
+    return new AndroidLogClosable(child, logger);
   }
 
-  async uninstallApp(appPath: string, printable?: Printable): Promise<void> {
+  async uninstallApp(appPath: string, handler: LogHandler): Promise<void> {
+    const { serial } = this;
+    const logger = new MixedLogger([this.logger, handler]);
     const stat = await fs.promises.stat(appPath).catch(() => null);
     if (!stat) {
       throw new Error(`app not found: ${appPath}`);
@@ -328,18 +333,22 @@ export class AndroidChannel implements DeviceChannel {
     if (!manifest.package) {
       throw new Error(`Unexpected value. app path: ${appPath}, ${stringify(manifest)}`);
     }
-    await Adb.uninstallApp(this.serial, manifest.package, false, printable);
+    await Adb.uninstallApp(serial, manifest.package, false, logger);
   }
 
   /**
    * @note if install failed with INSTALL_FAILED_UPDATE_INCOMPATIBLE then uninstall with keep data and install again
    */
-  async installApp(appPath: string, printable?: Printable): Promise<void> {
-    await Adb.installAppForce(this.serial, appPath, printable);
+  async installApp(appPath: string, handler: LogHandler): Promise<void> {
+    const { serial } = this;
+    const logger = new MixedLogger([this.logger, handler]);
+    await Adb.installAppForce(serial, appPath, logger);
   }
 
-  async runApp(appPath: string, printable?: Printable): Promise<void> {
-    await Adb.turnOnScreen(this.serial).catch((error) => {
+  async runApp(appPath: string, handler: LogHandler): Promise<void> {
+    const { serial } = this;
+    const logger = new MixedLogger([this.logger, handler]);
+    await Adb.turnOnScreen(serial).catch((error) => {
       this.logger.error('adb.runApp.turnOnScreen', { error: errorify(error) });
     });
     const manifest = await getManifestFromApp(appPath);
@@ -350,7 +359,7 @@ export class AndroidChannel implements DeviceChannel {
     if (!activityName) {
       throw new Error(`Unexpected value. app path: ${appPath}, ${stringify(manifest)}`);
     }
-    await Adb.runApp(this.serial, manifest.package, activityName, printable);
+    await Adb.runApp(serial, manifest.package, activityName, logger);
   }
 
   /**

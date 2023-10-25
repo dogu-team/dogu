@@ -14,7 +14,7 @@ import {
   Serial,
   StreamingAnswer,
 } from '@dogu-private/types';
-import { Closable, Printable, PromiseOrValue, stringify } from '@dogu-tech/common';
+import { Closable, PromiseOrValue, stringify } from '@dogu-tech/common';
 import { BrowserInstallation, StreamingOfferDto } from '@dogu-tech/device-client-common';
 import { ChildProcess, isFreePort } from '@dogu-tech/node';
 import { Observable } from 'rxjs';
@@ -145,7 +145,7 @@ export class LinuxChannel implements DeviceChannel {
     await ChildProcess.exec(`lsof -i tcp:${port} | grep LISTEN | awk '{print $2}' | xargs kill -9`, {}, logger);
   }
 
-  forward(hostPort: number, devicePort: number, printable?: Printable): void {
+  forward(hostPort: number, devicePort: number, handler: LogHandler): void {
     // noop
   }
 
@@ -162,21 +162,21 @@ export class LinuxChannel implements DeviceChannel {
     return await DesktopCapturer.getWindows(logger);
   }
 
-  uninstallApp(appPath: string): void {
+  uninstallApp(appPath: string, handler: LogHandler): void {
     throw new Error('Method not implemented.');
   }
 
-  installApp(appPath: string): void {
+  installApp(appPath: string, handler: LogHandler): void {
     throw new Error('Method not implemented.');
   }
 
-  runApp(appPath: string): void {
+  runApp(appPath: string, handler: LogHandler): void {
     ChildProcess.spawn(appPath, [], {}, logger).catch((err) => {
       logger.error(`failed to start app`, { error: stringify(err) });
     });
   }
 
-  subscribeLog(args: string[], handler: LogHandler, printable?: Printable | undefined): PromiseOrValue<Closable> {
+  subscribeLog(args: string[], handler: LogHandler): PromiseOrValue<Closable> {
     throw new Error('Method not implemented.');
   }
 

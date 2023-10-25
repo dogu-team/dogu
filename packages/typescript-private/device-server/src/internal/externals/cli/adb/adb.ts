@@ -1,6 +1,6 @@
 import { PlatformAbility } from '@dogu-private/dost-children';
 import { PrivateProtocol, Serial } from '@dogu-private/types';
-import { delay, errorify, Printable, stringify } from '@dogu-tech/common';
+import { delay, errorify, IDisposable, Printable, stringify, using } from '@dogu-tech/common';
 import { ChildProcess, HostPaths } from '@dogu-tech/node';
 import child_process, { execFile, ExecFileOptionsWithStringEncoding, spawn } from 'child_process';
 import fs from 'fs';
@@ -39,6 +39,26 @@ export function adbBinary(): string {
 
 export function adbPrefix(): string {
   return `${adbBinary()} -P ${DOGU_ADB_SERVER_PORT}`;
+}
+
+class AdbScope implements IDisposable {
+  constructor(
+    private func: { name: string },
+    private option: {
+      serial: Serial;
+      [key: string]: any;
+    },
+  ) {
+    this.option.random = Math.random();
+  }
+  async create(): Promise<void> {
+    adbLogger.verbose(`adb.${this.func.name} begin`, this.option);
+    return Promise.resolve();
+  }
+  async dispose(): Promise<void> {
+    adbLogger.verbose(`adb.${this.func.name} end`, this.option);
+    return Promise.resolve();
+  }
 }
 
 const execFileAsync = util.promisify(execFile);
@@ -118,20 +138,9 @@ export async function killServer(): Promise<void> {
 }
 
 export async function forward(serial: Serial, hostPort: number, devicePort: number, printable: Printable = adbLogger): Promise<void> {
-  const random = Math.random();
-  adbLogger.verbose('adb.forward begin', {
-    serial,
-    hostPort,
-    devicePort,
-    random,
-  });
-  await exec(`${adbPrefix()} -s ${serial} forward tcp:${hostPort} tcp:${devicePort}`);
-  printable.verbose?.(`${serial} is forwarding from ${hostPort} to ${devicePort}`);
-  adbLogger.verbose(`adb.forward end`, {
-    serial,
-    hostPort,
-    devicePort,
-    random,
+  await using(new AdbScope(forward, { serial, hostPort, devicePort }), async () => {
+    await exec(`${adbPrefix()} -s ${serial} forward tcp:${hostPort} tcp:${devicePort}`);
+    printable.verbose?.(`${serial} is forwarding from ${hostPort} to ${devicePort}`);
   });
 }
 
