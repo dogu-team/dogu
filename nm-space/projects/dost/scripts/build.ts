@@ -41,10 +41,7 @@ function getArtifactPrefix(): string {
 }
 
 function getCompression(): CompressionLevel {
-  if (deviceServerEnv.DOGU_RUN_TYPE === 'production' || deviceServerEnv.DOGU_RUN_TYPE === 'self-hosted') {
-    return 'normal';
-  }
-  return 'store';
+  return 'normal';
 }
 
 function getOptions(archs: Arch[], extraRess: ExtraResource[]): CliOptions {
