@@ -1,13 +1,29 @@
-export interface IDisposable {
-  create(): Promise<void>;
-  dispose(): Promise<void>;
+type NoPromise<T> = T extends Promise<unknown> ? never : T;
+
+export interface IDisposableSync {
+  create(): void;
+  dispose(): void;
 }
 
-export async function using<T extends IDisposable, U>(resource: T, func: (resource: T) => Promise<U>): Promise<U> {
+export interface IDisposableAsync {
+  create(): Promise<void> | void;
+  dispose(): Promise<void> | void;
+}
+
+export function using<T extends IDisposableSync, U>(resource: T, func: (resource: T) => NoPromise<U>): U {
   try {
-    await resource.create();
+    resource.create();
+    return func(resource);
+  } finally {
+    resource.dispose();
+  }
+}
+
+export async function usingAsnyc<T extends IDisposableAsync, U>(resource: T, func: (resource: T) => Promise<U>): Promise<U> {
+  try {
+    await Promise.resolve(resource.create());
     return await func(resource);
   } finally {
-    await resource.dispose();
+    await Promise.resolve(resource.dispose());
   }
 }
