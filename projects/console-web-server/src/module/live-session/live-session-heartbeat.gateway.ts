@@ -9,8 +9,10 @@ import WebSocket from 'ws';
 import { config } from '../../config';
 
 import { LiveSession } from '../../db/entity/live-session.entity';
+import { CloudLicenseService } from '../../enterprise/module/license/cloud-license.service';
 import { WsCommonService } from '../../ws/common/ws-common.service';
 import { DoguLogger } from '../logger/logger';
+import { WebSocketClientRegistryService } from '../websocket-client-registry/websocket-client-registry.service';
 import { LiveSessionService } from './live-session.service';
 
 @WebSocketGateway({ path: '/live-session-heartbeat' })
@@ -22,6 +24,8 @@ export class LiveSessionHeartbeatGateway implements OnGatewayConnection {
     @InjectDataSource()
     private readonly dataSource: DataSource,
     private readonly liveSessionService: LiveSessionService,
+    private readonly cloudLicense: CloudLicenseService,
+    private readonly webSocketClientRegistryService: WebSocketClientRegistryService,
   ) {}
 
   async handleConnection(webSocket: WebSocket, incomingMessage: IncomingMessage): Promise<void> {
@@ -121,6 +125,23 @@ export class LiveSessionHeartbeatGateway implements OnGatewayConnection {
       });
       await this.liveSessionService.updateHeartbeat(liveSessionId);
       await this.liveSessionService.increaseParticipantsCount(liveSessionId);
+
+      const cloudLicense = await this.cloudLicense.getLicenseInfo(organizationId);
+      const webSocketClientId = LiveSessionService.createLiveSessionWebSocketClientId(cloudLicense.cloudLicenseId, liveSessionId);
+      const webSocketClient = this.webSocketClientRegistryService.get(webSocketClientId);
+      if (!webSocketClient) {
+        this.logger.error(`LiveSessionHeartbeatGateway.handleConnection webSocketClient not found`, { webSocketClientId });
+        webSocket.close(1003, `webSocketClient not found`);
+        return;
+      }
+
+      webSocketClient.on('message', (data) => {
+        const sendMessage: LiveSessionWsMessage = {
+          type: 'remaining-free-seconds',
+          message: data.toString(),
+        };
+        webSocket.send(JSON.stringify(sendMessage));
+      });
     });
   }
 }

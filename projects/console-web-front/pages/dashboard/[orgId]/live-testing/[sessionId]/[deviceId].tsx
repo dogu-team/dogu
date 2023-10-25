@@ -21,6 +21,8 @@ import useModal from '../../../../../src/hooks/useModal';
 import useWebSocket from '../../../../../src/hooks/useWebSocket';
 import CountDownTimer from '../../../../../src/components/common/CountDownTimer';
 import LiveTestingCloseSessionButton from '../../../../../src/components/cloud/LiveTestingCloseSessionButton';
+import { transform, transformAndValidate } from '@dogu-tech/common';
+import { CloudLicenseMessage } from '@dogu-private/console';
 
 const CloudLiveTestingStudioPage: NextPageWithLayout<CloudStudioTestingPageProps> = ({ organization, me, device }) => {
   const [isOpen, openModal, closeModal, payload] = useModal<string>();
@@ -46,6 +48,9 @@ const CloudLiveTestingStudioPage: NextPageWithLayout<CloudStudioTestingPageProps
           const data = JSON.parse(event.data) as LiveSessionWsMessage;
           if (data.type === LiveSessionState.CLOSE_WAIT) {
             openModal(data.message);
+          } else if (data.type === 'remaining-free-seconds') {
+            const parsed = transform(CloudLicenseMessage.RemainingFreeSecondsReceive, JSON.parse(data.message));
+            console.debug('remaining-free-seconds', parsed);
           }
         } catch (e) {
           console.error('Invalid message: ', event.data);

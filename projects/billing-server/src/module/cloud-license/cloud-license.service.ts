@@ -28,7 +28,10 @@ export class CloudLicenseService {
   }
 
   async findLicense(organizationId: OrganizationId): Promise<CloudLicense> {
-    const license = await this.dataSource.manager.getRepository(CloudLicense).findOne({ where: { organizationId } });
+    const license = await this.dataSource.manager.getRepository(CloudLicense).findOne({
+      where: { organizationId },
+      relations: ['cloudSubscriptionItems'],
+    });
 
     if (!license) {
       throw new NotFoundException(`Organization does not have a cloud license. organizationId: ${organizationId}`);

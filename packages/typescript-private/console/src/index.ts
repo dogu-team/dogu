@@ -5,6 +5,7 @@ export * from './base/change-log-user-reaction';
 export * from './base/cloud-device';
 export * from './base/cloud-device-rental';
 export * from './base/cloud-license';
+export * from './base/cloud-subscription-item';
 export * from './base/controller-handler';
 export * from './base/dest';
 export * from './base/dest-edge';

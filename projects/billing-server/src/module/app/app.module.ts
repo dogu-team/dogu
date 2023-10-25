@@ -3,6 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { dataSourceConfig } from '../../config';
 import { AuthModule } from '../auth/auth.module';
 import { CloudLicenseModule } from '../cloud-license/cloud-license.module';
+import { LoggerModule } from '../logger/logger.module';
 import { SelfHostedLicenseModule } from '../self-hosted-license/self-hosted-license.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -13,6 +14,7 @@ import { AppService } from './app.service';
     CloudLicenseModule,
     SelfHostedLicenseModule,
     AuthModule,
+    LoggerModule,
   ],
   controllers: [AppController],
   providers: [AppService],

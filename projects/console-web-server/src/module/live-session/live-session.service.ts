@@ -1,7 +1,7 @@
-import { DevicePropCamel, DeviceUsageState, LiveSessionCreateRequestBodyDto, LiveSessionFindQueryDto, OrganizationPropCamel } from '@dogu-private/console';
-import { LiveSessionId, LiveSessionState } from '@dogu-private/types';
+import { CloudLicenseBase, DevicePropCamel, DeviceUsageState, LiveSessionCreateRequestBodyDto, LiveSessionFindQueryDto, OrganizationPropCamel } from '@dogu-private/console';
+import { LiveSessionActiveStates, LiveSessionId, LiveSessionState, OrganizationId } from '@dogu-private/types';
 import { InjectRedis } from '@liaoliaots/nestjs-redis';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import Redis from 'ioredis';
 import { DataSource, EntityManager, In } from 'typeorm';
@@ -11,6 +11,7 @@ import { config } from '../../config';
 import { Device } from '../../db/entity/device.entity';
 import { LiveSession } from '../../db/entity/live-session.entity';
 import { Organization } from '../../db/entity/organization.entity';
+import { CloudLicenseService } from '../../enterprise/module/license/cloud-license.service';
 import { DoguLogger } from '../logger/logger';
 import { DeviceCommandService } from '../organization/device/device-command.service';
 
@@ -24,6 +25,7 @@ export class LiveSessionService {
     @InjectRedis()
     private readonly redis: Redis,
     private readonly deviceCommandService: DeviceCommandService,
+    private readonly cloudLicenseService: CloudLicenseService,
     private readonly logger: DoguLogger,
   ) {
     this.subscriber = redis.duplicate();
@@ -43,9 +45,11 @@ export class LiveSessionService {
     return liveSessions;
   }
 
-  async create(body: LiveSessionCreateRequestBodyDto): Promise<LiveSession> {
+  async createOrReject(body: LiveSessionCreateRequestBodyDto, cloudLicense: CloudLicenseBase): Promise<LiveSession> {
     const { organizationId, deviceModel, deviceVersion } = body;
     return await this.dataSource.manager.transaction(async (manager) => {
+      const isLiveTestingSubscribing = await LiveSessionService.validateCloudLicense(manager, organizationId, cloudLicense);
+
       const device = await manager
         .getRepository(Device)
         .createQueryBuilder(Device.name)
@@ -77,6 +81,10 @@ export class LiveSessionService {
       await this.updateHeartbeat(created.liveSessionId);
       const saved = await manager.getRepository(LiveSession).save(created);
       this.logger.debug('LiveSession created', { saved });
+      if (!isLiveTestingSubscribing) {
+        await this.startUpdateRemainingFreeSeconds(cloudLicense.cloudLicenseId, saved.liveSessionId);
+      }
+
       return saved;
     });
   }
@@ -203,5 +211,52 @@ export class LiveSessionService {
 
     await this.publishCloseEvent(closedSession.liveSessionId, 'closed!');
     return closedSession;
+  }
+
+  async startUpdateRemainingFreeSeconds(cloudLicenseId: string, liveSessionId: string): Promise<void> {
+    const webSocketClientId = LiveSessionService.createLiveSessionWebSocketClientId(cloudLicenseId, liveSessionId);
+    this.cloudLicenseService.startUpdateRemainingFreeSeconds(cloudLicenseId, webSocketClientId, {
+      onOpen: async (close) => {
+        this.subscribeCloseEvent(liveSessionId, () => {
+          close();
+        });
+      },
+      onMessage: async (message) => {
+        if (message.expired) {
+          this.logger.debug('LiveSessionService.startUpdateRemainingFreeSeconds.message expired', {
+            cloudLicenseId,
+            liveSessionId,
+            message,
+          });
+          await this.closeByLiveSessionId(liveSessionId);
+          return;
+        }
+      },
+    });
+  }
+
+  static async validateCloudLicense(manager: EntityManager, organizationId: OrganizationId, cloudLicense: CloudLicenseBase): Promise<boolean> {
+    const activeCount = await manager //
+      .getRepository(LiveSession)
+      .count({
+        where: {
+          organizationId,
+          state: In(LiveSessionActiveStates),
+        },
+      });
+    if (activeCount >= cloudLicense.liveTestingParallelCount) {
+      throw new ForbiddenException(`Live testing parallel count exceeded. liveTestingParallelCount: ${cloudLicense.liveTestingParallelCount}`);
+    }
+
+    const isLiveTestingSubscribing = cloudLicense.cloudSubscriptionItems?.find((item) => item.type === 'live-testing');
+    if (!isLiveTestingSubscribing && cloudLicense.remainingFreeSeconds <= 0) {
+      throw new ForbiddenException(`Live testing is not subscribed. remainingFreeSeconds: ${cloudLicense.remainingFreeSeconds}`);
+    }
+
+    return !!isLiveTestingSubscribing;
+  }
+
+  static createLiveSessionWebSocketClientId(cloudLicenseId: string, liveSessionId: string): string {
+    return `${cloudLicenseId}:${liveSessionId}`;
   }
 }
