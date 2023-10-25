@@ -77,6 +77,8 @@ const GboardAppInfo: PreinstallAppInfo = {
 const PreinstallApps: PreinstallAppInfo[] = [GboardAppInfo];
 
 export class AndroidSharedDeviceService implements Zombieable {
+  public name = 'AndroidSharedDeviceService';
+  public platform = Platform.PLATFORM_ANDROID;
   private logcatProc: child_process.ChildProcess | undefined = undefined;
   private zombieWaiter: ZombieQueriable;
   private setupState = 'none';
@@ -102,17 +104,8 @@ export class AndroidSharedDeviceService implements Zombieable {
     ZombieServiceInstance.deleteComponent(this);
   }
 
-  get name(): string {
-    return 'AndroidSharedDeviceService';
-  }
-
-  get platform(): Platform {
-    return Platform.PLATFORM_ANDROID;
-  }
-
   get props(): ZombieProps {
     return {
-      serial: this.serial,
       setupState: this.setupState,
     };
   }
