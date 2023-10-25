@@ -8,6 +8,12 @@ on:
         type: string
         description: 'Dogu Agent app version'
         default: '0.0.1'
+      windows_runner:
+        type: choice
+        description: 'windows runner'
+        options:
+          - 'windows-2019'
+        default: 'windows-2019'
       maxos_runner:
         type: choice
         description: 'macos runner'
@@ -30,12 +36,12 @@ jobs:
       fail-fast: false
       max-parallel: 99
       matrix:
-        runner: [windows-2019, ${{ github.event.inputs.maxos_runner }}]
+        runner: [pass]
         include:
-          - runner: windows-2019
-            extension: exe
-          - runner: self-hosted-macos
-            extension: zip
+          - runner: ${{ github.event.inputs.windows_runner }}
+          - runner: ${{ github.event.inputs.maxos_runner }}
+        exclude:
+          - runner: pass
     runs-on: ['${{ matrix.runner }}']
 
     env:
@@ -240,13 +246,21 @@ jobs:
           ELECTRON_CACHE: ${{ github.workspace }}/.electron-cache/electron
           ELECTRON_BUILDER_CACHE: ${{ github.workspace }}/.electron-cache/electron-builder
 
-      - name: Upload dogu-agent
-        if: ${{ success() }}
+      - name: Upload dogu-agent windows
+        if: ${{ success() }} && runner.os == 'Windows'
         uses: actions/upload-artifact@v3
         with:
           name: 'dogu-agent-${{ runner.os }}'
           path: |
-            ./nm-space/projects/dost/dist/*.${{ matrix.extension }}
+            ./nm-space/projects/dost/dist/*.exe
+
+      - name: Upload dogu-agent mac
+        if: ${{ success() }} && runner.os == 'macOS'
+        uses: actions/upload-artifact@v3
+        with:
+          name: 'dogu-agent-${{ runner.os }}'
+          path: |
+            ./nm-space/projects/dost/dist/*.zip
 
   send-slack:
     runs-on: ubuntu-latest

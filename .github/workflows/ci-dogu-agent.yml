@@ -54,8 +54,8 @@ jobs:
       matrix:
         runner: [pass]
         include:
-          - runner: ${{ github.event.inputs.maxos_runner }}
           - runner: ${{ github.event.inputs.windows_runner }}
+          - runner: ${{ github.event.inputs.maxos_runner }}
         exclude:
           - runner: pass
     runs-on: ['${{ matrix.runner }}']
