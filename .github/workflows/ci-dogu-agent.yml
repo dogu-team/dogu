@@ -3,6 +3,12 @@ name: 🔄ci-dogu-agent
 on:
   workflow_dispatch:
     inputs:
+      windows_runner:
+        type: choice
+        description: 'windows runner'
+        options:
+          - 'windows-2019'
+        default: 'windows-2019'
       maxos_runner:
         type: choice
         description: 'macos runner'
@@ -46,9 +52,12 @@ jobs:
       fail-fast: false
       max-parallel: 99
       matrix:
-        runner: [windows-2019]
+        runner: [pass]
         include:
           - runner: ${{ github.event.inputs.maxos_runner }}
+          - runner: ${{ github.event.inputs.windows_runner }}
+        exclude:
+          - runner: pass
     runs-on: ['${{ matrix.runner }}']
 
     env:
