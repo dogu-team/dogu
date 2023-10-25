@@ -5,29 +5,29 @@ on:
     inputs:
       exclude_runner:
         type: string
-        description: 'exclude to build (ex. windows-2019 or macos-latest)'
-        default: 'macos-latest'
+        description: 'exclude to build (ex. windows-2019 or self-hosted-macos)'
+        default: 'self-hosted-macos'
       clean:
         type: boolean
         description: 'clean git repo'
         default: false
 
-  push:
-    branches: ['main']
-    paths:
-      - '.github/workflows/build-dost.yml'
-      - 'prebuilds/protocol-exporter/**.proto'
-      - 'packages/typescript-dev-private/build-tools/**'
-      - 'packages/typescript-private/device-server/**'
-      - 'packages/typescript-private/host-agent/**'
-      - 'projects/go-device-controller/**'
-      - 'projects/ios-device-agent/**'
-      - 'projects/android-device-agent/**'
-      - 'projects/device-server/**'
-      - 'projects/host-agent/**'
-      - 'nm-space/projects/dost/**'
-  pull_request:
-    branches: ['main']
+  # push:
+  #   branches: ['main']
+  #   paths:
+  #     - '.github/workflows/build-dost.yml'
+  #     - 'prebuilds/protocol-exporter/**.proto'
+  #     - 'packages/typescript-dev-private/build-tools/**'
+  #     - 'packages/typescript-private/device-server/**'
+  #     - 'packages/typescript-private/host-agent/**'
+  #     - 'projects/go-device-controller/**'
+  #     - 'projects/ios-device-agent/**'
+  #     - 'projects/android-device-agent/**'
+  #     - 'projects/device-server/**'
+  #     - 'projects/host-agent/**'
+  #     - 'nm-space/projects/dost/**'
+  # pull_request:
+  #   branches: ['main']
 
 env:
   YARN_CHECKSUM_BEHAVIOR: update yarn
@@ -43,7 +43,7 @@ jobs:
       fail-fast: false
       max-parallel: 99
       matrix:
-        runner: [windows-2019, macos-latest]
+        runner: [windows-2019, self-hosted-macos]
         arch: [arm64, x64]
         exclude:
           - runner: ${{ github.event.inputs.exclude_runner }}
