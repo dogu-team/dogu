@@ -68,7 +68,7 @@ function getXcodeBuildPathSync(): string {
 export async function validateXcodeBuild(): Promise<void> {
   try {
     const xcodebuildPath = await getXcodeBuildPath();
-    await ChildProcess.exec(`${xcodebuildPath} -version`, {}, logger);
+    await ChildProcess.exec(`${xcodebuildPath} -version`, {});
   } catch (error) {
     const message = `
 1. install xcode

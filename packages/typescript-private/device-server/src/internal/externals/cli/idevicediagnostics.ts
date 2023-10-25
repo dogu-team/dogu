@@ -7,7 +7,7 @@ import { registerBootstrapHandler } from '../../../bootstrap/bootstrap.service';
 export async function restart(udid: string, printable: Printable): Promise<string> {
   tryAccessAndFix();
   const libPath = [HostPaths.external.libimobiledevice.libimobiledeviceLibPath(), process.env.DYLD_LIBRARY_PATH].join(':');
-  return (await ChildProcess.exec(`export DYLD_LIBRARY_PATH=${libPath} && ${HostPaths.external.libimobiledevice.idevicediagnostics()} restart -u ${udid}`, {}, printable)).stdout;
+  return (await ChildProcess.exec(`export DYLD_LIBRARY_PATH=${libPath} && ${HostPaths.external.libimobiledevice.idevicediagnostics()} restart -u ${udid}`, {})).stdout;
 }
 
 const tryAccessAndFix = (): void => {

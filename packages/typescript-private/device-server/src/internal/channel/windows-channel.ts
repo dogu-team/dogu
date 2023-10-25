@@ -156,7 +156,7 @@ export class WindowsChannel implements DeviceChannel {
       return;
     }
     const pid = splited[splited.length - 1];
-    await ChildProcess.exec(`taskkill /F /PID ${pid}`, {}, logger);
+    await ChildProcess.exec(`taskkill /F /PID ${pid}`, {});
   }
 
   reboot(): void {

@@ -6,6 +6,10 @@ export function createAndroidLogger(serial: Serial): SerialLogger {
   return new SerialLogger(serial, LoggerFactory.createLazy(`${serial}_android`, { withFileTransports: true }));
 }
 
+export function createAdbSerialLogger(serial: Serial): SerialLogger {
+  return new SerialLogger(serial, LoggerFactory.createLazy(`${serial}_adb`, { withFileTransports: true }));
+}
+
 export function createIosLogger(serial: Serial): SerialLogger {
   return new SerialLogger(serial, LoggerFactory.createLazy(`${serial}_ios`, { withFileTransports: true }));
 }

@@ -2,7 +2,7 @@ import { DeviceSystemInfo, Serial, SerialPrintable } from '@dogu-private/types';
 import { delay, filterAsync, loop, stringify } from '@dogu-tech/common';
 import semver from 'semver';
 import { AppiumContextImpl } from '../../../appium/appium.context';
-import { Adb, AdbSerial, AppiumAdb } from '../../externals/index';
+import { AdbSerial, AppiumAdb } from '../../externals/index';
 import { CheckTimer } from '../../util/check-time';
 
 export interface AndroidResetInfo {
@@ -23,7 +23,7 @@ export class AndroidResetService {
   }
 
   async makeDirty(): Promise<void> {
-    await Adb.shell(this.serial, `echo dirty > ${DirtyPath}`);
+    await this.adb.shell(`echo dirty > ${DirtyPath}`);
   }
 
   async isDirty(): Promise<boolean> {
@@ -37,7 +37,7 @@ export class AndroidResetService {
       return true;
     }
     try {
-      const { stdout } = await Adb.shell(serial, `cat ${DirtyPath}`);
+      const { stdout } = await this.adb.shell(`cat ${DirtyPath}`);
       return stdout.includes('dirty');
     } catch (e) {
       return false;
@@ -82,7 +82,7 @@ export class AndroidResetService {
   }
 
   private async resetDirty(): Promise<void> {
-    await Adb.shell(this.serial, `rm -f ${DirtyPath}`);
+    await this.adb.shell(`rm -f ${DirtyPath}`);
   }
 
   private async resetIMEList(): Promise<void> {

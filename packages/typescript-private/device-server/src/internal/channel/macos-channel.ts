@@ -142,7 +142,7 @@ export class MacosChannel implements DeviceChannel {
   }
 
   async killOnPort(port: number): Promise<void> {
-    await ChildProcess.exec(`lsof -i tcp:${port} | grep LISTEN | awk '{print $2}' | xargs kill -9`, {}, logger);
+    await ChildProcess.exec(`lsof -i tcp:${port} | grep LISTEN | awk '{print $2}' | xargs kill -9`, {});
   }
 
   forward(hostPort: number, devicePort: number, handler: LogHandler): void {

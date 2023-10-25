@@ -8,6 +8,7 @@ import util from 'util';
 import { registerBootstrapHandler } from '../../../../bootstrap/bootstrap.service';
 import { env } from '../../../../env';
 import { adbLogger } from '../../../../logger/logger.instance';
+import { createAdbSerialLogger, SerialLogger } from '../../../../logger/serial-logger.instance';
 import { pathMap } from '../../../../path-map';
 import { LogHandler } from '../../../public/device-channel';
 import { DeviceScanResult, DeviceScanStatus } from '../../../public/device-driver';
@@ -46,7 +47,6 @@ class AdbScope implements IDisposableSync, IDisposableAsync {
   constructor(
     private funcName: string,
     private option: {
-      serial: Serial;
       [key: string]: any;
     },
   ) {
@@ -61,6 +61,32 @@ class AdbScope implements IDisposableSync, IDisposableAsync {
   }
 }
 
+class AdbSerialScope implements IDisposableSync, IDisposableAsync {
+  static loggers: Map<Serial, SerialLogger> = new Map();
+  public random: number;
+  private logger: SerialLogger;
+  constructor(
+    private funcName: string,
+    private option: {
+      serial: Serial;
+      [key: string]: any;
+    },
+  ) {
+    if (!AdbSerialScope.loggers.has(option.serial)) {
+      AdbSerialScope.loggers.set(option.serial, createAdbSerialLogger(option.serial));
+    }
+    this.logger = AdbSerialScope.loggers.get(option.serial) ?? createAdbSerialLogger(option.serial);
+    this.random = Math.random();
+    this.option.random = this.random;
+  }
+  create(): void {
+    this.logger.verbose(`adb.${this.funcName} begin`, this.option);
+  }
+  dispose(): void {
+    this.logger.verbose(`adb.${this.funcName} end`, this.option);
+  }
+}
+
 interface AdbExecOption {
   execOption?: child_process.ExecOptions;
   printable: Printable;
@@ -71,8 +97,8 @@ const execFileAsync = util.promisify(execFile);
 type DeviceControlKeycode = PrivateProtocol.DeviceControlKeycode;
 const DeviceControlKeycode = PrivateProtocol.DeviceControlKeycode;
 
-async function exec(command: string, option: AdbExecOption): ReturnType<typeof ChildProcess.exec> {
-  return ChildProcess.exec(command, option.execOption ?? {}, option.printable);
+async function exec(command: string): ReturnType<typeof ChildProcess.exec> {
+  return ChildProcess.exec(command, {});
 }
 
 async function execIgnoreError(command: string, option: AdbExecOption): ReturnType<typeof ChildProcess.execIgnoreError> {
@@ -157,66 +183,76 @@ export interface AndroidSystemBarVisibility {
   navigationBar: boolean;
 }
 
-export async function startServer(): Promise<void> {
-  await exec(`${adbPrefix()} start-server`, { printable: adbLogger });
-}
+export module Adb {
+  export async function startServer(): Promise<void> {
+    await exec(`${adbPrefix()} start-server`);
+  }
 
-export async function killServer(): Promise<void> {
-  await exec(`${adbPrefix()} kill-server`, { printable: adbLogger });
-}
+  export async function killServer(): Promise<void> {
+    await exec(`${adbPrefix()} kill-server`);
+  }
 
-export async function serials(): Promise<DeviceScanResult[]> {
-  return await usingAsnyc(new AdbScope('serials', { serial: '0' }), async () => {
-    const output = (await execIgnoreError(`${adbPrefix()} devices`, { printable: adbLogger })).stdout;
-    adbLogger.verbose('adb.serials', { output });
-    const regex = /(\S+)/g;
+  export async function serials(): Promise<DeviceScanResult[]> {
+    return await usingAsnyc(new AdbScope('serials', {}), async () => {
+      const output = (await execIgnoreError(`${adbPrefix()} devices`, { printable: adbLogger })).stdout;
+      adbLogger.verbose('adb.serials', { output });
+      const regex = /(\S+)/g;
 
-    const stateToDeviceStatus = (state: string): DeviceScanStatus => {
-      switch (state) {
-        case 'device':
-          return 'online';
-        case 'offline':
-          return 'offline';
-        case 'unauthorized':
-          return 'unauthorized';
-        default:
-          return 'unknown';
-      }
-    };
-
-    const stateToDesciprtion = (state: string): string | undefined => {
-      switch (state) {
-        case 'device':
-          return undefined;
-        case 'offline':
-          return `This device is offline as a result of the adb command. Please check the device status. Rebooting the device may fix it.`;
-        case 'unauthorized':
-          return 'Device is unauthorized. Please allow usb debugging.';
-        default:
-          return `Device status is unknown. ${state}`;
-      }
-    };
-
-    const scanInfos = output
-      .split('\n')
-      .slice(1, -2)
-      .map((serialAndStateLine) => {
-        const matched = serialAndStateLine.match(regex);
-        if (!matched || matched.length < 2) {
-          return undefined;
+      const stateToDeviceStatus = (state: string): DeviceScanStatus => {
+        switch (state) {
+          case 'device':
+            return 'online';
+          case 'offline':
+            return 'offline';
+          case 'unauthorized':
+            return 'unauthorized';
+          default:
+            return 'unknown';
         }
-        const serial = matched[0];
-        const state = matched[1];
-        return { serial, name: state, status: stateToDeviceStatus(state), description: stateToDesciprtion(state) } as DeviceScanResult;
-      })
-      .filter((deviceScanInfo) => deviceScanInfo !== undefined)
-      .map((deviceScanInfo) => deviceScanInfo!);
-    return scanInfos;
-  });
+      };
+
+      const stateToDesciprtion = (state: string): string | undefined => {
+        switch (state) {
+          case 'device':
+            return undefined;
+          case 'offline':
+            return `This device is offline as a result of the adb command. Please check the device status. Rebooting the device may fix it.`;
+          case 'unauthorized':
+            return 'Device is unauthorized. Please allow usb debugging.';
+          default:
+            return `Device status is unknown. ${state}`;
+        }
+      };
+
+      const scanInfos = output
+        .split('\n')
+        .slice(1, -2)
+        .map((serialAndStateLine) => {
+          const matched = serialAndStateLine.match(regex);
+          if (!matched || matched.length < 2) {
+            return undefined;
+          }
+          const serial = matched[0];
+          const state = matched[1];
+          return { serial, name: state, status: stateToDeviceStatus(state), description: stateToDesciprtion(state) } as DeviceScanResult;
+        })
+        .filter((deviceScanInfo) => deviceScanInfo !== undefined)
+        .map((deviceScanInfo) => deviceScanInfo!);
+      return scanInfos;
+    });
+  }
 }
 
 export class AdbSerial {
   constructor(public serial: Serial, public printable: FilledPrintable) {}
+
+  async shell(command: string): ReturnType<typeof ChildProcess.exec> {
+    return await shell(this.serial, command);
+  }
+
+  async shellIgnoreError(command: string): ReturnType<typeof ChildProcess.execIgnoreError> {
+    return await shellIgnoreError(this.serial, command, { printable: this.printable });
+  }
 
   /**
    * network
@@ -224,41 +260,41 @@ export class AdbSerial {
 
   async forward(hostPort: number, devicePort: number): Promise<void> {
     const { serial, printable } = this;
-    await usingAsnyc(new AdbScope('forward', { serial, hostPort, devicePort }), async () => {
-      await exec(`${adbPrefix()} -s ${serial} forward tcp:${hostPort} tcp:${devicePort}`, { printable });
+    await usingAsnyc(new AdbSerialScope('forward', { serial, hostPort, devicePort }), async () => {
+      await exec(`${adbPrefix()} -s ${serial} forward tcp:${hostPort} tcp:${devicePort}`);
       printable.verbose?.(`${serial} is forwarding from ${hostPort} to ${devicePort}`);
     });
   }
 
   async unforward(hostPort: number, option: { ignore: boolean }): Promise<void> {
     const { serial, printable } = this;
-    await usingAsnyc(new AdbScope('unforward', { serial, hostPort }), async () => {
-      let func = exec;
+    await usingAsnyc(new AdbSerialScope('unforward', { serial, hostPort }), async () => {
       if (option?.ignore) {
-        func = execIgnoreError;
+        await exec(`${adbPrefix()} -s ${serial} forward --remove tcp:${hostPort}`);
+      } else {
+        await execIgnoreError(`${adbPrefix()} -s ${serial} forward --remove tcp:${hostPort}`, { printable });
       }
-      await func(`${adbPrefix()} -s ${serial} forward --remove tcp:${hostPort}`, { printable });
       printable.verbose?.(`${serial} is unforwarding from ${hostPort} to ${hostPort}`);
     });
   }
 
   async unforwardall(): Promise<void> {
     const { serial, printable } = this;
-    await usingAsnyc(new AdbScope('unforwardall', { serial }), async () => {
-      await exec(`${adbPrefix()} -s ${serial} forward --remove-all`, { printable });
+    await usingAsnyc(new AdbSerialScope('unforwardall', { serial }), async () => {
+      await exec(`${adbPrefix()} -s ${serial} forward --remove-all`);
     });
   }
 
   async logcatClear(): ReturnType<typeof ChildProcess.exec> {
     const { serial, printable } = this;
-    return await usingAsnyc(new AdbScope('logcatClear', { serial }), async () => {
+    return await usingAsnyc(new AdbSerialScope('logcatClear', { serial }), async () => {
       return await execIgnoreError(`${adbPrefix()} -s ${serial} logcat -c`, { execOption: { timeout: 3 * 1000 }, printable });
     });
   }
 
   logcat(args: string[], handler: LogHandler): child_process.ChildProcess {
     const { serial } = this;
-    return using(new AdbScope('logcat', { serial }), () => {
+    return using(new AdbSerialScope('logcat', { serial }), () => {
       const child = spawn(adbBinary(), ['-P', DOGU_ADB_SERVER_PORT.toString(), '-s', serial, 'logcat', ...args]);
       child.stdout.setEncoding('utf8');
       child.stdout.on('data', (data) => {
@@ -278,7 +314,7 @@ export class AdbSerial {
 
   async isPortOpen(port: number): Promise<boolean> {
     const { serial, printable } = this;
-    return await usingAsnyc(new AdbScope('isPortOpen', { serial, port }), async () => {
+    return await usingAsnyc(new AdbSerialScope('isPortOpen', { serial, port }), async () => {
       const result = await shell(serial, `netstat -eanut | grep LISTEN | grep tcp | grep :${port}`).catch((e) => {
         const stringified = stringify(e);
         printable.verbose?.(`isPortOpen error`, { error: stringified });
@@ -300,7 +336,7 @@ export class AdbSerial {
 
   async getPackageOnPort(port: number): Promise<PackageInfo> {
     const { serial, printable } = this;
-    return await usingAsnyc(new AdbScope('getPackageOnPort', { serial, port }), async () => {
+    return await usingAsnyc(new AdbSerialScope('getPackageOnPort', { serial, port }), async () => {
       const result = await shellIgnoreError(serial, `netstat -eanut | grep LISTEN | grep tcp | grep :${port}`, { printable });
       const splited = parseRecord(result.stdout);
       if (splited.length < 7) {
@@ -320,7 +356,7 @@ export class AdbSerial {
 
   async joinWifi(ssid: string, password: string): Promise<void> {
     const { serial, printable: logger } = this;
-    return await usingAsnyc(new AdbScope('joinWifi', { serial, ssid }), async () => {
+    return await usingAsnyc(new AdbSerialScope('joinWifi', { serial, ssid }), async () => {
       if (0 === ssid.length) {
         throw new Error(`AndroidSharedDeviceService.joinWifi failed. serial: ${serial}, ssid: ${ssid}`);
       }
@@ -372,7 +408,7 @@ export class AdbSerial {
 
   async uninstallApp(appName: string, keep = false): Promise<void> {
     const { serial, printable } = this;
-    return await usingAsnyc(new AdbScope('uninstallApp', { serial, appName, keep }), async () => {
+    return await usingAsnyc(new AdbSerialScope('uninstallApp', { serial, appName, keep }), async () => {
       const command = ['-P', DOGU_ADB_SERVER_PORT.toString(), '-s', serial, 'uninstall'];
       if (keep) {
         command.push('-k');
@@ -387,7 +423,7 @@ export class AdbSerial {
 
   async clearApp(appName: string): Promise<void> {
     const { serial, printable } = this;
-    return await usingAsnyc(new AdbScope('clearApp', { serial, appName }), async () => {
+    return await usingAsnyc(new AdbSerialScope('clearApp', { serial, appName }), async () => {
       const command = ['-P', DOGU_ADB_SERVER_PORT.toString(), '-s', serial, 'shell', 'pm', 'clear', appName];
       await ChildProcess.spawnAndWait(adbBinary(), command, { timeout: 60000 * 5 }, printable).catch((err) => {
         printable.error?.(`ChildProcess.clearApp failed`, { error: stringify(err) });
@@ -398,7 +434,7 @@ export class AdbSerial {
 
   async resetAppPermission(appName: string): Promise<void> {
     const { serial, printable } = this;
-    return await usingAsnyc(new AdbScope('resetAppPermission', { serial, appName }), async () => {
+    return await usingAsnyc(new AdbSerialScope('resetAppPermission', { serial, appName }), async () => {
       const command = ['-P', DOGU_ADB_SERVER_PORT.toString(), '-s', serial, 'shell', 'pm', 'reset-permissions', appName];
       await ChildProcess.spawnAndWait(adbBinary(), command, { timeout: 60000 * 5 }, printable).catch((err) => {
         printable.error?.(`ChildProcess.resetAppPermission failed`, { error: stringify(err) });
@@ -414,7 +450,7 @@ export class AdbSerial {
 
   async installApp(apkPath: string): Promise<child_process.ChildProcess> {
     const { serial, printable } = this;
-    return await usingAsnyc(new AdbScope('installApp', { serial, apkPath }), async () => {
+    return await usingAsnyc(new AdbSerialScope('installApp', { serial, apkPath }), async () => {
       const { command, args } = this.installAppArgsInternal(apkPath);
       const rv = await ChildProcess.spawnAndWait(command, args, { timeout: 60000 * 5 }, printable);
       return rv;
@@ -426,7 +462,7 @@ export class AdbSerial {
    */
   async installAppForce(appPath: string): Promise<void> {
     const { serial, printable } = this;
-    return await usingAsnyc(new AdbScope('installAppForce', { serial, appPath }), async () => {
+    return await usingAsnyc(new AdbSerialScope('installAppForce', { serial, appPath }), async () => {
       const logger = printable ?? adbLogger;
       logger.info(`installing app: ${appPath}`);
       const stat = await fs.promises.stat(appPath).catch(() => null);
@@ -469,7 +505,7 @@ export class AdbSerial {
 
   async installAppWithReturningStdoutStderr(apkPath: string, timeout: number): Promise<ChildProcess.ExecResult> {
     const { serial, printable } = this;
-    return await usingAsnyc(new AdbScope('installAppWithReturningStdoutStderr', { serial, apkPath }), async () => {
+    return await usingAsnyc(new AdbSerialScope('installAppWithReturningStdoutStderr', { serial, apkPath }), async () => {
       const { command, args } = this.installAppArgsInternal(apkPath);
       printable.verbose?.('installAppWithReturningStdoutStderr start', { command: `${command} ${args.join(' ')}` });
       const rv = await new Promise<ChildProcess.ExecResult>((resolve, reject) => {
@@ -495,7 +531,7 @@ export class AdbSerial {
 
   async runApp(packageName: string, launchableActivityName: string): Promise<child_process.ChildProcess> {
     const { serial, printable } = this;
-    return await usingAsnyc(new AdbScope('runApp', { serial, packageName }), async () => {
+    return await usingAsnyc(new AdbSerialScope('runApp', { serial, packageName }), async () => {
       const rv = await ChildProcess.spawnAndWait(
         adbBinary(),
         ['-P', `${DOGU_ADB_SERVER_PORT}`, '-s', serial, 'shell', 'am', 'start', '-e', 'testkey', 'testvalue', '-n', `${packageName}/${launchableActivityName}`],
@@ -508,7 +544,7 @@ export class AdbSerial {
 
   async runActivity(activityName: string): Promise<child_process.ChildProcess> {
     const { serial, printable } = this;
-    return await usingAsnyc(new AdbScope('runActivity', { serial, activityName }), async () => {
+    return await usingAsnyc(new AdbSerialScope('runActivity', { serial, activityName }), async () => {
       const rv = await ChildProcess.spawnAndWait(adbBinary(), ['-P', `${DOGU_ADB_SERVER_PORT}`, '-s', serial, 'shell', 'am', 'start', '-a', `${activityName}`], {}, printable);
       return rv;
     });
@@ -516,7 +552,7 @@ export class AdbSerial {
 
   async getPidOf(appName: string): Promise<string> {
     const { serial, printable } = this;
-    return await usingAsnyc(new AdbScope('getPidOf', { serial, appName }), async () => {
+    return await usingAsnyc(new AdbSerialScope('getPidOf', { serial, appName }), async () => {
       const cmdret = await shellIgnoreError(serial, `pidof ${appName}`, { printable });
       const rv = cmdret.stdout.trim();
       return rv;
@@ -525,7 +561,7 @@ export class AdbSerial {
 
   async getPackageInfoFromUid(uid: number): Promise<PackageInfo> {
     const { serial, printable } = this;
-    return await usingAsnyc(new AdbScope('getPackageInfoFromUid', { serial, uid }), async () => {
+    return await usingAsnyc(new AdbSerialScope('getPackageInfoFromUid', { serial, uid }), async () => {
       const cmdret = await shellIgnoreError(serial, `ps -n | grep ${uid}`, { printable });
       const splited = parseRecord(cmdret.stdout);
       const rv = splited.length < 9 ? DefaultPackageInfo() : { pid: parseInt(splited[1]), uid: uid, name: splited[splited.length - 1] };
@@ -535,7 +571,7 @@ export class AdbSerial {
 
   async kill(pid: string): Promise<string> {
     const { serial, printable } = this;
-    return await usingAsnyc(new AdbScope('kill', { serial, pid }), async () => {
+    return await usingAsnyc(new AdbSerialScope('kill', { serial, pid }), async () => {
       const cmdret = await shellIgnoreError(serial, `kill ${pid}`, { printable });
       const rv = cmdret.stdout.trim();
       return rv;
@@ -544,7 +580,7 @@ export class AdbSerial {
 
   async killPackage(packageName: string): Promise<string> {
     const { serial, printable } = this;
-    return await usingAsnyc(new AdbScope('killPackage', { serial, packageName }), async () => {
+    return await usingAsnyc(new AdbSerialScope('killPackage', { serial, packageName }), async () => {
       const cmdret = await shellIgnoreError(serial, `am force-stop ${packageName}`, { printable });
       const rv = cmdret.stdout.trim();
       return rv;
@@ -553,7 +589,7 @@ export class AdbSerial {
 
   async killOnPort(port: number): Promise<boolean> {
     const { serial, printable } = this;
-    return await usingAsnyc(new AdbScope('killOnPort', { serial, port }), async () => {
+    return await usingAsnyc(new AdbSerialScope('killOnPort', { serial, port }), async () => {
       const packageInfo = await this.getPackageOnPort(port);
       if (packageInfo.pid < 0) {
         adbLogger.verbose('adb.killOnPort end', { serial, port, rv: false });
@@ -566,9 +602,9 @@ export class AdbSerial {
 
   async runAppProcess(localPath: string, destPath: string, main: string): Promise<child_process.ChildProcess> {
     const { serial, printable } = this;
-    return await usingAsnyc(new AdbScope('runAppProcess', { serial, localPath, destPath }), async () => {
-      const pushret = await exec(`${adbPrefix()} -s ${serial} push ${localPath} ${destPath}`, { printable });
-      const chmodRet = await exec(`${adbPrefix()} -s ${serial} shell chmod 777 ${destPath}`, { printable });
+    return await usingAsnyc(new AdbSerialScope('runAppProcess', { serial, localPath, destPath }), async () => {
+      const pushret = await exec(`${adbPrefix()} -s ${serial} push ${localPath} ${destPath}`);
+      const chmodRet = await exec(`${adbPrefix()} -s ${serial} shell chmod 777 ${destPath}`);
       const rv = await ChildProcess.spawn(
         adbBinary(),
         ['-P', DOGU_ADB_SERVER_PORT.toString(), '-s', serial, 'shell', `CLASSPATH=${destPath}`, 'app_process', '/', main],
@@ -581,7 +617,7 @@ export class AdbSerial {
 
   async disablePackage(packageName: string, userId: number): Promise<void> {
     const { serial, printable } = this;
-    return await usingAsnyc(new AdbScope('disablePackage', { serial, packageName }), async () => {
+    return await usingAsnyc(new AdbSerialScope('disablePackage', { serial, packageName }), async () => {
       await shellIgnoreError(serial, `pm disable-user ${userId} ${packageName}`, { printable });
       await shellIgnoreError(serial, `pm disable-user ${packageName}`, { printable });
     });
@@ -589,14 +625,14 @@ export class AdbSerial {
 
   async disableGooglePlayProtect(): Promise<void> {
     const { serial, printable } = this;
-    return await usingAsnyc(new AdbScope('disableGooglePlayProtect', { serial }), async () => {
+    return await usingAsnyc(new AdbSerialScope('disableGooglePlayProtect', { serial }), async () => {
       await shellIgnoreError(serial, `settings put global package_verifier_user_consent -1`, { printable });
     });
   }
 
   async allowNonMarketApps(): Promise<void> {
     const { serial, printable } = this;
-    return await usingAsnyc(new AdbScope('allowNonMarketApps', { serial }), async () => {
+    return await usingAsnyc(new AdbSerialScope('allowNonMarketApps', { serial }), async () => {
       await shellIgnoreError(
         serial,
         `settings put global install_non_market_apps 1
@@ -608,7 +644,7 @@ export class AdbSerial {
 
   async getProps(): Promise<AndroidPropInfo> {
     const { serial, printable } = this;
-    return await usingAsnyc(new AdbScope('getProps', { serial }), async () => {
+    return await usingAsnyc(new AdbSerialScope('getProps', { serial }), async () => {
       const cmdret = await shellIgnoreError(serial, 'getprop', { printable });
       const rv = parseAndroidShellProp(cmdret.stdout);
       return rv;
@@ -617,7 +653,7 @@ export class AdbSerial {
 
   async getProp(key: string): Promise<string> {
     const { serial, printable } = this;
-    return await usingAsnyc(new AdbScope('getProp', { serial }), async () => {
+    return await usingAsnyc(new AdbSerialScope('getProp', { serial }), async () => {
       const cmdret = await shellIgnoreError(serial, `getprop ${key}`, { printable });
       return cmdret.stdout;
     });
@@ -626,21 +662,21 @@ export class AdbSerial {
   // Profile GPU Rendering (https://stackoverflow.com/questions/42492191/how-to-show-hide-profile-gpu-rendering-as-bars-using-adb-command)
   async setProfileGPURendering(value: string): Promise<void> {
     const { serial, printable } = this;
-    return await usingAsnyc(new AdbScope('setProfileGPURendering', { serial, value }), async () => {
+    return await usingAsnyc(new AdbSerialScope('setProfileGPURendering', { serial, value }), async () => {
       await this.setProp('debug.hwui.profile', value);
     });
   }
 
   async setProp(propName: string, propValue: string): Promise<void> {
     const { serial, printable } = this;
-    return await usingAsnyc(new AdbScope('setProp', { serial, propName, propValue }), async () => {
+    return await usingAsnyc(new AdbSerialScope('setProp', { serial, propName, propValue }), async () => {
       await shell(serial, `setprop ${propName} ${propValue}`);
     });
   }
 
   async getProcCpuInfo(): Promise<AndroidProcCpuInfo[]> {
     const { serial, printable } = this;
-    return await usingAsnyc(new AdbScope('getProcCpuInfo', { serial }), async () => {
+    return await usingAsnyc(new AdbSerialScope('getProcCpuInfo', { serial }), async () => {
       const cmdret = await shellIgnoreError(serial, 'cat /proc/cpuinfo', { printable });
       const rv = parseAndroidProcCpuInfo(cmdret.stdout);
       return rv;
@@ -649,7 +685,7 @@ export class AdbSerial {
 
   async getProcMemInfo(): Promise<AndroidProcMemInfo> {
     const { serial, printable } = this;
-    return await usingAsnyc(new AdbScope('getProcMemInfo', { serial }), async () => {
+    return await usingAsnyc(new AdbSerialScope('getProcMemInfo', { serial }), async () => {
       const cmdret = await shellIgnoreError(serial, 'cat /proc/meminfo', { printable });
       const rv = parseAndroidProcMemInfo(cmdret.stdout);
       return rv;
@@ -658,7 +694,7 @@ export class AdbSerial {
 
   async getProcDiskstats(): Promise<AndroidProcDiskstats[]> {
     const { serial, printable } = this;
-    return await usingAsnyc(new AdbScope('getProcDiskstats', { serial }), async () => {
+    return await usingAsnyc(new AdbSerialScope('getProcDiskstats', { serial }), async () => {
       const cmdret = await shellIgnoreError(serial, 'cat /proc/diskstats', { printable });
       const rv = parseAndroidProcDiskstats(cmdret.stdout);
       return rv;
@@ -667,7 +703,7 @@ export class AdbSerial {
 
   async getDfInfo(): Promise<AndroidDfInfo[]> {
     const { serial, printable } = this;
-    return await usingAsnyc(new AdbScope('getDfInfo', { serial }), async () => {
+    return await usingAsnyc(new AdbSerialScope('getDfInfo', { serial }), async () => {
       const cmdret = await shellIgnoreError(serial, 'df', { printable });
       const rv = parseAndroidShellDf(cmdret.stdout);
       return rv;
@@ -676,7 +712,7 @@ export class AdbSerial {
 
   async getShellTopInfo(): Promise<AndroidShellTopInfo> {
     const { serial, printable } = this;
-    return await usingAsnyc(new AdbScope('getShellTopInfo', { serial }), async () => {
+    return await usingAsnyc(new AdbSerialScope('getShellTopInfo', { serial }), async () => {
       const cmdret = await shellIgnoreError(serial, 'top -bn1', { printable });
       const rv = parseAndroidShellTop(cmdret.stdout);
       return rv;
@@ -689,7 +725,7 @@ export class AdbSerial {
 
   async getForegroundPackage(): Promise<FocusedAppInfo[]> {
     const { serial, printable } = this;
-    return await usingAsnyc(new AdbScope('getForegroundPackage', { serial }), async () => {
+    return await usingAsnyc(new AdbSerialScope('getForegroundPackage', { serial }), async () => {
       const cmdret = await shellIgnoreError(serial, 'dumpsys input | grep -A10 FocusedApplication', { printable });
       const lines = cmdret.stdout.split('\n');
       const appLines: string[] = [];
@@ -794,7 +830,7 @@ export class AdbSerial {
 
   async getIMEList(): Promise<ImeInfo[]> {
     const { serial, printable } = this;
-    return await usingAsnyc(new AdbScope('getIMEList', { serial }), async () => {
+    return await usingAsnyc(new AdbSerialScope('getIMEList', { serial }), async () => {
       const { stdout } = await shell(serial, `ime list -a`);
       const ret = parseIMEList(stdout);
       return ret;
@@ -806,7 +842,7 @@ export class AdbSerial {
    */
   async putIMESecure(ime: ImeInfo): Promise<void> {
     const { serial, printable } = this;
-    return await usingAsnyc(new AdbScope('putIMESecure', { serial, ime }), async () => {
+    return await usingAsnyc(new AdbSerialScope('putIMESecure', { serial, ime }), async () => {
       await shell(serial, `settings put secure enabled_input_methods ${ime.packageName}/${ime.service}`);
     });
   }
@@ -851,7 +887,7 @@ export class AdbSerial {
 
   async isScreenOn(): Promise<boolean> {
     const { serial, printable } = this;
-    return await usingAsnyc(new AdbScope('isScreenOn', { serial }), async () => {
+    return await usingAsnyc(new AdbSerialScope('isScreenOn', { serial }), async () => {
       const result = await shellIgnoreError(serial, 'dumpsys input_method', { printable });
       const rv = result.stdout.includes('mInteractive=true');
       return rv;
@@ -860,7 +896,7 @@ export class AdbSerial {
 
   async isDreamingLockScreen(): Promise<boolean> {
     const { serial, printable } = this;
-    return await usingAsnyc(new AdbScope('isDreamingLockScreen', { serial }), async () => {
+    return await usingAsnyc(new AdbSerialScope('isDreamingLockScreen', { serial }), async () => {
       const result = await shellIgnoreError(serial, 'dumpsys window | grep mDreamingLockscreen=true', { printable });
       const rv = result.stdout.includes('mDreamingLockscreen=true');
       return rv;
@@ -869,7 +905,7 @@ export class AdbSerial {
 
   async turnOnScreen(): Promise<void> {
     const { serial, printable } = this;
-    return await usingAsnyc(new AdbScope('turnOnScreen', { serial }), async () => {
+    return await usingAsnyc(new AdbSerialScope('turnOnScreen', { serial }), async () => {
       const isTurnOff = !(await this.isScreenOn());
       if (isTurnOff) {
         await this.keyevent(DeviceControlKeycode.DEVICE_CONTROL_KEYCODE_WAKEUP);
@@ -882,7 +918,7 @@ export class AdbSerial {
 
   async turnOffScreen(): Promise<void> {
     const { serial, printable } = this;
-    return await usingAsnyc(new AdbScope('turnOffScreen', { serial }), async () => {
+    return await usingAsnyc(new AdbSerialScope('turnOffScreen', { serial }), async () => {
       const random = Math.random();
       adbLogger.verbose('adb.turnOffScreen begin', { serial, random });
       const isTurnOn = await this.isScreenOn();
@@ -895,28 +931,28 @@ export class AdbSerial {
 
   async keepScreenOn(): Promise<void> {
     const { serial, printable } = this;
-    return await usingAsnyc(new AdbScope('keepScreenOn', { serial }), async () => {
+    return await usingAsnyc(new AdbSerialScope('keepScreenOn', { serial }), async () => {
       await shellIgnoreError(serial, 'svc power stayon true', { printable });
     });
   }
 
   async keepScreenOff(): Promise<void> {
     const { serial, printable } = this;
-    return await usingAsnyc(new AdbScope('keepScreenOff', { serial }), async () => {
+    return await usingAsnyc(new AdbSerialScope('keepScreenOff', { serial }), async () => {
       await shellIgnoreError(serial, 'svc power stayon false', { printable });
     });
   }
 
   async keyevent(keyEvent: DeviceControlKeycode): Promise<void> {
     const { serial, printable } = this;
-    return await usingAsnyc(new AdbScope('keyevent', { serial, keyEvent }), async () => {
+    return await usingAsnyc(new AdbSerialScope('keyevent', { serial, keyEvent }), async () => {
       await shellIgnoreError(serial, `input keyevent ${keyEvent}`, { printable });
     });
   }
 
   async getDisplaySize(): Promise<{ width: number; height: number }> {
     const { serial, printable } = this;
-    return await usingAsnyc(new AdbScope('getDisplaySize', { serial }), async () => {
+    return await usingAsnyc(new AdbSerialScope('getDisplaySize', { serial }), async () => {
       const result = await shellIgnoreError(serial, 'wm size', { printable });
       // get adb shell wm output
       // Physical size: 1080x1920
@@ -944,14 +980,14 @@ export class AdbSerial {
 
   async stayOnWhilePluggedIn(): Promise<void> {
     const { serial, printable } = this;
-    return await usingAsnyc(new AdbScope('stayOnWhilePluggedIn', { serial }), async () => {
+    return await usingAsnyc(new AdbSerialScope('stayOnWhilePluggedIn', { serial }), async () => {
       await shellIgnoreError(serial, 'settings put global stay_on_while_plugged_in 3', { printable });
     });
   }
 
   async setBrightness(value: number): Promise<void> {
     const { serial, printable } = this;
-    return await usingAsnyc(new AdbScope('setBrightness', { serial, value }), async () => {
+    return await usingAsnyc(new AdbSerialScope('setBrightness', { serial, value }), async () => {
       await shellIgnoreError(serial, `settings put system screen_brightness ${value}`, { printable });
     });
   }
@@ -961,7 +997,7 @@ export class AdbSerial {
    */
   async unlock(): Promise<void> {
     const { serial, printable } = this;
-    return await usingAsnyc(new AdbScope('unlock', { serial }), async () => {
+    return await usingAsnyc(new AdbSerialScope('unlock', { serial }), async () => {
       await this.keyevent(DeviceControlKeycode.DEVICE_CONTROL_KEYCODE_MENU);
       await this.keyevent(DeviceControlKeycode.DEVICE_CONTROL_KEYCODE_ENTER);
     });
@@ -969,7 +1005,7 @@ export class AdbSerial {
 
   async reboot(): Promise<void> {
     const { serial, printable } = this;
-    return await usingAsnyc(new AdbScope('reboot', { serial }), async () => {
+    return await usingAsnyc(new AdbSerialScope('reboot', { serial }), async () => {
       const random = Math.random();
       adbLogger.verbose('adb.reboot begin', { serial, random });
       await commandIgnoreError(serial, 'reboot', { printable });
@@ -979,7 +1015,7 @@ export class AdbSerial {
 
   async reconnect(): Promise<void> {
     const { serial, printable } = this;
-    return await usingAsnyc(new AdbScope('reconnect', { serial }), async () => {
+    return await usingAsnyc(new AdbSerialScope('reconnect', { serial }), async () => {
       await commandIgnoreError(serial, 'reconnect', { printable });
       await commandIgnoreError(serial, 'usb', { printable });
     });
@@ -987,7 +1023,7 @@ export class AdbSerial {
 
   async getTime(): Promise<string | undefined> {
     const { serial, printable } = this;
-    return await usingAsnyc(new AdbScope('getTime', { serial }), async () => {
+    return await usingAsnyc(new AdbSerialScope('getTime', { serial }), async () => {
       try {
         const result = await shellIgnoreError(serial, `echo $(date +'%Y-%m-%d %H:%M:%S')`, { printable });
         return `${result.stdout.trim()}.000`;
@@ -999,7 +1035,7 @@ export class AdbSerial {
 
   async getUptimeSeconds(): Promise<number | undefined> {
     const { serial, printable } = this;
-    return await usingAsnyc(new AdbScope('getUptimeSeconds', { serial }), async () => {
+    return await usingAsnyc(new AdbSerialScope('getUptimeSeconds', { serial }), async () => {
       try {
         const result = await shellIgnoreError(serial, 'cat /proc/uptime', { printable });
         const uptime = result.stdout.split(' ')[0];
@@ -1017,7 +1053,7 @@ export class AdbSerial {
 
   async readDir(path: string): Promise<AndroidFileEntry[]> {
     const { serial, printable } = this;
-    return await usingAsnyc(new AdbScope('readDir', { serial, path }), async () => {
+    return await usingAsnyc(new AdbSerialScope('readDir', { serial, path }), async () => {
       const result = await shellIgnoreError(serial, `ls -l "${path}"`, { printable });
       const rv = parseAndroidLs(result.stdout);
       return rv;
@@ -1031,7 +1067,7 @@ export class AdbSerial {
 
   async getEmulatorName(): Promise<string> {
     const { serial, printable } = this;
-    return await usingAsnyc(new AdbScope('getEmulatorName', { serial }), async () => {
+    return await usingAsnyc(new AdbSerialScope('getEmulatorName', { serial }), async () => {
       const result = await execIgnoreError(`${adbPrefix()} -s ${serial} emu avd name`, { printable });
       const lines = result.stdout.split('\n');
       if (lines.length < 1) {
@@ -1054,7 +1090,7 @@ export class AdbSerial {
    */
   async enableTestharness(): Promise<void> {
     const { serial, printable } = this;
-    return await usingAsnyc(new AdbScope('enableTestharness', { serial }), async (scope: AdbScope) => {
+    return await usingAsnyc(new AdbSerialScope('enableTestharness', { serial }), async (scope: AdbSerialScope) => {
       const { random } = scope;
       return new Promise((resolve, reject) => {
         execFile(
@@ -1081,7 +1117,7 @@ export class AdbSerial {
 
   async resetPackages(ignorePackages: string[]): Promise<void> {
     const { serial, printable: logger } = this;
-    return await usingAsnyc(new AdbScope('resetPackages', { serial, ignorePackages }), async (scope: AdbScope) => {
+    return await usingAsnyc(new AdbSerialScope('resetPackages', { serial, ignorePackages }), async (scope: AdbSerialScope) => {
       const { random } = scope;
       const allApps = await this.getIntalledPackages();
       const userApps = await this.getNonSystemIntalledPackages();
@@ -1106,7 +1142,7 @@ export class AdbSerial {
 
   async resetSdcard(): Promise<void> {
     const { serial, printable } = this;
-    return await usingAsnyc(new AdbScope('resetSdcard', { serial }), async (scope: AdbScope) => {
+    return await usingAsnyc(new AdbSerialScope('resetSdcard', { serial }), async (scope: AdbSerialScope) => {
       const { random } = scope;
       const mkdirLists = ['Alarms', 'DCIM', 'Documents', 'Download', 'Movies', 'Music', 'Notifications', 'Pictures', 'Podcasts', 'Ringtones'];
       const files = await this.readDir('/storage/emulated/0');
@@ -1134,7 +1170,7 @@ export class AdbSerial {
    */
   async resetIME(): Promise<void> {
     const { serial, printable } = this;
-    return await usingAsnyc(new AdbScope('resetIME', { serial }), async () => {
+    return await usingAsnyc(new AdbSerialScope('resetIME', { serial }), async () => {
       await shell(serial, `ime reset`);
     });
   }

@@ -1,4 +1,4 @@
-export * as Adb from './cli/adb/adb';
+export { Adb, AdbSerial } from './cli/adb/adb';
 export * from './cli/adb/appium-adb';
 export * from './cli/adb/info';
 export * as DesktopCapturer from './cli/desktop-capturer';
