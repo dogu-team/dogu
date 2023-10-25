@@ -1,12 +1,11 @@
-import { AndroidFullLocale, createAndroidFullLocale, RuntimeInfo, Serial } from '@dogu-private/types';
-import { DuplicatedCallGuarder, FilledPrintable, loop, stringify } from '@dogu-tech/common';
+import { AndroidFullLocale, createAndroidFullLocale, RuntimeInfo } from '@dogu-private/types';
+import { DuplicatedCallGuarder, loop, stringify } from '@dogu-tech/common';
 import { killChildProcess } from '@dogu-tech/node';
 import child_process from 'child_process';
 import { AppiumContext } from '../../../appium/appium.context';
 import { DeveloperOptionsString } from '../../../constants/developer-options-string';
 import { env } from '../../../env';
-import { FocusedAppInfo } from '../../externals/cli/adb/adb';
-import { Adb } from '../../externals/index';
+import { AdbSerial, FocusedAppInfo } from '../../externals/cli/adb/adb';
 import { AndroidAdbProfiler, AndroidAdbProfilerParams } from './android-profiler';
 
 interface Fragment {
@@ -83,14 +82,14 @@ export class BlockDeveloperOptionsProfiler implements AndroidAdbProfiler {
     if (!env.DOGU_IS_DEVICE_SHARE) {
       return {};
     }
-    const { serial, context, appium, logger } = params;
+    const { context, appium, logger, adb } = params;
     const settingsAppInfo = this.getSettingsInfoIfFocused(await context.queryForegroundPackage());
     if (!settingsAppInfo) {
       this.killLogcatProcess();
       return {};
     }
     if (!this.logcatProc) {
-      await this.startLogcatProcess(serial, settingsAppInfo.packageName, logger);
+      await this.startLogcatProcess(adb, settingsAppInfo.packageName);
     }
     const props = await context.queryProp();
     this.locale = createAndroidFullLocale(props.persist_sys_locale);
@@ -100,7 +99,7 @@ export class BlockDeveloperOptionsProfiler implements AndroidAdbProfiler {
 
     this.onUpdateGuarder
       .guard(async () => {
-        await this.catchAndKill(serial, settingsAppInfo.packageName, appium);
+        await this.catchAndKill(adb, settingsAppInfo.packageName, appium);
       })
       .catch((e) => {
         logger.warn(`BlockDeveloperOptionsProfiler.profile failed`, { reason: e });
@@ -109,9 +108,9 @@ export class BlockDeveloperOptionsProfiler implements AndroidAdbProfiler {
     return {};
   }
 
-  private async catchAndKill(serial: Serial, packageName: string, appium: AppiumContext): Promise<void> {
+  private async catchAndKill(adb: AdbSerial, packageName: string, appium: AppiumContext): Promise<void> {
     for await (const _ of loop(300, 10)) {
-      const settingsAppInfo = this.getSettingsInfoIfFocused(await Adb.getForegroundPackage(serial));
+      const settingsAppInfo = this.getSettingsInfoIfFocused(await adb.getForegroundPackage());
       if (!settingsAppInfo) {
         break;
       }
@@ -125,7 +124,7 @@ export class BlockDeveloperOptionsProfiler implements AndroidAdbProfiler {
           continue;
         }
 
-        await Adb.killPackage(serial, packageName);
+        await adb.killPackage(packageName);
       }
     }
   }
@@ -138,28 +137,23 @@ export class BlockDeveloperOptionsProfiler implements AndroidAdbProfiler {
     return filtered[0];
   }
 
-  private async startLogcatProcess(serial: Serial, packageName: string, logger: FilledPrintable): Promise<void> {
-    const openTime = await Adb.getTime(serial);
+  private async startLogcatProcess(adb: AdbSerial, packageName: string): Promise<void> {
+    const openTime = await adb.getTime();
     if (openTime) {
       const killPackageIfContains = (msg: string): void => {
         for (const fragment of blockFragments) {
           if (msg.includes(fragment.fragmentName)) {
-            Adb.killPackage(serial, packageName).catch((e) => {
-              logger.error(e);
+            adb.killPackage(packageName).catch((e) => {
+              adb.printable.error(e);
             });
             this.killLogcatProcess();
           }
         }
       };
-      this.logcatProc = Adb.logcat(
-        serial,
-        ['-e', SwitchingToFragmentKeyword, '-T', `${openTime}`],
-        {
-          info: (msg) => killPackageIfContains(stringify(msg)),
-          error: (msg) => killPackageIfContains(stringify(msg)),
-        },
-        logger,
-      );
+      this.logcatProc = adb.logcat(['-e', SwitchingToFragmentKeyword, '-T', `${openTime}`], {
+        info: (msg) => killPackageIfContains(stringify(msg)),
+        error: (msg) => killPackageIfContains(stringify(msg)),
+      });
     }
   }
 

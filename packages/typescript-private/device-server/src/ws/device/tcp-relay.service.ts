@@ -1,6 +1,6 @@
 import { OnWebSocketClose, OnWebSocketMessage, WebSocketGatewayBase, WebSocketRegistryValueAccessor, WebSocketService } from '@dogu-private/nestjs-common';
 import { categoryFromPlatform, platformTypeFromPlatform, Serial } from '@dogu-private/types';
-import { closeWebSocketWithTruncateReason, errorify, Instance, loop } from '@dogu-tech/common';
+import { closeWebSocketWithTruncateReason, errorify, Instance, loop, NullLogger } from '@dogu-tech/common';
 import { DeviceTcpRelay, DoguDeviceTcpRelayPortHeaderKey, DoguDeviceTcpRelaySerialHeaderKey, TcpRelayRequest, TcpRelayResponse } from '@dogu-tech/device-client-common';
 import { IncomingHttpHeaders, IncomingMessage } from 'http';
 import { Socket } from 'net';
@@ -169,7 +169,7 @@ export class DeviceTcpRelayService
     if (platformCategory === 'mobile') {
       hostPort = await getFreePort();
       try {
-        await deviceChannel.forward(hostPort, port);
+        await deviceChannel.forward(hostPort, port, NullLogger.instance);
       } catch (e) {
         throw new Error(`Forward to ${port} failed`);
       }

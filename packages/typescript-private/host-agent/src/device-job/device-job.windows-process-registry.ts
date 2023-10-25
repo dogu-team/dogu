@@ -184,7 +184,7 @@ export class DeviceJobWindowsProcessRegistry {
   private quitSafari(browserName: string, organizationId: string, deviceId: string, routineDeviceJobId: number): void {
     if (browserName === 'safari' && process.platform === 'darwin') {
       this.logger.info('startRecording: kill Safari', { organizationId, deviceId, routineDeviceJobId });
-      ChildProcess.exec(`osascript -e 'quit app "Safari"'`, {}, this.logger).catch((e) => {
+      ChildProcess.exec(`osascript -e 'quit app "Safari"'`, {}).catch((e) => {
         const error = errorify(e);
         this.logger.error('Failed to kill Safari', { error });
       });

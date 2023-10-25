@@ -7,14 +7,18 @@ import fs from 'fs';
 import { registerBootstrapHandler } from '../../../bootstrap/bootstrap.service';
 import { LogHandler } from '../../public/device-channel';
 
-export function logcat(serial: Serial, args: string[], handler: LogHandler, printable?: Printable): child_process.ChildProcess {
+export function logcat(serial: Serial, args: string[], handler: LogHandler, printable: Printable): child_process.ChildProcess {
+  return logcatPure(serial, ['-e', 'replayd', '-e', 'DoguScreen', ...args], handler, printable);
+}
+
+export function logcatPure(serial: Serial, args: string[], handler: LogHandler, printable: Printable): child_process.ChildProcess {
   const libPath = [HostPaths.external.libimobiledevice.libimobiledeviceLibPath(), process.env.DYLD_LIBRARY_PATH].join(':');
   const random = Math.random();
-  printable?.verbose?.('ios.logcat begin', { serial, args, random });
+  printable.info('idevicesyslog.logcatPure begin', { serial, args, random });
   const bin = HostPaths.external.libimobiledevice.idevicesyslog();
   tryAccessAndFix();
 
-  const child = spawn(bin, ['-u', serial, '-e', 'replayd', '-e', 'DoguScreen', ...args], {
+  const child = spawn(bin, ['-u', serial, ...args], {
     env: {
       ...process.env,
       DYLD_LIBRARY_PATH: libPath,
@@ -31,7 +35,7 @@ export function logcat(serial: Serial, args: string[], handler: LogHandler, prin
   child.on('error', (error) => {
     handler.error(stringify(error));
   });
-  printable?.verbose?.('ios.logcat end', { serial, args, random });
+  printable.info('idevicesyslog.logcatPure end', { serial, args, random });
   return child;
 }
 
@@ -53,14 +57,18 @@ const makeAccessableSync = (): void => {
   }
 };
 
-registerBootstrapHandler(__filename, async () => {
-  if (process.platform !== 'darwin') {
-    return;
-  }
-  try {
-    await fs.promises.chmod(HostPaths.external.libimobiledevice.idevicesyslog(), 0o777);
-  } catch (error) {
-    const cause = error instanceof Error ? error : new Error(stringify(error));
-    throw new Error(`Failed to chmod idevicesyslog`, { cause });
-  }
-}, () => new PlatformAbility().isIosEnabled);
+registerBootstrapHandler(
+  __filename,
+  async () => {
+    if (process.platform !== 'darwin') {
+      return;
+    }
+    try {
+      await fs.promises.chmod(HostPaths.external.libimobiledevice.idevicesyslog(), 0o777);
+    } catch (error) {
+      const cause = error instanceof Error ? error : new Error(stringify(error));
+      throw new Error(`Failed to chmod idevicesyslog`, { cause });
+    }
+  },
+  () => new PlatformAbility().isIosEnabled,
+);

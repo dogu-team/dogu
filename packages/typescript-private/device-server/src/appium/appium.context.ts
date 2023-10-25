@@ -12,7 +12,7 @@ import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
 import _ from 'lodash';
 import WebDriverIO, { remote } from 'webdriverio';
 import { DevicePortService } from '../device-port/device-port.service';
-import { Adb } from '../internal/externals/index';
+import { AdbSerial } from '../internal/externals/index';
 import { Zombieable, ZombieProps, ZombieQueriable } from '../internal/services/zombie/zombie-component';
 import { ZombieServiceInstance } from '../internal/services/zombie/zombie-service';
 import { createAppiumLogger, logger } from '../logger/logger.instance';
@@ -363,6 +363,7 @@ export class AppiumContextImpl implements AppiumContext {
     if (platform !== Platform.PLATFORM_ANDROID) {
       return undefined;
     }
+    const adb = new AdbSerial(serial, this.printable);
     const viewport: Rect = {
       x: (_.get(this.data.client.driver.capabilities, 'viewportRect.left') as number) ?? 0,
       y: (_.get(this.data.client.driver.capabilities, 'viewportRect.top') as number) ?? 0,
@@ -387,7 +388,7 @@ export class AppiumContextImpl implements AppiumContext {
     };
 
     try {
-      const systemBarVisibility = await Adb.getSystemBarVisibility(serial);
+      const systemBarVisibility = await adb.getSystemBarVisibility();
       statusBar.visible = systemBarVisibility.statusBar;
       navigationBar.visible = systemBarVisibility.navigationBar;
     } catch (error) {

@@ -88,7 +88,7 @@ class MobileDeviceImpl {
 
   @Retry()
   async listApps(udid: string, printable: Printable): Promise<string[]> {
-    const { stdout } = await ChildProcess.exec(`${pathMap().macos.mobiledevice} list_apps -u ${udid}`, {}, printable);
+    const { stdout } = await ChildProcess.exec(`${pathMap().macos.mobiledevice} list_apps -u ${udid}`, {});
     return stdout
       .trim()
       .split('\n')

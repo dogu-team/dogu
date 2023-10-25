@@ -4,15 +4,21 @@ import { CreateLocalDeviceDetectTokenRequest, Device, DeviceConfigDto } from '@d
 import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import { ConfigService } from '../config/config.service';
 import { toErrorResultDto } from '../device-webdriver/device-webdriver.controller';
-import { Adb } from '../internal/externals/index';
+import { AdbSerial } from '../internal/externals/index';
 import { LocalDeviceService } from '../local-device/local-device.service';
+import { DoguLogger } from '../logger/logger';
 import { appiumCapabilitiesNotFoundError, appiumContextNotFoundError } from '../response-utils';
 import { ScanService } from '../scan/scan.service';
 import { deviceNotFoundError } from './device.utils';
 
 @Controller(Device.controller)
 export class DeviceController {
-  constructor(private readonly scanService: ScanService, private readonly configService: ConfigService, private readonly localDeviceService: LocalDeviceService) {}
+  constructor(
+    private readonly scanService: ScanService,
+    private readonly configService: ConfigService,
+    private readonly localDeviceService: LocalDeviceService,
+    private logger: DoguLogger,
+  ) {}
 
   @Get(Device.getDeviceSerials.path)
   getDeviceSerials(): Instance<typeof Device.getDeviceSerials.responseBody> {
@@ -197,7 +203,8 @@ export class DeviceController {
     }
 
     try {
-      const systemBarVisibility = await Adb.getSystemBarVisibility(channel.serial);
+      const adb = new AdbSerial(channel.serial, this.logger);
+      const systemBarVisibility = await adb.getSystemBarVisibility();
       return {
         value: {
           $case: 'data',
