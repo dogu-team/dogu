@@ -247,11 +247,17 @@ export class AdbSerial {
   constructor(public serial: Serial, public printable: FilledPrintable) {}
 
   async shell(command: string): ReturnType<typeof ChildProcess.exec> {
-    return await shell(this.serial, command);
+    const { serial } = this;
+    return await usingAsnyc(new AdbSerialScope('shell', { serial, command }), async () => {
+      return await shell(this.serial, command);
+    });
   }
 
   async shellIgnoreError(command: string): ReturnType<typeof ChildProcess.execIgnoreError> {
-    return await shellIgnoreError(this.serial, command, { printable: this.printable });
+    const { serial } = this;
+    return await usingAsnyc(new AdbSerialScope('shell', { serial, command }), async () => {
+      return await shellIgnoreError(this.serial, command, { printable: this.printable });
+    });
   }
 
   /**
@@ -260,7 +266,7 @@ export class AdbSerial {
 
   async forward(hostPort: number, devicePort: number): Promise<void> {
     const { serial, printable } = this;
-    await usingAsnyc(new AdbSerialScope('forward', { serial, hostPort, devicePort }), async () => {
+    return await usingAsnyc(new AdbSerialScope('forward', { serial, hostPort, devicePort }), async () => {
       await exec(`${adbPrefix()} -s ${serial} forward tcp:${hostPort} tcp:${devicePort}`);
       printable.verbose?.(`${serial} is forwarding from ${hostPort} to ${devicePort}`);
     });
@@ -268,11 +274,11 @@ export class AdbSerial {
 
   async unforward(hostPort: number, option: { ignore: boolean }): Promise<void> {
     const { serial, printable } = this;
-    await usingAsnyc(new AdbSerialScope('unforward', { serial, hostPort }), async () => {
+    return await usingAsnyc(new AdbSerialScope('unforward', { serial, hostPort }), async () => {
       if (option?.ignore) {
-        await exec(`${adbPrefix()} -s ${serial} forward --remove tcp:${hostPort}`);
-      } else {
         await execIgnoreError(`${adbPrefix()} -s ${serial} forward --remove tcp:${hostPort}`, { printable });
+      } else {
+        await exec(`${adbPrefix()} -s ${serial} forward --remove tcp:${hostPort}`);
       }
       printable.verbose?.(`${serial} is unforwarding from ${hostPort} to ${hostPort}`);
     });
@@ -280,7 +286,7 @@ export class AdbSerial {
 
   async unforwardall(): Promise<void> {
     const { serial, printable } = this;
-    await usingAsnyc(new AdbSerialScope('unforwardall', { serial }), async () => {
+    return await usingAsnyc(new AdbSerialScope('unforwardall', { serial }), async () => {
       await exec(`${adbPrefix()} -s ${serial} forward --remove-all`);
     });
   }
