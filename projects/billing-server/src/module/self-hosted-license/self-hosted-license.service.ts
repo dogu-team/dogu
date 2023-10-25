@@ -6,6 +6,7 @@ import { DataSource } from 'typeorm';
 import { v4 } from 'uuid';
 
 import { SelfHostedLicense } from '../../db/entity/self-hosted-license.entity';
+import { LicenseKeyService } from '../common/license-key.service';
 
 @Injectable()
 export class SelfHostedLicenseService {
@@ -15,14 +16,16 @@ export class SelfHostedLicenseService {
   ) {}
 
   async createLicense(dto: CreateSelfHostedLicenseDto): Promise<SelfHostedLicense> {
-    const { organizationId, companyName } = dto;
+    const { organizationId, companyName, expiredAt } = dto;
     const existingLicense = await this.dataSource.manager.getRepository(SelfHostedLicense).findOne({ where: { organizationId, companyName } });
 
     if (existingLicense) {
       throw new ConflictException(`Organization already has a self-hosted license. organizationId: ${organizationId}`);
     }
 
-    const license = this.dataSource.manager.getRepository(SelfHostedLicense).create({ selfHostedLicenseId: v4(), organizationId, companyName });
+    const licenseKey = LicenseKeyService.createLicensKey();
+
+    const license = this.dataSource.manager.getRepository(SelfHostedLicense).create({ selfHostedLicenseId: v4(), organizationId, companyName, expiredAt, licenseKey });
     const rv = await this.dataSource.manager.getRepository(SelfHostedLicense).save(license);
     return rv;
   }

@@ -2,13 +2,13 @@
 import { DateTime, DurationLike } from 'luxon';
 // import { LicenseToken } from '../../db/entity/license-token.enitiy';
 
-export class LicenseTokenService {
-  static createToken(): string {
+export class LicenseKeyService {
+  static createKey(): string {
     return Math.random().toString(36).slice(2) + DateTime.now().toMillis().toString(36).slice(2) + Math.random().toString(36).slice(2);
   }
 
-  static createLicensToken(): string {
-    const tokenBody = this.createToken();
+  static createLicensKey(): string {
+    const tokenBody = this.createKey();
     return tokenBody;
   }
 

@@ -1,7 +1,7 @@
 import { config } from '../../src/config';
 
 export const pgConfig = {
-  containerName: 'dogu-client-admin-pgsql',
+  containerName: 'billing-pgsql',
   imageName: 'postgres:15.3',
   rootUser: config.rds.username,
   rootPassword: config.rds.password,

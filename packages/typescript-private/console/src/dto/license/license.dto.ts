@@ -1,5 +1,6 @@
 import { OrganizationId } from '@dogu-private/types';
-import { IsOptional, IsString, IsUUID } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsDate, IsNotEmpty, IsOptional, IsString, IsUUID } from 'class-validator';
 
 import { SelfHostedLicenseBase } from '../..';
 
@@ -16,6 +17,11 @@ export class CreateSelfHostedLicenseDto {
   @IsOptional()
   @IsString()
   companyName?: string;
+
+  @IsNotEmpty()
+  @IsDate()
+  @Type(() => Date)
+  expiredAt!: Date;
 }
 
 export interface LicenseErrorInfo {

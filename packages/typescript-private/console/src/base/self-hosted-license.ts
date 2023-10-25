@@ -13,6 +13,7 @@ export interface SelfHostedLicenseBase {
   createdAt: Date;
   updatedAt: Date;
   lastAccessAt: Date;
+  expiredAt: Date;
   deletedAt: Date | null;
 }
 

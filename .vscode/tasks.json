@@ -139,6 +139,18 @@
     {
       "type": "npm",
       "script": "dev",
+      "label": "Dev: BS billing-server",
+      "path": "projects/billing-server",
+      "problemMatcher": [],
+      "presentation": {
+        "group": "devWatchers",
+        "close": false,
+        "panel": "shared"
+      }
+    },
+    {
+      "type": "npm",
+      "script": "dev",
       "label": "Dev: HA host-agent",
       "path": "projects/host-agent",
       "problemMatcher": [],

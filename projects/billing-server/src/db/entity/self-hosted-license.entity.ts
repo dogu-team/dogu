@@ -32,11 +32,14 @@ export class SelfHostedLicense implements SelfHostedLicenseBase {
   @ColumnTemplate.CreateDate(SelfHostedLicenseTokenPropSnake.created_at)
   createdAt!: Date;
 
+  @ColumnTemplate.CreateDate(SelfHostedLicenseTokenPropSnake.last_access_at)
+  lastAccessAt!: Date;
+
   @ColumnTemplate.UpdateDate(SelfHostedLicenseTokenPropSnake.updated_at)
   updatedAt!: Date;
 
-  @ColumnTemplate.CreateDate(SelfHostedLicenseTokenPropSnake.last_access_at)
-  lastAccessAt!: Date;
+  @ColumnTemplate.Date(SelfHostedLicenseTokenPropSnake.expired_at, false)
+  expiredAt!: Date;
 
   @ColumnTemplate.DeleteDate(SelfHostedLicenseTokenPropSnake.deleted_at)
   deletedAt!: Date | null;
