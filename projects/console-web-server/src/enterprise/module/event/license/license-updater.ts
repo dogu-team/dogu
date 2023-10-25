@@ -1,6 +1,6 @@
-import { DEFAULT_SELF_HOSTED_LICENSE_TIER_DATA } from '@dogu-private/console';
+// import { DEFAULT_SELF_HOSTED_LICENSE_TIER_DATA } from '@dogu-private/console';
 import { DeviceConnectionState } from '@dogu-private/types';
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import _ from 'lodash';
 import { DataSource, EntityManager } from 'typeorm';
@@ -8,17 +8,14 @@ import { Device } from '../../../../db/entity/device.entity';
 import { ProjectAndDevice } from '../../../../db/entity/index';
 import { FEATURE_CONFIG } from '../../../../feature.config';
 import { DoguLogger } from '../../../../module/logger/logger';
-import { LicenseValidator } from '../../license/common/validation';
-import { FeatureLicenseService } from '../../license/feature-license.service';
 @Injectable()
 export class LicenseUpdater {
   constructor(
     @InjectDataSource() //
     private readonly dataSource: DataSource,
-    private readonly logger: DoguLogger,
-    @Inject(FeatureLicenseService)
-    private readonly licenseService: FeatureLicenseService,
-  ) {}
+    private readonly logger: DoguLogger, // @Inject(FeatureLicenseService)
+  ) // private readonly licenseService: FeatureLicenseService,
+  {}
 
   public async update(): Promise<void> {
     const functionsToCheck = [this.checkExpiredLicense.bind(this)];
@@ -124,38 +121,33 @@ export class LicenseUpdater {
   }
 
   private async checkExpiredSelfHostedLicense(): Promise<void> {
-    const license = await this.licenseService.getLicense(null);
-    if (license.isCommunityEdition) {
-      return;
-    }
-
-    if (license.errorInfo) {
-      return;
-    }
-
-    const expired = license.licenseToken?.expiredAt!;
-
-    const isExpired = LicenseValidator.isLicenseExpiration(license);
-    if (!isExpired) {
-      return;
-    }
-
-    const enableMobileCount = DEFAULT_SELF_HOSTED_LICENSE_TIER_DATA.enabledMobileCount;
-    const enableBrowserCount = DEFAULT_SELF_HOSTED_LICENSE_TIER_DATA.enabledBrowserCount;
-
-    await this.dataSource.manager.transaction(async (manager) => {
-      const hostDevices = await LicenseValidator.enabledHostDevices(manager);
-      const usingBrowserRunnerCount = hostDevices.map((device) => device.maxParallelJobs).reduce((a, b) => a + b, 0);
-      if (enableBrowserCount < usingBrowserRunnerCount) {
-        await this.dropBrowserRunners(manager, hostDevices, enableBrowserCount);
-      }
-
-      const usingMobileDevices = await LicenseValidator.enabledMobileDevices(manager);
-      if (enableMobileCount < usingMobileDevices.length) {
-        await this.dropMobileDevices(manager, usingMobileDevices, enableMobileCount);
-      }
-    });
+    // const license = await this.licenseService.getLicense(null);
+    // if (license.isCommunityEdition) {
+    //   return;
+    // }
+    // if (license.errorInfo) {
+    //   return;
+    // }
+    // const expired = license.licenseToken?.expiredAt!;
+    // const isExpired = LicenseValidator.isLicenseExpiration(license);
+    // if (!isExpired) {
+    //   return;
+    // }
+    // const enableMobileCount = DEFAULT_SELF_HOSTED_LICENSE_TIER_DATA.enabledMobileCount;
+    // const enableBrowserCount = DEFAULT_SELF_HOSTED_LICENSE_TIER_DATA.enabledBrowserCount;
+    // await this.dataSource.manager.transaction(async (manager) => {
+    //   const hostDevices = await LicenseValidator.enabledHostDevices(manager);
+    //   const usingBrowserRunnerCount = hostDevices.map((device) => device.maxParallelJobs).reduce((a, b) => a + b, 0);
+    //   if (enableBrowserCount < usingBrowserRunnerCount) {
+    //     await this.dropBrowserRunners(manager, hostDevices, enableBrowserCount);
+    //   }
+    //   const usingMobileDevices = await LicenseValidator.enabledMobileDevices(manager);
+    //   if (enableMobileCount < usingMobileDevices.length) {
+    //     await this.dropMobileDevices(manager, usingMobileDevices, enableMobileCount);
+    //   }
+    // });
   }
+
   private async checkExpiredLicense(): Promise<void> {
     if (FEATURE_CONFIG.get('licenseModule') === 'self-hosted') {
       await this.checkExpiredSelfHostedLicense();

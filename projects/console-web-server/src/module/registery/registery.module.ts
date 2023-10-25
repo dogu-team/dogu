@@ -6,6 +6,7 @@ import { OrganizationRole } from '../../db/entity/organization-role.entity';
 import { UserAndResetPasswordToken } from '../../db/entity/relations/user-and-reset-password-token.entity';
 import { UserAndVerificationToken } from '../../db/entity/relations/user-and-verification-token.entity';
 import { UserSns } from '../../db/entity/user-sns.entity';
+import { LicenseModule } from '../../enterprise/module/license/license.module';
 import { EmailModule } from '../../module/email/email.module';
 import { UserModule } from '../../module/user/user.module';
 import { GitlabModule } from '../gitlab/gitlab.module';
@@ -35,6 +36,7 @@ const IMPORT_MODULES = [
   HttpModule,
   UserInvitationModule,
   GitlabModule,
+  LicenseModule,
 ];
 
 @Module({

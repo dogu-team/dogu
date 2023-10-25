@@ -40,8 +40,6 @@ import { Device } from '../../../db/entity/device.entity';
 import { DeviceBrowserInstallation, DeviceTag, Project } from '../../../db/entity/index';
 import { DeviceAndDeviceTag } from '../../../db/entity/relations/device-and-device-tag.entity';
 import { ProjectAndDevice } from '../../../db/entity/relations/project-and-device.entity';
-import { LicenseValidator } from '../../../enterprise/module/license/common/validation';
-import { FeatureLicenseService } from '../../../enterprise/module/license/feature-license.service';
 import { Page } from '../../common/dto/pagination/page';
 import { DeviceTagService } from '../device-tag/device-tag.service';
 import {
@@ -56,8 +54,8 @@ import {
 @Injectable()
 export class DeviceStatusService {
   constructor(
-    @Inject(FeatureLicenseService)
-    private readonly licenseService: FeatureLicenseService,
+    // @Inject(FeatureLicenseService)
+    // private readonly licenseService: FeatureLicenseService,
     @Inject(forwardRef(() => DeviceTagService))
     private readonly tagService: DeviceTagService,
     @InjectDataSource()
@@ -65,15 +63,22 @@ export class DeviceStatusService {
   ) {}
 
   async getEnabledDeviceCount(): Promise<GetEnabledDeviceCountResponse> {
-    const enabledMobileDevices = await LicenseValidator.enabledMobileDevices(this.dataSource.manager);
-    const enabledHostDevices = await LicenseValidator.enabledHostDevices(this.dataSource.manager);
+    // const enabledMobileDevices = await LicenseValidator.enabledMobileDevices(this.dataSource.manager);
+    // const enabledHostDevices = await LicenseValidator.enabledHostDevices(this.dataSource.manager);
 
-    const enabledMobileCount = enabledMobileDevices.length;
-    const enabledHostRunnerCount = enabledHostDevices.map((device) => device.maxParallelJobs).reduce((a, b) => a + b, 0);
+    // const enabledMobileCount = enabledMobileDevices.length;
+    // const enabledHostRunnerCount = enabledHostDevices.map((device) => device.maxParallelJobs).reduce((a, b) => a + b, 0);
+
+    // const rv: GetEnabledDeviceCountResponse = {
+    //   enabledMobileCount,
+    //   enabledBrowserCount: enabledHostRunnerCount,
+    // };
+
+    // return rv;
 
     const rv: GetEnabledDeviceCountResponse = {
-      enabledMobileCount,
-      enabledBrowserCount: enabledHostRunnerCount,
+      enabledMobileCount: 2,
+      enabledBrowserCount: 2,
     };
 
     return rv;
@@ -266,13 +271,13 @@ export class DeviceStatusService {
       throw new HttpException(`Cannot find device. deviceId: ${deviceId}`, HttpStatus.NOT_FOUND);
     }
 
-    if (projectId || isGlobal) {
-      if (device.isHost) {
-        await LicenseValidator.validateBrowserEnableCount(this.dataSource.manager, this.licenseService, organizationId, device, device.maxParallelJobs);
-      } else {
-        await LicenseValidator.validateMobileEnableCount(this.dataSource.manager, this.licenseService, organizationId, device);
-      }
-    }
+    // if (projectId || isGlobal) {
+    //   if (device.isHost) {
+    //     await LicenseValidator.validateBrowserEnableCount(this.dataSource.manager, this.licenseService, organizationId, device, device.maxParallelJobs);
+    //   } else {
+    //     await LicenseValidator.validateMobileEnableCount(this.dataSource.manager, this.licenseService, organizationId, device);
+    //   }
+    // }
 
     await this.dataSource.transaction(async (manager) => {
       if (isGlobal === true) {
@@ -356,11 +361,11 @@ export class DeviceStatusService {
       }
     }
 
-    if (device.isGlobal === 1 || (device.projectAndDevices && device.projectAndDevices.length > 0)) {
-      if (device.maxParallelJobs < maxParallelJobs) {
-        await LicenseValidator.validateBrowserEnableCount(manager, this.licenseService, organizationId, device, maxParallelJobs);
-      }
-    }
+    // if (device.isGlobal === 1 || (device.projectAndDevices && device.projectAndDevices.length > 0)) {
+    //   if (device.maxParallelJobs < maxParallelJobs) {
+    //     await LicenseValidator.validateBrowserEnableCount(manager, this.licenseService, organizationId, device, maxParallelJobs);
+    //   }
+    // }
 
     const newData = Object.assign(device, {
       maxParallelJobs,

@@ -1,21 +1,17 @@
-import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { Request } from 'express';
 import { DataSource } from 'typeorm';
 import { Project } from '../../../../db/entity/project.entity';
-import { FEATURE_CONFIG } from '../../../../feature.config';
 import { LICENSE_AUTHROIZE } from '../../../../module/auth/auth.types';
-import { LicenseValidator } from '../../license/common/validation';
-import { FeatureLicenseService } from '../../license/feature-license.service';
 
 @Injectable()
 export class AuthLicenseService {
   constructor(
     @InjectDataSource()
-    private readonly dataSource: DataSource,
-    @Inject(FeatureLicenseService)
-    private readonly licenseService: FeatureLicenseService,
-  ) {}
+    private readonly dataSource: DataSource, // @Inject(FeatureLicenseService)
+  ) // private readonly licenseService: FeatureLicenseService,
+  {}
 
   public async validateLicense(req: Request, type: LICENSE_AUTHROIZE): Promise<void> {
     switch (type) {
@@ -37,17 +33,17 @@ export class AuthLicenseService {
     const project = await this.dataSource.getRepository(Project).findOne({ where: { projectId: projectIdByRequest } });
     const orgIdByProject = project?.organizationId;
     const orgId = orgIdByRequest || orgIdByProject;
-    if (FEATURE_CONFIG.get('licenseModule') === 'self-hosted') {
-      const license = await this.licenseService.getLicense(orgId ?? null);
-      LicenseValidator.validateOpenApiEnabled(license);
-    }
+    // if (FEATURE_CONFIG.get('licenseModule') === 'self-hosted') {
+    //   const license = await this.licenseService.getLicense(orgId ?? null);
+    //   LicenseValidator.validateOpenApiEnabled(license);
+    // }
   }
 
   private async validateDoguAgentAutoUpdateLicense(req: Request): Promise<void> {
     const orgIdByRequest = req.params.organizationId;
-    if (FEATURE_CONFIG.get('licenseModule') === 'self-hosted') {
-      const license = await this.licenseService.getLicense(orgIdByRequest ?? null);
-      LicenseValidator.validateDoguAgentAutoUpdateEnabled(license);
-    }
+    // if (FEATURE_CONFIG.get('licenseModule') === 'self-hosted') {
+    //   const license = await this.licenseService.getLicense(orgIdByRequest ?? null);
+    //   LicenseValidator.validateDoguAgentAutoUpdateEnabled(license);
+    // }
   }
 }
