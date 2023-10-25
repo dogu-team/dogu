@@ -26,11 +26,11 @@ jobs:
       fail-fast: false
       max-parallel: 99
       matrix:
-        runner: [windows-2019, macos-latest]
+        runner: [windows-2019, self-hosted-macos]
         include:
           - runner: windows-2019
             extension: exe
-          - runner: macos-latest
+          - runner: self-hosted-macos
             extension: dmg
     runs-on: ['${{ matrix.runner }}']
 

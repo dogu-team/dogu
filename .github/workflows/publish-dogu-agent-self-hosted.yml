@@ -23,16 +23,12 @@ jobs:
       fail-fast: false
       max-parallel: 99
       matrix:
-        runner: [windows-2019, macos-latest]
-        arch: [arm64, x64]
+        runner: [windows-2019, self-hosted-macos]
         include:
           - runner: windows-2019
             extension: exe
-          - runner: macos-latest
+          - runner: self-hosted-macos
             extension: zip
-        exclude:
-          - runner: windows-2019
-            arch: arm64
     runs-on: ['${{ matrix.runner }}']
 
     env:
@@ -234,7 +230,6 @@ jobs:
           yarn run build && yarn run deploy:notarize
         working-directory: ./nm-space/projects/dost
         env:
-          DOGU_BUILD_ARCH: ${{ matrix.arch }}
           ELECTRON_CACHE: ${{ github.workspace }}/.electron-cache/electron
           ELECTRON_BUILDER_CACHE: ${{ github.workspace }}/.electron-cache/electron-builder
 
@@ -242,7 +237,7 @@ jobs:
         if: ${{ success() }}
         uses: actions/upload-artifact@v3
         with:
-          name: 'dogu-agent-${{ runner.os }}-${{ matrix.arch }}'
+          name: 'dogu-agent-${{ runner.os }}'
           path: |
             ./nm-space/projects/dost/dist/*.${{ matrix.extension }}
 
