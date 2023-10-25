@@ -42,6 +42,7 @@ import { DeviceChannel, DeviceChannelOpenParam, DeviceHealthStatus, DeviceServer
 import { IosDeviceAgentService } from '../services/device-agent/ios-device-agent-service';
 import { IosDisplayProfileService, IosProfileService } from '../services/profile/ios-profiler';
 import { ProfileServices } from '../services/profile/profile-service';
+import { IosSharedDeviceService } from '../services/shared-device/ios-shared-device';
 import { StreamingService } from '../services/streaming/streaming-service';
 import { IosSystemInfoService } from '../services/system-info/ios-system-info-service';
 import { Zombieable } from '../services/zombie/zombie-component';
@@ -205,6 +206,9 @@ export class IosChannel implements DeviceChannel {
       deviceSerial: serial,
       browserPlatform: 'ios',
     });
+
+    const shared = new IosSharedDeviceService(serial, systemInfo, deviceAgent, logger);
+    await shared.wait();
 
     const deviceChannel = new IosChannel(
       serial,
