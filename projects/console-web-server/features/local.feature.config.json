@@ -1,5 +1,5 @@
 {
-  "licenseModule": "cloud",
+  "licenseModule": "self-hosted",
   "fileService": "nexus",
   "useSampleProject": true,
   "emailVerification": false,

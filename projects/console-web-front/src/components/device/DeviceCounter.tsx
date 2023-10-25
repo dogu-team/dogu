@@ -1,8 +1,8 @@
 import { ExclamationCircleOutlined } from '@ant-design/icons';
+import { SelfHostedLicenseBase, COMMUNITY_MAX_BROWSER_COUNT, COMMUNITY_MAX_MOBILE_COUNT } from '@dogu-private/console';
 import styled from 'styled-components';
 
 import { useDeviceCount } from '../../../enterprise/api/device';
-import { COMMUNITY_MAX_BROWSER_COUNT, COMMUNITY_MAX_MOBILE_COUNT } from '../../../enterprise/utils/license';
 import useOrganizationContext from '../../hooks/context/useOrganizationContext';
 import useRefresh from '../../hooks/useRefresh';
 
@@ -19,13 +19,13 @@ const DeviceCounter: React.FC = () => {
   const browserUsedCount = countInfo?.enabledBrowserCount ?? 0;
   const browserMaxCount =
     process.env.NEXT_PUBLIC_ENV === 'self-hosted'
-      ? organization.licenseInfo?.licenseTier?.enabledBrowserCount ?? COMMUNITY_MAX_BROWSER_COUNT
+      ? (organization.licenseInfo as SelfHostedLicenseBase)?.maximumEnabledBrowserCount ?? COMMUNITY_MAX_BROWSER_COUNT
       : Number.POSITIVE_INFINITY;
 
   const mobileUsedCount = countInfo?.enabledMobileCount ?? 0;
   const mobileMaxCount =
     process.env.NEXT_PUBLIC_ENV === 'self-hosted'
-      ? organization.licenseInfo?.licenseTier?.enabledMobileCount ?? COMMUNITY_MAX_MOBILE_COUNT
+      ? (organization.licenseInfo as SelfHostedLicenseBase)?.maximumEnabledMobileCount ?? COMMUNITY_MAX_MOBILE_COUNT
       : Number.POSITIVE_INFINITY;
 
   const isBrowserMaxed = browserUsedCount >= browserMaxCount;

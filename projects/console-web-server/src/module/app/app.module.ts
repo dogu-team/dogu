@@ -3,10 +3,11 @@ import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/c
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TypeOrmModule } from '@nestjs/typeorm';
+
 import { config, dataSourceConfig } from '../../config';
 import { HostAppModule } from '../../enterprise/module/host-app/host-app.module';
 import { SlackModule } from '../../enterprise/module/integration/slack/slack.module';
-import { LicenseModule } from '../../enterprise/module/license/feature-license.module';
+import { LicenseModule } from '../../enterprise/module/license/license.module';
 import { OpenApiMoudule } from '../../enterprise/module/open-api/open-api.module';
 import { RecordModule } from '../../enterprise/module/record/record.module';
 import { LoggerMiddleware } from '../../middleware/logger.middleware';

@@ -18,7 +18,7 @@ export class CloudLicenseController {
   }
 
   @Get(':organizationId')
-  async getLicense(@Param('organizationId') organizationId: OrganizationId): Promise<CloudLicense> {
-    return await this.cloudLicenseService.getLicense(organizationId);
+  async findLicense(@Param('organizationId') organizationId: OrganizationId): Promise<CloudLicense> {
+    return await this.cloudLicenseService.findLicense(organizationId);
   }
 }

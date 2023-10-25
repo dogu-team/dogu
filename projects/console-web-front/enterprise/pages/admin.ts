@@ -1,11 +1,12 @@
-import { LicenseResponse, UserBase } from '@dogu-private/console';
+import { UserBase } from '@dogu-private/console';
 import { GetServerSideProps } from 'next';
 
 import { getUserInServerSide } from '../../src/api/registery';
 import { getLicenseInServerSide } from '../api/license';
 
 export interface AdminProps {
-  license: LicenseResponse;
+  // FIXME: any
+  license: any;
   user: UserBase;
 }
 

@@ -13,3 +13,7 @@ export interface DoguLicenseBaseTraits {
 export type DoguLicenseBase = DoguLicenseBaseTraits;
 export const DoguLicensePropCamel = propertiesOf<DoguLicenseBase>();
 export const DoguLicensePropSnake = camelToSnakeCasePropertiesOf<DoguLicenseBase>();
+
+export const COMMUNITY_LICENSE_KEY = 'community';
+export const COMMUNITY_MAX_BROWSER_COUNT = 2;
+export const COMMUNITY_MAX_MOBILE_COUNT = 2;

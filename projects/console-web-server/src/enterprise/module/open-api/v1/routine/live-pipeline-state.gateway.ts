@@ -8,10 +8,12 @@ import { IncomingMessage } from 'http';
 import { DataSource } from 'typeorm';
 import { WebSocket } from 'ws';
 import { Project } from '../../../../../db/entity/project.entity';
+import { FEATURE_CONFIG } from '../../../../../feature.config';
 import { PROJECT_ROLE } from '../../../../../module/auth/auth.types';
 import { ApiPermission } from '../../../../../module/auth/guard/common';
 import { DoguLogger } from '../../../../../module/logger/logger';
 import { V1OpenApiGuard } from '../../../auth/guard/open-api/v1/open-api.guard';
+import { SelfHostedLicenseService } from '../../../license/self-hosted-license.service';
 import { V1RoutineService } from './routine.service';
 
 @WebSocketGateway({ path: V1RoutinePipelineWsController.path })
@@ -21,8 +23,8 @@ export class V1LivePipelineStatusGateway implements OnGatewayConnection, OnGatew
     private readonly dataSource: DataSource,
     @Inject(V1RoutineService)
     private readonly v1RoutineService: V1RoutineService,
-    // @Inject(FeatureLicenseService)
-    // private readonly licenseService: FeatureLicenseService,
+    @Inject(SelfHostedLicenseService)
+    private readonly selfHostedLicenseService: SelfHostedLicenseService,
     private readonly logger: DoguLogger,
   ) {}
 
@@ -85,22 +87,31 @@ export class V1LivePipelineStatusGateway implements OnGatewayConnection, OnGatew
       closeWebSocketWithTruncateReason(client, 1003, `Authorization header is required`);
       return;
     }
-    const tokenByRequest = authHeader.split(' ')[1];
 
-    const project = await this.dataSource.manager.getRepository(Project).findOne({ where: { projectId: projectIdByRequest } });
-    const orgIdByProject = project?.organizationId ?? null;
-    // try {
-    //   if (FEATURE_CONFIG.get('licenseModule') === 'self-hosted') {
-    //     const license = await this.licenseService.getLicense(orgIdByProject);
-    //     LicenseValidator.validateOpenApiEnabled(license);
-    //   }
-    // } catch (e) {
-    //   this.logger.error(`Unauthorized. ${stringify(e)}`);
-    //   closeWebSocketWithTruncateReason(client, 1003, `This License is not enabled.`);
-    //   return;
-    // }
+    if (FEATURE_CONFIG.get('licenseModule') === 'self-hosted') {
+      const project = await this.dataSource.manager.getRepository(Project).findOne({ where: { projectId: projectIdByRequest } });
+      const orgIdByProject = project?.organizationId ?? null;
+      try {
+        if (!orgIdByProject) {
+          this.logger.error(`Unauthorized. No organizationId information.`);
+          closeWebSocketWithTruncateReason(client, 1003, `No organizationId information.`);
+          return;
+        }
+        const license = await this.selfHostedLicenseService.getLicenseInfo(orgIdByProject);
+        if (!license.openApiEnabled) {
+          this.logger.error(`Unauthorized. OpenApi is not enabled.`);
+          closeWebSocketWithTruncateReason(client, 1003, `OpenApi is not enabled.`);
+          return;
+        }
+      } catch (e) {
+        this.logger.error(`Unauthorized. ${stringify(e)}`);
+        closeWebSocketWithTruncateReason(client, 1003, `This License is not enabled.`);
+        return;
+      }
+    }
 
     try {
+      const tokenByRequest = authHeader.split(' ')[1];
       await ApiPermission.validateProjectApiPermission(this.dataSource.manager, tokenByRequest, PROJECT_ROLE.READ, '', projectIdByRequest);
     } catch (e) {
       this.logger.error(`Unauthorized. ${stringify(e)}`);

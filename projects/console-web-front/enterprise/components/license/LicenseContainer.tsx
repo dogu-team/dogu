@@ -1,5 +1,4 @@
 import { ExclamationCircleOutlined } from '@ant-design/icons';
-import { LicenseResponse } from '@dogu-private/console';
 import { OrganizationId } from '@dogu-private/types';
 import { Alert, Button, Form, Input, Space, Tag } from 'antd';
 import { isAxiosError } from 'axios';
@@ -8,6 +7,7 @@ import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import useTranslation from 'next-translate/useTranslation';
 import Trans from 'next-translate/Trans';
+import { SelfHostedLicenseBase, COMMUNITY_MAX_BROWSER_COUNT, COMMUNITY_MAX_MOBILE_COUNT } from '@dogu-private/console';
 
 import DangerZone from '../../../src/components/common/boxes/DangerZone';
 import TokenCopyInput from '../../../src/components/common/TokenCopyInput';
@@ -15,28 +15,21 @@ import useModal from '../../../src/hooks/useModal';
 import { sendErrorNotification, sendSuccessNotification } from '../../../src/utils/antd';
 import { getErrorMessageFromAxios } from '../../../src/utils/error';
 import { registerSelfHostedLicense, reRegisterSelfHostedLicense } from '../../api/license';
-import {
-  checkCommunityEdition,
-  checkExpired,
-  COMMUNITY_MAX_BROWSER_COUNT,
-  COMMUNITY_MAX_MOBILE_COUNT,
-  LICENSE_DOCS_URL,
-} from '../../utils/license';
+import { checkCommunityEdition, checkExpired, LICENSE_DOCS_URL } from '../../utils/license';
 import { isTimeout } from '../../utils/error';
 import ProTag from '../common/ProTag';
 import LicenseSubmitForm, { LicenseSubmitFormValues } from './LicenseSubmitForm';
 import TimeoutDocsModal from './TimeoutDocsModal';
 import useEventStore from '../../../src/stores/events';
 import DoguText from '../../../src/components/common/DoguText';
-import LicenseErrorAlert from './LicenseErrorAlert';
 
 interface Props {
-  license: LicenseResponse;
+  license: SelfHostedLicenseBase;
   organizationId: OrganizationId | null;
 }
 
-const LicenseContainer: React.FC<Props> = ({ license, organizationId }) => {
-  const [licenseInfo, setLicenseInfo] = useState<LicenseResponse>(license);
+const SelfHostedLicenseContainer: React.FC<Props> = ({ license, organizationId }) => {
+  const [licenseInfo, setLicenseInfo] = useState<SelfHostedLicenseBase>(license);
   const [isTimeoutOpen, openTimeoutModal, closeTimeoutModal] = useModal();
   const [form] = Form.useForm<LicenseSubmitFormValues>();
   const router = useRouter();
@@ -44,7 +37,7 @@ const LicenseContainer: React.FC<Props> = ({ license, organizationId }) => {
   const fireEvent = useEventStore((state) => state.fireEvent);
 
   const isExpired = checkExpired(licenseInfo);
-  const hasError = isExpired || licenseInfo.errorInfo !== null;
+  // const hasError = isExpired || licenseInfo.errorInfo !== null;
 
   useEffect(() => {
     setLicenseInfo(license);
@@ -100,10 +93,10 @@ const LicenseContainer: React.FC<Props> = ({ license, organizationId }) => {
       } else {
         return (
           <>
-            <ProTag style={{ marginRight: '.25rem' }} warnging={licenseInfo?.errorInfo !== null} />
+            <ProTag style={{ marginRight: '.25rem' }} />
             {`Professional (Max browsers: ${
-              licenseInfo.licenseTier?.enabledBrowserCount ?? COMMUNITY_MAX_BROWSER_COUNT
-            } / Max devices: ${licenseInfo.licenseTier?.enabledMobileCount ?? COMMUNITY_MAX_MOBILE_COUNT})`}
+              licenseInfo.maximumEnabledBrowserCount ?? COMMUNITY_MAX_BROWSER_COUNT
+            } / Max devices: ${licenseInfo.maximumEnabledMobileCount ?? COMMUNITY_MAX_MOBILE_COUNT})`}
           </>
         );
       }
@@ -127,13 +120,13 @@ const LicenseContainer: React.FC<Props> = ({ license, organizationId }) => {
         <ContentTitle>{t('licenseKey')}</ContentTitle>
         <div style={{ marginBottom: '1rem' }}>
           {isExpired && <Alert type="error" showIcon message={t('licenseExpiredAlertMessage')} />}
-          {licenseInfo.errorInfo !== null && <LicenseErrorAlert errorInfo={licenseInfo.errorInfo} />}
+          {/* {licenseInfo.errorInfo !== null && <LicenseErrorAlert errorInfo={licenseInfo.errorInfo} />} */}
         </div>
-        {licenseInfo?.consoleRegisteredToken ? (
+        {licenseInfo?.licenseKey ? (
           <TokenCopyInput
-            value={licenseInfo?.consoleRegisteredToken}
-            status={hasError ? 'error' : undefined}
-            suffix={hasError ? <ExclamationCircleOutlined style={{ color: 'red' }} /> : undefined}
+            value={licenseInfo?.licenseKey}
+            // status={hasError ? 'error' : undefined}
+            // suffix={hasError ? <ExclamationCircleOutlined style={{ color: 'red' }} /> : undefined}
           />
         ) : (
           <>
@@ -160,11 +153,11 @@ const LicenseContainer: React.FC<Props> = ({ license, organizationId }) => {
           </>
         )}
       </Content>
-      {licenseInfo.licenseToken?.createdAt && (
+      {licenseInfo.createdAt && (
         <Content>
           <ContentTitle>{t('licenseActivatedDate')}</ContentTitle>
           <ContentValue>
-            {new Date(licenseInfo.licenseToken.createdAt).toLocaleDateString(router.locale, {
+            {new Date(licenseInfo.createdAt).toLocaleDateString(router.locale, {
               hour: '2-digit',
               minute: '2-digit',
               second: '2-digit',
@@ -172,11 +165,11 @@ const LicenseContainer: React.FC<Props> = ({ license, organizationId }) => {
           </ContentValue>
         </Content>
       )}
-      {licenseInfo.licenseToken?.expiredAt && (
+      {licenseInfo.expiredAt && (
         <Content>
           <ContentTitle>{t('licenseExpirationDate')}</ContentTitle>
           <ContentValue>
-            {new Date(licenseInfo.licenseToken.expiredAt).toLocaleDateString(router.locale, {
+            {new Date(licenseInfo.expiredAt).toLocaleDateString(router.locale, {
               hour: '2-digit',
               minute: '2-digit',
               second: '2-digit',
@@ -242,7 +235,7 @@ const LicenseContainer: React.FC<Props> = ({ license, organizationId }) => {
   );
 };
 
-export default LicenseContainer;
+export default SelfHostedLicenseContainer;
 
 const Box = styled.div``;
 

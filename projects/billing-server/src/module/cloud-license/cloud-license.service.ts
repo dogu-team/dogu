@@ -27,7 +27,7 @@ export class CloudLicenseService {
     return rv;
   }
 
-  async getLicense(organizationId: OrganizationId): Promise<CloudLicense> {
+  async findLicense(organizationId: OrganizationId): Promise<CloudLicense> {
     const license = await this.dataSource.manager.getRepository(CloudLicense).findOne({ where: { organizationId } });
 
     if (!license) {

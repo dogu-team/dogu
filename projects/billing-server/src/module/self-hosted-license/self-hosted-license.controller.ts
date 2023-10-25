@@ -1,8 +1,8 @@
 import { CreateSelfHostedLicenseDto } from '@dogu-private/console';
-import { OrganizationId } from '@dogu-private/types';
-import { Body, Controller, Get, Inject, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Inject, Post, Query } from '@nestjs/common';
 
 import { SelfHostedLicense } from '../../db/entity/self-hosted-license.entity';
+import { FindSelfHostedLicenseQueryDto } from './self-hosted-license.dto';
 import { SelfHostedLicenseService } from './self-hosted-license.service';
 
 @Controller('self-hosted-licenses')
@@ -17,8 +17,8 @@ export class SelfHostedLicenseController {
     return await this.selfHostedLicenseService.createLicense(dto);
   }
 
-  @Get(':organizationId')
-  async getLicense(@Param('organizationId') organizationId: OrganizationId): Promise<SelfHostedLicense> {
-    return await this.selfHostedLicenseService.getLicense(organizationId);
+  @Get()
+  async findLicense(@Query() dto: FindSelfHostedLicenseQueryDto): Promise<SelfHostedLicense> {
+    return await this.selfHostedLicenseService.findLicense(dto);
   }
 }

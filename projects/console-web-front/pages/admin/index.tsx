@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import styled from 'styled-components';
 
-import LicenseContainer from '../../enterprise/components/license/LicenseContainer';
+import SelfHostedLicenseContainer from '../../enterprise/components/license/LicenseContainer';
 import { AdminProps, getAdminServerSideProps } from '../../enterprise/pages/admin';
 import ConsoleBasicLayout from '../../src/components/layouts/ConsoleBasicLayout';
 import { flexRowBaseStyle } from '../../src/styles/box';
@@ -25,7 +25,7 @@ const AdminPage: NextPageWithLayout<AdminProps> = ({ license }) => {
           </MenuItem>
         </Sidebar>
         <Content>
-          <LicenseContainer license={license ?? undefined} organizationId={null} />
+          <SelfHostedLicenseContainer license={license ?? undefined} organizationId={null} />
         </Content>
       </FlexRow>
     </Box>

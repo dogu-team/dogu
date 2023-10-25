@@ -18,7 +18,7 @@ import { RoutineStep } from '../../db/entity/step.entity';
 import { LicenseSystemProcessor } from '../../enterprise/module/event/license/license-system.processor';
 import { LicenseUpdater } from '../../enterprise/module/event/license/license-updater';
 import { SlackModule } from '../../enterprise/module/integration/slack/slack.module';
-import { LicenseModule } from '../../enterprise/module/license/feature-license.module';
+import { LicenseModule } from '../../enterprise/module/license/license.module';
 import { DeviceMessageModule } from '../device-message/device-message.module';
 import { LiveSessionModule } from '../live-session/live-session.module';
 import { ProjectModule } from '../project/project.module';
@@ -70,8 +70,8 @@ import { UpdateProducer } from './update-producer';
     forwardRef(() => PipelineModule),
     RemoteModule,
     SlackModule,
-    ProjectModule,
     LicenseModule,
+    ProjectModule,
     LiveSessionModule,
   ],
   providers: [

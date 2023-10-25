@@ -1,5 +1,5 @@
 import { CheckCircleOutlined, CloseCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
-import { HostBase } from '@dogu-private/console';
+import { HostBase, SelfHostedLicenseBase } from '@dogu-private/console';
 import { HostConnectionState } from '@dogu-private/types';
 import { Button, Tag, Tooltip } from 'antd';
 import { useContext } from 'react';
@@ -71,7 +71,7 @@ const HostVesrsionBadge = ({ host }: Props) => {
     (updatableInfo.reason || updatableInfo.isUpdatable);
   const isCommunityEdition =
     process.env.NEXT_PUBLIC_ENV === 'self-hosted' &&
-    !organization?.licenseInfo?.licenseTier?.doguAgentAutoUpdateEnabled;
+    !(organization?.licenseInfo as SelfHostedLicenseBase | undefined)?.doguAgentAutoUpdateEnabled;
 
   return (
     <>

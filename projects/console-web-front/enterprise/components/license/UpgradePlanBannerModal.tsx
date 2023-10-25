@@ -1,5 +1,5 @@
 import { CheckOutlined } from '@ant-design/icons';
-import { LICENSE_SELF_HOSTED_TIER_TYPE } from '@dogu-private/console';
+import { SelfHostedLicenseBase } from '@dogu-private/console';
 import { Button, Divider, Modal, Tag } from 'antd';
 import useTranslation from 'next-translate/useTranslation';
 import Link from 'next/link';
@@ -7,7 +7,7 @@ import styled from 'styled-components';
 
 import useOrganizationContext from '../../../src/hooks/context/useOrganizationContext';
 import { flexRowBaseStyle } from '../../../src/styles/box';
-import { checkExpired } from '../../utils/license';
+import { checkCommunityEdition, checkExpired } from '../../utils/license';
 
 interface PricingItemProps {
   title: React.ReactNode;
@@ -63,7 +63,7 @@ interface Props {
 export const UpgradeDevicePlanBannerModal: React.FC<Props> = ({ isOpen, close, title, description }) => {
   const { organization } = useOrganizationContext();
   const { t } = useTranslation('license');
-  const licenseInfo = organization?.licenseInfo;
+  const licenseInfo = organization?.licenseInfo as SelfHostedLicenseBase | undefined;
 
   return (
     <Modal destroyOnClose open={isOpen} onCancel={close} closable title={title} footer={null} centered>
@@ -71,9 +71,7 @@ export const UpgradeDevicePlanBannerModal: React.FC<Props> = ({ isOpen, close, t
         <p>{description}</p>
       </div>
       <PricingItemWrapper>
-        {!licenseInfo ||
-        licenseInfo?.licenseTierId === LICENSE_SELF_HOSTED_TIER_TYPE.self_hosted_community ||
-        checkExpired(licenseInfo) ? (
+        {!licenseInfo || checkCommunityEdition(licenseInfo) || checkExpired(licenseInfo) ? (
           <>
             <PricingItem
               isCurrentPlan
@@ -113,7 +111,7 @@ export const UpgradeDevicePlanBannerModal: React.FC<Props> = ({ isOpen, close, t
               description={t('pricingProDeviceDescription')}
               pricing={t('pricingPaid', { price: '29,000' })}
               availableFeatures={[
-                t('pricingProDeviceFeature1', { count: licenseInfo?.licenseTier?.enabledMobileCount ?? 2 }),
+                t('pricingProDeviceFeature1', { count: licenseInfo?.maximumEnabledMobileCount ?? 2 }),
                 t('pricingProCommonFeature2'),
                 t('pricingProCommonFeature3'),
               ]}
@@ -139,7 +137,7 @@ export const UpgradeDevicePlanBannerModal: React.FC<Props> = ({ isOpen, close, t
 export const UpgradeBrowserPlanModal: React.FC<Props> = ({ isOpen, close, title, description }) => {
   const { organization } = useOrganizationContext();
   const { t } = useTranslation('license');
-  const licenseInfo = organization?.licenseInfo;
+  const licenseInfo = organization?.licenseInfo as SelfHostedLicenseBase | undefined;
 
   return (
     <Modal destroyOnClose open={isOpen} onCancel={close} closable title={title} footer={null} centered>
@@ -147,9 +145,7 @@ export const UpgradeBrowserPlanModal: React.FC<Props> = ({ isOpen, close, title,
         <p>{description}</p>
       </div>
       <PricingItemWrapper>
-        {!licenseInfo ||
-        licenseInfo?.licenseTierId === LICENSE_SELF_HOSTED_TIER_TYPE.self_hosted_community ||
-        checkExpired(licenseInfo) ? (
+        {!licenseInfo || checkCommunityEdition(licenseInfo) || checkExpired(licenseInfo) ? (
           <>
             <PricingItem
               isCurrentPlan
@@ -189,7 +185,7 @@ export const UpgradeBrowserPlanModal: React.FC<Props> = ({ isOpen, close, title,
               description={t('pricingProBrowserDescription')}
               pricing={t('pricingPaid', { price: '19,000' })}
               availableFeatures={[
-                t('pricingProBrowserFeature1', { count: licenseInfo?.licenseTier?.enabledBrowserCount ?? 2 }),
+                t('pricingProBrowserFeature1', { count: licenseInfo?.maximumEnabledBrowserCount ?? 2 }),
                 t('pricingProCommonFeature2'),
                 t('pricingProCommonFeature3'),
               ]}
@@ -215,7 +211,7 @@ export const UpgradeBrowserPlanModal: React.FC<Props> = ({ isOpen, close, title,
 export const UpgradeConveniencePlanModal: React.FC<Props> = ({ isOpen, close, title, description }) => {
   const { organization } = useOrganizationContext();
   const { t } = useTranslation('license');
-  const licenseInfo = organization?.licenseInfo;
+  const licenseInfo = organization?.licenseInfo as SelfHostedLicenseBase | undefined;
 
   return (
     <Modal destroyOnClose open={isOpen} onCancel={close} closable title={title} footer={null} centered>
@@ -223,9 +219,7 @@ export const UpgradeConveniencePlanModal: React.FC<Props> = ({ isOpen, close, ti
         <p>{description}</p>
       </div>
       <PricingItemWrapper>
-        {!licenseInfo ||
-        licenseInfo?.licenseTierId === LICENSE_SELF_HOSTED_TIER_TYPE.self_hosted_community ||
-        checkExpired(licenseInfo) ? (
+        {!licenseInfo || checkCommunityEdition(licenseInfo) || checkExpired(licenseInfo) ? (
           <>
             <PricingItem
               isCurrentPlan

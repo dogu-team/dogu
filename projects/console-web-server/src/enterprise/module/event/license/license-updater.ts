@@ -1,21 +1,26 @@
 // import { DEFAULT_SELF_HOSTED_LICENSE_TIER_DATA } from '@dogu-private/console';
 import { DeviceConnectionState } from '@dogu-private/types';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import _ from 'lodash';
 import { DataSource, EntityManager } from 'typeorm';
+
 import { Device } from '../../../../db/entity/device.entity';
-import { ProjectAndDevice } from '../../../../db/entity/index';
+import { Organization, ProjectAndDevice } from '../../../../db/entity/index';
 import { FEATURE_CONFIG } from '../../../../feature.config';
 import { DoguLogger } from '../../../../module/logger/logger';
+import { DeviceStatusService } from '../../../../module/organization/device/device-status.service';
+import { SelfHostedLicenseService } from '../../license/self-hosted-license.service';
+
 @Injectable()
 export class LicenseUpdater {
   constructor(
     @InjectDataSource() //
     private readonly dataSource: DataSource,
-    private readonly logger: DoguLogger, // @Inject(FeatureLicenseService)
-  ) // private readonly licenseService: FeatureLicenseService,
-  {}
+    private readonly logger: DoguLogger,
+    @Inject(SelfHostedLicenseService)
+    private readonly selfHostedLicenseService: SelfHostedLicenseService,
+  ) {}
 
   public async update(): Promise<void> {
     const functionsToCheck = [this.checkExpiredLicense.bind(this)];
@@ -121,31 +126,28 @@ export class LicenseUpdater {
   }
 
   private async checkExpiredSelfHostedLicense(): Promise<void> {
-    // const license = await this.licenseService.getLicense(null);
-    // if (license.isCommunityEdition) {
-    //   return;
-    // }
-    // if (license.errorInfo) {
-    //   return;
-    // }
-    // const expired = license.licenseToken?.expiredAt!;
-    // const isExpired = LicenseValidator.isLicenseExpiration(license);
-    // if (!isExpired) {
-    //   return;
-    // }
-    // const enableMobileCount = DEFAULT_SELF_HOSTED_LICENSE_TIER_DATA.enabledMobileCount;
-    // const enableBrowserCount = DEFAULT_SELF_HOSTED_LICENSE_TIER_DATA.enabledBrowserCount;
-    // await this.dataSource.manager.transaction(async (manager) => {
-    //   const hostDevices = await LicenseValidator.enabledHostDevices(manager);
-    //   const usingBrowserRunnerCount = hostDevices.map((device) => device.maxParallelJobs).reduce((a, b) => a + b, 0);
-    //   if (enableBrowserCount < usingBrowserRunnerCount) {
-    //     await this.dropBrowserRunners(manager, hostDevices, enableBrowserCount);
-    //   }
-    //   const usingMobileDevices = await LicenseValidator.enabledMobileDevices(manager);
-    //   if (enableMobileCount < usingMobileDevices.length) {
-    //     await this.dropMobileDevices(manager, usingMobileDevices, enableMobileCount);
-    //   }
-    // });
+    const rootOrganization = await this.dataSource.getRepository(Organization).createQueryBuilder('organization').orderBy('organization.createdAt', 'ASC').getOne();
+
+    if (!rootOrganization) {
+      this.logger.error('checkExpiredSelfHostedLicense Cannot find organization in server');
+      throw new NotFoundException(`Cannot find organization in server`);
+    }
+
+    const license = await this.selfHostedLicenseService.getLicenseInfo(rootOrganization.organizationId);
+
+    await this.dataSource.manager.transaction(async (manager) => {
+      const hostDevices = await DeviceStatusService.findEnabledHostDevices(manager, rootOrganization.organizationId);
+      const usingBrowserRunnerCount = hostDevices.map((device) => device.maxParallelJobs).reduce((a, b) => a + b, 0);
+
+      if (license.maximumEnabledBrowserCount < usingBrowserRunnerCount) {
+        await this.dropBrowserRunners(manager, hostDevices, license.maximumEnabledBrowserCount);
+      }
+      const mobildDevices = await DeviceStatusService.findEnabledMobileDevices(manager, rootOrganization.organizationId);
+
+      if (license.maximumEnabledMobileCount < mobildDevices.length) {
+        await this.dropMobileDevices(manager, mobildDevices, license.maximumEnabledMobileCount);
+      }
+    });
   }
 
   private async checkExpiredLicense(): Promise<void> {

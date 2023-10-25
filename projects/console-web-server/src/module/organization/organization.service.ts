@@ -55,6 +55,7 @@ import { OrganizationAccessToken } from '../../db/entity/organization-access-tok
 import { UserAndInvitationToken } from '../../db/entity/relations/user-and-invitation-token.entity';
 import { Routine } from '../../db/entity/routine.entity';
 import { RoutineStep } from '../../db/entity/step.entity';
+import { SelfHostedLicenseService } from '../../enterprise/module/license/self-hosted-license.service';
 import { FEATURE_CONFIG } from '../../feature.config';
 import { castEntity } from '../../types/entity-cast';
 import { ORGANIZATION_ROLE } from '../auth/auth.types';
@@ -77,8 +78,6 @@ export class OrganizationService {
     @Inject(EmailService)
     private readonly emailService: EmailService,
     private readonly organizationFileService: OrganizationFileService,
-    // @Inject(GitlabService)
-    // private readonly gitlabService: GitlabService,
     @Inject(UserInvitationService)
     private readonly invitationService: UserInvitationService,
     @Inject(ApplicationService)
@@ -86,9 +85,10 @@ export class OrganizationService {
     @Inject(ProjectService)
     private readonly projectService: ProjectService,
     @Inject(RoutineService)
-    private readonly routineService: RoutineService, // @Inject(FeatureLicenseService)
-  ) // private readonly licenseService: FeatureLicenseService,
-  {}
+    private readonly routineService: RoutineService,
+    @Inject(SelfHostedLicenseService)
+    private readonly selfHostedLicenseService: SelfHostedLicenseService,
+  ) {}
 
   async isOrganizationExist(organizationId: OrganizationId): Promise<boolean> {
     const rv = await this.dataSource.getRepository(Organization).findOne({
@@ -147,16 +147,15 @@ export class OrganizationService {
     const user = await this.dataSource.getRepository(User).findOne({ where: { userId: userPayload.userId } });
 
     if (FEATURE_CONFIG.get('licenseModule') === 'self-hosted') {
-      // const licenseInfo = await this.licenseService.getLicense(organizationId);
-      return { ...organization, owner, licenseInfo: undefined };
-      // if (user!.isRoot) {
-      //   return { ...organization, owner, licenseInfo };
-      // }
-      // return orgBase;
+      const licenseInfo = await this.selfHostedLicenseService.getLicenseInfo(organizationId);
+      if (user!.isRoot) {
+        return { ...organization, owner, licenseInfo };
+      }
+      return orgBase;
     } else {
-      // if (user!.userId == owner.userId) {
-      //   return { ...organization, owner };
-      // }
+      if (user!.userId == owner.userId) {
+        return { ...organization, owner };
+      }
 
       return orgBase;
     }
