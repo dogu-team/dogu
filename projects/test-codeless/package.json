@@ -7,7 +7,7 @@
   "author": "",
   "main": "index.js",
   "scripts": {
-    "display": "ts-node src/services/displaySizeChecker.ts"
+    "visual": "ts-node src/services/webVisualChecker.ts"
   },
   "dependencies": {
     "cheerio": "^1.0.0-rc.12",
