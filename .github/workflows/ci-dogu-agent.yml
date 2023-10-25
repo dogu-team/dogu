@@ -46,7 +46,9 @@ jobs:
       fail-fast: false
       max-parallel: 99
       matrix:
-        runner: ${{ [github.event.inputs.maxos_runner, windows-2019] }}
+        runner: [windows-2019]
+        include:
+          - runner: ${{ github.event.inputs.maxos_runner }}
     runs-on: ['${{ matrix.runner }}']
 
     env:
