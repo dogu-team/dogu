@@ -12,8 +12,9 @@ on:
         type: choice
         description: 'windows runner'
         options:
+          - 'self-hosted-windows'
           - 'windows-2019'
-        default: 'windows-2019'
+        default: 'self-hosted-windows'
       maxos_runner:
         type: choice
         description: 'macos runner'
