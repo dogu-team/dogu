@@ -1,5 +1,5 @@
 import { CreateSelfHostedLicenseDto } from '@dogu-private/console';
-import { ConflictException, Injectable } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { v4 } from 'uuid';
@@ -35,7 +35,7 @@ export class SelfHostedLicenseService {
     const license = await this.dataSource.manager.getRepository(SelfHostedLicense).findOne({ where: { organizationId, licenseKey } });
 
     if (!license) {
-      throw new ConflictException(`Organization does not have a self-hosted license. organizationId: ${organizationId}`);
+      throw new NotFoundException(`Organization does not have a self-hosted license. organizationId: ${organizationId}`);
     }
 
     return license;

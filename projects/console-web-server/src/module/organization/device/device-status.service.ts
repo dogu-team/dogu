@@ -41,9 +41,11 @@ import { Device } from '../../../db/entity/device.entity';
 import { DeviceBrowserInstallation, DeviceTag, Organization, Project } from '../../../db/entity/index';
 import { DeviceAndDeviceTag } from '../../../db/entity/relations/device-and-device-tag.entity';
 import { ProjectAndDevice } from '../../../db/entity/relations/project-and-device.entity';
+import { SelfHostedLicenseValidator } from '../../../enterprise/module/license/common/validation';
 import { SelfHostedLicenseService } from '../../../enterprise/module/license/self-hosted-license.service';
 import { FEATURE_CONFIG } from '../../../feature.config';
 import { Page } from '../../common/dto/pagination/page';
+import { TokenService } from '../../token/token.service';
 import { DeviceTagService } from '../device-tag/device-tag.service';
 import {
   AttachTagToDeviceDto,
@@ -281,19 +283,23 @@ export class DeviceStatusService {
       if (projectId || isGlobal) {
         const license = await this.selfHostedLicenseService.getLicenseInfo(organizationId);
 
+        const isExpired = TokenService.isExpired(license.expiredAt);
+
         if (device.isHost) {
           const enabledHostDevices = await DeviceStatusService.findEnabledHostDevices(this.dataSource.manager, organizationId);
           const enabledHostRunnerCount = enabledHostDevices.map((device) => device.maxParallelJobs).reduce((a, b) => a + b, 0);
+          const maximumBrowserCount = SelfHostedLicenseValidator.getMaxmiumBrowserCount(license);
 
-          if (enabledHostRunnerCount + device.maxParallelJobs > license.maximumEnabledBrowserCount) {
-            throw new HttpException(`License browser runner count is not enough. license browser runner count: ${license.maximumEnabledBrowserCount}`, HttpStatus.PAYMENT_REQUIRED);
+          if (enabledHostRunnerCount + device.maxParallelJobs > maximumBrowserCount) {
+            throw new HttpException(`License browser runner count is not enough. license browser runner count: ${maximumBrowserCount}`, HttpStatus.PAYMENT_REQUIRED);
           }
         } else {
           const enabledMobileDevices = await DeviceStatusService.findEnabledMobileDevices(this.dataSource.manager, organizationId);
           const enabledMobileCount = enabledMobileDevices.length;
+          const maximumMobileCount = SelfHostedLicenseValidator.getMaxmiumMobileCount(license);
 
-          if (enabledMobileCount + 1 > license.maximumEnabledMobileCount) {
-            throw new HttpException(`License mobile device count is not enough. license mobile device count: ${license.maximumEnabledMobileCount}`, HttpStatus.PAYMENT_REQUIRED);
+          if (enabledMobileCount + 1 > maximumMobileCount) {
+            throw new HttpException(`License mobile device count is not enough. license mobile device count: ${maximumMobileCount}`, HttpStatus.PAYMENT_REQUIRED);
           }
         }
       }
@@ -382,13 +388,14 @@ export class DeviceStatusService {
     }
 
     if (device.isGlobal === 1 || (device.projectAndDevices && device.projectAndDevices.length > 0)) {
-      if (device.maxParallelJobs < maxParallelJobs) {
+      if (FEATURE_CONFIG.get('licenseModule') === 'self-hosted') {
         const license = await this.selfHostedLicenseService.getLicenseInfo(organizationId);
         const enabledHostDevices = await DeviceStatusService.findEnabledHostDevices(this.dataSource.manager, organizationId);
         const enabledHostRunnerCount = enabledHostDevices.map((device) => device.maxParallelJobs).reduce((a, b) => a + b, 0);
+        const maximumBrowserCount = SelfHostedLicenseValidator.getMaxmiumBrowserCount(license);
 
-        if (enabledHostRunnerCount + maxParallelJobs - device.maxParallelJobs > license.maximumEnabledBrowserCount) {
-          throw new HttpException(`License browser runner count is not enough. license browser runner count: ${license.maximumEnabledBrowserCount}`, HttpStatus.PAYMENT_REQUIRED);
+        if (enabledHostRunnerCount + maxParallelJobs - device.maxParallelJobs > maximumBrowserCount) {
+          throw new HttpException(`License browser runner count is not enough. license browser runner count: ${maximumBrowserCount}`, HttpStatus.PAYMENT_REQUIRED);
         }
       }
     }

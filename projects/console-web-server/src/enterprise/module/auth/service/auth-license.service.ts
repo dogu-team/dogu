@@ -6,6 +6,7 @@ import { DataSource } from 'typeorm';
 import { Project } from '../../../../db/entity/project.entity';
 import { FEATURE_CONFIG } from '../../../../feature.config';
 import { LICENSE_AUTHROIZE } from '../../../../module/auth/auth.types';
+import { TokenService } from '../../../../module/token/token.service';
 import { SelfHostedLicenseService } from '../../license/self-hosted-license.service';
 
 @Injectable()
@@ -44,8 +45,11 @@ export class AuthLicenseService {
 
     if (FEATURE_CONFIG.get('licenseModule') === 'self-hosted') {
       const license = await this.selfHostedLicenseService.getLicenseInfo(orgId);
-      if (!license.openApiEnabled) {
-        throw new UnauthorizedException(`OpenApi is not enabled.`);
+
+      const isExpired = TokenService.isExpired(license.expiredAt);
+
+      if (isExpired || !license.openApiEnabled) {
+        throw new HttpException(`OpenApi is not enabled.`, HttpStatus.PAYMENT_REQUIRED);
       }
     }
   }
@@ -55,8 +59,11 @@ export class AuthLicenseService {
 
     if (FEATURE_CONFIG.get('licenseModule') === 'self-hosted') {
       const license = await this.selfHostedLicenseService.getLicenseInfo(orgIdByRequest);
-      if (!license.doguAgentAutoUpdateEnabled) {
-        throw new UnauthorizedException(`DoguAgentAutoUpdate is not enabled.`);
+
+      const isExpired = TokenService.isExpired(license.expiredAt);
+
+      if (isExpired || !license.doguAgentAutoUpdateEnabled) {
+        throw new HttpException(`DoguAgentAutoUpdate is not enabled.`, HttpStatus.PAYMENT_REQUIRED);
       }
     }
   }

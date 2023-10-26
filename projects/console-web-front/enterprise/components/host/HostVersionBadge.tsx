@@ -21,6 +21,7 @@ import { OrganizationContext } from '../../../src/hooks/context/useOrganizationC
 import { isPaymentRequired, isTimeout } from '../../utils/error';
 import { UpgradeConveniencePlanModal } from '../license/UpgradePlanBannerModal';
 import TimeoutDocsModal from '../license/TimeoutDocsModal';
+import { checkCommunityEdition, checkExpired } from '../../utils/license';
 
 interface Props {
   host: HostBase;
@@ -71,7 +72,7 @@ const HostVesrsionBadge = ({ host }: Props) => {
     (updatableInfo.reason || updatableInfo.isUpdatable);
   const isCommunityEdition =
     process.env.NEXT_PUBLIC_ENV === 'self-hosted' &&
-    !(organization?.licenseInfo as SelfHostedLicenseBase | undefined)?.doguAgentAutoUpdateEnabled;
+    checkCommunityEdition(organization?.licenseInfo as SelfHostedLicenseBase);
 
   return (
     <>

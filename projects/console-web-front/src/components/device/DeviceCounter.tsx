@@ -3,6 +3,7 @@ import { SelfHostedLicenseBase, COMMUNITY_MAX_BROWSER_COUNT, COMMUNITY_MAX_MOBIL
 import styled from 'styled-components';
 
 import { useDeviceCount } from '../../../enterprise/api/device';
+import { checkExpired } from '../../../enterprise/utils/license';
 import useOrganizationContext from '../../hooks/context/useOrganizationContext';
 import useRefresh from '../../hooks/useRefresh';
 
@@ -16,17 +17,37 @@ const DeviceCounter: React.FC = () => {
     return null;
   }
 
+  const getbrowserMaxCount = () => {
+    if (process.env.NEXT_PUBLIC_ENV === 'self-hosted') {
+      if (checkExpired(organization.licenseInfo as SelfHostedLicenseBase)) {
+        return COMMUNITY_MAX_BROWSER_COUNT;
+      }
+      return (
+        (organization.licenseInfo as SelfHostedLicenseBase)?.maximumEnabledBrowserCount ?? COMMUNITY_MAX_BROWSER_COUNT
+      );
+    } else {
+      return Number.POSITIVE_INFINITY;
+    }
+  };
+
+  const getMobileMaxCount = () => {
+    if (process.env.NEXT_PUBLIC_ENV === 'self-hosted') {
+      if (checkExpired(organization.licenseInfo as SelfHostedLicenseBase)) {
+        return COMMUNITY_MAX_MOBILE_COUNT;
+      }
+      return (
+        (organization.licenseInfo as SelfHostedLicenseBase)?.maximumEnabledBrowserCount ?? COMMUNITY_MAX_MOBILE_COUNT
+      );
+    } else {
+      return Number.POSITIVE_INFINITY;
+    }
+  };
+
   const browserUsedCount = countInfo?.enabledBrowserCount ?? 0;
-  const browserMaxCount =
-    process.env.NEXT_PUBLIC_ENV === 'self-hosted'
-      ? (organization.licenseInfo as SelfHostedLicenseBase)?.maximumEnabledBrowserCount ?? COMMUNITY_MAX_BROWSER_COUNT
-      : Number.POSITIVE_INFINITY;
+  const browserMaxCount = getbrowserMaxCount();
 
   const mobileUsedCount = countInfo?.enabledMobileCount ?? 0;
-  const mobileMaxCount =
-    process.env.NEXT_PUBLIC_ENV === 'self-hosted'
-      ? (organization.licenseInfo as SelfHostedLicenseBase)?.maximumEnabledMobileCount ?? COMMUNITY_MAX_MOBILE_COUNT
-      : Number.POSITIVE_INFINITY;
+  const mobileMaxCount = getMobileMaxCount();
 
   const isBrowserMaxed = browserUsedCount >= browserMaxCount;
   const isMobileMaxed = mobileUsedCount >= mobileMaxCount;

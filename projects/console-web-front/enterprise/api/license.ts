@@ -1,41 +1,26 @@
-import {} from '@dogu-private/console';
-import { OrganizationId } from '@dogu-private/types';
+import { RegisterSelfHostedLicenseDto, SelfHostedLicenseBase } from '@dogu-private/console';
 import { GetServerSidePropsContext } from 'next';
 
-import { EmptyTokenError, getServersideCookies } from '../../src/utils/auth';
+import api from '../../src/api';
 
-export const registerSelfHostedLicense = async (dto: any): Promise<any> => {
-  // const { data } = await api.post<LicenseResponse>('/dogu-licenses', dto);
-  // return data;
-  throw new Error('Not implemented');
+import { EmptyTokenError, getServersideCookies, setCookiesInServerSide } from '../../src/utils/auth';
+
+export const registerSelfHostedLicense = async (dto: RegisterSelfHostedLicenseDto): Promise<any> => {
+  const { data } = await api.post<SelfHostedLicenseBase>('/licenses', dto);
+  return data;
 };
 
-export const reRegisterSelfHostedLicense = async (dto: any): Promise<any> => {
-  // const { data } = await api.patch<LicenseResponse>('/dogu-licenses', dto);
-  // return data;
-  throw new Error('Not implemented');
-};
-
-export const getLicenseInServerSide = async (
-  context: GetServerSidePropsContext,
-  organizationId: OrganizationId | null,
-) => {
+export const getSelfHostedLicenseInServerSide = async (context: GetServerSidePropsContext) => {
   const { authToken } = getServersideCookies(context.req.cookies);
 
   if (authToken) {
-    // let data: AxiosResponse<LicenseResponse>;
-    // if (organizationId) {
-    //   data = await api.get<LicenseResponse>(`/organizations/${organizationId}/dogu-licenses`, {
-    //     headers: { Authorization: `Bearer ${authToken}` },
-    //   });
-    // } else {
-    //   data = await api.get<LicenseResponse>(`/dogu-licenses`, {
-    //     headers: { Authorization: `Bearer ${authToken}` },
-    //   });
-    // }
-    // setCookiesInServerSide(data, context);
-    // const license = data.data;
-    // return license;
+    const response = await api.get<SelfHostedLicenseBase>(`/licenses`, {
+      headers: { Authorization: `Bearer ${authToken}` },
+    });
+
+    setCookiesInServerSide(response, context);
+    const license = response.data;
+    return license;
   }
 
   throw new EmptyTokenError();

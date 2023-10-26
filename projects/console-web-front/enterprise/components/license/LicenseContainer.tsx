@@ -7,14 +7,19 @@ import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import useTranslation from 'next-translate/useTranslation';
 import Trans from 'next-translate/Trans';
-import { SelfHostedLicenseBase, COMMUNITY_MAX_BROWSER_COUNT, COMMUNITY_MAX_MOBILE_COUNT } from '@dogu-private/console';
+import {
+  SelfHostedLicenseBase,
+  COMMUNITY_MAX_BROWSER_COUNT,
+  COMMUNITY_MAX_MOBILE_COUNT,
+  COMMUNITY_LICENSE_KEY,
+} from '@dogu-private/console';
 
 import DangerZone from '../../../src/components/common/boxes/DangerZone';
 import TokenCopyInput from '../../../src/components/common/TokenCopyInput';
 import useModal from '../../../src/hooks/useModal';
 import { sendErrorNotification, sendSuccessNotification } from '../../../src/utils/antd';
 import { getErrorMessageFromAxios } from '../../../src/utils/error';
-import { registerSelfHostedLicense, reRegisterSelfHostedLicense } from '../../api/license';
+import { registerSelfHostedLicense } from '../../api/license';
 import { checkCommunityEdition, checkExpired, LICENSE_DOCS_URL } from '../../utils/license';
 import { isTimeout } from '../../utils/error';
 import ProTag from '../common/ProTag';
@@ -38,6 +43,7 @@ const SelfHostedLicenseContainer: React.FC<Props> = ({ license, organizationId }
 
   const isExpired = checkExpired(licenseInfo);
   // const hasError = isExpired || licenseInfo.errorInfo !== null;
+  const isCommunityEdition = checkCommunityEdition(licenseInfo);
 
   useEffect(() => {
     setLicenseInfo(license);
@@ -46,7 +52,7 @@ const SelfHostedLicenseContainer: React.FC<Props> = ({ license, organizationId }
   const handleSubmit = async (licenseKey: string) => {
     try {
       if (!organizationId) {
-        const rv = await registerSelfHostedLicense({ licenseToken: licenseKey });
+        const rv = await registerSelfHostedLicense({ licenseKey });
         setLicenseInfo(rv);
         fireEvent('onLicenseUpdated', rv);
       } else {
@@ -64,31 +70,10 @@ const SelfHostedLicenseContainer: React.FC<Props> = ({ license, organizationId }
     }
   };
 
-  const handleReRegister = async (licenseKey: string) => {
-    try {
-      if (!organizationId) {
-        const rv = await reRegisterSelfHostedLicense({ licenseToken: licenseKey });
-        setLicenseInfo(rv);
-        fireEvent('onLicenseUpdated', rv);
-      } else {
-        // TODO: cloud license register
-      }
-      sendSuccessNotification('Successfully re-registered license');
-    } catch (e) {
-      if (isAxiosError(e)) {
-        if (isTimeout(e)) {
-          openTimeoutModal();
-        } else {
-          sendErrorNotification(`Failed to re-register license: ${getErrorMessageFromAxios(e)}`);
-        }
-      }
-    }
-  };
-
   const getTypeText = (): React.ReactNode => {
     if (organizationId) {
     } else {
-      if (checkCommunityEdition(licenseInfo)) {
+      if (isCommunityEdition) {
         return 'Community Edition';
       } else {
         return (
@@ -122,13 +107,7 @@ const SelfHostedLicenseContainer: React.FC<Props> = ({ license, organizationId }
           {isExpired && <Alert type="error" showIcon message={t('licenseExpiredAlertMessage')} />}
           {/* {licenseInfo.errorInfo !== null && <LicenseErrorAlert errorInfo={licenseInfo.errorInfo} />} */}
         </div>
-        {licenseInfo?.licenseKey ? (
-          <TokenCopyInput
-            value={licenseInfo?.licenseKey}
-            // status={hasError ? 'error' : undefined}
-            // suffix={hasError ? <ExclamationCircleOutlined style={{ color: 'red' }} /> : undefined}
-          />
-        ) : (
+        {isCommunityEdition ? (
           <>
             <LicenseSubmitForm form={form} onSubmit={handleSubmit} />
             <Alert
@@ -151,9 +130,15 @@ const SelfHostedLicenseContainer: React.FC<Props> = ({ license, organizationId }
               }
             />
           </>
+        ) : (
+          <TokenCopyInput
+            value={licenseInfo?.licenseKey}
+            // status={hasError ? 'error' : undefined}
+            // suffix={hasError ? <ExclamationCircleOutlined style={{ color: 'red' }} /> : undefined}
+          />
         )}
       </Content>
-      {licenseInfo.createdAt && (
+      {!isCommunityEdition && licenseInfo.createdAt && (
         <Content>
           <ContentTitle>{t('licenseActivatedDate')}</ContentTitle>
           <ContentValue>
@@ -165,7 +150,7 @@ const SelfHostedLicenseContainer: React.FC<Props> = ({ license, organizationId }
           </ContentValue>
         </Content>
       )}
-      {licenseInfo.expiredAt && (
+      {!isCommunityEdition && licenseInfo.expiredAt && (
         <Content>
           <ContentTitle>{t('licenseExpirationDate')}</ContentTitle>
           <ContentValue>
@@ -211,7 +196,7 @@ const SelfHostedLicenseContainer: React.FC<Props> = ({ license, organizationId }
                 }
                 onConfirm={async () => {
                   const { key } = await form.validateFields();
-                  await handleReRegister(key);
+                  await handleSubmit(key);
                 }}
                 onOpenChange={(open) => {
                   if (!open) {

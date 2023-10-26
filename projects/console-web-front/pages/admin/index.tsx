@@ -5,7 +5,7 @@ import { useRouter } from 'next/router';
 import styled from 'styled-components';
 
 import SelfHostedLicenseContainer from '../../enterprise/components/license/LicenseContainer';
-import { AdminProps, getAdminServerSideProps } from '../../enterprise/pages/admin';
+import { AdminProps, getSelfHostedAdminServerSideProps } from '../../enterprise/pages/admin';
 import ConsoleBasicLayout from '../../src/components/layouts/ConsoleBasicLayout';
 import { flexRowBaseStyle } from '../../src/styles/box';
 import { NextPageWithLayout } from '../_app';
@@ -40,7 +40,7 @@ AdminPage.getLayout = (page) => {
   );
 };
 
-export const getServerSideProps: GetServerSideProps<AdminProps> = getAdminServerSideProps;
+export const getServerSideProps: GetServerSideProps<AdminProps> = getSelfHostedAdminServerSideProps;
 
 export default AdminPage;
 

@@ -24,6 +24,12 @@ export class CreateSelfHostedLicenseDto {
   expiredAt!: Date;
 }
 
+export class RegisterSelfHostedLicenseDto {
+  @IsNotEmpty()
+  @IsString()
+  licenseKey!: string;
+}
+
 export interface LicenseErrorInfo {
   isTokenInValid: boolean;
   isLicenseServerDisConnected: boolean;

@@ -1,7 +1,7 @@
 import { COMMUNITY_LICENSE_KEY, COMMUNITY_MAX_BROWSER_COUNT, COMMUNITY_MAX_MOBILE_COUNT, SelfHostedLicenseBase } from '@dogu-private/console';
 import { OrganizationId } from '@dogu-private/types';
-import { setAxiosErrorFilterToIntercepter } from '@dogu-tech/common';
-import { Injectable } from '@nestjs/common';
+import { FilteredAxiosError, setAxiosErrorFilterToIntercepter } from '@dogu-tech/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import axios from 'axios';
 import { DataSource } from 'typeorm';
@@ -43,10 +43,7 @@ export class SelfHostedLicenseService {
 
   async setLicense(organizationId: OrganizationId, licenseKey: string): Promise<SelfHostedLicenseBase> {
     try {
-      const response = await this.api.post<SelfHostedLicenseBase>('/self-hosted-licenses', {
-        organizationId,
-        licenseKey,
-      });
+      const response = await this.api.get<SelfHostedLicenseBase>(`/self-hosted-licenses?organizationId=${organizationId}&licenseKey=${licenseKey}`);
 
       await this.dataSource.transaction(async (manager) => {
         const existingLicense = await manager.getRepository(DoguLicense).createQueryBuilder('doguLicense').getOne();
@@ -59,6 +56,9 @@ export class SelfHostedLicenseService {
 
       return response.data;
     } catch (e) {
+      if ((e as FilteredAxiosError).responseStatus === 404) {
+        throw new NotFoundException(`Your organization does not have a self-hosted license. organizationId: ${organizationId}, licenseKey: ${licenseKey}`);
+      }
       throw e;
     }
   }

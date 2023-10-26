@@ -10,6 +10,7 @@ import { Organization, ProjectAndDevice } from '../../../../db/entity/index';
 import { FEATURE_CONFIG } from '../../../../feature.config';
 import { DoguLogger } from '../../../../module/logger/logger';
 import { DeviceStatusService } from '../../../../module/organization/device/device-status.service';
+import { SelfHostedLicenseValidator } from '../../license/common/validation';
 import { SelfHostedLicenseService } from '../../license/self-hosted-license.service';
 
 @Injectable()
@@ -138,14 +139,17 @@ export class LicenseUpdater {
     await this.dataSource.manager.transaction(async (manager) => {
       const hostDevices = await DeviceStatusService.findEnabledHostDevices(manager, rootOrganization.organizationId);
       const usingBrowserRunnerCount = hostDevices.map((device) => device.maxParallelJobs).reduce((a, b) => a + b, 0);
+      const maximumBrowserCount = SelfHostedLicenseValidator.getMaxmiumBrowserCount(license);
 
-      if (license.maximumEnabledBrowserCount < usingBrowserRunnerCount) {
-        await this.dropBrowserRunners(manager, hostDevices, license.maximumEnabledBrowserCount);
+      if (maximumBrowserCount < usingBrowserRunnerCount) {
+        await this.dropBrowserRunners(manager, hostDevices, maximumBrowserCount);
       }
-      const mobildDevices = await DeviceStatusService.findEnabledMobileDevices(manager, rootOrganization.organizationId);
 
-      if (license.maximumEnabledMobileCount < mobildDevices.length) {
-        await this.dropMobileDevices(manager, mobildDevices, license.maximumEnabledMobileCount);
+      const mobildDevices = await DeviceStatusService.findEnabledMobileDevices(manager, rootOrganization.organizationId);
+      const maximumMobileCount = SelfHostedLicenseValidator.getMaxmiumMobileCount(license);
+
+      if (maximumMobileCount < mobildDevices.length) {
+        await this.dropMobileDevices(manager, mobildDevices, maximumMobileCount);
       }
     });
   }
