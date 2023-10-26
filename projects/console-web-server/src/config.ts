@@ -60,6 +60,8 @@ export const config = {
       liveSessionHeartbeat: (liveSessionId: string): string => `/live-sessions/${liveSessionId}/heartbeat`,
       liveSessionCloseWaitEvent: (liveSessionId: string): string => `/live-sessions/${liveSessionId}/close-wait-event`,
       liveSessionCloseEvent: (liveSessionId: string): string => `/live-sessions/${liveSessionId}/close-event`,
+      liveSessionCloudLicenseId: (liveSessionId: string): string => `/live-sessions/${liveSessionId}/cloud-license-id`,
+      cloudLicenseLiveTestingHeartbeat: (cloudLicenseId: string): string => `/cloud-licenses/${cloudLicenseId}/live-testing-heartbeat`,
       cloudLicenseLiveTesting: (cloudLicenseId: string): string => `/cloud-licenses/${cloudLicenseId}/live-testing`,
     },
     expireSeconds: 10 * 60,
@@ -157,6 +159,12 @@ export const config = {
     },
     participantsCount: {
       allowedSeconds: 24 * 60 * 60,
+    },
+    cloudLicenseId: {
+      allowedSeconds: 24 * 60 * 60,
+    },
+    cloudLicenseLiveTestingHeartbeat: {
+      allowedSeconds: 10,
     },
   },
   ws: {

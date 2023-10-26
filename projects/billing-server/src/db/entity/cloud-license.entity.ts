@@ -2,7 +2,6 @@ import { CloudLicenseBase, CloudLicensePropSnake } from '@dogu-private/console';
 import { OrganizationId } from '@dogu-private/types';
 import { Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
 import { CloudSubscriptionItem } from './cloud-subscription-item.entity';
-
 import { ColumnTemplate } from './util/decorators';
 
 @Entity('cloud_license')
