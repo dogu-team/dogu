@@ -12,7 +12,6 @@ import (
 type IosControlHandler struct {
 	sendFunc           func(*params.CfGdcDaResult, error)
 	deviceAgentRelayer relayer.IosDeviceAgentService
-	seq                uint32
 }
 
 var _ich DatachannelHandler = &IosControlHandler{}
@@ -24,7 +23,9 @@ func NewIosControlHandler(serial string, getDeviceAgentUrlFunc func() string) *I
 			switch a := r.Value.(type) {
 			case *params.DcIdaResult_DcGdcDaControlResult:
 				log.Inst.Debug("IosControlHandler.onEach", zap.String("serial", serial), zap.String("result", a.DcGdcDaControlResult.String()))
+
 				ach.sendFunc(&params.CfGdcDaResult{
+					Seq: r.GetSeq(),
 					Value: &params.CfGdcDaResult_CfGdcDaControlResult{
 						CfGdcDaControlResult: a.DcGdcDaControlResult,
 					},
@@ -56,9 +57,8 @@ func (h *IosControlHandler) OnParamList(param *params.CfGdcDaParamList) bool {
 	for i := 0; i < len(param.Params); i++ {
 		switch a := param.Params[i].Value.(type) {
 		case *params.CfGdcDaParam_CfGdcDaControlParam:
-			h.seq++
 			paramsToSend.Params = append(paramsToSend.Params, &params.DcIdaParam{
-				Seq: h.seq,
+				Seq: param.Params[i].GetSeq(),
 				Value: &params.DcIdaParam_DcGdcDaControlParam{
 					DcGdcDaControlParam: a.CfGdcDaControlParam,
 				},

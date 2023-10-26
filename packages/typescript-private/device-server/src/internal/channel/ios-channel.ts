@@ -74,6 +74,7 @@ export class IosChannel implements DeviceChannel {
     private readonly deviceAgent: IosDeviceAgentService,
     private _appiumContext: AppiumContextProxy,
     private readonly _appiumDeviceWebDriverHandler: AppiumDeviceWebDriverHandler,
+    private readonly _sharedDevice: IosSharedDeviceService,
     private readonly logger: SerialPrintable,
     readonly browserInstallations: BrowserInstallation[],
   ) {
@@ -155,7 +156,8 @@ export class IosChannel implements DeviceChannel {
       await deviceServerService.devicePortService.createOrGetHostPort(serial, 'iOSAppiumServer'),
       wdaForwardPort,
     );
-    ZombieServiceInstance.addComponent(appiumContextProxy);
+    const appiumWaiter = ZombieServiceInstance.addComponent(appiumContextProxy);
+    await appiumWaiter.waitUntilAlive();
     logger.verbose('appium context started');
 
     logger.verbose('ios device agent process starting');
@@ -168,8 +170,8 @@ export class IosChannel implements DeviceChannel {
       deviceServerService.devicePortService.getIosDeviceAgentScreenServerPort(),
       grpcForwardPort,
       deviceServerService.devicePortService.getIosDeviceAgentGrpcServerPort(),
-      wdaForwardPort,
-      deviceServerService.devicePortService.getIosWebDriverAgentServerPort(),
+      wda,
+      deviceServerService.devicePortService.getIosDeviceAgentWebDriverAgentServerPort(),
       deviceAgent,
       streaming,
       logger,
@@ -207,7 +209,7 @@ export class IosChannel implements DeviceChannel {
       browserPlatform: 'ios',
     });
 
-    const shared = new IosSharedDeviceService(serial, systemInfo, deviceAgent, logger);
+    const shared = new IosSharedDeviceService(serial, systemInfo, deviceAgent, wda, logger);
     await shared.wait();
 
     const deviceChannel = new IosChannel(
@@ -220,6 +222,7 @@ export class IosChannel implements DeviceChannel {
       deviceAgent,
       appiumContextProxy,
       appiumDeviceWebDriverHandler,
+      shared,
       logger,
       findAllBrowserInstallationsResult.browserInstallations,
     );
@@ -280,6 +283,7 @@ export class IosChannel implements DeviceChannel {
     this.webdriverAgentProcess.delete();
     this.iosDeviceAgentProcess.delete();
     this.deviceAgent.delete();
+    this._sharedDevice.delete();
     ZombieServiceInstance.deleteAllComponentsIfExist((zombieable: Zombieable): boolean => {
       return zombieable.serial === this.serial && zombieable.platform === Platform.PLATFORM_IOS;
     }, 'kill serial bound zombies');

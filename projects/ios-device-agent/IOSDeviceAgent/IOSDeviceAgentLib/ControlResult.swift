@@ -31,7 +31,7 @@ class ControlResult {
           $0.dcGdcDaControlResult = result
         }
 
-        Log.shared.debug("ControlResult.set eq: \(self.seq), control: \(resultToSend.dcGdcDaControlResult)")
+        Log.shared.debug("ControlResult.set seq: \(self.seq), control: \(resultToSend.dcGdcDaControlResult)")
         try await self.session.send(result: resultToSend)
       },
       catch: {

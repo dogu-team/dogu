@@ -42,7 +42,7 @@ export class DevicePortService {
     return 35002;
   }
 
-  public getIosWebDriverAgentServerPort(): number {
+  public getIosDeviceAgentWebDriverAgentServerPort(): number {
     return 50003;
   }
 
