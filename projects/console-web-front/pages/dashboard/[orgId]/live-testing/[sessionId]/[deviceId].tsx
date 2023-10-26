@@ -8,6 +8,8 @@ import { useRouter } from 'next/router';
 import { shallow } from 'zustand/shallow';
 import Trans from 'next-translate/Trans';
 import useTranslation from 'next-translate/useTranslation';
+import { transform } from '@dogu-tech/common';
+import { CloudLicenseMessage } from '@dogu-private/console';
 
 import { NextPageWithLayout } from 'pages/_app';
 import ManualTesting from 'src/components/studio/LiveTesting';
@@ -21,8 +23,6 @@ import useModal from '../../../../../src/hooks/useModal';
 import useWebSocket from '../../../../../src/hooks/useWebSocket';
 import CountDownTimer from '../../../../../src/components/common/CountDownTimer';
 import LiveTestingCloseSessionButton from '../../../../../src/components/cloud/LiveTestingCloseSessionButton';
-import { transform, transformAndValidate } from '@dogu-tech/common';
-import { CloudLicenseMessage } from '@dogu-private/console';
 
 const CloudLiveTestingStudioPage: NextPageWithLayout<CloudStudioTestingPageProps> = ({ organization, me, device }) => {
   const [isOpen, openModal, closeModal, payload] = useModal<string>();
@@ -50,7 +50,7 @@ const CloudLiveTestingStudioPage: NextPageWithLayout<CloudStudioTestingPageProps
             openModal(data.message);
           } else if (data.type === 'cloud-license-live-testing') {
             const parsed = transform(CloudLicenseMessage.LiveTestingReceive, JSON.parse(data.message));
-            console.debug('cloud-license-live-testing', parsed);
+            fireEvent('onCloudRemainingFreeSecondMessage', parsed);
           }
         } catch (e) {
           console.error('Invalid message: ', event.data);

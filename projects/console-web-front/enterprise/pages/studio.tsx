@@ -1,14 +1,18 @@
 import { DeviceBase, FeatureTableBase, OrganizationBase, ProjectBase, UserBase } from '@dogu-private/console';
 import { DeviceId, LiveSessionId, OrganizationId } from '@dogu-private/types';
+import { Button } from 'antd';
 import { GetServerSideProps } from 'next';
 import { useRouter } from 'next/router';
+import { MdOutlineFeedback } from 'react-icons/md';
 
 import { getCloudDeviceByIdInServerSide } from '../../src/api/cloud-device';
 import { getDeviceByIdInServerSide } from '../../src/api/device';
 import { getOrganizationInServerSide } from '../../src/api/organization';
 import { getProjectInServerSide } from '../../src/api/project';
 import { getUserInServerSide } from '../../src/api/registery';
+import LiveTestingFeedbackButton from '../../src/components/cloud/live-testing/LiveTestingFeedbackButton';
 import LiveTestingCloseSessionButton from '../../src/components/cloud/LiveTestingCloseSessionButton';
+import LiveTestingSessionTimer from '../../src/components/cloud/LiveTestingSessionTimer';
 import ParticipantGroup from '../../src/components/studio/ParticipantGroup';
 import StudioDeviceSelector from '../../src/components/studio/StudioDeviceSelector';
 import { getFeatureConfigInServerSide } from '../api/feature';
@@ -68,12 +72,22 @@ export const getStudioTestingLayout = (page: React.ReactElement<StudioTestingPag
 
 export const getCloudStudioTestingLayout = (page: React.ReactElement<CloudStudioTestingPageProps>) => {
   const router = useRouter();
+  const liveSessionId = router.query.sessionId as LiveSessionId;
 
   return (
     <StudioLayout
       device={page.props.device}
       headerRight={
         <>
+          <div style={{ marginRight: '1rem' }}>
+            <LiveTestingFeedbackButton sessionId={liveSessionId} userId={page.props.me.userId} />
+          </div>
+          <div style={{ marginRight: '1rem' }}>
+            <LiveTestingSessionTimer
+              organizationId={page.props.organization.organizationId}
+              sessionId={liveSessionId}
+            />
+          </div>
           <div style={{ marginRight: '1rem' }}>
             <ParticipantGroup
               organizationId={page.props.organization.organizationId}
@@ -83,7 +97,7 @@ export const getCloudStudioTestingLayout = (page: React.ReactElement<CloudStudio
           </div>
           <LiveTestingCloseSessionButton
             organizationId={page.props.organization.organizationId}
-            sessionId={router.query.sessionId as LiveSessionId}
+            sessionId={liveSessionId}
             onClose={() => window.close()}
             type="primary"
           >

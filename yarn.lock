@@ -7048,7 +7048,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@slack/web-api@npm:6.9.0":
+"@slack/web-api@npm:6.9.0, @slack/web-api@npm:^6.9.0":
   version: 6.9.0
   resolution: "@slack/web-api@npm:6.9.0"
   dependencies:
@@ -13068,6 +13068,7 @@ __metadata:
     "@emotion/is-prop-valid": 1.2.0
     "@monaco-editor/react": 4.5.0-beta.0
     "@sentry/nextjs": 7.50.0
+    "@slack/web-api": ^6.9.0
     "@svgr/webpack": 8.0.1
     "@swc/core": 1.2.220
     "@types/cookie": 0.5.1

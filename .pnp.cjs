@@ -20228,6 +20228,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@emotion/is-prop-valid", "npm:1.2.0"],\
             ["@monaco-editor/react", "virtual:28b444ca65aca9f6532815a467e94245056189ac01976539aa2f4fb241137b45c9697a2074b54444c9d1c779b8e60e1a1140c79b811d2daaa176852048e428eb#npm:4.5.0-beta.0"],\
             ["@sentry/nextjs", "virtual:28b444ca65aca9f6532815a467e94245056189ac01976539aa2f4fb241137b45c9697a2074b54444c9d1c779b8e60e1a1140c79b811d2daaa176852048e428eb#npm:7.50.0"],\
+            ["@slack/web-api", "npm:6.9.0"],\
             ["@svgr/webpack", "npm:8.0.1"],\
             ["@swc/core", "npm:1.2.220"],\
             ["@types/cookie", "npm:0.5.1"],\

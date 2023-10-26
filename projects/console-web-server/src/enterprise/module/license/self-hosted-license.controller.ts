@@ -1,4 +1,3 @@
-// import { FindLicenseDtoBase, LicenseResponse } from '@dogu-private/console';
 import { RegisterSelfHostedLicenseDto, SelfHostedLicenseBase } from '@dogu-private/console';
 import { UserPayload } from '@dogu-private/types';
 import { Body, Controller, Get, Inject, NotFoundException, Post } from '@nestjs/common';
@@ -10,8 +9,8 @@ import { SELF_HOSTED_ROLE } from '../../../module/auth/auth.types';
 import { SelfHostedPermission, User } from '../../../module/auth/decorators';
 import { SelfHostedLicenseService } from './self-hosted-license.service';
 
-@Controller('licenses')
-export class LicenseSelfHostedController {
+@Controller('self-hosted-licenses')
+export class SelfHostedLicenseController {
   constructor(
     @Inject(SelfHostedLicenseService)
     private readonly selfHostedLicenseService: SelfHostedLicenseService,
@@ -43,7 +42,7 @@ export class LicenseSelfHostedController {
   }
 
   @Get('')
-  @SelfHostedPermission(SELF_HOSTED_ROLE.ROOT)
+  @SelfHostedPermission(SELF_HOSTED_ROLE.MEMBER)
   async getLicense(@User() user: UserPayload): Promise<SelfHostedLicenseBase> {
     const organizationRole = await this.dataSource.getRepository(OrganizationAndUserAndOrganizationRole).findOne({
       where: {

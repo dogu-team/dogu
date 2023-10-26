@@ -40,7 +40,7 @@ const DeviceItem: React.FC<{ device: CloudDeviceMetadataBase }> = ({ device }) =
             <PlatformIcon platform={device.platform} />
           </OneSpan>
           <OneSpan>
-            {device.resolutionHeight} * {device.resolutionWidth}
+            {device.resolutionHeight}x{device.resolutionWidth}
           </OneSpan>
           <OneSpan>{Number(device.memory) ? `${ceilDeviceMemory(Number(device.memory))}` : '-'}</OneSpan>
           <ButtonWrapper>

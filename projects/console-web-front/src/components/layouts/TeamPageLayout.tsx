@@ -2,15 +2,16 @@ import { AppstoreOutlined, SettingOutlined, UserOutlined } from '@ant-design/ico
 import { TeamBase } from '@dogu-private/console';
 import useTranslation from 'next-translate/useTranslation';
 import { useRouter } from 'next/router';
-import { swrAuthFetcher } from 'src/api';
 import styled from 'styled-components';
 import useSWR from 'swr';
 
+import { swrAuthFetcher } from 'src/api';
 import MenuLinkTabs, { MenuLinkTabProps } from '../MenuLinkTabs';
 import OrganizationSideBar from './OrganizationSideBar';
 import ConsoleLayout, { ConsoleLayoutProps } from './ConsoleLayout';
+import H4 from '../common/headings/H4';
 
-interface Props extends Pick<ConsoleLayoutProps, 'organization' | 'user' | 'children'> {}
+interface Props extends Pick<ConsoleLayoutProps, 'organization' | 'user' | 'children' | 'license'> {}
 
 const TeamPageLayout = ({ children, ...props }: Props) => {
   const router = useRouter();
@@ -48,7 +49,7 @@ const TeamPageLayout = ({ children, ...props }: Props) => {
     <ConsoleLayout
       {...props}
       sidebar={<OrganizationSideBar />}
-      title={t('team:teamDetailPageTitle', { name: data?.name ?? '' })}
+      title={<H4>{t('team:teamDetailPageTitle', { name: data?.name ?? '' })}</H4>}
     >
       <Box>
         <MenuLinkTabs tabs={tabs} />

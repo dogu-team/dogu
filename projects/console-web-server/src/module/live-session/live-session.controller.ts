@@ -1,6 +1,7 @@
 import { LiveSessionCreateRequestBodyDto } from '@dogu-private/console';
 import { LiveSessionId } from '@dogu-private/types';
 import { Body, Controller, Delete, Param, Post } from '@nestjs/common';
+
 import { LiveSession } from '../../db/entity/live-session.entity';
 import { CloudLicenseService } from '../../enterprise/module/license/cloud-license.service';
 import { ORGANIZATION_ROLE } from '../auth/auth.types';
@@ -9,7 +10,10 @@ import { LiveSessionService } from './live-session.service';
 
 @Controller('/live-sessions')
 export class LiveSessionController {
-  constructor(private readonly liveSessionService: LiveSessionService, private readonly cloudLicenseService: CloudLicenseService) {}
+  constructor(
+    private readonly liveSessionService: LiveSessionService,
+    private readonly cloudLicenseService: CloudLicenseService,
+  ) {}
 
   @Post()
   @OrganizationPermission(ORGANIZATION_ROLE.MEMBER)
