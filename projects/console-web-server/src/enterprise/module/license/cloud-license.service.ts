@@ -85,7 +85,7 @@ export class CloudLicenseService {
 
     webSocket.on('message', (data) => {
       (async () => {
-        const receiveMessage = await transformAndValidate(CloudLicenseMessage.RemainingFreeSecondsReceive, data.toString());
+        const receiveMessage = await transformAndValidate(CloudLicenseMessage.RemainingFreeSecondsReceive, JSON.parse(data.toString()));
         if (receiveMessage.cloudLicenseId !== cloudLicenseId) {
           this.logger.error('LiveSessionService.startUpdateRemainingFreeSeconds.message cloudLicenseId not matched', {
             cloudLicenseId,

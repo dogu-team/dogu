@@ -1,15 +1,14 @@
 import { Param, Result, WebSocketProxyId, WebSocketProxyReceive } from '@dogu-private/console-host-agent';
 import { DeviceId, OrganizationId } from '@dogu-private/types';
 import { transformAndValidate } from '@dogu-tech/common';
-import { InjectRedis } from '@liaoliaots/nestjs-redis';
 import { Injectable } from '@nestjs/common';
-import Redis from 'ioredis';
 import { config } from '../../config';
 import { DoguLogger } from '../logger/logger';
+import { RedisService } from '../redis/redis.service';
 
 @Injectable()
 export class DeviceMessageQueue {
-  constructor(@InjectRedis() private readonly redis: Redis, private readonly logger: DoguLogger) {}
+  constructor(private readonly redis: RedisService, private readonly logger: DoguLogger) {}
 
   async pushParam(organizationId: OrganizationId, deviceId: DeviceId, param: Param): Promise<void> {
     const key = config.redis.key.deviceParam(organizationId, deviceId);

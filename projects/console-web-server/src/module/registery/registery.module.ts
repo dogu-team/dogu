@@ -1,4 +1,3 @@
-import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Organization, OrganizationAndUserAndOrganizationRole, SubscribeUser, User, UserAndRefreshToken } from '../../db/entity';
@@ -33,7 +32,6 @@ const IMPORT_MODULES = [
   OrganizationModule,
   EmailModule,
   UserModule,
-  HttpModule,
   UserInvitationModule,
   GitlabModule,
   LicenseModule,

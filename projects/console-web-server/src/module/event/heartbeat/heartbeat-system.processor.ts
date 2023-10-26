@@ -1,17 +1,16 @@
-import { InjectRedis } from '@liaoliaots/nestjs-redis';
-import { Inject, Injectable } from '@nestjs/common';
-import Redis from 'ioredis';
+import { Injectable } from '@nestjs/common';
 import { config } from '../../../config';
 import { DoguLogger } from '../../logger/logger';
+import { RedisService } from '../../redis/redis.service';
 import { DeviceConnectionUpdater } from './device-connection-updater';
 import { HostConnectionUpdater } from './host-connection-updater';
 
 @Injectable()
 export class HeartBeatSystemProcessor {
   constructor(
-    @InjectRedis() private readonly redis: Redis,
-    @Inject(DeviceConnectionUpdater) private readonly deviceConnectionUpdater: DeviceConnectionUpdater,
-    @Inject(HostConnectionUpdater) private readonly hostConnectionUpdater: HostConnectionUpdater,
+    private readonly redis: RedisService,
+    private readonly deviceConnectionUpdater: DeviceConnectionUpdater,
+    private readonly hostConnectionUpdater: HostConnectionUpdater,
     private readonly logger: DoguLogger,
   ) {}
 

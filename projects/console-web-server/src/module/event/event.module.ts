@@ -22,6 +22,7 @@ import { LicenseModule } from '../../enterprise/module/license/license.module';
 import { DeviceMessageModule } from '../device-message/device-message.module';
 import { LiveSessionModule } from '../live-session/live-session.module';
 import { ProjectModule } from '../project/project.module';
+import { RedisModule } from '../redis/redis.module';
 import { RemoteModule } from '../remote/remote.module';
 import { PipelineModule } from '../routine/pipeline/pipeline.module';
 import { DeviceConnectionUpdater } from './heartbeat/device-connection-updater';
@@ -73,6 +74,7 @@ import { UpdateProducer } from './update-producer';
     LicenseModule,
     ProjectModule,
     LiveSessionModule,
+    RedisModule,
   ],
   providers: [
     UpdateProducer,

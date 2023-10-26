@@ -1,14 +1,13 @@
 import { LiveSessionState } from '@dogu-private/types';
-import { InjectRedis } from '@liaoliaots/nestjs-redis';
 import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
-import Redis from 'ioredis';
 import { DataSource } from 'typeorm';
 
 import { config } from '../../config';
 import { LiveSession } from '../../db/entity/live-session.entity';
 import { LiveSessionService } from '../live-session/live-session.service';
 import { DoguLogger } from '../logger/logger';
+import { RedisService } from '../redis/redis.service';
 import { EventConsumer } from './event.consumer';
 import { EventProducer } from './event.producer';
 
@@ -20,8 +19,7 @@ export class LiveSessionUpdater implements OnModuleInit, OnModuleDestroy {
   constructor(
     @InjectDataSource()
     private readonly dataSource: DataSource,
-    @InjectRedis()
-    redis: Redis,
+    private readonly redis: RedisService,
     private readonly logger: DoguLogger,
     private readonly liveSessionService: LiveSessionService,
   ) {

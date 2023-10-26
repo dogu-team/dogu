@@ -1,6 +1,5 @@
 import { CloudLicenseBase, DevicePropCamel, DeviceUsageState, LiveSessionCreateRequestBodyDto, LiveSessionFindQueryDto, OrganizationPropCamel } from '@dogu-private/console';
 import { LiveSessionActiveStates, LiveSessionId, LiveSessionState, OrganizationId } from '@dogu-private/types';
-import { InjectRedis } from '@liaoliaots/nestjs-redis';
 import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import Redis from 'ioredis';
@@ -14,6 +13,7 @@ import { Organization } from '../../db/entity/organization.entity';
 import { CloudLicenseService } from '../../enterprise/module/license/cloud-license.service';
 import { DoguLogger } from '../logger/logger';
 import { DeviceCommandService } from '../organization/device/device-command.service';
+import { RedisService } from '../redis/redis.service';
 
 @Injectable()
 export class LiveSessionService {
@@ -22,8 +22,7 @@ export class LiveSessionService {
   constructor(
     @InjectDataSource()
     private readonly dataSource: DataSource,
-    @InjectRedis()
-    private readonly redis: Redis,
+    private readonly redis: RedisService,
     private readonly deviceCommandService: DeviceCommandService,
     private readonly cloudLicenseService: CloudLicenseService,
     private readonly logger: DoguLogger,
