@@ -22,7 +22,7 @@ func NewIosControlHandler(serial string, getDeviceAgentUrlFunc func() string) *I
 		for _, r := range results.Results {
 			switch a := r.Value.(type) {
 			case *params.DcIdaResult_DcGdcDaControlResult:
-				log.Inst.Debug("IosControlHandler.onEach", zap.String("serial", serial), zap.String("result", a.DcGdcDaControlResult.String()))
+				log.Inst.Debug("IosControlHandler.onEach", zap.String("serial", serial), zap.Uint32("seq", r.GetSeq()), zap.String("result", a.DcGdcDaControlResult.String()))
 
 				ach.sendFunc(&params.CfGdcDaResult{
 					Seq: r.GetSeq(),

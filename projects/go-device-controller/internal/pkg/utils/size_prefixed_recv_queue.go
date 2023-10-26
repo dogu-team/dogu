@@ -39,6 +39,9 @@ func (q *SizePrefixedRecvQueue) PushBytes(data []byte) {
 }
 
 func (q *SizePrefixedRecvQueue) Has() bool {
+	if len(q.slice) < 4 {
+		return false
+	}
 	// https://kokes.github.io/blog/2019/03/19/deserialising-ints-from-bytes.html
 	sh := (*reflect.SliceHeader)(unsafe.Pointer(&q.slice))
 	size := *(*uint32)(unsafe.Pointer(sh.Data))
