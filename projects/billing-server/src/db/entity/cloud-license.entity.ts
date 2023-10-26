@@ -13,8 +13,8 @@ export class CloudLicense implements CloudLicenseBase {
   @Column({ type: 'character varying', name: CloudLicensePropSnake.organization_id, unique: true })
   organizationId!: OrganizationId;
 
-  @Column({ type: 'integer', name: CloudLicensePropSnake.remaining_free_seconds, default: 180 * 60 })
-  remainingFreeSeconds!: number;
+  @Column({ type: 'integer', name: CloudLicensePropSnake.live_testing_remaining_free_seconds, default: 180 * 60 })
+  liveTestingRemainingFreeSeconds!: number;
 
   @Column({ type: 'integer', name: CloudLicensePropSnake.live_testing_parallel_count, default: 1 })
   liveTestingParallelCount!: number;

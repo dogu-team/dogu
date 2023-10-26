@@ -9,8 +9,8 @@ import { CloudLicense } from '../../db/entity/cloud-license.entity';
 import { retrySerialize } from '../../db/utils';
 import { DoguLogger } from '../logger/logger';
 
-@WebSocketGateway({ path: '/cloud-license/remaining-free-seconds' })
-export class CloudLicenseRemainingFreeSecondsGateway implements OnGatewayConnection {
+@WebSocketGateway({ path: '/cloud-license/live-testing' })
+export class CloudLicenseLiveTestingGateway implements OnGatewayConnection {
   constructor(
     @InjectDataSource()
     private readonly dataSource: DataSource,
@@ -20,7 +20,7 @@ export class CloudLicenseRemainingFreeSecondsGateway implements OnGatewayConnect
   handleConnection(webSocket: WebSocket, incomingMessage: IncomingMessage): void {
     webSocket.on('message', (data) => {
       (async (): Promise<void> => {
-        const sendMessage = await transformAndValidate(CloudLicenseMessage.RemainingFreeSecondsSend, JSON.parse(data.toString()));
+        const sendMessage = await transformAndValidate(CloudLicenseMessage.LiveTestingSend, JSON.parse(data.toString()));
         const remainingFreeSeconds = await retrySerialize(this.logger, this.dataSource, async (manager) => {
           const cloudLicense = await manager.getRepository(CloudLicense).findOne({
             where: {
@@ -36,27 +36,31 @@ export class CloudLicenseRemainingFreeSecondsGateway implements OnGatewayConnect
             return;
           }
 
-          if (cloudLicense.remainingFreeSeconds <= 0) {
-            return cloudLicense.remainingFreeSeconds;
+          if (cloudLicense.liveTestingRemainingFreeSeconds <= 0) {
+            return cloudLicense.liveTestingRemainingFreeSeconds;
           }
 
-          cloudLicense.remainingFreeSeconds -= sendMessage.seconds;
+          if (sendMessage.usedFreeSeconds === null) {
+            return cloudLicense.liveTestingRemainingFreeSeconds;
+          }
+
+          cloudLicense.liveTestingRemainingFreeSeconds -= sendMessage.usedFreeSeconds;
           const result = await manager.getRepository(CloudLicense).save(cloudLicense);
-          return result.remainingFreeSeconds;
+          return result.liveTestingRemainingFreeSeconds;
         });
 
         if (remainingFreeSeconds === undefined) {
           return;
         }
 
-        const receiveMessage: CloudLicenseMessage.RemainingFreeSecondsReceive = {
+        const receiveMessage: CloudLicenseMessage.LiveTestingReceive = {
           cloudLicenseId: sendMessage.cloudLicenseId,
           expired: remainingFreeSeconds <= 0,
           remainingFreeSeconds,
         };
         webSocket.send(JSON.stringify(receiveMessage));
       })().catch((error) => {
-        this.logger.error('Failed to decrease remaining free seconds', { error: errorify(error) });
+        this.logger.error('Failed to update live testing free seconds', { error: errorify(error) });
       });
     });
   }

@@ -2,7 +2,6 @@ import { CloudLicenseBase, DevicePropCamel, DeviceUsageState, LiveSessionCreateR
 import { LiveSessionActiveStates, LiveSessionId, LiveSessionState, OrganizationId } from '@dogu-private/types';
 import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
-import Redis from 'ioredis';
 import { DataSource, EntityManager, In } from 'typeorm';
 import { v4 } from 'uuid';
 
@@ -17,8 +16,6 @@ import { RedisService } from '../redis/redis.service';
 
 @Injectable()
 export class LiveSessionService {
-  private readonly subscriber: Redis;
-
   constructor(
     @InjectDataSource()
     private readonly dataSource: DataSource,
@@ -26,9 +23,7 @@ export class LiveSessionService {
     private readonly deviceCommandService: DeviceCommandService,
     private readonly cloudLicenseService: CloudLicenseService,
     private readonly logger: DoguLogger,
-  ) {
-    this.subscriber = redis.duplicate();
-  }
+  ) {}
 
   async findAllByQuery(query: LiveSessionFindQueryDto): Promise<LiveSession[]> {
     const { organizationId, deviceId, state } = query;
@@ -81,7 +76,7 @@ export class LiveSessionService {
       const saved = await manager.getRepository(LiveSession).save(created);
       this.logger.debug('LiveSession created', { saved });
       if (!isLiveTestingSubscribing) {
-        await this.startUpdateRemainingFreeSeconds(cloudLicense.cloudLicenseId, saved.liveSessionId);
+        await this.startUpdateLiveTesting(cloudLicense.cloudLicenseId, saved.liveSessionId);
       }
 
       return saved;
@@ -102,24 +97,13 @@ export class LiveSessionService {
   }
 
   async updateHeartbeat(liveSessionId: LiveSessionId): Promise<void> {
-    await this.redis.set(config.redis.key.liveSessionHeartbeat(liveSessionId), Date.now());
-    await this.redis.expire(config.redis.key.liveSessionHeartbeat(liveSessionId), config.liveSession.heartbeat.allowedSeconds);
+    const key = config.redis.key.liveSessionHeartbeat(liveSessionId);
+    await this.redis.set(key, Date.now());
+    await this.redis.expire(key, config.liveSession.heartbeat.allowedSeconds);
   }
 
   async subscribeCloseWaitEvent(liveSessionId: LiveSessionId, onMessage: (message: string) => void): Promise<() => Promise<void>> {
-    const thisChannel = config.redis.key.liveSessionCloseWaitEvent(liveSessionId);
-    const onMessageImpl = (channel: string, message: string) => {
-      if (channel === thisChannel) {
-        onMessage(message);
-      }
-    };
-    this.subscriber.on('message', onMessageImpl);
-    await this.subscriber.subscribe(config.redis.key.liveSessionCloseWaitEvent(liveSessionId));
-    const unsubscribe = async () => {
-      await this.subscriber.unsubscribe(config.redis.key.liveSessionCloseWaitEvent(liveSessionId));
-      this.subscriber.removeListener('message', onMessageImpl);
-    };
-    return unsubscribe;
+    return await this.redis.subscribeMessage(config.redis.key.liveSessionCloseWaitEvent(liveSessionId), onMessage);
   }
 
   async publishCloseWaitEvent(liveSessionId: LiveSessionId, message: string): Promise<void> {
@@ -127,19 +111,7 @@ export class LiveSessionService {
   }
 
   async subscribeCloseEvent(liveSessionId: LiveSessionId, onMessage: (message: string) => void): Promise<() => Promise<void>> {
-    const thisChannel = config.redis.key.liveSessionCloseEvent(liveSessionId);
-    const onMessageImpl = (channel: string, message: string) => {
-      if (channel === thisChannel) {
-        onMessage(message);
-      }
-    };
-    this.subscriber.on('message', onMessageImpl);
-    await this.subscriber.subscribe(config.redis.key.liveSessionCloseEvent(liveSessionId));
-    const unsubscribe = async () => {
-      await this.subscriber.unsubscribe(config.redis.key.liveSessionCloseEvent(liveSessionId));
-      this.subscriber.removeListener('message', onMessageImpl);
-    };
-    return unsubscribe;
+    return await this.redis.subscribeMessage(config.redis.key.liveSessionCloseEvent(liveSessionId), onMessage);
   }
 
   async publishCloseEvent(liveSessionId: LiveSessionId, message: string): Promise<void> {
@@ -212,17 +184,17 @@ export class LiveSessionService {
     return closedSession;
   }
 
-  async startUpdateRemainingFreeSeconds(cloudLicenseId: string, liveSessionId: string): Promise<void> {
-    const webSocketClientId = LiveSessionService.createLiveSessionWebSocketClientId(cloudLicenseId, liveSessionId);
-    this.cloudLicenseService.startUpdateRemainingFreeSeconds(cloudLicenseId, webSocketClientId, {
+  async startUpdateLiveTesting(cloudLicenseId: string, liveSessionId: string): Promise<void> {
+    this.cloudLicenseService.startUpdateLiveTesting(cloudLicenseId, {
       onOpen: async (close) => {
         this.subscribeCloseEvent(liveSessionId, () => {
           close();
         });
       },
       onMessage: async (message) => {
+        await this.publishCloudLicenseLiveTesting(cloudLicenseId, JSON.stringify(message));
         if (message.expired) {
-          this.logger.debug('LiveSessionService.startUpdateRemainingFreeSeconds.message expired', {
+          this.logger.debug('LiveSessionService.startUpdateLiveTesting.message expired', {
             cloudLicenseId,
             liveSessionId,
             message,
@@ -232,6 +204,14 @@ export class LiveSessionService {
         }
       },
     });
+  }
+
+  async publishCloudLicenseLiveTesting(cloudLicenseId: string, message: string): Promise<void> {
+    await this.redis.publish(config.redis.key.cloudLicenseLiveTesting(cloudLicenseId), message);
+  }
+
+  async subscribeCloudLicenseLiveTesting(cloudLicenseId: string, onMessage: (message: string) => void): Promise<() => Promise<void>> {
+    return await this.redis.subscribeMessage(config.redis.key.cloudLicenseLiveTesting(cloudLicenseId), onMessage);
   }
 
   static async validateCloudLicense(manager: EntityManager, organizationId: OrganizationId, cloudLicense: CloudLicenseBase): Promise<boolean> {
@@ -248,14 +228,10 @@ export class LiveSessionService {
     }
 
     const isLiveTestingSubscribing = cloudLicense.cloudSubscriptionItems?.find((item) => item.type === 'live-testing');
-    if (!isLiveTestingSubscribing && cloudLicense.remainingFreeSeconds <= 0) {
-      throw new ForbiddenException(`Live testing is not subscribed. remainingFreeSeconds: ${cloudLicense.remainingFreeSeconds}`);
+    if (!isLiveTestingSubscribing && cloudLicense.liveTestingRemainingFreeSeconds <= 0) {
+      throw new ForbiddenException(`Live testing is not subscribed. remainingFreeSeconds: ${cloudLicense.liveTestingRemainingFreeSeconds}`);
     }
 
     return !!isLiveTestingSubscribing;
-  }
-
-  static createLiveSessionWebSocketClientId(cloudLicenseId: string, liveSessionId: string): string {
-    return `${cloudLicenseId}:${liveSessionId}`;
   }
 }

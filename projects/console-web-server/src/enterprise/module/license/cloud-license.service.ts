@@ -1,25 +1,25 @@
 import { CloudLicenseBase, CloudLicenseMessage, CreateCloudLicenseDto } from '@dogu-private/console';
 import { OrganizationId } from '@dogu-private/types';
-import { setAxiosErrorFilterToIntercepter, transformAndValidate } from '@dogu-tech/common';
+import { closeWebSocketWithTruncateReason, setAxiosErrorFilterToIntercepter, transformAndValidate } from '@dogu-tech/common';
+import { WebSocketClientFactory } from '@dogu-tech/node';
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
 import { WebSocket } from 'ws';
 
 import { env } from '../../../env';
 import { DoguLogger } from '../../../module/logger/logger';
-import { WebSocketClientRegistryService } from '../../../module/websocket-client-registry/websocket-client-registry.service';
 import { getBillingServerWebSocketUrl } from './common/utils';
 
-export interface CloudLicenseRemainingFreeSecondsHandler {
+export interface CloudLicenseLiveTestingFreeSecondsHandler {
   onOpen: (close: () => void) => void;
-  onMessage: (message: CloudLicenseMessage.RemainingFreeSecondsReceive) => void;
+  onMessage: (message: CloudLicenseMessage.LiveTestingReceive) => void;
 }
 
 @Injectable()
 export class CloudLicenseService {
   private readonly api: axios.AxiosInstance;
 
-  constructor(private readonly webSocketClientRegistryService: WebSocketClientRegistryService, private readonly logger: DoguLogger) {
+  constructor(private readonly logger: DoguLogger) {
     this.api = axios.create({
       baseURL: env.DOGU_BILLING_SERVER_URL,
     });
@@ -44,10 +44,10 @@ export class CloudLicenseService {
     }
   }
 
-  async startUpdateRemainingFreeSeconds(cloudLicenseId: string, webSocketClientId: string, handler: CloudLicenseRemainingFreeSecondsHandler): Promise<void> {
+  async startUpdateLiveTesting(cloudLicenseId: string, handler: CloudLicenseLiveTestingFreeSecondsHandler): Promise<void> {
     const intervalSeconds = 5;
-    const url = `${getBillingServerWebSocketUrl()}/cloud-license/remaining-free-seconds`;
-    const webSocket = this.webSocketClientRegistryService.create(webSocketClientId, url);
+    const url = `${getBillingServerWebSocketUrl()}/cloud-license/live-testing`;
+    const webSocket = new WebSocketClientFactory().create({ url });
     webSocket.on('open', () => {
       let updatedAt = Date.now();
       const update = () => {
@@ -57,11 +57,11 @@ export class CloudLicenseService {
 
         const now = Date.now();
         const diff = now - updatedAt;
-        const seconds = Math.floor(diff / 1000);
+        const usedFreeSeconds = Math.floor(diff / 1000);
         updatedAt = now;
-        const message: CloudLicenseMessage.RemainingFreeSecondsSend = {
+        const message: CloudLicenseMessage.LiveTestingSend = {
           cloudLicenseId,
-          seconds,
+          usedFreeSeconds,
         };
         webSocket.send(JSON.stringify(message));
       };
@@ -78,18 +78,17 @@ export class CloudLicenseService {
 
       const close = () => {
         update();
-        this.webSocketClientRegistryService.close(webSocketClientId, 1000, 'closed');
+        closeWebSocketWithTruncateReason(webSocket, 1000, 'closed');
       };
       handler.onOpen(close);
     });
 
     webSocket.on('message', (data) => {
       (async () => {
-        const receiveMessage = await transformAndValidate(CloudLicenseMessage.RemainingFreeSecondsReceive, JSON.parse(data.toString()));
+        const receiveMessage = await transformAndValidate(CloudLicenseMessage.LiveTestingReceive, JSON.parse(data.toString()));
         if (receiveMessage.cloudLicenseId !== cloudLicenseId) {
-          this.logger.error('LiveSessionService.startUpdateRemainingFreeSeconds.message cloudLicenseId not matched', {
+          this.logger.error('LiveSessionService.startUpdateLiveTesting.message cloudLicenseId not matched', {
             cloudLicenseId,
-            webSocketClientId,
             receiveMessage,
           });
           return;
@@ -97,10 +96,9 @@ export class CloudLicenseService {
 
         handler.onMessage(receiveMessage);
       })().catch((error) => {
-        this.logger.error('LiveSessionService.startUpdateRemainingFreeSeconds.message error', {
+        this.logger.error('LiveSessionService.startUpdateLiveTesting.message error', {
           error,
           cloudLicenseId,
-          webSocketClientId,
         });
       });
     });

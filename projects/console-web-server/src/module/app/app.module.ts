@@ -45,7 +45,6 @@ import { RegisteryModule } from '../registery/registery.module';
 import { RemoteModule } from '../remote/remote.module';
 import { RoutineModule } from '../routine/routine.module';
 import { UserModule } from '../user/user.module';
-import { WebSocketClientRegistryModule } from '../websocket-client-registry/websocket-client-registry.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
@@ -94,7 +93,6 @@ const BASE_MODULES = [
   RecordModule,
   CloudDeviceModule,
   LiveSessionModule,
-  WebSocketClientRegistryModule,
   RedisModule,
 ];
 

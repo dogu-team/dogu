@@ -8,7 +8,7 @@ export const LiveSessionActiveStates = [LiveSessionState.CREATED, LiveSessionSta
 
 export type LiveSessionId = string;
 
-export const LiveSessionWsMessageType = [LiveSessionState.CREATED, LiveSessionState.CLOSE_WAIT, LiveSessionState.CLOSED, 'remaining-free-seconds'] as const;
+export const LiveSessionWsMessageType = [LiveSessionState.CREATED, LiveSessionState.CLOSE_WAIT, LiveSessionState.CLOSED, 'cloud-license-live-testing'] as const;
 export type LiveSessionWsMessageType = (typeof LiveSessionWsMessageType)[number];
 
 export interface LiveSessionWsMessage {

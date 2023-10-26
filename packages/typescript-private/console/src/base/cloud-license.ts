@@ -6,7 +6,7 @@ import { CloudSubscriptionItemBase } from './cloud-subscription-item';
 export interface CloudLicenseBase {
   cloudLicenseId: string;
   organizationId: OrganizationId;
-  remainingFreeSeconds: number;
+  liveTestingRemainingFreeSeconds: number;
   liveTestingParallelCount: number;
   createdAt: Date;
   updatedAt: Date;
@@ -18,15 +18,15 @@ export const CloudLicenseBasePropCamel = propertiesOf<CloudLicenseBase>();
 export const CloudLicensePropSnake = camelToSnakeCasePropertiesOf<CloudLicenseBase>();
 
 export namespace CloudLicenseMessage {
-  export class RemainingFreeSecondsSend {
+  export class LiveTestingSend {
     @IsUUID()
     cloudLicenseId!: string;
 
     @IsNumber()
-    seconds!: number;
+    usedFreeSeconds!: number | null;
   }
 
-  export class RemainingFreeSecondsReceive {
+  export class LiveTestingReceive {
     @IsUUID()
     cloudLicenseId!: string;
 

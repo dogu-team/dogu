@@ -48,9 +48,9 @@ const CloudLiveTestingStudioPage: NextPageWithLayout<CloudStudioTestingPageProps
           const data = JSON.parse(event.data) as LiveSessionWsMessage;
           if (data.type === LiveSessionState.CLOSE_WAIT) {
             openModal(data.message);
-          } else if (data.type === 'remaining-free-seconds') {
-            const parsed = transform(CloudLicenseMessage.RemainingFreeSecondsReceive, JSON.parse(data.message));
-            console.debug('remaining-free-seconds', parsed);
+          } else if (data.type === 'cloud-license-live-testing') {
+            const parsed = transform(CloudLicenseMessage.LiveTestingReceive, JSON.parse(data.message));
+            console.debug('cloud-license-live-testing', parsed);
           }
         } catch (e) {
           console.error('Invalid message: ', event.data);
