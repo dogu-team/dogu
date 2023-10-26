@@ -60,7 +60,7 @@ const AddDeviceTabButton = ({ selected, href }: TabButtonProps) => {
   );
 };
 
-interface Props extends Pick<ConsoleLayoutProps, 'organization' | 'user'> {
+interface Props extends Pick<ConsoleLayoutProps, 'organization' | 'user' | 'license'> {
   children: React.ReactNode;
 }
 
