@@ -78,7 +78,7 @@ export class DeviceRTCCaller {
           resolveWithCleartimeout(null);
           return;
         }
-        console.debug(`DeviceRTCCaller.call resolve `, seq, Date.now() - startTime, returnObj[returnKey]);
+        console.debug(`DeviceRTCCaller.call resolve `, { seq, time: Date.now() - startTime, obj: returnObj[returnKey] });
         resolveWithCleartimeout(returnObj[returnKey] as ResultValue);
       });
 
