@@ -15,7 +15,6 @@ services:
       - DOGU_BILLING_RDS_PASSWORD=
       - DOGU_BILLING_RDS_SSL_CONNECTION=
       - DOGU_BILLING_RUN_TYPE=
-      - DOGU_BILLING_API_TOKEN=
 
   prod-billing-server:
     container_name: prod-billing-server
@@ -32,4 +31,3 @@ services:
       - DOGU_BILLING_RDS_PASSWORD=
       - DOGU_BILLING_RDS_SSL_CONNECTION=
       - DOGU_BILLING_RUN_TYPE=
-      - DOGU_BILLING_API_TOKEN=
