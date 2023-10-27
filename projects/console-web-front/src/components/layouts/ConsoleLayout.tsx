@@ -100,7 +100,7 @@ const StyledLayoutContent = styled(Layout.Content)`
 
 const TitleBox = styled.div`
   display: flex;
-  height: 3rem;
+  min-height: 3rem;
   flex-direction: column;
   width: 100%;
   justify-content: space-between;

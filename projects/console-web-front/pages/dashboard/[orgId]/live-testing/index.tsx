@@ -8,6 +8,7 @@ import { LoadingOutlined } from '@ant-design/icons';
 import useTranslation from 'next-translate/useTranslation';
 import { useEffect } from 'react';
 import { LiveSessionId } from '@dogu-private/types';
+import Trans from 'next-translate/Trans';
 
 import { NextPageWithLayout } from 'pages/_app';
 import ConsoleLayout from 'src/components/layouts/ConsoleLayout';
@@ -22,13 +23,12 @@ import CloudDeviceFilter from '../../../../src/components/cloud/CloudDeviceFilte
 import LiveTestingSessionList from '../../../../src/components/cloud/LiveTestingSessionList';
 import { swrAuthFetcher } from '../../../../src/api';
 import useRefresh from '../../../../src/hooks/useRefresh';
-import Trans from 'next-translate/Trans';
 import H4 from '../../../../src/components/common/headings/H4';
 import LiveTestingFeedbackModal, {
   LIVE_TESTING_FEEDBACK_LOCAL_STORAGE_KEY,
 } from '../../../../src/components/cloud/live-testing/LiveTestingFeedbackModal';
 import useModal from '../../../../src/hooks/useModal';
-import LiveTestingStatus from '../../../../enterprise/components/license/LiveTestingStatus';
+import LiveTestingSessionCounter from '../../../../enterprise/components/license/LiveTestingSessionCounter';
 
 const OrganizationLiveTestingPage: NextPageWithLayout<OrganizationServerSideProps> = ({
   user,
@@ -89,7 +89,6 @@ const OrganizationLiveTestingPage: NextPageWithLayout<OrganizationServerSideProp
               <FlexSpaceBetweenBox>
                 <div>
                   <Description>{t('cloud-device:liveSessionListDescription')}</Description>
-                  <LiveTestingStatus license={license as CloudLicenseBase} usingSessionCount={data.length ?? 0} />
                 </div>
 
                 <RefreshButton />
@@ -139,9 +138,17 @@ OrganizationLiveTestingPage.getLayout = (page) => {
       {...page.props}
       sidebar={<OrganizationSideBar />}
       title={
-        <H4>
-          <Trans i18nKey="organization:liveTestingPageTitle" />
-        </H4>
+        <div style={{ marginBottom: '.5rem' }}>
+          <H4>
+            <Trans i18nKey="organization:liveTestingPageTitle" />
+          </H4>
+          <div style={{ marginTop: '.25rem' }}>
+            <LiveTestingSessionCounter
+              license={page.props.license as CloudLicenseBase}
+              organizationId={page.props.organization.organizationId}
+            />
+          </div>
+        </div>
       }
     >
       {page}
