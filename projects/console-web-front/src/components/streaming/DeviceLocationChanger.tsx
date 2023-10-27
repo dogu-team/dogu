@@ -1,17 +1,19 @@
 import { GeoLocation } from '@dogu-private/types';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import GoogleMapReact from 'google-map-react';
 import styled from 'styled-components';
 import Image from 'next/image';
 
 import useDeviceStreamingContext from '../../hooks/streaming/useDeviceStreamingContext';
 import resources from '../../resources';
+import { Popconfirm } from 'antd';
 
 interface Props {}
 
 const DeviceLocationChanger: React.FC<Props> = () => {
   const { deviceService, device } = useDeviceStreamingContext();
   const [currentLocation, setCurrentLocation] = useState<GeoLocation | undefined>();
+  const clickedLocation = useRef<GeoLocation | undefined>(undefined);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -28,21 +30,29 @@ const DeviceLocationChanger: React.FC<Props> = () => {
     })();
   }, [deviceService?.deviceClient, device?.serial]);
 
-  const handleChange = async (e: any) => {
+  const handleClick = async (e: GoogleMapReact.ClickEventValue) => {
+    clickedLocation.current = {
+      latitude: e.lat,
+      longitude: e.lng,
+    };
+    setIsOpen(true);
+  };
+
+  const handleConfirm = async () => {
     if (!deviceService?.deviceClient.current || !device?.serial) {
       return;
     }
 
+    setLoading(true);
     try {
       await deviceService.deviceClient.current.setGeoLocation(device.serial, {
-        latitude: e.lat,
-        longitude: e.lng,
+        latitude: clickedLocation.current?.latitude ?? 0,
+        longitude: clickedLocation.current?.longitude ?? 0,
       });
-      setCurrentLocation({
-        latitude: e.lat,
-        longitude: e.lng,
-      });
+      setCurrentLocation(clickedLocation.current);
     } catch (e) {}
+    setLoading(false);
+    setIsOpen(false);
   };
 
   return (
@@ -54,7 +64,7 @@ const DeviceLocationChanger: React.FC<Props> = () => {
           }}
           center={{ lat: currentLocation?.latitude ?? 0, lng: currentLocation?.longitude ?? 0 }}
           defaultZoom={3}
-          onClick={handleChange}
+          onClick={handleClick}
           options={{
             zoomControl: false,
             fullscreenControl: false,
@@ -77,7 +87,24 @@ const DeviceLocationChanger: React.FC<Props> = () => {
             />
           )}
         </GoogleMapReact>
+
+        {isOpen && <LoadingBox />}
       </MapWrapper>
+      <Popconfirm
+        open={isOpen}
+        onCancel={() => setIsOpen(false)}
+        onConfirm={handleConfirm}
+        title="Location"
+        description="Confirm to change location"
+        zIndex={2000}
+        placement="topRight"
+        destroyTooltipOnHide
+        okButtonProps={{
+          loading,
+        }}
+      >
+        <div style={{ width: 1, height: 1 }} />
+      </Popconfirm>
     </div>
   );
 };
@@ -85,6 +112,19 @@ const DeviceLocationChanger: React.FC<Props> = () => {
 export default DeviceLocationChanger;
 
 const MapWrapper = styled.div`
+  position: relative;
   width: 300px;
   height: 20rem;
+`;
+
+const LoadingBox = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background-color: rgba(0, 0, 0, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
