@@ -10,6 +10,8 @@ import {
 import React from 'react';
 import { Platform } from '@dogu-private/types';
 import { Divider, Tooltip } from 'antd';
+import { MdGpsFixed } from 'react-icons/md';
+import { HiLanguage } from 'react-icons/hi2';
 
 import { DeviceToolBarMenu } from 'src/utils/streaming/streaming';
 import useDeviceStreamingContext from '../../hooks/streaming/useDeviceStreamingContext';
@@ -17,6 +19,8 @@ import useDeviceInput from '../../hooks/streaming/useDeviceInput';
 import { flexRowBaseStyle, flexRowSpaceBetweenStyle } from '../../styles/box';
 import ApplicationUploader from './ApplicationUploader';
 import DeviceHelperButtonGroup from './DeviceHelperButtonGroup';
+import DeviceLanguageChanger from './DeviceLanguageChanger';
+import DeviceLocationChanger from './DeviceLocationChanger';
 
 interface ToolbarButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'children'> {
   workingPlatforms?: Platform[];
@@ -41,6 +45,7 @@ const ToolbarButton = ({ workingPlatforms, icon, text, content, ...props }: Tool
       placement="rightTop"
       title={<div style={{ color: '#000' }}>{content}</div>}
       color="#fff"
+      destroyTooltipOnHide
     >
       <StyledToolbarButton tabIndex={-1} {...props}>
         <SpaceBetween>
@@ -81,6 +86,20 @@ const DeviceControlToolbar: React.FC<Props> = () => {
           </div>
         }
       />
+
+      <ToolbarButton
+        workingPlatforms={[Platform.PLATFORM_ANDROID]}
+        icon={<HiLanguage />}
+        text="Language"
+        content={<DeviceLanguageChanger />}
+      />
+
+      {/* <ToolbarButton
+        workingPlatforms={[Platform.PLATFORM_ANDROID]}
+        icon={<MdGpsFixed />}
+        text="Location"
+        content={<DeviceLocationChanger />}
+      /> */}
 
       <Divider style={{ margin: '.8rem 0' }} />
 
