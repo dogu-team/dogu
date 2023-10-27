@@ -1,6 +1,6 @@
 import { PlatformAbility } from '@dogu-private/dost-children';
 import { PrivateProtocol, Serial } from '@dogu-private/types';
-import { delay, errorify, FilledPrintable, IDisposableAsync, IDisposableSync, Printable, stringify, using, usingAsnyc } from '@dogu-tech/common';
+import { delay, errorify, FilledPrintable, IDisposableAsync, IDisposableSync, Printable, Retry, stringify, using, usingAsnyc } from '@dogu-tech/common';
 import { ChildProcess, HostPaths } from '@dogu-tech/node';
 import child_process, { execFile, ExecFileOptionsWithStringEncoding, spawn } from 'child_process';
 import fs from 'fs';
@@ -66,6 +66,7 @@ class AdbSerialScope implements IDisposableSync, IDisposableAsync {
   static loggers: Map<Serial, SerialLogger> = new Map();
   public random: number;
   private logger: SerialLogger;
+  private startTime: number | undefined;
   constructor(
     private funcName: string,
     private option: {
@@ -81,9 +82,13 @@ class AdbSerialScope implements IDisposableSync, IDisposableAsync {
     this.option.random = this.random;
   }
   create(): void {
+    this.startTime = Date.now();
     this.logger.verbose(`adb.${this.funcName} begin`, this.option);
   }
   dispose(): void {
+    if (this.startTime) {
+      this.option.duration = Date.now() - this.startTime;
+    }
     this.logger.verbose(`adb.${this.funcName} end`, this.option);
   }
 }
@@ -432,7 +437,7 @@ export class AdbSerial {
     const { serial, printable } = this;
     return await usingAsnyc(new AdbSerialScope('clearApp', { serial, appName }), async () => {
       const command = ['-P', DOGU_ADB_SERVER_PORT.toString(), '-s', serial, 'shell', 'pm', 'clear', appName];
-      await ChildProcess.spawnAndWait(adbBinary(), command, { timeout: 60000 * 5 }, printable).catch((err) => {
+      await ChildProcess.spawnAndWait(adbBinary(), command, { timeout: 60000 * 2 }, printable).catch((err) => {
         printable.error?.(`ChildProcess.clearApp failed`, { error: stringify(err) });
         return;
       });
@@ -1061,7 +1066,7 @@ export class AdbSerial {
   async readDir(path: string): Promise<AndroidFileEntry[]> {
     const { serial, printable } = this;
     return await usingAsnyc(new AdbSerialScope('readDir', { serial, path }), async () => {
-      const result = await shellIgnoreError(serial, `ls -l "${path}"`, { printable });
+      const result = await shell(serial, `ls -l "${path}"`);
       const rv = parseAndroidLs(result.stdout);
       return rv;
     });
@@ -1089,6 +1094,9 @@ export class AdbSerial {
    * reset
    *
    */
+
+  ResetDangerousPackagePrefixes = ['com.sec.android.', 'com.android.', 'com.google.'];
+  NotDangerousPackagePrefixes = ['com.sec.android.inputmethod', 'com.android.chrome', 'com.google.android.youtube', 'com.google.android.apps.maps', 'com.google.android.webview'];
 
   /**
    * @requires Android 10+
@@ -1122,34 +1130,43 @@ export class AdbSerial {
     });
   }
 
+  @Retry({ retryCount: 5, retryInterval: 1000 })
   async resetPackages(ignorePackages: string[]): Promise<void> {
     const { serial, printable: logger } = this;
     return await usingAsnyc(new AdbSerialScope('resetPackages', { serial, ignorePackages }), async (scope: AdbSerialScope) => {
-      const { random } = scope;
       const allApps = await this.getIntalledPackages();
       const userApps = await this.getNonSystemIntalledPackages();
       if (allApps.length === 0 || userApps.length === 0) {
         throw new Error(`adb.resetPackages failed to get packages, allApps: ${allApps.length}, userApps: ${userApps.length}`);
       }
-      const promises = allApps.map(async (app): Promise<void> => {
-        if (!userApps.find((targetApp) => targetApp.packageName === app.packageName)) {
-          return;
-        }
+
+      const systemApps = allApps.filter((app) => !userApps.find((userApp) => userApp.packageName === app.packageName));
+
+      const rmUsersPromises = userApps.map(async (app): Promise<void> => {
         if (ignorePackages.includes(app.packageName)) {
           return;
         }
-        await this.clearApp(app.packageName).catch((err) => {
-          logger.error(`adb.resetPackages failed to clear`, { error: stringify(err), package: app.packageName, serial, random });
-        });
-        await this.uninstallApp(app.packageName, false).catch((err) => {
-          logger.error(`adb.resetPackages failed to uninstall`, { error: stringify(err), package: app.packageName, serial, random });
-        });
+        await this.clearApp(app.packageName);
+        await this.uninstallApp(app.packageName, false);
         return Promise.resolve();
       });
-      await Promise.all(promises);
+      await Promise.all(rmUsersPromises);
+
+      const rmSystemsPromises = systemApps.map(async (app): Promise<void> => {
+        const hasDangeroousPrefix = this.ResetDangerousPackagePrefixes.find((prefix) => app.packageName.startsWith(prefix));
+        const isNotDangerous = this.NotDangerousPackagePrefixes.find((prefix) => app.packageName.startsWith(prefix));
+        if (hasDangeroousPrefix && !isNotDangerous) {
+          return;
+        }
+        await this.clearApp(app.packageName);
+
+        return Promise.resolve();
+      });
+      await Promise.all(rmSystemsPromises);
     });
   }
 
+  @Retry({ retryCount: 5, retryInterval: 1000 })
   async resetSdcard(): Promise<void> {
     const { serial, printable } = this;
     return await usingAsnyc(new AdbSerialScope('resetSdcard', { serial }), async (scope: AdbSerialScope) => {

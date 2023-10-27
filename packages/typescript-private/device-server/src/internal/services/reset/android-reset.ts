@@ -74,10 +74,11 @@ export class AndroidResetService {
   }
 
   private async resetCommon(option: { ignorePackages: string[] }): Promise<void> {
-    await this.timer.check(`AndroidResetService.resetCommon.resetPackages`, this.adb.resetPackages(option.ignorePackages));
+    await this.timer.check(`AndroidResetService.resetAccounts.runActivity`, this.adb.runActivity('android.settings.MANAGE_APPLICATIONS_SETTINGS'));
     await this.timer.check(`AndroidResetService.resetCommon.resetSdcard`, this.adb.resetSdcard());
     await this.timer.check(`AndroidResetService.resetCommon.resetIMEList`, this.resetIMEList());
     await this.timer.check(`AndroidResetService.resetCommon.logcatClear`, this.adb.logcatClear());
+    await this.timer.check(`AndroidResetService.resetCommon.resetPackages`, this.adb.resetPackages(option.ignorePackages));
     await this.timer.check(`AndroidResetService.resetCommon.resetDirty`, this.resetDirty());
   }
 
