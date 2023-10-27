@@ -127,6 +127,7 @@ jobs:
 
           # billing
           sed -i "s|DOGU_BILLING_SERVER_URL=.*$|DOGU_BILLING_SERVER_URL=${{ secrets.DEV_DOGU_BILLING_SERVER_URL }}|" ./docker-compose.yml
+          echo "DOGU_BILLING_TOKEN"=${{ secrets.DEV_DOGU_BILLING_TOKEN }} >> ./docker-compose.env
 
           sed -i '/^  console:/a\    env_file:\n      - docker-compose.env' docker-compose.yml
       - name: run

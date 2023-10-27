@@ -109,6 +109,9 @@ jobs:
           sed -i "s|TURN_SERVER_USERNAME=.*$|TURN_SERVER_USERNAME=${{ secrets.PROD_DOGU_TURN_SERVER_USERNAME }}|" ./docker-compose.env
           sed -i "s|TURN_SERVER_PASSWORD=.*$|TURN_SERVER_PASSWORD=${{ secrets.PROD_DOGU_TURN_SERVER_PASSWORD }}|" ./docker-compose.env
 
+          # billing
+          echo "DOGU_BILLING_TOKEN"=${{ secrets.PROD_DOGU_BILLING_TOKEN }} >> ./docker-compose.env
+
           sed -i '/^  console:/a\    env_file:\n      - docker-compose.env' docker-compose.yml
       - name: run
         run: |
