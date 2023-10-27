@@ -27,9 +27,21 @@ interface ToolbarButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonE
   icon: React.ReactNode;
   text: React.ReactNode;
   content?: React.ReactNode;
+  destroyTooltipOnHide?: boolean;
+  tooltipTitle?: React.ReactNode;
+  tooltipStyle?: React.CSSProperties;
 }
 
-const ToolbarButton = ({ workingPlatforms, icon, text, content, ...props }: ToolbarButtonProps) => {
+const ToolbarButton = ({
+  workingPlatforms,
+  icon,
+  text,
+  content,
+  destroyTooltipOnHide,
+  tooltipStyle,
+  tooltipTitle,
+  ...props
+}: ToolbarButtonProps) => {
   const { device } = useDeviceStreamingContext();
   const tooltipRef = React.useRef<HTMLDivElement>(null);
 
@@ -43,9 +55,17 @@ const ToolbarButton = ({ workingPlatforms, icon, text, content, ...props }: Tool
       ref={tooltipRef}
       open={!!content ? undefined : false}
       placement="rightTop"
-      title={<div style={{ color: '#000' }}>{content}</div>}
+      title={
+        <div style={{ color: '#000' }}>
+          <p style={{ fontSize: '.8rem', fontWeight: '600', marginBottom: '.25rem', lineHeight: '1.5' }}>
+            {tooltipTitle}
+          </p>
+          {content}
+        </div>
+      }
       color="#fff"
-      destroyTooltipOnHide
+      destroyTooltipOnHide={destroyTooltipOnHide}
+      overlayInnerStyle={tooltipStyle}
     >
       <StyledToolbarButton tabIndex={-1} {...props}>
         <SpaceBetween>
@@ -67,7 +87,7 @@ const ToolbarButton = ({ workingPlatforms, icon, text, content, ...props }: Tool
 interface Props {}
 
 const DeviceControlToolbar: React.FC<Props> = () => {
-  const { deviceRTCCaller } = useDeviceStreamingContext();
+  const { deviceRTCCaller, isCloudDevice } = useDeviceStreamingContext();
   const { handleToolMenuInput } = useDeviceInput(deviceRTCCaller ?? undefined);
 
   return (
@@ -87,19 +107,28 @@ const DeviceControlToolbar: React.FC<Props> = () => {
         }
       />
 
-      <ToolbarButton
-        workingPlatforms={[Platform.PLATFORM_ANDROID]}
-        icon={<HiLanguage />}
-        text="Language"
-        content={<DeviceLanguageChanger />}
-      />
+      {isCloudDevice && (
+        <ToolbarButton
+          workingPlatforms={[Platform.PLATFORM_ANDROID]}
+          icon={<HiLanguage />}
+          text="Language"
+          content={<DeviceLanguageChanger />}
+          destroyTooltipOnHide
+          tooltipTitle="Change device language"
+        />
+      )}
 
-      {/* <ToolbarButton
-        workingPlatforms={[Platform.PLATFORM_ANDROID]}
-        icon={<MdGpsFixed />}
-        text="Location"
-        content={<DeviceLocationChanger />}
-      /> */}
+      {isCloudDevice && (
+        <ToolbarButton
+          workingPlatforms={[Platform.PLATFORM_ANDROID]}
+          icon={<MdGpsFixed />}
+          text="Location"
+          content={<DeviceLocationChanger />}
+          tooltipStyle={{ width: '320px' }}
+          tooltipTitle="Change device location"
+          destroyTooltipOnHide
+        />
+      )}
 
       <Divider style={{ margin: '.8rem 0' }} />
 

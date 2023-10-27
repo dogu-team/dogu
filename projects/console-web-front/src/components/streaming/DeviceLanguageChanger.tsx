@@ -16,13 +16,13 @@ const DeviceLanguageChanger: React.FC<Props> = () => {
 
   useEffect(() => {
     (async () => {
-      if (!deviceService?.deviceClient || !device?.serial) {
+      if (!deviceService?.deviceClient.current || !device?.serial) {
         return;
       }
 
       setLoading(true);
       try {
-        const locale = await deviceService.deviceClient.getLocale(device.serial);
+        const locale = await deviceService.deviceClient.current.getLocale(device.serial);
         const localeInfo = LocaleInfos.find((info) => {
           return (
             info.code.language === locale.language &&
@@ -37,7 +37,7 @@ const DeviceLanguageChanger: React.FC<Props> = () => {
   }, [deviceService?.deviceClient, device?.serial]);
 
   const handleChange = async (e: RadioChangeEvent) => {
-    if (!deviceService?.deviceClient || !device) {
+    if (!deviceService?.deviceClient.current || !device) {
       return;
     }
 
@@ -51,7 +51,7 @@ const DeviceLanguageChanger: React.FC<Props> = () => {
         return;
       }
 
-      await deviceService.deviceClient.setLocale(device.serial, localeInfo.code);
+      await deviceService.deviceClient.current.setLocale(device.serial, localeInfo.code);
       setSelectedLocale(localeInfo);
     } catch (e) {}
     setLoading(false);

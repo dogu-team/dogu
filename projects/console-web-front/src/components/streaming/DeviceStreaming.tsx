@@ -38,11 +38,11 @@ const DeviceStreaming = ({ device, children, pid, isCloudDevice }: Props) => {
   const gamiumService = useGamiumClient(
     peerConnection,
     device,
-    deviceService.deviceHostClient,
-    deviceService.deviceClient,
+    deviceService.deviceHostClient.current,
+    deviceService.deviceClient.current,
     THROTTLE_MS,
   );
-  const inspector = useInspector(deviceService?.deviceInspector, device ?? null, videoRef);
+  const inspector = useInspector(deviceService?.deviceInspector.current, device ?? null, videoRef);
   const { t } = useTranslation();
 
   if (error) {

@@ -27,8 +27,8 @@ const ApplicationUploader = ({}: Props) => {
   const { device, deviceService, loading, isCloudDevice } = useDeviceStreamingContext();
   const { uploadApp, cancelUpload, runApp, isInstalling, progress, app, result } = useDeviceAppInstall(
     device?.serial,
-    deviceService?.deviceHostClient,
-    deviceService?.deviceClient,
+    deviceService?.deviceHostClient.current,
+    deviceService?.deviceClient.current,
     { isCloudDevice: isCloudDevice ?? false },
   );
   const [shouldRun, setShouldRun] = useState(false);
