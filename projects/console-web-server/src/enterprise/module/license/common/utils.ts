@@ -14,10 +14,8 @@ export function updateAuthHeaderByBillingApiToken(headers: Record<string, AxiosH
     throw new Error('DOGU_BILLING_TOKEN is not set');
   }
 
-  return {
-    ...headers,
-    Authorization: `Bearer ${token}`,
-  };
+  headers.Authorization = `Bearer ${token}`;
+  return headers;
 }
 
 export function updateAuthHeaderBySelfHostedLicense(
@@ -27,8 +25,6 @@ export function updateAuthHeaderBySelfHostedLicense(
 ): Record<string, AxiosHeaderValue | string | null> {
   const raw = `${organizationId}:${licenseKey}`;
   const encoded = Buffer.from(raw).toString('base64');
-  return {
-    ...headers,
-    Authorization: `Basic ${encoded}`,
-  };
+  headers.Authorization = `Basic ${encoded}`;
+  return headers;
 }
