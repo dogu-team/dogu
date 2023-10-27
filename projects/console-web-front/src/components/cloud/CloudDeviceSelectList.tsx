@@ -16,6 +16,7 @@ import { getErrorMessageFromAxios } from '../../utils/error';
 import { createLiveTestingSession } from '../../api/live-session';
 import useEventStore from '../../stores/events';
 import LiveTestingStartButton from './LiveTestingStartButton';
+import { isPaymentRequired } from '../../../enterprise/utils/error';
 
 const SelectItem: React.FC<{ item: CloudDeviceByModelResponse; platform: Platform }> = ({ item, platform }) => {
   const fireEvent = useEventStore((state) => state.fireEvent, shallow);
@@ -37,6 +38,10 @@ const SelectItem: React.FC<{ item: CloudDeviceByModelResponse; platform: Platfor
       );
     } catch (e) {
       if (isAxiosError(e)) {
+        if (isPaymentRequired(e)) {
+          sendErrorNotification(`You can use only one session during the Beta. Please close the other session.`);
+          return;
+        }
         sendErrorNotification(`Cannot start device: ${getErrorMessageFromAxios(e)}`);
       }
     }
