@@ -76,7 +76,7 @@ export class IosSharedDeviceService implements Zombieable {
         await this.wda.terminateApp(app.bundleId);
       }
     }
-    await delay(500);
+    await delay(1000);
   }
 
   onDie(): void {}
