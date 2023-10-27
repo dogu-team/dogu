@@ -191,9 +191,9 @@ export class LiveSessionService {
     });
     await this.updateCloudLicenseId(liveSessionId, cloudLicenseId);
     await this.updateCloudLicenseLiveTestingHeartbeat(cloudLicenseId);
-    this.cloudLicenseService.startUpdateLiveTesting(cloudLicenseId, {
+    await this.cloudLicenseService.startUpdateLiveTesting(cloudLicenseId, {
       onOpen: async (close) => {
-        this.subscribeCloseEvent(liveSessionId, () => {
+        await this.subscribeCloseEvent(liveSessionId, () => {
           close();
         });
       },
@@ -207,7 +207,6 @@ export class LiveSessionService {
             message,
           });
           await this.closeByLiveSessionId(liveSessionId);
-          return;
         }
       },
     });

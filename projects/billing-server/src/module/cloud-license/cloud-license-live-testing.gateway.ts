@@ -10,7 +10,7 @@ import { retrySerialize } from '../../db/utils';
 import { BillingTokenService } from '../billing-token/billing-token.service';
 import { DoguLogger } from '../logger/logger';
 
-@WebSocketGateway({ path: '/cloud-license/live-testing' })
+@WebSocketGateway({ path: '/cloud-licenses/live-testing' })
 export class CloudLicenseLiveTestingGateway implements OnGatewayConnection {
   constructor(
     @InjectDataSource()

@@ -50,7 +50,7 @@ export class CloudLicenseService {
 
   async startUpdateLiveTesting(cloudLicenseId: string, handler: CloudLicenseLiveTestingFreeSecondsHandler): Promise<void> {
     const intervalSeconds = 5;
-    const url = `${getBillingServerWebSocketUrl()}/cloud-licenses/live-testing`;
+    const url = `${getBillingServerWebSocketUrl()}/cloud-licenses/live-testing?auth=${env.DOGU_BILLING_TOKEN}`;
     const webSocket = new WebSocketClientFactory().create({ url });
     webSocket.on('open', () => {
       let updatedAt = Date.now();

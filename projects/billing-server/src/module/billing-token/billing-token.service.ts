@@ -6,7 +6,6 @@ import { Brackets, DataSource, IsNull, Like, MoreThan } from 'typeorm';
 import { v4 } from 'uuid';
 import { BillingToken } from '../../db/entity/billing-token.entity';
 import { env } from '../../env';
-import { parseAuthorizationHeader } from '../auth/utils';
 import { DoguLogger } from '../logger/logger';
 
 const billingTokenPrefix = 'billing-token-';
@@ -80,12 +79,13 @@ export class BillingTokenService implements OnModuleInit {
   }
 
   async validateBillingApiTokenFromRequest(request: IncomingMessage): Promise<void> {
-    const parsed = parseAuthorizationHeader(request);
-    if (parsed.type.toLowerCase() !== 'bearer') {
-      throw new Error(`invalid authorization type`);
+    const parsedUrl = new URL(request.url ?? '', 'http://localhost');
+    const token = parsedUrl.searchParams.get('auth');
+    if (!token) {
+      throw new Error(`token is required`);
     }
 
-    const billingToken = await this.findValidBillingToken(parsed.token);
+    const billingToken = await this.findValidBillingToken(token);
     if (!billingToken) {
       throw new Error(`token is invalid`);
     }
