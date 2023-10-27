@@ -26,9 +26,9 @@ import useRefresh from '../../../../src/hooks/useRefresh';
 import H4 from '../../../../src/components/common/headings/H4';
 import LiveTestingFeedbackModal, {
   LIVE_TESTING_FEEDBACK_LOCAL_STORAGE_KEY,
-} from '../../../../src/components/cloud/live-testing/LiveTestingFeedbackModal';
+} from '../../../../src/components/cloud/LiveTestingFeedbackModal';
 import useModal from '../../../../src/hooks/useModal';
-import LiveTestingSessionCounter from '../../../../enterprise/components/license/LiveTestingSessionCounter';
+import LiveTestingSessionCounter from '../../../../src/components/cloud/LiveTestingSessionCounter';
 
 const OrganizationLiveTestingPage: NextPageWithLayout<OrganizationServerSideProps> = ({
   user,

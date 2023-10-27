@@ -3,8 +3,8 @@ import { Form, Input, Modal, Rate } from 'antd';
 import axios from 'axios';
 import { useState } from 'react';
 
-import { LiveTestingFeedbackDto } from '../../../../pages/api/feedbacks/live-testing';
-import { sendSuccessNotification } from '../../../utils/antd';
+import { LiveTestingFeedbackDto } from '../../../pages/api/feedbacks/live-testing';
+import { sendSuccessNotification } from '../../utils/antd';
 
 export const LIVE_TESTING_FEEDBACK_LOCAL_STORAGE_KEY = 'live-testing-feedback';
 

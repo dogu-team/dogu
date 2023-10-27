@@ -10,7 +10,7 @@ import { getDeviceByIdInServerSide } from '../../src/api/device';
 import { getOrganizationInServerSide } from '../../src/api/organization';
 import { getProjectInServerSide } from '../../src/api/project';
 import { getUserInServerSide } from '../../src/api/registery';
-import LiveTestingFeedbackButton from '../../src/components/cloud/live-testing/LiveTestingFeedbackButton';
+import LiveTestingFeedbackButton from '../../src/components/cloud/LiveTestingFeedbackButton';
 import LiveTestingCloseSessionButton from '../../src/components/cloud/LiveTestingCloseSessionButton';
 import LiveTestingSessionTimer from '../../src/components/cloud/LiveTestingSessionTimer';
 import ParticipantGroup from '../../src/components/studio/ParticipantGroup';

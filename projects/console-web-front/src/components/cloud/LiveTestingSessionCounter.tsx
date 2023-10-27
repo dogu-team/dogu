@@ -2,7 +2,8 @@ import { CloudLicenseBase, LiveSessionBase } from '@dogu-private/console';
 import { OrganizationId } from '@dogu-private/types';
 import styled from 'styled-components';
 import useSWR from 'swr';
-import { swrAuthFetcher } from '../../../src/api';
+
+import { swrAuthFetcher } from '../../api/index';
 
 interface Props {
   license: CloudLicenseBase;

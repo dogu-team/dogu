@@ -2,7 +2,7 @@ import { LiveSessionId, UserId } from '@dogu-private/types';
 import { Button } from 'antd';
 import { MdOutlineFeedback } from 'react-icons/md';
 
-import useModal from '../../../hooks/useModal';
+import useModal from '../../hooks/useModal';
 import LiveTestingFeedbackModal from './LiveTestingFeedbackModal';
 
 interface Props {
