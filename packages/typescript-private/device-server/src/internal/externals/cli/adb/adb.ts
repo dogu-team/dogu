@@ -4,6 +4,7 @@ import { delay, errorify, FilledPrintable, IDisposableAsync, IDisposableSync, Pr
 import { ChildProcess, HostPaths } from '@dogu-tech/node';
 import child_process, { execFile, ExecFileOptionsWithStringEncoding, spawn } from 'child_process';
 import fs from 'fs';
+import os from 'os';
 import util from 'util';
 import { registerBootstrapHandler } from '../../../../bootstrap/bootstrap.service';
 import { env } from '../../../../env';
@@ -225,7 +226,7 @@ export module Adb {
       };
 
       const scanInfos = output
-        .split('\n')
+        .split(os.EOL)
         .slice(1, -2)
         .map((serialAndStateLine) => {
           const matched = serialAndStateLine.match(regex);
@@ -733,7 +734,7 @@ export class AdbSerial {
     const { serial, printable } = this;
     return await usingAsnyc(new AdbSerialScope('getForegroundPackage', { serial }), async () => {
       const cmdret = await shellIgnoreError(serial, 'dumpsys input | grep -A10 FocusedApplication', { printable });
-      const lines = cmdret.stdout.split('\n');
+      const lines = cmdret.stdout.split(os.EOL);
       const appLines: string[] = [];
       for (const l of lines) {
         const curL = l.replace('FocusedApplication:', '').trim();
@@ -794,7 +795,7 @@ export class AdbSerial {
     const { serial, printable } = this;
     const { stdout } = await shell(serial, `pm list packages -f ${flags}`);
     const installedPackages = stdout
-      .split('\n')
+      .split(os.EOL)
       .map((line) => ({
         line: line.trim(),
         match: line.match(packageLinePattern),
@@ -856,7 +857,7 @@ export class AdbSerial {
   async getInstalledPackageInfo(packageName: string, queryOptions: InstalledPackageQueryOptions): Promise<InstalledPackageInfo> {
     const { serial, printable } = this;
     const { stdout } = await shell(serial, `dumpsys package ${packageName}`);
-    const lines = stdout.split('\n');
+    const lines = stdout.split(os.EOL);
     let foundPackagesLine = false;
     let foundPackageNameLine = false;
     const result: InstalledPackageInfo = {};
@@ -1075,7 +1076,7 @@ export class AdbSerial {
     const { serial, printable } = this;
     return await usingAsnyc(new AdbSerialScope('getEmulatorName', { serial }), async () => {
       const result = await execIgnoreError(`${adbPrefix()} -s ${serial} emu avd name`, { printable });
-      const lines = result.stdout.split('\n');
+      const lines = result.stdout.split(os.EOL);
       if (lines.length < 1) {
         throw new Error(`Failed to get emulator name. ${result.stderr}`);
       }
@@ -1235,7 +1236,7 @@ export class AdbSerial {
       timeout: 10 * 1000,
     });
     adbLogger.warn('adb.getSystemBarVisibilities', { serial, stderr });
-    stdout.split('\n').forEach((line, index, lines) => {
+    stdout.split(os.EOL).forEach((line, index, lines) => {
       const windowMatch = line.match(WindowPattern);
       if (windowMatch) {
         const windowName = windowMatch[1];
