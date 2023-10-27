@@ -8529,6 +8529,16 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
+      ["@googlemaps/js-api-loader", [\
+        ["npm:1.16.2", {\
+          "packageLocation": "./.yarn/cache/@googlemaps-js-api-loader-npm-1.16.2-361944bb39-122ee57cc6.zip/node_modules/@googlemaps/js-api-loader/",\
+          "packageDependencies": [\
+            ["@googlemaps/js-api-loader", "npm:1.16.2"],\
+            ["fast-deep-equal", "npm:3.1.3"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
       ["@grpc/grpc-js", [\
         ["npm:1.7.3", {\
           "packageLocation": "./.yarn/cache/@grpc-grpc-js-npm-1.7.3-367eafd856-cb05aae459.zip/node_modules/@grpc/grpc-js/",\
@@ -9885,6 +9895,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/@lukeed-csprng-npm-1.1.0-d28ed78cc2-926f5f7fc6.zip/node_modules/@lukeed/csprng/",\
           "packageDependencies": [\
             ["@lukeed/csprng", "npm:1.1.0"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@mapbox/point-geometry", [\
+        ["npm:0.1.0", {\
+          "packageLocation": "./.yarn/cache/@mapbox-point-geometry-npm-0.1.0-d0fd1852be-ed41c1ce01.zip/node_modules/@mapbox/point-geometry/",\
+          "packageDependencies": [\
+            ["@mapbox/point-geometry", "npm:0.1.0"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -14701,6 +14720,16 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/glob", "npm:8.1.0"],\
             ["@types/minimatch", "npm:5.1.2"],\
             ["@types/node", "npm:18.15.13"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@types/google-map-react", [\
+        ["npm:2.1.9", {\
+          "packageLocation": "./.yarn/cache/@types-google-map-react-npm-2.1.9-c3e3c33d80-74f2484ab4.zip/node_modules/@types/google-map-react/",\
+          "packageDependencies": [\
+            ["@types/google-map-react", "npm:2.1.9"],\
+            ["@types/react", "npm:18.0.38"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -20980,6 +21009,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@svgr/webpack", "npm:8.0.1"],\
             ["@swc/core", "npm:1.2.220"],\
             ["@types/cookie", "npm:0.5.1"],\
+            ["@types/google-map-react", "npm:2.1.9"],\
             ["@types/hoist-non-react-statics", "npm:3.3.1"],\
             ["@types/lodash", "npm:4.14.186"],\
             ["@types/node", "npm:18.15.11"],\
@@ -21015,6 +21045,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["find-up", "npm:6.3.0"],\
             ["flatbuffers", "npm:22.10.26"],\
             ["gamium", "npm:2.0.2"],\
+            ["google-map-react", "virtual:28b444ca65aca9f6532815a467e94245056189ac01976539aa2f4fb241137b45c9697a2074b54444c9d1c779b8e60e1a1140c79b811d2daaa176852048e428eb#npm:2.2.1"],\
             ["hoist-non-react-statics", "npm:3.3.2"],\
             ["lodash", "npm:4.17.21"],\
             ["moment", "npm:2.29.4"],\
@@ -26299,6 +26330,36 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["proto3-json-serializer", "npm:2.0.0"],\
             ["protobufjs", "npm:7.2.5"],\
             ["retry-request", "npm:6.0.0"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["google-map-react", [\
+        ["npm:2.2.1", {\
+          "packageLocation": "./.yarn/cache/google-map-react-npm-2.2.1-173e5f53fb-6bc082581c.zip/node_modules/google-map-react/",\
+          "packageDependencies": [\
+            ["google-map-react", "npm:2.2.1"]\
+          ],\
+          "linkType": "SOFT"\
+        }],\
+        ["virtual:28b444ca65aca9f6532815a467e94245056189ac01976539aa2f4fb241137b45c9697a2074b54444c9d1c779b8e60e1a1140c79b811d2daaa176852048e428eb#npm:2.2.1", {\
+          "packageLocation": "./.yarn/__virtual__/google-map-react-virtual-3ed233708d/0/cache/google-map-react-npm-2.2.1-173e5f53fb-6bc082581c.zip/node_modules/google-map-react/",\
+          "packageDependencies": [\
+            ["google-map-react", "virtual:28b444ca65aca9f6532815a467e94245056189ac01976539aa2f4fb241137b45c9697a2074b54444c9d1c779b8e60e1a1140c79b811d2daaa176852048e428eb#npm:2.2.1"],\
+            ["@googlemaps/js-api-loader", "npm:1.16.2"],\
+            ["@mapbox/point-geometry", "npm:0.1.0"],\
+            ["@types/react", "npm:18.0.28"],\
+            ["@types/react-dom", "npm:18.2.0"],\
+            ["eventemitter3", "npm:4.0.7"],\
+            ["prop-types", "npm:15.8.1"],\
+            ["react", "npm:18.2.0"],\
+            ["react-dom", "virtual:28b444ca65aca9f6532815a467e94245056189ac01976539aa2f4fb241137b45c9697a2074b54444c9d1c779b8e60e1a1140c79b811d2daaa176852048e428eb#npm:18.2.0"]\
+          ],\
+          "packagePeers": [\
+            "@types/react-dom",\
+            "@types/react",\
+            "react-dom",\
+            "react"\
           ],\
           "linkType": "HARD"\
         }]\

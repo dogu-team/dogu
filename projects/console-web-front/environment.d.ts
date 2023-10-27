@@ -17,6 +17,7 @@ declare global {
       NEXT_PUBLIC_TURN_SERVER_CREDENTIAL_TYPE: 'password';
       NEXT_PUBLIC_LANDING_URL: string | undefined;
       NEXT_PUBLIC_DOGU_VERSION: string;
+      NEXT_PUBLIC_GOOGLE_MAP_API_KEY: string;
     }
   }
 }
