@@ -2,6 +2,7 @@ import * as cheerio from 'cheerio';
 import { Browser, Builder } from 'selenium-webdriver';
 import safari from 'selenium-webdriver/safari';
 import { promisify } from 'util';
+import { Device } from '../device/devices';
 
 import { ImageTool } from '../image-tools/imageTool';
 import { BrowserDriver } from './browser';
@@ -9,8 +10,8 @@ import { BrowserDriver } from './browser';
 const wait = promisify(setTimeout);
 
 export class Safari extends BrowserDriver {
-  constructor(driverName: string, width: number, height: number, pixelRatio: number) {
-    super(driverName, width, height, pixelRatio);
+  constructor(device: Device, viewportWidth: number, viewportHeight: number, pixelRatio: number) {
+    super(device, viewportWidth, viewportHeight, pixelRatio);
   }
 
   async build(): Promise<void> {
@@ -18,10 +19,9 @@ export class Safari extends BrowserDriver {
     this.driver = await new Builder().forBrowser(Browser.SAFARI).setSafariOptions(options).build();
 
     await this.driver.manage().window().setRect({
-      width: this.widthResolution,
-      height: this.heightResolution,
+      width: this.viewportWidth,
+      height: this.viewportHeight,
     });
-    await this.driver.manage().window().maximize();
   }
 
   async takeScreenshot(): Promise<void> {
@@ -50,17 +50,17 @@ export class Safari extends BrowserDriver {
       const $ = cheerio.load(pageSource);
       const body = $('body')[0];
 
-      await this.hideText(body, 0);
-      await wait(1000);
-      const hiddenTextScreenshot = await this.driver.takeScreenshot();
-      await this.hideText(body, 1);
+      // await this.hideText(body, 0);
+      // await wait(1000);
+      // const hiddenTextScreenshot = await this.driver.takeScreenshot();
+      // await this.hideText(body, 1);
 
-      if (isLast) {
-        const croppedScreenshot = await ImageTool.cropImage(hiddenTextScreenshot, lastHeight * 2);
-        this.hiddenTextScreenshotsBase64.push(croppedScreenshot);
-      } else {
-        this.hiddenTextScreenshotsBase64.push(hiddenTextScreenshot);
-      }
+      // if (isLast) {
+      //   const croppedScreenshot = await ImageTool.cropImage(hiddenTextScreenshot, lastHeight * 2);
+      //   this.hiddenTextScreenshotsBase64.push(croppedScreenshot);
+      // } else {
+      //   this.hiddenTextScreenshotsBase64.push(hiddenTextScreenshot);
+      // }
 
       maxHeight = await this.driver.executeScript('return Math.max( document.body.scrollHeight, document.documentElement.scrollHeight );');
 

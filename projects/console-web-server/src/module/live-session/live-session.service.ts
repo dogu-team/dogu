@@ -263,4 +263,22 @@ export class LiveSessionService {
 
     return !!isLiveTestingSubscribing;
   }
+
+  async getLiveSessionCount(): Promise<number> {
+    const count = await this.redis.get(config.redis.key.liveSessionCount());
+    if (count === null) {
+      return 0;
+    }
+
+    const parsed = parseInt(count);
+    if (isNaN(parsed)) {
+      return 0;
+    }
+
+    return parsed;
+  }
+
+  async setLiveSessionCount(count: number): Promise<void> {
+    await this.redis.set(config.redis.key.liveSessionCount(), count);
+  }
 }

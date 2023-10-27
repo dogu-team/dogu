@@ -25383,6 +25383,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@dogu-dev-private/base-build-tools", "workspace:packages/typescript-dev-private/base-build-tools"],\
             ["@dogu-dev-private/build-tools", "workspace:packages/typescript-dev-private/build-tools"],\
             ["@dogu-private/types", "workspace:packages/typescript-private/types"],\
+            ["@dogu-tech/env-tools", "workspace:packages/typescript/env-tools"],\
             ["@dogu-tech/node", "workspace:packages/typescript/node"],\
             ["@types/node", "npm:18.15.11"],\
             ["@types/shelljs", "npm:0.8.11"],\

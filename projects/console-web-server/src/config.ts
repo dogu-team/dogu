@@ -54,6 +54,7 @@ export const config = {
       deviceStreamingSessionParam: (deviceId: DeviceId): string => `device-streaming-session/${deviceId}/params`,
       updateConnection: 'update-connection',
       updateLiveSession: 'update-live-session',
+      updateMonitoring: 'update-monitoring',
       WebSocketProxyReceive: (organizationId: OrganizationId, deviceId: DeviceId, webSocketProxyId: WebSocketProxyId): string =>
         `/organizations/${organizationId}/devices/${deviceId}/webSocketProxies/${webSocketProxyId}/receives`,
       liveSessionParticipantsCount: (liveSessionId: string): string => `/live-sessions/${liveSessionId}/participants-count`,
@@ -61,6 +62,7 @@ export const config = {
       liveSessionCloseWaitEvent: (liveSessionId: string): string => `/live-sessions/${liveSessionId}/close-wait-event`,
       liveSessionCloseEvent: (liveSessionId: string): string => `/live-sessions/${liveSessionId}/close-event`,
       liveSessionCloudLicenseId: (liveSessionId: string): string => `/live-sessions/${liveSessionId}/cloud-license-id`,
+      liveSessionCount: (): string => `/live-sessions/count`,
       cloudLicenseLiveTestingHeartbeat: (cloudLicenseId: string): string => `/cloud-licenses/${cloudLicenseId}/live-testing-heartbeat`,
       cloudLicenseLiveTesting: (cloudLicenseId: string): string => `/cloud-licenses/${cloudLicenseId}/live-testing`,
     },

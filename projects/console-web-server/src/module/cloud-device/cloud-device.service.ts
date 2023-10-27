@@ -62,6 +62,10 @@ export class CloudDeviceService {
     const infoValues = Array.from(deviceInfoMap.values());
     const deviceIds = infoValues.map((info) => info.device?.deviceId);
 
+    if (deviceIds.length === 0) {
+      return new Page(dto.page, dto.offset, 0, []);
+    }
+
     const query = this.createCloudDeviceDefaultQuery()
       .where('device.device_id IN (:...deviceIds)', { deviceIds })
       .orderBy(`device.${DevicePropCamel.modelName}`, 'ASC')

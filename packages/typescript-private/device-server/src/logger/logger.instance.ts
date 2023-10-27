@@ -10,14 +10,6 @@ export function createGdcLogger(platform: Platform): Logger {
   return LoggerFactory.createLazy(`gdc_${platformTypeFromPlatform(platform)}`, { withFileTransports: true });
 }
 
-export function createAndroidLogger(serial: Serial): Logger {
-  return LoggerFactory.createLazy(`${serial}_android`, { withFileTransports: true });
-}
-
-export function createIosLogger(serial: Serial): Logger {
-  return LoggerFactory.createLazy(`${serial}_ios`, { withFileTransports: true });
-}
-
 export function createAppiumLogger(serial: Serial): Logger {
   return LoggerFactory.createLazy(`${serial}_appium`, { withFileTransports: true });
 }

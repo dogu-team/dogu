@@ -207,6 +207,7 @@ export interface LocaleAvailability {
 export interface LocaleInfo {
   code: LocaleCode;
   availability: LocaleAvailability;
+  description: string;
 }
 
 export const LocaleInfos: LocaleInfo[] = [
@@ -218,6 +219,7 @@ export const LocaleInfos: LocaleInfo[] = [
     availability: {
       platforms: ['android'],
     },
+    description: 'Arabic (Algeria)',
   },
   {
     code: {
@@ -227,6 +229,7 @@ export const LocaleInfos: LocaleInfo[] = [
     availability: {
       platforms: ['android'],
     },
+    description: 'Arabic (Libya)',
   },
   {
     code: {
@@ -236,6 +239,7 @@ export const LocaleInfos: LocaleInfo[] = [
     availability: {
       platforms: ['android'],
     },
+    description: 'Arabic (Morocco)',
   },
   {
     code: {
@@ -245,6 +249,7 @@ export const LocaleInfos: LocaleInfo[] = [
     availability: {
       platforms: ['android'],
     },
+    description: 'Arabic (Tunisia)',
   },
   {
     code: {
@@ -254,32 +259,39 @@ export const LocaleInfos: LocaleInfo[] = [
     availability: {
       platforms: ['android'],
     },
+    description: 'Bulgarian',
   },
   {
     code: {
       language: 'ca',
+      region: 'ES',
     },
     availability: {
       platforms: ['android'],
     },
+    description: 'Catalan',
   },
   {
     code: {
       language: 'zh',
+      region: 'CN',
       script: 'Hans',
     },
     availability: {
       platforms: ['android'],
     },
+    description: 'Chinese (Simplified)',
   },
   {
     code: {
       language: 'zh',
+      region: 'CN',
       script: 'Hant',
     },
     availability: {
       platforms: ['android'],
     },
+    description: 'Chinese (Traditional)',
   },
   {
     code: {
@@ -290,6 +302,7 @@ export const LocaleInfos: LocaleInfo[] = [
     availability: {
       platforms: ['android'],
     },
+    description: 'Chinese (HK)',
   },
   {
     code: {
@@ -300,30 +313,37 @@ export const LocaleInfos: LocaleInfo[] = [
     availability: {
       platforms: ['android'],
     },
+    description: 'Chinese (TW)',
   },
   {
     code: {
       language: 'hr',
+      region: 'HR',
     },
     availability: {
       platforms: ['android'],
     },
+    description: 'Croatian',
   },
   {
     code: {
       language: 'cs',
+      region: 'CZ',
     },
     availability: {
       platforms: ['android'],
     },
+    description: 'Czech',
   },
   {
     code: {
       language: 'da',
+      region: 'DK',
     },
     availability: {
       platforms: ['android'],
     },
+    description: 'Dansk',
   },
   {
     code: {
@@ -333,6 +353,7 @@ export const LocaleInfos: LocaleInfo[] = [
     availability: {
       platforms: ['android'],
     },
+    description: 'Deutsch',
   },
   {
     code: {
@@ -342,6 +363,7 @@ export const LocaleInfos: LocaleInfo[] = [
     availability: {
       platforms: ['android'],
     },
+    description: 'Dutch',
   },
   {
     code: {
@@ -351,6 +373,7 @@ export const LocaleInfos: LocaleInfo[] = [
     availability: {
       platforms: ['android'],
     },
+    description: 'English (Australia)',
   },
   {
     code: {
@@ -360,6 +383,7 @@ export const LocaleInfos: LocaleInfo[] = [
     availability: {
       platforms: ['android'],
     },
+    description: 'English (Canada)',
   },
   {
     code: {
@@ -369,6 +393,7 @@ export const LocaleInfos: LocaleInfo[] = [
     availability: {
       platforms: ['android'],
     },
+    description: 'English (India)',
   },
 
   {
@@ -379,6 +404,7 @@ export const LocaleInfos: LocaleInfo[] = [
     availability: {
       platforms: ['android'],
     },
+    description: 'English (Ireland)',
   },
   {
     code: {
@@ -388,6 +414,7 @@ export const LocaleInfos: LocaleInfo[] = [
     availability: {
       platforms: ['android'],
     },
+    description: 'English (South Africa)',
   },
   {
     code: {
@@ -397,6 +424,7 @@ export const LocaleInfos: LocaleInfo[] = [
     availability: {
       platforms: ['android'],
     },
+    description: 'English (UK)',
   },
   {
     code: {
@@ -406,6 +434,7 @@ export const LocaleInfos: LocaleInfo[] = [
     availability: {
       platforms: ['android'],
     },
+    description: 'English (US)',
   },
   {
     code: {
@@ -415,6 +444,7 @@ export const LocaleInfos: LocaleInfo[] = [
     availability: {
       platforms: ['android'],
     },
+    description: 'Estonian',
   },
   {
     code: {
@@ -424,14 +454,17 @@ export const LocaleInfos: LocaleInfo[] = [
     availability: {
       platforms: ['android'],
     },
+    description: 'Filipino',
   },
   {
     code: {
       language: 'fi',
+      region: 'FI',
     },
     availability: {
       platforms: ['android'],
     },
+    description: 'Finnish',
   },
   {
     code: {
@@ -441,6 +474,7 @@ export const LocaleInfos: LocaleInfo[] = [
     availability: {
       platforms: ['android'],
     },
+    description: 'French (Canada)',
   },
   {
     code: {
@@ -450,38 +484,47 @@ export const LocaleInfos: LocaleInfo[] = [
     availability: {
       platforms: ['android'],
     },
+    description: 'French (France)',
   },
   {
     code: {
       language: 'el',
+      region: 'GR',
     },
     availability: {
       platforms: ['android'],
     },
+    description: 'Greek',
   },
   {
     code: {
       language: 'he',
+      region: 'IL',
     },
     availability: {
       platforms: ['android'],
     },
+    description: 'Hebrew',
   },
   {
     code: {
       language: 'hi',
+      region: 'IN',
     },
     availability: {
       platforms: ['android'],
     },
+    description: 'Hindi',
   },
   {
     code: {
       language: 'hu',
+      region: 'HU',
     },
     availability: {
       platforms: ['android'],
     },
+    description: 'Hungarian',
   },
   {
     code: {
@@ -491,6 +534,7 @@ export const LocaleInfos: LocaleInfo[] = [
     availability: {
       platforms: ['android'],
     },
+    description: 'Icelandic',
   },
   {
     code: {
@@ -500,30 +544,37 @@ export const LocaleInfos: LocaleInfo[] = [
     availability: {
       platforms: ['android'],
     },
+    description: 'Indonesian',
   },
   {
     code: {
       language: 'it',
+      region: 'IT',
     },
     availability: {
       platforms: ['android'],
     },
+    description: 'Italiano',
   },
   {
     code: {
       language: 'ja',
+      region: 'JP',
     },
     availability: {
       platforms: ['android'],
     },
+    description: 'Japanese',
   },
   {
     code: {
       language: 'ko',
+      region: 'KR',
     },
     availability: {
       platforms: ['android'],
     },
+    description: 'Korean',
   },
   {
     code: {
@@ -533,6 +584,7 @@ export const LocaleInfos: LocaleInfo[] = [
     availability: {
       platforms: ['android'],
     },
+    description: 'Lithuanian',
   },
   {
     code: {
@@ -542,14 +594,7 @@ export const LocaleInfos: LocaleInfo[] = [
     availability: {
       platforms: ['android'],
     },
-  },
-  {
-    code: {
-      language: 'no',
-    },
-    availability: {
-      platforms: ['android'],
-    },
+    description: 'Malay',
   },
   {
     code: {
@@ -559,6 +604,7 @@ export const LocaleInfos: LocaleInfo[] = [
     availability: {
       platforms: ['android'],
     },
+    description: 'Norwegian',
   },
   {
     code: {
@@ -568,6 +614,7 @@ export const LocaleInfos: LocaleInfo[] = [
     availability: {
       platforms: ['android'],
     },
+    description: 'Polish',
   },
   {
     code: {
@@ -577,6 +624,7 @@ export const LocaleInfos: LocaleInfo[] = [
     availability: {
       platforms: ['android'],
     },
+    description: 'Portuguese (Brazil)',
   },
   {
     code: {
@@ -586,38 +634,47 @@ export const LocaleInfos: LocaleInfo[] = [
     availability: {
       platforms: ['android'],
     },
+    description: 'Portuguese (Portugal)',
   },
   {
     code: {
       language: 'ro',
+      region: 'RO',
     },
     availability: {
       platforms: ['android'],
     },
+    description: 'Romanian',
   },
   {
     code: {
       language: 'ru',
+      region: 'RU',
     },
     availability: {
       platforms: ['android'],
     },
+    description: 'Russian',
   },
   {
     code: {
       language: 'sr',
+      region: 'RS',
     },
     availability: {
       platforms: ['android'],
     },
+    description: 'Serbian',
   },
   {
     code: {
       language: 'sk',
+      region: 'SK',
     },
     availability: {
       platforms: ['android'],
     },
+    description: 'Slovak',
   },
   {
     code: {
@@ -627,23 +684,7 @@ export const LocaleInfos: LocaleInfo[] = [
     availability: {
       platforms: ['android'],
     },
-  },
-  {
-    code: {
-      language: 'es',
-    },
-    availability: {
-      platforms: ['android'],
-    },
-  },
-  {
-    code: {
-      language: 'es',
-      region: 'AR',
-    },
-    availability: {
-      platforms: ['android'],
-    },
+    description: 'Slovenian',
   },
   {
     code: {
@@ -653,14 +694,17 @@ export const LocaleInfos: LocaleInfo[] = [
     availability: {
       platforms: ['android'],
     },
+    description: 'Spanish',
   },
   {
     code: {
-      language: 'sv',
+      language: 'es',
+      region: 'AR',
     },
     availability: {
       platforms: ['android'],
     },
+    description: 'Spanish (Argentina)',
   },
   {
     code: {
@@ -670,14 +714,17 @@ export const LocaleInfos: LocaleInfo[] = [
     availability: {
       platforms: ['android'],
     },
+    description: 'Swedish',
   },
   {
     code: {
       language: 'tr',
+      region: 'TR',
     },
     availability: {
       platforms: ['android'],
     },
+    description: 'Turkish',
   },
   {
     code: {
@@ -687,13 +734,16 @@ export const LocaleInfos: LocaleInfo[] = [
     availability: {
       platforms: ['android'],
     },
+    description: 'Ukrainian',
   },
   {
     code: {
       language: 'vi',
+      region: 'VN',
     },
     availability: {
       platforms: ['android'],
     },
+    description: 'Vietnamese',
   },
 ];

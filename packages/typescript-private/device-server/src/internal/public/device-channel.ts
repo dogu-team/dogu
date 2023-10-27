@@ -77,17 +77,17 @@ export interface DeviceChannel {
   // process
   queryProfile(methods: ProfileMethod[] | ProfileMethod): PromiseOrValue<FilledRuntimeInfo>;
   killOnPort(port: number): PromiseOrValue<void>;
-  forward(hostPort: number, devicePort: number, printable?: Printable): PromiseOrValue<void>;
+  forward(hostPort: number, devicePort: number, handler: LogHandler): PromiseOrValue<void>;
   unforward(hostPort: number): PromiseOrValue<void>;
-  subscribeLog(args: string[], handler: LogHandler, printable?: Printable): PromiseOrValue<Closable>;
+  subscribeLog(args: string[], handler: LogHandler): PromiseOrValue<Closable>;
   joinWifi(ssid: string, password: string): PromiseOrValue<void>;
   isPortListening(port: number): PromiseOrValue<boolean>;
   getWindows(): PromiseOrValue<DeviceWindowInfo[]>;
 
   // app
-  uninstallApp(appPath: string, printable?: Printable): PromiseOrValue<void>;
-  installApp(appPath: string, printable?: Printable): PromiseOrValue<void>;
-  runApp(appPath: string, printable?: Printable): PromiseOrValue<void>;
+  uninstallApp(appPath: string, handler: LogHandler): PromiseOrValue<void>;
+  installApp(appPath: string, handler: LogHandler): PromiseOrValue<void>;
+  runApp(appPath: string, handler: LogHandler): PromiseOrValue<void>;
 
   // appium
   getAppiumContext(): PromiseOrValue<AppiumContext | null>;

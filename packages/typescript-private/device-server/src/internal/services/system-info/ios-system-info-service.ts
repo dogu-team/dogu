@@ -2,9 +2,8 @@ import { DefaultDeviceSystemInfo, DeviceSystemInfo, ProfileMethods, Serial } fro
 import { Printable } from '@dogu-tech/common';
 import { MobileDevice } from '../../externals';
 import { IosDeviceAgentService } from '../device-agent/ios-device-agent-service';
-import { SystemInfoService } from './system-info-service-interface';
 
-export class IosSystemInfoService implements SystemInfoService {
+export class IosSystemInfoService {
   constructor(private readonly service: IosDeviceAgentService, private readonly logger: Printable) {}
 
   static async getVersion(serial: Serial, logger: Printable): Promise<string | undefined> {

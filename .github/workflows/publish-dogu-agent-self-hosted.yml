@@ -8,6 +8,20 @@ on:
         type: string
         description: 'Dogu Agent app version'
         default: '0.0.1'
+      windows_runner:
+        type: choice
+        description: 'windows runner'
+        options:
+          - 'self-hosted-windows'
+          - 'windows-2019'
+        default: 'self-hosted-windows'
+      maxos_runner:
+        type: choice
+        description: 'macos runner'
+        options:
+          - 'self-hosted-macos'
+          - 'macos-latest'
+        default: 'self-hosted-macos'
       clean:
         type: boolean
         description: 'clean git repo'
@@ -23,16 +37,12 @@ jobs:
       fail-fast: false
       max-parallel: 99
       matrix:
-        runner: [windows-2019, macos-latest]
-        arch: [arm64, x64]
+        runner: [pass]
         include:
-          - runner: windows-2019
-            extension: exe
-          - runner: macos-latest
-            extension: zip
+          - runner: ${{ github.event.inputs.windows_runner }}
+          - runner: ${{ github.event.inputs.maxos_runner }}
         exclude:
-          - runner: windows-2019
-            arch: arm64
+          - runner: pass
     runs-on: ['${{ matrix.runner }}']
 
     env:
@@ -234,17 +244,24 @@ jobs:
           yarn run build && yarn run deploy:notarize
         working-directory: ./nm-space/projects/dost
         env:
-          DOGU_BUILD_ARCH: ${{ matrix.arch }}
           ELECTRON_CACHE: ${{ github.workspace }}/.electron-cache/electron
           ELECTRON_BUILDER_CACHE: ${{ github.workspace }}/.electron-cache/electron-builder
 
-      - name: Upload dogu-agent
-        if: ${{ success() }}
+      - name: Upload dogu-agent windows
+        if: ${{ success() }} && runner.os == 'Windows'
         uses: actions/upload-artifact@v3
         with:
-          name: 'dogu-agent-${{ runner.os }}-${{ matrix.arch }}'
+          name: 'dogu-agent-${{ runner.os }}'
           path: |
-            ./nm-space/projects/dost/dist/*.${{ matrix.extension }}
+            ./nm-space/projects/dost/dist/*.exe
+
+      - name: Upload dogu-agent mac
+        if: ${{ success() }} && runner.os == 'macOS'
+        uses: actions/upload-artifact@v3
+        with:
+          name: 'dogu-agent-${{ runner.os }}'
+          path: |
+            ./nm-space/projects/dost/dist/*.zip
 
   send-slack:
     runs-on: ubuntu-latest

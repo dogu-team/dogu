@@ -1,4 +1,4 @@
-import { BufferLogger, MixedLogger, NullLogger, Printable, stringify } from '@dogu-tech/common';
+import { BufferLogger, MixedLogger, Printable, stringify } from '@dogu-tech/common';
 import childProcess from 'child_process';
 import lodash from 'lodash';
 import { ChildProcessError } from './errors/child-process-error';
@@ -24,7 +24,7 @@ export interface ExecResult {
   stderr: string;
 }
 
-export function exec(command: string, options: childProcess.ExecOptions, printable: Printable): Promise<ExecResult> {
+export async function exec(command: string, options: childProcess.ExecOptions): Promise<ExecResult> {
   return new Promise((resolve, reject) => {
     childProcess.exec(command, fillExecOptions(options), (error, stdout, stderr) => {
       if (error) {
@@ -36,7 +36,7 @@ export function exec(command: string, options: childProcess.ExecOptions, printab
   });
 }
 
-export function execIgnoreError(command: string, options: childProcess.ExecOptions, printable: Printable): Promise<ExecResult> {
+export async function execIgnoreError(command: string, options: childProcess.ExecOptions, printable: Printable): Promise<ExecResult> {
   return new Promise((resolve, reject) => {
     childProcess.exec(command, fillExecOptions(options), (error, stdout, stderr) => {
       if (error) {
@@ -141,7 +141,7 @@ export function defaultShell(): string | true | undefined {
 async function _initialize(): Promise<void> {
   // Responding to Windows Hangul encoding broken problem
   if (process.platform === 'win32') {
-    await exec('chcp 65001', {}, NullLogger.instance);
+    await exec('chcp 65001', {});
   }
 }
 
