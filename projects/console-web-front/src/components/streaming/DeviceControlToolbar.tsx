@@ -118,7 +118,7 @@ const DeviceControlToolbar: React.FC<Props> = () => {
         />
       )}
 
-      {isCloudDevice && (
+      {/* {isCloudDevice && (
         <ToolbarButton
           workingPlatforms={[Platform.PLATFORM_ANDROID]}
           icon={<MdGpsFixed />}
@@ -128,7 +128,7 @@ const DeviceControlToolbar: React.FC<Props> = () => {
           tooltipTitle="Change device location"
           destroyTooltipOnHide
         />
-      )}
+      )} */}
 
       <Divider style={{ margin: '.8rem 0' }} />
 
