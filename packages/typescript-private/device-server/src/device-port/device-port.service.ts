@@ -1,6 +1,7 @@
 import { Serial } from '@dogu-private/types';
 import { Injectable } from '@nestjs/common';
 import AsyncLock from 'async-lock';
+import { config } from '../internal/config';
 import { getFreePort } from '../internal/util/net';
 
 export type DeviceHostPortType =
@@ -39,10 +40,16 @@ export class DevicePortService {
   }
 
   public getIosDeviceAgentGrpcServerPort(): number {
+    if (config.externalIosDeviceAgent.use) {
+      return config.externalIosDeviceAgent.grpcPort;
+    }
     return 35002;
   }
 
   public getIosDeviceAgentWebDriverAgentServerPort(): number {
+    if (config.externalIosDeviceAgent.use) {
+      return config.externalIosDeviceAgent.webDriverPort;
+    }
     return 50003;
   }
 

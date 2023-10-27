@@ -90,18 +90,6 @@ export class IosDeviceAgentProcess {
     streamingService: StreamingService,
     logger: FilledPrintable,
   ): Promise<IosDeviceAgentProcess> {
-    let grpcPort = grpcDevicePort;
-    if (config.externalIosDeviceAgent.use) {
-      const devices = config.externalIosDeviceAgent.devices.filter((device) => device.serial === serial);
-      if (devices.length !== 1) {
-        throw new Error(`serial is not found. ${serial}. check config`);
-      }
-      const device = devices[0];
-      if (device === undefined) {
-        throw new Error(`device is undefined. ${serial}. check config`);
-      }
-      grpcPort = device.grpcPort;
-    }
     const originDerivedData = await DerivedData.create(HostPaths.external.xcodeProject.idaDerivedDataPath());
     if (!originDerivedData.hasSerial(serial)) {
       throw new Error(`iOSDeviceAgent can't be executed on ${serial}`);
@@ -118,7 +106,7 @@ export class IosDeviceAgentProcess {
       screenForwardPort,
       screenDevicePort,
       grpcForwardPort,
-      grpcPort,
+      grpcDevicePort,
       webdriverAgentProcess,
       idaWdaDevicePort,
       iosDeviceAgentService,

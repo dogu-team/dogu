@@ -100,6 +100,9 @@ export class WebdriverAgentProcess {
     await client.post(`/session/${sessionId}/wda/apps/activate`, { bundleId }, { headers: { 'Content-Type': 'application/json' } });
   }
 
+  /*
+   * Caution: dangerous. If this called, trigger crash of IosDeviceAgent....
+   */
   async terminateApp(bundleId: string): Promise<void> {
     const { sessionId, client } = this.xctest;
     if (!sessionId) {
@@ -107,6 +110,15 @@ export class WebdriverAgentProcess {
       return;
     }
     await client.post(`/session/${sessionId}/wda/apps/terminate`, { bundleId }, { headers: { 'Content-Type': 'application/json' } });
+  }
+
+  async goToHome(): Promise<void> {
+    const { sessionId, client } = this.xctest;
+    if (!sessionId) {
+      this.logger.warn('sessionId is undefined. so skip goToHome');
+      return;
+    }
+    await client.post(`/wda/homescreen`);
   }
 
   /*
