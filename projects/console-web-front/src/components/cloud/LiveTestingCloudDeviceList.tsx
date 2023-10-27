@@ -36,8 +36,10 @@ const DeviceItem: React.FC<{ device: CloudDeviceMetadataBase }> = ({ device }) =
         <ItemInner>
           <OneSpan>{deviceBrandMapper[device.manufacturer] ?? device.manufacturer}</OneSpan>
           <OneSpan>{device.modelName ?? device.model}</OneSpan>
-          <OneSpan>
+          <OneSpan style={{ display: 'flex', alignItems: 'center' }}>
             <PlatformIcon platform={device.platform} />
+            &nbsp;
+            {device.versions.sort((a, b) => Number(a) - Number(b)).join(', ')}
           </OneSpan>
           <OneSpan>
             {device.resolutionHeight}x{device.resolutionWidth}
