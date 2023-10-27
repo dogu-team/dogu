@@ -1128,6 +1128,9 @@ export class AdbSerial {
       const { random } = scope;
       const allApps = await this.getIntalledPackages();
       const userApps = await this.getNonSystemIntalledPackages();
+      if (allApps.length === 0 || userApps.length === 0) {
+        throw new Error(`adb.resetPackages failed to get packages, allApps: ${allApps.length}, userApps: ${userApps.length}`);
+      }
       const promises = allApps.map(async (app): Promise<void> => {
         if (!userApps.find((targetApp) => targetApp.packageName === app.packageName)) {
           return;
