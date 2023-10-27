@@ -31,3 +31,4 @@ export * from './repositories';
 export * from './stream/redirect';
 export * from './tree-kill';
 export * from './url';
+export * from './websocket-client-factory';

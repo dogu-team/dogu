@@ -5,7 +5,7 @@ import { LicenseUpdater } from './license-updater';
 @Injectable()
 export class LicenseSystemProcessor {
   constructor(
-    @Inject(LicenseUpdater) private readonly licenseUpdater: LicenseUpdater, //
+    @Inject(LicenseUpdater) private readonly licenseUpdater: LicenseUpdater,
     private readonly logger: DoguLogger,
   ) {}
 

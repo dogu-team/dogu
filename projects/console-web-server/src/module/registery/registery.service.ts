@@ -17,6 +17,7 @@ import { DataSource, EntityManager } from 'typeorm';
 import { Organization, Token, User, UserEmailPreference } from '../../db/entity/index';
 import { UserAndVerificationToken } from '../../db/entity/relations/user-and-verification-token.entity';
 import { UserSns } from '../../db/entity/user-sns.entity';
+import { CloudLicenseService } from '../../enterprise/module/license/cloud-license.service';
 import { FEATURE_CONFIG } from '../../feature.config';
 import { EmailService } from '../../module/email/email.service';
 import { SendVerifyEmailDto, VerifyEmailDto } from '../../module/registery/dto/registery.dto';
@@ -43,6 +44,8 @@ export class RegisteryService {
     private readonly authService: AuthUserService,
     @Inject(AuthJwtService)
     private readonly authJwtService: AuthJwtService,
+    @Inject(CloudLicenseService)
+    private readonly cloudLicenseService: CloudLicenseService,
     @InjectDataSource()
     private readonly dataSource: DataSource,
     @Inject(UserService)
@@ -96,6 +99,10 @@ export class RegisteryService {
         organization = result[0];
       } else {
         organization = await this.organizationService.createOrganization(entityManager, user.userId, { name: `${user.name}'s organization` });
+      }
+
+      if (FEATURE_CONFIG.get('licenseModule') === 'cloud') {
+        await this.cloudLicenseService.createLicense({ organizationId: organization.organizationId });
       }
 
       // create user email preference

@@ -1,42 +1,41 @@
-import { FindLicenseDtoBase, LicenseResponse } from '@dogu-private/console';
-import { OrganizationId } from '@dogu-private/types';
-import { AxiosResponse } from 'axios';
+import { CloudLicenseBase, RegisterSelfHostedLicenseDto, SelfHostedLicenseBase } from '@dogu-private/console';
 import { GetServerSidePropsContext } from 'next';
 
 import api from '../../src/api';
+
 import { EmptyTokenError, getServersideCookies, setCookiesInServerSide } from '../../src/utils/auth';
 
-export const registerSelfHostedLicense = async (dto: FindLicenseDtoBase): Promise<LicenseResponse> => {
-  const { data } = await api.post<LicenseResponse>('/dogu-licenses', dto);
+export const registerSelfHostedLicense = async (dto: RegisterSelfHostedLicenseDto): Promise<any> => {
+  const { data } = await api.post<SelfHostedLicenseBase>('/self-hosted-licenses', dto);
   return data;
 };
 
-export const reRegisterSelfHostedLicense = async (dto: FindLicenseDtoBase): Promise<LicenseResponse> => {
-  const { data } = await api.patch<LicenseResponse>('/dogu-licenses', dto);
-  return data;
-};
-
-export const getLicenseInServerSide = async (
-  context: GetServerSidePropsContext,
-  organizationId: OrganizationId | null,
-) => {
+export const getSelfHostedLicenseInServerSide = async (context: GetServerSidePropsContext) => {
   const { authToken } = getServersideCookies(context.req.cookies);
 
   if (authToken) {
-    let data: AxiosResponse<LicenseResponse>;
-    if (organizationId) {
-      data = await api.get<LicenseResponse>(`/organizations/${organizationId}/dogu-licenses`, {
-        headers: { Authorization: `Bearer ${authToken}` },
-      });
-    } else {
-      data = await api.get<LicenseResponse>(`/dogu-licenses`, {
-        headers: { Authorization: `Bearer ${authToken}` },
-      });
-    }
-    setCookiesInServerSide(data, context);
+    const response = await api.get<SelfHostedLicenseBase>(`/self-hosted-licenses`, {
+      headers: { Authorization: `Bearer ${authToken}` },
+    });
 
-    const license = data.data;
+    setCookiesInServerSide(response, context);
+    const license = response.data;
+    return license;
+  }
 
+  throw new EmptyTokenError();
+};
+
+export const getCloudLicenseInServerSide = async (context: GetServerSidePropsContext) => {
+  const { authToken } = getServersideCookies(context.req.cookies);
+
+  if (authToken) {
+    const response = await api.get<CloudLicenseBase>(`/cloud-licenses`, {
+      headers: { Authorization: `Bearer ${authToken}` },
+    });
+
+    setCookiesInServerSide(response, context);
+    const license = response.data;
     return license;
   }
 

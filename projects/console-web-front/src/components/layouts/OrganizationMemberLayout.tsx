@@ -6,7 +6,7 @@ import MenuLinkTabs, { MenuLinkTabProps } from '../MenuLinkTabs';
 import ConsoleLayout, { ConsoleLayoutProps } from './ConsoleLayout';
 import OrganizationSideBar from './OrganizationSideBar';
 
-interface Props extends Pick<ConsoleLayoutProps, 'organization' | 'user' | 'titleI18nKey' | 'children'> {}
+interface Props extends Pick<ConsoleLayoutProps, 'organization' | 'user' | 'titleI18nKey' | 'children' | 'license'> {}
 
 const OrganizationMemberLayout = (props: Props) => {
   const { t } = useTranslation();
@@ -33,6 +33,7 @@ const OrganizationMemberLayout = (props: Props) => {
       titleI18nKey={props.titleI18nKey}
       organization={props.organization}
       user={props.user}
+      license={props.license}
       sidebar={<OrganizationSideBar />}
     >
       <div style={{ marginBottom: '1rem' }}>

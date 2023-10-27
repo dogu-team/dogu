@@ -165,7 +165,7 @@ export class Env {
 
   @IsOptional()
   @IsString()
-  DOGU_SLACK_BOT_TOKEN?: string;
+  DOGU_BILLING_TOKEN?: string;
 }
 
 export const env = loadEnvLazySync(Env, { printable: logger });

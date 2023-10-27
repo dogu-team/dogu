@@ -1,14 +1,11 @@
 import { Global, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { LicenseSelfHostedTier } from '../../db/entity/license-self-hosted-tier.enitiy';
-import { LicenseToken } from '../../db/entity/license-token.enitiy';
-import { License } from '../../db/entity/license.enitiy';
+
+import { CloudLicense } from '../../db/entity/cloud-license.entity';
+import { SelfHostedLicense } from '../../db/entity/self-hosted-license.entity';
 
 @Global()
 @Module({
-  imports: [TypeOrmModule.forFeature([License, LicenseToken, LicenseSelfHostedTier])],
-  exports: [],
-  providers: [],
-  controllers: [],
+  imports: [TypeOrmModule.forFeature([CloudLicense, SelfHostedLicense])],
 })
 export class AuthModule {}

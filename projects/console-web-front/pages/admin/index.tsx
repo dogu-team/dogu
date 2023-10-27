@@ -4,8 +4,8 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import styled from 'styled-components';
 
-import LicenseContainer from '../../enterprise/components/license/LicenseContainer';
-import { AdminProps, getAdminServerSideProps } from '../../enterprise/pages/admin';
+import SelfHostedLicenseContainer from '../../enterprise/components/license/LicenseContainer';
+import { AdminProps, getSelfHostedAdminServerSideProps } from '../../enterprise/pages/admin';
 import ConsoleBasicLayout from '../../src/components/layouts/ConsoleBasicLayout';
 import { flexRowBaseStyle } from '../../src/styles/box';
 import { NextPageWithLayout } from '../_app';
@@ -25,7 +25,7 @@ const AdminPage: NextPageWithLayout<AdminProps> = ({ license }) => {
           </MenuItem>
         </Sidebar>
         <Content>
-          <LicenseContainer license={license ?? undefined} organizationId={null} />
+          <SelfHostedLicenseContainer license={license ?? undefined} organizationId={null} />
         </Content>
       </FlexRow>
     </Box>
@@ -40,7 +40,7 @@ AdminPage.getLayout = (page) => {
   );
 };
 
-export const getServerSideProps: GetServerSideProps<AdminProps> = getAdminServerSideProps;
+export const getServerSideProps: GetServerSideProps<AdminProps> = getSelfHostedAdminServerSideProps;
 
 export default AdminPage;
 

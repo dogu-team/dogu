@@ -13,7 +13,7 @@
   "cloudDeviceFilterVersionDefaultLabel": "Version",
   "cloudDeviceFilterSearchInputPlaceholder": "Brand or name",
 
-  "cloudDeviceListDescription": "Select devices from the farm",
+  "cloudDeviceListDescription": "Select real devices from the farm",
 
   "cloudDeviceSelectModalTitle": "Select device",
   "cloudDeviceSelectListVersionColumn": "Version",

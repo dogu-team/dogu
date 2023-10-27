@@ -1,72 +1,33 @@
 import { OrganizationId } from '@dogu-private/types';
 import { Type } from 'class-transformer';
-import { Equals, IsIn, IsNumber, IsString, IsUUID, ValidateNested } from 'class-validator';
-import { LicenseBase, LicenseType, LicenseTypeKey } from '../../base/license';
+import { IsDate, IsNotEmpty, IsOptional, IsString, IsUUID } from 'class-validator';
 
-export class LicenseDtoBase {
-  @IsIn([LicenseTypeKey])
-  licenseType!: LicenseType;
+import { SelfHostedLicenseBase } from '../..';
 
-  @IsNumber()
-  @Type(() => Number)
-  durationDate?: number | null;
-
-  @IsString()
-  licenseTierName!: string;
-}
-
-export class CreateLicenseWithCloudDto extends LicenseDtoBase {
-  @Equals('cloud')
-  declare licenseType: 'cloud';
-
+export class CreateCloudLicenseDto {
   @IsUUID()
   organizationId!: OrganizationId;
 }
 
-export class CreateLicenseWithSelfHostedDto extends LicenseDtoBase {
-  @Equals('self-hosted')
-  declare licenseType: 'self-hosted';
-
-  @IsString()
-  companyName!: string;
-
-  @IsNumber()
-  @Type(() => Number)
-  enabledMobileCount!: number;
-
-  @IsNumber()
-  @Type(() => Number)
-  enabledBrowserCount!: number;
-}
-
-export class CreateLicenseDto {
-  @ValidateNested()
-  @Type(() => LicenseDtoBase, {
-    discriminator: {
-      property: 'licenseType',
-      subTypes: [
-        { value: CreateLicenseWithCloudDto, name: 'cloud' },
-        { value: CreateLicenseWithSelfHostedDto, name: 'self-hosted' },
-      ],
-    },
-    keepDiscriminatorProperty: true,
-  })
-  licenseInfo!: CreateLicenseWithCloudDto | CreateLicenseWithSelfHostedDto;
-}
-
-export class FindLicenseDtoBase {
-  @IsString()
-  licenseToken!: string;
-}
-
-export class FindLicenseWithCloudDto extends FindLicenseDtoBase {
+export class CreateSelfHostedLicenseDto {
+  @IsOptional()
   @IsUUID()
-  organizationId!: OrganizationId;
+  organizationId?: OrganizationId;
+
+  @IsOptional()
+  @IsString()
+  companyName?: string;
+
+  @IsNotEmpty()
+  @IsDate()
+  @Type(() => Date)
+  expiredAt!: Date;
 }
 
-export class FindLicenseWithSelfHostedDto extends FindLicenseDtoBase {
+export class RegisterSelfHostedLicenseDto {
+  @IsNotEmpty()
   @IsString()
-  companyName!: string;
+  licenseKey!: string;
 }
 
 export interface LicenseErrorInfo {
@@ -74,7 +35,7 @@ export interface LicenseErrorInfo {
   isLicenseServerDisConnected: boolean;
   unKnownError: boolean;
 }
-export interface LicenseResponse extends LicenseBase {
+export interface SelfHostedLicenseResponse extends SelfHostedLicenseBase {
   errorInfo: LicenseErrorInfo | null;
   isCommunityEdition: boolean;
   consoleRegisteredToken: string | null;

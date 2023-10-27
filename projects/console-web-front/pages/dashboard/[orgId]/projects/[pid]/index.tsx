@@ -3,7 +3,6 @@ import { GetServerSideProps } from 'next';
 
 import { NextPageWithLayout } from 'pages/_app';
 import { redirectWithLocale } from '../../../../../src/ssr/locale';
-import ProjectLayoutWithSidebar from '../../../../../src/components/layouts/ProjectLayoutWithSidebar';
 
 const ProjectPage: NextPageWithLayout = () => {
   return <div></div>;

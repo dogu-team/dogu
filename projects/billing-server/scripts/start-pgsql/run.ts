@@ -1,7 +1,7 @@
 import { node_package } from '@dogu-dev-private/build-tools';
-import { checkDockerInstalled, clearDokerContainer, createDbSchema, createFakeDbMigrations, createSeedData, pullDockerImage } from '../common/common';
+import { checkDockerInstalled, clearDokerContainer, createDbSchema, createFakeDbMigrations, pullDockerImage } from '../common/common';
 import { exec, execute } from '../utils/utils';
-import { pgConfig, pgsqlConnectionOptions } from './config';
+import { pgConfig } from './config';
 
 async function startDockerContainer() {
   await checkDockerInstalled();
@@ -35,7 +35,6 @@ async function startDockerContainer() {
   process.chdir(currentDir);
   await createDbSchema();
   await createFakeDbMigrations();
-  await createSeedData(pgsqlConnectionOptions);
   console.log('Done');
   /**
    * @note force exit because kill the typeorm:schema process but does not exit

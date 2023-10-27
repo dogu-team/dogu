@@ -27,32 +27,40 @@ export class CloudDeviceService {
     const versionFilterClause = version ? `device.${DevicePropCamel.version} LIKE :version` : '1=1';
 
     // pick representative device for each model
-    const cloudDevices = await this.createCloudDeviceDefaultQuery().getMany();
+    const cloudDevices = await this.createCloudDeviceDefaultQuery()
+      .andWhere(`(${modelFilterClause} OR ${modelNameFilterClause} OR ${manufacturerFilterClause})`, { keyword: `.*${keyword}.*` })
+      .andWhere(platformFilterClause, { platform })
+      .andWhere(versionFilterClause, { version: `${version}%` })
+      .getMany();
 
-    const deviceMap = new Map<string, Device>();
+    const deviceInfoMap = new Map<string, { device: Device; versions: Set<string> }>();
     cloudDevices.forEach((device) => {
       const key = `${device.model}`;
-      const existingDevice = deviceMap.get(key);
+      const info = deviceInfoMap.get(key);
 
-      if (!existingDevice) {
-        deviceMap.set(key, device);
+      if (!info) {
+        deviceInfoMap.set(key, { device, versions: new Set([this.floorToMajorVersion(device.version)]) });
         return;
       }
 
+      const existingDevice = info.device;
+
       if (device.usageState < existingDevice.usageState) {
-        deviceMap.set(key, device);
+        deviceInfoMap.set(key, { device, versions: info.versions.add(this.floorToMajorVersion(device.version)) });
         return;
       }
 
       if (device.usageState === existingDevice.usageState) {
         if (device.connectionState === DeviceConnectionState.DEVICE_CONNECTION_STATE_CONNECTED) {
-          deviceMap.set(key, device);
+          deviceInfoMap.set(key, { device, versions: info.versions.add(this.floorToMajorVersion(device.version)) });
           return;
         }
       }
+
+      deviceInfoMap.set(key, { device: existingDevice, versions: info.versions.add(this.floorToMajorVersion(device.version)) });
     });
-    const representativeDevices = Array.from(deviceMap.values());
-    const deviceIds = representativeDevices.map((device) => device.deviceId);
+    const infoValues = Array.from(deviceInfoMap.values());
+    const deviceIds = infoValues.map((info) => info.device?.deviceId);
 
     if (deviceIds.length === 0) {
       return new Page(dto.page, dto.offset, 0, []);
@@ -60,9 +68,6 @@ export class CloudDeviceService {
 
     const query = this.createCloudDeviceDefaultQuery()
       .where('device.device_id IN (:...deviceIds)', { deviceIds })
-      .andWhere(`(${modelFilterClause} OR ${modelNameFilterClause} OR ${manufacturerFilterClause})`, { keyword: `.*${keyword}.*` })
-      .andWhere(platformFilterClause, { platform })
-      .andWhere(versionFilterClause, { version: `${version}%` })
       .orderBy(`device.${DevicePropCamel.modelName}`, 'ASC')
       .addOrderBy(`device.${DevicePropCamel.model}`, 'ASC')
       .skip(dto.getDBOffset())
@@ -91,6 +96,7 @@ export class CloudDeviceService {
         location: device.location,
         connectionState: device.connectionState,
         usageState: device.usageState,
+        versions: Array.from(deviceInfoMap.get(device.model)?.versions ?? []),
       };
     });
 
@@ -145,11 +151,14 @@ export class CloudDeviceService {
 
     const query = this.createCloudDeviceDefaultQuery()
       .andWhere(platformFilterClause, { platform })
-      .distinctOn([`device.${DevicePropCamel.version}`])
-      .orderBy(`device.${DevicePropCamel.version}`, 'ASC');
+      .distinctOn([`device.${DevicePropCamel.version}`]);
     const devices = await query.getMany();
+    const majorVersionSet = new Set(devices.map((device) => this.floorToMajorVersion(device.version)));
+    const orderedMajorVersions = Array.from(majorVersionSet).sort((a, b) => {
+      return Number(a) - Number(b);
+    });
 
-    return devices.map((device) => device.version);
+    return Array.from(orderedMajorVersions);
   }
 
   private createCloudDeviceDefaultQuery() {
@@ -160,5 +169,11 @@ export class CloudDeviceService {
       .where(`device.${DevicePropCamel.isHost} = :isHost`, { isHost: 0 })
       .andWhere(`device.${DevicePropCamel.isGlobal} = :isGlobal`, { isGlobal: 1 })
       .andWhere(`organization.shareable = :shareable`, { shareable: true });
+  }
+
+  private floorToMajorVersion(version: string): string {
+    // return only major version. ex) 1 -> 1, 1.2 -> 1, 1.2.3 -> 1, 1.23.4 (A) -> 1, 1.23.4 (B) -> 1
+    const versionArray = version.split('.');
+    return versionArray[0];
   }
 }

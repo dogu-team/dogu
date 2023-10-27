@@ -1,9 +1,10 @@
 import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+
 import { Organization, OrganizationAndUserAndOrganizationRole, Token, User } from '../../db/entity';
 import { OrganizationAccessToken } from '../../db/entity/organization-access-token.entity';
 import { UserAndInvitationToken } from '../../db/entity/relations/user-and-invitation-token.entity';
-import { LicenseModule } from '../../enterprise/module/license/feature-license.module';
+import { LicenseModule } from '../../enterprise/module/license/license.module';
 import { EmailModule } from '../email/email.module';
 import { FileModule } from '../file/file.module';
 import { GitlabModule } from '../gitlab/gitlab.module';
