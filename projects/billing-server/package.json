@@ -8,9 +8,9 @@
   "scripts": {
     "build": "tsc -b",
     "clean": "shx rm -rf build generated",
-    "dev": "cross-env TZ=UTC NODE_ENV=development nodemon --config nodemon.json",
+    "dev": "cross-env TZ=UTC NODE_ENV=development NODE_OPTIONS=\"--max-old-space-size=8192 $NODE_OPTIONS\" nodemon --config nodemon.json",
     "rebuild": "yarn run clean && yarn run build",
-    "start": "cross-env TZ=UTC NODE_ENV=production node -r tsconfig-paths/register -r ts-node/register build/src/main",
+    "start": "cross-env TZ=UTC NODE_ENV=production NODE_OPTIONS=\"--max-old-space-size=8192 $NODE_OPTIONS\" node -r tsconfig-paths/register -r ts-node/register build/src/main",
     "start:pgsql": "yarn run rebuild && cross-env TZ=UTC NODE_ENV=development ts-node scripts/start-pgsql/run.ts",
     "typeorm": "node --require ts-node/register $(yarn bin typeorm)",
     "typeorm:create": "cross-env TZ=UTC NODE_ENV=development ts-node scripts/typeorm/typeorm-create.ts",

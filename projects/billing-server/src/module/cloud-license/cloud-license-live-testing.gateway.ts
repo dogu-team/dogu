@@ -1,5 +1,5 @@
 import { CloudLicenseMessage } from '@dogu-private/console';
-import { errorify, transformAndValidate } from '@dogu-tech/common';
+import { closeWebSocketWithTruncateReason, errorify, transformAndValidate, WebSocketCode } from '@dogu-tech/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { OnGatewayConnection, WebSocketGateway } from '@nestjs/websockets';
 import { IncomingMessage } from 'http';
@@ -7,6 +7,7 @@ import { DataSource } from 'typeorm';
 import { WebSocket } from 'ws';
 import { CloudLicense } from '../../db/entity/cloud-license.entity';
 import { retrySerialize } from '../../db/utils';
+import { BillingTokenService } from '../billing-token/billing-token.service';
 import { DoguLogger } from '../logger/logger';
 
 @WebSocketGateway({ path: '/cloud-license/live-testing' })
@@ -14,10 +15,16 @@ export class CloudLicenseLiveTestingGateway implements OnGatewayConnection {
   constructor(
     @InjectDataSource()
     private readonly dataSource: DataSource,
+    private readonly billingTokenService: BillingTokenService,
     private readonly logger: DoguLogger,
   ) {}
 
   handleConnection(webSocket: WebSocket, incomingMessage: IncomingMessage): void {
+    this.billingTokenService.validateBillingApiTokenFromRequest(incomingMessage).catch((error) => {
+      this.logger.error('Failed to validate billing api token', { error: errorify(error) });
+      closeWebSocketWithTruncateReason(webSocket, WebSocketCode.Unauthorized, 'Failed to validate billing api token');
+    });
+
     webSocket.on('message', (data) => {
       (async (): Promise<void> => {
         const sendMessage = await transformAndValidate(CloudLicenseMessage.LiveTestingSend, JSON.parse(data.toString()));

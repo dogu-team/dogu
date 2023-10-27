@@ -1,4 +1,5 @@
 import { CreateSelfHostedLicenseDto } from '@dogu-private/console';
+import { stringify } from '@dogu-tech/common';
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
@@ -20,7 +21,7 @@ export class SelfHostedLicenseService {
     const existingLicense = await this.dataSource.manager.getRepository(SelfHostedLicense).findOne({ where: { organizationId, companyName } });
 
     if (existingLicense) {
-      throw new ConflictException(`Organization already has a self-hosted license. organizationId: ${organizationId}`);
+      throw new ConflictException(`Organization already has a self-hosted license. organizationId: ${stringify(organizationId)}`);
     }
 
     const licenseKey = LicenseKeyService.createLicensKey();
@@ -32,8 +33,11 @@ export class SelfHostedLicenseService {
 
   async findLicense(dto: FindSelfHostedLicenseQueryDto): Promise<SelfHostedLicense> {
     const { organizationId, licenseKey } = dto;
-    const license = await this.dataSource.manager.getRepository(SelfHostedLicense).findOne({ where: { organizationId, licenseKey } });
+    if (!organizationId) {
+      throw new NotFoundException(`Organization must be provided. organizationId: ${stringify(organizationId)}`);
+    }
 
+    const license = await this.dataSource.manager.getRepository(SelfHostedLicense).findOne({ where: { organizationId, licenseKey } });
     if (!license) {
       throw new NotFoundException(`Organization does not have a self-hosted license. organizationId: ${organizationId}`);
     }

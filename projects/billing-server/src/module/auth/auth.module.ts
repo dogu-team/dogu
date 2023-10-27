@@ -7,8 +7,5 @@ import { SelfHostedLicense } from '../../db/entity/self-hosted-license.entity';
 @Global()
 @Module({
   imports: [TypeOrmModule.forFeature([CloudLicense, SelfHostedLicense])],
-  exports: [],
-  providers: [],
-  controllers: [],
 })
 export class AuthModule {}

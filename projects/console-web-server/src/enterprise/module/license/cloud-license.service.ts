@@ -7,8 +7,9 @@ import axios from 'axios';
 import { WebSocket } from 'ws';
 
 import { env } from '../../../env';
+import { FEATURE_CONFIG } from '../../../feature.config';
 import { DoguLogger } from '../../../module/logger/logger';
-import { getBillingServerWebSocketUrl } from './common/utils';
+import { getBillingServerWebSocketUrl, updateAuthHeaderByBillingApiToken } from './common/utils';
 
 export interface CloudLicenseLiveTestingFreeSecondsHandler {
   onOpen: (close: () => void) => void;
@@ -24,6 +25,9 @@ export class CloudLicenseService {
       baseURL: env.DOGU_BILLING_SERVER_URL,
     });
     setAxiosErrorFilterToIntercepter(this.api);
+    if (FEATURE_CONFIG.get('licenseModule') === 'cloud') {
+      updateAuthHeaderByBillingApiToken(this.api.defaults.headers);
+    }
   }
 
   async createLicense(dto: CreateCloudLicenseDto): Promise<CloudLicenseBase> {
@@ -46,7 +50,7 @@ export class CloudLicenseService {
 
   async startUpdateLiveTesting(cloudLicenseId: string, handler: CloudLicenseLiveTestingFreeSecondsHandler): Promise<void> {
     const intervalSeconds = 5;
-    const url = `${getBillingServerWebSocketUrl()}/cloud-license/live-testing`;
+    const url = `${getBillingServerWebSocketUrl()}/cloud-licenses/live-testing`;
     const webSocket = new WebSocketClientFactory().create({ url });
     webSocket.on('open', () => {
       let updatedAt = Date.now();

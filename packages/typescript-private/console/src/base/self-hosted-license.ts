@@ -4,6 +4,10 @@ import { camelToSnakeCasePropertiesOf, propertiesOf } from '@dogu-tech/common';
 export interface SelfHostedLicenseBase {
   selfHostedLicenseId: string;
   licenseKey: string;
+
+  /**
+   * @deprecated use organizationId instead
+   */
   companyName: string | null;
   organizationId: OrganizationId | null;
   maximumEnabledMobileCount: number;

@@ -11,6 +11,9 @@ export class SelfHostedLicense implements SelfHostedLicenseBase {
   @Column({ type: 'character varying', name: SelfHostedLicenseTokenPropSnake.license_key })
   licenseKey!: string;
 
+  /**
+   * @deprecated use organizationId instead
+   */
   @Column({ type: 'character varying', name: SelfHostedLicenseTokenPropSnake.company_name, nullable: true })
   companyName!: string | null;
 

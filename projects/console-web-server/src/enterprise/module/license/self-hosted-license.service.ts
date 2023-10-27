@@ -10,6 +10,7 @@ import { v4 } from 'uuid';
 import { DoguLicense } from '../../../db/entity/dogu-license.enitiy';
 import { env } from '../../../env';
 import { DoguLogger } from '../../../module/logger/logger';
+import { updateAuthHeaderBySelfHostedLicense } from './common/utils';
 
 @Injectable()
 export class SelfHostedLicenseService {
@@ -43,7 +44,9 @@ export class SelfHostedLicenseService {
 
   async setLicense(organizationId: OrganizationId, licenseKey: string): Promise<SelfHostedLicenseBase> {
     try {
-      const response = await this.api.get<SelfHostedLicenseBase>(`/self-hosted-licenses?organizationId=${organizationId}&licenseKey=${licenseKey}`);
+      const response = await this.api.get<SelfHostedLicenseBase>(`/self-hosted-licenses`, {
+        headers: updateAuthHeaderBySelfHostedLicense(this.api.defaults.headers, organizationId, licenseKey),
+      });
 
       await this.dataSource.transaction(async (manager) => {
         const existingLicense = await manager.getRepository(DoguLicense).createQueryBuilder('doguLicense').getOne();
@@ -71,7 +74,9 @@ export class SelfHostedLicenseService {
     }
 
     try {
-      const response = await this.api.get<SelfHostedLicenseBase>(`/self-hosted-licenses?organizationId=${organizationId}&licenseKey=${license?.licenseKey}`);
+      const response = await this.api.get<SelfHostedLicenseBase>(`/self-hosted-licenses`, {
+        headers: updateAuthHeaderBySelfHostedLicense(this.api.defaults.headers, organizationId, license.licenseKey),
+      });
       return response.data;
     } catch (e) {
       this.logger.error(`Failed to get license info from billing server. organizationId: ${organizationId}, licenseKey: ${license?.licenseKey}`, {
