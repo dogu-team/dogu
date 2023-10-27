@@ -20,6 +20,7 @@ const LiveTestingFeedbackModal: React.FC<Props> = ({ isOpen, onClose, userId, se
   const [form] = Form.useForm<{ rate: number; comment: string }>();
 
   const handleClose = () => {
+    localStorage.setItem(LIVE_TESTING_FEEDBACK_LOCAL_STORAGE_KEY, 'true');
     form.resetFields();
     onClose();
   };
