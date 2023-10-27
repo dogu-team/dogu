@@ -1,12 +1,4 @@
-import {
-  getDefaultMaxBrowserEnableCountByTier,
-  getDefaultMaxMobileEnableCountByTier,
-  LICENSE_SELF_HOSTED_TIER_TABLE_NAME,
-  LICENSE_SELF_HOSTED_TIER_TYPE,
-} from '@dogu-private/console';
 import { retry } from '@dogu-tech/common';
-import { ClientConfig } from 'pg';
-import { PostgreSql } from '../utils/pgsql';
 import { exec, execute, spawnWithFindPattern, which } from '../utils/utils';
 
 export async function checkDockerInstalled(): Promise<void> {
@@ -77,33 +69,5 @@ export async function createFakeDbMigrations(): Promise<void> {
       retryCount: 3,
       retryInterval: 3000,
     }),
-  );
-}
-
-export async function createSeedData(config: ClientConfig): Promise<void> {
-  console.log('Create seeds...');
-  await retry(
-    async () => {
-      await PostgreSql.on(config, async (context) => {
-        LICENSE_SELF_HOSTED_TIER_TYPE;
-        const keys = Object.keys(LICENSE_SELF_HOSTED_TIER_TYPE).filter((key) => isNaN(Number(key)));
-
-        for (const key of keys) {
-          const value = LICENSE_SELF_HOSTED_TIER_TYPE[key as keyof typeof LICENSE_SELF_HOSTED_TIER_TYPE];
-
-          const maxMobileEnableCount = getDefaultMaxMobileEnableCountByTier(value);
-          const maxBrowserEnableCount = getDefaultMaxBrowserEnableCountByTier(value);
-          const openApiEnabled = LICENSE_SELF_HOSTED_TIER_TYPE.self_hosted_community ? false : true;
-          const doguAgentAutoUpdateEnabled = LICENSE_SELF_HOSTED_TIER_TYPE.self_hosted_community ? false : true;
-          await context.query(
-            'Create seed data...',
-            `INSERT INTO ${LICENSE_SELF_HOSTED_TIER_TABLE_NAME} (name, enabled_mobile_count, enabled_browser_count, open_api_enabled, dogu_agent_auto_update_enabled ) VALUES ('${key}', ${maxMobileEnableCount}, ${maxBrowserEnableCount}, ${
-              openApiEnabled ? 'true' : 'false'
-            }, ${doguAgentAutoUpdateEnabled ? 'true' : 'false'});`,
-          );
-        }
-      });
-    },
-    { retryCount: 3, retryInterval: 3000 },
   );
 }

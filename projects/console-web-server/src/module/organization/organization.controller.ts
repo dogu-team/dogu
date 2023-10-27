@@ -7,7 +7,7 @@ import {
   UserBase,
   UserPropCamel,
 } from '@dogu-private/console';
-import { OrganizationId, UserId, UserPayload } from '@dogu-private/types';
+import { LiveSessionId, OrganizationId, UserId, UserPayload } from '@dogu-private/types';
 import { Body, Controller, Delete, Get, HttpException, HttpStatus, Inject, Param, Patch, Post, Query, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { InjectDataSource } from '@nestjs/typeorm';
@@ -208,11 +208,22 @@ export class OrganizationController {
 
   @Get(':organizationId/live-sessions')
   @OrganizationPermission(ORGANIZATION_ROLE.MEMBER)
-  async findUsingCloudDevicesByOrganizationId(
+  async findLiveSessionsByOrganizationId(
     @User() userPayload: UserPayload, //
     @Param(OrganizationPropCamel.organizationId) organizationId: OrganizationId,
   ): Promise<LiveSession[]> {
-    const rv = await this.organizationService.findUsingCloudDevicesByOrganizationId(organizationId);
+    const rv = await this.organizationService.findLiveSessionsByOrganizationId(organizationId);
+    return rv;
+  }
+
+  @Get(':organizationId/live-sessions/:liveSessionId')
+  @OrganizationPermission(ORGANIZATION_ROLE.MEMBER)
+  async findOneLiveSessionById(
+    @User() userPayload: UserPayload, //
+    @Param(OrganizationPropCamel.organizationId) organizationId: OrganizationId,
+    @Param('liveSessionId') liveSessionId: LiveSessionId,
+  ): Promise<LiveSession> {
+    const rv = await this.organizationService.findLiveSessionById(organizationId, liveSessionId);
     return rv;
   }
 }

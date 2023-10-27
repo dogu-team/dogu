@@ -3,10 +3,7 @@ import { camelToSnakeCasePropertiesOf, propertiesOf } from '@dogu-tech/common';
 
 export interface TokenBaseTraits {
   tokenId: TokenId;
-  // organizationId: OrganizationId | null;
-  // email: string;
   token: string;
-  // type: TokenType;
   createdAt: Date;
   expiredAt: Date | null;
   deletedAt: Date | null;

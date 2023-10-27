@@ -25,6 +25,8 @@ const LiveTestingCloseSessionButton: React.FC<Props> = ({ organizationId, sessio
     try {
       await request(sessionId, organizationId);
       fireEvent('onCloudLiveTestingSessionClosed', sessionId);
+      const bc = new BroadcastChannel('dogu-live-testing');
+      bc.postMessage({ type: 'close', sessionId });
       onClose?.();
     } catch (e) {
       if (isAxiosError(e)) {

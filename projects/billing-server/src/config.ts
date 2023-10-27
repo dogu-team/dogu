@@ -26,7 +26,6 @@ export const config = {
     schema: env.DOGU_BILLING_RDS_SCHEMA,
     ssl: env.DOGU_BILLING_RDS_SSL_CONNECTION ? { rejectUnauthorized: false } : false,
   },
-  apiToken: env.DOGU_BILLING_API_TOKEN,
 };
 
 export const dataSourceConfig: DataSourceOptions = {

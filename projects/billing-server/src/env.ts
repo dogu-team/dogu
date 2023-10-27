@@ -34,9 +34,6 @@ export class Env {
 
   @IsFilledString()
   DOGU_BILLING_RDS_SCHEMA!: string;
-
-  @IsFilledString()
-  DOGU_BILLING_API_TOKEN!: string;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment

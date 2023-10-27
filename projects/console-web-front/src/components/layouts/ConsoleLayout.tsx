@@ -18,11 +18,20 @@ export interface ConsoleLayoutProps extends OrganizationServerSideProps {
   children: React.ReactNode;
   sidebar: React.ReactNode;
   titleI18nKey?: string;
-  title?: string;
+  title?: React.ReactNode;
   padding?: string;
 }
 
-const ConsoleLayout = ({ titleI18nKey, children, sidebar, title, padding, organization, user }: ConsoleLayoutProps) => {
+const ConsoleLayout = ({
+  titleI18nKey,
+  children,
+  sidebar,
+  title,
+  padding,
+  organization,
+  user,
+  license,
+}: ConsoleLayoutProps) => {
   const { t } = useTranslation();
   const { data, error, mutate, isLoading } = useSWR<OrganizationResponse>(
     `/organizations/${organization.organizationId}`,
@@ -48,14 +57,14 @@ const ConsoleLayout = ({ titleI18nKey, children, sidebar, title, padding, organi
 
   return (
     <OrganizationContext.Provider value={{ organization: data ?? organization, mutate }}>
-      <ConsoleBasicLayout licenseInfo={organization.licenseInfo} user={user}>
+      <ConsoleBasicLayout licenseInfo={license} user={user}>
         <StyledLayout>
           {sidebar}
           <StyledLayoutContent>
             <PaddingBox style={{ padding }}>
               {(title ?? titleI18nKey) && (
                 <TitleBox>
-                  <H4>{title ?? (titleI18nKey ? t(titleI18nKey) : '')}</H4>
+                  {title ?? <H4>{titleI18nKey ? t(titleI18nKey) : ''}</H4>}
                   <StyledHr />
                 </TitleBox>
               )}
@@ -91,7 +100,7 @@ const StyledLayoutContent = styled(Layout.Content)`
 
 const TitleBox = styled.div`
   display: flex;
-  height: 3rem;
+  min-height: 3rem;
   flex-direction: column;
   width: 100%;
   justify-content: space-between;

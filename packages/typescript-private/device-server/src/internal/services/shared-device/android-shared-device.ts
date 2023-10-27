@@ -23,43 +23,212 @@ const DeviceControlMetaState = PrivateProtocol.DeviceControlMetaState;
 
 const UserId = 0;
 
+/*
+ * BlockApps
+ * disable: Disable package that starts with app.keyword
+ * runtime: Filter logcat messages with "START u0" and If message contains app.keyword, kill app.packageName
+ */
 interface BlockAppInfo {
+  vender: 'samsung' | 'lg' | 'kt' | 'skt' | 'google';
+  category: 'dial' | 'update' | 'noise' | 'account';
   keyword: string;
   packageName: string;
   skipOnTestHarness?: true;
+  prefix?: string;
   disable?: true;
+  runtime?: true;
 }
 const BlockAppList: BlockAppInfo[] = [
+  /*
+   *  Block dial
+   */
   {
+    vender: 'skt',
+    category: 'dial',
     keyword: 'com.skt.prod.dialer', // block galaxy dialer
     packageName: 'com.skt.prod.dialer',
+    runtime: true,
   },
   {
+    vender: 'samsung',
+    category: 'dial',
     keyword: 'com.samsung.android.dialer', // block galaxy dialer
     packageName: 'com.samsung.android.dialer',
+    runtime: true,
   },
   {
+    vender: 'samsung',
+    category: 'dial',
     keyword: 'com.samsung.android.app.telephonyui', // block galaxy emergency dialer
     packageName: 'com.samsung.android.app.telephonyui',
+    runtime: true,
   },
+  /*
+   * Block account
+   */
   {
+    vender: 'samsung',
+    category: 'account',
     skipOnTestHarness: true,
     keyword: 'com.samsung.android.mobileservice', // block galaxy samsung login
     packageName: 'com.samsung.android.mobileservice',
+    runtime: true,
   },
   {
+    vender: 'samsung',
+    category: 'account',
+    skipOnTestHarness: true,
+    keyword: 'com.osp.app.signin', // block galaxy samsung login
+    packageName: 'com.osp.app.signin',
+    runtime: true,
+  },
+  /*
+   * Block updates
+   */
+  {
+    vender: 'samsung',
+    category: 'update',
     keyword: 'com.sec.android.soagent', // block galaxy software update
     packageName: 'com.sec.android.soagent',
     disable: true,
+    runtime: true,
   },
   {
+    vender: 'samsung',
+    category: 'update',
     keyword: 'com.wssyncmldm', // block galaxy software update
     packageName: 'com.wssyncmldm',
     disable: true,
+    runtime: true,
   },
   {
+    vender: 'google',
+    category: 'update',
     keyword: 'com.google.android.gms/.update.SystemUpdateActivity', // block pixel system update, not tested
     packageName: 'com.google.android.gms',
+    runtime: true,
+  },
+  {
+    vender: 'google',
+    category: 'update',
+    keyword: 'com.google.android.gms/.update.SystemUpdateActivity', // block pixel system update, not tested
+    packageName: 'com.google.android.gms',
+    runtime: true,
+  },
+  /*
+   * Block noise apps
+   */
+  {
+    vender: 'lg',
+    category: 'noise',
+    keyword: 'com.lguplus.',
+    packageName: 'com.lguplus.',
+    disable: true,
+  },
+  {
+    vender: 'skt',
+    category: 'noise',
+    keyword: 'com.skt.',
+    packageName: 'com.skt.',
+    disable: true,
+  },
+  {
+    vender: 'skt',
+    category: 'noise',
+    keyword: 'com.skms.',
+    packageName: 'com.skms.',
+    disable: true,
+  },
+  {
+    vender: 'kt',
+    category: 'noise',
+    keyword: 'com.kt.',
+    packageName: 'com.kt.',
+    disable: true,
+  },
+  {
+    vender: 'kt',
+    category: 'noise',
+    keyword: 'com.ktpns.',
+    packageName: 'com.ktpns.',
+    disable: true,
+  },
+  {
+    vender: 'kt',
+    category: 'noise',
+    keyword: 'com.ktshow.',
+    packageName: 'com.ktshow.',
+    disable: true,
+  },
+  {
+    vender: 'kt',
+    category: 'noise',
+    keyword: 'com.samsung.hidden.KT',
+    packageName: 'com.samsung.hidden.KT',
+    disable: true,
+  },
+  {
+    vender: 'kt',
+    category: 'noise',
+    keyword: 'com.samsung.kt114provider2',
+    packageName: 'com.samsung.kt114provider2',
+    disable: true,
+  },
+  {
+    vender: 'samsung',
+    category: 'noise',
+    keyword: 'com.samsung.android.app.spage',
+    packageName: 'com.samsung.android.app.spage',
+    disable: true,
+  },
+  {
+    vender: 'samsung',
+    category: 'noise',
+    keyword: 'com.samsung.android.game.gamehome',
+    packageName: 'com.samsung.android.game.gamehome',
+    disable: true,
+  },
+  {
+    vender: 'samsung',
+    category: 'noise',
+    keyword: 'com.sec.android.app.samsungapps',
+    packageName: 'com.sec.android.app.samsungapps',
+    disable: true,
+  },
+  {
+    vender: 'samsung',
+    category: 'noise',
+    keyword: 'com.samsung.android.bixby.agent',
+    packageName: 'com.samsung.android.bixby.agent',
+    disable: true,
+  },
+  {
+    vender: 'samsung',
+    category: 'noise',
+    keyword: 'com.samsung.android.app.omcagent',
+    packageName: 'com.samsung.android.app.omcagent',
+    disable: true,
+  },
+  {
+    vender: 'samsung',
+    category: 'noise',
+    keyword: 'com.samsung.android.arzone',
+    packageName: 'com.samsung.android.arzone',
+    disable: true,
+  },
+  {
+    vender: 'samsung',
+    category: 'noise',
+    keyword: 'com.samsung.android.app.contacts',
+    packageName: 'com.samsung.android.app.contacts',
+    disable: true,
+  },
+  {
+    vender: 'samsung',
+    category: 'noise',
+    keyword: 'com.samsung.android.calendar',
+    packageName: 'com.samsung.android.calendar',
+    disable: true,
   },
 ];
 
@@ -174,8 +343,18 @@ export class AndroidSharedDeviceService implements Zombieable {
       this.printable.error(`AndroidSharedDeviceService.revive.closeDialog failed.`, { serial, error: errorify(e) });
     });
 
-    const disableAppList = BlockAppList.filter((app) => app.disable);
-    for (const app of disableAppList) {
+    const packages = await adb.getIntalledPackages();
+    if (0 === packages.length) {
+      throw new Error(`AndroidSharedDeviceService.setup. no packages`);
+    }
+    for (const app of packages) {
+      const matched = BlockAppList.filter((block) => app.packageName.startsWith(block.keyword));
+      if (0 === matched.length) {
+        continue;
+      }
+      await adb.killPackage(app.packageName).catch((e) => {
+        this.printable.error(`AndroidSharedDeviceService.revive.killPackage failed.`, { serial, error: errorify(e) });
+      });
       await adb.disablePackage(app.packageName, 0).catch((e) => {
         this.printable.error(`AndroidSharedDeviceService.revive.disablePackage failed.`, { error: errorify(e) });
       });
@@ -245,6 +424,9 @@ export class AndroidSharedDeviceService implements Zombieable {
   private filterMsgThatContainsBlockApp(msg: string): BlockAppInfo[] {
     const ret: BlockAppInfo[] = [];
     for (const app of BlockAppList) {
+      if (!app.runtime) {
+        continue;
+      }
       if (msg.includes(app.keyword)) {
         if (app.skipOnTestHarness && isHarnessEnabled(this.androidProps)) {
           continue;

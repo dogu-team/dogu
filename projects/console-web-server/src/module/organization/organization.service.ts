@@ -20,7 +20,7 @@ import {
   UserPropCamel,
   UserPropSnake,
 } from '@dogu-private/console';
-import { LiveSessionState, OrganizationId, UserId, UserPayload, USER_INVITATION_STATUS } from '@dogu-private/types';
+import { LiveSessionId, LiveSessionState, OrganizationId, UserId, UserPayload, USER_INVITATION_STATUS } from '@dogu-private/types';
 import { notEmpty } from '@dogu-tech/common';
 import { HttpException, HttpStatus, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
@@ -55,8 +55,7 @@ import { OrganizationAccessToken } from '../../db/entity/organization-access-tok
 import { UserAndInvitationToken } from '../../db/entity/relations/user-and-invitation-token.entity';
 import { Routine } from '../../db/entity/routine.entity';
 import { RoutineStep } from '../../db/entity/step.entity';
-import { FeatureLicenseService } from '../../enterprise/module/license/feature-license.service';
-import { FEATURE_CONFIG } from '../../feature.config';
+import { SelfHostedLicenseService } from '../../enterprise/module/license/self-hosted-license.service';
 import { castEntity } from '../../types/entity-cast';
 import { ORGANIZATION_ROLE } from '../auth/auth.types';
 import { EMPTY_PAGE, Page } from '../common/dto/pagination/page';
@@ -78,8 +77,6 @@ export class OrganizationService {
     @Inject(EmailService)
     private readonly emailService: EmailService,
     private readonly organizationFileService: OrganizationFileService,
-    // @Inject(GitlabService)
-    // private readonly gitlabService: GitlabService,
     @Inject(UserInvitationService)
     private readonly invitationService: UserInvitationService,
     @Inject(ApplicationService)
@@ -88,8 +85,8 @@ export class OrganizationService {
     private readonly projectService: ProjectService,
     @Inject(RoutineService)
     private readonly routineService: RoutineService,
-    @Inject(FeatureLicenseService)
-    private readonly licenseService: FeatureLicenseService,
+    @Inject(SelfHostedLicenseService)
+    private readonly selfHostedLicenseService: SelfHostedLicenseService,
   ) {}
 
   async isOrganizationExist(organizationId: OrganizationId): Promise<boolean> {
@@ -143,25 +140,11 @@ export class OrganizationService {
     if (!orgUserRole.user) {
       throw new HttpException('organization does not have owner profile', HttpStatus.NOT_FOUND);
     }
+
     const owner = orgUserRole.user;
-
     const orgBase: OrganizationBase = { ...organization, owner };
-    const user = await this.dataSource.getRepository(User).findOne({ where: { userId: userPayload.userId } });
 
-    if (FEATURE_CONFIG.get('licenseModule') === 'self-hosted') {
-      const licenseInfo = await this.licenseService.getLicense(organizationId);
-      return { ...organization, owner, licenseInfo };
-      // if (user!.isRoot) {
-      //   return { ...organization, owner, licenseInfo };
-      // }
-      // return orgBase;
-    } else {
-      // if (user!.userId == owner.userId) {
-      //   return { ...organization, owner };
-      // }
-
-      return orgBase;
-    }
+    return orgBase;
   }
 
   async createOrganization(manager: EntityManager, userId: UserId, dto: createOrganizationDto): Promise<OrganizationBase> {
@@ -694,7 +677,7 @@ export class OrganizationService {
     });
   }
 
-  async findUsingCloudDevicesByOrganizationId(organizationId: OrganizationId): Promise<LiveSession[]> {
+  async findLiveSessionsByOrganizationId(organizationId: OrganizationId): Promise<LiveSession[]> {
     const sessions = await this.dataSource.getRepository(LiveSession).find({
       where: {
         organizationId,
@@ -731,5 +714,49 @@ export class OrganizationService {
     });
 
     return sessions;
+  }
+
+  async findLiveSessionById(organizationId: OrganizationId, liveSessionId: LiveSessionId): Promise<LiveSession> {
+    const session = await this.dataSource.getRepository(LiveSession).findOne({
+      where: {
+        liveSessionId,
+        organizationId,
+        state: In([LiveSessionState.CREATED, LiveSessionState.CLOSE_WAIT]),
+        closedAt: IsNull(),
+      },
+      relations: ['device'],
+      order: {
+        device: {
+          modelName: 'ASC',
+          model: 'ASC',
+        },
+      },
+      select: {
+        liveSessionId: true,
+        organizationId: true,
+        deviceId: true,
+        state: true,
+        closeWaitAt: true,
+        createdAt: true,
+        device: {
+          deviceId: true,
+          platform: true,
+          model: true,
+          modelName: true,
+          version: true,
+          manufacturer: true,
+          resolutionWidth: true,
+          resolutionHeight: true,
+          memory: true,
+          usageState: true,
+        },
+      },
+    });
+
+    if (!session) {
+      throw new NotFoundException(`LiveSession not found. liveSessionId: ${liveSessionId}`);
+    }
+
+    return session;
   }
 }

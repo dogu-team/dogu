@@ -84,7 +84,8 @@ export type EventName =
   | 'onCloudLiveTestingSessionCreated'
   | 'onCloudLiveTestingSessionClosed'
   | 'onCloudHeartbeatSocketClosed'
-  | 'onCloudHeartbeatSocketMessage';
+  | 'onCloudHeartbeatSocketMessage'
+  | 'onCloudRemainingFreeSecondMessage';
 
 interface EventStore {
   eventName: EventName | null;
