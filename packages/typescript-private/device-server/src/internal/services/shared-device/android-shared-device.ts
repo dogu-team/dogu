@@ -74,6 +74,14 @@ const BlockAppList: BlockAppInfo[] = [
     packageName: 'com.samsung.android.mobileservice',
     runtime: true,
   },
+  {
+    vender: 'samsung',
+    category: 'account',
+    skipOnTestHarness: true,
+    keyword: 'com.osp.app.signin', // block galaxy samsung login
+    packageName: 'com.osp.app.signin',
+    runtime: true,
+  },
   /*
    * Block updates
    */
