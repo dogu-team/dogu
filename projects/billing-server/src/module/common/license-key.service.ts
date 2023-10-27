@@ -8,7 +8,7 @@ export class LicenseKeyService {
   }
 
   static createLicensKey(): string {
-    const tokenBody = this.createKey();
+    const tokenBody = `dogu-license-${this.createKey()}`;
     return tokenBody;
   }
 
