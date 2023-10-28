@@ -3,5 +3,10 @@
   "compilerOptions": {
     "noEmit": true
   },
-  "include": [".eslintrc.cjs", "prebuilds/protocol-exporter/.eslintrc.cjs", "**/*.config.js", "scripts/**/*.ts"]
+  "include": [
+    ".eslintrc.cjs", //
+    "prebuilds/protocol-exporter/.eslintrc.cjs",
+    "**/*.config.js",
+    "scripts/**/*.ts"
+  ]
 }

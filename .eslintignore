@@ -1,3 +1,6 @@
-**/*.js
 **/*.d.ts
 **/*.d.ts.map
+node_modules
+.yarn
+.pnp.cjs
+yarn.lock

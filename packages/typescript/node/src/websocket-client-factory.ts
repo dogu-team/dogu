@@ -31,3 +31,21 @@ export class WebSocketClientFactory {
     return client;
   }
 }
+
+export function messageToString(data: Buffer | ArrayBuffer | Buffer[] | string): string {
+  if (data instanceof Buffer) {
+    return data.toString();
+  } else if (data instanceof ArrayBuffer) {
+    return Buffer.from(data).toString();
+  } else if (Array.isArray(data)) {
+    if (data.length === 0) {
+      return '';
+    } else {
+      return data.map((elem) => elem.toString()).join('');
+    }
+  } else if (typeof data === 'string') {
+    return data;
+  } else {
+    throw new Error(`invalid data type: ${typeof data}`);
+  }
+}

@@ -4,7 +4,7 @@
   },
   "[javascript]": {
     "editor.codeActionsOnSave": {
-      "source.fixAll.eslint": true
+      "source.fixAll.eslint": false
     },
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
@@ -76,7 +76,7 @@
   "java.compile.nullAnalysis.mode": "automatic",
   "javascript.preferences.importModuleSpecifier": "relative",
   "prettier.documentSelectors": ["*.ts, *.json"],
-  "prettier.prettierPath": ".yarn/sdks/prettier/index.js",
+  "prettier.prettierPath": ".yarn/sdks/prettier/index.cjs",
   "protoc": {
     "options": [
       "--proto_path=./prebuilds/protocol-exporter/proto",
@@ -212,5 +212,11 @@
   "[python]": {
     "editor.defaultFormatter": "ms-python.black-formatter"
   },
-  "python.formatting.provider": "none"
+  "python.formatting.provider": "none",
+  "terminal.integrated.env.osx": {
+    "NODE_OPTIONS": "--max-old-space-size=8192 $NODE_OPTIONS"
+  },
+  "terminal.integrated.env.windows": {
+    "NODE_OPTIONS": "--max-old-space-size=8192 $NODE_OPTIONS"
+  }
 }
