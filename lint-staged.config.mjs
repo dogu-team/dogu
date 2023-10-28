@@ -7,7 +7,7 @@ export default {
       .filter((file) => !IgnorePatterns.some((pattern) => file.includes(pattern)))
       .join(' ');
     if (joins.trim() === '') return [];
-    return [`organize-imports-cli ${joins}`, `prettier --write ${joins}`, `eslint ${joins}`];
+    return [`organize-imports-cli ${joins}`, `prettier --write ${joins}`];
   },
   'package.json': (files) => {
     const joins = files.filter((file) => !IgnorePatterns.some((pattern) => file.includes(pattern))).join(' ');
