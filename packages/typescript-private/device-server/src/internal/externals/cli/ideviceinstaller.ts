@@ -1,16 +1,21 @@
 import { PlatformAbility } from '@dogu-private/dost-children';
+import { Serial } from '@dogu-private/types';
 import { errorify, Printable, stringify } from '@dogu-tech/common';
 import { ChildProcess, HostPaths } from '@dogu-tech/node';
 import child_process from 'child_process';
 import fs from 'fs';
 import { registerBootstrapHandler } from '../../../bootstrap/bootstrap.service';
 
-class IdeviceInstallerImpl {
-  async uninstallApp(udid: string, appName: string, printable: Printable): Promise<child_process.ChildProcess> {
+export class IdeviceInstaller {
+  constructor(private udid: Serial, private logger: Printable) {
     this.tryAccessAndFix();
+  }
+
+  async uninstallApp(appName: string): Promise<child_process.ChildProcess> {
+    const { udid, logger } = this;
     const exe = HostPaths.external.libimobiledevice.ideviceinstaller();
     const args = ['-u', udid, '--uninstall', appName];
-    printable.info(`IdeviceInstallerImpl.uninstallApp ${exe} ${stringify(args)}`);
+    logger.info(`IdeviceInstallerImpl.uninstallApp ${exe} ${stringify(args)}`);
     return ChildProcess.spawnAndWait(
       exe,
       args,
@@ -20,15 +25,15 @@ class IdeviceInstallerImpl {
           DYLD_LIBRARY_PATH: this.libPath(),
         },
       },
-      printable,
+      logger,
     );
   }
 
-  async installApp(udid: string, appPath: string, printable: Printable): Promise<child_process.ChildProcess> {
-    this.tryAccessAndFix();
+  async installApp(appPath: string): Promise<child_process.ChildProcess> {
+    const { udid, logger } = this;
     const exe = HostPaths.external.libimobiledevice.ideviceinstaller();
     const args = ['-u', udid, '--install', appPath];
-    printable.info(`IdeviceInstallerImpl.installApp ${exe} ${stringify(args)}`);
+    logger.info(`IdeviceInstallerImpl.installApp ${exe} ${stringify(args)}`);
     return ChildProcess.spawnAndWait(
       exe,
       args,
@@ -38,26 +43,16 @@ class IdeviceInstallerImpl {
           DYLD_LIBRARY_PATH: this.libPath(),
         },
       },
-      printable,
+      logger,
     );
   }
 
-  async listuserApps(udid: string, printable: Printable): Promise<child_process.ChildProcess> {
-    this.tryAccessAndFix();
+  async listUserApps(): Promise<ChildProcess.ExecResult> {
+    const { udid, logger } = this;
     const exe = HostPaths.external.libimobiledevice.ideviceinstaller();
     const args = ['-u', udid, '--list-apps', '-o', 'list_user'];
-    printable.info(`IdeviceInstallerImpl.installApp ${exe} ${stringify(args)}`);
-    return ChildProcess.spawnAndWait(
-      exe,
-      args,
-      {
-        env: {
-          ...process.env,
-          DYLD_LIBRARY_PATH: this.libPath(),
-        },
-      },
-      printable,
-    );
+    logger.info(`IdeviceInstallerImpl.listUserApps ${exe} ${stringify(args)}`);
+    return await ChildProcess.exec(`${exe} ${args.join(' ')}`, {});
   }
 
   private tryAccessAndFix = (): void => {
@@ -97,5 +92,3 @@ registerBootstrapHandler(
   },
   () => new PlatformAbility().isIosEnabled,
 );
-
-export const IdeviceInstaller = new IdeviceInstallerImpl();

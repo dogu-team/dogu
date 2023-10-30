@@ -253,11 +253,12 @@ class ZombieWdaXCTest implements Zombieable {
   }
 
   async reviveInternal(): Promise<void> {
-    const { printable: logger } = this;
+    const { serial, printable: logger } = this;
     logger.debug(`ZombieWdaXCTest.revive`);
     await delay(1000);
 
-    await IdeviceInstaller.uninstallApp(this.serial, 'com.facebook.WebDriverAgentRunner', logger).catch(() => {
+    const installer = new IdeviceInstaller(serial, logger);
+    await installer.uninstallApp('com.facebook.WebDriverAgentRunner').catch(() => {
       logger.warn('uninstallApp com.facebook.WebDriverAgentRunner failed');
     });
     await XcodeBuild.killPreviousXcodebuild(this.serial, `webdriveragent.*${this.serial}`, logger).catch(() => {

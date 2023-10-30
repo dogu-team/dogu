@@ -193,9 +193,11 @@ export class IosSharedDeviceService implements Zombieable {
     if (!env.DOGU_IS_DEVICE_SHARE) {
       return;
     }
+    const { serial, printable: logger } = this;
+    const installer = new IdeviceInstaller(serial, logger);
     const uninstallApps = BlockAppList.filter((item) => item.uninstall).map((item) => item.bundleId);
     for (const app of uninstallApps) {
-      await IdeviceInstaller.uninstallApp(this.serial, app, this.printable);
+      await installer.uninstallApp(app);
     }
   }
 

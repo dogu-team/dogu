@@ -26,7 +26,7 @@ import path from 'path';
 import { Observable } from 'rxjs';
 import semver from 'semver';
 import { createAppiumCapabilities } from '../../appium/appium.capabilites';
-import { AppiumContext, AppiumContextKey, AppiumContextProxy } from '../../appium/appium.context';
+import { AppiumContext, AppiumContextImpl, AppiumContextKey, AppiumContextProxy } from '../../appium/appium.context';
 import { AppiumDeviceWebDriverHandler } from '../../device-webdriver/appium.device-webdriver.handler';
 import { DeviceWebDriverHandler } from '../../device-webdriver/device-webdriver.common';
 import { env } from '../../env';
@@ -42,11 +42,13 @@ import { DeviceChannel, DeviceChannelOpenParam, DeviceHealthStatus, DeviceServer
 import { IosDeviceAgentService } from '../services/device-agent/ios-device-agent-service';
 import { IosDisplayProfileService, IosProfileService } from '../services/profile/ios-profiler';
 import { ProfileServices } from '../services/profile/profile-service';
+import { IosResetService } from '../services/reset/ios-reset';
 import { IosSharedDeviceService } from '../services/shared-device/ios-shared-device';
 import { StreamingService } from '../services/streaming/streaming-service';
 import { IosSystemInfoService } from '../services/system-info/ios-system-info-service';
 import { Zombieable } from '../services/zombie/zombie-component';
 import { ZombieServiceInstance } from '../services/zombie/zombie-service';
+import { checkTime } from '../util/check-time';
 
 type DeviceControl = PrivateProtocol.DeviceControl;
 
@@ -75,6 +77,7 @@ export class IosChannel implements DeviceChannel {
     private _appiumContext: AppiumContextProxy,
     private readonly _appiumDeviceWebDriverHandler: AppiumDeviceWebDriverHandler,
     private readonly _sharedDevice: IosSharedDeviceService,
+    private readonly _reset: IosResetService,
     private readonly logger: SerialPrintable,
     readonly browserInstallations: BrowserInstallation[],
   ) {
@@ -209,7 +212,8 @@ export class IosChannel implements DeviceChannel {
       browserPlatform: 'ios',
     });
 
-    const shared = new IosSharedDeviceService(serial, systemInfo, deviceAgent, wda, logger);
+    const reset = new IosResetService(serial, logger);
+    const shared = new IosSharedDeviceService(serial, systemInfo, deviceAgent, wda, reset, logger);
     await shared.setup();
     await shared.wait();
 
@@ -224,6 +228,7 @@ export class IosChannel implements DeviceChannel {
       appiumContextProxy,
       appiumDeviceWebDriverHandler,
       shared,
+      reset,
       logger,
       findAllBrowserInstallationsResult.browserInstallations,
     );
@@ -426,17 +431,18 @@ export class IosChannel implements DeviceChannel {
   }
 
   async uninstallApp(appPath: string, handler: LogHandler): Promise<void> {
-    const { serial } = this;
     const logger = new MixedLogger([this.logger, handler]);
+    const installer = new IdeviceInstaller(this.serial, logger);
     const dotAppPath = await this.findDotAppPath(appPath);
     const appName = await MobileDevice.getBundleId(dotAppPath, logger);
-    await IdeviceInstaller.uninstallApp(serial, appName, logger);
+    await installer.uninstallApp(appName);
   }
 
   async installApp(appPath: string, handler: LogHandler): Promise<void> {
-    const { serial } = this;
     const logger = new MixedLogger([this.logger, handler]);
-    const result = await IdeviceInstaller.installApp(serial, appPath, logger).catch((error) => {
+    const installer = new IdeviceInstaller(this.serial, logger);
+
+    const result = await installer.installApp(appPath).catch((error) => {
       if (!(error instanceof ChildProcessError)) {
         throw error;
       }
@@ -448,7 +454,7 @@ export class IosChannel implements DeviceChannel {
     });
     if ('errorType' in result && result.errorType === 'MismatchedApplicationIdentifierEntitlement') {
       await this.uninstallApp(appPath, handler);
-      await IdeviceInstaller.installApp(serial, appPath, logger);
+      await installer.installApp(appPath);
     }
   }
 
@@ -477,8 +483,11 @@ export class IosChannel implements DeviceChannel {
     return new IosLogClosable(child, logger);
   }
 
-  reset(): PromiseOrValue<void> {
-    throw new Error('Method not implemented.');
+  async reset(): Promise<void> {
+    const { logger } = this;
+    await checkTime(`IosChannel.reset.switchAppiumContext`, this.switchAppiumContext('builtin'), logger);
+    const appiumContextImpl = this._appiumContext.getImpl(AppiumContextImpl);
+    await checkTime(`IosChannel.reset.reset`, this._reset.reset(this.info, appiumContextImpl), logger);
   }
 
   joinWifi(ssid: string, password: string): PromiseOrValue<void> {
