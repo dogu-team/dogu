@@ -35,7 +35,7 @@ export class RemoteGamiumGateway implements OnGatewayConnection, OnGatewayDiscon
     this.logger.info('RemoteGamiumGateway.handleConnection');
     let context: Context | null = null;
 
-    webSocket.addEventListener('error', () => {
+    webSocket.addEventListener('error', (event) => {
       this.logger.verbose('error');
     });
     webSocket.addEventListener('close', (event) => {
