@@ -9,6 +9,10 @@ module.exports = {
   parser: '@typescript-eslint/parser',
   parserOptions: {
     tsconfigRootDir: __dirname,
+
+    /**
+     * @note Please set the file explicitly. If you use the glob pattern, you may experience an error while loading tscconfig.
+     */
     project: [
       './tsconfig.eslint.json', //
       './projects/billing-server/tsconfig.json',
@@ -31,7 +35,6 @@ module.exports = {
       './packages/typescript-private/console/tsconfig.json',
       './packages/typescript-private/console-host-agent/tsconfig.json',
       './packages/typescript-private/console-open-api/tsconfig.json',
-      './packages/typescript-private/console-ui/tsconfig.json',
       './packages/typescript-private/device-server/tsconfig.json',
       './packages/typescript-private/dogu-agent-core/tsconfig.json',
       './packages/typescript-private/dost-children/tsconfig.json',

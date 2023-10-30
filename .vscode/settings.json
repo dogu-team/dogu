@@ -36,7 +36,9 @@
     },
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
-  "apple-swift-format.configSearchPaths": ["./.swift-format"],
+  "apple-swift-format.configSearchPaths": [
+    "./.swift-format"
+  ],
   "apple-swift-format.enable": true,
   "clang-format.language.proto.enable": true,
   "clang-format.language.proto.style": "google",
@@ -56,8 +58,18 @@
   "eslint.lintTask.options": ".ts",
   "eslint.nodePath": ".yarn/sdks",
   "eslint.packageManager": "yarn",
-  "eslint.probe": ["javascript", "javascriptreact", "typescript", "typescriptreact", "html", "vue", "markdown"],
-  "eslint.workingDirectories": ["."],
+  "eslint.probe": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact",
+    "html",
+    "vue",
+    "markdown"
+  ],
+  "eslint.workingDirectories": [
+    "."
+  ],
   "git.rebaseWhenSync": true,
   "go.inlayHints.assignVariableTypes": true,
   "go.inlayHints.compositeLiteralFields": true,
@@ -75,7 +87,9 @@
   },
   "java.compile.nullAnalysis.mode": "automatic",
   "javascript.preferences.importModuleSpecifier": "relative",
-  "prettier.documentSelectors": ["*.ts, *.json"],
+  "prettier.documentSelectors": [
+    "*.ts, *.json"
+  ],
   "prettier.prettierPath": ".yarn/sdks/prettier/index.cjs",
   "protoc": {
     "options": [
@@ -214,9 +228,9 @@
   },
   "python.formatting.provider": "none",
   "terminal.integrated.env.osx": {
-    "NODE_OPTIONS": "--max-old-space-size=8192 $NODE_OPTIONS"
+    "NODE_OPTIONS": "--max-old-space-size=16384 $NODE_OPTIONS"
   },
   "terminal.integrated.env.windows": {
-    "NODE_OPTIONS": "--max-old-space-size=8192 $NODE_OPTIONS"
+    "NODE_OPTIONS": "--max-old-space-size=16384 $NODE_OPTIONS"
   }
 }

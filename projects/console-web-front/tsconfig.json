@@ -6,11 +6,7 @@
     "forceConsistentCasingInFileNames": true,
     "incremental": true,
     "jsx": "preserve",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "ESNext"
-    ],
+    "lib": ["dom", "dom.iterable", "ESNext"],
     "module": "esnext",
     "moduleResolution": "node16",
     "noEmit": true,
@@ -23,16 +19,8 @@
     "emitDecoratorMetadata": true,
     "isolatedModules": true
   },
-  "exclude": [
-    "node_modules"
-  ],
-  "include": [
-    "global.d.ts",
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
-    "i18n"
-  ],
+  "exclude": ["node_modules"],
+  "include": ["global.d.ts", "next-env.d.ts", "**/*.ts", "**/*.tsx", "i18n"],
   "references": [
     {
       "path": "../../packages/typescript-private/types"

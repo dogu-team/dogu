@@ -32,20 +32,20 @@ export class WebSocketClientFactory {
   }
 }
 
-export function messageToString(data: Buffer | ArrayBuffer | Buffer[] | string): string {
-  if (data instanceof Buffer) {
-    return data.toString();
-  } else if (data instanceof ArrayBuffer) {
-    return Buffer.from(data).toString();
-  } else if (Array.isArray(data)) {
-    if (data.length === 0) {
+export function rawToString(raw: unknown): string {
+  if (raw instanceof Buffer) {
+    return raw.toString();
+  } else if (raw instanceof ArrayBuffer) {
+    return Buffer.from(raw).toString();
+  } else if (Array.isArray(raw)) {
+    if (raw.length === 0) {
       return '';
     } else {
-      return data.map((elem) => elem.toString()).join('');
+      return raw.map((item) => rawToString(item)).join('');
     }
-  } else if (typeof data === 'string') {
-    return data;
+  } else if (typeof raw === 'string') {
+    return raw;
   } else {
-    throw new Error(`invalid data type: ${typeof data}`);
+    throw new Error(`invalid data type: ${typeof raw}`);
   }
 }
