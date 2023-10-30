@@ -3,10 +3,10 @@ import { useEffect, useRef, useState } from 'react';
 import GoogleMapReact from 'google-map-react';
 import styled from 'styled-components';
 import Image from 'next/image';
+import { Popconfirm } from 'antd';
 
 import useDeviceStreamingContext from '../../hooks/streaming/useDeviceStreamingContext';
 import resources from '../../resources';
-import { Popconfirm } from 'antd';
 
 interface Props {}
 
@@ -19,16 +19,16 @@ const DeviceLocationChanger: React.FC<Props> = () => {
 
   useEffect(() => {
     (async () => {
-      if (!deviceService?.deviceClient.current || !device?.serial) {
+      if (!deviceService?.deviceClientRef.current || !device?.serial) {
         return;
       }
 
       try {
-        const location = await deviceService.deviceClient.current.getGeoLocation(device.serial);
+        const location = await deviceService.deviceClientRef.current.getGeoLocation(device.serial);
         setCurrentLocation(location);
       } catch (e) {}
     })();
-  }, [deviceService?.deviceClient, device?.serial]);
+  }, [deviceService?.deviceClientRef, device?.serial]);
 
   const handleClick = async (e: GoogleMapReact.ClickEventValue) => {
     clickedLocation.current = {
@@ -39,13 +39,13 @@ const DeviceLocationChanger: React.FC<Props> = () => {
   };
 
   const handleConfirm = async () => {
-    if (!deviceService?.deviceClient.current || !device?.serial) {
+    if (!deviceService?.deviceClientRef.current || !device?.serial) {
       return;
     }
 
     setLoading(true);
     try {
-      await deviceService.deviceClient.current.setGeoLocation(device.serial, {
+      await deviceService.deviceClientRef.current.setGeoLocation(device.serial, {
         latitude: clickedLocation.current?.latitude ?? 0,
         longitude: clickedLocation.current?.longitude ?? 0,
       });
