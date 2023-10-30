@@ -3856,6 +3856,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@googlemaps/js-api-loader@npm:^1.13.8":
+  version: 1.16.2
+  resolution: "@googlemaps/js-api-loader@npm:1.16.2"
+  dependencies:
+    fast-deep-equal: ^3.1.3
+  checksum: 122ee57cc6a936e50358aedc4e79042353590467210e901fb42d4e7d9123c248c4db5cd5407a350cb5bea6de9e9ef1a508c08ba593475285d90bc4b93db42f51
+  languageName: node
+  linkType: hard
+
 "@grpc/grpc-js@npm:1.7.3":
   version: 1.7.3
   resolution: "@grpc/grpc-js@npm:1.7.3"
@@ -4883,6 +4892,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@mapbox/point-geometry@npm:^0.1.0":
+  version: 0.1.0
+  resolution: "@mapbox/point-geometry@npm:0.1.0"
+  checksum: ed41c1ce0140de81039424415d9a199abba72cdb2287314e1b8c3e295da3224f7e8c1b0ae99a9b097703e7abe63e1978a518e29896989cc8bba3d482360bc22f
+  languageName: node
+  linkType: hard
+
 "@monaco-editor/loader@npm:^1.3.3":
   version: 1.3.3
   resolution: "@monaco-editor/loader@npm:1.3.3"
@@ -5874,9 +5890,9 @@ __metadata:
   linkType: hard
 
 "@octokit/openapi-types@npm:^18.0.0":
-  version: 18.1.1
-  resolution: "@octokit/openapi-types@npm:18.1.1"
-  checksum: 94f42977fd2fcb9983c781fd199bc11218885a1226d492680bfb1268524a1b2af48a768eef90c63b80a2874437de641d59b3b7f640a5afa93e7c21fe1a79069a
+  version: 18.0.0
+  resolution: "@octokit/openapi-types@npm:18.0.0"
+  checksum: d487d6c6c1965e583eee417d567e4fe3357a98953fc49bce1a88487e7908e9b5dbb3e98f60dfa340e23b1792725fbc006295aea071c5667a813b9c098185b56f
   languageName: node
   linkType: hard
 
@@ -8133,6 +8149,15 @@ __metadata:
     "@types/minimatch": "*"
     "@types/node": "*"
   checksum: 6ae717fedfdfdad25f3d5a568323926c64f52ef35897bcac8aca8e19bc50c0bd84630bbd063e5d52078b2137d8e7d3c26eabebd1a2f03ff350fff8a91e79fc19
+  languageName: node
+  linkType: hard
+
+"@types/google-map-react@npm:^2":
+  version: 2.1.9
+  resolution: "@types/google-map-react@npm:2.1.9"
+  dependencies:
+    "@types/react": "*"
+  checksum: 74f2484ab4af9c6f29f243b0bfdd7d4f856177d2aee88c32457fa986150e793f9c6a6161f3d9185d0ae2b1624f33a60917ba80d61e76d013ea0458bf7599e6fb
   languageName: node
   linkType: hard
 
@@ -13072,6 +13097,7 @@ __metadata:
     "@svgr/webpack": 8.0.1
     "@swc/core": 1.2.220
     "@types/cookie": 0.5.1
+    "@types/google-map-react": ^2
     "@types/hoist-non-react-statics": 3.3.1
     "@types/lodash": 4.14.186
     "@types/node": 18.15.11
@@ -13107,6 +13133,7 @@ __metadata:
     find-up: 6.3.0
     flatbuffers: 22.10.26
     gamium: 2.0.2
+    google-map-react: ^2.2.1
     hoist-non-react-statics: 3.3.2
     lodash: 4.17.21
     moment: 2.29.4
@@ -17449,6 +17476,21 @@ __metadata:
     protobufjs: 7.2.5
     retry-request: ^6.0.0
   checksum: 95121b0636fdc60ba34583f49d98baaff3c2e27b1d0a880c8f5f3c41567b871f1243d278747842b4c4b2139357838cb03cb6b0ce420145c78e04cd074b26cb0f
+  languageName: node
+  linkType: hard
+
+"google-map-react@npm:^2.2.1":
+  version: 2.2.1
+  resolution: "google-map-react@npm:2.2.1"
+  dependencies:
+    "@googlemaps/js-api-loader": ^1.13.8
+    "@mapbox/point-geometry": ^0.1.0
+    eventemitter3: ^4.0.4
+    prop-types: ^15.7.2
+  peerDependencies:
+    react: ^16.0.0 || ^17.0.0 || ^18.0.0
+    react-dom: ^16.0.0 || ^17.0.0 || ^18.0.0
+  checksum: 6bc082581c44ffe1e048766849308bc078ebe0a695b485d284ded9783fa4ffd9ddc4d62597fa11379fe667f17a54a2e2f6ade8e2eda78299959fe81551563a14
   languageName: node
   linkType: hard
 
@@ -26403,7 +26445,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prop-types@npm:*, prop-types@npm:15.8.1, prop-types@npm:^15.0.0, prop-types@npm:^15.5.0, prop-types@npm:^15.6.2, prop-types@npm:^15.8.1":
+"prop-types@npm:*, prop-types@npm:15.8.1, prop-types@npm:^15.0.0, prop-types@npm:^15.5.0, prop-types@npm:^15.6.2, prop-types@npm:^15.7.2, prop-types@npm:^15.8.1":
   version: 15.8.1
   resolution: "prop-types@npm:15.8.1"
   dependencies:

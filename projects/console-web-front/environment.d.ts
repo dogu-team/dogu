@@ -18,6 +18,7 @@ declare global {
       NEXT_PUBLIC_LANDING_URL: string | undefined;
       NEXT_PUBLIC_DOGU_VERSION: string;
       DOGU_SLACK_BOT_TOKEN: string;
+      NEXT_PUBLIC_GOOGLE_MAP_API_KEY: string;
     }
   }
 }
