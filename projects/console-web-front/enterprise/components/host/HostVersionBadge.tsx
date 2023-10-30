@@ -17,11 +17,11 @@ import useRequest from '../../../src/hooks/useRequest';
 import { updateHostApp } from '../../api/host';
 import { sendErrorNotification, sendSuccessNotification } from '../../../src/utils/antd';
 import { getErrorMessageFromAxios } from '../../../src/utils/error';
-import { OrganizationContext } from '../../../src/hooks/context/useOrganizationContext';
+import useOrganizationContext from '../../../src/hooks/context/useOrganizationContext';
 import { isPaymentRequired, isTimeout } from '../../utils/error';
 import { UpgradeConveniencePlanModal } from '../license/UpgradePlanBannerModal';
 import TimeoutDocsModal from '../license/TimeoutDocsModal';
-import { checkCommunityEdition, checkExpired } from '../../utils/license';
+import { checkCommunityEdition } from '../../utils/license';
 
 interface Props {
   host: HostBase;
@@ -29,7 +29,7 @@ interface Props {
 
 const HostVesrsionBadge = ({ host }: Props) => {
   const latestContext = useContext(DoguAgentLatestContext);
-  const { organization } = useContext(OrganizationContext);
+  const { license } = useOrganizationContext();
   const [isOpen, openModal, closeModal] = useModal();
   const [isBannerOpen, openBanner, closeBanner] = useModal();
   const [isDocsOtpen, openDocs, closeDocs] = useModal();
@@ -72,7 +72,7 @@ const HostVesrsionBadge = ({ host }: Props) => {
     (updatableInfo.reason || updatableInfo.isUpdatable);
   const isCommunityEdition =
     process.env.NEXT_PUBLIC_ENV === 'self-hosted' &&
-    checkCommunityEdition(organization?.licenseInfo as SelfHostedLicenseBase);
+    (!license || checkCommunityEdition(license as SelfHostedLicenseBase));
 
   return (
     <>
