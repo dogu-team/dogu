@@ -14,7 +14,7 @@ import * as bcrypt from 'bcrypt';
 import { DateTime } from 'luxon';
 import { DataSource, EntityManager } from 'typeorm';
 
-import { Organization, Token, User, UserEmailPreference } from '../../db/entity/index';
+import { Organization, OrganizationAndUserAndOrganizationRole, Token, User, UserEmailPreference } from '../../db/entity/index';
 import { UserAndVerificationToken } from '../../db/entity/relations/user-and-verification-token.entity';
 import { UserSns } from '../../db/entity/user-sns.entity';
 import { CloudLicenseService } from '../../enterprise/module/license/cloud-license.service';
@@ -22,6 +22,7 @@ import { FEATURE_CONFIG } from '../../feature.config';
 import { EmailService } from '../../module/email/email.service';
 import { SendVerifyEmailDto, VerifyEmailDto } from '../../module/registery/dto/registery.dto';
 import { TokenService } from '../../module/token/token.service';
+import { ORGANIZATION_ROLE } from '../auth/auth.types';
 import { AuthJwtService } from '../auth/service/auth-jwt.service';
 import { AuthUserService } from '../auth/service/auth-user.service';
 import { OrganizationService } from '../organization/organization.service';
@@ -95,6 +96,13 @@ export class RegisteryService {
         if (result.length === 0) {
           throw new HttpException(`Organization not found`, HttpStatus.NOT_FOUND);
         }
+
+        const userRole = entityManager.getRepository(OrganizationAndUserAndOrganizationRole).create({
+          userId: user.userId,
+          organizationId: result[0].organizationId,
+          organizationRoleId: ORGANIZATION_ROLE.MEMBER,
+        });
+        await entityManager.getRepository(OrganizationAndUserAndOrganizationRole).save(userRole);
 
         organization = result[0];
       } else {
