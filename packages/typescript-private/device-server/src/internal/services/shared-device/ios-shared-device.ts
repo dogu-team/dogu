@@ -5,6 +5,7 @@ import { env } from '../../../env';
 import { IdeviceInstaller } from '../../externals/cli/ideviceinstaller';
 import { WebdriverAgentProcess } from '../../externals/cli/webdriver-agent-process';
 import { IosDeviceAgentService } from '../device-agent/ios-device-agent-service';
+import { IosResetService } from '../reset/ios-reset';
 import { Zombieable, ZombieProps, ZombieQueriable } from '../zombie/zombie-component';
 import { ZombieServiceInstance } from '../zombie/zombie-service';
 
@@ -135,6 +136,10 @@ const BlockAppList: BlockAppInfo[] = [
     bundleId: 'com.apple.Passbook',
     uninstall: true,
   },
+  {
+    bundleId: 'com.apple.Music',
+    uninstall: true,
+  },
   // access block
   {
     bundleId: 'com.apple.Preferences',
@@ -166,6 +171,7 @@ export class IosSharedDeviceService implements Zombieable {
     private systemInfo: DeviceSystemInfo,
     private deviceAgent: IosDeviceAgentService,
     private wda: WebdriverAgentProcess,
+    private reset: IosResetService,
     public printable: FilledPrintable,
   ) {
     this.zombieWaiter = ZombieServiceInstance.addComponent(this);
@@ -180,7 +186,7 @@ export class IosSharedDeviceService implements Zombieable {
   }
 
   get props(): ZombieProps {
-    return { serial: this.serial };
+    return { serial: this.serial, resetting: this.reset.isResetting };
   }
 
   async setup(): Promise<void> {
@@ -205,6 +211,9 @@ export class IosSharedDeviceService implements Zombieable {
 
   async update(): Promise<void> {
     if (!env.DOGU_IS_DEVICE_SHARE) {
+      return;
+    }
+    if (this.reset.isResetting) {
       return;
     }
     await this.wda.waitUntilSessionId();

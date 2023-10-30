@@ -42,6 +42,24 @@ class IdeviceInstallerImpl {
     );
   }
 
+  async listuserApps(udid: string, printable: Printable): Promise<child_process.ChildProcess> {
+    this.tryAccessAndFix();
+    const exe = HostPaths.external.libimobiledevice.ideviceinstaller();
+    const args = ['-u', udid, '--list-apps', '-o', 'list_user'];
+    printable.info(`IdeviceInstallerImpl.installApp ${exe} ${stringify(args)}`);
+    return ChildProcess.spawnAndWait(
+      exe,
+      args,
+      {
+        env: {
+          ...process.env,
+          DYLD_LIBRARY_PATH: this.libPath(),
+        },
+      },
+      printable,
+    );
+  }
+
   private tryAccessAndFix = (): void => {
     const bin = HostPaths.external.libimobiledevice.ideviceinstaller();
     try {

@@ -1,13 +1,33 @@
 import { DeviceSystemInfo, Serial, SerialPrintable } from '@dogu-private/types';
-import { delay, loop } from '@dogu-tech/common';
+import { delay, IDisposableAsync, loop, usingAsnyc } from '@dogu-tech/common';
 import { boxBox } from 'intersects';
 import { AppiumContextImpl, WDIOElement } from '../../../appium/appium.context';
 import { CheckTimer } from '../../util/check-time';
 
+class ResetScope implements IDisposableAsync {
+  public random: number;
+  constructor(
+    private logger: SerialPrintable,
+    private option: {
+      [key: string]: any;
+    },
+  ) {
+    this.random = Math.random();
+    this.option.random = this.random;
+  }
+  create(): void {}
+  dispose(): void {}
+}
+
 export class IosResetService {
   private timer: CheckTimer;
+  private _isResetting = false;
   constructor(private serial: Serial, private logger: SerialPrintable) {
     this.timer = new CheckTimer(this.logger);
+  }
+
+  get isResetting(): boolean {
+    return this._isResetting;
   }
 
   /*
@@ -15,16 +35,29 @@ export class IosResetService {
    */
   async reset(info: DeviceSystemInfo, appiumContext: AppiumContextImpl): Promise<void> {
     const { serial, logger } = this;
-    logger.info(`IosResetService.reset begin`, { serial, info });
 
-    await this.timer.check('IosResetService.reset.logoutApppleAccount', this.logoutApppleAccount(appiumContext));
-    await this.timer.check('IosResetService.reset.clearSafariCache', this.clearSafariCache(appiumContext));
-    await this.timer.check('IosResetService.reset.clearPhotoImages', this.clearPhotoImages(appiumContext));
-    await this.timer.check('IosResetService.reset.clearPhotoAlbums', this.clearPhotoAlbums(appiumContext));
-    await this.timer.check('IosResetService.reset.clearRecentlyDeletedPhotos', this.clearRecentlyDeletedPhotos(appiumContext));
-    await this.timer.check('IosResetService.reset.clearPhotosSuggestionAndFeedbacks', this.clearPhotosSuggestionAndFeedbacks(appiumContext));
-
-    this.logger.info(`IosResetService.reset end`, { serial, info });
+    await usingAsnyc(
+      {
+        create: async () => {
+          this._isResetting = true;
+          this.logger.info(`IosResetService.reset begin`, { serial, info });
+          await delay(0);
+        },
+        dispose: async () => {
+          this._isResetting = false;
+          this.logger.info(`IosResetService.reset end`, { serial, info });
+          await delay(0);
+        },
+      },
+      async () => {
+        await this.timer.check('IosResetService.reset.logoutApppleAccount', this.logoutApppleAccount(appiumContext));
+        await this.timer.check('IosResetService.reset.clearSafariCache', this.clearSafariCache(appiumContext));
+        await this.timer.check('IosResetService.reset.clearPhotoImages', this.clearPhotoImages(appiumContext));
+        await this.timer.check('IosResetService.reset.clearPhotoAlbums', this.clearPhotoAlbums(appiumContext));
+        await this.timer.check('IosResetService.reset.clearRecentlyDeletedPhotos', this.clearRecentlyDeletedPhotos(appiumContext));
+        await this.timer.check('IosResetService.reset.clearPhotosSuggestionAndFeedbacks', this.clearPhotosSuggestionAndFeedbacks(appiumContext));
+      },
+    );
   }
 
   private async logoutApppleAccount(appiumContext: AppiumContextImpl): Promise<void> {
