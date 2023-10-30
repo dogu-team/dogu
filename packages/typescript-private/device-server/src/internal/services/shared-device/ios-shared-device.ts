@@ -131,6 +131,10 @@ const BlockAppList: BlockAppInfo[] = [
     bundleId: 'com.apple.Fitness',
     uninstall: true,
   },
+  {
+    bundleId: 'com.apple.Passbook',
+    uninstall: true,
+  },
   // access block
   {
     bundleId: 'com.apple.Preferences',

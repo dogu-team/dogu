@@ -17,6 +17,7 @@ export class IosResetService {
     const { serial, logger } = this;
     logger.info(`IosResetService.reset begin`, { serial, info });
 
+    await this.timer.check('IosResetService.reset.logoutApppleAccount', this.logoutApppleAccount(appiumContext));
     await this.timer.check('IosResetService.reset.clearSafariCache', this.clearSafariCache(appiumContext));
     await this.timer.check('IosResetService.reset.clearPhotoImages', this.clearPhotoImages(appiumContext));
     await this.timer.check('IosResetService.reset.clearPhotoAlbums', this.clearPhotoAlbums(appiumContext));
@@ -24,6 +25,27 @@ export class IosResetService {
     await this.timer.check('IosResetService.reset.clearPhotosSuggestionAndFeedbacks', this.clearPhotosSuggestionAndFeedbacks(appiumContext));
 
     this.logger.info(`IosResetService.reset end`, { serial, info });
+  }
+
+  private async logoutApppleAccount(appiumContext: AppiumContextImpl): Promise<void> {
+    const driver = appiumContext.driver();
+    if (!driver) {
+      throw new Error(`IosResetService.clearSafariCache driver is null`);
+    }
+    await relaunchApp(driver, 'com.apple.Preferences');
+
+    const account = await scrollToSelector(driver, new IosAccessibilitiySelector('APPLE_ACCOUNT'));
+    await account.click();
+
+    await delay(1000);
+
+    let signout = await driver.$('~AAUIDeleteButtonSpecifierID');
+    if (signout.error) {
+      return;
+    }
+
+    signout = await scrollToSelector(driver, new IosAccessibilitiySelector('AAUIDeleteButtonSpecifierID'));
+    await signout.click();
   }
 
   private async clearSafariCache(appiumContext: AppiumContextImpl): Promise<void> {
@@ -43,8 +65,8 @@ export class IosResetService {
     for (let i = 0; i < ClearConfirmCount; i++) {
       await clickSelector(driver, new IosAccessibilitiySelector('CLEAR_HISTORY_AND_DATA'));
 
-      const clearConfirm = await driver.$(new IosAccessibilitiySelector('Clear History and Data').build()).catch(() => null);
-      if (!clearConfirm) {
+      const clearConfirm = await driver.$(new IosAccessibilitiySelector('Clear History and Data').build());
+      if (clearConfirm.error) {
         break;
       }
       if (!(await clearConfirm.waitForEnabled({ timeout: 1_000 }).catch(() => null))) {
@@ -96,7 +118,7 @@ export class IosResetService {
           continue;
         }
 
-        await image.click().catch(() => {});
+        await image.click();
       }
 
       await clickSelector(driver, new IosAccessibilitiySelector('Delete'));
