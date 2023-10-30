@@ -30,19 +30,19 @@ const THROTTLE_MS = 33;
 const DeviceStreaming = ({ device, children, pid, isCloudDevice }: Props) => {
   const [mode, setMode] = useState<StreamingMode>('input');
   const isSelf = useLocalDeviceDetect(device);
-  const { loading, deviceRTCCaller, peerConnection, videoRef, error } = useRTCConnection(
+  const { loading, deviceRTCCallerRef, peerConnectionRef, videoRef, error } = useRTCConnection(
     { device, pid, isCloudDevice },
     THROTTLE_MS,
   );
-  const deviceService = useDeviceClient(peerConnection, THROTTLE_MS);
+  const deviceService = useDeviceClient(peerConnectionRef, THROTTLE_MS);
   const gamiumService = useGamiumClient(
-    peerConnection,
+    peerConnectionRef,
     device,
-    deviceService.deviceHostClient.current,
-    deviceService.deviceClient.current,
+    deviceService.deviceHostClientRef,
+    deviceService.deviceClientRef,
     THROTTLE_MS,
   );
-  const inspector = useInspector(deviceService?.deviceInspector.current, device ?? null, videoRef);
+  const inspector = useInspector(deviceService.deviceInspectorRef, device ?? null, videoRef);
   const { t } = useTranslation();
 
   if (error) {
@@ -64,7 +64,7 @@ const DeviceStreaming = ({ device, children, pid, isCloudDevice }: Props) => {
     );
   }
 
-  if (peerConnection?.iceConnectionState === 'disconnected') {
+  if (peerConnectionRef.current?.iceConnectionState === 'disconnected') {
     return (
       <>
         <div style={{ flex: 1 }}>
@@ -77,7 +77,7 @@ const DeviceStreaming = ({ device, children, pid, isCloudDevice }: Props) => {
     );
   }
 
-  if (peerConnection?.iceConnectionState === 'failed') {
+  if (peerConnectionRef.current?.iceConnectionState === 'failed') {
     return (
       <>
         <div style={{ flex: 1 }}>
@@ -95,8 +95,8 @@ const DeviceStreaming = ({ device, children, pid, isCloudDevice }: Props) => {
       value={{
         mode,
         loading,
-        deviceRTCCaller: deviceRTCCaller ?? null,
-        peerConnection: peerConnection ?? null,
+        deviceRTCCaller: deviceRTCCallerRef.current ?? null,
+        peerConnection: peerConnectionRef.current ?? null,
         error: error ?? null,
         gamiumService,
         deviceService,

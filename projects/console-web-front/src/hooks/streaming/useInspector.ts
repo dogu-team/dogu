@@ -18,7 +18,7 @@ import { InspectorWorkerMessage, InspectorWorkerResponse } from '../../types/ins
 import { BrowserDeviceInspector } from '../../utils/streaming/browser-device-inspector';
 
 const useInspector = (
-  deviceInspector: BrowserDeviceInspector | undefined,
+  deviceInspector: RefObject<BrowserDeviceInspector | undefined>,
   device: DeviceBase | null,
   videoRef: RefObject<HTMLVideoElement> | null,
 ) => {
@@ -43,13 +43,13 @@ const useInspector = (
   }, [selectedContextAndNode, isGamium, device?.platform]);
 
   const getRawSources = useCallback(async () => {
-    if (deviceInspector && device) {
-      const result = await deviceInspector.getContextPageSources(device.serial);
+    if (deviceInspector.current && device) {
+      const result = await deviceInspector.current.getContextPageSources(device.serial);
       return result;
     }
 
     throw new Error('deviceInspector or device is undefined');
-  }, [deviceInspector, device]);
+  }, [device]);
 
   const updateSources = useCallback(async () => {
     if (!device) {
@@ -323,21 +323,21 @@ const useInspector = (
   }, []);
 
   const connectGamium = useCallback(async () => {
-    if (!deviceInspector || !device) {
+    if (!deviceInspector.current || !device) {
       return;
     }
 
     try {
-      const result = await deviceInspector?.tryConnectGamiumInspector(device.serial);
+      const result = await deviceInspector.current.tryConnectGamiumInspector(device.serial);
       return result;
     } catch (e) {
       console.error(e);
     }
-  }, [deviceInspector, device]);
+  }, [device]);
 
   const updateHitPoint = useCallback(
     async (e: React.MouseEvent) => {
-      if (isGamium && device?.serial && deviceInspector && videoRef?.current) {
+      if (isGamium && device?.serial && deviceInspector.current && videoRef?.current) {
         const mouseX = e.nativeEvent.offsetX;
         const mouseY = e.nativeEvent.offsetY;
 
@@ -355,7 +355,7 @@ const useInspector = (
         const deviceY = mouseY / deviceHeightRatio;
 
         try {
-          const hitpoint = await deviceInspector.getHitPoint(
+          const hitpoint = await deviceInspector.current.getHitPoint(
             device.serial,
             {
               x: deviceX,
@@ -369,7 +369,7 @@ const useInspector = (
         }
       }
     },
-    [isGamium, device?.serial, deviceInspector, videoRef],
+    [isGamium, device?.serial, videoRef],
   );
 
   return {

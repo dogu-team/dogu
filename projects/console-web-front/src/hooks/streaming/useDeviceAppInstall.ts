@@ -1,12 +1,12 @@
 import { Serial } from '@dogu-private/types';
 import { errorify } from '@dogu-tech/common';
 import { DeviceClient, DeviceHostClient, HostFileUploader } from '@dogu-tech/device-client-common';
-import { useCallback, useEffect, useState } from 'react';
+import { RefObject, useCallback, useEffect, useState } from 'react';
 
 const useDeviceAppInstall = (
   serial: Serial | undefined,
-  deviceHostClient: DeviceHostClient | undefined,
-  deviceClient: DeviceClient | undefined,
+  deviceHostClientRef: RefObject<DeviceHostClient | undefined> | undefined,
+  deviceClientRef: RefObject<DeviceClient | undefined> | undefined,
   option: { isCloudDevice: boolean },
 ) => {
   const [app, setApp] = useState<File>();
@@ -28,82 +28,79 @@ const useDeviceAppInstall = (
     setUploadedFilePath('');
   }, []);
 
-  const uploadApp = useCallback(
-    async (file: File) => {
-      if (file.size === 0) {
-        alert('File size is 0. Choose another file.');
-        return;
+  const uploadApp = useCallback(async (file: File) => {
+    if (file.size === 0) {
+      alert('File size is 0. Choose another file.');
+      return;
+    }
+
+    if (!deviceHostClientRef?.current) {
+      return;
+    }
+
+    setApp(file);
+
+    const totalSize = file.size;
+    const chunkSize = 65535 * 16 - 16; // around 1 MB ( datachannel max byte(65535)  * 16(magic number) - packetheader sizes(16) ). for best throughput
+    const fr = new FileReader();
+    let writeOffset = 0;
+
+    const readSlice = (o: number) => {
+      const slice = file.slice(writeOffset, o + chunkSize);
+      fr.readAsArrayBuffer(slice);
+    };
+
+    fr.addEventListener('error', (error) => console.error('Error reading file:', error));
+    fr.addEventListener('abort', (event) => {});
+    fr.addEventListener('load', (e) => {
+      const result = e.target?.result as ArrayBuffer;
+      hostFileUploader.write(result);
+      writeOffset += result.byteLength;
+
+      if (writeOffset < file.size) {
+        readSlice(writeOffset);
+      } else {
+        hostFileUploader.end();
       }
+    });
 
-      if (!deviceHostClient) {
-        return;
-      }
-
-      setApp(file);
-
-      const totalSize = file.size;
-      const chunkSize = 65535 * 16 - 16; // around 1 MB ( datachannel max byte(65535)  * 16(magic number) - packetheader sizes(16) ). for best throughput
-      const fr = new FileReader();
-      let writeOffset = 0;
-
-      const readSlice = (o: number) => {
-        const slice = file.slice(writeOffset, o + chunkSize);
-        fr.readAsArrayBuffer(slice);
-      };
-
-      fr.addEventListener('error', (error) => console.error('Error reading file:', error));
-      fr.addEventListener('abort', (event) => {});
-      fr.addEventListener('load', (e) => {
-        const result = e.target?.result as ArrayBuffer;
-        hostFileUploader.write(result);
-        writeOffset += result.byteLength;
-
-        if (writeOffset < file.size) {
-          readSlice(writeOffset);
-        } else {
-          hostFileUploader.end();
+    const hostFileUploader = await deviceHostClientRef.current.uploadFile(
+      file.name,
+      file.size,
+      (recvOffest: number) => {
+        setProgress((recvOffest / totalSize) * 100);
+      },
+      (filePath: string, error?: Error) => {
+        if (error) {
+          console.debug('File upload error:', error);
+          setResult({
+            isSuccess: false,
+            failType: 'upload',
+            error: error,
+          });
+          return;
         }
-      });
-
-      const hostFileUploader = await deviceHostClient.uploadFile(
-        file.name,
-        file.size,
-        (recvOffest: number) => {
-          setProgress((recvOffest / totalSize) * 100);
-        },
-        (filePath: string, error?: Error) => {
-          if (error) {
-            console.debug('File upload error:', error);
-            setResult({
-              isSuccess: false,
-              failType: 'upload',
-              error: error,
-            });
-            return;
-          }
-          // receive complete message
-          console.debug('File uploaded:', filePath);
-          setProgress(100);
-          setUploadedFilePath(filePath);
-        },
-      );
-      setHostFileUploader(hostFileUploader);
-      setProgress(0);
-      readSlice(0);
-    },
-    [deviceHostClient],
-  );
+        // receive complete message
+        console.debug('File uploaded:', filePath);
+        setProgress(100);
+        setUploadedFilePath(filePath);
+      },
+    );
+    setHostFileUploader(hostFileUploader);
+    setProgress(0);
+    readSlice(0);
+  }, []);
 
   const installApp = useCallback(
     async (uploadedFilePath: string) => {
-      if (!serial || !deviceClient || !deviceHostClient) {
+      if (!serial || !deviceClientRef?.current || !deviceHostClientRef?.current) {
         return;
       }
 
       setIsInstalling(true);
       if (option.isCloudDevice) {
         try {
-          await deviceHostClient.resignApp({ filePath: uploadedFilePath });
+          await deviceHostClientRef.current.resignApp({ filePath: uploadedFilePath });
         } catch (e) {
           const error = errorify(e);
           console.debug('resignApp error:', error);
@@ -117,7 +114,7 @@ const useDeviceAppInstall = (
       }
 
       try {
-        await deviceClient.installApp(serial, uploadedFilePath);
+        await deviceClientRef.current.installApp(serial, uploadedFilePath);
         setResult({
           isSuccess: true,
         });
@@ -132,7 +129,7 @@ const useDeviceAppInstall = (
         });
       }
     },
-    [reset, deviceClient, serial],
+    [reset, serial],
   );
 
   useEffect(() => {
@@ -148,12 +145,12 @@ const useDeviceAppInstall = (
   }, [hostFileUploader, reset]);
 
   const runApp = useCallback(async () => {
-    if (!serial || !deviceClient || !uploadedFilePath) {
+    if (!serial || !deviceClientRef?.current || !uploadedFilePath) {
       return;
     }
 
-    await deviceClient.runApp(serial, uploadedFilePath);
-  }, [serial, uploadedFilePath, deviceClient]);
+    await deviceClientRef.current.runApp(serial, uploadedFilePath);
+  }, [serial, uploadedFilePath]);
 
   return { isInstalling, progress, app, result, uploadApp, cancelUpload, runApp };
 };

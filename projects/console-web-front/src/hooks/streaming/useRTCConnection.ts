@@ -26,24 +26,24 @@ const useRTCConnection = ({ device, pid, isCloudDevice }: Option, sendThrottleMs
   const organizationId = router.query.orgId as OrganizationId;
   const { fps, resolution } = useStreamingOptionStore((state) => state.option);
   const timer = useRef<NodeJS.Timeout | null>(null);
-  const [peerConnection, setPeerConnection] = useState<RTCPeerConnection>();
-  const [deviceRTCCaller, setDeviceRTCCaller] = useState<DeviceRTCCaller>();
+  const peerConnectionRef = useRef<RTCPeerConnection | undefined>();
+  const deviceRTCCallerRef = useRef<DeviceRTCCaller | undefined>();
   const [haConnectionError, setHAConnectionError] = useState<StreamingError>();
   const [loading, setLoading] = useState(true);
   const videoRef = useRef<HTMLVideoElement>(null);
 
   const cleanUp = useCallback(() => {
-    console.debug('deviceRTCCaller', deviceRTCCaller);
-    deviceRTCCaller?.channel?.close();
+    console.debug('deviceRTCCaller', deviceRTCCallerRef?.current);
+    deviceRTCCallerRef.current?.channel?.close();
     console.debug(`close connection data ${device?.deviceId}`);
 
-    console.debug('peer', peerConnection);
-    peerConnection?.close();
+    console.debug('peer', peerConnectionRef.current);
+    peerConnectionRef.current?.close();
     console.debug(`close connection ${device?.deviceId}`);
-  }, [deviceRTCCaller, peerConnection]);
+  }, []);
 
   useEffect(() => {
-    if (peerConnection) {
+    if (peerConnectionRef.current) {
       const unsub = useEventStore.subscribe(({ eventName }) => {
         if (eventName === 'onCloudHeartbeatSocketClosed') {
           cleanUp();
@@ -53,7 +53,7 @@ const useRTCConnection = ({ device, pid, isCloudDevice }: Option, sendThrottleMs
 
       return unsub;
     }
-  }, [peerConnection, cleanUp]);
+  }, [peerConnectionRef.current, cleanUp]);
 
   useEffect(() => {
     const checkDeviceState = async () => {
@@ -209,18 +209,18 @@ const useRTCConnection = ({ device, pid, isCloudDevice }: Option, sendThrottleMs
 
       const caller = new DeviceRTCCaller(device.deviceId, dc);
       caller.setSendThrottleMs(sendThrottleMs);
-      setDeviceRTCCaller(caller);
+      deviceRTCCallerRef.current = caller;
     }
 
-    setPeerConnection(pc);
+    peerConnectionRef.current = pc;
 
     return () => {
       if (videoRef.current) {
         videoRef.current.srcObject = null;
       }
 
-      setDeviceRTCCaller(undefined);
-      setPeerConnection(undefined);
+      deviceRTCCallerRef.current = undefined;
+      peerConnectionRef.current = undefined;
       setHAConnectionError(undefined);
       setLoading(true);
     };
@@ -232,7 +232,7 @@ const useRTCConnection = ({ device, pid, isCloudDevice }: Option, sendThrottleMs
     };
   }, [cleanUp, fps, resolution]);
 
-  return { loading, peerConnection, deviceRTCCaller, videoRef, error: haConnectionError };
+  return { loading, peerConnectionRef, deviceRTCCallerRef, videoRef, error: haConnectionError };
 };
 
 function isVideoShowing(elem: HTMLVideoElement | null): boolean {

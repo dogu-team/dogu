@@ -3,7 +3,7 @@ import { PrivateProtocol } from '@dogu-private/types';
 import { Closable, Retry } from '@dogu-tech/common';
 import { DeviceClient, DeviceHostClient } from '@dogu-tech/device-client-common';
 import { DefaultGamiumEnginePort, GamiumClient, Param } from 'gamium/common';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { RefObject, useCallback, useEffect, useRef } from 'react';
 
 import { isDesktop } from '../../utils/device';
 import { BrowserGamiumService, RequestPriority } from '../../utils/streaming/browser-gamium-service';
@@ -34,22 +34,27 @@ class GamiumEnginePortForwarder {
 }
 
 const useGamiumClient = (
-  peerConnection: RTCPeerConnection | undefined,
+  peerConnectionRef: RefObject<RTCPeerConnection | undefined>,
   device: DeviceBase | undefined,
-  deviceHostClient: DeviceHostClient | undefined,
-  deviceClient: DeviceClient | undefined,
+  deviceHostClientRef: RefObject<DeviceHostClient | undefined>,
+  deviceClientRef: RefObject<DeviceClient | undefined>,
   sendThrottleMs: number,
 ) => {
-  const [gamiumClient, setGamiumClient] = useState<GamiumClient>();
+  const gamiumClientRef = useRef<GamiumClient | undefined>();
   const closer = useRef<Closable | null>(null);
 
   const forward = useCallback(
     async (device: DeviceBase) => {
       async function forwardGamiumEnginePort(gamiumEnginePort = DefaultGamiumEnginePort): Promise<number> {
-        if (!deviceHostClient || !deviceClient) {
+        if (!deviceHostClientRef.current || !deviceClientRef.current) {
           return -1;
         }
-        const forwarder = new GamiumEnginePortForwarder(deviceHostClient, deviceClient, device, gamiumEnginePort);
+        const forwarder = new GamiumEnginePortForwarder(
+          deviceHostClientRef.current,
+          deviceClientRef.current,
+          device,
+          gamiumEnginePort,
+        );
         const result = await forwarder.forward();
         if (result.closer) {
           closer.current = result.closer;
@@ -58,15 +63,15 @@ const useGamiumClient = (
       }
       return await forwardGamiumEnginePort();
     },
-    [deviceHostClient, deviceClient],
+    [deviceHostClientRef, deviceClientRef],
   );
 
   const initializeGamiumClient = useCallback(async () => {
-    if (!peerConnection || !device) {
+    if (!peerConnectionRef.current || !device) {
       return;
     }
 
-    if (peerConnection.connectionState !== 'connected') {
+    if (peerConnectionRef.current.connectionState !== 'connected') {
       alert('Not ready');
       return;
     }
@@ -75,6 +80,10 @@ const useGamiumClient = (
 
     // TEMP
     setTimeout(() => {
+      if (!peerConnectionRef.current) {
+        return;
+      }
+
       const gamiumDcLabel: DataChannelLabel = {
         name: 'gamium',
         protocol: {
@@ -84,7 +93,7 @@ const useGamiumClient = (
           },
         },
       };
-      const gamiumDc = createDataChannel(peerConnection, gamiumDcLabel, {
+      const gamiumDc = createDataChannel(peerConnectionRef.current, gamiumDcLabel, {
         ordered: true,
         maxRetransmits: 0,
       });
@@ -93,16 +102,16 @@ const useGamiumClient = (
       gamiumService.setSendThrottleMs(sendThrottleMs);
       gamiumService.setRequestPriority(Param.Packets_DumpObjectsHierarchyParam, RequestPriority.High);
 
-      setGamiumClient(gamiumClient);
+      gamiumClientRef.current = gamiumClient;
     }, 3000);
-  }, [peerConnection, device, forward, sendThrottleMs]);
+  }, [peerConnectionRef, device, forward, sendThrottleMs]);
 
   const destroyGamiumClient = useCallback(() => {
     console.debug('gamium client closer', closer.current);
     closer.current?.close();
-    gamiumClient?.disconnect();
-    setGamiumClient(undefined);
-  }, [gamiumClient]);
+    gamiumClientRef.current?.disconnect();
+    gamiumClientRef.current = undefined;
+  }, []);
 
   useEffect(() => {
     return () => {
@@ -112,7 +121,7 @@ const useGamiumClient = (
     };
   }, [device]);
 
-  return { gamiumClient, initializeGamiumClient, destroyGamiumClient };
+  return { gamiumClientRef, initializeGamiumClient, destroyGamiumClient };
 };
 
 export default useGamiumClient;
