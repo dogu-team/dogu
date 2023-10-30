@@ -8,5 +8,5 @@
     "incremental": true,
     "removeComments": true
   },
-  "include": ["**/*.ts"]
+  "include": ["./**/*.ts"]
 }

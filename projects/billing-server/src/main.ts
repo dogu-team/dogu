@@ -13,7 +13,7 @@ process.on('uncaughtException', (error, origin) => {
   logger.error('Uncaught Exception thrown:', { error: stringify(error), origin: stringify(origin) });
 });
 
-async function bootstrap() {
+async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule);
   const httpAdapterHost = app.get(HttpAdapterHost);
   app

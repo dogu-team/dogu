@@ -1,5 +1,6 @@
 import { CloudLicenseMessage } from '@dogu-private/console';
 import { closeWebSocketWithTruncateReason, errorify, transformAndValidate, WebSocketCode } from '@dogu-tech/common';
+import { rawToString } from '@dogu-tech/node';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { OnGatewayConnection, WebSocketGateway } from '@nestjs/websockets';
 import { IncomingMessage } from 'http';
@@ -27,7 +28,7 @@ export class CloudLicenseLiveTestingGateway implements OnGatewayConnection {
 
     webSocket.on('message', (data) => {
       (async (): Promise<void> => {
-        const sendMessage = await transformAndValidate(CloudLicenseMessage.LiveTestingSend, JSON.parse(data.toString()));
+        const sendMessage = await transformAndValidate(CloudLicenseMessage.LiveTestingSend, JSON.parse(rawToString(data)));
         const remainingFreeSeconds = await retrySerialize(this.logger, this.dataSource, async (manager) => {
           const cloudLicense = await manager.getRepository(CloudLicense).findOne({
             where: {
