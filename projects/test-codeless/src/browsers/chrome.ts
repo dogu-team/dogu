@@ -1,32 +1,32 @@
-import * as cheerio from 'cheerio';
+import path from 'path';
 import { Browser, Builder } from 'selenium-webdriver';
 import chrome from 'selenium-webdriver/chrome';
 import { promisify } from 'util';
+import { Device } from '../device/devices';
 
 import { BrowserDriver } from './browser';
 
 const wait = promisify(setTimeout);
 
 export class Chrome extends BrowserDriver {
-  constructor(driverName: string, widthResolution: number, heightResolution: number, pixelRatio: number) {
-    super(driverName, widthResolution, heightResolution, pixelRatio);
+  static customChromeDriverPath = path.join(__dirname, '../binary/chromedriver');
+
+  constructor(device: Device, viewportWidth: number, viewportHeight: number, pixelRatio: number) {
+    super(device, viewportWidth, viewportHeight, pixelRatio);
   }
 
   async build(): Promise<void> {
-    const widthSize = this.widthResolution / this.pixelRatio;
-    const heightSize = this.heightResolution / this.pixelRatio;
-
+    // const services = new chrome.ServiceBuilder(Chrome.customChromeDriverPath);
     const options = new chrome.Options();
 
-    options.addArguments('--headless');
+    // options.addArguments('--headless');
     options.addArguments('--enable-gpu');
-    options.addArguments(`--window-size=${widthSize},${heightSize}`);
-    // options.addArguments('--user-agent=Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0 Mobile/15E148 Safari/604.1');
+    options.addArguments(`--window-size=${this.viewportWidth},${this.viewportHeight}`);
+    options.addArguments(`--user-agent=${this.createUserAgent()}`);
     options.excludeSwitches('enable-automation');
+    options.setLoggingPrefs({ browser: 'ALL', performance: 'ALL' });
 
     this.driver = await new Builder().forBrowser(Browser.CHROME).setChromeOptions(options).build();
-
-    // await this.driver.manage().window().maximize();
   }
 
   async takeScreenshot(): Promise<void> {
@@ -34,6 +34,38 @@ export class Chrome extends BrowserDriver {
     const maxWidth: number = await this.driver.executeScript('return document.documentElement.scrollWidth');
     let maxHeight: number = await this.driver.executeScript('return Math.max( document.body.scrollHeight, document.documentElement.scrollHeight );');
     const viewHeight: number = await this.driver.executeScript('return document.documentElement.clientHeight;');
+
+    // await this.driver.executeScript(`
+    // function disableCSSAnimationsAndTransitions() {
+    //     const style = document.createElement('style');
+    //     style.innerHTML = \`
+    //     *,
+    //     *::before,
+    //     *::after {
+    //         animation-name: none !important;
+    //         animation-duration: 0s !important;
+    //         animation-delay: 0s !important;
+    //         animation-timing-function: step-start !important;
+    //         animation-iteration-count: 1 !important;
+    //         animation-direction: normal !important;
+    //         animation-fill-mode: both !important;
+    //         animation-play-state: paused !important;
+
+    //         transition-property: none !important;
+    //         transition-duration: 0s !important;
+    //         transition-timing-function: step-start !important;
+    //         transition-delay: 0s !important;
+
+    //         transform: none !important;
+    //     }
+    //     \`;
+
+    //     document.head.appendChild(style);
+    //   }
+
+    //   disableCSSAnimationsAndTransitions();
+    //   document.body.style.overflowX = 'hidden';
+    // `);
 
     let isDeletedFixedPositions = false;
 
@@ -61,8 +93,8 @@ export class Chrome extends BrowserDriver {
       const base64 = await cdp.send('Page.captureScreenshot', screenshotConfig);
       this.originalScreeShotsBase64.push(base64['result']['data']);
 
-      const pageSource = await this.driver.getPageSource();
-      const $ = cheerio.load(pageSource);
+      // const pageSource = await this.driver.getPageSource();
+      // const $ = cheerio.load(pageSource);
       // const body = $('body')[0];
 
       // await this.hideText(body, 0);
@@ -84,6 +116,9 @@ export class Chrome extends BrowserDriver {
         maxHeight = newMaxHeight;
         isDeletedFixedPositions = true;
       }
+
+      // let browserLogs = await this.driver.manage().logs().get(logging.Type.BROWSER);
+      // let performanceLogs = await this.driver.manage().logs().get(logging.Type.PERFORMANCE);
     }
   }
 

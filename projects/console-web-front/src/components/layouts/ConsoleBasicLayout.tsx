@@ -1,5 +1,5 @@
 import { CloseOutlined, SlackOutlined } from '@ant-design/icons';
-import { LicenseResponse, UserBase } from '@dogu-private/console';
+import { CloudLicenseBase, SelfHostedLicenseBase, UserBase } from '@dogu-private/console';
 import { Tooltip } from 'antd';
 import Trans from 'next-translate/Trans';
 import Link from 'next/link';
@@ -19,7 +19,7 @@ import Header from './Header';
 interface Props {
   children: React.ReactNode;
   user?: UserBase;
-  licenseInfo?: LicenseResponse;
+  licenseInfo?: SelfHostedLicenseBase | CloudLicenseBase;
 }
 
 const ConsoleBasicLayout = ({ children, user, licenseInfo }: Props) => {
@@ -32,7 +32,9 @@ const ConsoleBasicLayout = ({ children, user, licenseInfo }: Props) => {
 
     return !localStorage.getItem('hideHeaderBanner');
   });
-  const [licenseInfoState, setLicenseInfoState] = useState<LicenseResponse | undefined>(licenseInfo);
+  const [licenseInfoState, setLicenseInfoState] = useState<SelfHostedLicenseBase | CloudLicenseBase | undefined>(
+    licenseInfo,
+  );
 
   useEffect(() => {
     setLicenseInfoState(licenseInfo);
@@ -42,7 +44,7 @@ const ConsoleBasicLayout = ({ children, user, licenseInfo }: Props) => {
     useEventStore.subscribe(({ eventName, payload }) => {
       if (eventName === 'onLicenseUpdated') {
         if (payload) {
-          setLicenseInfoState(payload as LicenseResponse);
+          setLicenseInfoState(payload as SelfHostedLicenseBase);
         }
       }
     });
@@ -91,7 +93,9 @@ const ConsoleBasicLayout = ({ children, user, licenseInfo }: Props) => {
           </AlertBanner>
         )}
         <Header
-          links={licenseInfoState ? <LicenseTag licenseInfo={licenseInfoState} me={me} /> : null}
+          links={
+            licenseInfoState ? <LicenseTag licenseInfo={licenseInfoState as SelfHostedLicenseBase} me={me} /> : null
+          }
           right={
             <FlexRow>
               <Tooltip

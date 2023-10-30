@@ -77,6 +77,7 @@ jobs:
           echo "NEXT_PUBLIC_LANDING_URL=https://dogutech.io" >> ./docker-compose.env
           echo "NEXT_PUBLIC_DOGU_GA_ID=G-T1Q4Z5LY9P" >> ./docker-compose.env
           echo "NEXT_PUBLIC_SENTRY_DSN=${{ secrets.DOGU_SENTRY_DSN }}" >> ./docker-compose.env
+          echo "DOGU_SLACK_BOT_TOKEN=${{ secrets.SLACK_BOT_TOKEN }}" >> ./docker-compose.env
 
           # console - back
           echo "DOGU_RUN_TYPE=production" >> ./docker-compose.env
@@ -107,6 +108,9 @@ jobs:
           sed -i "s|NEXT_PUBLIC_TURN_SERVER_HOST=.*$|NEXT_PUBLIC_TURN_SERVER_HOST=${{ secrets.PROD_DOGU_TURN_SERVER_HOST }}|" ./docker-compose.yml
           sed -i "s|TURN_SERVER_USERNAME=.*$|TURN_SERVER_USERNAME=${{ secrets.PROD_DOGU_TURN_SERVER_USERNAME }}|" ./docker-compose.env
           sed -i "s|TURN_SERVER_PASSWORD=.*$|TURN_SERVER_PASSWORD=${{ secrets.PROD_DOGU_TURN_SERVER_PASSWORD }}|" ./docker-compose.env
+
+          # billing
+          echo "DOGU_BILLING_TOKEN"=${{ secrets.PROD_DOGU_BILLING_TOKEN }} >> ./docker-compose.env
 
           sed -i '/^  console:/a\    env_file:\n      - docker-compose.env' docker-compose.yml
       - name: run

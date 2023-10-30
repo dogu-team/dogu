@@ -1,15 +1,15 @@
 import { Global, Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Token, User, UserAndRefreshToken } from '../../db/entity/index';
-import { env } from '../../env';
-import { AuthHostService } from './service/auth-host.service';
-import { AuthJwtService } from './service/auth-jwt.service';
 
+import { Token, User, UserAndRefreshToken } from '../../db/entity/index';
 import { AuthLicenseService } from '../../enterprise/module/auth/service/auth-license.service';
 import { V1AuthOpenApiService } from '../../enterprise/module/auth/service/open-api/v1/auth-open-api.service';
-import { LicenseModule } from '../../enterprise/module/license/feature-license.module';
+import { LicenseModule } from '../../enterprise/module/license/license.module';
+import { env } from '../../env';
 import { FEATURE_CONFIG } from '../../feature.config';
+import { AuthHostService } from './service/auth-host.service';
+import { AuthJwtService } from './service/auth-jwt.service';
 import { AuthRemoteService } from './service/auth-remote.service';
 import { AuthUserService } from './service/auth-user.service';
 import { GoogleStrategy } from './strategy/google-strategy';

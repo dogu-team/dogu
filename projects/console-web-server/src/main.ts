@@ -11,7 +11,6 @@ import { WinstonModule } from 'nest-winston';
 import { env } from './env';
 import { AllExceptionsFilter } from './filter/exception.filter';
 import { AppModule } from './module/app/app.module';
-import { setupSwagger } from './module/common/swagger/swagger';
 import { logger } from './module/logger/logger.instance';
 import { isSentryEnabled, SentryBreadCrumbTrasponrt } from './utils/sentry';
 import { PatternBasedWsAdapter } from './ws/common/pattern-based-ws-adaptor';
@@ -68,8 +67,6 @@ async function bootstrap(): Promise<void> {
       optionsSuccessStatus: 200,
       allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
     });
-
-  setupSwagger(app);
 
   await app.listen(env.DOGU_CONSOLE_WEB_SERVER_PORT);
   logger.info(`ready - started server on ${env.DOGU_CONSOLE_WEB_SERVER_PORT}`);

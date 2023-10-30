@@ -18,17 +18,17 @@ import { RoutineStep } from '../../db/entity/step.entity';
 import { LicenseSystemProcessor } from '../../enterprise/module/event/license/license-system.processor';
 import { LicenseUpdater } from '../../enterprise/module/event/license/license-updater';
 import { SlackModule } from '../../enterprise/module/integration/slack/slack.module';
-import { LicenseModule } from '../../enterprise/module/license/feature-license.module';
+import { LicenseModule } from '../../enterprise/module/license/license.module';
 import { DeviceMessageModule } from '../device-message/device-message.module';
 import { LiveSessionModule } from '../live-session/live-session.module';
 import { ProjectModule } from '../project/project.module';
+import { RedisModule } from '../redis/redis.module';
 import { RemoteModule } from '../remote/remote.module';
 import { PipelineModule } from '../routine/pipeline/pipeline.module';
 import { DeviceConnectionUpdater } from './heartbeat/device-connection-updater';
 import { HeartBeatSystemProcessor } from './heartbeat/heartbeat-system.processor';
 import { HostConnectionUpdater } from './heartbeat/host-connection-updater';
 import { LiveSessionUpdater } from './live-session-updater';
-import { MonitoringUpdater } from './monitoring-updater';
 import { DestUpdater } from './pipeline/dest-updater';
 import { DeviceJobUpdater } from './pipeline/device-job-updater';
 import { ExternalEventUpdater } from './pipeline/external-event-updater';
@@ -71,9 +71,10 @@ import { UpdateProducer } from './update-producer';
     forwardRef(() => PipelineModule),
     RemoteModule,
     SlackModule,
-    ProjectModule,
     LicenseModule,
+    ProjectModule,
     LiveSessionModule,
+    RedisModule,
   ],
   providers: [
     UpdateProducer,
@@ -109,7 +110,6 @@ import { UpdateProducer } from './update-producer';
 
     LicenseUpdater,
     LiveSessionUpdater,
-    MonitoringUpdater,
   ],
   exports: [CancelPipelineQueue, UpdateStepStatusQueue, UpdateDeviceJobStatusQueue, UpdateDestStateQueue, UpdateRemoteDestStateQueue],
 })

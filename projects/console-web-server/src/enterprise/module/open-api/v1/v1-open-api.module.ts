@@ -1,12 +1,13 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Pipeline } from 'ioredis';
+
 import { User } from '../../../../db/entity/user.entity';
 import { EventModule } from '../../../../module/event/event.module';
 import { ProjectModule } from '../../../../module/project/project.module';
 import { PipelineModule } from '../../../../module/routine/pipeline/pipeline.module';
 import { WsCommonService } from '../../../../ws/common/ws-common.service';
-import { LicenseModule } from '../../license/feature-license.module';
+import { LicenseModule } from '../../license/license.module';
 import { V1ProjectController } from './project/project.controller';
 import { V1ProjectService } from './project/project.service';
 import { V1LivePipelineStatusGateway } from './routine/live-pipeline-state.gateway';

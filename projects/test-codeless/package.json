@@ -1,13 +1,13 @@
 {
   "private": true,
   "name": "test-codeless",
-  "version": "2.1.4",
+  "version": "2.2.1",
   "description": "",
   "license": "ISC",
   "author": "",
   "main": "index.js",
   "scripts": {
-    "display": "ts-node src/services/displaySizeChecker.ts"
+    "visual": "ts-node src/services/webVisualChecker.ts"
   },
   "dependencies": {
     "cheerio": "^1.0.0-rc.12",

@@ -31,7 +31,7 @@ interface Props extends Omit<ProjectServerSideProps, 'isGitIntegrated'> {
   children: React.ReactNode;
 }
 
-const PipelineJobLayout = ({ children, organization, project, user }: Props) => {
+const PipelineJobLayout = ({ children, organization, project, user, license }: Props) => {
   const router = useRouter();
   const orgId = router.query.orgId;
   const projectId = router.query.pid;
@@ -97,6 +97,7 @@ const PipelineJobLayout = ({ children, organization, project, user }: Props) => 
       organization={organization}
       project={project}
       user={user}
+      license={license}
       innerSidebar={<JobListSideBar pipeline={pipeline} />}
       titleI18nKey="project:tabMenuRoutineTitle"
     >

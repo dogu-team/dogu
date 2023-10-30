@@ -10,6 +10,8 @@ import {
 import React from 'react';
 import { Platform } from '@dogu-private/types';
 import { Divider, Tooltip } from 'antd';
+import { MdGpsFixed } from 'react-icons/md';
+import { HiLanguage } from 'react-icons/hi2';
 
 import { DeviceToolBarMenu } from 'src/utils/streaming/streaming';
 import useDeviceStreamingContext from '../../hooks/streaming/useDeviceStreamingContext';
@@ -17,15 +19,29 @@ import useDeviceInput from '../../hooks/streaming/useDeviceInput';
 import { flexRowBaseStyle, flexRowSpaceBetweenStyle } from '../../styles/box';
 import ApplicationUploader from './ApplicationUploader';
 import DeviceHelperButtonGroup from './DeviceHelperButtonGroup';
+import DeviceLanguageChanger from './DeviceLanguageChanger';
+import DeviceLocationChanger from './DeviceLocationChanger';
 
 interface ToolbarButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'children'> {
   workingPlatforms?: Platform[];
   icon: React.ReactNode;
   text: React.ReactNode;
   content?: React.ReactNode;
+  destroyTooltipOnHide?: boolean;
+  tooltipTitle?: React.ReactNode;
+  tooltipStyle?: React.CSSProperties;
 }
 
-const ToolbarButton = ({ workingPlatforms, icon, text, content, ...props }: ToolbarButtonProps) => {
+const ToolbarButton = ({
+  workingPlatforms,
+  icon,
+  text,
+  content,
+  destroyTooltipOnHide,
+  tooltipStyle,
+  tooltipTitle,
+  ...props
+}: ToolbarButtonProps) => {
   const { device } = useDeviceStreamingContext();
   const tooltipRef = React.useRef<HTMLDivElement>(null);
 
@@ -39,8 +55,17 @@ const ToolbarButton = ({ workingPlatforms, icon, text, content, ...props }: Tool
       ref={tooltipRef}
       open={!!content ? undefined : false}
       placement="rightTop"
-      title={<div style={{ color: '#000' }}>{content}</div>}
+      title={
+        <div style={{ color: '#000' }}>
+          <p style={{ fontSize: '.8rem', fontWeight: '600', marginBottom: '.25rem', lineHeight: '1.5' }}>
+            {tooltipTitle}
+          </p>
+          {content}
+        </div>
+      }
       color="#fff"
+      destroyTooltipOnHide={destroyTooltipOnHide}
+      overlayInnerStyle={tooltipStyle}
     >
       <StyledToolbarButton tabIndex={-1} {...props}>
         <SpaceBetween>
@@ -62,7 +87,7 @@ const ToolbarButton = ({ workingPlatforms, icon, text, content, ...props }: Tool
 interface Props {}
 
 const DeviceControlToolbar: React.FC<Props> = () => {
-  const { deviceRTCCaller } = useDeviceStreamingContext();
+  const { deviceRTCCaller, isCloudDevice } = useDeviceStreamingContext();
   const { handleToolMenuInput } = useDeviceInput(deviceRTCCaller ?? undefined);
 
   return (
@@ -81,6 +106,29 @@ const DeviceControlToolbar: React.FC<Props> = () => {
           </div>
         }
       />
+
+      {isCloudDevice && (
+        <ToolbarButton
+          workingPlatforms={[Platform.PLATFORM_ANDROID]}
+          icon={<HiLanguage />}
+          text="Language"
+          content={<DeviceLanguageChanger />}
+          destroyTooltipOnHide
+          tooltipTitle="Change device language"
+        />
+      )}
+
+      {/* {isCloudDevice && (
+        <ToolbarButton
+          workingPlatforms={[Platform.PLATFORM_ANDROID]}
+          icon={<MdGpsFixed />}
+          text="Location"
+          content={<DeviceLocationChanger />}
+          tooltipStyle={{ width: '320px' }}
+          tooltipTitle="Change device location"
+          destroyTooltipOnHide
+        />
+      )} */}
 
       <Divider style={{ margin: '.8rem 0' }} />
 

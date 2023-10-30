@@ -1,23 +1,33 @@
-import { OrganizationBase, ProjectBase, UserBase } from '@dogu-private/console';
+import {
+  CloudLicenseBase,
+  OrganizationBase,
+  ProjectBase,
+  SelfHostedLicenseBase,
+  UserBase,
+} from '@dogu-private/console';
 import { AxiosError } from 'axios';
 import { GetServerSideProps } from 'next';
 
 import { getOrganizationInServerSide } from 'src/api/organization';
 import { getProjectInServerSide, getProjectScm } from 'src/api/project';
+import { getCloudLicenseInServerSide, getSelfHostedLicenseInServerSide } from '../../enterprise/api/license';
+import { IS_CLOUD } from '../../pages/_app';
 import { redirectWithLocale } from '../ssr/locale';
 import { checkUserVerifiedInServerSide } from '../utils/auth';
 
 export interface ProjectServerSideProps {
   organization: OrganizationBase;
   project: ProjectBase;
+  license: CloudLicenseBase | SelfHostedLicenseBase;
   user: UserBase;
   isGitIntegrated: boolean;
 }
 
 export const getProjectPageServerSideProps: GetServerSideProps<ProjectServerSideProps> = async (context) => {
   try {
-    const [organization, project, checkResult, scm] = await Promise.all([
+    const [organization, license, project, checkResult, scm] = await Promise.all([
       getOrganizationInServerSide(context),
+      IS_CLOUD ? getCloudLicenseInServerSide(context) : getSelfHostedLicenseInServerSide(context),
       getProjectInServerSide(context),
       checkUserVerifiedInServerSide(context),
       getProjectScm(context),
@@ -37,6 +47,7 @@ export const getProjectPageServerSideProps: GetServerSideProps<ProjectServerSide
       props: {
         organization,
         project,
+        license,
         user: checkResult.props.fallback['/registery/check'],
         isGitIntegrated: !!scm,
       },

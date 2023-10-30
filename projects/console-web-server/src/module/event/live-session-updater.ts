@@ -1,14 +1,13 @@
-import { LiveSessionState } from '@dogu-private/types';
-import { InjectRedis } from '@liaoliaots/nestjs-redis';
+import { LiveSessionActiveStates, LiveSessionState } from '@dogu-private/types';
 import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
-import Redis from 'ioredis';
-import { DataSource } from 'typeorm';
+import { DataSource, In } from 'typeorm';
 
 import { config } from '../../config';
 import { LiveSession } from '../../db/entity/live-session.entity';
 import { LiveSessionService } from '../live-session/live-session.service';
 import { DoguLogger } from '../logger/logger';
+import { RedisService } from '../redis/redis.service';
 import { EventConsumer } from './event.consumer';
 import { EventProducer } from './event.producer';
 
@@ -20,8 +19,7 @@ export class LiveSessionUpdater implements OnModuleInit, OnModuleDestroy {
   constructor(
     @InjectDataSource()
     private readonly dataSource: DataSource,
-    @InjectRedis()
-    redis: Redis,
+    private readonly redis: RedisService,
     private readonly logger: DoguLogger,
     private readonly liveSessionService: LiveSessionService,
   ) {
@@ -55,8 +53,32 @@ export class LiveSessionUpdater implements OnModuleInit, OnModuleDestroy {
   }
 
   private async update(): Promise<void> {
+    await this.startUpdateCloudLicenseLiveTesting();
     await this.createdToCloseWait();
     await this.closeWaitToCreatedOrClosed();
+  }
+
+  private async startUpdateCloudLicenseLiveTesting(): Promise<void> {
+    const liveSessions = await this.dataSource.manager
+      .getRepository(LiveSession)
+      .createQueryBuilder()
+      .where({
+        state: In(LiveSessionActiveStates),
+      })
+      .getMany();
+    for (const liveSession of liveSessions) {
+      const cloudLicenseId = await this.liveSessionService.findCloudLicenseId(liveSession.liveSessionId);
+      if (!cloudLicenseId) {
+        continue;
+      }
+
+      const isCloudLicenseLiveTestingHeartbeatExists = await this.liveSessionService.isCloudLicenseLiveTestingHeartbeatExists(cloudLicenseId);
+      if (isCloudLicenseLiveTestingHeartbeatExists) {
+        continue;
+      }
+
+      await this.liveSessionService.startUpdateCloudLicenseLiveTesting(cloudLicenseId, liveSession.liveSessionId);
+    }
   }
 
   private async createdToCloseWait(): Promise<void> {

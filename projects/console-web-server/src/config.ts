@@ -57,11 +57,14 @@ export const config = {
       updateMonitoring: 'update-monitoring',
       WebSocketProxyReceive: (organizationId: OrganizationId, deviceId: DeviceId, webSocketProxyId: WebSocketProxyId): string =>
         `/organizations/${organizationId}/devices/${deviceId}/webSocketProxies/${webSocketProxyId}/receives`,
-      liveSessionParticipantsCount: (liveSessionId: string): string => `/liveSessions/${liveSessionId}/participants-count`,
-      liveSessionHeartbeat: (liveSessionId: string): string => `/liveSessions/${liveSessionId}/heartbeat`,
-      liveSessionCloseWaitEvent: (liveSessionId: string): string => `/liveSessions/${liveSessionId}/close-wait-event`,
-      liveSessionCloseEvent: (liveSessionId: string): string => `/liveSessions/${liveSessionId}/close-event`,
-      liveSessionCount: (): string => `/liveSessions/count`,
+      liveSessionParticipantsCount: (liveSessionId: string): string => `/live-sessions/${liveSessionId}/participants-count`,
+      liveSessionHeartbeat: (liveSessionId: string): string => `/live-sessions/${liveSessionId}/heartbeat`,
+      liveSessionCloseWaitEvent: (liveSessionId: string): string => `/live-sessions/${liveSessionId}/close-wait-event`,
+      liveSessionCloseEvent: (liveSessionId: string): string => `/live-sessions/${liveSessionId}/close-event`,
+      liveSessionCloudLicenseId: (liveSessionId: string): string => `/live-sessions/${liveSessionId}/cloud-license-id`,
+      liveSessionCount: (): string => `/live-sessions/count`,
+      cloudLicenseLiveTestingHeartbeat: (cloudLicenseId: string): string => `/cloud-licenses/${cloudLicenseId}/live-testing-heartbeat`,
+      cloudLicenseLiveTesting: (cloudLicenseId: string): string => `/cloud-licenses/${cloudLicenseId}/live-testing`,
     },
     expireSeconds: 10 * 60,
     deviceStreamingExpireSeconds: 7,
@@ -158,6 +161,12 @@ export const config = {
     },
     participantsCount: {
       allowedSeconds: 24 * 60 * 60,
+    },
+    cloudLicenseId: {
+      allowedSeconds: 24 * 60 * 60,
+    },
+    cloudLicenseLiveTestingHeartbeat: {
+      allowedSeconds: 10,
     },
   },
   ws: {

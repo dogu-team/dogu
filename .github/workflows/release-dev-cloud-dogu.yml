@@ -92,6 +92,7 @@ jobs:
           echo "NEXT_PUBLIC_LANDING_URL=${{ secrets.DEV_DOGU_LANDING_URL }}" >> ./docker-compose.env
           echo "NEXT_PUBLIC_DOGU_GA_ID=${{ secrets.DEV_DOGU_GA_ID }}" >> ./docker-compose.env
           echo "NEXT_PUBLIC_SENTRY_DSN=${{ secrets.DOGU_SENTRY_DSN }}" >> ./docker-compose.env
+          echo "DOGU_SLACK_BOT_TOKEN=${{ secrets.SLACK_BOT_TOKEN }}" >> ./docker-compose.env
 
           # console - back
           echo "DOGU_RUN_TYPE=development" >> ./docker-compose.env
@@ -126,6 +127,7 @@ jobs:
 
           # billing
           sed -i "s|DOGU_BILLING_SERVER_URL=.*$|DOGU_BILLING_SERVER_URL=${{ secrets.DEV_DOGU_BILLING_SERVER_URL }}|" ./docker-compose.yml
+          echo "DOGU_BILLING_TOKEN"=${{ secrets.DEV_DOGU_BILLING_TOKEN }} >> ./docker-compose.env
 
           sed -i '/^  console:/a\    env_file:\n      - docker-compose.env' docker-compose.yml
       - name: run
