@@ -10,7 +10,10 @@ import { LiveSessionService } from './live-session.service';
 
 @Controller('/live-sessions')
 export class LiveSessionController {
-  constructor(private readonly liveSessionService: LiveSessionService, private readonly cloudLicenseService: CloudLicenseService) {}
+  constructor(
+    private readonly liveSessionService: LiveSessionService,
+    private readonly cloudLicenseService: CloudLicenseService,
+  ) {}
 
   @Post()
   @OrganizationPermission(ORGANIZATION_ROLE.MEMBER)
