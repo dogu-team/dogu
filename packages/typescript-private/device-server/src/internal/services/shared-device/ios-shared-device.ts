@@ -127,6 +127,10 @@ const BlockAppList: BlockAppInfo[] = [
     bundleId: 'com.apple.mobileslideshow',
     uninstall: true,
   },
+  {
+    bundleId: 'com.apple.Fitness',
+    uninstall: true,
+  },
   // access block
   {
     bundleId: 'com.apple.Preferences',

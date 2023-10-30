@@ -1,10 +1,14 @@
 import { DeviceSystemInfo, Serial, SerialPrintable } from '@dogu-private/types';
 import { delay, loop } from '@dogu-tech/common';
 import { boxBox } from 'intersects';
-import { AppiumContextImpl } from '../../../appium/appium.context';
+import { AppiumContextImpl, WDIOElement } from '../../../appium/appium.context';
+import { CheckTimer } from '../../util/check-time';
 
 export class IosResetService {
-  constructor(private serial: Serial, private logger: SerialPrintable) {}
+  private timer: CheckTimer;
+  constructor(private serial: Serial, private logger: SerialPrintable) {
+    this.timer = new CheckTimer(this.logger);
+  }
 
   /*
    * Reset device and reboot
@@ -13,8 +17,11 @@ export class IosResetService {
     const { serial, logger } = this;
     logger.info(`IosResetService.reset begin`, { serial, info });
 
-    await this.clearSafariCache(appiumContext);
-    await this.clearPhotoImages(appiumContext);
+    await this.timer.check('IosResetService.reset.clearSafariCache', this.clearSafariCache(appiumContext));
+    await this.timer.check('IosResetService.reset.clearPhotoImages', this.clearPhotoImages(appiumContext));
+    await this.timer.check('IosResetService.reset.clearPhotoAlbums', this.clearPhotoAlbums(appiumContext));
+    await this.timer.check('IosResetService.reset.clearRecentlyDeletedPhotos', this.clearRecentlyDeletedPhotos(appiumContext));
+    await this.timer.check('IosResetService.reset.clearPhotosSuggestionAndFeedbacks', this.clearPhotosSuggestionAndFeedbacks(appiumContext));
 
     this.logger.info(`IosResetService.reset end`, { serial, info });
   }
@@ -24,39 +31,19 @@ export class IosResetService {
     if (!driver) {
       throw new Error(`IosResetService.clearSafariCache driver is null`);
     }
-    await driver.execute('mobile: terminateApp', {
-      bundleId: 'com.apple.Preferences',
-    });
-    await driver.execute('mobile: launchApp', {
-      bundleId: 'com.apple.Preferences',
-    });
-    for await (const _ of loop(300, 10)) {
-      const safari = await driver.$('~Safari');
-      if (!(await safari.waitForEnabled({ timeout: 1_000 }).catch(() => null))) {
-        await driver.execute('mobile: scroll', {
-          direction: 'down',
-        });
-        continue;
-      }
-      await safari.click();
-      break;
-    }
+    const ClearConfirmCount = 3;
 
-    for await (const _ of loop(300, 10)) {
-      const clear = await driver.$('~CLEAR_HISTORY_AND_DATA');
-      if (!(await clear.waitForEnabled({ timeout: 1_000 }).catch(() => null))) {
-        await driver.execute('mobile: scroll', {
-          direction: 'down',
-        });
-        continue;
-      }
-      break;
-    }
-    for (let i = 0; i < 3; i++) {
-      const clear = await driver.$('~CLEAR_HISTORY_AND_DATA');
-      await clear.click();
+    await relaunchApp(driver, 'com.apple.Preferences');
 
-      const clearConfirm = await driver.$('~Clear History and Data').catch(() => null);
+    const safari = await scrollToSelector(driver, new IosAccessibilitiySelector('Safari'));
+    await safari.click();
+
+    await scrollToSelector(driver, new IosAccessibilitiySelector('CLEAR_HISTORY_AND_DATA'));
+
+    for (let i = 0; i < ClearConfirmCount; i++) {
+      await clickSelector(driver, new IosAccessibilitiySelector('CLEAR_HISTORY_AND_DATA'));
+
+      const clearConfirm = await driver.$(new IosAccessibilitiySelector('Clear History and Data').build()).catch(() => null);
       if (!clearConfirm) {
         break;
       }
@@ -65,39 +52,28 @@ export class IosResetService {
       }
       await clearConfirm.click();
 
-      const closeTabSelector = '**/XCUIElementTypeButton[`label == "Close Tabs"`]';
-      const clearTabs = await driver.$(`-ios class chain:${closeTabSelector}`);
-      await clearTabs.waitForEnabled({ timeout: 1_000 });
-      await clearTabs.click();
+      await clickSelector(driver, new IosClassChainSelector('**/XCUIElementTypeButton[`label == "Close Tabs"`]'));
     }
   }
 
   private async clearPhotoImages(appiumContext: AppiumContextImpl): Promise<void> {
     const driver = appiumContext.driver();
     if (!driver) {
-      throw new Error(`IosResetService.clearSafariCache driver is null`);
+      throw new Error(`IosResetService.clearPhotoImages driver is null`);
     }
+    const { logger } = this;
     const WaitTimeout = 10_000;
 
-    await driver.execute('mobile: terminateApp', {
-      bundleId: 'com.apple.mobileslideshow',
-    });
-    await driver.execute('mobile: launchApp', {
-      bundleId: 'com.apple.mobileslideshow',
-    });
-    const library = await driver.$('~Library');
-    await library.waitForDisplayed({ timeout: WaitTimeout });
-    await library.click();
+    await relaunchApp(driver, 'com.apple.mobileslideshow');
 
-    const allPhotos = await driver.$('~All Photos');
-    await allPhotos.waitForDisplayed({ timeout: WaitTimeout });
-    await allPhotos.click();
+    await clickSelector(driver, new IosAccessibilitiySelector('Library'));
+    await clickSelector(driver, new IosAccessibilitiySelector('All Photos'));
 
+    let loopCount = 0;
     let emptyCheckedCount = 0;
-
-    for (let i = 0; i < 10; i++) {
-      const imagesSelector = '**/XCUIElementTypeImage';
-      const imagesTry = await driver.$$(`-ios class chain:${imagesSelector}`);
+    for await (const _ of loop(300)) {
+      logger.info(`IosResetService.clearPhotoImages loopCount: ${loopCount++}`);
+      const imagesTry = await driver.$$(new IosClassChainSelector('**/XCUIElementTypeImage').build());
       if (imagesTry.length === 0) {
         emptyCheckedCount++;
         if (5 < emptyCheckedCount) {
@@ -107,16 +83,12 @@ export class IosResetService {
         continue;
       }
 
-      const selectButtonSelector = '**/XCUIElementTypeButton[`label == "Select"`]';
-      const selectButton = await driver.$(`-ios class chain:${selectButtonSelector}`);
-      await selectButton.waitForEnabled({ timeout: WaitTimeout });
-      await selectButton.click();
+      await clickSelector(driver, new IosClassChainSelector('**/XCUIElementTypeButton[`label == "Select"`]'));
 
-      const cancelButtonSelector = '**/XCUIElementTypeButton[`label == "Cancel"`]';
-      const cancelButton = await driver.$(`-ios class chain:${cancelButtonSelector}`);
+      const cancelButton = await driver.$(new IosClassChainSelector('**/XCUIElementTypeButton[`label == "Cancel"`]').build());
       const cancelRect = await cancelButton.getElementRect(cancelButton.elementId);
 
-      const images = await driver.$$(`-ios class chain:${imagesSelector}`);
+      const images = await driver.$$(new IosClassChainSelector('**/XCUIElementTypeImage').build());
       for (const image of images) {
         const rect = await image.getElementRect(image.elementId);
 
@@ -127,14 +99,144 @@ export class IosResetService {
         await image.click().catch(() => {});
       }
 
-      const deleteButton = await driver.$('~Delete');
-      await deleteButton.waitForEnabled({ timeout: WaitTimeout });
-      await deleteButton.click();
-
-      const deleteSelector = `type == 'XCUIElementTypeButton' && name CONTAINS 'Delete '`;
-      const deleteDialogBtn = await driver.$(`-ios predicate string:${deleteSelector}`);
-      await deleteDialogBtn.waitForEnabled({ timeout: WaitTimeout });
-      await deleteDialogBtn.click();
+      await clickSelector(driver, new IosAccessibilitiySelector('Delete'));
+      await clickSelector(driver, new IosPredicateStringSelector(`type == 'XCUIElementTypeButton' && name CONTAINS 'Delete '`));
     }
   }
+
+  private async clearPhotoAlbums(appiumContext: AppiumContextImpl): Promise<void> {
+    const driver = appiumContext.driver();
+    if (!driver) {
+      throw new Error(`IosResetService.clearPhotoImages driver is null`);
+    }
+
+    await relaunchApp(driver, 'com.apple.mobileslideshow');
+    await clickSelector(driver, new IosAccessibilitiySelector('Albums'));
+    await clickSelector(driver, new IosClassChainSelector('**/XCUIElementTypeStaticText[`label == "See All"`]'));
+    await clickSelector(driver, new IosAccessibilitiySelector('Edit'));
+
+    let emptyCheckedCount = 0;
+    for await (const _ of loop(300)) {
+      const deleteDialogBtns = await driver.$$(new IosPredicateStringSelector(`type == 'XCUIElementTypeButton' && name CONTAINS 'Delete,'`).build());
+      if (deleteDialogBtns.length === 0) {
+        emptyCheckedCount++;
+        if (5 < emptyCheckedCount) {
+          break;
+        }
+        await delay(1000);
+        continue;
+      }
+      await deleteDialogBtns[0].click();
+
+      await clickSelector(driver, new IosAccessibilitiySelector('Delete'));
+    }
+  }
+
+  private async clearRecentlyDeletedPhotos(appiumContext: AppiumContextImpl): Promise<void> {
+    const driver = appiumContext.driver();
+    if (!driver) {
+      throw new Error(`IosResetService.clearPhotoImages driver is null`);
+    }
+    const MaxScrollCount = 1000;
+    const DeleteRepeatCount = 3;
+
+    for await (const _ of loop(300, DeleteRepeatCount)) {
+      await relaunchApp(driver, 'com.apple.mobileslideshow');
+
+      for await (const _ of loop(300, MaxScrollCount)) {
+        const recentlyDeleted = await driver.$(new IosClassChainSelector('**/XCUIElementTypeStaticText[`label == "Recently Deleted"`]').build());
+        if (!(await recentlyDeleted.waitForEnabled({ timeout: 1_000 }).catch(() => null))) {
+          await driver.execute('mobile: scroll', {
+            direction: 'down',
+          });
+          continue;
+        }
+        await recentlyDeleted.click();
+        break;
+      }
+
+      await clickSelector(driver, new IosClassChainSelector('**/XCUIElementTypeButton[`label == "Select"`]'));
+      await clickSelector(driver, new IosAccessibilitiySelector('Delete All'));
+      await clickSelector(driver, new IosPredicateStringSelector(`type == 'XCUIElementTypeButton' && name CONTAINS 'Delete '`));
+    }
+  }
+
+  private async clearPhotosSuggestionAndFeedbacks(appiumContext: AppiumContextImpl): Promise<void> {
+    const driver = appiumContext.driver();
+    if (!driver) {
+      throw new Error(`IosResetService.clearPhotoImages driver is null`);
+    }
+    await relaunchApp(driver, 'com.apple.Preferences');
+
+    const photos = await scrollToSelector(driver, new IosClassChainSelector('**/XCUIElementTypeCell[`label == "Photos"`]'));
+    await photos.click();
+
+    const resetMem = await scrollToSelector(driver, new IosAccessibilitiySelector('ResetBlacklistedMemoryFeatures'));
+    await resetMem.click();
+    await clickSelector(driver, new IosAccessibilitiySelector('Reset'));
+
+    const resetFeedback = await scrollToSelector(driver, new IosAccessibilitiySelector('ResetPeopleFeedback'));
+    await resetFeedback.click();
+    await clickSelector(driver, new IosAccessibilitiySelector('Reset'));
+  }
+}
+
+async function relaunchApp(driver: WebdriverIO.Browser, bundleId: string): Promise<void> {
+  await driver.execute('mobile: terminateApp', {
+    bundleId,
+  });
+  await driver.execute('mobile: launchApp', {
+    bundleId,
+  });
+}
+
+interface IosSelector {
+  build(): string;
+}
+
+class IosAccessibilitiySelector {
+  constructor(private id: string) {}
+
+  build(): string {
+    return `~${this.id}`;
+  }
+}
+
+class IosClassChainSelector {
+  constructor(private selector: string) {}
+
+  build(): string {
+    return `-ios class chain:${this.selector}`;
+  }
+}
+
+class IosPredicateStringSelector {
+  constructor(private selector: string) {}
+
+  build(): string {
+    return `-ios predicate string:${this.selector}`;
+  }
+}
+
+async function clickSelector(driver: WebdriverIO.Browser, selector: IosSelector): Promise<void> {
+  const WaitTimeout = 10_000;
+  const elem = await driver.$(selector.build());
+  await elem.waitForDisplayed({ timeout: WaitTimeout });
+  await elem.click();
+}
+
+async function scrollToSelector(driver: WebdriverIO.Browser, selector: IosSelector): Promise<WDIOElement> {
+  const MaxScrollCount = 1000;
+
+  for await (const _ of loop(300, MaxScrollCount)) {
+    const elem = await driver.$(selector.build());
+    if (!(await elem.waitForEnabled({ timeout: 1_000 }).catch(() => null))) {
+      await driver.execute('mobile: scroll', {
+        direction: 'down',
+      });
+      continue;
+    }
+    return elem;
+  }
+  throw new Error(`scrollToAccessibility ${selector.build()} failed`);
 }
