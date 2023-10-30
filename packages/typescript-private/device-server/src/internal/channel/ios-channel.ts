@@ -210,6 +210,7 @@ export class IosChannel implements DeviceChannel {
     });
 
     const shared = new IosSharedDeviceService(serial, systemInfo, deviceAgent, wda, logger);
+    await shared.setup();
     await shared.wait();
 
     const deviceChannel = new IosChannel(
