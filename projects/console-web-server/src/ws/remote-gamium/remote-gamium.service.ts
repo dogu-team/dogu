@@ -29,7 +29,7 @@ export class RemoteGamiumService {
     private readonly logger: DoguLogger,
   ) {}
 
-  async findDeviceJob(sessionId: string): Promise<{ device: Device; remote: Remote }> {
+  async findDeviceJob(sessionId: string, port: number): Promise<{ device: Device; remote: Remote }> {
     const remoteDeviceJob = await this.dataSource.getRepository(RemoteDeviceJob).findOne({ where: { sessionId }, relations: [DEVICE_TABLE_NAME, REMOTE_TABLE_NAME] });
     if (!remoteDeviceJob) {
       throw new RemoteException(HttpStatus.NOT_FOUND, new Error(`Remote device job not found. sessionId: ${sessionId}`), {});
