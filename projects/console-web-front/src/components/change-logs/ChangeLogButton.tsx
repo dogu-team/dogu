@@ -88,7 +88,6 @@ const StyledButton = styled.button`
   ${flexRowCenteredStyle}
   width: 2rem;
   height: 2rem;
-  margin-right: 0.75rem;
   border-radius: 50%;
   color: #000;
   font-size: 1.2rem;

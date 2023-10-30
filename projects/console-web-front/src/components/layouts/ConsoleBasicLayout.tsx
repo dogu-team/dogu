@@ -1,6 +1,6 @@
 import { CloseOutlined, SlackOutlined } from '@ant-design/icons';
 import { CloudLicenseBase, SelfHostedLicenseBase, UserBase } from '@dogu-private/console';
-import { Tooltip } from 'antd';
+import { Button, Tooltip } from 'antd';
 import Trans from 'next-translate/Trans';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -98,6 +98,7 @@ const ConsoleBasicLayout = ({ children, user, licenseInfo }: Props) => {
           }
           right={
             <FlexRow>
+              <Button type="text">Plans & Billing</Button>
               <Tooltip
                 title="Community"
                 arrow={false}
@@ -133,13 +134,13 @@ const Box = styled.div`
 
 const FlexRow = styled.div`
   ${flexRowBaseStyle}
+  gap: .5rem;
 `;
 
 const StyledLink = styled(Link)`
   ${flexRowCenteredStyle}
   width: 2rem;
   height: 2rem;
-  margin-right: 0.75rem;
   border-radius: 50%;
   color: #000;
   font-size: 1.2rem;

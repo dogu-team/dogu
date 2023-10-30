@@ -29,6 +29,7 @@ import LiveTestingFeedbackModal, {
 } from '../../../../src/components/cloud/LiveTestingFeedbackModal';
 import useModal from '../../../../src/hooks/useModal';
 import LiveTestingSessionCounter from '../../../../src/components/cloud/LiveTestingSessionCounter';
+import LiveTestingFreeTierTopBanner from '../../../../src/components/billing/LiveTestingFreeTierTopBanner';
 
 const OrganizationLiveTestingPage: NextPageWithLayout<OrganizationServerSideProps> = ({
   user,
@@ -139,6 +140,8 @@ OrganizationLiveTestingPage.getLayout = (page) => {
       sidebar={<OrganizationSideBar />}
       title={
         <div style={{ marginBottom: '.5rem' }}>
+          <LiveTestingFreeTierTopBanner license={page.props.license as CloudLicenseBase} />
+
           <H4>
             <Trans i18nKey="organization:liveTestingPageTitle" />
           </H4>
