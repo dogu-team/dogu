@@ -85,6 +85,10 @@ const BillingRegistrationForm: React.FC<Props> = ({ form }) => {
           minLength={19}
           maxLength={19}
           onChange={handleChangeCardNumber}
+          autoComplete="off"
+          autoCapitalize="off"
+          autoCorrect="off"
+          spellCheck="false"
         />
       </Form.Item>
       <Box style={{ gap: '4rem' }}>
@@ -97,6 +101,10 @@ const BillingRegistrationForm: React.FC<Props> = ({ form }) => {
             onChange={formatExpiryDate}
             minLength={7}
             maxLength={7}
+            autoComplete="off"
+            autoCapitalize="off"
+            autoCorrect="off"
+            spellCheck="false"
           />
         </Form.Item>
         <div style={{ position: 'relative' }}>
@@ -109,16 +117,26 @@ const BillingRegistrationForm: React.FC<Props> = ({ form }) => {
               minLength={2}
               maxLength={2}
               onChange={formatPassword}
+              autoComplete="off"
+              autoCapitalize="off"
+              autoCorrect="off"
+              spellCheck="false"
             />
           </Form.Item>
-          <div style={{ position: 'absolute', left: '58px', bottom: '30px' }}>
-            <BsCircleFill style={{ fontSize: '10px', margin: '0 .25rem' }} />
-            <BsCircleFill style={{ fontSize: '10px', marginRight: '.25rem' }} />
-          </div>
+          <div style={{ position: 'absolute', left: '58px', bottom: '30px' }}>● ●</div>
         </div>
       </Box>
       <Form.Item name="legalNumber" label="생년월일 6자리(개인) / 사업자등록번호 10자리(법인)">
-        <Input ref={legalNumberRef} required minLength={6} maxLength={10} />
+        <Input
+          ref={legalNumberRef}
+          required
+          minLength={6}
+          maxLength={10}
+          autoComplete="off"
+          autoCapitalize="off"
+          autoCorrect="off"
+          spellCheck="false"
+        />
       </Form.Item>
     </StyledForm>
   );

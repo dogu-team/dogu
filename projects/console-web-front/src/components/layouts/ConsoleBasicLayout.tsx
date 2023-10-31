@@ -98,7 +98,9 @@ const ConsoleBasicLayout = ({ children, user, licenseInfo }: Props) => {
           }
           right={
             <FlexRow>
-              <Button type="text">Plans & Billing</Button>
+              <Link href="/billing">
+                <Button type="text">Plans & Billing</Button>
+              </Link>
               <Tooltip
                 title="Community"
                 arrow={false}

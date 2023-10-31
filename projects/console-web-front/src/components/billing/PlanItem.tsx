@@ -1,37 +1,53 @@
-import { Button, Divider, Select } from 'antd';
+import { CloudSubscriptionPlanInfo } from '@dogu-private/console';
+import { Button, Divider, Select, SelectProps } from 'antd';
+import { useState } from 'react';
 import styled from 'styled-components';
 
+import { PlanDescriptionInfo } from '../../resources/plan';
+
 interface Props {
-  // title: React.ReactNode;
-  // price: React.ReactNode;
-  // currency: string;
+  planInfo: CloudSubscriptionPlanInfo;
+  descriptionInfo: PlanDescriptionInfo;
+  isAnnual: boolean;
   onClickUpgrade: () => void;
 }
 
-const PlanItem: React.FC<Props> = ({ onClickUpgrade }) => {
+const PlanItem: React.FC<Props> = ({ planInfo, descriptionInfo, onClickUpgrade, isAnnual }) => {
+  const baseOptions: SelectProps<string | number>['options'] = Object.keys(planInfo.optionMap).map((optionKey) => {
+    return {
+      value: optionKey,
+      label: descriptionInfo.getOptionLabelText(optionKey),
+    };
+  });
+  const options = descriptionInfo.lastContactUsOptionKey
+    ? [...baseOptions, { value: 'contact-us', label: descriptionInfo.lastContactUsOptionKey }]
+    : baseOptions;
+
+  const [selectedValue, setSelectedValue] = useState<string | number | null | undefined>(() => {
+    // TODO: from user's current plan
+    return options[0].value;
+  });
+
+  const handleChangeOption = (value: string | number) => {
+    setSelectedValue(value);
+  };
+
   return (
     <Box>
       <div>
         <div>
-          <PricingTitle>Title</PricingTitle>
+          <PricingTitle>{descriptionInfo.titleI18nKey}</PricingTitle>
         </div>
         <div style={{ marginBottom: '.5rem' }}>
-          <PricingPrice>price / month</PricingPrice>
+          <PricingPrice>{isAnnual ? 'price / year' : 'price / month'}</PricingPrice>
         </div>
         <div style={{ marginBottom: '.5rem' }}>
-          <Select
+          <Select<string | number>
             style={{ width: '100%' }}
-            options={[
-              {
-                label: '1',
-                value: '1',
-              },
-              {
-                label: '2',
-                value: '2',
-              },
-            ]}
-            defaultValue="1"
+            options={options}
+            value={selectedValue}
+            onChange={handleChangeOption}
+            dropdownMatchSelectWidth={false}
           />
         </div>
         <div>
@@ -43,11 +59,9 @@ const PlanItem: React.FC<Props> = ({ onClickUpgrade }) => {
         <Divider />
         <div>
           <ul>
-            <li>feature1</li>
-            <li>feature2</li>
-            <li>feature3</li>
-            <li>feature4</li>
-            <li>feature5</li>
+            {descriptionInfo.featureI18nKeys.map((featureKey) => (
+              <li key={featureKey}>{featureKey}</li>
+            ))}
           </ul>
         </div>
       </div>

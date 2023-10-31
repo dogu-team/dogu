@@ -1,23 +1,29 @@
+import { CloudSubscriptionPlanType } from '@dogu-private/console';
 import { ArrowLeftOutlined } from '@ant-design/icons';
-import { Button, Modal, Switch } from 'antd';
+import { Button, Modal } from 'antd';
 import { useState } from 'react';
 import styled from 'styled-components';
 
 import { flexRowBaseStyle } from '../../styles/box';
-import PlanItem from './PlanItem';
 import BillingPayStep from './BillingPayStep';
+import BillingSelectPlanStep from './BillingSelectPlanStep';
 
 interface Props {
   isOpen: boolean;
   close: () => void;
-  plans: any[];
+  planType: CloudSubscriptionPlanType;
 }
 
-const UpgradePlanModal: React.FC<Props> = ({ isOpen, close }) => {
+const UpgradePlanModal: React.FC<Props> = ({ isOpen, close, planType }) => {
   const [isSelected, setIsSelected] = useState(false);
 
   const handleClickUpgrade = () => {
     setIsSelected(true);
+  };
+
+  const handleClose = () => {
+    setIsSelected(false);
+    close();
   };
 
   return (
@@ -36,7 +42,7 @@ const UpgradePlanModal: React.FC<Props> = ({ isOpen, close }) => {
         </FlexRow>
       }
       open={isOpen}
-      onCancel={close}
+      onCancel={handleClose}
       footer={null}
       centered
       destroyOnClose
@@ -44,22 +50,7 @@ const UpgradePlanModal: React.FC<Props> = ({ isOpen, close }) => {
       {isSelected ? (
         <BillingPayStep />
       ) : (
-        <div>
-          <div>
-            <div>Your current plan: ...</div>
-          </div>
-          <div>
-            <label>Monthly</label>
-            <Switch />
-            <label>
-              Annually <b>{`(Save up to 20%)`}</b>
-            </label>
-          </div>
-
-          <PlanWrapper>
-            <PlanItem onClickUpgrade={handleClickUpgrade} />
-          </PlanWrapper>
-        </div>
+        <BillingSelectPlanStep planType={planType} onClickUpgrade={handleClickUpgrade} />
       )}
     </Modal>
   );
@@ -69,10 +60,4 @@ export default UpgradePlanModal;
 
 const FlexRow = styled.div`
   ${flexRowBaseStyle}
-`;
-
-const PlanWrapper = styled.div`
-  display: flex;
-  justify-content: center;
-  margin-top: 1rem;
 `;

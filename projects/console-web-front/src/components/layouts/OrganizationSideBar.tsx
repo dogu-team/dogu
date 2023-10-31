@@ -242,28 +242,6 @@ const OrganizationSideBar = () => {
           ),
           style: { borderRadius: '6px' },
         },
-        {
-          key: 'billing',
-          icon: collapsed ? (
-            <StyledIconLink
-              selected={router.asPath === `/dashboard/${orgId}/settings`}
-              href={`/dashboard/${orgId}/settings`}
-            >
-              <CreditCardOutlined />
-            </StyledIconLink>
-          ) : undefined,
-          label: collapsed ? (
-            'Plans & Billing'
-          ) : (
-            <SideBarMenu
-              icon={<CreditCardOutlined style={{ fontSize: '1.2rem' }} />}
-              path={`/dashboard/${orgId}/settings`}
-              text={'Plans & Billing'}
-              accessId={process.env.NEXT_PUBLIC_ENV !== 'production' ? 'side-bar-billing' : undefined}
-            />
-          ),
-          style: { borderRadius: '6px' },
-        },
       ],
     },
   ];

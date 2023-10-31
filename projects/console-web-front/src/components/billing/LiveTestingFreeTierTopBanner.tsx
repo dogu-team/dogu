@@ -17,7 +17,7 @@ const LiveTestingFreeTierTopBanner: React.FC<Props> = ({ license }) => {
         showIcon
         message={<p>You&apos;re using free tier.. 180min left... Blah blah</p>}
         action={
-          <UpgradePlanButton license={license} plans={[]}>
+          <UpgradePlanButton license={license} planType="live-testing">
             Upgrade plan
           </UpgradePlanButton>
         }
