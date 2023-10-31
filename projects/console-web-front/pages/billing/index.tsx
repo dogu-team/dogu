@@ -3,11 +3,12 @@ import { GetServerSideProps } from 'next';
 import styled from 'styled-components';
 
 import { getCloudLicenseInServerSide, getSelfHostedLicenseInServerSide } from '../../enterprise/api/license';
-import BillingHistoryList from '../../src/components/billing/BillingHistoryList';
-import BillingMethod from '../../src/components/billing/BillingMethod';
+import BillingInvoiceList from '../../src/components/billing/BillingInvoiceList';
+import BillingPaymentMethod from '../../src/components/billing/BillingPaymentMethod';
 import BillingSubscribedPlanDashboard from '../../src/components/billing/BillingSubscribedPlanDashboard';
 import LiveChat from '../../src/components/external/livechat';
 import ConsoleBasicLayout from '../../src/components/layouts/ConsoleBasicLayout';
+import Footer from '../../src/components/layouts/Footer';
 import { checkLoginInServerSide } from '../../src/utils/auth';
 import { NextPageWithLayout } from '../_app';
 
@@ -29,18 +30,18 @@ const BillingPage: NextPageWithLayout<BillingPageProps> = ({ me, license }) => {
       </Content>
       <Content>
         <TitleWrapper>
-          <ContentTitle>Billing method</ContentTitle>
+          <ContentTitle>Payment method</ContentTitle>
         </TitleWrapper>
         <ContentInner>
-          <BillingMethod />
+          <BillingPaymentMethod />
         </ContentInner>
       </Content>
       <Content>
         <TitleWrapper>
-          <ContentTitle>History</ContentTitle>
+          <ContentTitle>Invoices</ContentTitle>
         </TitleWrapper>
         <ContentInner>
-          <BillingHistoryList />
+          <BillingInvoiceList />
         </ContentInner>
       </Content>
     </Box>
@@ -51,6 +52,7 @@ BillingPage.getLayout = (page) => {
   return (
     <ConsoleBasicLayout user={page.props.me} licenseInfo={page.props.license}>
       {page}
+      <Footer />
       <LiveChat />
     </ConsoleBasicLayout>
   );
@@ -86,6 +88,7 @@ const Box = styled.div`
   margin: 0 auto;
   padding: 1rem 1rem 80px;
   line-height: 1.5;
+  flex: 1;
 `;
 
 const Content = styled.section`

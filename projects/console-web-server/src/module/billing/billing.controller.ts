@@ -20,7 +20,7 @@ export class BillingController {
     return this.billingService.updatePaymentMethod();
   }
 
-  @Get('history')
+  @Get('invoices')
   @OrganizationPermission(ORGANIZATION_ROLE.ADMIN)
   getBillingHistory(): any {
     return this.billingService.getBillingHistory();

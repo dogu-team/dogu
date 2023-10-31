@@ -1,22 +1,37 @@
-import { List } from 'antd';
+import { DownloadOutlined } from '@ant-design/icons';
+import { Button, List } from 'antd';
+import { useRouter } from 'next/router';
 import styled from 'styled-components';
 import useSWR from 'swr';
 
-import { swrAuthFetcher } from '../../api';
+import { swrAuthFetcher } from '../../api/index';
 import { flexRowBaseStyle, listItemStyle, tableCellStyle, tableHeaderStyle } from '../../styles/box';
+import { getLocaleFormattedDate } from '../../utils/locale';
 
 interface ItemProps {
   item: any;
 }
 
-const BillingHistoryItem: React.FC<ItemProps> = ({ item }) => {
+const InvoiceItem: React.FC<ItemProps> = ({ item }) => {
+  const router = useRouter();
+
   return (
     <Item>
       <ItemInner>
-        <Cell flex={1}>{item.date.toISOString()}</Cell>
+        <Cell flex={1}>
+          {getLocaleFormattedDate(router.locale ?? 'en', item.date, {
+            year: 'numeric',
+            month: 'numeric',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+          })}
+        </Cell>
         <Cell flex={2}>{item.items.join(',')}</Cell>
         <Cell flex={1}>{item.amount}</Cell>
-        <ButtonWrapper />
+        <ButtonWrapper>
+          <Button icon={<DownloadOutlined />} />
+        </ButtonWrapper>
       </ItemInner>
     </Item>
   );
@@ -24,8 +39,8 @@ const BillingHistoryItem: React.FC<ItemProps> = ({ item }) => {
 
 interface Props {}
 
-const BillingHistoryList: React.FC = () => {
-  const { data } = useSWR(`/billing/history`, swrAuthFetcher, { revalidateOnFocus: false });
+const BillingInvoiceList: React.FC = () => {
+  const { data } = useSWR(`/billing/invoices`, swrAuthFetcher, { revalidateOnFocus: false });
 
   return (
     <>
@@ -39,13 +54,13 @@ const BillingHistoryList: React.FC = () => {
       </Header>
       <List
         dataSource={[{ date: new Date(), items: ['test1', 'test2'], amount: '85$' }]}
-        renderItem={(item) => <BillingHistoryItem item={item} />}
+        renderItem={(item) => <InvoiceItem item={item} />}
       />
     </>
   );
 };
 
-export default BillingHistoryList;
+export default BillingInvoiceList;
 
 const Item = styled(List.Item)`
   ${listItemStyle}
