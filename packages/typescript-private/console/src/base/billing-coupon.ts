@@ -7,8 +7,11 @@ export interface BillingCouponBase {
   /**
    * @example 10 10% discount
    */
-  discountPercent: number;
-  remainingCount: number | null;
+  monthlyDiscountPercent: number | null;
+  monthlyApplyCount: number | null;
+  yearlyDiscountPercent: number | null;
+  yearlyApplyCount: number | null;
+  remainingAvailableCount: number | null;
   expiredAt: Date | null;
   createdAt: Date;
   updatedAt: Date;

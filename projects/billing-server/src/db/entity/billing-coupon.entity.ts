@@ -10,11 +10,20 @@ export class BillingCoupon implements BillingCouponBase {
   @Column({ type: 'character varying', name: BillingCouponPropSnake.code, unique: true })
   code!: string;
 
-  @Column({ type: 'integer', name: BillingCouponPropSnake.discount_percent })
-  discountPercent!: number;
+  @Column({ type: 'integer', name: BillingCouponPropSnake.monthly_discount_percent, nullable: true })
+  monthlyDiscountPercent!: number | null;
 
-  @Column({ type: 'integer', name: BillingCouponPropSnake.remaining_count, nullable: true })
-  remainingCount!: number | null;
+  @Column({ type: 'integer', name: BillingCouponPropSnake.monthly_apply_count, nullable: true })
+  monthlyApplyCount!: number | null;
+
+  @Column({ type: 'integer', name: BillingCouponPropSnake.yearly_discount_percent, nullable: true })
+  yearlyDiscountPercent!: number | null;
+
+  @Column({ type: 'integer', name: BillingCouponPropSnake.yearly_apply_count, nullable: true })
+  yearlyApplyCount!: number | null;
+
+  @Column({ type: 'integer', name: BillingCouponPropSnake.remaining_available_count, nullable: true })
+  remainingAvailableCount!: number | null;
 
   @ColumnTemplate.Date(BillingCouponPropSnake.expired_at, true)
   expiredAt!: Date | null;

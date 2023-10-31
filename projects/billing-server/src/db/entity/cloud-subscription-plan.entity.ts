@@ -1,18 +1,28 @@
-import { CloudSubscriptionPlanPropCamel, CloudSubscriptionPlanPropSnake, CloudSubscriptionPlanType } from '@dogu-private/console';
+import { CloudSubscriptionPlanBase, CloudSubscriptionPlanPropCamel, CloudSubscriptionPlanPropSnake, CloudSubscriptionPlanType } from '@dogu-private/console';
+import { BillingPeriod } from '@dogu-private/console/src/base/billing';
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 import { CloudLicense } from './cloud-license.entity';
 import { ColumnTemplate } from './util/decorators';
 
 @Entity('cloud_subscription_plan')
-export class CloudSubscriptionPlan {
+export class CloudSubscriptionPlan implements CloudSubscriptionPlanBase {
   @PrimaryColumn('uuid', { name: CloudSubscriptionPlanPropSnake.cloud_subscription_plan_id })
   cloudSubscriptionPlanId!: string;
 
   @Column({ type: 'enum', name: CloudSubscriptionPlanPropSnake.type, enum: CloudSubscriptionPlanType, nullable: false })
   type!: CloudSubscriptionPlanType;
 
+  @Column({ type: 'enum', name: CloudSubscriptionPlanPropSnake.period, enum: BillingPeriod, nullable: false })
+  period!: BillingPeriod;
+
   @Column('uuid', { name: CloudSubscriptionPlanPropSnake.cloud_license_id })
   cloudLicenseId!: string;
+
+  @Column('uuid', { name: CloudSubscriptionPlanPropSnake.billing_coupon_id, nullable: true })
+  billingCouponId!: string | null;
+
+  @Column('integer', { name: CloudSubscriptionPlanPropSnake.billing_coupon_remaining_apply_count, nullable: true })
+  billingCouponRemainingApplyCount!: number | null;
 
   @ColumnTemplate.CreateDate(CloudSubscriptionPlanPropSnake.created_at)
   createdAt!: Date;
