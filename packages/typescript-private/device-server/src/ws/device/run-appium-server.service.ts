@@ -18,7 +18,10 @@ export class DeviceRunAppiumServerService
   extends WebSocketGatewayBase<Value, typeof DeviceRunAppiumServer.sendMessage, typeof DeviceRunAppiumServer.receiveMessage>
   implements OnWebSocketMessage<Value, typeof DeviceRunAppiumServer.sendMessage, typeof DeviceRunAppiumServer.receiveMessage>, OnWebSocketClose<Value>
 {
-  constructor(private readonly scanService: ScanService, private readonly logger: DoguLogger) {
+  constructor(
+    private readonly scanService: ScanService,
+    private readonly logger: DoguLogger,
+  ) {
     super(DeviceRunAppiumServer, logger);
   }
 
@@ -33,7 +36,7 @@ export class DeviceRunAppiumServerService
       throw new Error(`Device with serial ${serial} not found`);
     }
 
-    await Promise.resolve(deviceChannel.switchAppiumContext('remote'))
+    await Promise.resolve(deviceChannel.switchAppiumContext('remote', 'device-run-appium-server-start'))
       .then((context: AppiumContext) => {
         this.send(webSocket, {
           value: {
@@ -76,7 +79,7 @@ export class DeviceRunAppiumServerService
     if (serial.length !== 0) {
       const deviceChannel = this.scanService.findChannel(serial);
       if (deviceChannel !== null) {
-        await deviceChannel.switchAppiumContext('builtin');
+        await deviceChannel.switchAppiumContext('builtin', 'device-run-appium-server-end');
       }
     }
   }

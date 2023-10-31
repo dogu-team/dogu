@@ -192,7 +192,7 @@ export class LinuxChannel implements DeviceChannel {
     return null;
   }
 
-  switchAppiumContext(key: AppiumContextKey): PromiseOrValue<AppiumContext> {
+  switchAppiumContext(key: AppiumContextKey, reason: string): PromiseOrValue<AppiumContext> {
     throw new Error('Method not implemented.');
   }
 

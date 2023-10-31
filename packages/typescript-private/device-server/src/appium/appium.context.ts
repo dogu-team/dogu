@@ -1,5 +1,5 @@
 import { Platform, Serial } from '@dogu-private/types';
-import { callAsyncWithTimeout, Class, delay, errorify, Instance, NullLogger, Printable, Retry, stringify } from '@dogu-tech/common';
+import { callAsyncWithTimeout, Class, delay, errorify, Instance, NullLogger, Printable, Retry, stringify, usingAsnyc } from '@dogu-tech/common';
 import { Android, AppiumContextInfo, ContextPageSource, Rect, ScreenSize, SystemBar } from '@dogu-tech/device-client-common';
 import { killChildProcess, killProcessOnPort, Logger } from '@dogu-tech/node';
 import AsyncLock from 'async-lock';
@@ -659,28 +659,43 @@ export class AppiumContextProxy implements AppiumContext, Zombieable {
     return this.implOrNull.getContextPageSources();
   }
 
-  async switchAppiumContext(key: AppiumContextKey): Promise<void> {
+  async switchAppiumContext(key: AppiumContextKey, reason: string): Promise<void> {
     await this.contextLock.acquire('switchAppiumContext', async () => {
       if (key === this.impl.key) {
         return;
       }
+      const random = Math.random();
       const befImplKey = this.impl.key;
-      this.logger.info(`switching appium context: from: ${befImplKey}, to: ${key} start`);
-      ZombieServiceInstance.deleteAllComponentsIfExist((zombieable) => {
-        if (zombieable.serial !== this.options.serial) {
-          return false;
-        }
-        if (zombieable instanceof AppiumContextImpl || zombieable instanceof AppiumRemoteContext) {
-          return true;
-        }
-        return false;
-      }, 'switching appium context');
 
-      const appiumContext = AppiumContextProxy.createAppiumContext({ ...this.options, key: key }, this.logger);
-      const awaiter = ZombieServiceInstance.addComponent(appiumContext);
-      await awaiter.waitUntilAlive();
-      this.impl = appiumContext;
-      this.logger.info(`switching appium context: from: ${befImplKey}, to: ${key} done`);
+      await usingAsnyc(
+        {
+          create: async () => {
+            this.logger.info(`switching appium context start`, { bef: befImplKey, after: key, reason, random });
+            await Promise.resolve();
+          },
+          dispose: async () => {
+            this.logger.info(`switching appium context  done`, { bef: befImplKey, after: key, reason, random });
+            await Promise.resolve();
+          },
+        },
+        async () => {
+          ZombieServiceInstance.deleteAllComponentsIfExist((zombieable) => {
+            if (zombieable.serial !== this.options.serial) {
+              return false;
+            }
+            if (zombieable instanceof AppiumContextImpl || zombieable instanceof AppiumRemoteContext) {
+              return true;
+            }
+            return false;
+          }, 'switching appium context');
+
+          const appiumContext = AppiumContextProxy.createAppiumContext({ ...this.options, key: key }, this.logger);
+          const awaiter = ZombieServiceInstance.addComponent(appiumContext);
+          await awaiter.waitUntilAlive();
+          this.impl = appiumContext;
+          this.zombieImpl = awaiter;
+        },
+      );
     });
   }
 

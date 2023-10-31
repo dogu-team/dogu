@@ -135,6 +135,27 @@ const BlockAppList: BlockAppInfo[] = [
   {
     vender: 'skt',
     category: 'noise',
+    keyword: 'Com.sktelecom.',
+    packageName: 'Com.sktelecom.',
+    disable: true,
+  },
+  {
+    vender: 'skt',
+    category: 'noise',
+    keyword: 'com.sktelecom.',
+    packageName: 'com.sktelecom.',
+    disable: true,
+  },
+  {
+    vender: 'skt',
+    category: 'noise',
+    keyword: 'com.tms',
+    packageName: 'com.tms',
+    disable: true,
+  },
+  {
+    vender: 'skt',
+    category: 'noise',
     keyword: 'com.skms.',
     packageName: 'com.skms.',
     disable: true,

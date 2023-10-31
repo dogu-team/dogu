@@ -20,7 +20,7 @@ export class AppiumDeviceWebDriverHandler implements DeviceWebDriverHandler {
 
   async onRelayHttp(headers: HeaderRecord, request: RelayRequest): Promise<RelayResponse> {
     if (this.appiumContextProxy.key !== 'remote') {
-      await this.appiumContextProxy.switchAppiumContext('remote');
+      await this.appiumContextProxy.switchAppiumContext('remote', 'remote-webdriver-start');
     }
 
     const httpRequestRelayHandler = this.httpRequestRelayService.getHandler(request.method);
@@ -63,7 +63,7 @@ export class AppiumDeviceWebDriverHandler implements DeviceWebDriverHandler {
       const appiumRemoteContext = this.appiumContextProxy.getImpl(AppiumRemoteContext);
       if (appiumRemoteContext.sessionId === param.sessionId) {
         try {
-          await this.appiumContextProxy.switchAppiumContext('builtin');
+          await this.appiumContextProxy.switchAppiumContext('builtin', 'remote-webdriver-done');
         } catch (error) {
           this.logger.error('Error while switching to builtin context', { error: errorify(error) });
         }

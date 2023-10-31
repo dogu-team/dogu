@@ -58,7 +58,12 @@ export class AndroidResetService {
       await this.timer.check(`AndroidResetService.reset.enableTestharness`, this.adb.enableTestharness());
     } catch (e) {
       await this.timer.check(`AndroidResetService.reset.resetAccounts`, this.resetAccounts(appiumAdb, appiumContext));
-      await this.timer.check(`AndroidResetService.reset.resetCommon`, this.resetCommon({ ignorePackages: [] }));
+      await this.timer.check(`AndroidResetService.reset.runAppSettingsActivity`, this.adb.runActivity('android.settings.MANAGE_APPLICATIONS_SETTINGS'));
+      await this.timer.check(`AndroidResetService.reset.resetSdcard`, this.adb.resetSdcard());
+      await this.timer.check(`AndroidResetService.reset.resetIMEList`, this.resetIMEList());
+      await this.timer.check(`AndroidResetService.reset.logcatClear`, this.adb.logcatClear());
+      await this.timer.check(`AndroidResetService.reset.resetPackages`, this.adb.resetPackages());
+      await this.timer.check(`AndroidResetService.reset.resetDirty`, this.resetDirty());
       await this.timer.check(`AndroidResetService.reset.reboot`, this.adb.reboot());
     }
     AndroidResetService.map.set(serial, { lastResetTime: Date.now() });
@@ -71,14 +76,6 @@ export class AndroidResetService {
       return false;
     }
     return semver.gte(version, '10.0.0');
-  }
-
-  private async resetCommon(option: { ignorePackages: string[] }): Promise<void> {
-    await this.timer.check(`AndroidResetService.resetCommon.resetPackages`, this.adb.resetPackages(option.ignorePackages));
-    await this.timer.check(`AndroidResetService.resetCommon.resetSdcard`, this.adb.resetSdcard());
-    await this.timer.check(`AndroidResetService.resetCommon.resetIMEList`, this.resetIMEList());
-    await this.timer.check(`AndroidResetService.resetCommon.logcatClear`, this.adb.logcatClear());
-    await this.timer.check(`AndroidResetService.resetCommon.resetDirty`, this.resetDirty());
   }
 
   private async resetDirty(): Promise<void> {

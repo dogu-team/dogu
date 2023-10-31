@@ -19,6 +19,7 @@ import HostFilter from 'src/components/hosts/HostFilter';
 import OrganizationDeviceFarmLayout from '../../../../src/components/layouts/OrganizationDeviceFarmLayout';
 import { swrAuthFetcher } from '../../../../src/api';
 import DeviceFarmTutorialLinkButton from '../../../../src/components/organizations/DeviceFarmTutorialLinkButton';
+import DownloadAgentButton from '../../../../src/components/hosts/DownloadAgentButton';
 
 export const DoguAgentLatestContext = createContext<{ latestInfo: DownloadablePackageResult[] }>({
   latestInfo: [],
@@ -48,21 +49,19 @@ const HostManagementPage: NextPageWithLayout<OrganizationServerSideProps> = ({ o
               >
                 {t('device-farm:addNewHost')}
               </Button>
-              {process.env.NEXT_PUBLIC_ENV !== 'self-hosted' && (
-                <Link href={`${process.env.NEXT_PUBLIC_LANDING_URL}/downloads/dogu-agent`} target="_blank">
-                  <Button
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      border: '',
-                    }}
-                  >
-                    <FcDownload style={{ marginRight: '4px' }} width={24} height={24} />
-                    {t('device-farm:agentDownloadTitle')}
-                  </Button>
-                </Link>
-              )}
+
+              <DownloadAgentButton
+                style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  border: '',
+                }}
+              >
+                <FcDownload style={{ marginRight: '4px' }} width={24} height={24} />
+                {t('device-farm:agentDownloadTitle')}
+              </DownloadAgentButton>
+
               <HostFilter />
             </LeftTopBox>
             <RefreshButton {...(process.env.NEXT_PUBLIC_ENV !== 'production' ? { 'access-id': 'host-refresh' } : {})} />

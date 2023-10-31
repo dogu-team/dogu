@@ -15,7 +15,6 @@ import useTutorialContext from '../../hooks/context/useTutorialContext';
 import useEventStore from '../../stores/events';
 import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd';
 import { getErrorMessageFromAxios } from '../../utils/error';
-import { getLocaledLink } from '../../utils/locale';
 import RefreshButton from '../buttons/RefreshButton';
 import TokenCopyInput from '../common/TokenCopyInput';
 import CreateHostModal from '../hosts/CreateHostModal';
@@ -26,6 +25,7 @@ import GuideStep from './GuideStep';
 import TutorialDeviceList from '../../../enterprise/components/device/TutorialDeviceList';
 import CreateProjectModal from '../projects/CreateProjectModal';
 import DoguText from '../common/DoguText';
+import DownloadAgentButton from '../hosts/DownloadAgentButton';
 
 const INTRODUCTION_ID = 'introduction';
 const CREATE_PROJECT_ID = 'create-project';
@@ -125,11 +125,6 @@ const DeviceFarmTutorial = () => {
     setLoading(false);
   };
 
-  const doguAgentDownloadLink =
-    process.env.NEXT_PUBLIC_ENV === 'self-hosted'
-      ? 'https://github.com/dogu-team/dogu/releases'
-      : `${process.env.NEXT_PUBLIC_LANDING_URL}${getLocaledLink(router.locale, '/downloads/dogu-agent')}`;
-
   return (
     <GuideLayout
       sidebar={
@@ -217,9 +212,7 @@ const DeviceFarmTutorial = () => {
             content={
               <div>
                 <div>
-                  <Link href={doguAgentDownloadLink} target="_blank">
-                    <Button type="primary">{t('downloadDoguAgentButtonTitle')}</Button>
-                  </Link>
+                  <DownloadAgentButton type="primary">{t('downloadDoguAgentButtonTitle')}</DownloadAgentButton>
                 </div>
 
                 <div style={{ marginTop: '.5rem' }}>
