@@ -31275,9 +31275,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"test-codeless@workspace:projects/test-service":
+"test-service@workspace:projects/test-service":
   version: 0.0.0-use.local
-  resolution: "test-codeless@workspace:projects/test-service"
+  resolution: "test-service@workspace:projects/test-service"
   dependencies:
     "@dogu-private/device-data": "workspace:^"
     "@dogu-private/sdk": "workspace:^"
