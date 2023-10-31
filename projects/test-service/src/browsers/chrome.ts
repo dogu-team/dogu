@@ -16,8 +16,11 @@ export class Chrome extends BrowserDriver {
   }
 
   async build(): Promise<void> {
-    // const services = new chrome.ServiceBuilder(Chrome.customChromeDriverPath);
+    const service = new chrome.ServiceBuilder();
     const options = new chrome.Options();
+
+    service.loggingTo('chrome.log');
+    service.enableVerboseLogging();
 
     options.addArguments('--headless');
     options.addArguments('--disable-gpu');
@@ -27,10 +30,10 @@ export class Chrome extends BrowserDriver {
     options.addArguments(`--user-agent=${this.createUserAgent()}`);
     options.excludeSwitches('enable-automation');
 
-    this.driver = await new Builder().forBrowser(Browser.CHROME).setChromeOptions(options).build();
+    this.driver = await new Builder().forBrowser(Browser.CHROME).setChromeOptions(options).setChromeService(service).build();
   }
 
-  async takeScreenshot(): Promise<void> {  
+  async takeScreenshot(): Promise<void> {
     const cdp = await this.driver.createCDPConnection('page');
     const clientWidth: number = await this.driver.executeScript('return document.documentElement.clientWidth');
     const innerWidth: number = await this.driver.executeScript('return window.innerWidth');
