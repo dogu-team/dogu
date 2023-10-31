@@ -1,9 +1,11 @@
 import { DeviceSystemInfo, Platform, PrivateProtocol, Serial } from '@dogu-private/types';
 import { delay, FilledPrintable } from '@dogu-tech/common';
 import child_process from 'child_process';
+import { AppiumContextImpl } from '../../../appium/appium.context';
 import { env } from '../../../env';
 import { IdeviceInstaller } from '../../externals/cli/ideviceinstaller';
 import { WebdriverAgentProcess } from '../../externals/cli/webdriver-agent-process';
+import { IosWebDriver } from '../../externals/webdriver/ios-webdriver';
 import { IosDeviceAgentService } from '../device-agent/ios-device-agent-service';
 import { IosResetService } from '../reset/ios-reset';
 import { Zombieable, ZombieProps, ZombieQueriable } from '../zombie/zombie-component';
@@ -140,6 +142,10 @@ const BlockAppList: BlockAppInfo[] = [
     bundleId: 'com.apple.Music',
     uninstall: true,
   },
+  {
+    bundleId: 'com.apple.Translate',
+    uninstall: true,
+  },
   // access block
   {
     bundleId: 'com.apple.Preferences',
@@ -172,6 +178,7 @@ export class IosSharedDeviceService implements Zombieable {
     private deviceAgent: IosDeviceAgentService,
     private wda: WebdriverAgentProcess,
     private reset: IosResetService,
+    private appiumContext: AppiumContextImpl,
     public printable: FilledPrintable,
   ) {
     this.zombieWaiter = ZombieServiceInstance.addComponent(this);
@@ -199,6 +206,14 @@ export class IosSharedDeviceService implements Zombieable {
     for (const app of uninstallApps) {
       await installer.uninstallApp(app);
     }
+
+    const driver = this.appiumContext.driver();
+    if (!driver) {
+      throw new Error(`IosResetService.clearSafariCache driver is null`);
+    }
+
+    const iosDriver = new IosWebDriver(driver);
+    await this.checkEnglish(iosDriver);
   }
 
   async revive(): Promise<void> {
@@ -232,4 +247,12 @@ export class IosSharedDeviceService implements Zombieable {
   }
 
   onDie(): void {}
+
+  private async checkEnglish(iosDriver: IosWebDriver): Promise<void> {
+    await iosDriver.relaunchApp('com.apple.Preferences');
+    const elem = await iosDriver.rawDriver.$('~General');
+    if (elem.error) {
+      throw new Error(`IosSharedDeviceService.checkEnglish. failed. language should be english`);
+    }
+  }
 }

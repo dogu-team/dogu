@@ -1,5 +1,5 @@
 import { DeviceSystemInfo, Serial, SerialPrintable } from '@dogu-private/types';
-import { delay, loop, usingAsnyc } from '@dogu-tech/common';
+import { delay, loop, loopTime, usingAsnyc } from '@dogu-tech/common';
 import { boxBox } from 'intersects';
 import { AppiumContextImpl } from '../../../appium/appium.context';
 import { IdeviceInstaller } from '../../externals/cli/ideviceinstaller';
@@ -54,6 +54,7 @@ export class IosResetService {
         await this.timer.check('IosResetService.reset.clearPhotosSuggestionAndFeedbacks', this.clearPhotosSuggestionAndFeedbacks(iosDriver));
         await this.timer.check('IosResetService.reset.clearFilesOnMyiPhone', this.clearFilesOnMyiPhone(iosDriver));
         await this.timer.check('IosResetService.reset.clearFilesRecentlyDeleted', this.clearFilesRecentlyDeleted(iosDriver));
+        await this.timer.check('IosResetService.reset.resetSettings', this.resetSettings(iosDriver));
       },
     );
   }
@@ -303,6 +304,33 @@ export class IosResetService {
       await iosDriver.clickSelector(new IosAccessibilitiySelector('Select'));
       await iosDriver.clickSelector(new IosAccessibilitiySelector('Delete All'));
       await iosDriver.clickSelector(new IosAccessibilitiySelector('Delete'));
+    }
+  }
+
+  private async resetSettings(iosDriver: IosWebDriver): Promise<void> {
+    await iosDriver.relaunchApp('com.apple.Preferences');
+    await iosDriver.clickSelector(new IosAccessibilitiySelector('General'));
+
+    const reset = await iosDriver.scrollToSelector(new IosAccessibilitiySelector('Transfer or Reset iPhone'));
+    await reset.click();
+
+    await iosDriver.clickSelector(new IosClassChainSelector('**/XCUIElementTypeStaticText[`label == "Reset"`]'));
+    await iosDriver.clickSelector(new IosAccessibilitiySelector('Reset Keyboard Dictionary'));
+    await iosDriver.clickSelector(new IosAccessibilitiySelector('Reset Dictionary'));
+
+    await iosDriver.clickSelector(new IosClassChainSelector('**/XCUIElementTypeStaticText[`label == "Reset"`]'));
+    await iosDriver.clickSelector(new IosAccessibilitiySelector('Reset Home Screen Layout'));
+    await iosDriver.clickSelector(new IosAccessibilitiySelector('Reset Home Screen'));
+
+    await iosDriver.clickSelector(new IosClassChainSelector('**/XCUIElementTypeStaticText[`label == "Reset"`]'));
+    await iosDriver.clickSelector(new IosAccessibilitiySelector('Reset Location & Privacy'));
+    await iosDriver.clickSelector(new IosAccessibilitiySelector('Reset Settings'));
+
+    for await (const _ of loopTime(300, 10000)) {
+      try {
+        await iosDriver.clickSelector(new IosAccessibilitiySelector('Trust'));
+        break;
+      } catch (e) {}
     }
   }
 }
