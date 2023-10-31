@@ -164,8 +164,14 @@ export class IosChannel implements DeviceChannel {
       wdaForwardPort,
     );
     const appiumWaiter = ZombieServiceInstance.addComponent(appiumContextProxy);
-    await appiumWaiter.waitUntilAlive();
+    await appiumWaiter.waitUntilAlive(100);
     logger.verbose('appium context started');
+
+    const reset = new IosResetService(serial, logger);
+    const appiumContextImpl = await appiumContextProxy.waitUntilBuiltin();
+    const shared = new IosSharedDeviceService(serial, wda, reset, appiumContextImpl, logger);
+    await shared.setup();
+    await shared.wait();
 
     logger.verbose('ios device agent process starting');
     const screenForwardPort = await deviceServerService.devicePortService.createOrGetHostPort(serial, 'iOSScreenForward');
@@ -216,11 +222,6 @@ export class IosChannel implements DeviceChannel {
       browserPlatform: 'ios',
     });
 
-    const reset = new IosResetService(serial, logger);
-    const shared = new IosSharedDeviceService(serial, systemInfo, deviceAgent, wda, reset, logger);
-    await shared.setup();
-    await shared.wait();
-
     const deviceChannel = new IosChannel(
       serial,
       systemInfo,
@@ -263,6 +264,9 @@ export class IosChannel implements DeviceChannel {
 
   static async restartIfAvailiable(serial: Serial, logger: Printable): Promise<void> {
     logger.info('IosChannel restartIfAvailiable', { on: env.DOGU_DEVICE_IOS_RESTART_ON_INIT });
+    if (env.DOGU_IS_DEVICE_SHARE) {
+      return;
+    }
     if (env.DOGU_DEVICE_IOS_RESTART_ON_INIT) {
       await IdeviceDiagnostics.restart(serial, logger);
       for await (const _ of loopTime(Milisecond.t3Seconds, Milisecond.t5Minutes)) {
@@ -489,9 +493,8 @@ export class IosChannel implements DeviceChannel {
 
   async reset(): Promise<void> {
     const { logger } = this;
-    await checkTime(`IosChannel.reset.switchAppiumContext`, this.switchAppiumContext('builtin'), logger);
-    const appiumContextImpl = this._appiumContext.getImpl(AppiumContextImpl);
-    await checkTime(`IosChannel.reset.reset`, this._reset.reset(this.info, appiumContextImpl), logger);
+    const appiumContextImpl = await checkTime(`IosChannel.reset.waitUntilBuiltin`, this._appiumContext.waitUntilBuiltin(), logger);
+    await checkTime(`IosChannel.reset.reset`, this._reset.reset(appiumContextImpl), logger);
   }
 
   joinWifi(ssid: string, password: string): PromiseOrValue<void> {

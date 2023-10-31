@@ -1,5 +1,5 @@
 import { Platform, Serial } from '@dogu-private/types';
-import { delay, errorify, FilledPrintable, loop, loopTime, Milisecond, setAxiosErrorFilterToIntercepter } from '@dogu-tech/common';
+import { delay, errorify, FilledPrintable, loopTime, Milisecond, setAxiosErrorFilterToIntercepter } from '@dogu-tech/common';
 import { HostPaths } from '@dogu-tech/node';
 import axios, { AxiosInstance } from 'axios';
 import http from 'http';
@@ -21,7 +21,12 @@ export class WebdriverAgentProcess {
   private readonly xctest: ZombieWdaXCTest;
   private readonly wdaTunnel: ZombieTunnel;
 
-  constructor(private readonly serial: Serial, private readonly wdaHostPort: number, private readonly logger: FilledPrintable, private isKilled = false) {
+  constructor(
+    private readonly serial: Serial,
+    private readonly wdaHostPort: number,
+    private readonly logger: FilledPrintable,
+    private isKilled = false,
+  ) {
     ZombieServiceInstance.deleteComponentIfExist((zombieable: Zombieable): boolean => {
       if (zombieable instanceof ZombieWdaXCTest) {
         return zombieable.serial === this.serial;
@@ -68,7 +73,7 @@ export class WebdriverAgentProcess {
   }
 
   async waitUntilSessionId(): Promise<void> {
-    for await (const _ of loop(300, 100)) {
+    for await (const _ of loopTime(300, Milisecond.t5Minutes)) {
       if (this.xctest.sessionId) {
         break;
       }
@@ -182,7 +187,11 @@ class ZombieWdaXCTest implements Zombieable {
   private error = 'none';
   private healthFailCount = 0;
 
-  constructor(public readonly serial: Serial, private readonly wdaHostPort: number, public printable: FilledPrintable) {
+  constructor(
+    public readonly serial: Serial,
+    private readonly wdaHostPort: number,
+    public printable: FilledPrintable,
+  ) {
     this.zombieWaiter = ZombieServiceInstance.addComponent(this);
     this.client = axios.create({
       baseURL: `http://127.0.0.1:${wdaHostPort}`,

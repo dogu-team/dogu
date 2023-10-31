@@ -51,7 +51,7 @@ export class IosWebDriver {
     const { driver } = this;
     const WaitTimeout = 10_000;
     const elem = await driver.$(selector.build());
-    await elem.waitForDisplayed({ timeout: WaitTimeout });
+    await elem.waitForEnabled({ timeout: WaitTimeout });
     await elem.click();
   }
 
@@ -61,7 +61,7 @@ export class IosWebDriver {
 
     for await (const _ of loop(300, MaxScrollCount)) {
       const elem = await driver.$(selector.build());
-      if (!(await elem.waitForEnabled({ timeout: 1_000 }).catch(() => null))) {
+      if (elem.error) {
         await driver.execute('mobile: scroll', {
           direction: 'down',
         });

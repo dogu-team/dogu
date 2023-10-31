@@ -1,4 +1,4 @@
-import { DeviceSystemInfo, Serial, SerialPrintable } from '@dogu-private/types';
+import { Serial, SerialPrintable } from '@dogu-private/types';
 import { delay, loop, loopTime, usingAsnyc } from '@dogu-tech/common';
 import { boxBox } from 'intersects';
 import { AppiumContextImpl } from '../../../appium/appium.context';
@@ -6,9 +6,16 @@ import { IdeviceInstaller } from '../../externals/cli/ideviceinstaller';
 import { IosAccessibilitiySelector, IosClassChainSelector, IosPredicateStringSelector, IosWebDriver } from '../../externals/webdriver/ios-webdriver';
 import { CheckTimer } from '../../util/check-time';
 
+export interface IosResetInfo {
+  lastResetTime: number;
+}
+
+const ResetExpireTime = 10 * 60 * 1000;
+
 export class IosResetService {
   private timer: CheckTimer;
   private _isResetting = false;
+  private static map: Map<Serial, IosResetInfo> = new Map(); // Hold for process lifetime
   constructor(
     private serial: Serial,
     private logger: SerialPrintable,
@@ -20,10 +27,29 @@ export class IosResetService {
     return this._isResetting;
   }
 
+  async makeDirty(): Promise<void> {
+    IosResetService.map.delete(this.serial);
+    await Promise.resolve();
+  }
+
+  async isDirty(): Promise<boolean> {
+    const { serial } = this;
+    const lastResetInfo = IosResetService.map.get(serial);
+    if (!lastResetInfo) {
+      return true;
+    }
+    const { lastResetTime } = lastResetInfo;
+    if (Date.now() - lastResetTime > ResetExpireTime) {
+      return true;
+    }
+    return false;
+    await Promise.resolve();
+  }
+
   /*
    * Reset device and reboot
    */
-  async reset(info: DeviceSystemInfo, appiumContext: AppiumContextImpl): Promise<void> {
+  async reset(appiumContext: AppiumContextImpl): Promise<void> {
     const { serial, logger } = this;
     const driver = appiumContext.driver();
     if (!driver) {
@@ -35,17 +61,16 @@ export class IosResetService {
       {
         create: async () => {
           this._isResetting = true;
-          this.logger.info(`IosResetService.reset begin`, { serial, info });
+          this.logger.info(`IosResetService.reset begin`, { serial });
           await delay(0);
         },
         dispose: async () => {
           this._isResetting = false;
-          this.logger.info(`IosResetService.reset end`, { serial, info });
+          this.logger.info(`IosResetService.reset end`, { serial });
           await delay(0);
         },
       },
       async () => {
-        await this.timer.check('IosResetService.reset.removeUserApps', this.removeUserApps());
         await this.timer.check('IosResetService.reset.logoutApppleAccount', this.logoutApppleAccount(iosDriver));
         await this.timer.check('IosResetService.reset.clearSafariCache', this.clearSafariCache(iosDriver));
         await this.timer.check('IosResetService.reset.clearPhotoImages', this.clearPhotoImages(iosDriver));
@@ -55,6 +80,8 @@ export class IosResetService {
         await this.timer.check('IosResetService.reset.clearFilesOnMyiPhone', this.clearFilesOnMyiPhone(iosDriver));
         await this.timer.check('IosResetService.reset.clearFilesRecentlyDeleted', this.clearFilesRecentlyDeleted(iosDriver));
         await this.timer.check('IosResetService.reset.resetSettings', this.resetSettings(iosDriver));
+        await this.timer.check('IosResetService.reset.removeUserApps', this.removeUserApps()); // last step because this removes appium
+        IosResetService.map.set(serial, { lastResetTime: Date.now() });
       },
     );
   }
@@ -85,19 +112,19 @@ export class IosResetService {
   }
 
   private async clearSafariCache(iosDriver: IosWebDriver): Promise<void> {
-    const ClearConfirmCount = 3;
+    const DeleteRepeatCount = 2;
 
-    await iosDriver.relaunchApp('com.apple.Preferences');
+    for (let i = 0; i < DeleteRepeatCount; i++) {
+      await iosDriver.relaunchApp('com.apple.Preferences');
 
-    const safari = await iosDriver.scrollToSelector(new IosAccessibilitiySelector('Safari'));
-    await safari.click();
+      const safari = await iosDriver.scrollToSelector(new IosAccessibilitiySelector('Safari'));
+      await safari.click();
 
-    await iosDriver.scrollToSelector(new IosAccessibilitiySelector('CLEAR_HISTORY_AND_DATA'));
+      await iosDriver.scrollToSelector(new IosAccessibilitiySelector('CLEAR_HISTORY_AND_DATA'));
 
-    for (let i = 0; i < ClearConfirmCount; i++) {
       await iosDriver.clickSelector(new IosAccessibilitiySelector('CLEAR_HISTORY_AND_DATA'));
 
-      const clearConfirm = await $(new IosAccessibilitiySelector('Clear History and Data').build());
+      const clearConfirm = await iosDriver.rawDriver.$(new IosAccessibilitiySelector('Clear History and Data').build());
       if (clearConfirm.error) {
         break;
       }

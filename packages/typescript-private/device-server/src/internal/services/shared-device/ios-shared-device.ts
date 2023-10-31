@@ -1,4 +1,4 @@
-import { DeviceSystemInfo, Platform, PrivateProtocol, Serial } from '@dogu-private/types';
+import { Platform, PrivateProtocol, Serial } from '@dogu-private/types';
 import { delay, FilledPrintable } from '@dogu-tech/common';
 import child_process from 'child_process';
 import { AppiumContextImpl } from '../../../appium/appium.context';
@@ -6,7 +6,7 @@ import { env } from '../../../env';
 import { IdeviceInstaller } from '../../externals/cli/ideviceinstaller';
 import { WebdriverAgentProcess } from '../../externals/cli/webdriver-agent-process';
 import { IosWebDriver } from '../../externals/webdriver/ios-webdriver';
-import { IosDeviceAgentService } from '../device-agent/ios-device-agent-service';
+import { CheckTimer } from '../../util/check-time';
 import { IosResetService } from '../reset/ios-reset';
 import { Zombieable, ZombieProps, ZombieQueriable } from '../zombie/zombie-component';
 import { ZombieServiceInstance } from '../zombie/zombie-service';
@@ -172,15 +172,15 @@ export class IosSharedDeviceService implements Zombieable {
   public platform = Platform.PLATFORM_IOS;
   private logcatProc: child_process.ChildProcess | undefined = undefined;
   private zombieWaiter: ZombieQueriable;
+  private timer: CheckTimer;
   constructor(
     public serial: Serial,
-    private systemInfo: DeviceSystemInfo,
-    private deviceAgent: IosDeviceAgentService,
     private wda: WebdriverAgentProcess,
     private reset: IosResetService,
     private appiumContext: AppiumContextImpl,
     public printable: FilledPrintable,
   ) {
+    this.timer = new CheckTimer(this.printable);
     this.zombieWaiter = ZombieServiceInstance.addComponent(this);
   }
 
@@ -201,19 +201,25 @@ export class IosSharedDeviceService implements Zombieable {
       return;
     }
     const { serial, printable: logger } = this;
+    const driver = this.appiumContext.driver();
+    if (!driver) {
+      throw new Error(`IosResetService.clearSafariCache driver is null`);
+    }
+
+    if (await this.reset.isDirty()) {
+      await this.timer.check(`IosResetService.setup.reset`, this.reset.reset(this.appiumContext));
+      throw new Error(`IosResetService.revive. device is dirty. so trigger reset ${serial}`);
+    }
     const installer = new IdeviceInstaller(serial, logger);
     const uninstallApps = BlockAppList.filter((item) => item.uninstall).map((item) => item.bundleId);
     for (const app of uninstallApps) {
       await installer.uninstallApp(app);
     }
 
-    const driver = this.appiumContext.driver();
-    if (!driver) {
-      throw new Error(`IosResetService.clearSafariCache driver is null`);
-    }
-
     const iosDriver = new IosWebDriver(driver);
     await this.checkEnglish(iosDriver);
+
+    await this.reset.makeDirty();
   }
 
   async revive(): Promise<void> {
