@@ -1,16 +1,16 @@
 import { OnWebSocketClose, OnWebSocketMessage, WebSocketGatewayBase, WebSocketRegistryValueAccessor, WebSocketService } from '@dogu-private/nestjs-common';
 import { Serial } from '@dogu-private/types';
-import { errorify, Instance, LogLevel } from '@dogu-tech/common';
+import { errorify, Instance } from '@dogu-tech/common';
 import { DeviceRunAppiumServer } from '@dogu-tech/device-client-common';
-import { DateNano } from '@dogu-tech/node';
 import { IncomingMessage } from 'http';
 import WebSocket from 'ws';
-import { AppiumContext } from '../../appium/appium.context';
+import { AppiumRemoteContextRental } from '../../appium/appium.context.proxy';
 import { DoguLogger } from '../../logger/logger';
 import { ScanService } from '../../scan/scan.service';
 
 interface Value {
   serial: Serial;
+  rental: AppiumRemoteContextRental | null;
 }
 
 @WebSocketService(DeviceRunAppiumServer)
@@ -26,7 +26,7 @@ export class DeviceRunAppiumServerService
   }
 
   override onWebSocketOpen(webSocket: WebSocket, incommingMessage: IncomingMessage): Value {
-    return { serial: '' };
+    return { serial: '', rental: null };
   }
 
   async onWebSocketMessage(webSocket: WebSocket, message: Instance<typeof DeviceRunAppiumServer.sendMessage>, valueAccessor: WebSocketRegistryValueAccessor<Value>): Promise<void> {
@@ -35,52 +35,36 @@ export class DeviceRunAppiumServerService
     if (deviceChannel === null) {
       throw new Error(`Device with serial ${serial} not found`);
     }
-
-    await Promise.resolve(deviceChannel.switchAppiumContext('remote', 'device-run-appium-server-start'))
-      .then((context: AppiumContext) => {
-        this.send(webSocket, {
-          value: {
-            kind: 'DeviceRunAppiumServerReceiveMessageResultValue',
-            success: true,
-            serverPort: context.getInfo().server.port,
-          },
-        });
-      })
-      .catch((reason) => {
-        this.send(webSocket, {
-          value: {
-            kind: 'DeviceRunAppiumServerReceiveMessageResultValue',
-            success: false,
-            serverPort: 0,
-            reason: errorify(reason),
-          },
-        });
-      });
-    valueAccessor.update({ serial });
-  }
-
-  private createLogMessage(level: LogLevel, message: string, details?: Record<string, unknown>): Instance<typeof DeviceRunAppiumServer.receiveMessage> {
-    const result: Instance<typeof DeviceRunAppiumServer.receiveMessage> = {
-      value: {
-        kind: 'DeviceRunAppiumServerReceiveMessageLogValue',
-        log: {
-          level,
-          message,
-          details,
-          localTimeStampNano: new DateNano().toRFC3339Nano(),
+    try {
+      const rental = await deviceChannel.rentAppiumRemoteContext('DeviceRunAppiumServerService');
+      this.send(webSocket, {
+        value: {
+          kind: 'DeviceRunAppiumServerReceiveMessageResultValue',
+          success: true,
+          serverPort: rental.context.getInfo().server.port,
         },
-      },
-    };
-    return result;
+      });
+      valueAccessor.update({ serial, rental });
+    } catch (e) {
+      this.send(webSocket, {
+        value: {
+          kind: 'DeviceRunAppiumServerReceiveMessageResultValue',
+          success: false,
+          serverPort: 0,
+          reason: errorify(e),
+        },
+      });
+    }
   }
 
   async onWebSocketClose(webSocket: WebSocket, event: WebSocket.CloseEvent, valueAccessor: WebSocketRegistryValueAccessor<Value>): Promise<void> {
-    const { serial } = valueAccessor.get();
-    if (serial.length !== 0) {
-      const deviceChannel = this.scanService.findChannel(serial);
-      if (deviceChannel !== null) {
-        await deviceChannel.switchAppiumContext('builtin', 'device-run-appium-server-end');
-      }
+    const { serial, rental } = valueAccessor.get();
+    if (serial.length === 0) {
+      return;
     }
+    if (!rental) {
+      return;
+    }
+    await rental.release();
   }
 }
