@@ -40,26 +40,31 @@ export function printLog(ctx: ExecutionContext, guardName: string, roleType: PRO
   logger.info(`${guardName}: `, { logInfo });
 }
 
-export function getOrganizationIdFromRequest(ctx: ExecutionContext): OrganizationId {
-  const orgIdParam = ctx.switchToHttp().getRequest<{ params: { organizationId: OrganizationId } }>().params.organizationId;
-  const orgIdQuery = ctx.switchToHttp().getRequest<{ query: { organizationId: OrganizationId } }>().query.organizationId;
-  const orgIdBody = ctx.switchToHttp().getRequest<{ body: { organizationId: OrganizationId } }>().body.organizationId;
-  const orgIds = [orgIdParam, orgIdQuery, orgIdBody].filter((id): id is OrganizationId => id !== undefined);
-  if (orgIds.length === 0) {
-    throw new HttpException(`Guard Error. organizationId is required`, HttpStatus.BAD_REQUEST);
-  } else if (orgIds.length > 1) {
-    throw new HttpException(`Guard Error. organizationId is duplicated`, HttpStatus.BAD_REQUEST);
-  }
-  return orgIds[0];
+export function getOrganizationIdFromRequest(ctx: ExecutionContext): OrganizationId | undefined {
+  const orgIdParam = ctx.switchToHttp().getRequest<{ params: { organizationId?: OrganizationId } }>().params.organizationId;
+  const orgIdQuery = ctx.switchToHttp().getRequest<{ query: { organizationId?: OrganizationId } }>().query.organizationId;
+  const orgIdBody = ctx.switchToHttp().getRequest<{ body: { organizationId?: OrganizationId } }>().body.organizationId;
+
+  return orgIdParam || orgIdQuery || orgIdBody;
 }
 
 export module UserPermission {
   export async function getUserWithOrganizationRoleAndProjectRoleGroup(
     manager: EntityManager,
-    organizationId: OrganizationId,
+    organizationId: OrganizationId | undefined,
     projectId: ProjectId,
     userId: UserId,
   ): Promise<User | null> {
+    if (!organizationId) {
+      const userRole = await manager.getRepository(OrganizationAndUserAndOrganizationRole).findOne({ where: { userId } });
+
+      if (!userRole) {
+        throw new HttpException(`The user is not a member of the organization.`, HttpStatus.UNAUTHORIZED);
+      }
+
+      organizationId = userRole?.organizationId;
+    }
+
     const user = await manager //
       .getRepository(User)
       .createQueryBuilder('user')
@@ -112,15 +117,18 @@ export module UserPermission {
     return projejctRole;
   }
 
-  export async function getOrganizationUserRole(manager: EntityManager, organizationId: OrganizationId, userId: UserId): Promise<OrganizationRole> {
+  export async function getOrganizationUserRole(manager: EntityManager, organizationId: OrganizationId | undefined, userId: UserId): Promise<OrganizationRole> {
     const orgIdCamel = OrganizationAndUserAndOrganizationRolePropCamel.organizationId;
     const orgIdSnake = OrganizationAndUserAndOrganizationRolePropSnake.organization_id;
+
+    const orgIdWhereClause = organizationId ? `orgUserRole.${orgIdSnake} = :${orgIdCamel}` : `1=1`;
+
     const orgUserRole = await manager
       .getRepository(OrganizationAndUserAndOrganizationRole) //
       .createQueryBuilder('orgUserRole')
       .innerJoinAndSelect(`orgUserRole.${OrganizationAndUserAndOrganizationRolePropCamel.organizationRole}`, `organizationRole`)
       .where(`orgUserRole.${UserPropSnake.user_id} = :${UserPropCamel.userId}`, { userId })
-      .andWhere(`orgUserRole.${orgIdSnake} = :${orgIdCamel}`, { organizationId })
+      .andWhere(orgIdWhereClause, { [orgIdCamel]: organizationId })
       .getOne();
 
     if (!orgUserRole) {
