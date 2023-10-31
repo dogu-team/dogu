@@ -1,7 +1,8 @@
 ARG DEBIAN_FRONTEND=noninteractive
 
 FROM ubuntu:22.04 AS dogu-console
-RUN apt-get update \
+RUN apt-get clean \
+    && apt-get update \
     && apt-get install -y ca-certificates curl gnupg \
     && curl -sL https://deb.nodesource.com/setup_lts.x | bash - \
     && apt-get install -y nodejs \
