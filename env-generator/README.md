@@ -1,3 +1,7 @@
+## Just Run (in root directory)
+
+env-generator/bin/env-generator gen-all local
+
 ## Deploy
 
 - npm install

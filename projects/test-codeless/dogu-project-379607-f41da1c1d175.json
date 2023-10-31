@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "dogu-project-379607",
+  "private_key_id": "f41da1c1d17519cf96c68dc9d02917c6810dd47e",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC1goPjv5fEl0Xf\nWMQvjSM2GP+0Ow8LiR8Y9/swSNm+c+/YsFcate8dn9r8C0ljVxeDVhe2syjCWmCh\nYvE3NRRooWJF7HnuHFV99vyXuoyRJaq5BoSeZG3WCOHTz6ZfL+9xEhJqpNekA1jJ\nu/0J5lT4Xc28cDmwe/+Tyq7KJBZ9GlKjW22PQzFZ5aYCKBBWdaxXeDNTejzZtRmM\ngClVFUt9oaiG1UZ1j2pLzNJIUsR2vqeinVD2DABEmx9A2ZR9NryO2exnYOc7OAip\nPnqXM+FG9y2taBiSCLG1btWLQ7NKEVFv4OyUArOG2OVwj0cFhrf22ZqNpM+H7zdL\nvHYl4akrAgMBAAECggEANN35bU4CNfv7mYSgy9rXfSvF2qhzBuCfAqZD7vnhFhRt\nsRcXn8uLBH1pioz9CKa2zgW27Xt8bTNmvsrzSCm5MoqC9avdjcmJ6yETzFvFEoe+\nlJq96OaGiVdX81ohcssi+jOR0qcFuhtRcpzDJG2GpTqpMHAdlXZgaBsaUv004aXZ\nklXtu2p3iR+HA3eaxKb1Zzmr+0nG8mcGQnRH+X+1SVEGBs+/juAJa6IOMuLp157E\nS6JwgeV55jhATss9n5DmlZCJnA5R6AgerwYIOqrv+gs38H0smQB5LRWpNqKB3TKD\ngXbs4GWPRoIAduydAsHOCGldXett6imxApoN5D6dsQKBgQDqsd0AknHzQ4HZo5bP\nkKFn+LHa1gHcKUTeX9WR9XyHSUTX4h236vbNZGR70BldajRx+acRE5GyeiteJNCt\nUaAxd7m6Il8604kiaElnLaTdiollFvpz8zFNN43K/Eu5I4r0X0+G5D0vN3X9wIAj\nYR581TqIjTz+bTOhpdh5W0J8cQKBgQDF/KwOdfAmOkpzBGplxw9ZdPZvfar9DFUa\n07BpqFR8cNfN/zZT/IJ+bLcjO5xY8J97HjaIyJZuD+5zIR+pt0khu3cV1iZ+lLRN\nH19sYulBuRLLnaKi5Q/B65CcNP8eXxaa6uPbs3QrNjdrZniDFALU41WX3lgB2KQP\nGJbRxWC9WwKBgHgp9yC62nMWJl7bfnTp9Wo5kD6egjdKPgOph70Ctu7Bmej60gJ/\n4DuLYlNuWf5VSWLt0xdQMLH0EU5ThTCocV/CkCp4PM/uzPD7+lFEsnvn2a8Tk8pY\nQu7pOcUrZk31n8i9IAfNxnHtcJEqxbDXofeCaUTPI+KU4PGr62k/S4xRAoGAHuPC\nMGtkMYKstO8+bmy1T165SEHSGLMA4DOg9Ysmy1eLw/8KieX+shziIeQeC55XM41O\nMt8g4UEpEdtcJk2LYnDuLoD/9oXa76FycOWpwPBQJ2aLxmB4qefH4yc9mo55Z2g4\nbsG74TYPRXlyWfkYTADADPbKwlb7mcNbXJUv97sCgYEAvnDjp1yCx9uMSRRFgPYA\nphWTppJTuhADe5sJF6xOlz1NqXND8cEseeqhUov5rqdETr+m2M19Aim1DEEn7jql\nq6bVr0hN4lZB+Sh2rt/XmqpnQtRFaiT3ZU3I3kS2rm2RbvcM7v+xXHmfVFyxrO9n\n8Q6knXWitM3W4N8ai5tcMUU=\n-----END PRIVATE KEY-----\n",
+  "client_email": "dogu-api@dogu-project-379607.iam.gserviceaccount.com",
+  "client_id": "103729795278048399930",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/dogu-api%40dogu-project-379607.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

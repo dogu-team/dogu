@@ -1,0 +1,21 @@
+{
+  "extends": "../../../tsconfig.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "rootDirs": ["."],
+    "baseUrl": ".",
+    "outDir": "build",
+    "incremental": true,
+    "removeComments": true
+  },
+  "exclude": ["node_modules", "test", "build", "**/*spec.ts"],
+  "include": ["src", "scripts"],
+  "references": [
+    {
+      "path": "../../typescript-private/types"
+    },
+    {
+      "path": "../../typescript/common"
+    }
+  ]
+}

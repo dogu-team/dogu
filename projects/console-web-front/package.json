@@ -16,6 +16,7 @@
     "@ant-design/cssinjs": "1.9.1",
     "@ant-design/icons": "5.0.1",
     "@dogu-private/console": "workspace:^",
+    "@dogu-private/device-data": "workspace:^",
     "@dogu-private/types": "workspace:^",
     "@dogu-private/webrtc": "workspace:^",
     "@dogu-tech/action-common": "workspace:^",

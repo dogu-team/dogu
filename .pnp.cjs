@@ -68,6 +68,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:packages/typescript-private/console-open-api"\
       },\
       {\
+        "name": "@dogu-private/device-data",\
+        "reference": "workspace:packages/typescript-private/device-data"\
+      },\
+      {\
         "name": "@dogu-private/device-server",\
         "reference": "workspace:packages/typescript-private/device-server"\
       },\
@@ -86,6 +90,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       {\
         "name": "@dogu-private/nestjs-common",\
         "reference": "workspace:packages/typescript-private/nestjs-common"\
+      },\
+      {\
+        "name": "@dogu-private/sdk",\
+        "reference": "workspace:packages/typescript-private/sdk"\
       },\
       {\
         "name": "@dogu-private/types",\
@@ -205,7 +213,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       },\
       {\
         "name": "test-codeless",\
-        "reference": "workspace:projects/test-codeless"\
+        "reference": "workspace:projects/test-service"\
       },\
       {\
         "name": "validators",\
@@ -224,11 +232,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@dogu-private/console", ["workspace:packages/typescript-private/console"]],\
       ["@dogu-private/console-host-agent", ["workspace:packages/typescript-private/console-host-agent"]],\
       ["@dogu-private/console-open-api", ["workspace:packages/typescript-private/console-open-api"]],\
+      ["@dogu-private/device-data", ["workspace:packages/typescript-private/device-data"]],\
       ["@dogu-private/device-server", ["workspace:packages/typescript-private/device-server"]],\
       ["@dogu-private/dogu-agent-core", ["workspace:packages/typescript-private/dogu-agent-core"]],\
       ["@dogu-private/dost-children", ["workspace:packages/typescript-private/dost-children"]],\
       ["@dogu-private/host-agent", ["workspace:packages/typescript-private/host-agent"]],\
       ["@dogu-private/nestjs-common", ["workspace:packages/typescript-private/nestjs-common"]],\
+      ["@dogu-private/sdk", ["workspace:packages/typescript-private/sdk"]],\
       ["@dogu-private/types", ["workspace:packages/typescript-private/types"]],\
       ["@dogu-private/webrtc", ["workspace:packages/typescript-private/webrtc"]],\
       ["@dogu-tech/action-common", ["workspace:packages/typescript/action-common"]],\
@@ -263,7 +273,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["protocol-exporter", ["workspace:prebuilds/protocol-exporter"]],\
       ["pytest-dogu-sdk", ["workspace:packages/python/pytest-dogu-sdk"]],\
       ["routine-interface-exporter", ["workspace:prebuilds/routine-interface-exporter"]],\
-      ["test-codeless", ["workspace:projects/test-codeless"]],\
+      ["test-codeless", ["workspace:projects/test-service"]],\
       ["validators", ["workspace:validators"]]\
     ],\
     "fallbackPool": [\
@@ -7509,6 +7519,26 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "SOFT"\
         }]\
       ]],\
+      ["@dogu-private/device-data", [\
+        ["workspace:packages/typescript-private/device-data", {\
+          "packageLocation": "./packages/typescript-private/device-data/",\
+          "packageDependencies": [\
+            ["@dogu-private/device-data", "workspace:packages/typescript-private/device-data"],\
+            ["@dogu-private/types", "workspace:packages/typescript-private/types"],\
+            ["@dogu-tech/common", "workspace:packages/typescript/common"],\
+            ["@dogu-tech/node", "workspace:packages/typescript/node"],\
+            ["@types/node", "npm:18.15.11"],\
+            ["class-transformer", "npm:0.5.1"],\
+            ["class-validator", "npm:0.14.0"],\
+            ["nodemon", "npm:2.0.22"],\
+            ["reflect-metadata", "npm:0.1.13"],\
+            ["shx", "npm:0.3.4"],\
+            ["ts-node", "virtual:f2635a2fcff48218c189c72f8ec68a58c0c9a493231eeb25fc0d4d97932a237dd3a38bfaa7c8a6d4be36984c08b243589188d7525f771fc6d7018c6cf79aeba1#npm:10.9.1"],\
+            ["typescript", "patch:typescript@npm%3A4.7.4#~builtin<compat/typescript>::version=4.7.4&hash=65a307"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
       ["@dogu-private/device-server", [\
         ["workspace:packages/typescript-private/device-server", {\
           "packageLocation": "./packages/typescript-private/device-server/",\
@@ -7719,6 +7749,29 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["ts-node", "virtual:f2635a2fcff48218c189c72f8ec68a58c0c9a493231eeb25fc0d4d97932a237dd3a38bfaa7c8a6d4be36984c08b243589188d7525f771fc6d7018c6cf79aeba1#npm:10.9.1"],\
             ["typescript", "patch:typescript@npm%3A4.7.4#~builtin<compat/typescript>::version=4.7.4&hash=65a307"],\
             ["ws", "virtual:b2489bbc0216283d7687523442dd6b04aeaedb71246257f8a0a0e6ae86307b18dca708146dd0f430b02186348d070ef7e31b7b07c55f7aabad66d13be5ae7e15#npm:8.13.0"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
+      ["@dogu-private/sdk", [\
+        ["workspace:packages/typescript-private/sdk", {\
+          "packageLocation": "./packages/typescript-private/sdk/",\
+          "packageDependencies": [\
+            ["@dogu-private/sdk", "workspace:packages/typescript-private/sdk"],\
+            ["@dogu-private/types", "workspace:packages/typescript-private/types"],\
+            ["@dogu-tech/common", "workspace:packages/typescript/common"],\
+            ["@dogu-tech/node", "workspace:packages/typescript/node"],\
+            ["@google-cloud/storage", "npm:7.5.0"],\
+            ["@types/node", "npm:18.15.11"],\
+            ["axios", "npm:1.6.0"],\
+            ["class-transformer", "npm:0.5.1"],\
+            ["class-validator", "npm:0.14.0"],\
+            ["google-auth-library", "npm:9.2.0"],\
+            ["nodemon", "npm:2.0.22"],\
+            ["reflect-metadata", "npm:0.1.13"],\
+            ["shx", "npm:0.3.4"],\
+            ["ts-node", "virtual:f2635a2fcff48218c189c72f8ec68a58c0c9a493231eeb25fc0d4d97932a237dd3a38bfaa7c8a6d4be36984c08b243589188d7525f771fc6d7018c6cf79aeba1#npm:10.9.1"],\
+            ["typescript", "patch:typescript@npm%3A4.7.4#~builtin<compat/typescript>::version=4.7.4&hash=65a307"]\
           ],\
           "linkType": "SOFT"\
         }]\
@@ -8422,12 +8475,67 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
-      ["@google-cloud/run", [\
-        ["npm:1.0.1", {\
-          "packageLocation": "./.yarn/cache/@google-cloud-run-npm-1.0.1-de863ff517-18ebd9c8e9.zip/node_modules/@google-cloud/run/",\
+      ["@google-cloud/paginator", [\
+        ["npm:5.0.0", {\
+          "packageLocation": "./.yarn/cache/@google-cloud-paginator-npm-5.0.0-99f22a27fb-7b8236ce61.zip/node_modules/@google-cloud/paginator/",\
           "packageDependencies": [\
-            ["@google-cloud/run", "npm:1.0.1"],\
+            ["@google-cloud/paginator", "npm:5.0.0"],\
+            ["arrify", "npm:2.0.1"],\
+            ["extend", "npm:3.0.2"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@google-cloud/projectify", [\
+        ["npm:4.0.0", {\
+          "packageLocation": "./.yarn/cache/@google-cloud-projectify-npm-4.0.0-013ddf774f-973d28414a.zip/node_modules/@google-cloud/projectify/",\
+          "packageDependencies": [\
+            ["@google-cloud/projectify", "npm:4.0.0"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@google-cloud/promisify", [\
+        ["npm:4.0.0", {\
+          "packageLocation": "./.yarn/cache/@google-cloud-promisify-npm-4.0.0-abe4f29539-edd189398c.zip/node_modules/@google-cloud/promisify/",\
+          "packageDependencies": [\
+            ["@google-cloud/promisify", "npm:4.0.0"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@google-cloud/run", [\
+        ["npm:1.0.2", {\
+          "packageLocation": "./.yarn/cache/@google-cloud-run-npm-1.0.2-ddf358c218-76a37b507e.zip/node_modules/@google-cloud/run/",\
+          "packageDependencies": [\
+            ["@google-cloud/run", "npm:1.0.2"],\
             ["google-gax", "npm:4.0.4"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@google-cloud/storage", [\
+        ["npm:7.5.0", {\
+          "packageLocation": "./.yarn/cache/@google-cloud-storage-npm-7.5.0-5a7d711444-35f022ae6b.zip/node_modules/@google-cloud/storage/",\
+          "packageDependencies": [\
+            ["@google-cloud/storage", "npm:7.5.0"],\
+            ["@google-cloud/paginator", "npm:5.0.0"],\
+            ["@google-cloud/projectify", "npm:4.0.0"],\
+            ["@google-cloud/promisify", "npm:4.0.0"],\
+            ["abort-controller", "npm:3.0.0"],\
+            ["async-retry", "npm:1.3.3"],\
+            ["compressible", "npm:2.0.18"],\
+            ["duplexify", "npm:4.1.2"],\
+            ["ent", "npm:2.2.0"],\
+            ["fast-xml-parser", "npm:4.3.2"],\
+            ["gaxios", "npm:6.1.1"],\
+            ["google-auth-library", "npm:9.0.0"],\
+            ["mime", "npm:3.0.0"],\
+            ["mime-types", "npm:2.1.35"],\
+            ["p-limit", "npm:3.1.0"],\
+            ["retry-request", "npm:7.0.1"],\
+            ["teeny-request", "npm:9.0.0"],\
+            ["uuid", "npm:8.3.2"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -13739,6 +13847,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
+      ["@types/caseless", [\
+        ["npm:0.12.4", {\
+          "packageLocation": "./.yarn/cache/@types-caseless-npm-0.12.4-37f2e6155d-5b2141d99d.zip/node_modules/@types/caseless/",\
+          "packageDependencies": [\
+            ["@types/caseless", "npm:0.12.4"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
       ["@types/cli-table", [\
         ["npm:0.3.1", {\
           "packageLocation": "./.yarn/cache/@types-cli-table-npm-0.3.1-03981af745-d6017999e3.zip/node_modules/@types/cli-table/",\
@@ -15025,6 +15142,19 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
+      ["@types/request", [\
+        ["npm:2.48.11", {\
+          "packageLocation": "./.yarn/cache/@types-request-npm-2.48.11-b3f7690453-fa3682c642.zip/node_modules/@types/request/",\
+          "packageDependencies": [\
+            ["@types/request", "npm:2.48.11"],\
+            ["@types/caseless", "npm:0.12.4"],\
+            ["@types/node", "npm:18.15.13"],\
+            ["@types/tough-cookie", "npm:4.0.4"],\
+            ["form-data", "npm:2.5.1"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
       ["@types/responselike", [\
         ["npm:1.0.0", {\
           "packageLocation": "./.yarn/cache/@types-responselike-npm-1.0.0-85dd08af42-e99fc7cc62.zip/node_modules/@types/responselike/",\
@@ -15238,6 +15368,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["@types/through", "npm:0.0.31"],\
             ["@types/node", "npm:18.15.13"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@types/tough-cookie", [\
+        ["npm:4.0.4", {\
+          "packageLocation": "./.yarn/cache/@types-tough-cookie-npm-4.0.4-412f6f4c14-6be275b09f.zip/node_modules/@types/tough-cookie/",\
+          "packageDependencies": [\
+            ["@types/tough-cookie", "npm:4.0.4"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -17851,6 +17990,16 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
+      ["async-retry", [\
+        ["npm:1.3.3", {\
+          "packageLocation": "./.yarn/cache/async-retry-npm-1.3.3-bc90c5cee0-38a7152ff7.zip/node_modules/async-retry/",\
+          "packageDependencies": [\
+            ["async-retry", "npm:1.3.3"],\
+            ["retry", "npm:0.13.1"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
       ["async-validator", [\
         ["npm:4.2.5", {\
           "packageLocation": "./.yarn/cache/async-validator-npm-4.2.5-4d61110c66-3e3d891a2e.zip/node_modules/async-validator/",\
@@ -17998,6 +18147,16 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/axios-npm-1.5.1-6bc68e7d25-4444f06601.zip/node_modules/axios/",\
           "packageDependencies": [\
             ["axios", "npm:1.5.1"],\
+            ["follow-redirects", "virtual:f8ffbd6db860234aec9e3b1f7357c76ae7346ca1bf8803ae8f0fba9f68c4cf3e69a2687237b9715f6e3ebbfebfa2d74cb0fb87edc7fbe8b6577e440ac6443c68#npm:1.15.2"],\
+            ["form-data", "npm:4.0.0"],\
+            ["proxy-from-env", "npm:1.1.0"]\
+          ],\
+          "linkType": "HARD"\
+        }],\
+        ["npm:1.6.0", {\
+          "packageLocation": "./.yarn/cache/axios-npm-1.6.0-b0f6015a96-c7c9f2ae9e.zip/node_modules/axios/",\
+          "packageDependencies": [\
+            ["axios", "npm:1.6.0"],\
             ["follow-redirects", "virtual:f8ffbd6db860234aec9e3b1f7357c76ae7346ca1bf8803ae8f0fba9f68c4cf3e69a2687237b9715f6e3ebbfebfa2d74cb0fb87edc7fbe8b6577e440ac6443c68#npm:1.15.2"],\
             ["form-data", "npm:4.0.0"],\
             ["proxy-from-env", "npm:1.1.0"]\
@@ -20578,6 +20737,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@ant-design/cssinjs", "virtual:28b444ca65aca9f6532815a467e94245056189ac01976539aa2f4fb241137b45c9697a2074b54444c9d1c779b8e60e1a1140c79b811d2daaa176852048e428eb#npm:1.9.1"],\
             ["@ant-design/icons", "virtual:28b444ca65aca9f6532815a467e94245056189ac01976539aa2f4fb241137b45c9697a2074b54444c9d1c779b8e60e1a1140c79b811d2daaa176852048e428eb#npm:5.0.1"],\
             ["@dogu-private/console", "workspace:packages/typescript-private/console"],\
+            ["@dogu-private/device-data", "workspace:packages/typescript-private/device-data"],\
             ["@dogu-private/types", "workspace:packages/typescript-private/types"],\
             ["@dogu-private/webrtc", "workspace:packages/typescript-private/webrtc"],\
             ["@dogu-tech/action-common", "workspace:packages/typescript/action-common"],\
@@ -20674,6 +20834,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@dogu-private/console", "workspace:packages/typescript-private/console"],\
             ["@dogu-private/console-host-agent", "workspace:packages/typescript-private/console-host-agent"],\
             ["@dogu-private/console-open-api", "workspace:packages/typescript-private/console-open-api"],\
+            ["@dogu-private/device-data", "workspace:packages/typescript-private/device-data"],\
+            ["@dogu-private/sdk", "workspace:packages/typescript-private/sdk"],\
             ["@dogu-private/types", "workspace:packages/typescript-private/types"],\
             ["@dogu-tech/common", "workspace:packages/typescript/common"],\
             ["@dogu-tech/console-action", "workspace:packages/typescript/console-action"],\
@@ -20684,7 +20846,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@dogu-tech/env-tools", "workspace:packages/typescript/env-tools"],\
             ["@dogu-tech/node", "workspace:packages/typescript/node"],\
             ["@gitbeaker/node", "npm:35.8.1"],\
-            ["@google-cloud/run", "npm:1.0.1"],\
+            ["@google-cloud/run", "npm:1.0.2"],\
+            ["@google-cloud/storage", "npm:7.5.0"],\
             ["@influxdata/influxdb-client", "npm:1.33.2"],\
             ["@nestjs-modules/mailer", "virtual:af52db50ce1e17ae30d2a127ee5eb203e2459595ebbd4aaffd83a5dbfc8ae6774ee976f28c80a96cee2a1b783ba84770e425442edbbe56c55f18094f55940734#npm:1.9.1"],\
             ["@nestjs/common", "virtual:5d989e67e8ca83aa0556255791fdcac55623c9ccb3281b72bd3861d249df0961376ab2c76ee45bf4750178857c5c30bac3bb628af955e16567e426f9e366b233#npm:10.2.7"],\
@@ -22742,6 +22905,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
+      ["ent", [\
+        ["npm:2.2.0", {\
+          "packageLocation": "./.yarn/cache/ent-npm-2.2.0-97a5f0ffb8-f588b5707d.zip/node_modules/ent/",\
+          "packageDependencies": [\
+            ["ent", "npm:2.2.0"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
       ["entities", [\
         ["npm:2.2.0", {\
           "packageLocation": "./.yarn/cache/entities-npm-2.2.0-0fc8d5b2f7-19010dacaf.zip/node_modules/entities/",\
@@ -24364,6 +24536,14 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["strnum", "npm:1.0.5"]\
           ],\
           "linkType": "HARD"\
+        }],\
+        ["npm:4.3.2", {\
+          "packageLocation": "./.yarn/cache/fast-xml-parser-npm-4.3.2-ccbd0655a8-d507ce2efa.zip/node_modules/fast-xml-parser/",\
+          "packageDependencies": [\
+            ["fast-xml-parser", "npm:4.3.2"],\
+            ["strnum", "npm:1.0.5"]\
+          ],\
+          "linkType": "HARD"\
         }]\
       ]],\
       ["fastq", [\
@@ -25668,6 +25848,19 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["gtoken", "npm:7.0.1"],\
             ["jws", "npm:4.0.0"],\
             ["lru-cache", "npm:6.0.0"]\
+          ],\
+          "linkType": "HARD"\
+        }],\
+        ["npm:9.2.0", {\
+          "packageLocation": "./.yarn/cache/google-auth-library-npm-9.2.0-4f58501613-0da686964a.zip/node_modules/google-auth-library/",\
+          "packageDependencies": [\
+            ["google-auth-library", "npm:9.2.0"],\
+            ["base64-js", "npm:1.5.1"],\
+            ["ecdsa-sig-formatter", "npm:1.0.11"],\
+            ["gaxios", "npm:6.1.1"],\
+            ["gcp-metadata", "npm:6.0.0"],\
+            ["gtoken", "npm:7.0.1"],\
+            ["jws", "npm:4.0.0"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -38774,6 +38967,17 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["extend", "npm:3.0.2"]\
           ],\
           "linkType": "HARD"\
+        }],\
+        ["npm:7.0.1", {\
+          "packageLocation": "./.yarn/cache/retry-request-npm-7.0.1-f9e0591050-75a359afc8.zip/node_modules/retry-request/",\
+          "packageDependencies": [\
+            ["retry-request", "npm:7.0.1"],\
+            ["@types/request", "npm:2.48.11"],\
+            ["debug", "virtual:ac3d8e680759ce54399273724d44e041d6c9b73454d191d411a8c44bb27e22f02aaf6ed9d3ad0ac1c298eac4833cff369c9c7b84c573016112c4f84be2cd8543#npm:4.3.4"],\
+            ["extend", "npm:3.0.2"],\
+            ["teeny-request", "npm:9.0.0"]\
+          ],\
+          "linkType": "HARD"\
         }]\
       ]],\
       ["reusify", [\
@@ -40223,6 +40427,16 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
+      ["stream-events", [\
+        ["npm:1.0.5", {\
+          "packageLocation": "./.yarn/cache/stream-events-npm-1.0.5-38468a7cf3-969ce82e34.zip/node_modules/stream-events/",\
+          "packageDependencies": [\
+            ["stream-events", "npm:1.0.5"],\
+            ["stubs", "npm:3.0.0"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
       ["stream-meter", [\
         ["npm:1.0.4", {\
           "packageLocation": "./.yarn/cache/stream-meter-npm-1.0.4-3d727492d5-a732f7ede9.zip/node_modules/stream-meter/",\
@@ -40572,6 +40786,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/strnum-npm-1.0.5-9ba11d2a0a-651b2031db.zip/node_modules/strnum/",\
           "packageDependencies": [\
             ["strnum", "npm:1.0.5"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["stubs", [\
+        ["npm:3.0.0", {\
+          "packageLocation": "./.yarn/cache/stubs-npm-3.0.0-22bb785265-dec7b82186.zip/node_modules/stubs/",\
+          "packageDependencies": [\
+            ["stubs", "npm:3.0.0"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -41035,6 +41258,20 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
+      ["teeny-request", [\
+        ["npm:9.0.0", {\
+          "packageLocation": "./.yarn/cache/teeny-request-npm-9.0.0-4d571e3c55-9cb0ad83f9.zip/node_modules/teeny-request/",\
+          "packageDependencies": [\
+            ["teeny-request", "npm:9.0.0"],\
+            ["http-proxy-agent", "npm:5.0.0"],\
+            ["https-proxy-agent", "npm:5.0.1"],\
+            ["node-fetch", "virtual:50c4e924672e97e0681982af1e6a37af513261adc35417869cb8e5cb6c9436d9652fa39aa9807d59a964bfbcc0ccd05b16d243bef2c0e36dd8d8e06b4af10a6e#npm:2.7.0"],\
+            ["stream-events", "npm:1.0.5"],\
+            ["uuid", "npm:9.0.0"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
       ["temp", [\
         ["npm:0.8.3", {\
           "packageLocation": "./.yarn/cache/temp-npm-0.8.3-cef69b9f4d-bfc6f1223d.zip/node_modules/temp/",\
@@ -41155,10 +41392,14 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["test-codeless", [\
-        ["workspace:projects/test-codeless", {\
-          "packageLocation": "./projects/test-codeless/",\
+        ["workspace:projects/test-service", {\
+          "packageLocation": "./projects/test-service/",\
           "packageDependencies": [\
-            ["test-codeless", "workspace:projects/test-codeless"],\
+            ["test-codeless", "workspace:projects/test-service"],\
+            ["@dogu-private/device-data", "workspace:packages/typescript-private/device-data"],\
+            ["@dogu-private/sdk", "workspace:packages/typescript-private/sdk"],\
+            ["@google-cloud/run", "npm:1.0.2"],\
+            ["@google-cloud/storage", "npm:7.5.0"],\
             ["@types/lodash", "npm:4.14.195"],\
             ["@types/node", "npm:18.15.11"],\
             ["@types/selenium-webdriver", "npm:4.1.15"],\

@@ -1,6 +1,7 @@
 {
   "sidebarSubTitle": "Organization",
   "liveTestingPageTitle": "Live Testing",
+  "responsiveWebPageTitle": "Responsive Web Testing",
   "projectPageTitle": "Projects",
   "memberPageTitle": "Members",
   "deviceFarmPageTitle": "Device Farm",
