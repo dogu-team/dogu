@@ -50,8 +50,10 @@ export class IosResetService {
         await this.timer.check('IosResetService.reset.clearSafariCache', this.clearSafariCache(iosDriver));
         await this.timer.check('IosResetService.reset.clearPhotoImages', this.clearPhotoImages(iosDriver));
         await this.timer.check('IosResetService.reset.clearPhotoAlbums', this.clearPhotoAlbums(iosDriver));
-        await this.timer.check('IosResetService.reset.clearRecentlyDeletedPhotos', this.clearRecentlyDeletedPhotos(iosDriver));
+        await this.timer.check('IosResetService.reset.clearPhotosRecentlyDeleted', this.clearPhotosRecentlyDeleted(iosDriver));
         await this.timer.check('IosResetService.reset.clearPhotosSuggestionAndFeedbacks', this.clearPhotosSuggestionAndFeedbacks(iosDriver));
+        await this.timer.check('IosResetService.reset.clearFilesOnMyiPhone', this.clearFilesOnMyiPhone(iosDriver));
+        await this.timer.check('IosResetService.reset.clearFilesRecentlyDeleted', this.clearFilesRecentlyDeleted(iosDriver));
       },
     );
   }
@@ -133,6 +135,7 @@ export class IosResetService {
       await iosDriver.clickSelector(new IosClassChainSelector('**/XCUIElementTypeButton[`label == "Select"`]'));
 
       const cancelButton = await iosDriver.rawDriver.$(new IosClassChainSelector('**/XCUIElementTypeButton[`label == "Cancel"`]').build());
+      const windowRect = await iosDriver.rawDriver.getWindowRect();
       const cancelRect = await cancelButton.getElementRect(cancelButton.elementId);
 
       const images = await iosDriver.rawDriver.$$(new IosClassChainSelector('**/XCUIElementTypeImage').build());
@@ -140,6 +143,9 @@ export class IosResetService {
         const rect = await image.getElementRect(image.elementId);
 
         if (boxBox(rect.x, rect.y, rect.width, rect.height, cancelRect.x, cancelRect.y, cancelRect.width, cancelRect.height)) {
+          continue;
+        }
+        if (!boxBox(rect.x, rect.y, rect.width, rect.height, windowRect.x, windowRect.y, windowRect.width, windowRect.height)) {
           continue;
         }
 
@@ -174,7 +180,7 @@ export class IosResetService {
     }
   }
 
-  private async clearRecentlyDeletedPhotos(iosDriver: IosWebDriver): Promise<void> {
+  private async clearPhotosRecentlyDeleted(iosDriver: IosWebDriver): Promise<void> {
     const MaxScrollCount = 1000;
     const DeleteRepeatCount = 3;
 
@@ -212,5 +218,91 @@ export class IosResetService {
     const resetFeedback = await iosDriver.scrollToSelector(new IosAccessibilitiySelector('ResetPeopleFeedback'));
     await resetFeedback.click();
     await iosDriver.clickSelector(new IosAccessibilitiySelector('Reset'));
+  }
+
+  private async enterFilesBrowseHome(iosDriver: IosWebDriver): Promise<void> {
+    await iosDriver.relaunchApp('com.apple.DocumentsApp');
+
+    const windowRect = await iosDriver.rawDriver.getWindowRect();
+
+    // click bottom right
+    let browserButtons = await iosDriver.rawDriver.$$(new IosClassChainSelector('**/XCUIElementTypeButton[`label == "Browse"`]').build());
+    for (const button of browserButtons) {
+      const pos = await button.getLocation();
+      if (pos.x > windowRect.width / 2 && pos.y > windowRect.height / 2) {
+        await button.click();
+        break;
+      }
+    }
+
+    // click top left
+    browserButtons = await iosDriver.rawDriver.$$(new IosClassChainSelector('**/XCUIElementTypeButton[`label == "Browse"`]').build());
+    for (const button of browserButtons) {
+      const pos = await button.getLocation();
+      if (pos.x < windowRect.width / 2 && pos.y < windowRect.height / 2) {
+        await button.click();
+        break;
+      }
+    }
+  }
+
+  private async clearFilesOnMyiPhone(iosDriver: IosWebDriver): Promise<void> {
+    const windowRect = await iosDriver.rawDriver.getWindowRect();
+    await this.enterFilesBrowseHome(iosDriver);
+
+    await iosDriver.clickSelector(new IosAccessibilitiySelector('On My iPhone'));
+
+    await iosDriver.clickSelector(new IosAccessibilitiySelector('DOC.itemCollectionMenuButton.Ellipsis'));
+    await iosDriver.clickSelector(new IosAccessibilitiySelector('Icons'));
+    await iosDriver.clickSelector(new IosAccessibilitiySelector('DOC.itemCollectionMenuButton.Ellipsis'));
+    await iosDriver.clickSelector(new IosAccessibilitiySelector('View Options'));
+    await iosDriver.clickSelector(new IosAccessibilitiySelector('DOC.groupMenuButton.none'));
+
+    let emptyCheckedCount = 0;
+    for await (const _ of loop(300, 10000)) {
+      const cellsTry = await iosDriver.rawDriver.$$(new IosClassChainSelector('**/XCUIElementTypeCell').build());
+      if (cellsTry.length === 0) {
+        emptyCheckedCount++;
+        if (5 < emptyCheckedCount) {
+          break;
+        }
+        await delay(1000);
+        continue;
+      }
+
+      await iosDriver.clickSelector(new IosAccessibilitiySelector('DOC.itemCollectionMenuButton.Ellipsis'));
+      await iosDriver.clickSelector(new IosAccessibilitiySelector('Select'));
+
+      const cells = await iosDriver.rawDriver.$$(new IosClassChainSelector('**/XCUIElementTypeCell').build());
+      for (const cell of cells) {
+        const rect = await cell.getElementRect(cell.elementId);
+        if (!boxBox(rect.x, rect.y, rect.width, rect.height, windowRect.x, windowRect.y, windowRect.width, windowRect.height)) {
+          continue;
+        }
+        await cell.click();
+      }
+      await iosDriver.clickSelector(new IosAccessibilitiySelector('Delete'));
+    }
+  }
+
+  private async clearFilesRecentlyDeleted(iosDriver: IosWebDriver): Promise<void> {
+    const DeleteRepeatCount = 3;
+
+    for await (const _ of loop(300, DeleteRepeatCount)) {
+      await this.enterFilesBrowseHome(iosDriver);
+
+      await iosDriver.clickSelector(new IosAccessibilitiySelector('Recently Deleted'));
+
+      await iosDriver.clickSelector(new IosAccessibilitiySelector('DOC.itemCollectionMenuButton.Ellipsis'));
+      await iosDriver.clickSelector(new IosAccessibilitiySelector('Icons'));
+      await iosDriver.clickSelector(new IosAccessibilitiySelector('DOC.itemCollectionMenuButton.Ellipsis'));
+      await iosDriver.clickSelector(new IosAccessibilitiySelector('View Options'));
+      await iosDriver.clickSelector(new IosAccessibilitiySelector('DOC.groupMenuButton.none'));
+
+      await iosDriver.clickSelector(new IosAccessibilitiySelector('DOC.itemCollectionMenuButton.Ellipsis'));
+      await iosDriver.clickSelector(new IosAccessibilitiySelector('Select'));
+      await iosDriver.clickSelector(new IosAccessibilitiySelector('Delete All'));
+      await iosDriver.clickSelector(new IosAccessibilitiySelector('Delete'));
+    }
   }
 }
