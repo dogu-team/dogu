@@ -9,7 +9,7 @@ import { Chrome } from '../browsers/chrome';
 const wait = promisify(setTimeout);
 
 export module WebResponsiveService {
-  const MAX_PARALLEL = 4;
+  const MAX_PARALLEL = 8;
 
   export async function run(args: { urls: string[] }): Promise<void> {
     const { urls } = args;
