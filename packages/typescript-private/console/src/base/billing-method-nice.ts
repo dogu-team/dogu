@@ -3,6 +3,7 @@ import { CloudLicenseBase, SelfHostedLicenseBase } from '..';
 
 export interface BillingMethodNiceBase {
   billingMethodNiceId: string;
+  bid: string | null;
   cloudLicenseId: string | null;
   selfHostedLicenseId: string | null;
   createdAt: Date;

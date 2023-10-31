@@ -8,6 +8,7 @@ export interface CloudLicenseBase {
   organizationId: OrganizationId;
   liveTestingRemainingFreeSeconds: number;
   liveTestingParallelCount: number;
+  firstBillingAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date | null;

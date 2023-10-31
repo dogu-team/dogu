@@ -18,6 +18,9 @@ export class CloudLicense implements CloudLicenseBase {
   @Column({ type: 'integer', name: CloudLicensePropSnake.live_testing_parallel_count, default: 1 })
   liveTestingParallelCount!: number;
 
+  @ColumnTemplate.Date(CloudLicensePropSnake.first_billing_at, true)
+  firstBillingAt!: Date | null;
+
   @ColumnTemplate.CreateDate(CloudLicensePropSnake.created_at)
   createdAt!: Date;
 

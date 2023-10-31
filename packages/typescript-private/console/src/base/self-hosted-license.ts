@@ -14,6 +14,7 @@ export interface SelfHostedLicenseBase {
   maximumEnabledBrowserCount: number;
   openApiEnabled: boolean;
   doguAgentAutoUpdateEnabled: boolean;
+  firstBillingAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
   lastAccessAt: Date;
