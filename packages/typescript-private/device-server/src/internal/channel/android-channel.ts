@@ -51,7 +51,10 @@ import { checkTime } from '../util/check-time';
 type DeviceControl = PrivateProtocol.DeviceControl;
 
 export class AndroidLogClosable implements Closable {
-  constructor(private readonly childProcess: ChildProcess, private readonly printable?: Printable) {}
+  constructor(
+    private readonly childProcess: ChildProcess,
+    private readonly printable?: Printable,
+  ) {}
 
   close(): void {
     killChildProcess(this.childProcess).catch((error) => {
@@ -286,7 +289,7 @@ export class AndroidChannel implements DeviceChannel {
 
   async reset(): Promise<void> {
     const { logger } = this;
-    await checkTime(`AndroidChannel.reset.switchAppiumContext`, this.switchAppiumContext('builtin'), logger);
+    await checkTime(`AndroidChannel.reset.switchAppiumContext`, this.switchAppiumContext('builtin', 'reset'), logger);
     const appiumContextImpl = this._appiumContext.getImpl(AppiumContextImpl);
     await checkTime(`AndroidChannel.reset.reset`, this._reset.reset(this.info, this.appiumAdb, appiumContextImpl), logger);
   }
@@ -388,8 +391,8 @@ export class AndroidChannel implements DeviceChannel {
     return this._appiumContext;
   }
 
-  async switchAppiumContext(key: AppiumContextKey): Promise<AppiumContext> {
-    await this._appiumContext.switchAppiumContext(key);
+  async switchAppiumContext(key: AppiumContextKey, reason: string): Promise<AppiumContext> {
+    await this._appiumContext.switchAppiumContext(key, reason);
     return this._appiumContext;
   }
 
