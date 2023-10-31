@@ -1,23 +1,9 @@
 import { DeviceSystemInfo, Serial, SerialPrintable } from '@dogu-private/types';
-import { delay, IDisposableAsync, loop, usingAsnyc } from '@dogu-tech/common';
+import { delay, loop, usingAsnyc } from '@dogu-tech/common';
 import { boxBox } from 'intersects';
 import { AppiumContextImpl, WDIOElement } from '../../../appium/appium.context';
+import { IdeviceInstaller } from '../../externals/cli/ideviceinstaller';
 import { CheckTimer } from '../../util/check-time';
-
-class ResetScope implements IDisposableAsync {
-  public random: number;
-  constructor(
-    private logger: SerialPrintable,
-    private option: {
-      [key: string]: any;
-    },
-  ) {
-    this.random = Math.random();
-    this.option.random = this.random;
-  }
-  create(): void {}
-  dispose(): void {}
-}
 
 export class IosResetService {
   private timer: CheckTimer;
@@ -50,6 +36,7 @@ export class IosResetService {
         },
       },
       async () => {
+        await this.timer.check('IosResetService.reset.removeUserApps', this.removeUserApps());
         await this.timer.check('IosResetService.reset.logoutApppleAccount', this.logoutApppleAccount(appiumContext));
         await this.timer.check('IosResetService.reset.clearSafariCache', this.clearSafariCache(appiumContext));
         await this.timer.check('IosResetService.reset.clearPhotoImages', this.clearPhotoImages(appiumContext));
@@ -58,6 +45,14 @@ export class IosResetService {
         await this.timer.check('IosResetService.reset.clearPhotosSuggestionAndFeedbacks', this.clearPhotosSuggestionAndFeedbacks(appiumContext));
       },
     );
+  }
+
+  private async removeUserApps(): Promise<void> {
+    const installer = new IdeviceInstaller(this.serial, this.logger);
+    const userApps = await installer.getUserApps();
+    for (const userApp of userApps) {
+      await installer.uninstallApp(userApp.bundieId);
+    }
   }
 
   private async logoutApppleAccount(appiumContext: AppiumContextImpl): Promise<void> {

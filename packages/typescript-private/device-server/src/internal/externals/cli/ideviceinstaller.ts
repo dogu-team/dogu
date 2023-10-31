@@ -4,7 +4,14 @@ import { errorify, Printable, stringify } from '@dogu-tech/common';
 import { ChildProcess, HostPaths } from '@dogu-tech/node';
 import child_process from 'child_process';
 import fs from 'fs';
+import os from 'os';
 import { registerBootstrapHandler } from '../../../bootstrap/bootstrap.service';
+
+export interface IosAppInfo {
+  bundieId: string;
+  version: string;
+  displayName: string;
+}
 
 export class IdeviceInstaller {
   constructor(private udid: Serial, private logger: Printable) {
@@ -20,10 +27,7 @@ export class IdeviceInstaller {
       exe,
       args,
       {
-        env: {
-          ...process.env,
-          DYLD_LIBRARY_PATH: this.libPath(),
-        },
+        env: this.env(),
       },
       logger,
     );
@@ -38,21 +42,70 @@ export class IdeviceInstaller {
       exe,
       args,
       {
-        env: {
-          ...process.env,
-          DYLD_LIBRARY_PATH: this.libPath(),
-        },
+        env: this.env(),
       },
       logger,
     );
   }
 
-  async listUserApps(): Promise<ChildProcess.ExecResult> {
+  async getSystemApps(): Promise<IosAppInfo[]> {
+    return this.getApps('list_system');
+  }
+
+  async getUserApps(): Promise<IosAppInfo[]> {
+    return this.getApps('list_user');
+  }
+
+  async getAllApps(): Promise<IosAppInfo[]> {
+    return this.getApps('list_all');
+  }
+
+  async getApps(option: 'list_user' | 'list_system' | 'list_all'): Promise<IosAppInfo[]> {
     const { udid, logger } = this;
     const exe = HostPaths.external.libimobiledevice.ideviceinstaller();
-    const args = ['-u', udid, '--list-apps', '-o', 'list_user'];
+    const args = ['-u', udid, '--list-apps', '-o', option];
     logger.info(`IdeviceInstallerImpl.listUserApps ${exe} ${stringify(args)}`);
-    return await ChildProcess.exec(`${exe} ${args.join(' ')}`, {});
+    const appInfos: IosAppInfo[] = [];
+    const proc = await ChildProcess.spawnAndWait(
+      exe,
+      args,
+      {
+        env: this.env(),
+      },
+      {
+        info: (data) => {
+          const str = stringify(data);
+          const lines = str.split(os.EOL);
+          for (const line of lines) {
+            if (0 === line.length) {
+              continue;
+            }
+            if (line.startsWith('CFBundleIdentifier')) {
+              return;
+            }
+            let [bundieId, version, displayName] = line.split(', ');
+            bundieId = bundieId.replace(/^"/, '').replace(/"$/, '');
+            version = version.replace(/^"/, '').replace(/"$/, '');
+            displayName = displayName.replace(/^"/, '').replace(/"$/, '');
+            appInfos.push({ bundieId, version, displayName });
+          }
+        },
+        error: (data) => {},
+      },
+    );
+    return appInfos;
+    // const ret = await ChildProcess.exec(`${exe} ${args.join(' ')}`, { env: this.env() });
+    // // if (!proc.stdout) {
+    // //   throw new Error(`IdeviceInstallerImpl.listUserApps ${exe} ${stringify(args)} stdout is empty`);
+    // // }
+    // const lines = ret.stdout.split(os.EOL).slice(1);
+    // return lines.map((line) => {
+    //   let [bundieId, version, displayName] = line.split(', ');
+    //   bundieId = bundieId.replace(/^"/, '').replace(/"$/, '');
+    //   version = version.replace(/^"/, '').replace(/"$/, '');
+    //   displayName = displayName.replace(/^"/, '').replace(/"$/, '');
+    //   return { bundieId, version, displayName };
+    // });
   }
 
   private tryAccessAndFix = (): void => {
@@ -72,6 +125,13 @@ export class IdeviceInstaller {
       throw new Error(`Failed to chmod ideviceinstaller ${stringify(error)}`);
     }
   };
+  private env(): NodeJS.ProcessEnv {
+    return {
+      ...process.env,
+      DYLD_LIBRARY_PATH: this.libPath(),
+    };
+  }
+
   private libPath(): string {
     return [HostPaths.external.libimobiledevice.libimobiledeviceLibPath(), process.env.DYLD_LIBRARY_PATH].join(':');
   }
