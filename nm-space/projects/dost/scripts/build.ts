@@ -29,9 +29,12 @@ function getName(): string {
   const { platform } = process;
   const { archs, extraResources } = await prepare(platform, deviceServerEnv.DOGU_RUN_TYPE);
   await checkIdentity();
-  await generateKeyFile();
-  await build(getOptions(archs, extraResources));
-  await deleteKeyFile();
+  try {
+    await generateKeyFile();
+    await build(getOptions(archs, extraResources));
+  } finally {
+    await deleteKeyFile();
+  }
 })();
 function getArtifactPrefix(): string {
   if (deviceServerEnv.DOGU_RUN_TYPE === 'production') {
