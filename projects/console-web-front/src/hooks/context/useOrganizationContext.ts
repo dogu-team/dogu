@@ -1,14 +1,16 @@
-import { OrganizationResponse } from '@dogu-private/console';
+import { CloudLicenseBase, OrganizationBase, SelfHostedLicenseBase } from '@dogu-private/console';
 import React, { useContext } from 'react';
 import { KeyedMutator } from 'swr';
 
 export interface OrganizationContextProviderProps {
-  organization: OrganizationResponse | null;
-  mutate: KeyedMutator<OrganizationResponse> | null;
+  organization: OrganizationBase | null;
+  license: CloudLicenseBase | SelfHostedLicenseBase | null;
+  mutate: KeyedMutator<OrganizationBase> | null;
 }
 
 export const OrganizationContext = React.createContext<OrganizationContextProviderProps>({
   organization: null,
+  license: null,
   mutate: null,
 });
 

@@ -10,7 +10,7 @@
     "types": ["webdriverio/async"]
   },
   "exclude": ["node_modules", "test", "build", "**/*spec.ts"],
-  "include": ["src", "scripts"],
+  "include": ["src/**/*.ts", "scripts/**/*.ts"],
   "references": [
     {
       "path": "../../typescript-private/dost-children"

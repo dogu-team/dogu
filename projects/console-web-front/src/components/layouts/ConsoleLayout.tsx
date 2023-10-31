@@ -1,7 +1,6 @@
 import { Layout } from 'antd';
 import styled from 'styled-components';
 import useTranslation from 'next-translate/useTranslation';
-import { OrganizationResponse } from '@dogu-private/console';
 import useSWR from 'swr';
 import { isAxiosError } from 'axios';
 
@@ -13,6 +12,7 @@ import ErrorBox from '../common/boxes/ErrorBox';
 import { OrganizationContext } from '../../hooks/context/useOrganizationContext';
 import { getErrorMessageFromAxios } from '../../utils/error';
 import { OrganizationServerSideProps } from '../../ssr/organization';
+import { OrganizationBase } from '@dogu-private/console';
 
 export interface ConsoleLayoutProps extends OrganizationServerSideProps {
   children: React.ReactNode;
@@ -33,7 +33,7 @@ const ConsoleLayout = ({
   license,
 }: ConsoleLayoutProps) => {
   const { t } = useTranslation();
-  const { data, error, mutate, isLoading } = useSWR<OrganizationResponse>(
+  const { data, error, mutate, isLoading } = useSWR<OrganizationBase>(
     `/organizations/${organization.organizationId}`,
     swrAuthFetcher,
     {
@@ -56,7 +56,7 @@ const ConsoleLayout = ({
   }
 
   return (
-    <OrganizationContext.Provider value={{ organization: data ?? organization, mutate }}>
+    <OrganizationContext.Provider value={{ organization: data ?? organization, mutate, license }}>
       <ConsoleBasicLayout licenseInfo={license} user={user}>
         <StyledLayout>
           {sidebar}

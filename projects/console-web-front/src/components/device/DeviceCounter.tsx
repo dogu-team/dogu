@@ -8,23 +8,21 @@ import useOrganizationContext from '../../hooks/context/useOrganizationContext';
 import useRefresh from '../../hooks/useRefresh';
 
 const DeviceCounter: React.FC = () => {
-  const { organization } = useOrganizationContext();
+  const { license } = useOrganizationContext();
   const { data: countInfo, mutate: mutateCountInfo } = useDeviceCount();
 
   useRefresh(['onDeviceAdded', 'onDeviceUpdated'], () => mutateCountInfo());
 
-  if (!organization) {
+  if (!license) {
     return null;
   }
 
   const getbrowserMaxCount = () => {
     if (process.env.NEXT_PUBLIC_ENV === 'self-hosted') {
-      if (checkExpired(organization.licenseInfo as SelfHostedLicenseBase)) {
+      if (checkExpired(license as SelfHostedLicenseBase)) {
         return COMMUNITY_MAX_BROWSER_COUNT;
       }
-      return (
-        (organization.licenseInfo as SelfHostedLicenseBase)?.maximumEnabledBrowserCount ?? COMMUNITY_MAX_BROWSER_COUNT
-      );
+      return (license as SelfHostedLicenseBase)?.maximumEnabledBrowserCount ?? COMMUNITY_MAX_BROWSER_COUNT;
     } else {
       return Number.POSITIVE_INFINITY;
     }
@@ -32,12 +30,10 @@ const DeviceCounter: React.FC = () => {
 
   const getMobileMaxCount = () => {
     if (process.env.NEXT_PUBLIC_ENV === 'self-hosted') {
-      if (checkExpired(organization.licenseInfo as SelfHostedLicenseBase)) {
+      if (checkExpired(license as SelfHostedLicenseBase)) {
         return COMMUNITY_MAX_MOBILE_COUNT;
       }
-      return (
-        (organization.licenseInfo as SelfHostedLicenseBase)?.maximumEnabledBrowserCount ?? COMMUNITY_MAX_MOBILE_COUNT
-      );
+      return (license as SelfHostedLicenseBase)?.maximumEnabledBrowserCount ?? COMMUNITY_MAX_MOBILE_COUNT;
     } else {
       return Number.POSITIVE_INFINITY;
     }

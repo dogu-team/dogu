@@ -35,6 +35,7 @@ const resources = {
     edge: '/resources/icons/browsers/edge.svg',
     samsungIntenet: '/resources/icons/browsers/samsung-internet.svg',
     reactNative: '/resources/icons/react-native.svg',
+    mapMarker: '/resources/icons/map-marker.svg',
   },
   images: {},
 };

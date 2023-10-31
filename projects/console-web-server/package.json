@@ -1,6 +1,6 @@
 {
   "name": "console-web-server",
-  "version": "2.2.1",
+  "version": "2.2.2",
   "license": "SEE LICENSE IN https://github.com/dogu-team/dogu/blob/main/LICENSE.md",
   "author": "Dogu Technologies",
   "scripts": {
@@ -8,6 +8,7 @@
     "clean": "shx rm -rf build generated",
     "dev": "cross-env TZ=UTC NODE_ENV=development nodemon --config nodemon.json",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+    "lint": "cd ../../ && yarn eslint projects/console-web-server/src/**/*.ts",
     "rebuild": "yarn run clean && yarn run build",
     "start": "cross-env TZ=UTC NODE_ENV=production NODE_OPTIONS=\"--max-old-space-size=8192 $NODE_OPTIONS\" node -r tsconfig-paths/register -r ts-node/register build/src/main",
     "start:e2e-background": "yarn run start:influxdb && yarn run start:redis && yarn run start:pgsql && yarn run start:nexus && yarn run start:turn-server",

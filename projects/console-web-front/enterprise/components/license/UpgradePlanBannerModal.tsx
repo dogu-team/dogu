@@ -61,9 +61,9 @@ interface Props {
 }
 
 export const UpgradeDevicePlanBannerModal: React.FC<Props> = ({ isOpen, close, title, description }) => {
-  const { organization } = useOrganizationContext();
+  const { license } = useOrganizationContext();
   const { t } = useTranslation('license');
-  const licenseInfo = organization?.licenseInfo as SelfHostedLicenseBase | undefined;
+  const licenseInfo = license as SelfHostedLicenseBase | null;
 
   return (
     <Modal destroyOnClose open={isOpen} onCancel={close} closable title={title} footer={null} centered>
@@ -135,9 +135,9 @@ export const UpgradeDevicePlanBannerModal: React.FC<Props> = ({ isOpen, close, t
 };
 
 export const UpgradeBrowserPlanModal: React.FC<Props> = ({ isOpen, close, title, description }) => {
-  const { organization } = useOrganizationContext();
+  const { license } = useOrganizationContext();
   const { t } = useTranslation('license');
-  const licenseInfo = organization?.licenseInfo as SelfHostedLicenseBase | undefined;
+  const licenseInfo = license as SelfHostedLicenseBase | null;
 
   return (
     <Modal destroyOnClose open={isOpen} onCancel={close} closable title={title} footer={null} centered>
@@ -209,9 +209,9 @@ export const UpgradeBrowserPlanModal: React.FC<Props> = ({ isOpen, close, title,
 };
 
 export const UpgradeConveniencePlanModal: React.FC<Props> = ({ isOpen, close, title, description }) => {
-  const { organization } = useOrganizationContext();
+  const { license } = useOrganizationContext();
   const { t } = useTranslation('license');
-  const licenseInfo = organization?.licenseInfo as SelfHostedLicenseBase | undefined;
+  const licenseInfo = license as SelfHostedLicenseBase | undefined;
 
   return (
     <Modal destroyOnClose open={isOpen} onCancel={close} closable title={title} footer={null} centered>

@@ -3,19 +3,22 @@ import { RuntimeInfo } from '@dogu-private/types';
 import { Closable } from '@dogu-tech/common';
 import { DeviceClient } from '@dogu-tech/device-client-common';
 import { useRouter } from 'next/router';
-import { useEffect, useRef, useState } from 'react';
+import { RefObject, useEffect, useRef, useState } from 'react';
 
-const useDeviceStreamingProfile = (deviceClient: DeviceClient | undefined, device: DeviceBase | undefined | null) => {
+const useDeviceStreamingProfile = (
+  deviceClientRef: RefObject<DeviceClient | undefined> | undefined,
+  device: DeviceBase | undefined | null,
+) => {
   const [runtimeInfos, setRuntimeInfos] = useState<RuntimeInfo[]>([]);
   const router = useRouter();
   const closer = useRef<Closable | undefined>();
 
   useEffect(() => {
     (async () => {
-      if (deviceClient && device) {
+      if (deviceClientRef?.current && device) {
         setRuntimeInfos([]);
         try {
-          const unsub = await deviceClient?.subscribeRuntimeInfo(device.serial, (info) => {
+          const unsub = await deviceClientRef.current.subscribeRuntimeInfo(device.serial, (info) => {
             setRuntimeInfos((prev) => {
               if (prev.length < 100) {
                 return [...prev, info];
@@ -32,7 +35,7 @@ const useDeviceStreamingProfile = (deviceClient: DeviceClient | undefined, devic
     return () => {
       closer.current?.close();
     };
-  }, [device?.serial, router.locale, deviceClient]);
+  }, [deviceClientRef?.current, device?.serial, router.locale]);
 
   return runtimeInfos;
 };

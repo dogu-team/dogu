@@ -24,10 +24,10 @@ const DeviceStreamingLayout = dynamic<DeviceStreamingLayoutProps>(() => import('
 const LiveTestingMenu = () => {
   const router = useRouter();
   const { device, deviceService, inspector, isCloudDevice } = useDeviceStreamingContext();
-  const runtimeInfos = useDeviceStreamingProfile(deviceService?.deviceClient.current, device ?? null);
+  const runtimeInfos = useDeviceStreamingProfile(deviceService?.deviceClientRef, device ?? null);
   const { t } = useTranslation();
   const { deviceLogs, isLogStopped, logFilterValue, togglePlay, handleChangeFilterValue, clearLog } = useDeviceLog(
-    deviceService?.deviceClient.current,
+    deviceService?.deviceClientRef,
     device ?? null,
   );
 

@@ -3,5 +3,12 @@
   "compilerOptions": {
     "noEmit": true
   },
-  "include": [".eslintrc.cjs", "prebuilds/protocol-exporter/.eslintrc.cjs", "**/*.config.js", "scripts/**/*.ts"]
+
+  /**
+   * @note does not include recursive globs
+   */
+  "include": [
+    ".eslintrc.cjs", //
+    "prebuilds/protocol-exporter/.eslintrc.cjs"
+  ]
 }

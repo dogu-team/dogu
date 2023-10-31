@@ -2,9 +2,12 @@ import { DeviceBase } from '@dogu-private/console';
 import { Platform } from '@dogu-private/types';
 import { Closable, Log } from '@dogu-tech/common';
 import { DeviceClient } from '@dogu-tech/device-client-common';
-import { useCallback, useEffect, useState } from 'react';
+import { RefObject, useCallback, useEffect, useState } from 'react';
 
-const useDeviceLog = (deviceClient: DeviceClient | undefined, device: DeviceBase | undefined | null) => {
+const useDeviceLog = (
+  deviceClientRef: RefObject<DeviceClient | undefined> | undefined,
+  device: DeviceBase | undefined | null,
+) => {
   const [logs, setLogs] = useState<Log[]>([]);
   const [filterValue, setFilterValue] = useState<string>('');
   const [isStopped, setIsStopped] = useState(true);
@@ -21,7 +24,7 @@ const useDeviceLog = (deviceClient: DeviceClient | undefined, device: DeviceBase
   useEffect(() => {
     let closer: Closable | undefined;
     (async () => {
-      if (deviceClient && device && !isStopped) {
+      if (deviceClientRef?.current && device && !isStopped) {
         const getArgs = () => {
           const trimmedFilter = filterValue.trim();
 
@@ -43,7 +46,7 @@ const useDeviceLog = (deviceClient: DeviceClient | undefined, device: DeviceBase
           }
         };
 
-        const unsubscriber = await deviceClient.subscribeLog(device.serial, getArgs(), (log) => {
+        const unsubscriber = await deviceClientRef.current.subscribeLog(device.serial, getArgs(), (log) => {
           const logs: Log[] = log.message
             .split('\n')
             .map((sl) => ({
@@ -72,7 +75,7 @@ const useDeviceLog = (deviceClient: DeviceClient | undefined, device: DeviceBase
     return () => {
       closer?.close();
     };
-  }, [deviceClient, device, filterValue, isStopped]);
+  }, [device, filterValue, isStopped]);
 
   const handleChangeFilterValue = useCallback((value: string) => {
     setFilterValue(value);
