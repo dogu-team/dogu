@@ -21,20 +21,16 @@ export class Chrome extends BrowserDriver {
 
     options.addArguments('--headless');
     options.addArguments('--disable-gpu');
+    options.addArguments('--disable-dev-shm-usage');
+    options.addArguments('--no-sandbox');
     options.addArguments(`--window-size=${this.viewportWidth},${this.viewportHeight}`);
     options.addArguments(`--user-agent=${this.createUserAgent()}`);
     options.excludeSwitches('enable-automation');
 
-    console.log('BUILD 1', Chrome.customChromeDriverPath);
-
     this.driver = await new Builder().forBrowser(Browser.CHROME).setChromeOptions(options).build();
-
-    console.log('BUILD 2');
   }
 
-  async takeScreenshot(): Promise<void> {
-    console.log('TAKE SCREEN');
-
+  async takeScreenshot(): Promise<void> {  
     const cdp = await this.driver.createCDPConnection('page');
     const clientWidth: number = await this.driver.executeScript('return document.documentElement.clientWidth');
     const innerWidth: number = await this.driver.executeScript('return window.innerWidth');
@@ -60,8 +56,6 @@ export class Chrome extends BrowserDriver {
           scale: 1,
         },
       };
-
-      console.log('WINDOW SCROLL TO');
 
       await this.driver.executeScript(`window.scrollTo(0, ${currentY})`);
       await wait(1000);

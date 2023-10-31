@@ -1,4 +1,4 @@
-FROM --platform=linux/amd64 node:18 AS test-service
+FROM node:18 AS test-service
 # RUN apt-get clean \
 #   && apt-get update \
 #   && apt-get install -y ca-certificates curl gnupg
@@ -15,6 +15,8 @@ FROM --platform=linux/amd64 node:18 AS test-service
 # RUN apt update
 # RUN apt install -y ca-certificates curl gnupg
 # RUN apt install libgconf-2-4 libatk1.0-0 libatk-bridge2.0-0 libgdk-pixbuf2.0-0 libgtk-3-0 libgbm-dev libnss3-dev libxss-dev
+
+RUN apt-get update && apt-get install -y libnss3 libnspr4 libatk1.0-0 libatk-bridge2.0-0 libcups2 libdrm2 libxkbcommon0 libxcomposite1 libxdamage1 libxfixes3 libxrandr2 libgbm1 libasound2
 
 ENV NODE_OPTIONS --max-old-space-size=4196
 ENV ORGANIZATION_ID=''
