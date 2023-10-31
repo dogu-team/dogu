@@ -1,4 +1,4 @@
-FROM node:18 AS test-service
+FROM --platform=linux/amd64 node:18 AS test-service
 # RUN apt-get clean \
 #   && apt-get update \
 #   && apt-get install -y ca-certificates curl gnupg
