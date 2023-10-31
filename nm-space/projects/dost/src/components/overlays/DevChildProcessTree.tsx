@@ -34,7 +34,7 @@ interface DevChildProcessTreeProps {
 function ChildTreeToComponent(tree: ChildTree, depth: number) {
   const info = tree.info;
   return (
-    <div>
+    <div key={`${info.pid}-div`}>
       <Text key={info.pid} fontSize={'xs'}>
         {depth > 0 ? '-'.repeat(depth) : ''}
         <span style={{ backgroundColor: '#d14545', color: '#fff', padding: '.1rem' }}>{info.pid}</span>{' '}
@@ -83,7 +83,7 @@ function DevChildProcessTree(props: DevChildProcessTreeProps) {
   return (
     <Modal onClose={onClose} isOpen={isOpen} isCentered scrollBehavior="inside" size="full">
       <ModalOverlay />
-      <ModalContent>
+      <ModalContent mt="80px">
         <ModalHeader>Child Processes time: {updateDate?.toLocaleTimeString()}</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
@@ -104,7 +104,7 @@ export default DevChildProcessTree;
 
 const StyledBox = styled.div`
   max-height: 100vh;
-  height: 600px;
+  height: 1000px;
   margin: 0.5rem 0;
   padding: 0.5rem;
   border: 1px solid #ccc;

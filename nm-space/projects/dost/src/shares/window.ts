@@ -8,5 +8,6 @@ export interface IWindowClient {
   unmaximize: () => Promise<void>;
   onMaximize: (callback: () => void) => void;
   onUnmaximize: (callback: () => void) => void;
+  openDevTools: () => Promise<void>;
   close: () => Promise<void>;
 }

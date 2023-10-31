@@ -18,6 +18,7 @@ import { useEffect, useRef, useState } from 'react';
 import { ipc } from '../../utils/window';
 import { ChildTree } from '../../shares/child';
 import DevChildProcessTree from './DevChildProcessTree';
+import DevAppConfigs from './DevAppConfigs';
 
 interface DevDrawerProps {
   isOpen: boolean;
@@ -38,7 +39,8 @@ function DevDrawer(props: DevDrawerProps) {
   const [isHAActive, setIsHAActive] = useState<boolean>(false);
   const [isDSActive, setIsDSActive] = useState<boolean>(false);
   const [updateDate, setUpdateDate] = useState<Date>();
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen: isOpenChildProc, onOpen: onOpenChildProc, onClose: onCloseChildProc } = useDisclosure();
+  const { isOpen: isOpenAppConfig, onOpen: onOpenAppConfig, onClose: onCloseAppConfig } = useDisclosure();
 
   const timer = useRef<NodeJS.Timeout | null>(null);
   useEffect(() => {
@@ -100,9 +102,36 @@ function DevDrawer(props: DevDrawerProps) {
                 <ListItem>
                   <Stack direction={['row']} spacing="20px">
                     <Text width="100%" align="left">
+                      DevTools
+                    </Text>
+                    <Button
+                      size="sm"
+                      onClick={(e) => {
+                        ipc.windowClient.openDevTools().catch((e) => {
+                          console.log(e);
+                        });
+                      }}
+                    >
+                      Open
+                    </Button>
+                  </Stack>
+                </ListItem>
+                <ListItem>
+                  <Stack direction={['row']} spacing="20px">
+                    <Text width="100%" align="left">
+                      AppConfig
+                    </Text>
+                    <Button size="sm" onClick={onOpenAppConfig}>
+                      Open
+                    </Button>
+                  </Stack>
+                </ListItem>
+                <ListItem>
+                  <Stack direction={['row']} spacing="20px">
+                    <Text width="100%" align="left">
                       Child Processes
                     </Text>
-                    <Button size="sm" onClick={onOpen}>
+                    <Button size="sm" onClick={onOpenChildProc}>
                       Open
                     </Button>
                   </Stack>
@@ -111,7 +140,8 @@ function DevDrawer(props: DevDrawerProps) {
             </Center>
           </DrawerBody>
         </DrawerContent>
-        <DevChildProcessTree isOpen={isOpen} onClose={onClose} />
+        <DevAppConfigs isOpen={isOpenAppConfig} onClose={onCloseAppConfig} />
+        <DevChildProcessTree isOpen={isOpenChildProc} onClose={onCloseChildProc} />
       </Drawer>
     </>
   );
