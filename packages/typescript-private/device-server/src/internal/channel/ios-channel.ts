@@ -26,7 +26,8 @@ import path from 'path';
 import { Observable } from 'rxjs';
 import semver from 'semver';
 import { createAppiumCapabilities } from '../../appium/appium.capabilites';
-import { AppiumContext, AppiumContextKey, AppiumContextProxy } from '../../appium/appium.context';
+import { AppiumContext } from '../../appium/appium.context';
+import { AppiumContextProxy, AppiumRemoteContextRental } from '../../appium/appium.context.proxy';
 import { AppiumDeviceWebDriverHandler } from '../../device-webdriver/appium.device-webdriver.handler';
 import { DeviceWebDriverHandler } from '../../device-webdriver/device-webdriver.common';
 import { env } from '../../env';
@@ -483,9 +484,8 @@ export class IosChannel implements DeviceChannel {
     return this._appiumContext;
   }
 
-  async switchAppiumContext(key: AppiumContextKey, reason: string): Promise<AppiumContext> {
-    await this._appiumContext.switchAppiumContext(key, reason);
-    return this._appiumContext;
+  async rentAppiumRemoteContext(reason: string): Promise<AppiumRemoteContextRental> {
+    return this._appiumContext.rentRemote(reason);
   }
 
   async getAppiumCapabilities(): Promise<AppiumCapabilities> {
