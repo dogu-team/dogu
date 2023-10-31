@@ -1,7 +1,13 @@
 FROM --platform=linux/amd64 node:18 AS test-service
 
-RUN apt-get update && apt-get install -y libnss3 libnspr4 libatk1.0-0 libatk-bridge2.0-0 libcups2 libdrm2 libxkbcommon0 libxcomposite1 libxdamage1 libxfixes3 libxrandr2 libgbm1 libasound2
+RUN apt-get update
 
+RUN apt-get install -y locales
+RUN localedef -i ko_KR -f UTF-8 ko_KR.UTF-8
+
+RUN apt-get install -y libnss3 libnspr4 libatk1.0-0 libatk-bridge2.0-0 libcups2 libdrm2 libxkbcommon0 libxcomposite1 libxdamage1 libxfixes3 libxrandr2 libgbm1 libasound2
+
+ENV LC_ALL ko_KR.UTF-8
 ENV NODE_OPTIONS --max-old-space-size=4196
 ENV ORGANIZATION_ID=''
 ENV SERVICE_NAME=''
