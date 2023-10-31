@@ -1,6 +1,7 @@
-import { BillingMethodNiceBase, BillingMethodNicePropCamel, BillingMethodNicePropSnake, SelfHostedLicenseBase } from '@dogu-private/console';
+import { BillingMethodNiceBase, BillingMethodNicePropCamel, BillingMethodNicePropSnake } from '@dogu-private/console';
 import { Column, Entity, JoinColumn, OneToOne, PrimaryColumn } from 'typeorm';
 import { CloudLicense } from './cloud-license.entity';
+import { SelfHostedLicense } from './self-hosted-license.entity';
 import { ColumnTemplate } from './util/decorators';
 
 @Entity('billing_method_nice')
@@ -27,5 +28,7 @@ export class BillingMethodNice implements BillingMethodNiceBase {
   @JoinColumn({ name: BillingMethodNicePropSnake.cloud_license_id, referencedColumnName: BillingMethodNicePropCamel.cloudLicenseId })
   cloudLicense?: CloudLicense;
 
-  selfHostedLicense?: SelfHostedLicenseBase;
+  @OneToOne(() => SelfHostedLicense, { onDelete: 'NO ACTION', onUpdate: 'NO ACTION' })
+  @JoinColumn({ name: BillingMethodNicePropSnake.self_hosted_license_id, referencedColumnName: BillingMethodNicePropCamel.selfHostedLicenseId })
+  selfHostedLicense?: SelfHostedLicense;
 }

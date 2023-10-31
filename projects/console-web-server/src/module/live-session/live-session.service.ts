@@ -1,5 +1,5 @@
 import { CloudLicenseBase, DevicePropCamel, DeviceUsageState, LiveSessionCreateRequestBodyDto, LiveSessionFindQueryDto, OrganizationPropCamel } from '@dogu-private/console';
-import { LiveSessionActiveStates, LiveSessionId, LiveSessionState, OrganizationId } from '@dogu-private/types';
+import { DeviceConnectionState, LiveSessionActiveStates, LiveSessionId, LiveSessionState, OrganizationId } from '@dogu-private/types';
 import { HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource, EntityManager, In } from 'typeorm';
@@ -53,6 +53,7 @@ export class LiveSessionService {
           model: deviceModel,
           version: deviceVersion,
           usageState: DeviceUsageState.AVAILABLE,
+          connectionState: DeviceConnectionState.DEVICE_CONNECTION_STATE_CONNECTED,
         })
         .getOne();
 

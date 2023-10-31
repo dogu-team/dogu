@@ -1,4 +1,4 @@
-import { CloudSubscriptionPlanPropSnake, CloudSubscriptionPlanType } from '@dogu-private/console';
+import { CloudSubscriptionPlanPropCamel, CloudSubscriptionPlanPropSnake, CloudSubscriptionPlanType } from '@dogu-private/console';
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 import { CloudLicense } from './cloud-license.entity';
 import { ColumnTemplate } from './util/decorators';
@@ -24,6 +24,6 @@ export class CloudSubscriptionPlan {
   deletedAt!: Date | null;
 
   @ManyToOne(() => CloudLicense, { onDelete: 'NO ACTION', onUpdate: 'NO ACTION' })
-  @JoinColumn({ name: CloudSubscriptionPlanPropSnake.cloud_license_id })
+  @JoinColumn({ name: CloudSubscriptionPlanPropSnake.cloud_license_id, referencedColumnName: CloudSubscriptionPlanPropCamel.cloudLicenseId })
   cloudLicense?: CloudLicense;
 }
