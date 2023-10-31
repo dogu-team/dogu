@@ -212,7 +212,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:projects/nexus-initializer"\
       },\
       {\
-        "name": "test-codeless",\
+        "name": "test-service",\
         "reference": "workspace:projects/test-service"\
       },\
       {\
@@ -273,7 +273,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["protocol-exporter", ["workspace:prebuilds/protocol-exporter"]],\
       ["pytest-dogu-sdk", ["workspace:packages/python/pytest-dogu-sdk"]],\
       ["routine-interface-exporter", ["workspace:prebuilds/routine-interface-exporter"]],\
-      ["test-codeless", ["workspace:projects/test-service"]],\
+      ["test-service", ["workspace:projects/test-service"]],\
       ["validators", ["workspace:validators"]]\
     ],\
     "fallbackPool": [\
@@ -41391,11 +41391,23 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
-      ["test-codeless", [\
+      ["test-exclude", [\
+        ["npm:6.0.0", {\
+          "packageLocation": "./.yarn/cache/test-exclude-npm-6.0.0-3fb03d69df-3b34a3d771.zip/node_modules/test-exclude/",\
+          "packageDependencies": [\
+            ["test-exclude", "npm:6.0.0"],\
+            ["@istanbuljs/schema", "npm:0.1.3"],\
+            ["glob", "npm:7.2.3"],\
+            ["minimatch", "npm:3.1.2"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["test-service", [\
         ["workspace:projects/test-service", {\
           "packageLocation": "./projects/test-service/",\
           "packageDependencies": [\
-            ["test-codeless", "workspace:projects/test-service"],\
+            ["test-service", "workspace:projects/test-service"],\
             ["@dogu-private/device-data", "workspace:packages/typescript-private/device-data"],\
             ["@dogu-private/sdk", "workspace:packages/typescript-private/sdk"],\
             ["@google-cloud/run", "npm:1.0.2"],\
@@ -41414,18 +41426,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["typescript", "patch:typescript@npm%3A4.7.4#~builtin<compat/typescript>::version=4.7.4&hash=65a307"]\
           ],\
           "linkType": "SOFT"\
-        }]\
-      ]],\
-      ["test-exclude", [\
-        ["npm:6.0.0", {\
-          "packageLocation": "./.yarn/cache/test-exclude-npm-6.0.0-3fb03d69df-3b34a3d771.zip/node_modules/test-exclude/",\
-          "packageDependencies": [\
-            ["test-exclude", "npm:6.0.0"],\
-            ["@istanbuljs/schema", "npm:0.1.3"],\
-            ["glob", "npm:7.2.3"],\
-            ["minimatch", "npm:3.1.2"]\
-          ],\
-          "linkType": "HARD"\
         }]\
       ]],\
       ["text-hex", [\
