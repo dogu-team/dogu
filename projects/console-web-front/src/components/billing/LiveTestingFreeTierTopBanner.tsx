@@ -9,7 +9,7 @@ interface Props {
 }
 
 const LiveTestingFreeTierTopBanner: React.FC<Props> = ({ license }) => {
-  if (license.cloudSubscriptionItems?.length === 0) {
+  if (license.cloudSubscriptionPlans?.length === 0) {
     return (
       <Alert
         type="info"

@@ -1,4 +1,4 @@
-import { CreateCloudLicenseDto } from '@dogu-private/console';
+import { CloudLicensePropCamel, CreateCloudLicenseDto } from '@dogu-private/console';
 import { OrganizationId } from '@dogu-private/types';
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
@@ -30,7 +30,7 @@ export class CloudLicenseService {
   async findLicense(organizationId: OrganizationId): Promise<CloudLicense> {
     const license = await this.dataSource.manager.getRepository(CloudLicense).findOne({
       where: { organizationId },
-      relations: ['cloudSubscriptionItems'],
+      relations: [CloudLicensePropCamel.cloudSubscriptionPlans],
     });
 
     if (!license) {
