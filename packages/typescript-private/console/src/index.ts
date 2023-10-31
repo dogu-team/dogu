@@ -1,12 +1,11 @@
 import 'reflect-metadata';
 
+export * from './base/billing-method-nice';
 export * from './base/billing-token';
 export * from './base/change-log';
 export * from './base/change-log-user-reaction';
-export * from './base/cloud-device';
-export * from './base/cloud-device-rental';
 export * from './base/cloud-license';
-export * from './base/cloud-subscription-item';
+export * from './base/cloud-subscription-plan';
 export * from './base/controller-handler';
 export * from './base/dest';
 export * from './base/dest-edge';
@@ -118,7 +117,6 @@ export * from './dto/user-invitation/user-invitation.dto';
 export * from './dto/user/user-response.dto';
 export * from './dto/user/user.dto';
 export * from './dto/ws/ws.dto';
-export * from './http-specs/cloud-device';
 export * from './util/common';
 export * from './util/device';
 export * from './util/page-source';

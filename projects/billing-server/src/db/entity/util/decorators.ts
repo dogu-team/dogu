@@ -1,10 +1,6 @@
 import { Column, CreateDateColumn, DeleteDateColumn, UpdateDateColumn } from 'typeorm';
 
 export class ColumnTemplate {
-  static RelationUuid(name: string, nullable = false): PropertyDecorator {
-    return Column({ type: 'uuid', name, nullable });
-  }
-
   static Date(name: string, nullable: boolean): PropertyDecorator {
     const defaultValue = nullable ? (): string => 'NULL' : (): string => 'CURRENT_TIMESTAMP(3)';
     return Column({ type: 'timestamptz', name, precision: 3, default: defaultValue, nullable });

@@ -1,8 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unnecessary-type-assertion */
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Platform, Serial } from '@dogu-private/types';
 import { callAsyncWithTimeout, Class, delay, errorify, Instance, NullLogger, Printable, Retry, stringify } from '@dogu-tech/common';
 import { Android, AppiumContextInfo, ContextPageSource, Rect, ScreenSize, SystemBar } from '@dogu-tech/device-client-common';
@@ -66,7 +61,7 @@ function transformId(context: unknown): string {
   }
 }
 
-function callClientAsyncWithTimeout<T>(callClientAsync: Promise<T>): Promise<T> {
+async function callClientAsyncWithTimeout<T>(callClientAsync: Promise<T>): Promise<T> {
   return callAsyncWithTimeout(callClientAsync, { timeout: AppiumClientCallAsyncTimeout });
 }
 
@@ -92,7 +87,10 @@ export interface AppiumContext extends Zombieable {
 
 class NullAppiumContext implements AppiumContext {
   public readonly props: ZombieProps = {};
-  constructor(public readonly options: AppiumContextOptions, public readonly printable: Logger) {}
+  constructor(
+    public readonly options: AppiumContextOptions,
+    public readonly printable: Logger,
+  ) {}
 
   get name(): string {
     return 'NullAppiumContext';
@@ -205,7 +203,10 @@ export class AppiumContextImpl implements AppiumContext {
   private notHealthyCount = 0;
 
   openingState: 'opening' | 'openingSucceeded' | 'openingFailed' = 'opening';
-  constructor(public readonly options: AppiumContextOptions, public readonly printable: Logger) {}
+  constructor(
+    public readonly options: AppiumContextOptions,
+    public readonly printable: Logger,
+  ) {}
 
   get name(): string {
     return 'AppiumContextImpl';
@@ -439,15 +440,18 @@ export class AppiumContextImpl implements AppiumContext {
       },
     };
     const driver = await remote(remoteOptions);
-    const filteredRemoteOptions = Object.keys(remoteOptions).reduce((acc, key) => {
-      const value = _.get(remoteOptions, key) as unknown;
-      if (_.isFunction(value)) {
-        return acc;
-      } else {
-        _.set(acc, key, value);
-        return acc;
-      }
-    }, {} as Record<string, unknown>);
+    const filteredRemoteOptions = Object.keys(remoteOptions).reduce(
+      (acc, key) => {
+        const value = _.get(remoteOptions, key) as unknown;
+        if (_.isFunction(value)) {
+          return acc;
+        } else {
+          _.set(acc, key, value);
+          return acc;
+        }
+      },
+      {} as Record<string, unknown>,
+    );
 
     this.printable.info('Appium client started', { remoteOptions, sessionId: driver.sessionId, capabilities: driver.capabilities });
     return {

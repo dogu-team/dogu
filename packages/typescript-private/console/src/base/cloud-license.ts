@@ -1,7 +1,7 @@
 import { OrganizationId } from '@dogu-private/types';
 import { camelToSnakeCasePropertiesOf, propertiesOf } from '@dogu-tech/common';
 import { IsBoolean, IsNumber, IsUUID } from 'class-validator';
-import { CloudSubscriptionItemBase } from './cloud-subscription-item';
+import { CloudSubscriptionPlanBase } from './cloud-subscription-plan';
 
 export interface CloudLicenseBase {
   cloudLicenseId: string;
@@ -11,10 +11,10 @@ export interface CloudLicenseBase {
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date | null;
-  cloudSubscriptionItems?: CloudSubscriptionItemBase[];
+  cloudSubscriptionPlans?: CloudSubscriptionPlanBase[];
 }
 
-export const CloudLicenseBasePropCamel = propertiesOf<CloudLicenseBase>();
+export const CloudLicensePropCamel = propertiesOf<CloudLicenseBase>();
 export const CloudLicensePropSnake = camelToSnakeCasePropertiesOf<CloudLicenseBase>();
 
 export namespace CloudLicenseMessage {

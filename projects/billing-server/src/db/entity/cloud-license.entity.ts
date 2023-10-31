@@ -1,7 +1,7 @@
 import { CloudLicenseBase, CloudLicensePropSnake } from '@dogu-private/console';
 import { OrganizationId } from '@dogu-private/types';
 import { Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
-import { CloudSubscriptionItem } from './cloud-subscription-item.entity';
+import { CloudSubscriptionPlan } from './cloud-subscription-plan.entity';
 import { ColumnTemplate } from './util/decorators';
 
 @Entity('cloud_license')
@@ -27,6 +27,6 @@ export class CloudLicense implements CloudLicenseBase {
   @ColumnTemplate.DeleteDate(CloudLicensePropSnake.deleted_at)
   deletedAt!: Date | null;
 
-  @OneToMany(() => CloudSubscriptionItem, (cloudSubscriptionItem) => cloudSubscriptionItem.cloudLicense, { cascade: ['soft-remove'] })
-  cloudSubscriptionItems?: CloudSubscriptionItem[];
+  @OneToMany(() => CloudSubscriptionPlan, (cloudSubscriptionPlan) => cloudSubscriptionPlan.cloudLicense, { cascade: ['soft-remove'] })
+  cloudSubscriptionPlans?: CloudSubscriptionPlan[];
 }
