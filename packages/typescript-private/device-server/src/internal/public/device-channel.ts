@@ -92,7 +92,7 @@ export interface DeviceChannel {
   // appium
   getAppiumContext(): PromiseOrValue<AppiumContext | null>;
   getAppiumCapabilities(): PromiseOrValue<AppiumCapabilities | null>;
-  switchAppiumContext(key: AppiumContextKey): PromiseOrValue<AppiumContext>;
+  switchAppiumContext(key: AppiumContextKey, reason: string): PromiseOrValue<AppiumContext>;
 
   // gamium
   set gamiumContext(context: GamiumContext | null);
