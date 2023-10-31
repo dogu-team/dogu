@@ -1,5 +1,6 @@
 import { Printable } from '@dogu-tech/common';
 import fs from 'fs';
+import _ from 'lodash';
 import path from 'path';
 
 const ConfigFileName = 'feature.config.json';
@@ -68,8 +69,35 @@ export async function loadFeatureConfig<T>(doguRunType: string, printable: Print
   }
 }
 
+export function validateEveryRunTypePropertyEqualitySync(configDirPath: string = process.cwd()): void {
+  const fileNames = fs.readdirSync(path.resolve(configDirPath, 'features'));
+  const datas = fileNames
+    .map((fileName) => path.resolve(configDirPath, 'features', fileName))
+    .map((filePath) => ({ filePath, content: fs.readFileSync(filePath, 'utf8') }))
+    .map(({ filePath, content }) => ({ filePath, config: JSON.parse(content) as object }));
+  if (datas.length < 2) {
+    return;
+  }
+  const left = datas[0];
+  const rights = datas.slice(1);
+  for (const right of rights) {
+    if (_.keys(left.config).length !== _.keys(right.config).length) {
+      throw new Error(`Feature config keys length not equal. left: ${left.filePath}, right: ${right.filePath}`);
+    }
+
+    for (const key of _.keys(left.config)) {
+      if (typeof _.get(left.config, key) !== typeof _.get(right.config, key)) {
+        throw new Error(`Feature config property type not equal. left: ${left.filePath}, right: ${right.filePath}, key: ${key}`);
+      }
+    }
+  }
+}
+
 export class FeatureConfig<T> {
-  constructor(readonly filePath: string, private readonly data: T) {}
+  constructor(
+    readonly filePath: string,
+    private readonly data: T,
+  ) {}
 
   get(key: keyof T): T[keyof T] {
     return this.data[key];

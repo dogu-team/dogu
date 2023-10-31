@@ -1,5 +1,11 @@
-import { CloudSubscriptionPlanBase, CloudSubscriptionPlanPropCamel, CloudSubscriptionPlanPropSnake, CloudSubscriptionPlanType } from '@dogu-private/console';
-import { BillingPeriod } from '@dogu-private/console/src/base/billing';
+import {
+  BillingCurrency,
+  BillingPeriod,
+  CloudSubscriptionPlanBase,
+  CloudSubscriptionPlanPropCamel,
+  CloudSubscriptionPlanPropSnake,
+  CloudSubscriptionPlanType,
+} from '@dogu-private/console';
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 import { CloudLicense } from './cloud-license.entity';
 import { ColumnTemplate } from './util/decorators';
@@ -12,16 +18,25 @@ export class CloudSubscriptionPlan implements CloudSubscriptionPlanBase {
   @Column({ type: 'enum', name: CloudSubscriptionPlanPropSnake.type, enum: CloudSubscriptionPlanType, nullable: false })
   type!: CloudSubscriptionPlanType;
 
+  @Column({ type: 'integer', name: CloudSubscriptionPlanPropSnake.option, nullable: false })
+  option!: number;
+
+  @Column({ type: 'enum', name: CloudSubscriptionPlanPropSnake.currency, enum: BillingCurrency, nullable: false })
+  currency!: BillingCurrency;
+
   @Column({ type: 'enum', name: CloudSubscriptionPlanPropSnake.period, enum: BillingPeriod, nullable: false })
   period!: BillingPeriod;
 
-  @Column('uuid', { name: CloudSubscriptionPlanPropSnake.cloud_license_id })
+  @Column({ type: 'integer', name: CloudSubscriptionPlanPropSnake.price, nullable: false })
+  price!: number;
+
+  @Column({ type: 'uuid', name: CloudSubscriptionPlanPropSnake.cloud_license_id })
   cloudLicenseId!: string;
 
-  @Column('uuid', { name: CloudSubscriptionPlanPropSnake.billing_coupon_id, nullable: true })
+  @Column({ type: 'uuid', name: CloudSubscriptionPlanPropSnake.billing_coupon_id, nullable: true })
   billingCouponId!: string | null;
 
-  @Column('integer', { name: CloudSubscriptionPlanPropSnake.billing_coupon_remaining_apply_count, nullable: true })
+  @Column({ type: 'integer', name: CloudSubscriptionPlanPropSnake.billing_coupon_remaining_apply_count, nullable: true })
   billingCouponRemainingApplyCount!: number | null;
 
   @ColumnTemplate.CreateDate(CloudSubscriptionPlanPropSnake.created_at)

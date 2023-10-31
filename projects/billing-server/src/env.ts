@@ -34,7 +34,12 @@ export class Env {
 
   @IsFilledString()
   DOGU_BILLING_RDS_SCHEMA!: string;
+
+  @IsFilledString()
+  DOGU_BILLING_NICE_CLIENT_KEY!: string;
+
+  @IsFilledString()
+  DOGU_BILLING_NICE_SECRET_KEY!: string;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 export const env = loadEnvLazySync(Env, { printable: logger });

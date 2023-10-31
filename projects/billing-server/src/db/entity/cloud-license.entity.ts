@@ -1,6 +1,7 @@
 import { CloudLicenseBase, CloudLicensePropSnake } from '@dogu-private/console';
 import { OrganizationId } from '@dogu-private/types';
 import { Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
+import { CloudSubscriptionPlanCustomOption } from './cloud-subscription-plan-custom-option.entity';
 import { CloudSubscriptionPlan } from './cloud-subscription-plan.entity';
 import { ColumnTemplate } from './util/decorators';
 
@@ -32,4 +33,7 @@ export class CloudLicense implements CloudLicenseBase {
 
   @OneToMany(() => CloudSubscriptionPlan, (cloudSubscriptionPlan) => cloudSubscriptionPlan.cloudLicense, { cascade: ['soft-remove'] })
   cloudSubscriptionPlans?: CloudSubscriptionPlan[];
+
+  @OneToMany(() => CloudSubscriptionPlanCustomOption, (cloudSubscriptionPlanCustomOption) => cloudSubscriptionPlanCustomOption.cloudLicense, { cascade: ['soft-remove'] })
+  cloudSubscriptionPlanCustomOptions?: CloudSubscriptionPlanCustomOption[];
 }

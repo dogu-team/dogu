@@ -11704,6 +11704,8 @@ __metadata:
     "@types/shelljs": 0.8.14
     "@types/uuid": 9.0.6
     "@types/ws": 8
+    aws-sdk: 2.1481.0
+    axios: 1.5.1
     class-transformer: 0.5.1
     class-validator: 0.14.0
     cross-env: 7.0.3

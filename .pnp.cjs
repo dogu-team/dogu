@@ -18810,6 +18810,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/shelljs", "npm:0.8.14"],\
             ["@types/uuid", "npm:9.0.6"],\
             ["@types/ws", "npm:8.5.4"],\
+            ["aws-sdk", "npm:2.1481.0"],\
+            ["axios", "npm:1.5.1"],\
             ["class-transformer", "npm:0.5.1"],\
             ["class-validator", "npm:0.14.0"],\
             ["cross-env", "npm:7.0.3"],\

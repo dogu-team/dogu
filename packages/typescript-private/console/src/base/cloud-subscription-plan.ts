@@ -1,264 +1,260 @@
 import { camelToSnakeCasePropertiesOf, propertiesOf } from '@dogu-tech/common';
 
-import { BillingPeriod, SubscriptionPlanPriceMap } from './billing';
+import { BillingCurrency, BillingPeriod, SubscriptionPlanInfo, SubscriptionPlanPriceMap } from './billing';
 import { CloudLicenseBase } from './cloud-license';
 
 export const CloudSubscriptionPlanType = ['live-testing'] as const;
 export type CloudSubscriptionPlanType = (typeof CloudSubscriptionPlanType)[number];
 
-export interface CloudSubscriptionPlanInfo {
-  optionMap: Record<number, SubscriptionPlanPriceMap>;
-}
-
-export const CloudSubscriptionPlanMap: Record<CloudSubscriptionPlanType, CloudSubscriptionPlanInfo> = {
+export const CloudSubscriptionPlanMap: Record<CloudSubscriptionPlanType, SubscriptionPlanInfo> = {
   'live-testing': {
     optionMap: {
       1: {
-        krw: {
+        KRW: {
           monthly: 39000,
           yearly: 31000 * 12,
         },
-        usd: {
+        USD: {
           monthly: 29,
           yearly: 23 * 12,
         },
       },
       2: {
-        krw: {
+        KRW: {
           monthly: 78000,
           yearly: 62000 * 12,
         },
-        usd: {
+        USD: {
           monthly: 58,
           yearly: 46 * 12,
         },
       },
       3: {
-        krw: {
+        KRW: {
           monthly: 117000,
           yearly: 93000 * 12,
         },
-        usd: {
+        USD: {
           monthly: 87,
           yearly: 69 * 12,
         },
       },
       4: {
-        krw: {
+        KRW: {
           monthly: 156000,
           yearly: 124000 * 12,
         },
-        usd: {
+        USD: {
           monthly: 116,
           yearly: 92 * 12,
         },
       },
       5: {
-        krw: {
+        KRW: {
           monthly: 195000,
           yearly: 155000 * 12,
         },
-        usd: {
+        USD: {
           monthly: 145,
           yearly: 115 * 12,
         },
       },
       6: {
-        krw: {
+        KRW: {
           monthly: 234000,
           yearly: 186000 * 12,
         },
-        usd: {
+        USD: {
           monthly: 174,
           yearly: 138 * 12,
         },
       },
       7: {
-        krw: {
+        KRW: {
           monthly: 273000,
           yearly: 217000 * 12,
         },
-        usd: {
+        USD: {
           monthly: 203,
           yearly: 161 * 12,
         },
       },
       8: {
-        krw: {
+        KRW: {
           monthly: 312000,
           yearly: 248000 * 12,
         },
-        usd: {
+        USD: {
           monthly: 232,
           yearly: 184 * 12,
         },
       },
       9: {
-        krw: {
+        KRW: {
           monthly: 351000,
           yearly: 279000 * 12,
         },
-        usd: {
+        USD: {
           monthly: 261,
           yearly: 207 * 12,
         },
       },
       10: {
-        krw: {
+        KRW: {
           monthly: 390000,
           yearly: 310000 * 12,
         },
-        usd: {
+        USD: {
           monthly: 290,
           yearly: 230 * 12,
         },
       },
       11: {
-        krw: {
+        KRW: {
           monthly: 429000,
           yearly: 341000 * 12,
         },
-        usd: {
+        USD: {
           monthly: 319,
           yearly: 253 * 12,
         },
       },
       12: {
-        krw: {
+        KRW: {
           monthly: 468000,
           yearly: 372000 * 12,
         },
-        usd: {
+        USD: {
           monthly: 348,
           yearly: 276 * 12,
         },
       },
       13: {
-        krw: {
+        KRW: {
           monthly: 507000,
           yearly: 403000 * 12,
         },
-        usd: {
+        USD: {
           monthly: 377,
           yearly: 299 * 12,
         },
       },
       14: {
-        krw: {
+        KRW: {
           monthly: 546000,
           yearly: 434000 * 12,
         },
-        usd: {
+        USD: {
           monthly: 406,
           yearly: 322 * 12,
         },
       },
       15: {
-        krw: {
+        KRW: {
           monthly: 585000,
           yearly: 465000 * 12,
         },
-        usd: {
+        USD: {
           monthly: 435,
           yearly: 345 * 12,
         },
       },
       16: {
-        krw: {
+        KRW: {
           monthly: 624000,
           yearly: 496000 * 12,
         },
-        usd: {
+        USD: {
           monthly: 464,
           yearly: 368 * 12,
         },
       },
       17: {
-        krw: {
+        KRW: {
           monthly: 663000,
           yearly: 527000 * 12,
         },
-        usd: {
+        USD: {
           monthly: 493,
           yearly: 391 * 12,
         },
       },
       18: {
-        krw: {
+        KRW: {
           monthly: 702000,
           yearly: 558000 * 12,
         },
-        usd: {
+        USD: {
           monthly: 522,
           yearly: 414 * 12,
         },
       },
       19: {
-        krw: {
+        KRW: {
           monthly: 741000,
           yearly: 589000 * 12,
         },
-        usd: {
+        USD: {
           monthly: 551,
           yearly: 437 * 12,
         },
       },
       20: {
-        krw: {
+        KRW: {
           monthly: 780000,
           yearly: 620000 * 12,
         },
-        usd: {
+        USD: {
           monthly: 580,
           yearly: 460 * 12,
         },
       },
       21: {
-        krw: {
+        KRW: {
           monthly: 819000,
           yearly: 651000 * 12,
         },
-        usd: {
+        USD: {
           monthly: 609,
           yearly: 483 * 12,
         },
       },
       22: {
-        krw: {
+        KRW: {
           monthly: 858000,
           yearly: 682000 * 12,
         },
-        usd: {
+        USD: {
           monthly: 638,
           yearly: 506 * 12,
         },
       },
       23: {
-        krw: {
+        KRW: {
           monthly: 897000,
           yearly: 713000 * 12,
         },
-        usd: {
+        USD: {
           monthly: 667,
           yearly: 529 * 12,
         },
       },
       24: {
-        krw: {
+        KRW: {
           monthly: 936000,
           yearly: 744000 * 12,
         },
-        usd: {
+        USD: {
           monthly: 696,
           yearly: 552 * 12,
         },
       },
       25: {
-        krw: {
+        KRW: {
           monthly: 975000,
           yearly: 775000 * 12,
         },
-        usd: {
+        USD: {
           monthly: 725,
           yearly: 575 * 12,
         },
@@ -270,7 +266,10 @@ export const CloudSubscriptionPlanMap: Record<CloudSubscriptionPlanType, CloudSu
 export interface CloudSubscriptionPlanBase {
   cloudSubscriptionPlanId: string;
   type: CloudSubscriptionPlanType;
+  option: number;
+  currency: BillingCurrency;
   period: BillingPeriod;
+  price: number;
   cloudLicenseId: string;
   billingCouponId: string | null;
   billingCouponRemainingApplyCount: number | null;

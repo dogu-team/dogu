@@ -9,9 +9,6 @@ export class BillingMethodNice implements BillingMethodNiceBase {
   @PrimaryColumn('uuid', { name: BillingMethodNicePropSnake.billing_method_nice_id })
   billingMethodNiceId!: string;
 
-  @Column({ type: 'character varying', name: BillingMethodNicePropSnake.currency, nullable: false })
-  currency!: string;
-
   @Column({ type: 'character varying', name: BillingMethodNicePropSnake.bid, nullable: true })
   bid!: string | null;
 

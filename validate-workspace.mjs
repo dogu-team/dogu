@@ -69,7 +69,14 @@ function checkMigrationFiles() {
   }
 }
 
+function checkFeatureConfigFilesEquality() {
+  execSync('yarn workspace console-web-server node scripts/validate-feature-config.mjs', { stdio: 'inherit' });
+  execSync('yarn workspace billing-server node scripts/validate-feature-config.mjs', { stdio: 'inherit' });
+  execSync('yarn workspace @dogu-private/dogu-agent-core node scripts/validate-feature-config.mjs', { stdio: 'inherit' });
+}
+
 disallowGitSubmodules();
 checkDoguWorkspaceFile();
 checkThirdPartyReadMe();
 checkMigrationFiles();
+checkFeatureConfigFilesEquality();
