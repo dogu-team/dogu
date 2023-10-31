@@ -39,7 +39,7 @@ const GitIntegrationForm = ({ form, hideType }: Props) => {
         <Input placeholder="ghp_1234567890abcd" required />
       </Form.Item>
       <Form.Item label="Repository URL" name="repo" required rules={[{ required: true, message: 'Input repository' }]}>
-        <Input placeholder="https://github.com/dogu-team/dogu.git" required />
+        <Input placeholder="https://github.com/dogu-team/example.git" required />
       </Form.Item>
     </Form>
   );

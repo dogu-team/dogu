@@ -1,6 +1,6 @@
 import { CreateHostDtoBase } from '@dogu-private/console';
 import { OrganizationId, HOST_NAME_MAX_LENGTH, HOST_NAME_MIN_LENGTH } from '@dogu-private/types';
-import { Alert, Button, Form, Input, message, notification } from 'antd';
+import { Alert, Form, Input } from 'antd';
 import { AxiosError } from 'axios';
 import Trans from 'next-translate/Trans';
 import useTranslation from 'next-translate/useTranslation';
@@ -17,7 +17,7 @@ import { flexRowBaseStyle } from '../../styles/box';
 import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd';
 import FormControlModal from '../modals/FormControlModal';
 import TokenCopyInput from '../common/TokenCopyInput';
-import { getLocaledLink } from '../../utils/locale';
+import DownloadAgentButton from './DownloadAgentButton';
 
 interface Props {
   isOpen: boolean;
@@ -53,11 +53,6 @@ const CreateHostModal = ({ isOpen, close }: Props) => {
     setLoading(false);
   };
 
-  const doguAgentDownloadLink =
-    process.env.NEXT_PUBLIC_ENV === 'self-hosted'
-      ? 'https://github.com/dogu-team/dogu/releases'
-      : `${process.env.NEXT_PUBLIC_LANDING_URL}${getLocaledLink(router.locale, '/downloads/dogu-agent')}`;
-
   return (
     <FormControlModal
       form={
@@ -72,7 +67,9 @@ const CreateHostModal = ({ isOpen, close }: Props) => {
                       <Trans
                         i18nKey="device-farm:hostCreateModalSuccessHint"
                         components={{
-                          link1: <Link href={doguAgentDownloadLink} target="_blank" />,
+                          link1: (
+                            <DownloadAgentButton type="link" size="small" style={{ padding: '0', color: '#69b1ff' }} />
+                          ),
                           link2: <Link href="https://docs.dogutech.io/device-farm/host" target="_blank" />,
                         }}
                       />
