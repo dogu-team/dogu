@@ -5,6 +5,7 @@ export * from './base/billing-method-nice';
 export * from './base/billing-token';
 export * from './base/change-log';
 export * from './base/change-log-user-reaction';
+export * from './base/cloud-device';
 export * from './base/cloud-license';
 export * from './base/cloud-subscription-plan';
 export * from './base/controller-handler';

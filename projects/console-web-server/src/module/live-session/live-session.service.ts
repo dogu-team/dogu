@@ -1,5 +1,6 @@
 import { CloudLicenseBase, DevicePropCamel, DeviceUsageState, LiveSessionCreateRequestBodyDto, LiveSessionFindQueryDto, OrganizationPropCamel } from '@dogu-private/console';
 import { DeviceConnectionState, LiveSessionActiveStates, LiveSessionId, LiveSessionState, OrganizationId } from '@dogu-private/types';
+import { errorify } from '@dogu-tech/common';
 import { HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource, EntityManager, In } from 'typeorm';
@@ -156,7 +157,7 @@ export class LiveSessionService {
     devices.forEach((device) => {
       this.deviceCommandService.reset(device.organizationId, device.deviceId, device.serial).catch((error) => {
         this.logger.error('LiveSessionService.close.reset error', {
-          error,
+          error: errorify(error),
           device,
         });
       });
@@ -256,7 +257,7 @@ export class LiveSessionService {
       throw new HttpException(`Live testing parallel count exceeded. liveTestingParallelCount: ${cloudLicense.liveTestingParallelCount}`, HttpStatus.PAYMENT_REQUIRED);
     }
 
-    const isLiveTestingSubscribing = cloudLicense.cloudSubscriptionItems?.find((item) => item.type === 'live-testing');
+    const isLiveTestingSubscribing = cloudLicense.cloudSubscriptionPlans?.find((plan) => plan.type === 'live-testing');
     if (!isLiveTestingSubscribing && cloudLicense.liveTestingRemainingFreeSeconds <= 0) {
       throw new HttpException(`Live testing is not subscribed. remainingFreeSeconds: ${cloudLicense.liveTestingRemainingFreeSeconds}`, HttpStatus.PAYMENT_REQUIRED);
     }
