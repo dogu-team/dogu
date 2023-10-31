@@ -65,7 +65,7 @@ export class WindowService {
       webPreferences: {
         preload: PreloadScriptPath,
         nodeIntegration: true,
-        devTools: false,
+        devTools: true,
       },
     });
     mainWindowState.manage(this.window);
@@ -82,8 +82,6 @@ export class WindowService {
       this.window.loadURL(`file://${ReactPublicIndexPath}`);
     } else {
       this.window.loadURL('http://127.0.0.1:3333/index.html');
-
-      this.window.webContents.openDevTools({ mode: 'detach' });
     }
     this.window?.on('maximize', () => {
       this.window?.webContents.send(windowClientKey.onMaximize);
@@ -108,6 +106,9 @@ export class WindowService {
 
       ipcMain.handle(windowClientKey.close, () => {
         WindowService?.instance?.window?.close();
+      });
+      ipcMain.handle(windowClientKey.openDevTools, () => {
+        WindowService?.instance?.window?.webContents.openDevTools({ mode: 'detach', activate: true });
       });
       handlerAdded = true;
     }

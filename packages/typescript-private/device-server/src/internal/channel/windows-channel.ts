@@ -19,7 +19,7 @@ import { BrowserInstallation, StreamingOfferDto } from '@dogu-tech/device-client
 import { ChildProcess, isFreePort } from '@dogu-tech/node';
 import { Observable } from 'rxjs';
 import systeminformation from 'systeminformation';
-import { AppiumContext, AppiumContextKey } from '../../appium/appium.context';
+import { AppiumRemoteContextRental } from '../../appium/appium.context.proxy';
 import { DeviceWebDriverHandler } from '../../device-webdriver/device-webdriver.common';
 import { SeleniumDeviceWebDriverHandler } from '../../device-webdriver/selenium.device-webdriver.handler';
 import { GamiumContext } from '../../gamium/gamium.context';
@@ -214,8 +214,9 @@ export class WindowsChannel implements DeviceChannel {
     return null;
   }
 
-  switchAppiumContext(key: AppiumContextKey): PromiseOrValue<AppiumContext> {
+  async rentAppiumRemoteContext(reason: string): Promise<AppiumRemoteContextRental> {
     throw new Error('Method not implemented.');
+    await Promise.resolve();
   }
 
   getAppiumCapabilities(): null {

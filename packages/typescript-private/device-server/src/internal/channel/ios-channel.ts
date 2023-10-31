@@ -26,7 +26,8 @@ import path from 'path';
 import { Observable } from 'rxjs';
 import semver from 'semver';
 import { createAppiumCapabilities } from '../../appium/appium.capabilites';
-import { AppiumContext, AppiumContextImpl, AppiumContextKey, AppiumContextProxy } from '../../appium/appium.context';
+import { AppiumContext } from '../../appium/appium.context';
+import { AppiumContextProxy, AppiumRemoteContextRental } from '../../appium/appium.context.proxy';
 import { AppiumDeviceWebDriverHandler } from '../../device-webdriver/appium.device-webdriver.handler';
 import { DeviceWebDriverHandler } from '../../device-webdriver/device-webdriver.common';
 import { env } from '../../env';
@@ -53,7 +54,10 @@ import { checkTime } from '../util/check-time';
 type DeviceControl = PrivateProtocol.DeviceControl;
 
 export class IosLogClosable implements Closable {
-  constructor(private readonly childProcess: ChildProcess, private readonly printable?: Printable) {}
+  constructor(
+    private readonly childProcess: ChildProcess,
+    private readonly printable?: Printable,
+  ) {}
 
   close(): void {
     killChildProcess(this.childProcess).catch((error) => {
@@ -498,9 +502,8 @@ export class IosChannel implements DeviceChannel {
     return this._appiumContext;
   }
 
-  async switchAppiumContext(key: AppiumContextKey): Promise<AppiumContext> {
-    await this._appiumContext.switchAppiumContext(key);
-    return this._appiumContext;
+  async rentAppiumRemoteContext(reason: string): Promise<AppiumRemoteContextRental> {
+    return this._appiumContext.rentRemote(reason);
   }
 
   async getAppiumCapabilities(): Promise<AppiumCapabilities> {

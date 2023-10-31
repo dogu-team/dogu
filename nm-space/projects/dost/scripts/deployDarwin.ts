@@ -13,7 +13,7 @@ const DoguIdentityUrls = [
 ];
 const DoguIdentity = `649965BEF665859D3D52B5DC2DF89EF852E58610 "Developer ID Application: Dogu Technologies Inc. (THJJSQ3S6P)"`;
 const KeyStr = env.DOGU_APPLE_API_PRIVATEKEY.replaceAll('\\n', '\n');
-const KeyFilePath = path.resolve(os.homedir(), '.dogu_secret', 'apple_api_privatekey.p8');
+const KeyFilePath = path.resolve(os.homedir(), '.dogu_secret', 'apple', `${Math.floor(Math.random() * 100000)}-apple_api_privatekey.p8`);
 const KeyId = env.DOGU_APPLE_API_KEY_ID;
 const IssuerId = env.DOGU_APPLE_API_ISSUER_ID;
 

@@ -16,7 +16,8 @@ import { Closable, Printable, PromiseOrValue } from '@dogu-tech/common';
 import { AppiumCapabilities, BrowserInstallation, StreamingOfferDto } from '@dogu-tech/device-client-common';
 import { Observable } from 'rxjs';
 import { DeviceWebDriver } from '../../alias';
-import { AppiumContext, AppiumContextKey } from '../../appium/appium.context';
+import { AppiumContext } from '../../appium/appium.context';
+import { AppiumRemoteContextRental } from '../../appium/appium.context.proxy';
 import { AppiumService } from '../../appium/appium.service';
 import { BrowserManagerService } from '../../browser-manager/browser-manager.service';
 import { DevicePortService } from '../../device-port/device-port.service';
@@ -92,7 +93,7 @@ export interface DeviceChannel {
   // appium
   getAppiumContext(): PromiseOrValue<AppiumContext | null>;
   getAppiumCapabilities(): PromiseOrValue<AppiumCapabilities | null>;
-  switchAppiumContext(key: AppiumContextKey): PromiseOrValue<AppiumContext>;
+  rentAppiumRemoteContext(reason: string): Promise<AppiumRemoteContextRental>;
 
   // gamium
   set gamiumContext(context: GamiumContext | null);
