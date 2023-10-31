@@ -19,6 +19,7 @@ import { PrivateDeviceWsModule } from '../../ws/private/private-device-ws.module
 import { RemoteGamiumModule } from '../../ws/remote-gamium/remote-gamium.module';
 import { RemoteWebDriverBiDiModule } from '../../ws/remote-webdriver-bidi/remote-webdriver-bidi.module';
 import { AuthModule } from '../auth/auth.module';
+import { BillingModule } from '../billing/billing.module';
 import { ChangeLogModule } from '../change-log/change-log.module';
 import { CloudDeviceModule } from '../cloud-device/cloud-device.module';
 import { DeviceMessageModule } from '../device-message/device-message.module';
@@ -94,6 +95,7 @@ const BASE_MODULES = [
   CloudDeviceModule,
   LiveSessionModule,
   RedisModule,
+  BillingModule,
 ];
 
 @Module({
