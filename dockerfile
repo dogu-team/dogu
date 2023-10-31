@@ -4,7 +4,7 @@ FROM ubuntu:22.04 AS dogu-console
 RUN apt-get clean \
     && apt-get update \
     && apt-get install -y ca-certificates curl gnupg \
-    && curl -sL https://deb.nodesource.com/setup_lts.x | bash - \
+    && curl -sL https://deb.nodesource.com/setup_16.x | bash - \
     && apt-get install -y nodejs \
     && npm install -g yarn \
     && apt update && apt install -y \
