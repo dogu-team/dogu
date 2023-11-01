@@ -56,7 +56,7 @@ export class DeviceHostController {
 
   @Delete(DeviceHost.removeTemp.path)
   async removeTemp(@Body() param: DeleteTempPathRequestBody): Promise<Instance<typeof DeviceHost.removeTemp.responseBody>> {
-    const filePathResolved = path.resolve(HostPaths.doguTempPath(), param.pathUnderTemp);
+    const filePathResolved = path.join(HostPaths.doguTempPath(), param.pathUnderTemp);
     const stat = await fs.promises.stat(filePathResolved);
     if (!stat.isFile()) {
       throw new Error(`Path ${filePathResolved} is not a file`);
