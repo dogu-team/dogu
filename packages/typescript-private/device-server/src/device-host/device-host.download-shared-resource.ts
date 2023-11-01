@@ -13,6 +13,8 @@ import { DoguLogger } from '../logger/logger';
 export type DeviceHostDownloadResult = Instance<typeof DeviceHostDownloadSharedResource.receiveMessage> & { message: string };
 export type DeviceHostDownloadParam = Instance<typeof DeviceHostDownloadSharedResource.sendMessage>;
 
+const AllowedDownloadPaths = (): string[] => [HostPaths.organizationsPath(HostPaths.doguHomePath), HostPaths.doguTempPath(), HostPaths.downloadsPath(HostPaths.doguHomePath)];
+
 @Injectable()
 export class DeviceHostDownloadSharedResourceService {
   private downloadLockAndQ = new AsyncLock();
@@ -38,6 +40,17 @@ export class DeviceHostDownloadSharedResourceService {
 
   private async download(message: DeviceHostDownloadParam): Promise<DeviceHostDownloadResult> {
     const { filePath, url, expectedFileSize, headers } = message;
+    const filePathResolved = path.resolve(filePath);
+    const isAllowedPath = AllowedDownloadPaths().some((allowedPath) => {
+      const relativeFrom = path.relative(allowedPath, filePathResolved);
+      if (relativeFrom.startsWith('..')) {
+        return false;
+      }
+      return true;
+    });
+    if (!isAllowedPath) {
+      throw new Error(`File path is not allowed: ${filePath}`);
+    }
     const stat = await fs.promises.stat(filePath).catch(() => null);
     if (stat !== null) {
       if (stat.isFile()) {
@@ -87,15 +100,18 @@ export class DeviceHostDownloadSharedResourceService {
     await fs.promises.mkdir(dirPath, { recursive: true });
     await renameRetry(tempFilePath, filePath, this.logger);
     this.logger.info('File downloaded', { filePath });
-    const responseHeaders = Reflect.ownKeys(response.headers).reduce((acc, key) => {
-      const value = Reflect.get(response.headers, key);
-      if (Array.isArray(value)) {
-        Reflect.set(acc, key, value.join(','));
-      } else {
-        Reflect.set(acc, key, String(value));
-      }
-      return acc;
-    }, {} as Record<string, string>);
+    const responseHeaders = Reflect.ownKeys(response.headers).reduce(
+      (acc, key) => {
+        const value = Reflect.get(response.headers, key);
+        if (Array.isArray(value)) {
+          Reflect.set(acc, key, value.join(','));
+        } else {
+          Reflect.set(acc, key, String(value));
+        }
+        return acc;
+      },
+      {} as Record<string, string>,
+    );
 
     return {
       responseCode: response.status,

@@ -22,6 +22,7 @@ export const HostPaths = {
   recordDeviceRunnerPath: (recordWorkspacePath: string, deviceRunnerId: string): string => path.resolve(recordWorkspacePath, deviceRunnerId),
   externalsPath: (doguHomePath: string): string => path.resolve(doguHomePath, 'externals'),
   downloadsPath: (doguHomePath: string): string => path.resolve(doguHomePath, 'downloads'),
+  organizationsPath: (doguHomePath: string): string => path.resolve(doguHomePath, 'organizations'),
   organizationWorkspacePath: (doguHomePath: string, organizationId: string): string => path.resolve(doguHomePath, 'organizations', organizationId),
   routinesPath: (doguHomePath: string): string => path.resolve(doguHomePath, 'routines'),
   hostWorkspacePath: (organizationWorkspacePath: string, hostId: string): string => path.resolve(organizationWorkspacePath, 'hosts', hostId),
