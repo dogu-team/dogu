@@ -1,7 +1,7 @@
 import { OrganizationId, ProjectId, RecordTestCaseId, RecordTestStepId, RoutineDeviceJobId, RoutineId, RoutinePipelineId } from '@dogu-private/types';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import path from 'path';
-import { FEATURE_CONFIG } from '../../feature.config';
+import { FeatureConfig } from '../../feature.config';
 import { FeatureFileService, HeadResult, ListItem } from '../feature/file/feature-file.service';
 import { ProjectAppDirectory, ProjectAppType } from './project-app-file';
 
@@ -135,7 +135,7 @@ export class ProjectFileService {
     extensions: string[],
   ) {
     const directoryPath =
-      FEATURE_CONFIG.get('fileService') === 's3'
+      FeatureConfig.get('fileService') === 's3'
         ? `organizations/${organizationId}/projects/${projectId}/routines/${routineId}/pipelines/${pipelineId}/records/${deviceJobId}`
         : `/organizations/${organizationId}/projects/${projectId}/routines/${routineId}/pipelines/${pipelineId}/records/${deviceJobId}`;
 

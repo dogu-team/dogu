@@ -1,5 +1,5 @@
 import { ClassProvider, Module } from '@nestjs/common';
-import { FEATURE_CONFIG } from '../../feature.config';
+import { FeatureConfig } from '../../feature.config';
 import { BillingController } from './billing.controller';
 import { BillingService } from './billing.service';
 import { CloudBillingService } from './implementations/cloud-billing.service';
@@ -7,7 +7,7 @@ import { SelfHostedBillingService } from './implementations/self-hosted-billing.
 
 const BillingServiceProvider: ClassProvider = {
   provide: BillingService,
-  useClass: FEATURE_CONFIG.get('licenseModule') === 'self-hosted' ? SelfHostedBillingService : CloudBillingService,
+  useClass: FeatureConfig.get('licenseModule') === 'self-hosted' ? SelfHostedBillingService : CloudBillingService,
 };
 
 @Module({

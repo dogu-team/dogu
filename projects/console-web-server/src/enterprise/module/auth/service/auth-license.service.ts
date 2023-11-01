@@ -4,7 +4,7 @@ import { Request } from 'express';
 import { DataSource } from 'typeorm';
 
 import { Project } from '../../../../db/entity/project.entity';
-import { FEATURE_CONFIG } from '../../../../feature.config';
+import { FeatureConfig } from '../../../../feature.config';
 import { LICENSE_AUTHROIZE } from '../../../../module/auth/auth.types';
 import { TokenService } from '../../../../module/token/token.service';
 import { SelfHostedLicenseService } from '../../license/self-hosted-license.service';
@@ -43,7 +43,7 @@ export class AuthLicenseService {
       throw new UnauthorizedException(`No organizationId information.`);
     }
 
-    if (FEATURE_CONFIG.get('licenseModule') === 'self-hosted') {
+    if (FeatureConfig.get('licenseModule') === 'self-hosted') {
       const license = await this.selfHostedLicenseService.getLicenseInfo(orgId);
 
       const isExpired = TokenService.isExpired(license.expiredAt);
@@ -57,7 +57,7 @@ export class AuthLicenseService {
   private async validateDoguAgentAutoUpdateLicense(req: Request): Promise<void> {
     const orgIdByRequest = req.params.organizationId;
 
-    if (FEATURE_CONFIG.get('licenseModule') === 'self-hosted') {
+    if (FeatureConfig.get('licenseModule') === 'self-hosted') {
       const license = await this.selfHostedLicenseService.getLicenseInfo(orgIdByRequest);
 
       const isExpired = TokenService.isExpired(license.expiredAt);

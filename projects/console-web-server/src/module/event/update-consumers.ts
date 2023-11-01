@@ -3,7 +3,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { Interval } from '@nestjs/schedule';
 import { config } from '../../config';
 import { LicenseSystemProcessor } from '../../enterprise/module/event/license/license-system.processor';
-import { FEATURE_CONFIG } from '../../feature.config';
+import { FeatureConfig } from '../../feature.config';
 import { DoguLogger } from '../logger/logger';
 import { HeartBeatSystemProcessor } from './heartbeat/heartbeat-system.processor';
 import { PipelineSystemProcessor } from './pipeline/pipeline-system.processor';
@@ -35,7 +35,7 @@ export class UpdateConsumer {
 
   @Interval(config.event.license.check.intervalMilliseconds)
   async onLicenseUpdate(): Promise<void> {
-    if (FEATURE_CONFIG.get('licenseModule') === 'self-hosted') {
+    if (FeatureConfig.get('licenseModule') === 'self-hosted') {
       const licenseStartTime = Date.now();
       await this.duplicatedLicenseCallGuarder.guard(this.licenseSystemProcessor.update.bind(this.licenseSystemProcessor));
       const licenseEndTime = Date.now();

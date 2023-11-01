@@ -43,7 +43,7 @@ import { DeviceAndDeviceTag } from '../../../db/entity/relations/device-and-devi
 import { ProjectAndDevice } from '../../../db/entity/relations/project-and-device.entity';
 import { SelfHostedLicenseValidator } from '../../../enterprise/module/license/common/validation';
 import { SelfHostedLicenseService } from '../../../enterprise/module/license/self-hosted-license.service';
-import { FEATURE_CONFIG } from '../../../feature.config';
+import { FeatureConfig } from '../../../feature.config';
 import { Page } from '../../common/dto/pagination/page';
 import { TokenService } from '../../token/token.service';
 import { DeviceTagService } from '../device-tag/device-tag.service';
@@ -68,7 +68,7 @@ export class DeviceStatusService {
   ) {}
 
   async getEnabledDeviceCount(): Promise<GetEnabledDeviceCountResponse> {
-    if (FEATURE_CONFIG.get('licenseModule') !== 'self-hosted') {
+    if (FeatureConfig.get('licenseModule') !== 'self-hosted') {
       throw new NotImplementedException(`This feature is not supported in cloud.`);
     }
 
@@ -279,7 +279,7 @@ export class DeviceStatusService {
       throw new HttpException(`Cannot find device. deviceId: ${deviceId}`, HttpStatus.NOT_FOUND);
     }
 
-    if (FEATURE_CONFIG.get('licenseModule') === 'self-hosted') {
+    if (FeatureConfig.get('licenseModule') === 'self-hosted') {
       if (projectId || isGlobal) {
         const license = await this.selfHostedLicenseService.getLicenseInfo(organizationId);
 
@@ -388,7 +388,7 @@ export class DeviceStatusService {
     }
 
     if (device.isGlobal === 1 || (device.projectAndDevices && device.projectAndDevices.length > 0)) {
-      if (FEATURE_CONFIG.get('licenseModule') === 'self-hosted') {
+      if (FeatureConfig.get('licenseModule') === 'self-hosted') {
         const license = await this.selfHostedLicenseService.getLicenseInfo(organizationId);
         const enabledHostDevices = await DeviceStatusService.findEnabledHostDevices(this.dataSource.manager, organizationId);
         const enabledHostRunnerCount = enabledHostDevices.map((device) => device.maxParallelJobs).reduce((a, b) => a + b, 0);

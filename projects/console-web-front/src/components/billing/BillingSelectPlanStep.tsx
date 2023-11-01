@@ -1,4 +1,4 @@
-import { CloudSubscriptionPlanMap, CloudSubscriptionPlanType } from '@dogu-private/console';
+import { BillingSubscriptionPlanMap, BillingSubscriptionPlanType } from '@dogu-private/console';
 import styled from 'styled-components';
 
 import { planDescriptionInfoMap } from '../../resources/plan';
@@ -6,14 +6,14 @@ import BillingDurationSwitch from './BillingDurationSwitch';
 import PlanItem from './PlanItem';
 
 interface Props {
-  planType: CloudSubscriptionPlanType;
+  planType: BillingSubscriptionPlanType;
   onClickUpgrade: () => void;
   // TODO: from user's plan
   // isAnnual: boolean;
 }
 
 const BillingSelectPlanStep: React.FC<Props> = ({ planType, onClickUpgrade }) => {
-  const planInfo = CloudSubscriptionPlanMap[planType];
+  const planInfo = BillingSubscriptionPlanMap[planType];
   const descriptionInfo = planDescriptionInfoMap[planType];
 
   return (

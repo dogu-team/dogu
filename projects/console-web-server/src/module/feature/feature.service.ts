@@ -1,9 +1,8 @@
-import { FeatureTableBase } from '@dogu-private/console';
 import { Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { User } from '../../db/entity/user.entity';
-import { FEATURE_CONFIG } from '../../feature.config';
+import { FeatureConfig, FeatureTable } from '../../feature.config';
 
 @Injectable()
 export class FeatureService {
@@ -12,9 +11,10 @@ export class FeatureService {
     private readonly dataSource: DataSource,
   ) {}
 
-  getFeatureConfig(): FeatureTableBase {
-    return FEATURE_CONFIG.getAll();
+  getFeatureConfig(): FeatureTable {
+    return FeatureConfig.getAll();
   }
+
   async existsRootUser(): Promise<boolean> {
     const exist = await this.dataSource.getRepository(User).findOne({ where: { isRoot: true } });
     return exist ? true : false;

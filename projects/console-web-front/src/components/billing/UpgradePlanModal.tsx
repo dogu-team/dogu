@@ -1,4 +1,4 @@
-import { CloudSubscriptionPlanType } from '@dogu-private/console';
+import { BillingSubscriptionPlanType } from '@dogu-private/console';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import { Button, Modal } from 'antd';
 import { useState } from 'react';
@@ -11,7 +11,7 @@ import BillingSelectPlanStep from './BillingSelectPlanStep';
 interface Props {
   isOpen: boolean;
   close: () => void;
-  planType: CloudSubscriptionPlanType;
+  planType: BillingSubscriptionPlanType;
 }
 
 const UpgradePlanModal: React.FC<Props> = ({ isOpen, close, planType }) => {
@@ -50,7 +50,6 @@ const UpgradePlanModal: React.FC<Props> = ({ isOpen, close, planType }) => {
       width="min(80vw, 720px)"
     >
       {isSelected ? (
-        
         <BillingPayStep />
       ) : (
         <BillingSelectPlanStep planType={planType} onClickUpgrade={handleClickUpgrade} />

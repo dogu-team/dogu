@@ -1,4 +1,4 @@
-import { SubscriptionPlanInfo } from '@dogu-private/console';
+import { BillingSubscriptionPlanInfo } from '@dogu-private/console';
 import { Button, Divider, Select, SelectProps } from 'antd';
 import { useState } from 'react';
 import styled from 'styled-components';
@@ -7,7 +7,7 @@ import { PlanDescriptionInfo } from '../../resources/plan';
 import useBillingPlanPurchaseStore from '../../stores/billing-plan-purchase';
 
 interface Props {
-  planInfo: SubscriptionPlanInfo;
+  planInfo: BillingSubscriptionPlanInfo;
   descriptionInfo: PlanDescriptionInfo;
   onClickUpgrade: () => void;
 }

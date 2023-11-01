@@ -1,4 +1,4 @@
-import { CloudLicenseBase, CloudSubscriptionPlanType } from '@dogu-private/console';
+import { CloudLicenseBase, BillingSubscriptionPlanType } from '@dogu-private/console';
 import { Button, ButtonProps } from 'antd';
 
 import useModal from '../../hooks/useModal';
@@ -6,7 +6,7 @@ import UpgradePlanModal from './UpgradePlanModal';
 
 interface Props extends Omit<ButtonProps, 'onClick'> {
   license: CloudLicenseBase;
-  planType: CloudSubscriptionPlanType;
+  planType: BillingSubscriptionPlanType;
 }
 
 const UpgradePlanButton: React.FC<Props> = ({ planType, ...props }) => {

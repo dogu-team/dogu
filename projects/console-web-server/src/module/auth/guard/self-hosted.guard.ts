@@ -5,7 +5,7 @@ import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { config } from '../../../config';
 import { User } from '../../../db/entity/user.entity';
-import { FEATURE_CONFIG } from '../../../feature.config';
+import { FeatureConfig } from '../../../feature.config';
 import { DoguLogger } from '../../logger/logger';
 import { SELF_HOSTED_ROLE, SELF_HOSTED_ROLE_KEY } from '../auth.types';
 import { printLog } from './common';
@@ -28,7 +28,7 @@ export class SelfHostedRoleGuard implements CanActivate {
       printLog(ctx, 'SelfHostedRoleGuard', controllerRoleType);
     }
 
-    if (FEATURE_CONFIG.get('licenseModule') !== 'self-hosted') {
+    if (FeatureConfig.get('licenseModule') !== 'self-hosted') {
       throw new HttpException(`LicenseGuard. The action is only allowed in self-hosted.`, HttpStatus.BAD_REQUEST);
     }
 

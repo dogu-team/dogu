@@ -8,7 +8,7 @@ import { IncomingMessage } from 'http';
 import { DataSource } from 'typeorm';
 import { WebSocket } from 'ws';
 import { Project } from '../../../../../db/entity/project.entity';
-import { FEATURE_CONFIG } from '../../../../../feature.config';
+import { FeatureConfig } from '../../../../../feature.config';
 import { PROJECT_ROLE } from '../../../../../module/auth/auth.types';
 import { ApiPermission } from '../../../../../module/auth/guard/common';
 import { DoguLogger } from '../../../../../module/logger/logger';
@@ -88,7 +88,7 @@ export class V1LivePipelineStatusGateway implements OnGatewayConnection, OnGatew
       return;
     }
 
-    if (FEATURE_CONFIG.get('licenseModule') === 'self-hosted') {
+    if (FeatureConfig.get('licenseModule') === 'self-hosted') {
       const project = await this.dataSource.manager.getRepository(Project).findOne({ where: { projectId: projectIdByRequest } });
       const orgIdByProject = project?.organizationId ?? null;
       try {

@@ -6,7 +6,7 @@ import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { config } from '../../../config';
 import { User } from '../../../db/entity/index';
-import { FEATURE_CONFIG } from '../../../feature.config';
+import { FeatureConfig } from '../../../feature.config';
 import { DoguLogger } from '../../logger/logger';
 import { EMAIL_VERIFICATION, EMAIL_VERIFICATION_KEY } from '../auth.types';
 import { printLog } from './common';
@@ -34,7 +34,7 @@ export class EmailVerificationGuard implements CanActivate {
       throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
     }
 
-    if (!FEATURE_CONFIG.get('emailVerification')) {
+    if (!FeatureConfig.get('emailVerification')) {
       return true;
     }
 

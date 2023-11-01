@@ -7,7 +7,7 @@ import axios from 'axios';
 import { WebSocket } from 'ws';
 
 import { env } from '../../../env';
-import { FEATURE_CONFIG } from '../../../feature.config';
+import { FeatureConfig } from '../../../feature.config';
 import { DoguLogger } from '../../../module/logger/logger';
 import { getBillingServerWebSocketUrl, updateAuthHeaderByBillingApiToken } from './common/utils';
 
@@ -26,7 +26,7 @@ export class CloudLicenseService {
       baseURL: env.DOGU_BILLING_SERVER_URL,
     });
     setAxiosErrorFilterToIntercepter(this.api);
-    if (FEATURE_CONFIG.get('licenseModule') === 'cloud') {
+    if (FeatureConfig.get('licenseModule') === 'cloud') {
       updateAuthHeaderByBillingApiToken(this.api.defaults.headers);
     }
   }

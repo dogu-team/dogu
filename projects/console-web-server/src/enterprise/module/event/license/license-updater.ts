@@ -7,7 +7,7 @@ import { DataSource, EntityManager } from 'typeorm';
 
 import { Device } from '../../../../db/entity/device.entity';
 import { Organization, ProjectAndDevice } from '../../../../db/entity/index';
-import { FEATURE_CONFIG } from '../../../../feature.config';
+import { FeatureConfig } from '../../../../feature.config';
 import { DoguLogger } from '../../../../module/logger/logger';
 import { DeviceStatusService } from '../../../../module/organization/device/device-status.service';
 import { SelfHostedLicenseValidator } from '../../license/common/validation';
@@ -155,7 +155,7 @@ export class LicenseUpdater {
   }
 
   private async checkExpiredLicense(): Promise<void> {
-    if (FEATURE_CONFIG.get('licenseModule') === 'self-hosted') {
+    if (FeatureConfig.get('licenseModule') === 'self-hosted') {
       await this.checkExpiredSelfHostedLicense();
     }
   }
