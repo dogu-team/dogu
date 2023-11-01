@@ -7567,6 +7567,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/async-lock", "npm:1.4.0"],\
             ["@types/cron", "npm:2.0.0"],\
             ["@types/express", "npm:4.17.13"],\
+            ["@types/intersects", "npm:2.7.3"],\
             ["@types/lodash", "npm:4.14.186"],\
             ["@types/node", "npm:18.15.11"],\
             ["@types/plist", "npm:3.0.2"],\
@@ -7588,6 +7589,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["find-free-ports", "npm:3.0.0"],\
             ["gamium", "npm:2.0.2"],\
             ["glob", "npm:10.0.0"],\
+            ["intersects", "npm:2.7.2"],\
             ["jest", "virtual:b2489bbc0216283d7687523442dd6b04aeaedb71246257f8a0a0e6ae86307b18dca708146dd0f430b02186348d070ef7e31b7b07c55f7aabad66d13be5ae7e15#npm:29.6.1"],\
             ["lodash", "npm:4.17.21"],\
             ["nest-winston", "virtual:d0508fb1c987a55ce593348c3c3508bc662c7271db932ea69a120075a5cf1c1208122c8c0d6b8e79e0a37a88088966bd934935bdae901a07544f17c740a10f2e#npm:1.8.0"],\
@@ -14475,6 +14477,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/@types-http-cache-semantics-npm-4.0.1-90863c7a3e-1048aacf62.zip/node_modules/@types/http-cache-semantics/",\
           "packageDependencies": [\
             ["@types/http-cache-semantics", "npm:4.0.1"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@types/intersects", [\
+        ["npm:2.7.3", {\
+          "packageLocation": "./.yarn/cache/@types-intersects-npm-2.7.3-0f0733dcad-3d8e01eb89.zip/node_modules/@types/intersects/",\
+          "packageDependencies": [\
+            ["@types/intersects", "npm:2.7.3"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -26895,6 +26906,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/interpret-npm-1.4.0-17b4b5b0a4-2e5f51268b.zip/node_modules/interpret/",\
           "packageDependencies": [\
             ["interpret", "npm:1.4.0"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["intersects", [\
+        ["npm:2.7.2", {\
+          "packageLocation": "./.yarn/cache/intersects-npm-2.7.2-a0f41ce426-b1e7afce2c.zip/node_modules/intersects/",\
+          "packageDependencies": [\
+            ["intersects", "npm:2.7.2"]\
           ],\
           "linkType": "HARD"\
         }]\

@@ -74,6 +74,23 @@ func (s *IosDeviceAgentService) startRecvLoop() {
 			continue
 		}
 
+		if s.recvQueue.Has() {
+			buf, err := s.recvQueue.Pop()
+			if err != nil {
+				log.Inst.Error("IosDeviceAgentService.Receive pop failed", zap.Error(err))
+				continue
+			}
+
+			result := &params.DcIdaResultList{}
+			if err := proto.Unmarshal(buf, result); err != nil {
+				log.Inst.Error("IosDeviceAgentService.onEach proto.Unmarshal error", zap.Error(err))
+				continue
+			}
+
+			s.onRecvMessage(result)
+			continue
+		}
+
 		err := s.recvQueue.Push(s.reader)
 		if err != nil {
 			if errorLogCount%100 == 0 {
@@ -83,25 +100,7 @@ func (s *IosDeviceAgentService) startRecvLoop() {
 			time.Sleep(time.Millisecond * 200)
 			continue
 		}
-
-		if !s.recvQueue.Has() {
-			continue
-		}
-
-		buf, err := s.recvQueue.Pop()
-		if err != nil {
-			log.Inst.Error("IosDeviceAgentService.Receive pop failed", zap.Error(err))
-			continue
-		}
-
-		result := &params.DcIdaResultList{}
-		if err := proto.Unmarshal(buf, result); err != nil {
-			log.Inst.Error("IosDeviceAgentService.onEach proto.Unmarshal error", zap.Error(err))
-			return
-		}
 		errorLogCount = 0
-
-		s.onRecvMessage(result)
 	}
 }
 

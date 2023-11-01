@@ -4199,6 +4199,7 @@ __metadata:
     "@types/async-lock": 1
     "@types/cron": 2.0.0
     "@types/express": 4.17.13
+    "@types/intersects": 2.7.3
     "@types/lodash": 4.14.186
     "@types/node": 18.15.11
     "@types/plist": 3
@@ -4220,6 +4221,7 @@ __metadata:
     find-free-ports: 3.0.0
     gamium: 2.0.2
     glob: 10.0.0
+    intersects: 2.7.2
     jest: 29.6.1
     lodash: 4.17.21
     nest-winston: 1.8.0
@@ -8076,6 +8078,13 @@ __metadata:
   dependencies:
     "@types/node": "*"
   checksum: 38ef4f8c91c7a5b664cf6dd4d90de7863f88549a9f8ef997f2f1184e4f8cf2e7b9b63c04f0b7b962f34a09983073a31a9856de5aae5159b2ddbb905a4c44dc9f
+  languageName: node
+  linkType: hard
+
+"@types/intersects@npm:2.7.3":
+  version: 2.7.3
+  resolution: "@types/intersects@npm:2.7.3"
+  checksum: 3d8e01eb896c154f5ddb4d85213a1569802252f8fd8d5f14e2dc6b4d004e7bb1ab0392033d62fd420eb071eea2a7950c3fa94bd6ff93e6546a5cb0868c33cef7
   languageName: node
   linkType: hard
 
@@ -15847,6 +15856,13 @@ __metadata:
   version: 1.4.0
   resolution: "interpret@npm:1.4.0"
   checksum: 2e5f51268b5941e4a17e4ef0575bc91ed0ab5f8515e3cf77486f7c14d13f3010df9c0959f37063dcc96e78d12dc6b0bb1b9e111cdfe69771f4656d2993d36155
+  languageName: node
+  linkType: hard
+
+"intersects@npm:2.7.2":
+  version: 2.7.2
+  resolution: "intersects@npm:2.7.2"
+  checksum: b1e7afce2c87e71ec702a47c42a2ace1134186fc2df45fb8cecc548e450adfb9023bd55fcfe7c34ef6d0bc1bf882a443cbf264a7d77083c872c47aaf408f0b4b
   languageName: node
   linkType: hard
 

@@ -53,6 +53,7 @@ export class DeviceRTCCaller {
   >(paramKey: ParamKey, returnKey: ResultKey, paramValue: ParamValue): Promise<ResultValue | null> {
     return new Promise((resolve, reject) => {
       const seq = this.getSeq();
+      const startTime = Date.now();
 
       // timeout handle
       const timeout = setTimeout(() => {
@@ -77,7 +78,7 @@ export class DeviceRTCCaller {
           resolveWithCleartimeout(null);
           return;
         }
-        console.debug(`resolve ${seq} ${JSON.stringify(returnObj[returnKey])}`);
+        console.debug(`DeviceRTCCaller.call resolve `, { seq, time: Date.now() - startTime, obj: returnObj[returnKey] });
         resolveWithCleartimeout(returnObj[returnKey] as ResultValue);
       });
 

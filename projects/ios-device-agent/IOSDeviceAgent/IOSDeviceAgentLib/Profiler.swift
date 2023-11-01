@@ -18,6 +18,7 @@ func queryProfile(param: Inner_Types_DcIdaQueryProfileParam) async throws -> Inn
 }
 
 var previousCpuLoadInfo = host_cpu_load_info()
+var previousRuntimeInfo = Outer_Profile_RuntimeInfoCpu()
 
 func getCpuUsages() async throws -> [Outer_Profile_RuntimeInfoCpu] {
   guard let cpuLoadInfo = hostCPULoadInfo() else {
@@ -29,20 +30,22 @@ func getCpuUsages() async throws -> [Outer_Profile_RuntimeInfoCpu] {
   let idleDiff = cpuLoadInfo.cpu_ticks.2 - previousCpuLoadInfo.cpu_ticks.2
   let niceDiff = cpuLoadInfo.cpu_ticks.3 - previousCpuLoadInfo.cpu_ticks.3
   let totalTicks = userDiff + systemDiff + idleDiff + niceDiff
+  if 0 == totalTicks {
+    return [previousRuntimeInfo]
+  }
   let cpuUsage = Float(userDiff + systemDiff + niceDiff) / Float(totalTicks) * 100.0
   previousCpuLoadInfo = cpuLoadInfo
-  return [
-    Outer_Profile_RuntimeInfoCpu.with {
-      $0.name = "default"
-      $0.currentLoad = UInt64(Float(userDiff + systemDiff + niceDiff) * 100.0 / Float(totalTicks))
-      $0.currentLoadUser = UInt64(Float(userDiff) * 100.0 / Float(totalTicks))
-      $0.currentLoadSystem = UInt64(Float(systemDiff) * 100.0 / Float(totalTicks))
-      $0.currentLoadNice = UInt64(Float(niceDiff) * 100.0 / Float(totalTicks))
-      $0.currentLoadIdle = UInt64(Float(idleDiff) * 100.0 / Float(totalTicks))
-      $0.currentLoadIrq = 0
-      $0.currentLoadCpu = 100
-    }
-  ]
+  previousRuntimeInfo = Outer_Profile_RuntimeInfoCpu.with {
+    $0.name = "default"
+    $0.currentLoad = UInt64(Float(userDiff + systemDiff + niceDiff) * 100.0 / Float(totalTicks))
+    $0.currentLoadUser = UInt64(Float(userDiff) * 100.0 / Float(totalTicks))
+    $0.currentLoadSystem = UInt64(Float(systemDiff) * 100.0 / Float(totalTicks))
+    $0.currentLoadNice = UInt64(Float(niceDiff) * 100.0 / Float(totalTicks))
+    $0.currentLoadIdle = UInt64(Float(idleDiff) * 100.0 / Float(totalTicks))
+    $0.currentLoadIrq = 0
+    $0.currentLoadCpu = 100
+  }
+  return [previousRuntimeInfo]
 
 }
 

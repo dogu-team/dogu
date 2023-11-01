@@ -44,7 +44,25 @@ static NSString* const FBUnknownBundleId = @"unknown";
 @implementation XCUIApplication (FBHelpers)
 
 
+CGRect* frameCache = NULL;
+
+
 - (CGRect)wdFrame
+{
+  if (NULL == frameCache) {
+    frameCache = malloc(sizeof(CGRect));
+    *frameCache = self.sanpshotFrame;
+  }
+  CGFloat max = MAX(frameCache->size.width, frameCache->size.height);
+  CGFloat min = MIN(frameCache->size.width, frameCache->size.height);
+  UIDeviceOrientation orientation = [XCUIDevice sharedDevice].orientation;
+  if (orientation == UIDeviceOrientationLandscapeLeft || orientation == UIDeviceOrientationLandscapeRight) {
+    return  CGRectMake(0, 0, max, min);
+  }
+  return CGRectMake(0, 0, min, max);
+}
+
+- (CGRect)sanpshotFrame
 {
   CGRect frame = self.frame;
   int width = (int)frame.size.width;

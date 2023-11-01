@@ -99,7 +99,13 @@ public actor ControlSession {
       let packet = self.recvQueue.pop()
       let paramList = try Inner_Params_DcIdaParamList(serializedData: packet)
       for param in paramList.params {
-        try await self.eventListener.onParam(session: self, abstractParam: param)
+        Task.catchable(
+          {
+            try await self.eventListener.onParam(session: self, abstractParam: param)
+          },
+          catch: {
+            Log.shared.error("ControlSession.onRecvData onParam handle error: \($0.localizedDescription)")
+          })
       }
     }
 

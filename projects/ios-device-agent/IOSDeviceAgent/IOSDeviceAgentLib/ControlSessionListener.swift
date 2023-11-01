@@ -69,6 +69,11 @@ actor ControlSessionListener: IControlSessionListener {
         },
         catch: {
           Log.shared.debug("ControlSessionListener.onParam failed to push control: \(param.control), \($0.localizedDescription)")
+          var errorControlResult = Inner_Types_CfGdcDaControlResult()
+          errorControlResult.error = Outer_ErrorResult()
+          errorControlResult.error.code = Outer_Code.inputUnknown
+          errorControlResult.error.message = $0.localizedDescription
+          controlResult.set(result: errorControlResult)
         })
       break
     default:

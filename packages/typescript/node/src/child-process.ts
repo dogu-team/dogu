@@ -69,11 +69,15 @@ export async function execIgnoreError(command: string, options: childProcess.Exe
  * @note When running with cmd, even if the process dies, the child process does not die together..
  */
 export function spawnSync(command: string, args: string[], options: childProcess.SpawnOptions, printable: Printable): childProcess.ChildProcess {
-  printable.verbose?.(`spawn ${command} ${stringify(args)}`);
+  const commandAndArgs = `${command} ${args.join(' ')}`;
+  printable.verbose?.(`spawn: ${commandAndArgs}`);
   const proc = childProcess.spawn(command, args, {
     shell: process.platform === 'win32' ? 'cmd.exe' : undefined,
     windowsVerbatimArguments: true,
     ...options,
+  });
+  proc.on('spawn', () => {
+    printable.verbose?.(`spawned: ${commandAndArgs}`);
   });
   proc.stdout?.setEncoding('utf8');
   proc.stdout?.on('data', (data) => {
@@ -105,21 +109,7 @@ export async function spawnAndWait(command: string, args: string[], options: chi
   return new Promise((resolve, reject) => {
     const commandAndArgs = `${command} ${args.join(' ')}`;
     const proc = spawnSync(command, args, options, printable);
-    proc.stdout?.setEncoding('utf8');
-    proc.stdout?.on('data', (data) => {
-      loggerWrap.info(String(data));
-    });
 
-    proc.stderr?.setEncoding('utf8');
-    proc.stderr?.on('data', (data) => {
-      loggerWrap.error(String(data));
-    });
-    proc.on('spawn', () => {
-      loggerWrap.info(`spawned: ${commandAndArgs}`);
-    });
-    proc.on('error', (err) => {
-      loggerWrap.error(`error: ${commandAndArgs} ${stringify(err)}`);
-    });
     proc.on('close', (code: number | null, signal: NodeJS.Signals | null) => {
       if (code != null) {
         if (code == 0) {

@@ -80,6 +80,9 @@ func (s *iosSurfaceSource) Receive() ([]byte, error) {
 }
 
 func (s *iosSurfaceSource) receive() ([]byte, error) {
+	if s.recvQueue.Has() {
+		return s.recvQueue.Pop()
+	}
 	for {
 		err := s.recvQueue.Push(s.reader)
 		if err != nil {

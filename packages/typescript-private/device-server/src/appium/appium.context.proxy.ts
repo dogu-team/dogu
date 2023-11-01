@@ -4,7 +4,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Platform } from '@dogu-private/types';
-import { Class, Instance, loopTime, Milisecond, Printable, usingAsnyc } from '@dogu-tech/common';
+import { Class, Instance, loopTime, Printable, usingAsnyc } from '@dogu-tech/common';
 import { Android, AppiumContextInfo, ContextPageSource, ScreenSize } from '@dogu-tech/device-client-common';
 import { Logger } from '@dogu-tech/node';
 import AsyncLock from 'async-lock';
@@ -139,7 +139,7 @@ export class AppiumContextProxy implements AppiumContext, Zombieable {
   }
 
   async waitUntilBuiltin(): Promise<AppiumContextImpl> {
-    for await (const _ of loopTime(Milisecond.t1Second, Milisecond.t5Minutes)) {
+    for await (const _ of loopTime({ period: { seconds: 1 }, expire: { minutes: 5 } })) {
       if (this.impl.key === 'builtin') {
         return this.getImpl(AppiumContextImpl);
       }
