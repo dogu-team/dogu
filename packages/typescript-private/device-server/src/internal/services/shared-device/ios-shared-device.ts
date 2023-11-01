@@ -1,11 +1,11 @@
 import { Platform, PrivateProtocol, Serial } from '@dogu-private/types';
-import { delay, FilledPrintable, loopTime } from '@dogu-tech/common';
+import { delay, FilledPrintable, loopTime, usingAsnyc } from '@dogu-tech/common';
 import child_process from 'child_process';
 import { AppiumContextImpl } from '../../../appium/appium.context';
 import { env } from '../../../env';
 import { IdeviceInstaller } from '../../externals/cli/ideviceinstaller';
 import { WebdriverAgentProcess } from '../../externals/cli/webdriver-agent-process';
-import { IosWebDriver } from '../../externals/webdriver/ios-webdriver';
+import { IosAccessibilitiySelector, IosWebDriver } from '../../externals/webdriver/ios-webdriver';
 import { CheckTimer } from '../../util/check-time';
 import { IosResetService } from '../reset/ios-reset';
 import { Zombieable, ZombieProps, ZombieQueriable } from '../zombie/zombie-component';
@@ -124,10 +124,6 @@ const BlockAppList: BlockAppInfo[] = [
   },
   {
     bundleId: 'com.apple.calculator',
-    uninstall: true,
-  },
-  {
-    bundleId: 'com.apple.mobileslideshow',
     uninstall: true,
   },
   {
@@ -255,11 +251,23 @@ export class IosSharedDeviceService implements Zombieable {
   onDie(): void {}
 
   private async checkEnglish(iosDriver: IosWebDriver): Promise<void> {
-    await iosDriver.relaunchApp('com.apple.Preferences');
-    const elem = await iosDriver.rawDriver.$('~General');
-    if (elem.error) {
-      throw new Error(`IosSharedDeviceService.checkEnglish. failed. language should be english`);
-    }
+    await usingAsnyc(
+      {
+        create: async () => {
+          await iosDriver.relaunchApp('com.apple.Preferences');
+        },
+        dispose: async () => {
+          await iosDriver.terminateApp('com.apple.Preferences');
+        },
+      },
+      async () => {
+        await iosDriver.relaunchApp('com.apple.Preferences');
+        const elems = await iosDriver.waitElementsExist(new IosAccessibilitiySelector('General'), { seconds: 3 });
+        if (0 === elems.length) {
+          throw new Error(`IosSharedDeviceService.checkEnglish. failed. language should be english`);
+        }
+      },
+    );
   }
 
   private async blockControlCenterEnglish(iosDriver: IosWebDriver): Promise<void> {

@@ -187,6 +187,7 @@ export class IosChannel implements DeviceChannel {
       deviceServerService.devicePortService.getIosDeviceAgentWebDriverAgentServerPort(),
       deviceAgent,
       streaming,
+      reset,
       logger,
     ).catch((error) => {
       logger.error('IosDeviceAgentProcess start failed.', { error: errorify(error) });
@@ -264,9 +265,6 @@ export class IosChannel implements DeviceChannel {
 
   static async restartIfAvailiable(serial: Serial, logger: Printable): Promise<void> {
     logger.info('IosChannel restartIfAvailiable', { on: env.DOGU_DEVICE_IOS_RESTART_ON_INIT });
-    if (env.DOGU_IS_DEVICE_SHARE) {
-      return;
-    }
     if (env.DOGU_DEVICE_IOS_RESTART_ON_INIT) {
       await IdeviceDiagnostics.restart(serial, logger);
       for await (const _ of loopTime({ period: { seconds: 3 }, expire: { minutes: 5 } })) {

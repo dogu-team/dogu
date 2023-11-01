@@ -4,6 +4,7 @@ import { HostPaths } from '@dogu-tech/node';
 import { Socket } from 'net';
 import { config } from '../../config';
 import { IosDeviceAgentService } from '../../services/device-agent/ios-device-agent-service';
+import { IosResetService } from '../../services/reset/ios-reset';
 import { StreamingService } from '../../services/streaming/streaming-service';
 import { Zombieable, ZombieProps, ZombieQueriable } from '../../services/zombie/zombie-component';
 import { ZombieServiceInstance } from '../../services/zombie/zombie-service';
@@ -30,6 +31,7 @@ export class IosDeviceAgentProcess {
     idaWdaDevicePort: number,
     iosDeviceAgentService: IosDeviceAgentService,
     streamingService: StreamingService,
+    reset: IosResetService,
     private readonly logger: FilledPrintable,
   ) {
     ZombieServiceInstance.deleteComponentIfExist((zombieable: Zombieable): boolean => {
@@ -60,6 +62,7 @@ export class IosDeviceAgentProcess {
       grpcDevicePort,
       iosDeviceAgentService,
       streamingService,
+      reset,
       this.logger,
     );
     this.screenTunnel = new ZombieTunnel(this.serial, screenForwardPort, screenDevicePort, this.logger);
@@ -88,6 +91,7 @@ export class IosDeviceAgentProcess {
     idaWdaDevicePort: number,
     iosDeviceAgentService: IosDeviceAgentService,
     streamingService: StreamingService,
+    reset: IosResetService,
     logger: FilledPrintable,
   ): Promise<IosDeviceAgentProcess> {
     const originDerivedData = await DerivedData.create(HostPaths.external.xcodeProject.idaDerivedDataPath());
@@ -111,6 +115,7 @@ export class IosDeviceAgentProcess {
       idaWdaDevicePort,
       iosDeviceAgentService,
       streamingService,
+      reset,
       logger,
     );
     await ret.xctest.zombieWaiter.waitUntilAlive(10);
@@ -159,6 +164,7 @@ class ZombieIdaXCTest implements Zombieable {
     private readonly grpcPort: number,
     private readonly iosDeviceAgentService: IosDeviceAgentService,
     private readonly streamingService: StreamingService,
+    private readonly reset: IosResetService,
     private readonly logger: FilledPrintable,
   ) {
     this.zombieWaiter = ZombieServiceInstance.addComponent(this);
@@ -189,6 +195,9 @@ class ZombieIdaXCTest implements Zombieable {
     const { serial, logger } = this;
     logger.debug?.(`ZombieIdaXCTest.revive`);
     if (config.externalIosDeviceAgent.use) {
+      return;
+    }
+    if (this.reset.isResetting) {
       return;
     }
 

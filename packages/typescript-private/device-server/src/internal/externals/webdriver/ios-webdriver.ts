@@ -39,10 +39,15 @@ export class IosWebDriver {
 
   async relaunchApp(bundleId: string): Promise<void> {
     const { driver } = this;
-    await driver.execute('mobile: terminateApp', {
+    await this.terminateApp(bundleId);
+    await driver.execute('mobile: launchApp', {
       bundleId,
     });
-    await driver.execute('mobile: launchApp', {
+  }
+
+  async terminateApp(bundleId: string): Promise<void> {
+    const { driver } = this;
+    await driver.execute('mobile: terminateApp', {
       bundleId,
     });
   }
