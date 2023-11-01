@@ -34,6 +34,7 @@ import { env } from '../../env';
 import { GamiumContext } from '../../gamium/gamium.context';
 import { deviceInfoLogger } from '../../logger/logger.instance';
 import { createIosLogger } from '../../logger/serial-logger.instance';
+import { config } from '../config';
 import { IdeviceDiagnostics, IdeviceSyslog, MobileDevice, Xctrace } from '../externals';
 import { IdeviceInstaller } from '../externals/cli/ideviceinstaller';
 import { IosDeviceAgentProcess } from '../externals/cli/ios-device-agent';
@@ -265,6 +266,9 @@ export class IosChannel implements DeviceChannel {
 
   static async restartIfAvailiable(serial: Serial, logger: Printable): Promise<void> {
     logger.info('IosChannel restartIfAvailiable', { on: env.DOGU_DEVICE_IOS_RESTART_ON_INIT });
+    if (config.externalIosDeviceAgent.use) {
+      return;
+    }
     if (env.DOGU_DEVICE_IOS_RESTART_ON_INIT) {
       await IdeviceDiagnostics.restart(serial, logger);
       for await (const _ of loopTime({ period: { seconds: 3 }, expire: { minutes: 5 } })) {

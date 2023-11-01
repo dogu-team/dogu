@@ -1,4 +1,5 @@
 import Combine
+import WebDriverAgentLib
 
 actor TouchControlPlayer: IControlPlayer {
   typealias Broker = TouchControlBroker
@@ -18,12 +19,14 @@ actor TouchControlPlayer: IControlPlayer {
   private var broker: Broker? = nil
   private var webDriverClient: WebDriverClient? = nil
   private var actionPerformer: ActionPerformer? = nil
+  private var config: Config? = nil
   private var lastPlayTime: UInt64 = 0  // client's event.timeStamp. unit: milliseconds
 
   func open(with param: ControlOpenParam, broker: Broker) throws {
     self.screenSize = param.screenSize
     self.webDriverClient = param.webDriverClient
     self.actionPerformer = param.actionPerformer
+    self.config = param.config
     self.broker = broker
     startTimer()
   }
@@ -48,6 +51,15 @@ actor TouchControlPlayer: IControlPlayer {
 
   private func play(currentTime: Date) async throws {
     guard let downUp = try await broker!.popByPattern(after: lastPlayTime) else {
+      return
+    }
+    if isBlockedAppActive() {
+      var result = Inner_Types_CfGdcDaControlResult()
+      result.error = Outer_ErrorResult.with {
+        $0.message = "The app is blocked by the system. Please unlock the app."
+      }
+      downUp.down.result.set(result: result)
+      downUp.up.result.set(result: result)
       return
     }
     let down = downUp.down
@@ -91,8 +103,8 @@ actor TouchControlPlayer: IControlPlayer {
         ],
       ]
     ])
-    let elapsedTime = Date().unixTimeMilliseconds - beginTime
-    lastPlayTime = up.control.timeStamp + elapsedTime
+    //    let elapsedTime = Date().unixTimeMilliseconds - beginTime
+    lastPlayTime = up.control.timeStamp
 
     var result = Inner_Types_CfGdcDaControlResult()
     result.error = Outer_ErrorResult()
@@ -125,5 +137,22 @@ actor TouchControlPlayer: IControlPlayer {
     return CGPoint(
       x: (controlSpacePoint.x * screenWidth) / controlSpaceSize.width,
       y: (controlSpacePoint.y * screenHeight) / controlSpaceSize.height)
+  }
+
+  private func isBlockedAppActive() -> Bool {
+    if !config!.isDeviceShare {
+      return false
+    }
+    let apps = XCUIApplication.fb_activeAppsInfo()
+    for app in apps {
+      guard let bundleId = app["bundleId"] as? String else {
+        return false
+      }
+      if Constants.BlockAppBundleIds.contains(where: { $0 == bundleId }) {
+        return true
+      }
+    }
+
+    return false
   }
 }

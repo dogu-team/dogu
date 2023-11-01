@@ -17,6 +17,7 @@ actor ActionPerformer {
     guard let session = FBSession.active() else {
       throw Error.sessionNotFound
     }
+    
     try session.activeApplication.fb_performActions(withSynthesizerType: FBW3CActionsSynthesizer.self, actions: actions, elementCache: session.elementCache)
   }
 }

@@ -37,12 +37,12 @@ public final class IOSDeviceAgent {
   }
 
   private func openInternal() throws {
-    config = try EnvironmentParser().parse()
+    self.config = try EnvironmentParser().parse()
     let screenSize = WebDriverAgentLibUtils.screenSize()
     Task.catchable(
       {
         let webDriverClient = try WebDriverClient(url: "http://127.0.0.1:\(self.config.webDriverPort)")
-        let param = ControlOpenParam(screenSize: screenSize, webDriverClient: webDriverClient, actionPerformer: ActionPerformer(webDriverClient: webDriverClient))
+        let param = ControlOpenParam(screenSize: screenSize, webDriverClient: webDriverClient, actionPerformer: ActionPerformer(webDriverClient: webDriverClient), config: self.config)
         try await self.controlProcessor.open(param: param)
       },
       catch: {

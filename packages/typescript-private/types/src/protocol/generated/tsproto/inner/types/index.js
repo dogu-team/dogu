@@ -18,5 +18,4 @@ __exportStar(require("./cf_gdc_da"), exports);
 __exportStar(require("./dc_da"), exports);
 __exportStar(require("./dc_gdc"), exports);
 __exportStar(require("./dc_ida"), exports);
-__exportStar(require("./dc_idc"), exports);
 __exportStar(require("./device_control"), exports);

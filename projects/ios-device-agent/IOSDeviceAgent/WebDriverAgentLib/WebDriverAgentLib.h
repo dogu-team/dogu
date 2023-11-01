@@ -37,6 +37,7 @@ FOUNDATION_EXPORT const unsigned char WebDriverAgentLib_VersionString[];
 #import <WebDriverAgentLib/XCUIDevice+FBHelpers.h>
 #import <WebDriverAgentLib/FBSession.h>
 #import <WebDriverAgentLib/XCUIApplication+FBTouchAction.h>
+#import <WebDriverAgentLib/XCUIApplication+FBHelpers.h>
 #import <WebDriverAgentLib/FBElementCache.h>
 #import <WebDriverAgentLib/FBW3CActionsSynthesizer.h>
 #import <WebDriverAgentLib/FBBaseActionsSynthesizer.h>

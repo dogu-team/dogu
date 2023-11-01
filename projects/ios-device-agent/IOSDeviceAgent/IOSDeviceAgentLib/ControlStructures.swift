@@ -41,6 +41,7 @@ struct ControlOpenParam {
   var screenSize: CGSize
   var webDriverClient: WebDriverClient
   var actionPerformer: ActionPerformer
+  var config: Config
 }
 
 struct PatternControl {

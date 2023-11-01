@@ -3,12 +3,14 @@ import Foundation
 struct Config {
   var webDriverPort: Int32 = 0
   var grpcPort: Int32 = 0
+  var isDeviceShare: Bool = false
 }
 
 final class EnvironmentParser {
   enum Error: Swift.Error {
     case invalidWebDriverPort(String?)
     case invalidGrpcPort(String?)
+    case invalidIsDeviceShare(String?)
   }
 
   func parse() throws -> Config {
@@ -28,6 +30,14 @@ final class EnvironmentParser {
       throw Error.invalidGrpcPort(grpcPort)
     }
 
-    return Config(webDriverPort: webDriverPortNumber, grpcPort: grpcPortNumber)
+    let isDeviceShare = ProcessInfo.processInfo.environment["DOGU_IOS_DEVICE_AGENT_IS_DEVICE_SHARE"]
+    guard let isDeviceShareString = isDeviceShare,
+      !isDeviceShareString.isEmpty,
+      let isDeviceShareBool = Int32(isDeviceShareString) == 1 ? true : false
+    else {
+      throw Error.invalidIsDeviceShare(isDeviceShare)
+    }
+
+    return Config(webDriverPort: webDriverPortNumber, grpcPort: grpcPortNumber, isDeviceShare: isDeviceShareBool)
   }
 }

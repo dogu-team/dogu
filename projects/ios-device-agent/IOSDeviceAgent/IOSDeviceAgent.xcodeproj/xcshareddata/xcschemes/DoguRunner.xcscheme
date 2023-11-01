@@ -62,6 +62,11 @@
             value = "$(DOGU_IOS_DEVICE_AGENT_WEB_DRIVER_PORT)"
             isEnabled = "YES">
          </EnvironmentVariable>
+         <EnvironmentVariable
+            key = "DOGU_IOS_DEVICE_AGENT_IS_DEVICE_SHARE"
+            value = "${DOGU_IOS_DEVICE_AGENT_IS_DEVICE_SHARE}"
+            isEnabled = "YES">
+         </EnvironmentVariable>
       </EnvironmentVariables>
    </LaunchAction>
    <ProfileAction

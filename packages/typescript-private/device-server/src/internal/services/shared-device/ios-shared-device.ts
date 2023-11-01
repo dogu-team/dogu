@@ -203,8 +203,8 @@ export class IosSharedDeviceService implements Zombieable {
     }
 
     if (await this.reset.isDirty()) {
-      await this.timer.check(`IosResetService.setup.reset`, this.reset.reset(this.appiumContext));
-      throw new Error(`IosResetService.revive. device is dirty. so trigger reset ${serial}`);
+      // await this.timer.check(`IosResetService.setup.reset`, this.reset.reset(this.appiumContext));
+      // throw new Error(`IosResetService.revive. device is dirty. so trigger reset ${serial}`);
     }
     const installer = new IdeviceInstaller(serial, logger);
     const uninstallApps = BlockAppList.filter((item) => item.uninstall).map((item) => item.bundleId);
