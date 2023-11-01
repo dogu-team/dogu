@@ -80,7 +80,7 @@ export class BillingTokenService implements OnModuleInit {
 
   async validateBillingApiTokenFromRequest(request: IncomingMessage): Promise<void> {
     const parsedUrl = new URL(request.url ?? '', 'http://localhost');
-    const token = parsedUrl.searchParams.get('auth');
+    const token = parsedUrl.searchParams.get('token');
     if (!token) {
       throw new Error(`token is required`);
     }

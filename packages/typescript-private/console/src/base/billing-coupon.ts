@@ -1,4 +1,5 @@
-import { camelToSnakeCasePropertiesOf, propertiesOf } from '@dogu-tech/common';
+import { camelToSnakeCasePropertiesOf, IsFilledString, propertiesOf } from '@dogu-tech/common';
+import { IsUUID } from 'class-validator';
 
 export interface BillingCouponBase {
   billingCouponId: string;
@@ -20,3 +21,16 @@ export interface BillingCouponBase {
 
 export const BillingCouponPropCamel = propertiesOf<BillingCouponBase>();
 export const BillingCouponPropSnake = camelToSnakeCasePropertiesOf<BillingCouponBase>();
+
+export class ValidateBillingCouponByOrganizationIdDto {
+  @IsUUID()
+  organizationId!: string;
+
+  @IsFilledString()
+  billingCouponCode!: string;
+}
+
+export interface ValidateBillingCouponByOrganizationIdResponse {
+  ok: boolean;
+  reason: 'already-used' | 'expired' | 'coupon-not-found' | 'organization-not-found' | 'not-used';
+}

@@ -28,7 +28,6 @@ export class SelfHostedLicenseService {
     updatedAt: new Date(),
     lastAccessAt: new Date(),
     expiredAt: new Date('9999-12-31T23:59:59.999Z'),
-    firstBillingAt: null,
     deletedAt: null,
   };
 

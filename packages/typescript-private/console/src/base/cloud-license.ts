@@ -1,24 +1,26 @@
 import { OrganizationId } from '@dogu-private/types';
 import { camelToSnakeCasePropertiesOf, propertiesOf } from '@dogu-tech/common';
 import { IsBoolean, IsNumber, IsUUID } from 'class-validator';
-import { CloudSubscriptionPlanBase } from './cloud-subscription-plan';
-import { CloudSubscriptionPlanCustomOptionBase } from './cloud-subscription-plan-custom-option';
+import { BillingInfoBase } from './billing-info';
 
 export interface CloudLicenseBase {
   cloudLicenseId: string;
   organizationId: OrganizationId;
   liveTestingRemainingFreeSeconds: number;
   liveTestingParallelCount: number;
-  firstBillingAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date | null;
-  cloudSubscriptionPlans?: CloudSubscriptionPlanBase[];
-  cloudSubscriptionPlanCustomOptions?: CloudSubscriptionPlanCustomOptionBase[];
+  billingInfo?: BillingInfoBase | null;
 }
 
 export const CloudLicensePropCamel = propertiesOf<CloudLicenseBase>();
 export const CloudLicensePropSnake = camelToSnakeCasePropertiesOf<CloudLicenseBase>();
+
+export class FindCloudLicenseDto {
+  @IsUUID()
+  organizationId!: string;
+}
 
 export namespace CloudLicenseMessage {
   export class LiveTestingSend {

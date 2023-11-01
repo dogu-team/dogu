@@ -25,19 +25,42 @@ function defaultSerializableTransactionOptions(): Required<SerializableTransacti
   };
 }
 
+export interface RetrySerializeHandler {
+  onAfterRollback?: (error: Error) => Promise<void>;
+}
+
 export async function retrySerialize<T>(
   logger: DoguLogger,
   dataSource: DataSource,
   fn: (manager: EntityManager) => Promise<T>,
+  handler?: RetrySerializeHandler,
   options?: SerializableTransactionOptions,
 ): Promise<T> {
   const { retryCount, retryInterval } = { ...defaultSerializableTransactionOptions(), ...options };
-  for (let i = 0; i < retryCount; i++) {
-    try {
-      return dataSource.transaction('SERIALIZABLE', fn);
-    } catch (error) {
-      if (i < retryCount - 1) {
-        const code = _.get(error, 'code') as string | undefined;
+  const queryRunner = dataSource.createQueryRunner();
+  await queryRunner.connect();
+
+  try {
+    for (let tryCount = 1; tryCount <= retryCount; tryCount++) {
+      try {
+        await queryRunner.startTransaction('SERIALIZABLE');
+        const result = await fn(queryRunner.manager);
+        await queryRunner.commitTransaction();
+        return result;
+      } catch (e) {
+        const error = errorify(e);
+        logger.warn('retrySerialize.catch transaction failed', { tryCount, error });
+        await queryRunner.rollbackTransaction();
+
+        try {
+          await handler?.onAfterRollback?.(error);
+        } catch (error) {
+          logger.error('retrySerialize.catch onAfterRollback failed', { error: errorify(error) });
+        }
+
+        if (tryCount === retryCount) {
+          throw error;
+        }
 
         /**
          * @see https://www.postgresql.org/docs/13/errcodes-appendix.html
@@ -45,14 +68,15 @@ export async function retrySerialize<T>(
          *  40001 serialization_failure
          *  40P01 deadlock_detected
          */
+        const code = _.get(error, 'code') as string | undefined;
         if (code === '40001' || code === '40P01') {
-          logger.warn(`transaction serialization failure. retry after ${retryInterval}ms try(${i + 1}/${retryCount})`, { error: errorify(error) });
+          logger.warn(`retrySerialize.catch serialization failure. retry after`, { tryCount, retryCount, retryInterval, error });
           await new Promise((resolve) => setTimeout(resolve, retryInterval));
         }
-      } else {
-        throw error;
       }
     }
+  } finally {
+    await queryRunner.release();
   }
 
   throw new Error('Must not reach here');

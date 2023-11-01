@@ -32,9 +32,6 @@ export class SelfHostedLicense implements SelfHostedLicenseBase {
   @Column({ type: 'boolean', name: SelfHostedLicenseTokenPropSnake.dogu_agent_auto_update_enabled, default: false })
   doguAgentAutoUpdateEnabled!: boolean;
 
-  @ColumnTemplate.Date(SelfHostedLicenseTokenPropSnake.first_billing_at, true)
-  firstBillingAt!: Date | null;
-
   @ColumnTemplate.CreateDate(SelfHostedLicenseTokenPropSnake.created_at)
   createdAt!: Date;
 

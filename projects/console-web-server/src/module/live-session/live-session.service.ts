@@ -193,11 +193,15 @@ export class LiveSessionService {
     });
     await this.updateCloudLicenseId(liveSessionId, cloudLicenseId);
     await this.updateCloudLicenseLiveTestingHeartbeat(cloudLicenseId);
-    await this.cloudLicenseService.startUpdateLiveTesting(cloudLicenseId, {
+    let unsubscribeCloseEvent: () => Promise<void> | undefined;
+    this.cloudLicenseService.startUpdateLiveTesting(cloudLicenseId, {
       onOpen: async (close) => {
-        await this.subscribeCloseEvent(liveSessionId, () => {
+        unsubscribeCloseEvent = await this.subscribeCloseEvent(liveSessionId, () => {
           close();
         });
+      },
+      onClose: async () => {
+        await unsubscribeCloseEvent?.();
       },
       onMessage: async (message) => {
         await this.updateCloudLicenseLiveTestingHeartbeat(cloudLicenseId);
@@ -257,7 +261,7 @@ export class LiveSessionService {
       throw new HttpException(`Live testing parallel count exceeded. liveTestingParallelCount: ${cloudLicense.liveTestingParallelCount}`, HttpStatus.PAYMENT_REQUIRED);
     }
 
-    const isLiveTestingSubscribing = cloudLicense.cloudSubscriptionPlans?.find((plan) => plan.type === 'live-testing');
+    const isLiveTestingSubscribing = cloudLicense.billingInfo?.billingSubscriptionPlans?.find((plan) => plan.type === 'live-testing');
     if (!isLiveTestingSubscribing && cloudLicense.liveTestingRemainingFreeSeconds <= 0) {
       throw new HttpException(`Live testing is not subscribed. remainingFreeSeconds: ${cloudLicense.liveTestingRemainingFreeSeconds}`, HttpStatus.PAYMENT_REQUIRED);
     }

@@ -1,23 +1,25 @@
 import { camelToSnakeCasePropertiesOf, IsFilledString, propertiesOf } from '@dogu-tech/common';
-import { IsNumber } from 'class-validator';
-import { CloudLicenseBase, SelfHostedLicenseBase } from '..';
+import { IsNumber, IsUUID } from 'class-validator';
+import { BillingInfoBase } from './billing-info';
 
 export interface BillingMethodNiceBase {
   billingMethodNiceId: string;
+  billingInfoId: string;
   bid: string | null;
-  cloudLicenseId: string | null;
-  selfHostedLicenseId: string | null;
+  cardCode: string | null;
+  cardName: string | null;
+  cardNoLast4: string | null;
+  subscribeRegistResponse: Record<string, unknown> | null;
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date | null;
-  cloudLicense?: CloudLicenseBase;
-  selfHostedLicense?: SelfHostedLicenseBase;
+  billingInfo?: BillingInfoBase;
 }
 
 export const BillingMethodNicePropCamel = propertiesOf<BillingMethodNiceBase>();
 export const BillingMethodNicePropSnake = camelToSnakeCasePropertiesOf<BillingMethodNiceBase>();
 
-export class CreateBillingMethodNiceRequest {
+export class SubscribeRegistNiceDto {
   @IsFilledString()
   cardNo!: string;
 
@@ -58,7 +60,7 @@ export class CreateBillingMethodNiceRequest {
  *  cardName: null
  * }
  */
-export interface CreateBillingMethodNiceResponse {
+export interface SubscribeRegistNiceResponse {
   resultCode: string;
   resultMsg: string;
   tid: string;
@@ -70,7 +72,12 @@ export interface CreateBillingMethodNiceResponse {
   messageSource?: string;
 }
 
-export class DeleteBillingMethodNiceRequest {
+export class CreateOrUpdateBillingMethodNiceDto extends SubscribeRegistNiceDto {
+  @IsUUID()
+  billingInfoId!: string;
+}
+
+export class SubscribeExpireNiceDto {
   @IsFilledString()
   bid!: string;
 }
@@ -94,7 +101,7 @@ export class DeleteBillingMethodNiceRequest {
  *  authDate: null
  * }
  */
-export interface DeleteBillingMethodNiceResponse {
+export interface SubscribeExpireNiceResponse {
   resultCode: string;
   resultMsg: string;
   tid: string;
@@ -103,12 +110,15 @@ export interface DeleteBillingMethodNiceResponse {
   authDate: string | null;
 }
 
-export class PaymentBillingMethodNiceRequest {
+export class SubscribePaymentsNiceDto {
   @IsFilledString()
   bid!: string;
 
   @IsNumber()
   amount!: number;
+
+  @IsFilledString()
+  goodsName!: string;
 }
 
 export const NicePaymentStatus = ['', 'paid', 'ready', 'failed', 'cancelled', 'partialCancelled', 'expired'] as const;
@@ -208,7 +218,7 @@ export type NiceCurrency = (typeof NiceCurrency)[number];
  *  messageSource: null
  * }
  */
-export interface PaymentBillingMethodNiceResponse {
+export interface SubscribePaymentsNiceResponse {
   resultCode: string;
   resultMsg: string;
   tid: string;
