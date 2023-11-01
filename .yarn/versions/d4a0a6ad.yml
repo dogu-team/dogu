@@ -1,0 +1,13 @@
+undecided:
+  - dogu
+  - "@dogu-private/device-server"
+  - "@dogu-tech/device-client-common"
+  - "@dogu-tech/node"
+  - android-device-agent
+  - billing-server
+  - console-web-front
+  - console-web-server
+  - dogu-agent
+  - host-agent
+  - nexus-initializer
+  - test-codeless
