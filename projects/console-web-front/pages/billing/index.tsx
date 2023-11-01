@@ -86,7 +86,7 @@ const Box = styled.div`
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 1rem 1rem 80px;
+  padding: 1rem;
   line-height: 1.5;
   flex: 1;
 `;

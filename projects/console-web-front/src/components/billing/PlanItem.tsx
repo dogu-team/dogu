@@ -1,4 +1,4 @@
-import { CloudSubscriptionPlanInfo } from '@dogu-private/console';
+import { SubscriptionPlanInfo } from '@dogu-private/console';
 import { Button, Divider, Select, SelectProps } from 'antd';
 import { useState } from 'react';
 import styled from 'styled-components';
@@ -6,7 +6,7 @@ import styled from 'styled-components';
 import { PlanDescriptionInfo } from '../../resources/plan';
 
 interface Props {
-  planInfo: CloudSubscriptionPlanInfo;
+  planInfo: SubscriptionPlanInfo;
   descriptionInfo: PlanDescriptionInfo;
   isAnnual: boolean;
   onClickUpgrade: () => void;

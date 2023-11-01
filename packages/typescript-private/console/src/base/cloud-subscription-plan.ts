@@ -1,6 +1,6 @@
 import { camelToSnakeCasePropertiesOf, propertiesOf } from '@dogu-tech/common';
 
-import { BillingCurrency, BillingPeriod, SubscriptionPlanInfo, SubscriptionPlanPriceMap } from './billing';
+import { BillingCurrency, BillingPeriod, SubscriptionPlanInfo } from './billing';
 import { CloudLicenseBase } from './cloud-license';
 
 export const CloudSubscriptionPlanType = ['live-testing'] as const;

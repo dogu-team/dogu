@@ -30,7 +30,7 @@ const InvoiceItem: React.FC<ItemProps> = ({ item }) => {
         <Cell flex={2}>{item.items.join(',')}</Cell>
         <Cell flex={1}>{item.amount}</Cell>
         <ButtonWrapper>
-          <Button icon={<DownloadOutlined />} />
+          <Button type="link">See more</Button>
         </ButtonWrapper>
       </ItemInner>
     </Item>
@@ -80,7 +80,7 @@ const Cell = styled.div<{ flex: number }>`
 `;
 
 const ButtonWrapper = styled.div`
-  width: 60px;
+  width: 100px;
   display: flex;
   justify-content: flex-end;
 `;
