@@ -23,4 +23,6 @@ export class BillingCaller {
       updateAuthHeaderByBillingApiToken(this.api.defaults.headers);
     }
   }
+
+  // async callBillingApi(dto: CallBillingApiDto): Promise<CallBillingApiResponse> {}
 }

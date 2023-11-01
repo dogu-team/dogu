@@ -279,3 +279,7 @@ export const BillingSubscriptionPlanMap: Record<BillingSubscriptionPlanType, Bil
     },
   },
 };
+
+export class CallBillingApiDto {}
+
+export interface CallBillingApiResponse {}

@@ -1,4 +1,4 @@
-import { CloudLicenseBase, CloudLicenseMessage, CreateCloudLicenseDto } from '@dogu-private/console';
+import { CloudLicenseBase, CloudLicenseMessage, CreateCloudLicenseDto, FindCloudLicenseDto } from '@dogu-private/console';
 import { OrganizationId } from '@dogu-private/types';
 import { closeWebSocketWithTruncateReason, errorify, setAxiosErrorFilterToIntercepter, transformAndValidate } from '@dogu-tech/common';
 import { rawToString, WebSocketClientFactory } from '@dogu-tech/node';
@@ -37,7 +37,12 @@ export class CloudLicenseService {
   }
 
   async getLicenseInfo(organizationId: OrganizationId): Promise<CloudLicenseBase> {
-    const response = await this.api.get<CloudLicenseBase>(`/cloud-licenses/${organizationId}`);
+    const query: FindCloudLicenseDto = {
+      organizationId,
+    };
+    const response = await this.api.get<CloudLicenseBase>(`/cloud-licenses`, {
+      params: query,
+    });
     return response.data;
   }
 
