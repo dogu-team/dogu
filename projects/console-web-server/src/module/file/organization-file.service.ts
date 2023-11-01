@@ -24,4 +24,27 @@ export class OrganizationFileService {
     });
     return putResult.location;
   }
+
+  async uploadDeviceApp(file: Express.Multer.File, organizationId: OrganizationId): Promise<string> {
+    const appExtension = path.extname(file.originalname).toLowerCase().replace('.', '');
+
+    const isAppExtension = appExtension === 'apk' || appExtension === 'ipa';
+    if (!isAppExtension) {
+      throw new HttpException('Invalid file type', HttpStatus.BAD_REQUEST);
+    }
+
+    await this.featureFileService.put({
+      bucketKey: 'organization',
+      key: `organizations/${organizationId}/${file.originalname}`,
+      body: file.buffer,
+      contentType: file.mimetype,
+    });
+
+    const rv = await this.featureFileService.getSignedUrl({
+      bucketKey: 'organization',
+      key: `organizations/${organizationId}/${file.originalname}`,
+      expires: 60,
+    });
+    return rv.url;
+  }
 }

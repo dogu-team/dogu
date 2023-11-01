@@ -5,9 +5,10 @@ import {
   InboxOutlined,
   LoadingOutlined,
 } from '@ant-design/icons';
-import { Platform } from '@dogu-private/types';
+import { OrganizationId, Platform } from '@dogu-private/types';
 import { Button, Divider, Progress, Steps, Switch, Tooltip, Upload } from 'antd';
 import useTranslation from 'next-translate/useTranslation';
+import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
@@ -24,8 +25,9 @@ interface Props {
 }
 
 const ApplicationUploader = ({}: Props) => {
+  const router = useRouter();
   const { device, deviceService, loading, isCloudDevice } = useDeviceStreamingContext();
-  const { uploadApp, cancelUpload, runApp, isInstalling, progress, app, result } = useDeviceAppInstall(
+  const { uploadApp, runApp, isInstalling, progress, app, result } = useDeviceAppInstall(
     device?.serial,
     deviceService?.deviceHostClientRef,
     deviceService?.deviceClientRef,
@@ -60,7 +62,7 @@ const ApplicationUploader = ({}: Props) => {
         name="app"
         accept={availableExtension}
         customRequest={async (option) => {
-          await uploadApp(option.file as File);
+          await uploadApp(router.query.orgId as OrganizationId, option.file as File);
         }}
         progress={{
           format: () => null,
@@ -83,9 +85,9 @@ const ApplicationUploader = ({}: Props) => {
           <FlexRow>
             <Title>{t('device-streaming:uploadApplicationAppInfo')}</Title>
             <div>
-              <Tooltip title="Cancel">
+              {/* <Tooltip title="Cancel">
                 <Button danger icon={<CloseOutlined />} onClick={cancelUpload} />
-              </Tooltip>
+              </Tooltip> */}
             </div>
           </FlexRow>
           <InfoContent>
