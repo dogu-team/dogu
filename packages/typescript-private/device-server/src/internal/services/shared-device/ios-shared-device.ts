@@ -1,5 +1,5 @@
 import { Platform, PrivateProtocol, Serial } from '@dogu-private/types';
-import { delay, FilledPrintable } from '@dogu-tech/common';
+import { delay, FilledPrintable, loopTime } from '@dogu-tech/common';
 import child_process from 'child_process';
 import { AppiumContextImpl } from '../../../appium/appium.context';
 import { env } from '../../../env';
@@ -259,6 +259,19 @@ export class IosSharedDeviceService implements Zombieable {
     const elem = await iosDriver.rawDriver.$('~General');
     if (elem.error) {
       throw new Error(`IosSharedDeviceService.checkEnglish. failed. language should be english`);
+    }
+  }
+
+  private async blockControlCenterEnglish(iosDriver: IosWebDriver): Promise<void> {
+    for await (const _ of loopTime(300, 1000000)) {
+      const elem = await iosDriver.rawDriver.$('~ControlCenterView');
+      if (elem.error) {
+        continue;
+      }
+      await iosDriver.rawDriver.execute('mobile: pressButton', {
+        name: 'home',
+        duration: 0.3,
+      });
     }
   }
 }

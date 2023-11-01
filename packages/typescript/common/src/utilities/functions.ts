@@ -1,14 +1,24 @@
 import { stringify } from '../strings/functions';
 import { PromiseOrValue } from './types';
 
-export async function* loop(delayMilliseconds: number, count = Infinity): AsyncGenerator<void> {
+class LoopCounter {
+  constructor(
+    public readonly index: number,
+    public readonly count: number,
+  ) {}
+  isLast(): boolean {
+    return this.index === this.count - 1;
+  }
+}
+
+export async function* loop(delayMilliseconds: number, count = Infinity): AsyncGenerator<LoopCounter> {
   for (let i = 0; ; ) {
     if (count !== Infinity) {
       if (!(i < count)) {
         break;
       }
     }
-    yield;
+    yield new LoopCounter(i, count);
     await delay(delayMilliseconds);
     if (count !== Infinity) {
       i++;
