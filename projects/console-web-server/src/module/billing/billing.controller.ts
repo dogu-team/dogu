@@ -1,4 +1,5 @@
-import { Controller, Get, Patch } from '@nestjs/common';
+import { CallBillingApiDto, CallBillingApiResponse } from '@dogu-private/console';
+import { Body, Controller, Get, Patch, Post } from '@nestjs/common';
 
 import { ORGANIZATION_ROLE } from '../auth/auth.types';
 import { OrganizationPermission } from '../auth/decorators';
@@ -30,9 +31,9 @@ export class BillingController {
     return this.billingService.getBillingHistory();
   }
 
-  // @Post('call')
-  // @OrganizationPermission(ORGANIZATION_ROLE.ADMIN)
-  // async callBillingApi(@Body() dto: CallBillingApiDto): Promise<CallBillingApiResponse> {
-  //   return this.billingCaller.callBillingApi(dto);
-  // }
+  @Post('call')
+  @OrganizationPermission(ORGANIZATION_ROLE.ADMIN)
+  async callBillingApi(@Body() dto: CallBillingApiDto): Promise<CallBillingApiResponse> {
+    return this.billingCaller.callBillingApi(dto);
+  }
 }

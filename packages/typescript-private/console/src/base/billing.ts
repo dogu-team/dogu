@@ -1,3 +1,6 @@
+import { IsFilledString, IsOptionalObject, Method } from '@dogu-tech/common';
+import { IsIn } from 'class-validator';
+
 export const BillingCategory = ['cloud', 'self-hosted'] as const;
 export type BillingCategory = (typeof BillingCategory)[number];
 
@@ -280,6 +283,22 @@ export const BillingSubscriptionPlanMap: Record<BillingSubscriptionPlanType, Bil
   },
 };
 
-export class CallBillingApiDto {}
+export class CallBillingApiDto {
+  @IsIn(Method)
+  method!: Method;
 
-export interface CallBillingApiResponse {}
+  @IsFilledString()
+  path!: string;
+
+  @IsOptionalObject()
+  query?: object;
+
+  @IsOptionalObject()
+  body?: object;
+}
+
+export interface CallBillingApiResponse {
+  status?: number;
+  body?: Record<string, unknown>;
+  errorMessage?: string;
+}

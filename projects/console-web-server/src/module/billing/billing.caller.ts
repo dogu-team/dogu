@@ -1,4 +1,5 @@
-import { setAxiosErrorFilterToIntercepter } from '@dogu-tech/common';
+import { CallBillingApiDto, CallBillingApiResponse } from '@dogu-private/console';
+import { isFilteredAxiosError, setAxiosErrorFilterToIntercepter } from '@dogu-tech/common';
 import { Injectable } from '@nestjs/common';
 import axios, { AxiosInstance } from 'axios';
 import { updateAuthHeaderByBillingApiToken } from '../../enterprise/module/license/common/utils';
@@ -24,5 +25,28 @@ export class BillingCaller {
     }
   }
 
-  // async callBillingApi(dto: CallBillingApiDto): Promise<CallBillingApiResponse> {}
+  async callBillingApi(dto: CallBillingApiDto): Promise<CallBillingApiResponse> {
+    const { method, path, query, body } = dto;
+    try {
+      const response = await this.api.request<Record<string, unknown>>({
+        method,
+        url: path,
+        params: query,
+        data: body,
+      });
+      return {
+        status: response.status,
+        body: response.data,
+      };
+    } catch (error) {
+      if (isFilteredAxiosError(error)) {
+        return {
+          status: error.responseStatus,
+          errorMessage: error.message,
+        };
+      }
+
+      throw error;
+    }
+  }
 }
