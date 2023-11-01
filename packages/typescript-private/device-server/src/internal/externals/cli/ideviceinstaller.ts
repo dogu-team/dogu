@@ -8,13 +8,16 @@ import os from 'os';
 import { registerBootstrapHandler } from '../../../bootstrap/bootstrap.service';
 
 export interface IosAppInfo {
-  bundieId: string;
+  bundleId: string;
   version: string;
   displayName: string;
 }
 
 export class IdeviceInstaller {
-  constructor(private udid: Serial, private logger: Printable) {
+  constructor(
+    private udid: Serial,
+    private logger: Printable,
+  ) {
     this.tryAccessAndFix();
   }
 
@@ -87,25 +90,13 @@ export class IdeviceInstaller {
             bundieId = bundieId.replace(/^"/, '').replace(/"$/, '');
             version = version.replace(/^"/, '').replace(/"$/, '');
             displayName = displayName.replace(/^"/, '').replace(/"$/, '');
-            appInfos.push({ bundieId, version, displayName });
+            appInfos.push({ bundleId: bundieId, version, displayName });
           }
         },
         error: (data) => {},
       },
     );
     return appInfos;
-    // const ret = await ChildProcess.exec(`${exe} ${args.join(' ')}`, { env: this.env() });
-    // // if (!proc.stdout) {
-    // //   throw new Error(`IdeviceInstallerImpl.listUserApps ${exe} ${stringify(args)} stdout is empty`);
-    // // }
-    // const lines = ret.stdout.split(os.EOL).slice(1);
-    // return lines.map((line) => {
-    //   let [bundieId, version, displayName] = line.split(', ');
-    //   bundieId = bundieId.replace(/^"/, '').replace(/"$/, '');
-    //   version = version.replace(/^"/, '').replace(/"$/, '');
-    //   displayName = displayName.replace(/^"/, '').replace(/"$/, '');
-    //   return { bundieId, version, displayName };
-    // });
   }
 
   private tryAccessAndFix = (): void => {

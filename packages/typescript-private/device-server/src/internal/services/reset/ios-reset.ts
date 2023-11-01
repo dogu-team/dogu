@@ -94,7 +94,7 @@ export class IosResetService {
     const installer = new IdeviceInstaller(this.serial, this.logger);
     const userApps = await installer.getUserApps();
     for (const userApp of userApps) {
-      await installer.uninstallApp(userApp.bundieId);
+      await installer.uninstallApp(userApp.bundleId);
     }
   }
 
