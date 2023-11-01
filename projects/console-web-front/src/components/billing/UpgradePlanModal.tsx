@@ -15,6 +15,7 @@ interface Props {
 }
 
 const UpgradePlanModal: React.FC<Props> = ({ isOpen, close, planType }) => {
+  const [isAnnual, setIsAnnual] = useState(false);
   const [isSelected, setIsSelected] = useState(false);
 
   const handleClickUpgrade = () => {
@@ -46,8 +47,10 @@ const UpgradePlanModal: React.FC<Props> = ({ isOpen, close, planType }) => {
       footer={null}
       centered
       destroyOnClose
+      width="min(80vw, 720px)"
     >
       {isSelected ? (
+        
         <BillingPayStep />
       ) : (
         <BillingSelectPlanStep planType={planType} onClickUpgrade={handleClickUpgrade} />

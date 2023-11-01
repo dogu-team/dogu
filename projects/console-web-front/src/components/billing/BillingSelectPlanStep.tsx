@@ -1,9 +1,8 @@
 import { CloudSubscriptionPlanMap, CloudSubscriptionPlanType } from '@dogu-private/console';
-import { Switch } from 'antd';
-import { useState } from 'react';
 import styled from 'styled-components';
 
 import { planDescriptionInfoMap } from '../../resources/plan';
+import BillingDurationSwitch from './BillingDurationSwitch';
 import PlanItem from './PlanItem';
 
 interface Props {
@@ -14,8 +13,6 @@ interface Props {
 }
 
 const BillingSelectPlanStep: React.FC<Props> = ({ planType, onClickUpgrade }) => {
-  const [isAnnual, setIsAnnual] = useState(false);
-
   const planInfo = CloudSubscriptionPlanMap[planType];
   const descriptionInfo = planDescriptionInfoMap[planType];
 
@@ -25,21 +22,13 @@ const BillingSelectPlanStep: React.FC<Props> = ({ planType, onClickUpgrade }) =>
         {/* TODO: from user's current plan */}
         <div>Your current plan: ...</div>
       </div>
-      <SwitchWrapper>
-        <Label>Monthly</Label>
-        <Switch checked={isAnnual} onChange={setIsAnnual} style={{ margin: '0 .25rem' }} />
-        <Label>
-          Annually <b>{`(Save up to 20%)`}</b>
-        </Label>
-      </SwitchWrapper>
+
+      <FlexEnd>
+        <BillingDurationSwitch />
+      </FlexEnd>
 
       <PlanWrapper>
-        <PlanItem
-          planInfo={planInfo}
-          descriptionInfo={descriptionInfo}
-          onClickUpgrade={onClickUpgrade}
-          isAnnual={isAnnual}
-        />
+        <PlanItem planInfo={planInfo} descriptionInfo={descriptionInfo} onClickUpgrade={onClickUpgrade} />
       </PlanWrapper>
     </div>
   );
@@ -53,15 +42,7 @@ const PlanWrapper = styled.div`
   margin-top: 1rem;
 `;
 
-const SwitchWrapper = styled.div`
-  margin: 0.5rem 0;
-`;
-
-const Label = styled.label`
-  font-size: 0.8rem;
-
-  b {
-    color: ${(props) => props.theme.colorPrimary};
-    font-weight 600;
-  }
+const FlexEnd = styled.div`
+  display: flex;
+  justify-content: flex-end;
 `;

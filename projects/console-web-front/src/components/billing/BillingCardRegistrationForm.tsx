@@ -145,7 +145,8 @@ const BillingRegistrationForm: React.FC<Props> = ({ form }) => {
 export default BillingRegistrationForm;
 
 const StyledForm = styled(Form)`
-  width: 400px;
+  flex: 1;
+  flex-shrink: 0;
 `;
 
 const Box = styled.div`

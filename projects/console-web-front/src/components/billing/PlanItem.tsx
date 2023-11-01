@@ -4,15 +4,16 @@ import { useState } from 'react';
 import styled from 'styled-components';
 
 import { PlanDescriptionInfo } from '../../resources/plan';
+import useBillingPlanPurchaseStore from '../../stores/billing-plan-purchase';
 
 interface Props {
   planInfo: SubscriptionPlanInfo;
   descriptionInfo: PlanDescriptionInfo;
-  isAnnual: boolean;
   onClickUpgrade: () => void;
 }
 
-const PlanItem: React.FC<Props> = ({ planInfo, descriptionInfo, onClickUpgrade, isAnnual }) => {
+const PlanItem: React.FC<Props> = ({ planInfo, descriptionInfo, onClickUpgrade }) => {
+  const isAnnual = useBillingPlanPurchaseStore((state) => state.isAnnual);
   const baseOptions: SelectProps<string | number>['options'] = Object.keys(planInfo.optionMap).map((optionKey) => {
     return {
       value: optionKey,
