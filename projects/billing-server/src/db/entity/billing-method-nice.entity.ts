@@ -1,6 +1,6 @@
-import { BillingInfoPropCamel, BillingMethodNiceBase, BillingMethodNicePropSnake } from '@dogu-private/console';
+import { BillingMethodNiceBase, BillingMethodNicePropSnake, BillingOrganizationPropCamel } from '@dogu-private/console';
 import { Column, Entity, JoinColumn, OneToOne, PrimaryColumn } from 'typeorm';
-import { BillingInfo } from './billing-info.entity';
+import { BillingOrganization } from './billing-organization.entity';
 import { ColumnTemplate } from './util/decorators';
 
 @Entity('billing_method_nice')
@@ -8,8 +8,8 @@ export class BillingMethodNice implements BillingMethodNiceBase {
   @PrimaryColumn('uuid', { name: BillingMethodNicePropSnake.billing_method_nice_id })
   billingMethodNiceId!: string;
 
-  @Column({ type: 'uuid', name: BillingMethodNicePropSnake.billing_info_id, unique: true })
-  billingInfoId!: string;
+  @Column({ type: 'uuid', name: BillingMethodNicePropSnake.billing_organization_id, unique: true })
+  billingOrganizationId!: string;
 
   @Column({ type: 'character varying', name: BillingMethodNicePropSnake.bid, nullable: true })
   bid!: string | null;
@@ -35,7 +35,7 @@ export class BillingMethodNice implements BillingMethodNiceBase {
   @ColumnTemplate.DeleteDate(BillingMethodNicePropSnake.deleted_at)
   deletedAt!: Date | null;
 
-  @OneToOne(() => BillingInfo, (billingInfo) => billingInfo.billingMethodNice)
-  @JoinColumn({ name: BillingMethodNicePropSnake.billing_info_id, referencedColumnName: BillingInfoPropCamel.billingInfoId })
-  billingInfo?: BillingInfo;
+  @OneToOne(() => BillingOrganization, (billingOrganization) => billingOrganization.billingMethodNice)
+  @JoinColumn({ name: BillingMethodNicePropSnake.billing_organization_id, referencedColumnName: BillingOrganizationPropCamel.billingOrganizationId })
+  billingOrganization?: BillingOrganization;
 }

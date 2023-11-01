@@ -1,9 +1,9 @@
-import { BillingInfoPropCamel, CloudLicensePropCamel, CreateCloudLicenseDto, FindCloudLicenseDto } from '@dogu-private/console';
+import { BillingOrganizationPropCamel, CloudLicensePropCamel, CreateCloudLicenseDto, FindCloudLicenseDto } from '@dogu-private/console';
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { v4 } from 'uuid';
-import { BillingInfo } from '../../db/entity/billing-info.entity';
+import { BillingOrganization } from '../../db/entity/billing-organization.entity';
 import { BillingSubscriptionPlan } from '../../db/entity/billing-subscription-plan.entity';
 
 import { CloudLicense } from '../../db/entity/cloud-license.entity';
@@ -41,8 +41,8 @@ export class CloudLicenseService {
       const license = await manager
         .getRepository(CloudLicense)
         .createQueryBuilder(CloudLicense.name)
-        .leftJoinAndSelect(`${CloudLicense.name}.${CloudLicensePropCamel.billingInfo}`, BillingInfo.name)
-        .leftJoinAndSelect(`${BillingInfo.name}.${BillingInfoPropCamel.billingSubscriptionPlans}`, BillingSubscriptionPlan.name)
+        .leftJoinAndSelect(`${CloudLicense.name}.${CloudLicensePropCamel.billingOrganization}`, BillingOrganization.name)
+        .leftJoinAndSelect(`${BillingOrganization.name}.${BillingOrganizationPropCamel.billingSubscriptionPlans}`, BillingSubscriptionPlan.name)
         .where(`${CloudLicense.name}.${CloudLicensePropCamel.organizationId} = :organizationId`, { organizationId })
         .getOne();
 

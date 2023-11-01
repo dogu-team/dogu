@@ -31,7 +31,7 @@ export class BillingController {
     return this.billingService.getBillingHistory();
   }
 
-  @Post('call')
+  @Post()
   @OrganizationPermission(ORGANIZATION_ROLE.ADMIN)
   async callBillingApi(@Body() dto: CallBillingApiDto): Promise<CallBillingApiResponse> {
     return this.billingCaller.callBillingApi(dto);

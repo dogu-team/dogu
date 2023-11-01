@@ -9,6 +9,7 @@ export interface BillingSubscriptionPlanSourceBase {
   currency: BillingCurrency;
   period: BillingPeriod;
   price: number;
+  billingOrganizationId: string;
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date | null;

@@ -36,18 +36,18 @@ export class BillingMethodNiceService {
         this.logger,
         this.dataSource,
         async (manager) => {
-          const { billingInfoId, cardNo } = dto;
+          const { billingOrganizationId, cardNo } = dto;
           const cardNoLast4 = cardNo.slice(-4);
-          const billingInfo = await manager.getRepository(BillingMethodNice).findOne({ where: { billingInfoId } });
-          bid = billingInfo?.bid ?? null;
+          const billingOrganization = await manager.getRepository(BillingMethodNice).findOne({ where: { billingOrganizationId } });
+          bid = billingOrganization?.bid ?? null;
           await subscribeExpire();
 
           const subscribeRegistResponse = await this.billingMethodNiceCaller.subscribeRegist(dto);
           const { cardCode, cardName } = subscribeRegistResponse;
           bid = subscribeRegistResponse.bid;
 
-          if (billingInfo) {
-            const updated = manager.getRepository(BillingMethodNice).merge(billingInfo, {
+          if (billingOrganization) {
+            const updated = manager.getRepository(BillingMethodNice).merge(billingOrganization, {
               bid,
               cardCode,
               cardName,
@@ -60,7 +60,7 @@ export class BillingMethodNiceService {
 
           const created = manager.getRepository(BillingMethodNice).create({
             billingMethodNiceId: v4(),
-            billingInfoId,
+            billingOrganizationId,
             bid,
             cardCode,
             cardName,

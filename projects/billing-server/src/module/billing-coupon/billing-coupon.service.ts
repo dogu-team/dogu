@@ -1,10 +1,10 @@
-import { ValidateBillingCouponByOrganizationIdDto, ValidateBillingCouponByOrganizationIdResponse } from '@dogu-private/console';
+import { ValidateBillingCouponDto, ValidateBillingCouponResponse } from '@dogu-private/console';
 import { Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { BillingCoupon } from '../../db/entity/billing-coupon.entity';
-import { BillingInfoAndBillingCoupon } from '../../db/entity/billing-info-and-billing-coupon.entity';
-import { BillingInfo } from '../../db/entity/billing-info.entity';
+import { BillingOrganizationAndBillingCoupon } from '../../db/entity/billing-organization-and-billing-coupon.entity';
+import { BillingOrganization } from '../../db/entity/billing-organization.entity';
 import { retrySerialize } from '../../db/utils';
 import { DoguLogger } from '../logger/logger';
 
@@ -15,7 +15,7 @@ export class BillingCouponService {
     @InjectDataSource() private readonly dataSource: DataSource,
   ) {}
 
-  async validateBillingCouponByOrganizationId(dto: ValidateBillingCouponByOrganizationIdDto): Promise<ValidateBillingCouponByOrganizationIdResponse> {
+  async validateBillingCoupon(dto: ValidateBillingCouponDto): Promise<ValidateBillingCouponResponse> {
     return await retrySerialize(this.logger, this.dataSource, async (manager) => {
       const { organizationId, billingCouponCode } = dto;
       const billingCoupon = await manager.getRepository(BillingCoupon).findOne({ where: { code: billingCouponCode } });
@@ -27,15 +27,15 @@ export class BillingCouponService {
         return { ok: false, reason: 'expired' };
       }
 
-      const billingInfo = await manager.getRepository(BillingInfo).findOne({ where: { organizationId } });
-      if (!billingInfo) {
+      const billingOrganization = await manager.getRepository(BillingOrganization).findOne({ where: { organizationId } });
+      if (!billingOrganization) {
         return { ok: true, reason: 'organization-not-found' };
       }
 
-      const billingInfoAndBillingCoupon = await manager.getRepository(BillingInfoAndBillingCoupon).findOne({
-        where: { billingCouponId: billingCoupon.billingCouponId, billingInfoId: billingInfo.billingInfoId },
+      const billingOrganizationAndBillingCoupon = await manager.getRepository(BillingOrganizationAndBillingCoupon).findOne({
+        where: { billingCouponId: billingCoupon.billingCouponId, billingOrganizationId: billingOrganization.billingOrganizationId },
       });
-      if (billingInfoAndBillingCoupon) {
+      if (billingOrganizationAndBillingCoupon) {
         return { ok: false, reason: 'already-used' };
       }
 

@@ -2,12 +2,12 @@ import {
   BillingHistoryAndBillingSubscriptionPlanPropCamel,
   BillingHistoryAndBillingSubscriptionPlanPropSnake,
   BillingHistoryBase,
+  BillingHistoryPropCamel,
   BillingHistoryPropSnake,
-  BillingInfoPropCamel,
 } from '@dogu-private/console';
 import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, PrimaryColumn } from 'typeorm';
 import { BillingHistoryAndBillingSubscriptionPlanTableName } from './billing-history-and-billing-subscription-plan.entity';
-import { BillingInfo } from './billing-info.entity';
+import { BillingOrganization } from './billing-organization.entity';
 import { BillingSubscriptionPlan } from './billing-subscription-plan.entity';
 import { ColumnTemplate } from './util/decorators';
 
@@ -19,8 +19,8 @@ export class BillingHistory implements BillingHistoryBase {
   @ColumnTemplate.Date(BillingHistoryPropSnake.purchased_at, false)
   purchasedAt!: Date;
 
-  @Column({ type: 'uuid', name: BillingHistoryPropSnake.billing_info_id })
-  billingInfoId!: string;
+  @Column({ type: 'uuid', name: BillingHistoryPropSnake.billing_organization_id })
+  billingOrganizationId!: string;
 
   @ColumnTemplate.CreateDate(BillingHistoryPropSnake.created_at)
   createdAt!: Date;
@@ -31,9 +31,9 @@ export class BillingHistory implements BillingHistoryBase {
   @ColumnTemplate.DeleteDate(BillingHistoryPropSnake.deleted_at)
   deletedAt!: Date | null;
 
-  @ManyToOne(() => BillingInfo)
-  @JoinColumn({ name: BillingHistoryPropSnake.billing_info_id, referencedColumnName: BillingInfoPropCamel.billingInfoId })
-  billingInfo?: BillingInfo;
+  @ManyToOne(() => BillingOrganization)
+  @JoinColumn({ name: BillingHistoryPropSnake.billing_organization_id, referencedColumnName: BillingHistoryPropCamel.billingOrganizationId })
+  billingOrganization?: BillingOrganization;
 
   @ManyToMany(() => BillingSubscriptionPlan)
   @JoinTable({

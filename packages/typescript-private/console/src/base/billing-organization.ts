@@ -4,8 +4,8 @@ import { BillingCategory } from './billing';
 import { BillingMethodNiceBase } from './billing-method-nice';
 import { BillingSubscriptionPlanBase } from './billing-subscription-plan';
 
-export interface BillingInfoBase {
-  billingInfoId: string;
+export interface BillingOrganizationBase {
+  billingOrganizationId: string;
   organizationId: string;
   category: BillingCategory;
   firstPurchasedAt: Date | null;
@@ -16,15 +16,15 @@ export interface BillingInfoBase {
   billingMethodNice?: BillingMethodNiceBase;
 }
 
-export const BillingInfoPropCamel = propertiesOf<BillingInfoBase>();
-export const BillingInfoPropSnake = camelToSnakeCasePropertiesOf<BillingInfoBase>();
+export const BillingOrganizationPropCamel = propertiesOf<BillingOrganizationBase>();
+export const BillingOrganizationPropSnake = camelToSnakeCasePropertiesOf<BillingOrganizationBase>();
 
-export class FindBillingInfoDto {
+export class FindBillingOrganizationDto {
   @IsUUID()
   organizationId!: string;
 }
 
-export class CreateBillingInfoDto {
+export class CreateBillingOrganizationDto {
   @IsUUID()
   organizationId!: string;
 
@@ -32,7 +32,7 @@ export class CreateBillingInfoDto {
   category!: BillingCategory;
 }
 
-export class CreateOrUpdateBillingInfoWithNiceDto {
+export class CreateOrUpdateBillingOrganizationWithNiceDto {
   @IsUUID()
   organizationId!: string;
 

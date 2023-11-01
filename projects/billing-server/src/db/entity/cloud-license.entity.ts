@@ -1,7 +1,7 @@
 import { CloudLicenseBase, CloudLicensePropCamel, CloudLicensePropSnake } from '@dogu-private/console';
 import { OrganizationId } from '@dogu-private/types';
 import { Column, Entity, JoinColumn, OneToOne, PrimaryColumn } from 'typeorm';
-import { BillingInfo } from './billing-info.entity';
+import { BillingOrganization } from './billing-organization.entity';
 import { ColumnTemplate } from './util/decorators';
 
 @Entity('cloud_license')
@@ -27,7 +27,7 @@ export class CloudLicense implements CloudLicenseBase {
   @ColumnTemplate.DeleteDate(CloudLicensePropSnake.deleted_at)
   deletedAt!: Date | null;
 
-  @OneToOne(() => BillingInfo, { nullable: true, createForeignKeyConstraints: false })
+  @OneToOne(() => BillingOrganization, { nullable: true, createForeignKeyConstraints: false })
   @JoinColumn({ name: CloudLicensePropSnake.organization_id, referencedColumnName: CloudLicensePropCamel.organizationId })
-  billingInfo?: BillingInfo | null;
+  billingOrganization?: BillingOrganization | null;
 }

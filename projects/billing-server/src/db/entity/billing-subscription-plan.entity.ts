@@ -9,7 +9,7 @@ import {
 } from '@dogu-private/console';
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 import { BillingCoupon } from './billing-coupon.entity';
-import { BillingInfo } from './billing-info.entity';
+import { BillingOrganization } from './billing-organization.entity';
 import { BillingSubscriptionPlanSource } from './billing-subscription-plan-source.entity';
 import { ColumnTemplate } from './util/decorators';
 
@@ -36,8 +36,8 @@ export class BillingSubscriptionPlan implements BillingSubscriptionPlanBase {
   @Column({ type: 'integer', name: BillingSubscriptionPlanPropSnake.price })
   price!: number;
 
-  @Column({ type: 'uuid', name: BillingSubscriptionPlanPropSnake.billing_info_id })
-  billingInfoId!: string;
+  @Column({ type: 'uuid', name: BillingSubscriptionPlanPropSnake.billing_organization_id })
+  billingOrganizationId!: string;
 
   @Column({ type: 'uuid', name: BillingSubscriptionPlanPropSnake.billing_subscription_plan_source_id, nullable: true })
   billingSubscriptionPlanSourceId!: string | null;
@@ -57,9 +57,9 @@ export class BillingSubscriptionPlan implements BillingSubscriptionPlanBase {
   @ColumnTemplate.DeleteDate(BillingSubscriptionPlanPropSnake.deleted_at)
   deletedAt!: Date | null;
 
-  @ManyToOne(() => BillingInfo, (billingInfo) => billingInfo.billingSubscriptionPlans)
-  @JoinColumn({ name: BillingSubscriptionPlanPropSnake.billing_info_id, referencedColumnName: BillingSubscriptionPlanPropCamel.billingInfoId })
-  billingInfo?: BillingInfo;
+  @ManyToOne(() => BillingOrganization, (billingOrganization) => billingOrganization.billingSubscriptionPlans)
+  @JoinColumn({ name: BillingSubscriptionPlanPropSnake.billing_organization_id, referencedColumnName: BillingSubscriptionPlanPropCamel.billingOrganizationId })
+  billingOrganization?: BillingOrganization;
 
   @ManyToOne(() => BillingCoupon)
   @JoinColumn({ name: BillingSubscriptionPlanPropSnake.billing_coupon_id, referencedColumnName: BillingSubscriptionPlanPropCamel.billingCouponId })

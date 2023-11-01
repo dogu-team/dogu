@@ -2,7 +2,7 @@ import { camelToSnakeCasePropertiesOf, propertiesOf } from '@dogu-tech/common';
 
 import { BillingCategory, BillingCurrency, BillingPeriod, BillingSubscriptionPlanType } from './billing';
 import { BillingCouponBase } from './billing-coupon';
-import { BillingInfoBase } from './billing-info';
+import { BillingOrganizationBase } from './billing-organization';
 import { BillingSubscriptionPlanSourceBase } from './billing-subscription-plan-source';
 
 export interface BillingSubscriptionPlanBase {
@@ -13,14 +13,14 @@ export interface BillingSubscriptionPlanBase {
   currency: BillingCurrency;
   period: BillingPeriod;
   price: number;
-  billingInfoId: string;
+  billingOrganizationId: string;
   billingCouponId: string | null;
   billingCouponRemainingApplyCount: number | null;
   billingSubscriptionPlanSourceId: string | null;
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date | null;
-  billingInfo?: BillingInfoBase;
+  billingOrganization?: BillingOrganizationBase;
   billingCoupon?: BillingCouponBase;
   billingSubscriptionPlanSource?: BillingSubscriptionPlanSourceBase;
 }

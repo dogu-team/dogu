@@ -1,10 +1,10 @@
 import { camelToSnakeCasePropertiesOf, IsFilledString, propertiesOf } from '@dogu-tech/common';
 import { IsNumber, IsUUID } from 'class-validator';
-import { BillingInfoBase } from './billing-info';
+import { BillingOrganizationBase } from './billing-organization';
 
 export interface BillingMethodNiceBase {
   billingMethodNiceId: string;
-  billingInfoId: string;
+  billingOrganizationId: string;
   bid: string | null;
   cardCode: string | null;
   cardName: string | null;
@@ -13,7 +13,7 @@ export interface BillingMethodNiceBase {
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date | null;
-  billingInfo?: BillingInfoBase;
+  billingOrganization?: BillingOrganizationBase;
 }
 
 export const BillingMethodNicePropCamel = propertiesOf<BillingMethodNiceBase>();
@@ -74,7 +74,7 @@ export interface SubscribeRegistNiceResponse {
 
 export class CreateOrUpdateBillingMethodNiceDto extends SubscribeRegistNiceDto {
   @IsUUID()
-  billingInfoId!: string;
+  billingOrganizationId!: string;
 }
 
 export class SubscribeExpireNiceDto {

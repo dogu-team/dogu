@@ -17,7 +17,7 @@ export interface BillingPromotionBase {
 export const BillingPromotionPropCamel = propertiesOf<BillingPromotionBase>();
 export const BillingPromotionPropSnake = camelToSnakeCasePropertiesOf<BillingPromotionBase>();
 
-export class GetAvailableBillingPromotionsByOrganizationIdDto {
+export class GetAvailableBillingPromotionsDto {
   @IsUUID()
   organizationId!: string;
 }

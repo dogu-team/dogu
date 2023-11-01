@@ -1,9 +1,9 @@
-import { BillingInfoAndBillingPromotionPropCamel, BillingInfoPropCamel, BillingPromotionPropCamel, GetAvailableBillingPromotionsByOrganizationIdDto } from '@dogu-private/console';
+import { BillingOrganizationAndBillingPromotionPropCamel, BillingOrganizationPropCamel, BillingPromotionPropCamel, GetAvailableBillingPromotionsDto } from '@dogu-private/console';
 import { Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
-import { BillingInfoAndBillingPromotion } from '../../db/entity/billing-info-and-billing-promotion.entity';
-import { BillingInfo } from '../../db/entity/billing-info.entity';
+import { BillingOrganizationAndBillingPromotion } from '../../db/entity/billing-organization-and-billing-promotion.entity';
+import { BillingOrganization } from '../../db/entity/billing-organization.entity';
 import { BillingPromotion } from '../../db/entity/billing-promotion.entity';
 import { DoguLogger } from '../logger/logger';
 
@@ -14,7 +14,7 @@ export class BillingPromotionService {
     @InjectDataSource() private readonly dataSource: DataSource,
   ) {}
 
-  async getAvailableBillingPromotionsByOrganizationId(dto: GetAvailableBillingPromotionsByOrganizationIdDto): Promise<BillingPromotion[]> {
+  async getAvailableBillingPromotions(dto: GetAvailableBillingPromotionsDto): Promise<BillingPromotion[]> {
     const { organizationId } = dto;
     const billingPromitions = await this.dataSource.manager
       .getRepository(BillingPromotion)
@@ -22,14 +22,14 @@ export class BillingPromotionService {
       .where((qb) => {
         const subQuery = qb
           .subQuery()
-          .select(`${BillingInfoAndBillingPromotion.name}.${BillingInfoAndBillingPromotionPropCamel.billingPromotionId}`)
-          .from(BillingInfoAndBillingPromotion, BillingInfoAndBillingPromotion.name)
+          .select(`${BillingOrganizationAndBillingPromotion.name}.${BillingOrganizationAndBillingPromotionPropCamel.billingPromotionId}`)
+          .from(BillingOrganizationAndBillingPromotion, BillingOrganizationAndBillingPromotion.name)
           .innerJoin(
-            BillingInfo,
-            BillingInfo.name,
-            `${BillingInfo.name}.${BillingInfoPropCamel.billingInfoId} = ${BillingInfoAndBillingPromotion.name}.${BillingInfoAndBillingPromotionPropCamel.billingInfoId}`,
+            BillingOrganization,
+            BillingOrganization.name,
+            `${BillingOrganization.name}.${BillingOrganizationPropCamel.billingOrganizationId} = ${BillingOrganizationAndBillingPromotion.name}.${BillingOrganizationAndBillingPromotionPropCamel.billingOrganizationId}`,
           )
-          .where(`${BillingInfo.name}.${BillingInfoPropCamel.organizationId} = :organizationId`, { organizationId })
+          .where(`${BillingOrganization.name}.${BillingOrganizationPropCamel.organizationId} = :organizationId`, { organizationId })
           .getQuery();
         return `${BillingPromotion.name}.${BillingPromotionPropCamel.billingPromitionId} NOT IN ${subQuery}`;
       })

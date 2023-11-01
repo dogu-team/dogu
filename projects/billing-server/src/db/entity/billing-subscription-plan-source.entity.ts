@@ -32,6 +32,9 @@ export class BillingSubscriptionPlanSource implements BillingSubscriptionPlanSou
   @Column({ type: 'integer', name: BillingSubscriptionPlanSourcePropSnake.price })
   price!: number;
 
+  @Column({ type: 'uuid', name: BillingSubscriptionPlanSourcePropSnake.billing_organization_id })
+  billingOrganizationId!: string;
+
   @ColumnTemplate.CreateDate(BillingSubscriptionPlanSourcePropSnake.created_at)
   createdAt!: Date;
 

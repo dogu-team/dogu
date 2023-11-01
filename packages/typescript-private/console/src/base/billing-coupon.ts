@@ -22,7 +22,7 @@ export interface BillingCouponBase {
 export const BillingCouponPropCamel = propertiesOf<BillingCouponBase>();
 export const BillingCouponPropSnake = camelToSnakeCasePropertiesOf<BillingCouponBase>();
 
-export class ValidateBillingCouponByOrganizationIdDto {
+export class ValidateBillingCouponDto {
   @IsUUID()
   organizationId!: string;
 
@@ -30,7 +30,7 @@ export class ValidateBillingCouponByOrganizationIdDto {
   billingCouponCode!: string;
 }
 
-export interface ValidateBillingCouponByOrganizationIdResponse {
+export interface ValidateBillingCouponResponse {
   ok: boolean;
   reason: 'already-used' | 'expired' | 'coupon-not-found' | 'organization-not-found' | 'not-used';
 }
