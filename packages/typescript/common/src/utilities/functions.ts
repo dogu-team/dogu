@@ -1,3 +1,4 @@
+import { time, TimeOptions } from '..';
 import { stringify } from '../strings/functions';
 import { PromiseOrValue } from './types';
 
@@ -26,7 +27,10 @@ export async function* loop(delayMilliseconds: number, count = Infinity): AsyncG
   }
 }
 
-export async function* loopTime(periodMilisec: number, expireTimeMilisec: number): AsyncGenerator<void> {
+export async function* loopTime(option: { period: TimeOptions; expire: TimeOptions }): AsyncGenerator<void> {
+  const periodMilisec = time(option.period);
+  const expireTimeMilisec = time(option.expire);
+
   const startTime = Date.now();
   for (let _ = 0; ; ) {
     const curTime = Date.now();

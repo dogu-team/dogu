@@ -1,5 +1,5 @@
 import { Serial } from '@dogu-private/types';
-import { BufferLogger, delay, errorify, FilledPrintable, IdleCheckLogger, loopTime, Milisecond, MixedLogger, PrefixLogger, stringify } from '@dogu-tech/common';
+import { BufferLogger, delay, errorify, FilledPrintable, IdleCheckLogger, loopTime, MixedLogger, PrefixLogger, stringify } from '@dogu-tech/common';
 import { ChildProcess, DirectoryRotation, findEndswith, HostPaths, killChildProcess, redirectFileToStream } from '@dogu-tech/node';
 import child_process, { exec, execFile } from 'child_process';
 import { randomUUID } from 'crypto';
@@ -164,7 +164,7 @@ export class XCTestRunContext {
 
   private async redirectOutput(tempDirPath: string, proc: child_process.ChildProcess, redirectContext: { stop: boolean }): Promise<void> {
     let fileName = '';
-    for await (const _ of loopTime(Milisecond.t1Second, Milisecond.t30Seconds)) {
+    for await (const _ of loopTime({ period: { seconds: 1 }, expire: { seconds: 30 } })) {
       const files = await findEndswith(tempDirPath, 'StandardOutputAndStandardError.txt').catch(() => []);
       if (0 < files.length) {
         fileName = files[0];

@@ -98,8 +98,7 @@ export class IosResetService {
   private async logoutApppleAccount(iosDriver: IosWebDriver): Promise<void> {
     await iosDriver.relaunchApp('com.apple.Preferences');
 
-    const account = await iosDriver.scrollDownToSelector(new IosAccessibilitiySelector('APPLE_ACCOUNT'));
-    await account.click();
+    await iosDriver.clickSelector(new IosAccessibilitiySelector('APPLE_ACCOUNT'));
 
     await delay(1000);
 
@@ -118,10 +117,7 @@ export class IosResetService {
     for (let i = 0; i < DeleteRepeatCount; i++) {
       await iosDriver.relaunchApp('com.apple.Preferences');
 
-      const safari = await iosDriver.scrollDownToSelector(new IosAccessibilitiySelector('Safari'));
-      await safari.click();
-
-      await iosDriver.scrollDownToSelector(new IosAccessibilitiySelector('CLEAR_HISTORY_AND_DATA'));
+      await iosDriver.clickSelector(new IosAccessibilitiySelector('Safari'));
 
       await iosDriver.clickSelector(new IosAccessibilitiySelector('CLEAR_HISTORY_AND_DATA'));
 
@@ -195,6 +191,11 @@ export class IosResetService {
       const recentlyDeleted = await iosDriver.scrollDownToSelector(new IosClassChainSelector('**/XCUIElementTypeStaticText[`label == "Recently Deleted"`]'));
       await recentlyDeleted.click();
 
+      const title = await iosDriver.rawDriver.$(new IosClassChainSelector('**/XCUIElementTypeOther[`label == "Recently Deleted"`]').build());
+      if (title.error) {
+        throw new Error('Recently Deleted title should show');
+      }
+
       const images = await iosDriver.waitElementsExist(new IosClassChainSelector('**/XCUIElementTypeImage'), { seconds: 3 });
       if (0 === images.length) {
         continue;
@@ -209,15 +210,13 @@ export class IosResetService {
   private async clearPhotosSuggestionAndFeedbacks(iosDriver: IosWebDriver): Promise<void> {
     await iosDriver.relaunchApp('com.apple.Preferences');
 
-    const photos = await iosDriver.scrollDownToSelector(new IosClassChainSelector('**/XCUIElementTypeCell[`label == "Photos"`]'));
-    await photos.click();
+    await iosDriver.clickSelector(new IosClassChainSelector('**/XCUIElementTypeCell[`label == "Photos"`]'));
 
-    const resetMem = await iosDriver.scrollDownToSelector(new IosAccessibilitiySelector('ResetBlacklistedMemoryFeatures'));
-    await resetMem.click();
+    await iosDriver.clickSelector(new IosAccessibilitiySelector('ResetBlacklistedMemoryFeatures'));
+
     await iosDriver.clickSelector(new IosAccessibilitiySelector('Reset'));
 
-    const resetFeedback = await iosDriver.scrollDownToSelector(new IosAccessibilitiySelector('ResetPeopleFeedback'));
-    await resetFeedback.click();
+    await iosDriver.clickSelector(new IosAccessibilitiySelector('ResetPeopleFeedback'));
     await iosDriver.clickSelector(new IosAccessibilitiySelector('Reset'));
   }
 
@@ -285,6 +284,7 @@ export class IosResetService {
       await this.enterFilesBrowseHome(iosDriver);
 
       await iosDriver.clickSelector(new IosAccessibilitiySelector('Recently Deleted'));
+      await delay(1000);
 
       const cellsTry = await iosDriver.waitElementsExist(new IosClassChainSelector('**/XCUIElementTypeCell'), { seconds: 3 });
       if (cellsTry.length === 0) {
@@ -308,8 +308,7 @@ export class IosResetService {
     await iosDriver.relaunchApp('com.apple.Preferences');
     await iosDriver.clickSelector(new IosAccessibilitiySelector('General'));
 
-    const reset = await iosDriver.scrollDownToSelector(new IosAccessibilitiySelector('Transfer or Reset iPhone'));
-    await reset.click();
+    await iosDriver.clickSelector(new IosAccessibilitiySelector('Transfer or Reset iPhone'));
 
     await iosDriver.clickSelector(new IosClassChainSelector('**/XCUIElementTypeStaticText[`label == "Reset"`]'));
     await iosDriver.clickSelector(new IosAccessibilitiySelector('Reset Keyboard Dictionary'));
@@ -323,7 +322,7 @@ export class IosResetService {
     await iosDriver.clickSelector(new IosAccessibilitiySelector('Reset Location & Privacy'));
     await iosDriver.clickSelector(new IosAccessibilitiySelector('Reset Settings'));
 
-    for await (const _ of loopTime(300, 10000)) {
+    for await (const _ of loopTime({ period: { milliseconds: 300 }, expire: { seconds: 10 } })) {
       try {
         await iosDriver.clickSelector(new IosAccessibilitiySelector('Trust'));
         break;

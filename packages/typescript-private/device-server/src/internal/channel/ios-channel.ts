@@ -269,7 +269,7 @@ export class IosChannel implements DeviceChannel {
     }
     if (env.DOGU_DEVICE_IOS_RESTART_ON_INIT) {
       await IdeviceDiagnostics.restart(serial, logger);
-      for await (const _ of loopTime(Milisecond.t3Seconds, Milisecond.t5Minutes)) {
+      for await (const _ of loopTime({ period: { seconds: 3 }, expire: { minutes: 5 } })) {
         const deviceInfosFromXctrace = await Xctrace.listDevices(logger, { timeout: Milisecond.t2Minutes }).catch((e) => []);
         if (deviceInfosFromXctrace.find((deviceInfo) => deviceInfo.serial === serial)) {
           break;

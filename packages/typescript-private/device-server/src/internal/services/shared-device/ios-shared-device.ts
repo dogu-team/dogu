@@ -263,7 +263,7 @@ export class IosSharedDeviceService implements Zombieable {
   }
 
   private async blockControlCenterEnglish(iosDriver: IosWebDriver): Promise<void> {
-    for await (const _ of loopTime(300, 1000000)) {
+    for await (const _ of loopTime({ period: { milliseconds: 300 }, expire: { minutes: 5 } })) {
       const elem = await iosDriver.rawDriver.$('~ControlCenterView');
       if (elem.error) {
         continue;

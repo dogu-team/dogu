@@ -73,7 +73,7 @@ export class WebdriverAgentProcess {
   }
 
   async waitUntilSessionId(): Promise<void> {
-    for await (const _ of loopTime(300, Milisecond.t5Minutes)) {
+    for await (const _ of loopTime({ period: { milliseconds: 300 }, expire: { minutes: 5 } })) {
       if (this.xctest.sessionId) {
         break;
       }
@@ -289,7 +289,7 @@ class ZombieWdaXCTest implements Zombieable {
       ZombieServiceInstance.notifyDie(this);
     });
 
-    for await (const _ of loopTime(Milisecond.t3Seconds, Milisecond.t3Minutes)) {
+    for await (const _ of loopTime({ period: { seconds: 3 }, expire: { minutes: 3 } })) {
       if (await this.isHealth()) {
         break;
       }

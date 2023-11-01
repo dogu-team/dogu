@@ -1,4 +1,4 @@
-import { loop, loopTime, time, TimeOptions } from '@dogu-tech/common';
+import { loop, loopTime, TimeOptions } from '@dogu-tech/common';
 import WebDriverIO from 'webdriverio';
 export type WDIOElement = WebDriverIO.Element<'async'>;
 
@@ -57,7 +57,7 @@ export class IosWebDriver {
 
   async waitElementsExist(selector: IosSelector, timeOption: TimeOptions): Promise<WDIOElement[]> {
     const { driver } = this;
-    for await (const _ of loopTime(500, time(timeOption))) {
+    for await (const _ of loopTime({ period: { milliseconds: 500 }, expire: timeOption })) {
       const elems = await driver.$$(selector.build());
       if (0 < elems.length) {
         return elems;
@@ -67,7 +67,7 @@ export class IosWebDriver {
   }
 
   static async waitElemElementsExist(elem: WDIOElement, selector: IosSelector, timeOption: TimeOptions): Promise<WDIOElement[]> {
-    for await (const _ of loop(500, time(timeOption))) {
+    for await (const _ of loopTime({ period: { milliseconds: 500 }, expire: timeOption })) {
       const elems = await elem.$$(selector.build());
       if (0 < elems.length) {
         return elems;
@@ -78,14 +78,14 @@ export class IosWebDriver {
 
   async scrollDownToSelector(selector: IosSelector): Promise<WDIOElement> {
     const { driver } = this;
-    const MaxScrollCount = 1000;
+    const MaxScrollCount = 30;
 
     for await (const _ of loop(300, MaxScrollCount)) {
       const elem = await driver.$(selector.build());
       if (elem.error) {
         await driver.execute('mobile: scroll', {
           direction: 'down',
-          distance: 0.5,
+          distance: 0.3,
         });
         continue;
       }
