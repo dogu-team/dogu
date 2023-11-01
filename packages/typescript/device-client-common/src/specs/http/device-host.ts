@@ -26,6 +26,18 @@ export class GetPathMapResponse {
   pathMap!: ThirdPartyPathMap;
 }
 
+export class GetTempPathResponse {
+  @IsFilledString()
+  path!: string;
+}
+
+export class DeleteTempPathRequestBody {
+  @IsFilledString()
+  pathUnderTemp!: string;
+}
+
+export class DeleteTempPathReponseBodyData {}
+
 export class DeviceHostEnsureBrowserAndDriverRequestBody implements EnsureBrowserAndDriverOptions {
   @IsIn(BrowserName)
   browserName!: BrowserName;
@@ -105,6 +117,25 @@ export const DeviceHost = {
     pathProvider: DefaultPathProvider,
     responseBody: DeviceServerResponseDto,
     responseBodyData: GetPathMapResponse,
+  }),
+
+  getTempPath: new DeviceServerControllerMethodSpec({
+    controllerSpec: DeviceHostController,
+    method: 'GET',
+    path: '/temp',
+    pathProvider: DefaultPathProvider,
+    responseBody: DeviceServerResponseDto,
+    responseBodyData: GetTempPathResponse,
+  }),
+
+  removeTemp: new DeviceServerControllerMethodSpec({
+    controllerSpec: DeviceHostController,
+    method: 'DELETE',
+    path: '/temp',
+    pathProvider: DefaultPathProvider,
+    requestBody: DeleteTempPathRequestBody,
+    responseBody: DeviceServerResponseDto,
+    responseBodyData: DeleteTempPathReponseBodyData,
   }),
 
   ensureBrowserAndDriver: new DeviceServerControllerMethodSpec({

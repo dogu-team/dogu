@@ -100,6 +100,7 @@ const DeviceControlToolbar: React.FC<Props> = () => {
         workingPlatforms={[Platform.PLATFORM_ANDROID, Platform.PLATFORM_IOS]}
         icon={<DownloadOutlined />}
         text="Install app"
+        tooltipTitle="Install application"
         content={
           <div>
             <ApplicationUploader />
