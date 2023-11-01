@@ -19,6 +19,7 @@
     "build": "ts-node scripts/build.ts",
     "clean": "shx rm -rf build",
     "dev": "nodemon",
+    "lint": "node scripts/validate-feature-config.mjs",
     "rebuild": "yarn run clean && yarn run build",
     "test:dev": "jest",
     "watch": "clear; echo @dogu-private/dogu-agent-core Watching... && nodemon"
