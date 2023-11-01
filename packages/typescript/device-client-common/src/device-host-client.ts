@@ -26,6 +26,16 @@ export class DeviceHostClient extends DeviceHttpClient {
     return pathMap;
   }
 
+  async getTempPath(): Promise<string> {
+    const response = await this.httpRequest(DeviceHost.getTempPath, new DeviceHost.getTempPath.pathProvider());
+    return response.path;
+  }
+
+  async removeTemp(param: Instance<typeof DeviceHost.removeTemp.requestBody>): Promise<Instance<typeof DeviceHost.removeTemp.responseBodyData>> {
+    const response = await this.httpRequest(DeviceHost.removeTemp, new DeviceHost.removeTemp.pathProvider(), undefined, param);
+    return response;
+  }
+
   async ensureBrowserAndDriver(
     options: Instance<typeof DeviceHost.ensureBrowserAndDriver.requestBody>,
   ): Promise<Instance<typeof DeviceHost.ensureBrowserAndDriver.responseBodyData>> {

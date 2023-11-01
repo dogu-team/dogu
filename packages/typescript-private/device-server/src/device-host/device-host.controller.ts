@@ -1,6 +1,9 @@
 import { Instance } from '@dogu-tech/common';
-import { DeviceHost, DeviceHostEnsureBrowserAndDriverRequestBody, GetFreePortQuery, ResignAppFileRequestBody } from '@dogu-tech/device-client-common';
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import { DeleteTempPathRequestBody, DeviceHost, DeviceHostEnsureBrowserAndDriverRequestBody, GetFreePortQuery, ResignAppFileRequestBody } from '@dogu-tech/device-client-common';
+import { HostPaths } from '@dogu-tech/node';
+import { Body, Controller, Delete, Get, Post, Query } from '@nestjs/common';
+import fs from 'fs';
+import path from 'path';
 import { BrowserManagerService } from '../browser-manager/browser-manager.service';
 import { getFreePort } from '../internal/util/net';
 import { pathMap } from '../path-map';
@@ -8,7 +11,10 @@ import { DeviceHostResignAppFileService } from './device-host.resign-app-file';
 
 @Controller(DeviceHost.controller)
 export class DeviceHostController {
-  constructor(private readonly browserManagerService: BrowserManagerService, private readonly appFileSerivce: DeviceHostResignAppFileService) {}
+  constructor(
+    private readonly browserManagerService: BrowserManagerService,
+    private readonly appFileSerivce: DeviceHostResignAppFileService,
+  ) {}
 
   @Get(DeviceHost.getFreePort.path)
   async getFreePort(@Query() query: GetFreePortQuery): Promise<Instance<typeof DeviceHost.getFreePort.responseBody>> {
@@ -32,6 +38,34 @@ export class DeviceHostController {
         data: {
           pathMap: pathMap(),
         },
+      },
+    };
+  }
+
+  @Get(DeviceHost.getTempPath.path)
+  getTempPath(): Instance<typeof DeviceHost.getTempPath.responseBody> {
+    return {
+      value: {
+        $case: 'data',
+        data: {
+          path: HostPaths.doguTempPath(),
+        },
+      },
+    };
+  }
+
+  @Delete(DeviceHost.removeTemp.path)
+  async removeTemp(@Body() param: DeleteTempPathRequestBody): Promise<Instance<typeof DeviceHost.removeTemp.responseBody>> {
+    const filePathResolved = path.resolve(HostPaths.doguTempPath(), param.pathUnderTemp);
+    const stat = await fs.promises.stat(filePathResolved);
+    if (!stat.isFile()) {
+      throw new Error(`Path ${filePathResolved} is not a file`);
+    }
+    await fs.promises.rm(filePathResolved, { force: true });
+    return {
+      value: {
+        $case: 'data',
+        data: {},
       },
     };
   }
