@@ -13,7 +13,7 @@ import { DoguLogger } from '../logger/logger';
 export type DeviceHostDownloadResult = Instance<typeof DeviceHostDownloadSharedResource.receiveMessage> & { message: string };
 export type DeviceHostDownloadParam = Instance<typeof DeviceHostDownloadSharedResource.sendMessage>;
 
-const AllowedDownloadPaths = (): string[] => [HostPaths.organizationsPath(HostPaths.doguHomePath), HostPaths.doguTempPath()];
+const AllowedDownloadPaths = (): string[] => [HostPaths.organizationsPath(HostPaths.doguHomePath), HostPaths.doguTempPath(), HostPaths.downloadsPath(HostPaths.doguHomePath)];
 
 @Injectable()
 export class DeviceHostDownloadSharedResourceService {
