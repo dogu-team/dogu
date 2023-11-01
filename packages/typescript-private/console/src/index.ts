@@ -8,7 +8,6 @@ export * from './base/billing-method-nice';
 export * from './base/billing-organization';
 export * from './base/billing-organization-and-billing-coupon';
 export * from './base/billing-organization-and-billing-promotion';
-export * from './base/billing-promotion';
 export * from './base/billing-subscription-plan';
 export * from './base/billing-subscription-plan-source';
 export * from './base/billing-token';

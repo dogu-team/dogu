@@ -35,7 +35,7 @@ export class BillingHistory implements BillingHistoryBase {
   @JoinColumn({ name: BillingHistoryPropSnake.billing_organization_id, referencedColumnName: BillingHistoryPropCamel.billingOrganizationId })
   billingOrganization?: BillingOrganization;
 
-  @ManyToMany(() => BillingSubscriptionPlan)
+  @ManyToMany(() => BillingSubscriptionPlan, { createForeignKeyConstraints: false })
   @JoinTable({
     name: BillingHistoryAndBillingSubscriptionPlanTableName,
     joinColumn: {
@@ -46,6 +46,7 @@ export class BillingHistory implements BillingHistoryBase {
       name: BillingHistoryAndBillingSubscriptionPlanPropSnake.billing_subscription_plan_id,
       referencedColumnName: BillingHistoryAndBillingSubscriptionPlanPropCamel.billingSubscriptionPlanId,
     },
+    synchronize: false,
   })
   billingSubscriptionPlans?: BillingSubscriptionPlan[];
 }

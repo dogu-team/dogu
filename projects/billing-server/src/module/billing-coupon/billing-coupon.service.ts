@@ -1,4 +1,11 @@
-import { ValidateBillingCouponDto, ValidateBillingCouponResponse } from '@dogu-private/console';
+import {
+  BillingCouponPropCamel,
+  BillingOrganizationAndBillingCouponPropCamel,
+  BillingOrganizationPropCamel,
+  GetAvailableBillingCouponsDto,
+  ValidateBillingCouponDto,
+  ValidateBillingCouponResponse,
+} from '@dogu-private/console';
 import { Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
@@ -41,5 +48,28 @@ export class BillingCouponService {
 
       return { ok: true, reason: 'not-used' };
     });
+  }
+
+  async getAvailableBillingCoupons(dto: GetAvailableBillingCouponsDto): Promise<BillingCoupon[]> {
+    const { organizationId } = dto;
+    const billingCoupons = await this.dataSource.manager
+      .getRepository(BillingCoupon)
+      .createQueryBuilder(BillingCoupon.name)
+      .where((qb) => {
+        const subQuery = qb
+          .subQuery()
+          .select(`${BillingOrganizationAndBillingCoupon.name}.${BillingOrganizationAndBillingCouponPropCamel.billingCouponId}`)
+          .from(BillingOrganizationAndBillingCoupon, BillingOrganizationAndBillingCoupon.name)
+          .innerJoin(
+            BillingOrganization,
+            BillingOrganization.name,
+            `${BillingOrganization.name}.${BillingOrganizationPropCamel.billingOrganizationId} = ${BillingOrganizationAndBillingCoupon.name}.${BillingOrganizationAndBillingCouponPropCamel.billingOrganizationId}`,
+          )
+          .where(`${BillingOrganization.name}.${BillingOrganizationPropCamel.organizationId} = :organizationId`, { organizationId })
+          .getQuery();
+        return `${BillingCoupon.name}.${BillingCouponPropCamel.billingCouponId} NOT IN ${subQuery}`;
+      })
+      .getMany();
+    return billingCoupons;
   }
 }

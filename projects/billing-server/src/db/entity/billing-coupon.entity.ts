@@ -1,4 +1,4 @@
-import { BillingCouponBase, BillingCouponPropSnake } from '@dogu-private/console';
+import { BillingCouponBase, BillingCouponPropSnake, BillingCouponType } from '@dogu-private/console';
 import { Column, Entity, PrimaryColumn } from 'typeorm';
 import { ColumnTemplate } from './util/decorators';
 
@@ -9,6 +9,9 @@ export class BillingCoupon implements BillingCouponBase {
 
   @Column({ type: 'character varying', name: BillingCouponPropSnake.code, unique: true })
   code!: string;
+
+  @Column({ type: 'enum', name: BillingCouponPropSnake.type, enum: BillingCouponType, default: 'basic' })
+  type!: BillingCouponType;
 
   @Column({ type: 'integer', name: BillingCouponPropSnake.monthly_discount_percent, nullable: true })
   monthlyDiscountPercent!: number | null;

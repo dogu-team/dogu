@@ -6,7 +6,6 @@ import { BillingCouponModule } from '../billing-coupon/billing-coupon.module';
 import { BillingHistoryModule } from '../billing-history/billing-history.module';
 import { BillingMethodNiceModule } from '../billing-method-nice/billing-method-nice.module';
 import { BillingOrganizationModule } from '../billing-organization/billing-organization.module';
-import { BillingPromotionModule } from '../billing-promotion/billing-promotion.module';
 import { BillingTokenModule } from '../billing-token/billing-token.module';
 import { CloudLicenseModule } from '../cloud-license/cloud-license.module';
 import { LoggerModule } from '../logger/logger.module';
@@ -25,7 +24,6 @@ import { AppService } from './app.service';
     BillingMethodNiceModule,
     BillingOrganizationModule,
     BillingHistoryModule,
-    BillingPromotionModule,
     BillingCouponModule,
   ],
   controllers: [AppController],

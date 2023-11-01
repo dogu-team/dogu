@@ -1,9 +1,13 @@
 import { camelToSnakeCasePropertiesOf, IsFilledString, propertiesOf } from '@dogu-tech/common';
 import { IsUUID } from 'class-validator';
 
+export const BillingCouponType = ['basic', 'promotion'] as const;
+export type BillingCouponType = (typeof BillingCouponType)[number];
+
 export interface BillingCouponBase {
   billingCouponId: string;
   code: string;
+  type: BillingCouponType;
 
   /**
    * @example 10 10% discount
@@ -33,4 +37,9 @@ export class ValidateBillingCouponDto {
 export interface ValidateBillingCouponResponse {
   ok: boolean;
   reason: 'already-used' | 'expired' | 'coupon-not-found' | 'organization-not-found' | 'not-used';
+}
+
+export class GetAvailableBillingCouponsDto {
+  @IsUUID()
+  organizationId!: string;
 }
