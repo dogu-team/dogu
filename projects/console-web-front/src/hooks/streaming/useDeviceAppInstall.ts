@@ -61,15 +61,20 @@ const useDeviceAppInstall = (
         }
         await deviceClientRef?.current?.installApp(serial, hostFilePath);
         await deviceClientRef?.current?.runApp(serial, hostFilePath);
-        await deviceHostClientRef.current.removeTemp({
-          pathUnderTemp: `${uuid}/${file.name}`,
-        });
 
         setIsInstalling(false);
         setResult({
           isSuccess: true,
         });
         setTimeout(() => reset(), 2000);
+
+        deviceHostClientRef.current
+          .removeTemp({
+            pathUnderTemp: `${uuid}/${file.name}`,
+          })
+          .catch((e) => {
+            console.error(`Temp application removal failed`, e);
+          });
       } catch (e) {
         setResult({
           isSuccess: false,
