@@ -1,5 +1,4 @@
 import Combine
-import WebDriverAgentLib
 
 actor TouchControlPlayer: IControlPlayer {
   typealias Broker = TouchControlBroker
@@ -19,14 +18,14 @@ actor TouchControlPlayer: IControlPlayer {
   private var broker: Broker? = nil
   private var webDriverClient: WebDriverClient? = nil
   private var actionPerformer: ActionPerformer? = nil
-  private var config: Config? = nil
+  private var inputBlocker: InputBlocker? = nil
   private var lastPlayTime: UInt64 = 0  // client's event.timeStamp. unit: milliseconds
 
   func open(with param: ControlOpenParam, broker: Broker) throws {
     self.screenSize = param.screenSize
     self.webDriverClient = param.webDriverClient
     self.actionPerformer = param.actionPerformer
-    self.config = param.config
+    self.inputBlocker = param.inputBlocker
     self.broker = broker
     startTimer()
   }
@@ -36,12 +35,16 @@ actor TouchControlPlayer: IControlPlayer {
   }
 
   private func startTimer() {
+    let callGuard = DuplicatedCallGuarder()
+    
     timer = Timer.publish(every: period, on: .main, in: .default)
       .autoconnect()
       .sink { currentTime in
         Task.catchable(
           {
-            try await self.play(currentTime: currentTime)
+            try await callGuard.guardCall {
+              try await self.play(currentTime: currentTime)
+            }
           },
           catch: {
             Log.shared.debug("handling failed. \($0)")
@@ -53,19 +56,20 @@ actor TouchControlPlayer: IControlPlayer {
     guard let downUp = try await broker!.popByPattern(after: lastPlayTime) else {
       return
     }
-    if isBlockedAppActive() {
-      var result = Inner_Types_CfGdcDaControlResult()
-      result.error = Outer_ErrorResult.with {
-        $0.message = "The app is blocked by the system. Please unlock the app."
-      }
-      downUp.down.result.set(result: result)
-      downUp.up.result.set(result: result)
+    if inputBlocker!.isAppBlocked {
+      self.notifyBlock(downUp: downUp)
       return
     }
+
     let down = downUp.down
     let up = downUp.up
 
     let beginPosition = try controlSpaceToScreenSpace(controlSpacePosition: down.control.position)
+    if(try await  inputBlocker!.blockTap(position: beginPosition) ){
+      self.notifyBlock(downUp: downUp)
+      return
+    }
+    
     let endPosition = try controlSpaceToScreenSpace(controlSpacePosition: up.control.position)
     var duration = up.control.timeStamp - down.control.timeStamp
     if duration < 100 {
@@ -138,21 +142,13 @@ actor TouchControlPlayer: IControlPlayer {
       x: (controlSpacePoint.x * screenWidth) / controlSpaceSize.width,
       y: (controlSpacePoint.y * screenHeight) / controlSpaceSize.height)
   }
-
-  private func isBlockedAppActive() -> Bool {
-    if !config!.isDeviceShare {
-      return false
+  
+  private func notifyBlock(downUp: DownUp) {
+    var result = Inner_Types_CfGdcDaControlResult()
+    result.error = Outer_ErrorResult.with {
+      $0.message = "The input is blocked by the system."
     }
-    let apps = XCUIApplication.fb_activeAppsInfo()
-    for app in apps {
-      guard let bundleId = app["bundleId"] as? String else {
-        return false
-      }
-      if Constants.BlockAppBundleIds.contains(where: { $0 == bundleId }) {
-        return true
-      }
-    }
-
-    return false
+    downUp.down.result.set(result: result)
+    downUp.up.result.set(result: result)
   }
 }

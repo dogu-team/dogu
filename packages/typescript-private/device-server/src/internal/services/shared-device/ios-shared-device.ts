@@ -235,17 +235,17 @@ export class IosSharedDeviceService implements Zombieable {
     if (this.reset.isResetting) {
       return;
     }
-    await this.wda.waitUntilSessionId();
-    const activeApps = await this.wda.getActiveAppList();
-    for (const app of activeApps) {
-      if (BlockAppList.find((item) => item.runtime && item.bundleId === app.bundleId)) {
-        if (this.reset.isResetting) {
-          return;
-        }
-        await this.wda.terminateApp(app.bundleId);
-      }
-    }
-    await delay(1000);
+    // await this.wda.waitUntilSessionId();
+    // const activeApps = await this.wda.getActiveAppList();
+    // for (const app of activeApps) {
+    //   if (BlockAppList.find((item) => item.runtime && item.bundleId === app.bundleId)) {
+    //     if (this.reset.isResetting) {
+    //       return;
+    //     }
+    //     await this.wda.terminateApp(app.bundleId);
+    //   }
+    // }
+    // await delay(1000);
   }
 
   onDie(): void {}
