@@ -16,10 +16,9 @@ export class BrowserDeviceInspector extends DeviceHttpClient {
   }
 
   async getPageSource(serial: Serial): Promise<string> {
-    return '';
-    // const pathProvider = new DeviceInspector.getPageSource.pathProvider(serial);
-    // const response = await this.httpRequest(DeviceInspector.getPageSource, pathProvider);
-    // return response.pageSource;
+    const pathProvider = new DeviceInspector.getPageSource.pathProvider(serial);
+    const response = await this.httpRequest(DeviceInspector.getPageSource, pathProvider);
+    return response.pageSource;
   }
 
   async getContexts(serial: Serial): Promise<string[]> {
@@ -57,7 +56,6 @@ export class BrowserDeviceInspector extends DeviceHttpClient {
   }
 
   async getContextPageSources(serial: Serial): Promise<ContextPageSource[]> {
-    return [];
     const pathProvider = new DeviceInspector.getContextPageSources.pathProvider(serial);
     const response = await this.httpRequest(DeviceInspector.getContextPageSources, pathProvider);
     return response.contextPageSources;
