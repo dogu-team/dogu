@@ -269,6 +269,9 @@ export class IosChannel implements DeviceChannel {
     if (config.externalIosDeviceAgent.use) {
       return;
     }
+    if (!IosResetService.isDirty(serial)) {
+      return;
+    }
     if (env.DOGU_DEVICE_IOS_RESTART_ON_INIT) {
       await IdeviceDiagnostics.restart(serial, logger);
       for await (const _ of loopTime({ period: { seconds: 3 }, expire: { minutes: 5 } })) {

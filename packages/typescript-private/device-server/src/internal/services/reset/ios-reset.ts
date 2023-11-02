@@ -7,11 +7,132 @@ import { IdeviceDiagnostics } from '../../externals/index';
 import { IosAccessibilitiySelector, IosClassChainSelector, IosPredicateStringSelector, IosWebDriver } from '../../externals/webdriver/ios-webdriver';
 import { CheckTimer } from '../../util/check-time';
 
+interface BlockAppInfo {
+  bundleId: string;
+  uninstall: true;
+}
+
+const BlockAppList: BlockAppInfo[] = [
+  // disable
+  {
+    bundleId: 'com.apple.tv',
+    uninstall: true,
+  },
+  {
+    bundleId: 'com.apple.Maps',
+    uninstall: true,
+  },
+  {
+    bundleId: 'com.apple.Health',
+    uninstall: true,
+  },
+  {
+    bundleId: 'com.apple.mobilecal',
+    uninstall: true,
+  },
+  {
+    bundleId: 'com.apple.mobiletimer',
+    uninstall: true,
+  },
+  {
+    bundleId: 'com.apple.mobilemail',
+    uninstall: true,
+  },
+  {
+    bundleId: 'com.apple.mobilenotes',
+    uninstall: true,
+  },
+  {
+    bundleId: 'com.apple.podcasts',
+    uninstall: true,
+  },
+  {
+    bundleId: 'com.apple.reminders',
+    uninstall: true,
+  },
+  {
+    bundleId: 'com.apple.facetime',
+    uninstall: true,
+  },
+  {
+    bundleId: 'com.apple.weather',
+    uninstall: true,
+  },
+  {
+    bundleId: 'com.apple.stocks',
+    uninstall: true,
+  },
+  {
+    bundleId: 'com.apple.Home',
+    uninstall: true,
+  },
+  {
+    bundleId: 'com.apple.iBooks',
+    uninstall: true,
+  },
+  {
+    bundleId: 'com.apple.MobileStore',
+    uninstall: true,
+  },
+  {
+    bundleId: 'com.apple.Bridge', // watch
+    uninstall: true,
+  },
+  {
+    bundleId: 'com.apple.MobileAddressBook', // contacts
+    uninstall: true,
+  },
+  {
+    bundleId: 'com.apple.shortcuts',
+    uninstall: true,
+  },
+  {
+    bundleId: 'com.apple.freeform',
+    uninstall: true,
+  },
+  {
+    bundleId: 'com.apple.tips',
+    uninstall: true,
+  },
+  {
+    bundleId: 'com.apple.VoiceMemos',
+    uninstall: true,
+  },
+  {
+    bundleId: 'com.apple.compass',
+    uninstall: true,
+  },
+  {
+    bundleId: 'com.apple.Magnifier',
+    uninstall: true,
+  },
+  {
+    bundleId: 'com.apple.calculator',
+    uninstall: true,
+  },
+  {
+    bundleId: 'com.apple.Fitness',
+    uninstall: true,
+  },
+  {
+    bundleId: 'com.apple.Passbook',
+    uninstall: true,
+  },
+  {
+    bundleId: 'com.apple.Music',
+    uninstall: true,
+  },
+  {
+    bundleId: 'com.apple.Translate',
+    uninstall: true,
+  },
+];
 export interface IosResetInfo {
   lastResetTime: number;
 }
 
 const ResetExpireTime = 10 * 60 * 1000;
+const SleepBeforeTerminate = 2000;
 
 class IosResetHelper {
   constructor(private iosDriver: IosWebDriver) {}
@@ -21,7 +142,7 @@ class IosResetHelper {
     const windowRect = await iosDriver.rawDriver.getWindowRect();
 
     // click bottom right
-    let browserButtons = await iosDriver.rawDriver.$$(new IosClassChainSelector('**/XCUIElementTypeButton[`label == "Browse"`]').build());
+    let browserButtons = await iosDriver.waitElementsExist(new IosClassChainSelector('**/XCUIElementTypeButton[`label == "Browse"`]'), { seconds: 3 });
     for (const button of browserButtons) {
       const pos = await button.getLocation();
       if (pos.x > windowRect.width / 2 && pos.y > windowRect.height / 2) {
@@ -31,7 +152,7 @@ class IosResetHelper {
     }
 
     // click top left
-    browserButtons = await iosDriver.rawDriver.$$(new IosClassChainSelector('**/XCUIElementTypeButton[`label == "Browse"`]').build());
+    browserButtons = await iosDriver.waitElementsExist(new IosClassChainSelector('**/XCUIElementTypeButton[`label == "Browse"`]'), { seconds: 3 });
     for (const button of browserButtons) {
       const pos = await button.getLocation();
       if (pos.x < windowRect.width / 2 && pos.y < windowRect.height / 2) {
@@ -41,6 +162,8 @@ class IosResetHelper {
     }
   }
 }
+
+const ClearRepeatCount = 1;
 
 export class IosResetService {
   private timer: CheckTimer;
@@ -63,7 +186,10 @@ export class IosResetService {
   }
 
   async isDirty(): Promise<boolean> {
-    const { serial } = this;
+    return await IosResetService.isDirty(this.serial);
+  }
+
+  static async isDirty(serial: Serial): Promise<boolean> {
     const lastResetInfo = IosResetService.map.get(serial);
     if (!lastResetInfo) {
       return true;
@@ -102,6 +228,9 @@ export class IosResetService {
         },
       },
       async () => {
+        await iosDriver.home();
+        await this.timer.check('IosResetService.reset.removeSystemApps', this.removeSystemApps());
+        await iosDriver.home();
         await this.timer.check('IosResetService.reset.logoutApppleAccount', this.logoutApppleAccount(iosDriver));
         await this.timer.check('IosResetService.reset.clearSafariCache', this.clearSafariCache(iosDriver));
         await this.timer.check('IosResetService.reset.clearPhotoImages', this.clearPhotoImages(iosDriver));
@@ -120,6 +249,14 @@ export class IosResetService {
     );
   }
 
+  private async removeSystemApps(): Promise<void> {
+    const installer = new IdeviceInstaller(this.serial, this.logger);
+    const uninstallApps = BlockAppList.filter((item) => item.uninstall).map((item) => item.bundleId);
+    for (const app of uninstallApps) {
+      await installer.uninstallApp(app);
+    }
+  }
+
   private async removeUserApps(): Promise<void> {
     const installer = new IdeviceInstaller(this.serial, this.logger);
     const userApps = await installer.getUserApps();
@@ -128,15 +265,16 @@ export class IosResetService {
     }
   }
 
-  @Repeat({ repeatCount: 2, repeatInterval: 100 })
+  @Repeat({ repeatCount: ClearRepeatCount, repeatInterval: 100 })
   private async logoutApppleAccount(iosDriver: IosWebDriver): Promise<void> {
     await usingAsnyc(
       {
         create: async () => {
+          await iosDriver.home();
           await iosDriver.relaunchApp('com.apple.Preferences');
         },
         dispose: async () => {
-          await delay(2000);
+          await delay(SleepBeforeTerminate);
           await iosDriver.terminateApp('com.apple.Preferences');
         },
       },
@@ -145,26 +283,27 @@ export class IosResetService {
 
         await delay(1000);
 
-        let signout = await iosDriver.rawDriver.$('~AAUIDeleteButtonSpecifierID');
-        if (signout.error) {
+        const signouts = await iosDriver.waitElementsExist(new IosAccessibilitiySelector('AAUIDeleteButtonSpecifierID'), { seconds: 3 });
+        if (0 === signouts.length) {
           return;
         }
 
-        signout = await iosDriver.scrollDownToSelector(new IosAccessibilitiySelector('AAUIDeleteButtonSpecifierID'));
+        const signout = signouts[0];
         await signout.click();
       },
     );
   }
 
-  @Repeat({ repeatCount: 2, repeatInterval: 100 })
+  @Repeat({ repeatCount: ClearRepeatCount, repeatInterval: 100 })
   private async clearSafariCache(iosDriver: IosWebDriver): Promise<void> {
     await usingAsnyc(
       {
         create: async () => {
+          await iosDriver.home();
           await iosDriver.relaunchApp('com.apple.Preferences');
         },
         dispose: async () => {
-          await delay(2000);
+          await delay(SleepBeforeTerminate);
           await iosDriver.terminateApp('com.apple.Preferences');
         },
       },
@@ -180,17 +319,18 @@ export class IosResetService {
     );
   }
 
-  @Repeat({ repeatCount: 2, repeatInterval: 100 })
+  @Repeat({ repeatCount: ClearRepeatCount, repeatInterval: 100 })
   private async clearPhotoImages(iosDriver: IosWebDriver): Promise<void> {
     const { logger } = this;
 
     await usingAsnyc(
       {
         create: async () => {
+          await iosDriver.home();
           await iosDriver.relaunchApp('com.apple.mobileslideshow');
         },
         dispose: async () => {
-          await delay(2000);
+          await delay(SleepBeforeTerminate);
           await iosDriver.terminateApp('com.apple.mobileslideshow');
         },
       },
@@ -207,7 +347,7 @@ export class IosResetService {
         await iosDriver.clickSelector(new IosAccessibilitiySelector('All Photos'));
         await iosDriver.clickSelector(new IosClassChainSelector('**/XCUIElementTypeButton[`label == "Select"`]'));
 
-        const cancelButton = await iosDriver.rawDriver.$(new IosClassChainSelector('**/XCUIElementTypeButton[`label == "Cancel"`]').build());
+        const cancelButton = await iosDriver.waitElementExist(new IosClassChainSelector('**/XCUIElementTypeButton[`label == "Cancel"`]'), { seconds: 3 });
         const windowRect = await iosDriver.rawDriver.getWindowRect();
         const cancelRect = await cancelButton.getElementRect(cancelButton.elementId);
 
@@ -231,15 +371,16 @@ export class IosResetService {
     );
   }
 
-  @Repeat({ repeatCount: 2, repeatInterval: 100 })
+  @Repeat({ repeatCount: ClearRepeatCount, repeatInterval: 100 })
   private async clearPhotoAlbums(iosDriver: IosWebDriver): Promise<void> {
     await usingAsnyc(
       {
         create: async () => {
+          await iosDriver.home();
           await iosDriver.relaunchApp('com.apple.mobileslideshow');
         },
         dispose: async () => {
-          await delay(2000);
+          await delay(SleepBeforeTerminate);
           await iosDriver.terminateApp('com.apple.mobileslideshow');
         },
       },
@@ -259,15 +400,16 @@ export class IosResetService {
     );
   }
 
-  @Repeat({ repeatCount: 2, repeatInterval: 100 })
+  @Repeat({ repeatCount: ClearRepeatCount, repeatInterval: 100 })
   private async clearPhotosRecentlyDeleted(iosDriver: IosWebDriver): Promise<void> {
     await usingAsnyc(
       {
         create: async () => {
+          await iosDriver.home();
           await iosDriver.relaunchApp('com.apple.mobileslideshow');
         },
         dispose: async () => {
-          await delay(2000);
+          await delay(SleepBeforeTerminate);
           await iosDriver.terminateApp('com.apple.mobileslideshow');
         },
       },
@@ -275,11 +417,7 @@ export class IosResetService {
         const recentlyDeleted = await iosDriver.scrollDownToSelector(new IosClassChainSelector('**/XCUIElementTypeStaticText[`label == "Recently Deleted"`]'));
         await recentlyDeleted.click();
 
-        const title = await iosDriver.rawDriver.$(new IosClassChainSelector('**/XCUIElementTypeOther[`label == "Recently Deleted"`]').build());
-        if (title.error) {
-          throw new Error('Recently Deleted title should show');
-        }
-
+        const title = await iosDriver.waitElementExist(new IosClassChainSelector('**/XCUIElementTypeOther[`label == "Recently Deleted"`]'), { seconds: 3 });
         const images = await iosDriver.waitElementsExist(new IosClassChainSelector('**/XCUIElementTypeImage'), { seconds: 3 });
         if (0 === images.length) {
           return;
@@ -292,15 +430,16 @@ export class IosResetService {
     );
   }
 
-  @Repeat({ repeatCount: 2, repeatInterval: 100 })
+  @Repeat({ repeatCount: ClearRepeatCount, repeatInterval: 100 })
   private async clearPhotosSuggestionAndFeedbacks(iosDriver: IosWebDriver): Promise<void> {
     await usingAsnyc(
       {
         create: async () => {
+          await iosDriver.home();
           await iosDriver.relaunchApp('com.apple.Preferences');
         },
         dispose: async () => {
-          await delay(2000);
+          await delay(SleepBeforeTerminate);
           await iosDriver.terminateApp('com.apple.Preferences');
         },
       },
@@ -317,15 +456,16 @@ export class IosResetService {
     );
   }
 
-  @Repeat({ repeatCount: 2, repeatInterval: 100 })
+  @Repeat({ repeatCount: ClearRepeatCount, repeatInterval: 100 })
   private async clearFilesOnMyiPhone(iosDriver: IosWebDriver, helper: IosResetHelper): Promise<void> {
     await usingAsnyc(
       {
         create: async () => {
+          await iosDriver.home();
           await iosDriver.relaunchApp('com.apple.DocumentsApp');
         },
         dispose: async () => {
-          await delay(2000);
+          await delay(SleepBeforeTerminate);
           await iosDriver.terminateApp('com.apple.DocumentsApp');
         },
       },
@@ -349,7 +489,7 @@ export class IosResetService {
         await iosDriver.clickSelector(new IosAccessibilitiySelector('DOC.itemCollectionMenuButton.Ellipsis'));
         await iosDriver.clickSelector(new IosAccessibilitiySelector('Select'));
 
-        const cells = await iosDriver.rawDriver.$$(new IosClassChainSelector('**/XCUIElementTypeCell').build());
+        const cells = await iosDriver.waitElementsExist(new IosClassChainSelector('**/XCUIElementTypeCell'), { seconds: 3 });
         for (const cell of cells) {
           const rect = await cell.getElementRect(cell.elementId);
           if (!boxBox(rect.x, rect.y, rect.width, rect.height, windowRect.x, windowRect.y, windowRect.width, windowRect.height)) {
@@ -362,15 +502,16 @@ export class IosResetService {
     );
   }
 
-  @Repeat({ repeatCount: 2, repeatInterval: 100 })
+  @Repeat({ repeatCount: ClearRepeatCount, repeatInterval: 100 })
   private async clearFilesTags(iosDriver: IosWebDriver, helper: IosResetHelper): Promise<void> {
     await usingAsnyc(
       {
         create: async () => {
+          await iosDriver.home();
           await iosDriver.relaunchApp('com.apple.DocumentsApp');
         },
         dispose: async () => {
-          await delay(2000);
+          await delay(SleepBeforeTerminate);
           await iosDriver.terminateApp('com.apple.DocumentsApp');
         },
       },
@@ -392,15 +533,16 @@ export class IosResetService {
     );
   }
 
-  @Repeat({ repeatCount: 2, repeatInterval: 100 })
+  @Repeat({ repeatCount: ClearRepeatCount, repeatInterval: 100 })
   private async clearFilesRecentlyDeleted(iosDriver: IosWebDriver, helper: IosResetHelper): Promise<void> {
     await usingAsnyc(
       {
         create: async () => {
+          await iosDriver.home();
           await iosDriver.relaunchApp('com.apple.DocumentsApp');
         },
         dispose: async () => {
-          await delay(2000);
+          await delay(SleepBeforeTerminate);
           await iosDriver.terminateApp('com.apple.DocumentsApp');
         },
       },
@@ -433,10 +575,11 @@ export class IosResetService {
     await usingAsnyc(
       {
         create: async () => {
+          await iosDriver.home();
           await iosDriver.relaunchApp('com.apple.Preferences');
         },
         dispose: async () => {
-          await delay(2000);
+          await delay(SleepBeforeTerminate);
           await iosDriver.terminateApp('com.apple.Preferences');
         },
       },
@@ -468,6 +611,8 @@ export class IosResetService {
   }
 
   private async removeWidgets(iosDriver: IosWebDriver): Promise<void> {
+    await iosDriver.home();
+    await iosDriver.home();
     await iosDriver.relaunchApp('com.apple.springboard');
 
     const MaxWidgetsCount = 100;
@@ -498,14 +643,14 @@ export class IosResetService {
             },
             'release',
           ]);
-          const scrollView = await iosDriver.rawDriver.$(new IosAccessibilitiySelector('left-of-home-scroll-view').build());
-          if (scrollView.error) {
+          const scrollView = await iosDriver.waitElementsExist(new IosAccessibilitiySelector('left-of-home-scroll-view'), { seconds: 3 });
+          if (0 === scrollView.length) {
             if (!counter.isLast()) {
               continue;
             }
             throw new Error('scrollView not found');
           }
-          return scrollView;
+          return scrollView[0];
         }
         throw new Error('scrollView not found');
       };

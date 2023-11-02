@@ -4,7 +4,6 @@ import child_process from 'child_process';
 import { AppiumContextImpl } from '../../../appium/appium.context';
 import { env } from '../../../env';
 import { config } from '../../config';
-import { IdeviceInstaller } from '../../externals/cli/ideviceinstaller';
 import { WebdriverAgentProcess } from '../../externals/cli/webdriver-agent-process';
 import { IosAccessibilitiySelector, IosWebDriver } from '../../externals/webdriver/ios-webdriver';
 import { CheckTimer } from '../../util/check-time';
@@ -20,129 +19,6 @@ type DeviceControlAction = PrivateProtocol.DeviceControlAction;
 const DeviceControlAction = PrivateProtocol.DeviceControlAction;
 type DeviceControlMetaState = PrivateProtocol.DeviceControlMetaState;
 const DeviceControlMetaState = PrivateProtocol.DeviceControlMetaState;
-
-interface BlockAppInfo {
-  bundleId: string;
-  uninstall: true;
-}
-
-const UninstallSystemAppList: string[] = [];
-
-const BlockAppList: BlockAppInfo[] = [
-  // disable
-  {
-    bundleId: 'com.apple.tv',
-    uninstall: true,
-  },
-  {
-    bundleId: 'com.apple.Maps',
-    uninstall: true,
-  },
-  {
-    bundleId: 'com.apple.Health',
-    uninstall: true,
-  },
-  {
-    bundleId: 'com.apple.mobilecal',
-    uninstall: true,
-  },
-  {
-    bundleId: 'com.apple.mobiletimer',
-    uninstall: true,
-  },
-  {
-    bundleId: 'com.apple.mobilemail',
-    uninstall: true,
-  },
-  {
-    bundleId: 'com.apple.mobilenotes',
-    uninstall: true,
-  },
-  {
-    bundleId: 'com.apple.podcasts',
-    uninstall: true,
-  },
-  {
-    bundleId: 'com.apple.reminders',
-    uninstall: true,
-  },
-  {
-    bundleId: 'com.apple.facetime',
-    uninstall: true,
-  },
-  {
-    bundleId: 'com.apple.weather',
-    uninstall: true,
-  },
-  {
-    bundleId: 'com.apple.stocks',
-    uninstall: true,
-  },
-  {
-    bundleId: 'com.apple.Home',
-    uninstall: true,
-  },
-  {
-    bundleId: 'com.apple.iBooks',
-    uninstall: true,
-  },
-  {
-    bundleId: 'com.apple.MobileStore',
-    uninstall: true,
-  },
-  {
-    bundleId: 'com.apple.Bridge', // watch
-    uninstall: true,
-  },
-  {
-    bundleId: 'com.apple.MobileAddressBook', // contacts
-    uninstall: true,
-  },
-  {
-    bundleId: 'com.apple.shortcuts',
-    uninstall: true,
-  },
-  {
-    bundleId: 'com.apple.freeform',
-    uninstall: true,
-  },
-  {
-    bundleId: 'com.apple.tips',
-    uninstall: true,
-  },
-  {
-    bundleId: 'com.apple.VoiceMemos',
-    uninstall: true,
-  },
-  {
-    bundleId: 'com.apple.compass',
-    uninstall: true,
-  },
-  {
-    bundleId: 'com.apple.Magnifier',
-    uninstall: true,
-  },
-  {
-    bundleId: 'com.apple.calculator',
-    uninstall: true,
-  },
-  {
-    bundleId: 'com.apple.Fitness',
-    uninstall: true,
-  },
-  {
-    bundleId: 'com.apple.Passbook',
-    uninstall: true,
-  },
-  {
-    bundleId: 'com.apple.Music',
-    uninstall: true,
-  },
-  {
-    bundleId: 'com.apple.Translate',
-    uninstall: true,
-  },
-];
 
 const RunningBoardProcessName = 'runningboardd';
 
@@ -188,11 +64,6 @@ export class IosSharedDeviceService implements Zombieable {
     if ((await this.reset.isDirty()) && !config.externalIosDeviceAgent.use) {
       await this.timer.check(`IosResetService.setup.reset`, this.reset.reset(this.appiumContext));
       throw new Error(`IosResetService.revive. device is dirty. so trigger reset ${serial}`);
-    }
-    const installer = new IdeviceInstaller(serial, logger);
-    const uninstallApps = BlockAppList.filter((item) => item.uninstall).map((item) => item.bundleId);
-    for (const app of uninstallApps) {
-      await installer.uninstallApp(app);
     }
 
     const iosDriver = new IosWebDriver(driver);

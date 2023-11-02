@@ -52,6 +52,14 @@ export class IosWebDriver {
     });
   }
 
+  async home(): Promise<void> {
+    const { driver } = this;
+    await driver.execute('mobile: pressButton', {
+      name: 'home',
+      duration: 0.3,
+    });
+  }
+
   async clickSelector(selector: IosSelector): Promise<void> {
     const { driver } = this;
     const WaitTimeout = 10_000;
@@ -69,6 +77,18 @@ export class IosWebDriver {
       }
     }
     return [];
+  }
+
+  async waitElementExist(selector: IosSelector, timeOption: TimeOptions): Promise<WDIOElement> {
+    const { driver } = this;
+    for await (const _ of loopTime({ period: { milliseconds: 500 }, expire: timeOption })) {
+      const elem = await driver.$(selector.build());
+      if (elem.error) {
+        continue;
+      }
+      return elem;
+    }
+    throw new Error(`IosWebDriver.waitElementExist ${selector.build()} failed`);
   }
 
   static async waitElemElementsExist(elem: WDIOElement, selector: IosSelector, timeOption: TimeOptions): Promise<WDIOElement[]> {
