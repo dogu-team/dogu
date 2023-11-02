@@ -1,3 +1,4 @@
+import { Type } from 'class-transformer';
 import { IsIn, IsNumber, IsOptional, IsString, IsUUID } from 'class-validator';
 import { BillingSubscriptionPlanSourceData } from '..';
 import { BillingCategory, BillingCurrency, BillingPeriod, BillingSubscriptionPlanType } from './billing';
@@ -57,6 +58,7 @@ export class GetBillingSubscriptionPreviewDto {
   subscriptionPlanType!: BillingSubscriptionPlanType;
 
   @IsNumber()
+  @Type(() => Number)
   subscriptionPlanOption!: number;
 
   @IsIn(BillingCurrency)

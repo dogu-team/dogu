@@ -229,10 +229,6 @@ export class BillingPurchaseService {
       }
 
       const { coupon } = parseCouponResult;
-      if (!coupon) {
-        throw new Error('coupon must not be null');
-      }
-
       const normalizedCouponFactor = calculateCouponFactor(coupon, period);
       const normalizedNextCouponFactor = calculateNextCouponFactor(coupon, period);
       const isSubscribing = billingSubscriptionPlans.length > 0;
