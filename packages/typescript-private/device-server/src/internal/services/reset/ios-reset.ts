@@ -80,6 +80,7 @@ export class IosResetService {
         await this.timer.check('IosResetService.reset.clearPhotosRecentlyDeleted', this.clearPhotosRecentlyDeleted(iosDriver));
         await this.timer.check('IosResetService.reset.clearPhotosSuggestionAndFeedbacks', this.clearPhotosSuggestionAndFeedbacks(iosDriver));
         await this.timer.check('IosResetService.reset.clearFilesOnMyiPhone', this.clearFilesOnMyiPhone(iosDriver, helper));
+        await this.timer.check('IosResetService.reset.clearFilesTags', this.clearFilesTags(iosDriver, helper));
         await this.timer.check('IosResetService.reset.clearFilesRecentlyDeleted', this.clearFilesRecentlyDeleted(iosDriver, helper));
         await this.timer.check('IosResetService.reset.resetSettings', this.resetSettings(iosDriver));
         await this.timer.check('IosResetService.reset.removeWidgets', this.removeWidgets(iosDriver));
@@ -328,6 +329,36 @@ export class IosResetService {
           await cell.click();
         }
         await iosDriver.clickSelector(new IosAccessibilitiySelector('Delete'));
+      },
+    );
+  }
+
+  @Repeat({ repeatCount: 2, repeatInterval: 100 })
+  private async clearFilesTags(iosDriver: IosWebDriver, helper: IosResetHelper): Promise<void> {
+    await usingAsnyc(
+      {
+        create: async () => {
+          await iosDriver.relaunchApp('com.apple.DocumentsApp');
+        },
+        dispose: async () => {
+          await delay(2000);
+          await iosDriver.terminateApp('com.apple.DocumentsApp');
+        },
+      },
+      async () => {
+        await helper.enterFilesBrowseHome();
+
+        await iosDriver.clickSelector(new IosAccessibilitiySelector('More'));
+        await iosDriver.clickSelector(new IosAccessibilitiySelector('Edit'));
+        for await (const _ of loop(100)) {
+          const remove = await iosDriver.waitElementsExist(new IosClassChainSelector('**/XCUIElementTypeImage[`label == "remove"`]'), { seconds: 3 });
+          if (0 === remove.length) {
+            break;
+          }
+          await remove[0].click();
+          await iosDriver.clickSelector(new IosClassChainSelector('**/XCUIElementTypeButton[`label == "Delete"`]'));
+        }
+        await iosDriver.clickSelector(new IosAccessibilitiySelector('Done'));
       },
     );
   }
