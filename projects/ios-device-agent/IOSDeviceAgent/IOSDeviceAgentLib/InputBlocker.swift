@@ -15,7 +15,7 @@ class InputBlocker {
 
   private var config: Config
   private let webDriverClient: WebDriverClient
-  private let period: TimeInterval = 1.0 / 3
+  private let period: TimeInterval = 1.0 / 2
   private var timer: Cancellable? = nil
   var isAppBlocked: Bool = false
 
@@ -120,6 +120,10 @@ class InputBlocker {
     if try await self.blockRemoveApp(app: session.activeApplication) {
       return true
     }
+    
+    if try await self.blockStopBroadcasting(app: session.activeApplication) {
+      return true
+    }
 
     return false
   }
@@ -144,6 +148,20 @@ class InputBlocker {
     }
     try await webDriverClient.homescreen()
     try await webDriverClient.homescreen()
+
+    return true
+  }
+  
+  @MainActor
+  private func blockStopBroadcasting(app: FBApplication) async throws -> Bool {
+    let broadcastAlert: XCUIElement = app.alerts["Screen Broadcasting"]
+    if !broadcastAlert.exists {
+      return false
+    }
+    let cancelButton = broadcastAlert.buttons["Cancel"]
+    if cancelButton.exists {
+      cancelButton.tap()
+    }
 
     return true
   }

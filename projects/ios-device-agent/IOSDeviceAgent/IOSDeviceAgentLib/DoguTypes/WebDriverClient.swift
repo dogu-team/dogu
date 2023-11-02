@@ -1,7 +1,6 @@
 import Combine
 import WebDriverAgentLib
 
-
 enum WebDriverConstants {
   static let defaultTimeout: TimeInterval = 3  // seconds
 }
@@ -121,11 +120,12 @@ public actor WebDriverClient {
     )
   }
 
+  @MainActor
   public func homescreen() async throws {
-//    try XCUIDevice.shared.fb_goToHomescreen()
     try XCUIDevice.shared.fb_pressButton("home", forDuration: 100)
   }
 
+  @MainActor
   public func pressButton(_ button: String) async throws {
     try XCUIDevice.shared.fb_pressButton(button, forDuration: 10)
   }
