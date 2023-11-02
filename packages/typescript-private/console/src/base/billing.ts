@@ -18,8 +18,15 @@ export interface BillingSubscriptionPlanInfo {
   optionMap: Record<number, BillingSubscriptionPlanPriceMap>;
 }
 
+export const BillingSubscriptionGroupType = ['live-testing-group'] as const;
+export type BillingSubscriptionGroupType = (typeof BillingSubscriptionGroupType)[number];
+
 export const BillingSubscriptionPlanType = ['live-testing'] as const;
 export type BillingSubscriptionPlanType = (typeof BillingSubscriptionPlanType)[number];
+
+export const BillingPlanGroupMap: Record<BillingSubscriptionGroupType, BillingSubscriptionPlanType[]> = {
+  'live-testing-group': ['live-testing'],
+};
 
 export const BillingSubscriptionPlanMap: Record<BillingSubscriptionPlanType, BillingSubscriptionPlanInfo> = {
   'live-testing': {

@@ -53,7 +53,7 @@ const LicenseTag: React.FC<Props> = ({ licenseInfo, me }) => {
             <p>Community Edition</p>
             <div style={{ marginTop: '.25rem' }}>
               <a href={`${process.env.NEXT_PUBLIC_LANDING_URL}/pricing?type=self-hosted`} target="_blank">
-                {t('license:comparePlans')} <ArrowRightOutlined />
+                {t('billing:comparePlans')} <ArrowRightOutlined />
               </a>
             </div>
           </div>

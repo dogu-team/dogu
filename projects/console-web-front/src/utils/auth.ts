@@ -12,6 +12,7 @@ import Cookies from 'universal-cookie';
 
 import { getMyData } from 'src/api/registery';
 import { redirectWithLocale } from '../ssr/locale';
+import { ORGANIZATION_ROLE } from '../types/organization';
 
 export const checkLoginInServerSide = async (context: GetServerSidePropsContext) => {
   const { authToken } = getServersideCookies(context.req.cookies);
@@ -117,3 +118,10 @@ export class EmptyTokenError extends Error {
     super('Not Authorized');
   }
 }
+
+export const hasAdminPermission = (user: UserBase) => {
+  return (
+    user.organizationAndUserAndOrganizationRoles &&
+    user.organizationAndUserAndOrganizationRoles[0].organizationRoleId <= ORGANIZATION_ROLE.ADMIN
+  );
+};

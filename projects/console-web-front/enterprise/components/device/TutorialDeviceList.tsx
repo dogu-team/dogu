@@ -153,7 +153,7 @@ const TutorialDeviceList = ({ organizationId, projectId, hostId }: Props) => {
       <UpgradeDevicePlanBannerModal
         isOpen={isBannerOpen}
         close={closeBanner}
-        title={t('license:addDeviceModalTitle')}
+        title={t('billing:addDeviceModalTitle')}
         description={null}
       />
       <TimeoutDocsModal isOpen={isDocsOtpen} close={closeDocs} />

@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import useTranslation from 'next-translate/useTranslation';
 import useSWR from 'swr';
 import { isAxiosError } from 'axios';
+import { OrganizationBase } from '@dogu-private/console';
 
 import H4 from 'src/components/common/headings/H4';
 import ConsoleBasicLayout from './ConsoleBasicLayout';
@@ -12,8 +13,6 @@ import ErrorBox from '../common/boxes/ErrorBox';
 import { OrganizationContext } from '../../hooks/context/useOrganizationContext';
 import { getErrorMessageFromAxios } from '../../utils/error';
 import { OrganizationServerSideProps } from '../../ssr/organization';
-import { OrganizationBase } from '@dogu-private/console';
-
 export interface ConsoleLayoutProps extends OrganizationServerSideProps {
   children: React.ReactNode;
   sidebar: React.ReactNode;

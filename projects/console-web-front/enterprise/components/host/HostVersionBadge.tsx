@@ -138,7 +138,7 @@ const HostVesrsionBadge = ({ host }: Props) => {
       <UpgradeConveniencePlanModal
         isOpen={isBannerOpen}
         close={closeBanner}
-        title={t('license:agentUpdateModalTitle')}
+        title={t('billing:agentUpdateModalTitle')}
         description={null}
       />
       <TimeoutDocsModal isOpen={isDocsOtpen} close={closeDocs} />

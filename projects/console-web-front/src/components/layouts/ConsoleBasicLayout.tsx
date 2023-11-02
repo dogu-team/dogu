@@ -5,12 +5,14 @@ import Trans from 'next-translate/Trans';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
+import { ImPriceTag } from 'react-icons/im';
 import styled from 'styled-components';
 
 import LicenseTag from '../../../enterprise/components/license/LicenseTag';
 import useAuth from '../../hooks/useAuth';
 import useEventStore from '../../stores/events';
 import { flexRowBaseStyle, flexRowCenteredStyle } from '../../styles/box';
+import { hasAdminPermission } from '../../utils/auth';
 import AccountMenu from '../AccountMenu';
 import ChangeLogButton from '../change-logs/ChangeLogButton';
 import DoguText from '../common/DoguText';
@@ -99,7 +101,15 @@ const ConsoleBasicLayout = ({ children, user, licenseInfo }: Props) => {
           right={
             <FlexRow>
               <Link href="/billing">
-                <Button type="text">Plans & Billing</Button>
+                {hasAdminPermission(me) && (
+                  <Button
+                    type="text"
+                    style={{ display: 'flex', alignItems: 'center' }}
+                    icon={<ImPriceTag style={{ marginRight: '.4rem' }} />}
+                  >
+                    <Trans i18nKey="billing:plansAndBillingButtonTitle" />
+                  </Button>
+                )}
               </Link>
               <Tooltip
                 title="Community"

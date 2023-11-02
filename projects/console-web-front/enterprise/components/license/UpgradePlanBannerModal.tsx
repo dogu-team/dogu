@@ -26,7 +26,7 @@ const PricingItem: React.FC<PricingItemProps> = ({
   isCurrentPlan,
   button,
 }) => {
-  const { t } = useTranslation('license');
+  const { t } = useTranslation('billing');
 
   return (
     <PricingItemBox>
@@ -62,7 +62,7 @@ interface Props {
 
 export const UpgradeDevicePlanBannerModal: React.FC<Props> = ({ isOpen, close, title, description }) => {
   const { license } = useOrganizationContext();
-  const { t } = useTranslation('license');
+  const { t } = useTranslation('billing');
   const licenseInfo = license as SelfHostedLicenseBase | null;
 
   return (
@@ -136,7 +136,7 @@ export const UpgradeDevicePlanBannerModal: React.FC<Props> = ({ isOpen, close, t
 
 export const UpgradeBrowserPlanModal: React.FC<Props> = ({ isOpen, close, title, description }) => {
   const { license } = useOrganizationContext();
-  const { t } = useTranslation('license');
+  const { t } = useTranslation('billing');
   const licenseInfo = license as SelfHostedLicenseBase | null;
 
   return (
@@ -210,7 +210,7 @@ export const UpgradeBrowserPlanModal: React.FC<Props> = ({ isOpen, close, title,
 
 export const UpgradeConveniencePlanModal: React.FC<Props> = ({ isOpen, close, title, description }) => {
   const { license } = useOrganizationContext();
-  const { t } = useTranslation('license');
+  const { t } = useTranslation('billing');
   const licenseInfo = license as SelfHostedLicenseBase | undefined;
 
   return (

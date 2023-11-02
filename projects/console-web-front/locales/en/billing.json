@@ -57,5 +57,33 @@
 
   "licenseServerDisconnectedMessage": "The license could not be verified, please check your network and try again or contact us",
   "licenseTokenInvalidMessage": "Invalid license key. Please try again with a valid key or contact us.",
-  "licenseUnknownErrorMessage": "Something went wrong!"
+  "licenseUnknownErrorMessage": "Something went wrong!",
+
+  "plansAndBillingButtonTitle": "Plans & Billing",
+  "upgradePlanButtonTitle": "Upgrade plan",
+  "upgradePlanModalTitle": "Change your plan!",
+  "currentPlanText": "Current plans",
+  "periodMonthlyLabel": "Monthly",
+  "periodAnnuallyLabel": "Annually",
+  "periodAnnuallySaveText": "Save upto {{save}}%",
+  "perMonthText": "month",
+  "billedAnnuallyText": "Billed annually",
+
+  "seeDetailsText": "See details",
+
+  "paymentFormCardNumberLabel": "Card number",
+  "paymentFormExpiryLabel": "Expiry",
+  "paymentFormPasswordLabel": "Password (first 2 digits)",
+  "paymentFormBirthdayLabel": "Birthdate (6 digits) or Business registration number (10 digits)",
+
+  "billingPaymentMethodTitle": "Payment method",
+  "billingInvoiceTitle": "Invoices",
+
+  "liveTestingFreeTierInfoBannerMessage": "You are using the free plan. Live testing is available for <time></time>.",
+  "liveTestingPlanGroupTitle": "Live testing",
+  "liveTestingPlanTitle": "Live testing",
+  "liveTestingOptionSingular": "{{option}} parallel session",
+  "liveTestingOptionPlural": "{{option}} parallel sessions",
+  "liveTestingMoreThanOption": "More than {{option}} parallel sessions",
+  "liveTestingFeature1": "Unlimited testing time"
 }

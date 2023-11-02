@@ -57,5 +57,33 @@
 
   "licenseServerDisconnectedMessage": "라이센스를 확인할 수 없습니다. 네트워크를 확인하고 다시 시도하거나 문의해주세요.",
   "licenseTokenInvalidMessage": "유효하지 않은 키입니다. 유효한 키로 다시 시도하거나 문의해주세요.",
-  "licenseUnknownErrorMessage": "문제가 발생했습니다!"
+  "licenseUnknownErrorMessage": "문제가 발생했습니다!",
+
+  "plansAndBillingButtonTitle": "플랜 및 결제",
+  "upgradePlanButtonTitle": "플랜 업그레이드",
+  "upgradePlanModalTitle": "플랜 변경하기",
+  "currentPlanText": "이용중인 플랜",
+  "periodMonthlyLabel": "월간 결제",
+  "periodAnnuallyLabel": "연간 결제",
+  "periodAnnuallySaveText": "최대 {{save}}% 할인",
+  "perMonthText": "월",
+  "billedAnnuallyText": "매년 청구됨",
+
+  "seeDetailsText": "더 알아보기",
+
+  "paymentFormCardNumberLabel": "카드 번호",
+  "paymentFormExpiryLabel": "유효기간",
+  "paymentFormPasswordLabel": "비밀번호 앞 2자리",
+  "paymentFormBirthdayLabel": "생년월일 (6자리) 또는 사업자등록번호 (10자리)",
+
+  "billingPaymentMethodTitle": "결제 수단",
+  "billingInvoiceTitle": "결제 내역",
+
+  "liveTestingFreeTierInfoBannerMessage": "무료 플랜을 사용하고 있습니다. <time></time> 동안 사용할 수 있습니다.",
+  "liveTestingPlanGroupTitle": "라이브 테스팅",
+  "liveTestingPlanTitle": "라이브 테스팅",
+  "liveTestingOptionSingular": "{{option}} parallel session",
+  "liveTestingOptionPlural": "{{option}} parallel sessions",
+  "liveTestingMoreThanOption": "More than {{option}} parallel sessions",
+  "liveTestingFeature1": "시간제한 없는 라이브 테스팅"
 }

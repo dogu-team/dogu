@@ -9,7 +9,7 @@ interface Props {
 }
 
 const TimeoutDocsModal: React.FC<Props> = ({ isOpen, close }) => {
-  const { t } = useTranslation('license');
+  const { t } = useTranslation('billing');
 
   return (
     <Modal open={isOpen} onCancel={close} footer={null} centered destroyOnClose title={t('timeoutModalTitle')}>

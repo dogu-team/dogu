@@ -7,12 +7,7 @@ import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import useTranslation from 'next-translate/useTranslation';
 import Trans from 'next-translate/Trans';
-import {
-  SelfHostedLicenseBase,
-  COMMUNITY_MAX_BROWSER_COUNT,
-  COMMUNITY_MAX_MOBILE_COUNT,
-  COMMUNITY_LICENSE_KEY,
-} from '@dogu-private/console';
+import { SelfHostedLicenseBase, COMMUNITY_MAX_BROWSER_COUNT, COMMUNITY_MAX_MOBILE_COUNT } from '@dogu-private/console';
 
 import DangerZone from '../../../src/components/common/boxes/DangerZone';
 import TokenCopyInput from '../../../src/components/common/TokenCopyInput';
@@ -38,7 +33,7 @@ const SelfHostedLicenseContainer: React.FC<Props> = ({ license, organizationId }
   const [isTimeoutOpen, openTimeoutModal, closeTimeoutModal] = useModal();
   const [form] = Form.useForm<LicenseSubmitFormValues>();
   const router = useRouter();
-  const { t } = useTranslation('license');
+  const { t } = useTranslation('billing');
   const fireEvent = useEventStore((state) => state.fireEvent);
 
   const isExpired = checkExpired(licenseInfo);
@@ -167,7 +162,7 @@ const SelfHostedLicenseContainer: React.FC<Props> = ({ license, organizationId }
         <DangerZone>
           <DangerZone.Item
             title={t('renewLicenseKeyMenuTitle')}
-            description={<Trans i18nKey="license:renewLicenseKeyMenuDescription" components={{ dogu: <DoguText /> }} />}
+            description={<Trans i18nKey="billing:renewLicenseKeyMenuDescription" components={{ dogu: <DoguText /> }} />}
             button={
               <DangerZone.Button
                 modalTitle={t('renewLicenseKeyModalTitle')}

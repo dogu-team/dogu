@@ -1,11 +1,13 @@
 import { CloudLicenseBase, SelfHostedLicenseBase, UserBase } from '@dogu-private/console';
 import { GetServerSideProps } from 'next';
+import useTranslation from 'next-translate/useTranslation';
 import styled from 'styled-components';
 
 import { getCloudLicenseInServerSide, getSelfHostedLicenseInServerSide } from '../../enterprise/api/license';
 import BillingInvoiceList from '../../src/components/billing/BillingInvoiceList';
 import BillingPaymentMethod from '../../src/components/billing/BillingPaymentMethod';
 import BillingSubscribedPlanDashboard from '../../src/components/billing/BillingSubscribedPlanDashboard';
+import UpgradePlanButton from '../../src/components/billing/UpgradePlanButton';
 import LiveChat from '../../src/components/external/livechat';
 import ConsoleBasicLayout from '../../src/components/layouts/ConsoleBasicLayout';
 import Footer from '../../src/components/layouts/Footer';
@@ -18,19 +20,26 @@ interface BillingPageProps {
 }
 
 const BillingPage: NextPageWithLayout<BillingPageProps> = ({ me, license }) => {
+  const { t } = useTranslation('billing');
+
   return (
     <Box>
       <Content>
         <TitleWrapper>
-          <ContentTitle>Current plans</ContentTitle>
+          <ContentTitle>{t('currentPlanText')}</ContentTitle>
           <ContentInner>
             <BillingSubscribedPlanDashboard license={license} />
           </ContentInner>
         </TitleWrapper>
+        <div>
+          <UpgradePlanButton license={license} groupType={null} type="primary">
+            {t('upgradePlanButtonTitle')}
+          </UpgradePlanButton>
+        </div>
       </Content>
       <Content>
         <TitleWrapper>
-          <ContentTitle>Payment method</ContentTitle>
+          <ContentTitle>{t('billingPaymentMethodTitle')}</ContentTitle>
         </TitleWrapper>
         <ContentInner>
           <BillingPaymentMethod />
@@ -38,7 +47,7 @@ const BillingPage: NextPageWithLayout<BillingPageProps> = ({ me, license }) => {
       </Content>
       <Content>
         <TitleWrapper>
-          <ContentTitle>Invoices</ContentTitle>
+          <ContentTitle>{t('billingInvoiceTitle')}</ContentTitle>
         </TitleWrapper>
         <ContentInner>
           <BillingInvoiceList />

@@ -14,7 +14,7 @@ interface Props {
 
 const LicenseSubmitForm: React.FC<Props> = ({ form, onSubmit }) => {
   const [loading, setLoading] = useState(false);
-  const { t } = useTranslation('license');
+  const { t } = useTranslation('billing');
 
   return (
     <StyledForm

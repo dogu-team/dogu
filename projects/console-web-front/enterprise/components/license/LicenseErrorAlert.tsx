@@ -9,7 +9,7 @@ interface Props {
 }
 
 const LicenseErrorAlert: React.FC<Props> = ({ errorInfo }) => {
-  const { t } = useTranslation('license');
+  const { t } = useTranslation('billing');
 
   const getErrorMessage = () => {
     if (errorInfo.isLicenseServerDisConnected) {

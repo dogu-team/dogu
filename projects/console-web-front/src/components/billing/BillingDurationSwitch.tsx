@@ -1,4 +1,5 @@
 import { Switch } from 'antd';
+import useTranslation from 'next-translate/useTranslation';
 import styled from 'styled-components';
 import { shallow } from 'zustand/shallow';
 
@@ -11,13 +12,14 @@ const BillingDurationSwitch: React.FC<Props> = () => {
     (state) => [state.isAnnual, state.updateIsAnnual],
     shallow,
   );
+  const { t } = useTranslation('billing');
 
   return (
     <SwitchWrapper>
-      <Label>Monthly</Label>
+      <Label>{t('periodMonthlyLabel')}</Label>
       <Switch checked={isAnnual} onChange={updateIsAnnual} style={{ margin: '0 .25rem' }} />
       <Label>
-        Annually <b>{`(Save up to 20%)`}</b>
+        {t('periodAnnuallyLabel')} <b>{`(${t('periodAnnuallySaveText', { save: 20 })})`}</b>
       </Label>
     </SwitchWrapper>
   );

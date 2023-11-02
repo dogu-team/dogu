@@ -1,6 +1,6 @@
 import { Form, FormInstance, Input, InputRef } from 'antd';
+import useTranslation from 'next-translate/useTranslation';
 import React, { useEffect, useRef } from 'react';
-import { BsCircleFill } from 'react-icons/bs';
 import styled from 'styled-components';
 
 export interface BillingRegistrationFormValues {
@@ -19,6 +19,7 @@ const BillingRegistrationForm: React.FC<Props> = ({ form }) => {
   const expiryRef = useRef<InputRef>(null);
   const passwordRef = useRef<InputRef>(null);
   const legalNumberRef = useRef<InputRef>(null);
+  const { t } = useTranslation('billing');
 
   useEffect(() => {
     return () => {
@@ -76,7 +77,7 @@ const BillingRegistrationForm: React.FC<Props> = ({ form }) => {
         console.log(values);
       }}
     >
-      <Form.Item label="Card number" name="card">
+      <Form.Item name="card" label={t('paymentFormCardNumberLabel')}>
         <Input
           required
           name="1"
@@ -92,7 +93,7 @@ const BillingRegistrationForm: React.FC<Props> = ({ form }) => {
         />
       </Form.Item>
       <Box style={{ gap: '4rem' }}>
-        <Form.Item name="expiry" label="유효기간">
+        <Form.Item name="expiry" label={t('paymentFormExpiryLabel')}>
           <Input
             style={{ width: '100px' }}
             required
@@ -108,7 +109,7 @@ const BillingRegistrationForm: React.FC<Props> = ({ form }) => {
           />
         </Form.Item>
         <div style={{ position: 'relative' }}>
-          <Form.Item name="password" label="비밀번호 앞 2자리">
+          <Form.Item name="password" label={t('paymentFormPasswordLabel')}>
             <Input
               type="password"
               style={{ width: '50px' }}
@@ -126,7 +127,7 @@ const BillingRegistrationForm: React.FC<Props> = ({ form }) => {
           <div style={{ position: 'absolute', left: '58px', bottom: '30px' }}>● ●</div>
         </div>
       </Box>
-      <Form.Item name="legalNumber" label="생년월일 6자리(개인) / 사업자등록번호 10자리(법인)">
+      <Form.Item name="legalNumber" label={t('paymentFormBirthdayLabel')}>
         <Input
           ref={legalNumberRef}
           required
