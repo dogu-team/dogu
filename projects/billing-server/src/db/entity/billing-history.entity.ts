@@ -15,6 +15,9 @@ export class BillingHistory implements BillingHistoryBase {
   @Column({ type: 'uuid' })
   billingOrganizationId!: string;
 
+  @Column({ type: 'jsonb', nullable: true })
+  subscribePaymentsResponse!: Record<string, unknown> | null;
+
   @CreatedAt()
   createdAt!: Date;
 

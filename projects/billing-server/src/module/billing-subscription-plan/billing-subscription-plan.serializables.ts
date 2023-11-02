@@ -35,8 +35,6 @@ export async function createSubscriptionPlan(context: RetrySerializeContext, dto
     currency: subscriptionPlanSourceData.currency,
     period: subscriptionPlanSourceData.period,
     originPrice: subscriptionPlanSourceData.originPrice,
-
-    // TODO: recalculate price logic
     lastPurchasedPrice,
   });
   await manager.getRepository(BillingSubscriptionPlan).save(billingSubscriptionPlan);

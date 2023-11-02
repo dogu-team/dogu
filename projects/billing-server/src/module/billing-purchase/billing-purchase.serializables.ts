@@ -414,6 +414,7 @@ export async function processPurchaseSubscription(
       billingHistoryId: v4(),
       billingOrganizationId: billingOrganization.billingOrganizationId,
       purchasedAt: new Date(),
+      subscribePaymentsResponse: createPurchaseResult.response as unknown as Record<string, unknown>,
     });
     created.billingSubscriptionPlans ??= [];
     created.billingSubscriptionPlans.push(createSubscriptionPlanResult.subscriptionPlan);
