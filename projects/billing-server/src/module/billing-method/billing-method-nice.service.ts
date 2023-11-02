@@ -1,4 +1,4 @@
-import { CreateOrUpdateBillingMethodNiceDto, CreatePurchaseBillingMethodNiceDto } from '@dogu-private/console';
+import { CreateOrUpdateBillingMethodNiceDto, CreatePurchaseBillingMethodNiceDto, CreatePurchaseBillingMethodNiceResponse } from '@dogu-private/console';
 import { errorify } from '@dogu-tech/common';
 import { forwardRef, Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
@@ -6,6 +6,7 @@ import { DataSource } from 'typeorm';
 import { v4 } from 'uuid';
 import { BillingMethodNice } from '../../db/entity/billing-method-nice.entity';
 import { retrySerialize } from '../../db/utils';
+import { BillingHistoryService } from '../billing-history/billing-history.service';
 import { BillingOrganizationService } from '../billing-organization/billing-organization.service';
 import { DoguLogger } from '../logger/logger';
 import { BillingMethodNiceCaller } from './billing-method-nice.caller';
@@ -18,6 +19,7 @@ export class BillingMethodNiceService {
     private readonly billingMethodNiceCaller: BillingMethodNiceCaller,
     @Inject(forwardRef(() => BillingOrganizationService))
     private readonly billingOrganizationService: BillingOrganizationService,
+    private readonly billingHistoryService: BillingHistoryService,
   ) {}
 
   async createOrUpdate(dto: CreateOrUpdateBillingMethodNiceDto): Promise<BillingMethodNice> {
@@ -90,7 +92,7 @@ export class BillingMethodNiceService {
     }
   }
 
-  async createPurchase(dto: CreatePurchaseBillingMethodNiceDto): Promise<void> {
+  async createPurchase(dto: CreatePurchaseBillingMethodNiceDto): Promise<CreatePurchaseBillingMethodNiceResponse> {
     const { organizationId, amount, goodsName } = dto;
     const billingOrganization = await this.billingOrganizationService.find({ organizationId });
     if (!billingOrganization?.billingMethodNice?.bid) {
@@ -103,5 +105,6 @@ export class BillingMethodNiceService {
       goodsName,
     });
     this.logger.info('BillingMethodNiceService.createPurchase.subscribePayments', { response });
+    return response;
   }
 }

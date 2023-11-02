@@ -2,7 +2,7 @@ import { BillingOrganizationProp, CreateSelfHostedLicenseDto, SelfHostedLicenseP
 import { stringify } from '@dogu-tech/common';
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
+import { DataSource, EntityManager } from 'typeorm';
 import { v4 } from 'uuid';
 import { BillingOrganization } from '../../db/entity/billing-organization.entity';
 import { BillingSubscriptionPlan } from '../../db/entity/billing-subscription-plan.entity';
@@ -22,18 +22,9 @@ export class SelfHostedLicenseService {
   ) {}
 
   async createLicense(dto: CreateSelfHostedLicenseDto): Promise<SelfHostedLicense> {
-    const { organizationId, companyName, expiredAt } = dto;
-    const existingLicense = await this.dataSource.manager.getRepository(SelfHostedLicense).findOne({ where: { organizationId, companyName } });
-
-    if (existingLicense) {
-      throw new ConflictException(`Organization already has a self-hosted license. organizationId: ${stringify(organizationId)}`);
-    }
-
-    const licenseKey = LicenseKeyService.createLicensKey();
-
-    const license = this.dataSource.manager.getRepository(SelfHostedLicense).create({ selfHostedLicenseId: v4(), organizationId, companyName, expiredAt, licenseKey });
-    const rv = await this.dataSource.manager.getRepository(SelfHostedLicense).save(license);
-    return rv;
+    return await retrySerialize(this.logger, this.dataSource, async (manager) => {
+      return await SelfHostedLicenseService.create(manager, dto);
+    });
   }
 
   async findLicense(dto: FindSelfHostedLicenseQueryDto): Promise<SelfHostedLicense> {
@@ -53,5 +44,20 @@ export class SelfHostedLicenseService {
 
       return license;
     });
+  }
+
+  static async create(manager: EntityManager, dto: CreateSelfHostedLicenseDto): Promise<SelfHostedLicense> {
+    const { organizationId, companyName, expiredAt } = dto;
+    const existingLicense = await manager.getRepository(SelfHostedLicense).findOne({ where: { organizationId, companyName } });
+
+    if (existingLicense) {
+      throw new ConflictException(`Organization already has a self-hosted license. organizationId: ${stringify(organizationId)}`);
+    }
+
+    const licenseKey = LicenseKeyService.createLicensKey();
+
+    const license = manager.getRepository(SelfHostedLicense).create({ selfHostedLicenseId: v4(), organizationId, companyName, expiredAt, licenseKey });
+    const rv = await manager.getRepository(SelfHostedLicense).save(license);
+    return rv;
   }
 }

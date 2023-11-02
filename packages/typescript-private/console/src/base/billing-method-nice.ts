@@ -263,3 +263,5 @@ export interface SubscribePaymentsNiceResponse {
   bid: string;
   messageSource: string | null;
 }
+
+export interface CreatePurchaseBillingMethodNiceResponse extends SubscribePaymentsNiceResponse {}

@@ -4,8 +4,9 @@ import { BillingHistoryController } from './billing-history.controller';
 import { BillingHistoryService } from './billing-history.service';
 
 @Module({
+  imports: [BillingTokenModule],
   controllers: [BillingHistoryController],
   providers: [BillingHistoryService],
-  imports: [BillingTokenModule],
+  exports: [BillingHistoryService],
 })
 export class BillingHistoryModule {}

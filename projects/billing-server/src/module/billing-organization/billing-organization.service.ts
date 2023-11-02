@@ -40,15 +40,7 @@ export class BillingOrganizationService {
 
   async create(dto: CreateBillingOrganizationDto): Promise<BillingOrganization> {
     const billingOrganization = await retrySerialize(this.logger, this.dataSource, async (manager) => {
-      const { organizationId, category } = dto;
-      const found = await manager.getRepository(BillingOrganization).findOne({ where: { organizationId } });
-      if (found) {
-        throw new ConflictException(`BillingOrganization already exists by organizationId ${organizationId}`);
-      }
-
-      const created = manager.getRepository(BillingOrganization).create({ billingOrganizationId: v4(), organizationId, category });
-      const saved = await manager.getRepository(BillingOrganization).save(created);
-      return saved;
+      return await BillingOrganizationService.create(manager, dto);
     });
 
     return billingOrganization;
@@ -79,5 +71,17 @@ export class BillingOrganizationService {
       .leftJoinAndSelect(`${BillingOrganization.name}.${BillingOrganizationProp.billingSubscriptionPlans}`, BillingOrganizationProp.billingSubscriptionPlans)
       .where({ organizationId, category })
       .getOne();
+  }
+
+  static async create(manager: EntityManager, dto: CreateBillingOrganizationDto): Promise<BillingOrganization> {
+    const { organizationId, category } = dto;
+    const found = await manager.getRepository(BillingOrganization).findOne({ where: { organizationId } });
+    if (found) {
+      throw new ConflictException(`BillingOrganization already exists by organizationId ${organizationId}`);
+    }
+
+    const created = manager.getRepository(BillingOrganization).create({ billingOrganizationId: v4(), organizationId, category });
+    const saved = await manager.getRepository(BillingOrganization).save(created);
+    return saved;
   }
 }

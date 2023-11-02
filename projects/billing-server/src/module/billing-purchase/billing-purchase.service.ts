@@ -27,6 +27,7 @@ import { BillingOrganization } from '../../db/entity/billing-organization.entity
 import { BillingSubscriptionPlanSource } from '../../db/entity/billing-subscription-plan-source.entity';
 import { retrySerialize } from '../../db/utils';
 import { BillingCouponService } from '../billing-coupon/billing-coupon.service';
+import { BillingHistoryService } from '../billing-history/billing-history.service';
 import { BillingMethodNiceService } from '../billing-method/billing-method-nice.service';
 import { BillingOrganizationService } from '../billing-organization/billing-organization.service';
 import { DoguLogger } from '../logger/logger';
@@ -148,6 +149,7 @@ export class BillingPurchaseService {
     private readonly dataSource: DataSource,
     private readonly billingMethodNiceService: BillingMethodNiceService,
     private readonly billingOrganizationService: BillingOrganizationService,
+    private readonly billingHistoryService: BillingHistoryService,
   ) {}
 
   async getSubscriptionPreview(dto: GetBillingSubscriptionPreviewDto): Promise<GetBillingSubscriptionPreviewResponse> {
@@ -424,11 +426,17 @@ export class BillingPurchaseService {
       };
     }
 
-    await billingMethodNiceService.createPurchase({
+    const response = await billingMethodNiceService.createPurchase({
       organizationId: dto.organizationId,
       amount: getSubscriptionPreview.totalPrice,
       goodsName: dto.subscriptionPlanType,
     });
+
+    // await manager.getRepository(BillingHistory).create({
+    //   billingHistoryId: v4(),
+    //   purchasedAt: new Date(),
+    //   billingOrganizationId: dto.organizationId,
+    // });
 
     return {
       ok: true,

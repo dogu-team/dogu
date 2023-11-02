@@ -8,6 +8,7 @@ import { BillingSubscriptionPlan } from '../../db/entity/billing-subscription-pl
 
 import { CloudLicense } from '../../db/entity/cloud-license.entity';
 import { retrySerialize } from '../../db/utils';
+import { BillingOrganizationService } from '../billing-organization/billing-organization.service';
 import { DoguLogger } from '../logger/logger';
 
 @Injectable()
@@ -31,6 +32,7 @@ export class CloudLicenseService {
         organizationId,
       });
       const saved = await manager.getRepository(CloudLicense).save(created);
+      const billingOrganization = await BillingOrganizationService.create(manager, { organizationId, category: 'cloud' });
       return saved;
     });
   }
