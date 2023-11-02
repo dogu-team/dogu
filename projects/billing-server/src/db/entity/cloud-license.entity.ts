@@ -1,33 +1,33 @@
-import { CloudLicenseBase, CloudLicensePropCamel, CloudLicensePropSnake } from '@dogu-private/console';
+import { BillingOrganizationProp, CloudLicenseBase } from '@dogu-private/console';
 import { OrganizationId } from '@dogu-private/types';
 import { Column, Entity, JoinColumn, OneToOne, PrimaryColumn } from 'typeorm';
 import { BillingOrganization } from './billing-organization.entity';
-import { ColumnTemplate } from './util/decorators';
+import { CreatedAt, DeletedAt, UpdatedAt } from './util/decorators';
 
-@Entity('cloud_license')
+@Entity()
 export class CloudLicense implements CloudLicenseBase {
-  @PrimaryColumn('uuid', { name: CloudLicensePropSnake.cloud_license_id })
+  @PrimaryColumn('uuid')
   cloudLicenseId!: string;
 
-  @Column({ type: 'uuid', name: CloudLicensePropSnake.organization_id, unique: true })
+  @Column({ type: 'uuid', unique: true })
   organizationId!: OrganizationId;
 
-  @Column({ type: 'integer', name: CloudLicensePropSnake.live_testing_remaining_free_seconds, default: 180 * 60 })
+  @Column({ type: 'integer', default: 180 * 60 })
   liveTestingRemainingFreeSeconds!: number;
 
-  @Column({ type: 'integer', name: CloudLicensePropSnake.live_testing_parallel_count, default: 1 })
+  @Column({ type: 'integer', default: 1 })
   liveTestingParallelCount!: number;
 
-  @ColumnTemplate.CreateDate(CloudLicensePropSnake.created_at)
+  @CreatedAt()
   createdAt!: Date;
 
-  @ColumnTemplate.UpdateDate(CloudLicensePropSnake.updated_at)
+  @UpdatedAt()
   updatedAt!: Date;
 
-  @ColumnTemplate.DeleteDate(CloudLicensePropSnake.deleted_at)
+  @DeletedAt()
   deletedAt!: Date | null;
 
   @OneToOne(() => BillingOrganization, { nullable: true, createForeignKeyConstraints: false })
-  @JoinColumn({ name: CloudLicensePropSnake.organization_id, referencedColumnName: CloudLicensePropCamel.organizationId })
+  @JoinColumn({ referencedColumnName: BillingOrganizationProp.organizationId })
   billingOrganization?: BillingOrganization | null;
 }

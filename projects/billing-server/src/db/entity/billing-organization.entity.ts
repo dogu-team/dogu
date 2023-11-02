@@ -1,30 +1,36 @@
-import { BillingCategory, BillingOrganizationBase, BillingOrganizationPropSnake } from '@dogu-private/console';
+import { BillingCategory, BillingOrganizationBase } from '@dogu-private/console';
 import { Column, Entity, OneToMany, OneToOne, PrimaryColumn } from 'typeorm';
 import { BillingMethodNice } from './billing-method-nice.entity';
 import { BillingSubscriptionPlan } from './billing-subscription-plan.entity';
-import { ColumnTemplate } from './util/decorators';
+import { CreatedAt, DateColumn, DeletedAt, UpdatedAt } from './util/decorators';
 
-@Entity('billing_organization')
+@Entity()
 export class BillingOrganization implements BillingOrganizationBase {
-  @PrimaryColumn('uuid', { name: BillingOrganizationPropSnake.billing_organization_id })
+  @PrimaryColumn('uuid')
   billingOrganizationId!: string;
 
-  @Column({ type: 'uuid', name: BillingOrganizationPropSnake.organization_id, unique: true })
+  @Column({ type: 'uuid', unique: true })
   organizationId!: string;
 
-  @Column({ type: 'enum', name: BillingOrganizationPropSnake.category, enum: BillingCategory })
+  @Column({ type: 'enum', enum: BillingCategory })
   category!: BillingCategory;
 
-  @ColumnTemplate.Date(BillingOrganizationPropSnake.first_purchased_at, true)
+  @DateColumn({ nullable: true })
   firstPurchasedAt!: Date | null;
 
-  @ColumnTemplate.CreateDate(BillingOrganizationPropSnake.created_at)
+  @DateColumn({ nullable: true })
+  lastMonthlyPurchasedAt!: Date | null;
+
+  @DateColumn({ nullable: true })
+  lastYearlyPurchasedAt!: Date | null;
+
+  @CreatedAt()
   createdAt!: Date;
 
-  @ColumnTemplate.UpdateDate(BillingOrganizationPropSnake.updated_at)
+  @UpdatedAt()
   updatedAt!: Date;
 
-  @ColumnTemplate.DeleteDate(BillingOrganizationPropSnake.deleted_at)
+  @DeletedAt()
   deletedAt!: Date | null;
 
   @OneToMany(() => BillingSubscriptionPlan, (billingSubscriptionPlan) => billingSubscriptionPlan.billingOrganization)

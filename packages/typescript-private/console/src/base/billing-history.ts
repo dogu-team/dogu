@@ -1,4 +1,4 @@
-import { camelToSnakeCasePropertiesOf, propertiesOf } from '@dogu-tech/common';
+import { propertiesOf } from '@dogu-tech/common';
 import { IsUUID } from 'class-validator';
 import { BillingOrganizationBase } from './billing-organization';
 import { BillingSubscriptionPlanBase } from './billing-subscription-plan';
@@ -14,8 +14,7 @@ export interface BillingHistoryBase {
   billingSubscriptionPlans?: BillingSubscriptionPlanBase[];
 }
 
-export const BillingHistoryPropCamel = propertiesOf<BillingHistoryBase>();
-export const BillingHistoryPropSnake = camelToSnakeCasePropertiesOf<BillingHistoryBase>();
+export const BillingHistoryProp = propertiesOf<BillingHistoryBase>();
 
 export class GetBillingHistoriesDto {
   @IsUUID()

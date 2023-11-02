@@ -1,4 +1,4 @@
-import { BillingOrganizationPropCamel, CreateSelfHostedLicenseDto, SelfHostedLicensePropCamel } from '@dogu-private/console';
+import { BillingOrganizationProp, CreateSelfHostedLicenseDto, SelfHostedLicenseProp } from '@dogu-private/console';
 import { stringify } from '@dogu-tech/common';
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
@@ -42,8 +42,8 @@ export class SelfHostedLicenseService {
       const license = await manager
         .getRepository(SelfHostedLicense)
         .createQueryBuilder(SelfHostedLicense.name)
-        .leftJoinAndSelect(`${SelfHostedLicense.name}.${SelfHostedLicensePropCamel.billingOrganization}`, BillingOrganization.name)
-        .leftJoinAndSelect(`${BillingOrganization.name}.${BillingOrganizationPropCamel.billingSubscriptionPlans}`, BillingSubscriptionPlan.name)
+        .leftJoinAndSelect(`${SelfHostedLicense.name}.${SelfHostedLicenseProp.billingOrganization}`, BillingOrganization.name)
+        .leftJoinAndSelect(`${BillingOrganization.name}.${BillingOrganizationProp.billingSubscriptionPlans}`, BillingSubscriptionPlan.name)
         .where({ organizationId, licenseKey })
         .getOne();
 

@@ -1,5 +1,5 @@
 import { OrganizationId } from '@dogu-private/types';
-import { camelToSnakeCasePropertiesOf, propertiesOf } from '@dogu-tech/common';
+import { propertiesOf } from '@dogu-tech/common';
 import { BillingOrganizationBase } from './billing-organization';
 
 export interface SelfHostedLicenseBase {
@@ -23,5 +23,4 @@ export interface SelfHostedLicenseBase {
   billingOrganization?: BillingOrganizationBase | null;
 }
 
-export const SelfHostedLicensePropCamel = propertiesOf<SelfHostedLicenseBase>();
-export const SelfHostedLicensePropSnake = camelToSnakeCasePropertiesOf<SelfHostedLicenseBase>();
+export const SelfHostedLicenseProp = propertiesOf<SelfHostedLicenseBase>();

@@ -1,5 +1,5 @@
 import { OrganizationId } from '@dogu-private/types';
-import { camelToSnakeCasePropertiesOf, propertiesOf } from '@dogu-tech/common';
+import { propertiesOf } from '@dogu-tech/common';
 import { IsBoolean, IsNumber, IsUUID } from 'class-validator';
 import { BillingOrganizationBase } from './billing-organization';
 
@@ -14,8 +14,7 @@ export interface CloudLicenseBase {
   billingOrganization?: BillingOrganizationBase | null;
 }
 
-export const CloudLicensePropCamel = propertiesOf<CloudLicenseBase>();
-export const CloudLicensePropSnake = camelToSnakeCasePropertiesOf<CloudLicenseBase>();
+export const CloudLicenseProp = propertiesOf<CloudLicenseBase>();
 
 export class FindCloudLicenseDto {
   @IsUUID()

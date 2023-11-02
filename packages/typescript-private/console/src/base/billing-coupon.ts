@@ -1,8 +1,21 @@
-import { camelToSnakeCasePropertiesOf, IsFilledString, propertiesOf } from '@dogu-tech/common';
+import { IsFilledString, propertiesOf } from '@dogu-tech/common';
 import { IsUUID } from 'class-validator';
 
 export const BillingCouponType = ['basic', 'promotion'] as const;
 export type BillingCouponType = (typeof BillingCouponType)[number];
+
+export const BillingCouponReason = [
+  'coupon-not-found',
+  'coupon-expired',
+  'organization-not-found',
+  'coupon-already-used',
+  'coupon-not-used',
+  'coupon-all-used',
+  'coupon-invalid-monthly-apply-count',
+  'coupon-invalid-yearly-apply-count',
+  'coupon-null-argument',
+] as const;
+export type BillingCouponReason = (typeof BillingCouponReason)[number];
 
 export interface BillingCouponBase {
   billingCouponId: string;
@@ -23,23 +36,26 @@ export interface BillingCouponBase {
   deletedAt: Date | null;
 }
 
-export const BillingCouponPropCamel = propertiesOf<BillingCouponBase>();
-export const BillingCouponPropSnake = camelToSnakeCasePropertiesOf<BillingCouponBase>();
+export const BillingCouponProp = propertiesOf<BillingCouponBase>();
 
 export class ValidateBillingCouponDto {
   @IsUUID()
   organizationId!: string;
 
   @IsFilledString()
-  billingCouponCode!: string;
+  code!: string;
 }
 
 export interface ValidateBillingCouponResponse {
   ok: boolean;
-  reason: 'already-used' | 'expired' | 'coupon-not-found' | 'organization-not-found' | 'not-used';
+  reason: BillingCouponReason;
+  coupon: BillingCouponBase | null;
 }
 
 export class GetAvailableBillingCouponsDto {
   @IsUUID()
   organizationId!: string;
+
+  @IsFilledString()
+  type!: BillingCouponType;
 }

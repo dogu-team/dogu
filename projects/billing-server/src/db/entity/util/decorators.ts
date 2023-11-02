@@ -1,20 +1,33 @@
 import { Column, CreateDateColumn, DeleteDateColumn, UpdateDateColumn } from 'typeorm';
 
-export class ColumnTemplate {
-  static Date(name: string, nullable: boolean): PropertyDecorator {
-    const defaultValue = nullable ? (): string => 'NULL' : (): string => 'CURRENT_TIMESTAMP(3)';
-    return Column({ type: 'timestamptz', name, precision: 3, default: defaultValue, nullable });
-  }
+export interface DateOptions {
+  /**
+   * @default false
+   */
+  nullable?: boolean;
+}
 
-  static CreateDate(name: string): PropertyDecorator {
-    return CreateDateColumn({ type: 'timestamptz', name, precision: 3, default: () => 'CURRENT_TIMESTAMP(3)', nullable: false });
-  }
+function mergeDateOptions(options?: DateOptions): Required<DateOptions> {
+  return {
+    nullable: false,
+    ...options,
+  };
+}
 
-  static UpdateDate(name: string): PropertyDecorator {
-    return UpdateDateColumn({ type: 'timestamptz', name, precision: 3, default: () => 'CURRENT_TIMESTAMP(3)', onUpdate: 'CURRENT_TIMESTAMP(3)', nullable: false });
-  }
+export function DateColumn(options?: DateOptions): PropertyDecorator {
+  const { nullable } = mergeDateOptions(options);
+  const defaultValue = nullable ? (): string => 'NULL' : (): string => 'CURRENT_TIMESTAMP(3)';
+  return Column({ type: 'timestamptz', precision: 3, default: defaultValue, nullable });
+}
 
-  static DeleteDate(name: string): PropertyDecorator {
-    return DeleteDateColumn({ type: 'timestamptz', name, precision: 3, default: () => 'NULL', nullable: true });
-  }
+export function CreatedAt(): PropertyDecorator {
+  return CreateDateColumn({ type: 'timestamptz', precision: 3, default: () => 'CURRENT_TIMESTAMP(3)', nullable: false });
+}
+
+export function UpdatedAt(): PropertyDecorator {
+  return UpdateDateColumn({ type: 'timestamptz', precision: 3, default: () => 'CURRENT_TIMESTAMP(3)', onUpdate: 'CURRENT_TIMESTAMP(3)', nullable: false });
+}
+
+export function DeletedAt(): PropertyDecorator {
+  return DeleteDateColumn({ type: 'timestamptz', precision: 3, default: () => 'NULL', nullable: true });
 }

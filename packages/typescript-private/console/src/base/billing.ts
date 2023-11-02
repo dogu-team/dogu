@@ -10,11 +10,7 @@ export type BillingCurrency = (typeof BillingCurrency)[number];
 export const BillingPeriod = ['monthly', 'yearly'] as const;
 export type BillingPeriod = (typeof BillingPeriod)[number];
 
-export interface BillingSubscriptionPlanPrice {
-  monthly: number;
-  yearly: number;
-}
-
+export type BillingSubscriptionPlanPrice = Record<BillingPeriod, number>;
 export type BillingSubscriptionPlanPriceMap = Record<BillingCurrency, BillingSubscriptionPlanPrice>;
 
 export interface BillingSubscriptionPlanInfo {

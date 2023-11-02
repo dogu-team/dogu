@@ -1,54 +1,53 @@
-import { SelfHostedLicenseBase, SelfHostedLicensePropCamel, SelfHostedLicensePropSnake } from '@dogu-private/console';
+import { BillingOrganizationProp, SelfHostedLicenseBase } from '@dogu-private/console';
 import { Column, Entity, JoinColumn, OneToOne, PrimaryColumn } from 'typeorm';
 import { BillingOrganization } from './billing-organization.entity';
+import { CreatedAt, DateColumn, DeletedAt, UpdatedAt } from './util/decorators';
 
-import { ColumnTemplate } from './util/decorators';
-
-@Entity('self_hosted_license')
+@Entity()
 export class SelfHostedLicense implements SelfHostedLicenseBase {
-  @PrimaryColumn('uuid', { name: SelfHostedLicensePropSnake.self_hosted_license_id })
+  @PrimaryColumn('uuid')
   selfHostedLicenseId!: string;
 
-  @Column({ type: 'character varying', name: SelfHostedLicensePropSnake.license_key })
+  @Column({ type: 'character varying' })
   licenseKey!: string;
 
   /**
    * @deprecated use organizationId instead
    */
-  @Column({ type: 'character varying', name: SelfHostedLicensePropSnake.company_name, nullable: true })
+  @Column({ type: 'character varying', nullable: true })
   companyName!: string | null;
 
-  @Column({ type: 'character varying', name: SelfHostedLicensePropSnake.organization_id, nullable: true, unique: true })
+  @Column({ type: 'character varying', nullable: true, unique: true })
   organizationId!: string | null;
 
-  @Column({ type: 'integer', name: SelfHostedLicensePropSnake.maximum_enabled_mobile_count, default: 2 })
+  @Column({ type: 'integer', default: 2 })
   maximumEnabledMobileCount!: number;
 
-  @Column({ type: 'integer', name: SelfHostedLicensePropSnake.maximum_enabled_browser_count, default: 2 })
+  @Column({ type: 'integer', default: 2 })
   maximumEnabledBrowserCount!: number;
 
-  @Column({ type: 'boolean', name: SelfHostedLicensePropSnake.open_api_enabled, default: false })
+  @Column({ type: 'boolean', default: false })
   openApiEnabled!: boolean;
 
-  @Column({ type: 'boolean', name: SelfHostedLicensePropSnake.dogu_agent_auto_update_enabled, default: false })
+  @Column({ type: 'boolean', default: false })
   doguAgentAutoUpdateEnabled!: boolean;
 
-  @ColumnTemplate.CreateDate(SelfHostedLicensePropSnake.created_at)
+  @CreatedAt()
   createdAt!: Date;
 
-  @ColumnTemplate.CreateDate(SelfHostedLicensePropSnake.last_access_at)
+  @CreatedAt()
   lastAccessAt!: Date;
 
-  @ColumnTemplate.UpdateDate(SelfHostedLicensePropSnake.updated_at)
+  @UpdatedAt()
   updatedAt!: Date;
 
-  @ColumnTemplate.Date(SelfHostedLicensePropSnake.expired_at, false)
+  @DateColumn()
   expiredAt!: Date;
 
-  @ColumnTemplate.DeleteDate(SelfHostedLicensePropSnake.deleted_at)
+  @DeletedAt()
   deletedAt!: Date | null;
 
   @OneToOne(() => BillingOrganization, { nullable: true, createForeignKeyConstraints: false })
-  @JoinColumn({ name: SelfHostedLicensePropSnake.organization_id, referencedColumnName: SelfHostedLicensePropCamel.organizationId })
+  @JoinColumn({ referencedColumnName: BillingOrganizationProp.organizationId })
   billingOrganization?: BillingOrganization | null;
 }

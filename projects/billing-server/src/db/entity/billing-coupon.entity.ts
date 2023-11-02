@@ -1,42 +1,42 @@
-import { BillingCouponBase, BillingCouponPropSnake, BillingCouponType } from '@dogu-private/console';
+import { BillingCouponBase, BillingCouponType } from '@dogu-private/console';
 import { Column, Entity, PrimaryColumn } from 'typeorm';
-import { ColumnTemplate } from './util/decorators';
+import { CreatedAt, DateColumn, DeletedAt, UpdatedAt } from './util/decorators';
 
-@Entity('billing_coupon')
+@Entity()
 export class BillingCoupon implements BillingCouponBase {
-  @PrimaryColumn('uuid', { name: BillingCouponPropSnake.billing_coupon_id })
+  @PrimaryColumn('uuid')
   billingCouponId!: string;
 
-  @Column({ type: 'character varying', name: BillingCouponPropSnake.code, unique: true })
+  @Column({ type: 'character varying', unique: true })
   code!: string;
 
-  @Column({ type: 'enum', name: BillingCouponPropSnake.type, enum: BillingCouponType, default: 'basic' })
+  @Column({ type: 'enum', enum: BillingCouponType, default: 'basic' })
   type!: BillingCouponType;
 
-  @Column({ type: 'integer', name: BillingCouponPropSnake.monthly_discount_percent, nullable: true })
+  @Column({ type: 'integer', nullable: true })
   monthlyDiscountPercent!: number | null;
 
-  @Column({ type: 'integer', name: BillingCouponPropSnake.monthly_apply_count, nullable: true })
+  @Column({ type: 'integer', nullable: true })
   monthlyApplyCount!: number | null;
 
-  @Column({ type: 'integer', name: BillingCouponPropSnake.yearly_discount_percent, nullable: true })
+  @Column({ type: 'integer', nullable: true })
   yearlyDiscountPercent!: number | null;
 
-  @Column({ type: 'integer', name: BillingCouponPropSnake.yearly_apply_count, nullable: true })
+  @Column({ type: 'integer', nullable: true })
   yearlyApplyCount!: number | null;
 
-  @Column({ type: 'integer', name: BillingCouponPropSnake.remaining_available_count, nullable: true })
+  @Column({ type: 'integer', nullable: true })
   remainingAvailableCount!: number | null;
 
-  @ColumnTemplate.Date(BillingCouponPropSnake.expired_at, true)
+  @DateColumn({ nullable: true })
   expiredAt!: Date | null;
 
-  @ColumnTemplate.CreateDate(BillingCouponPropSnake.created_at)
+  @CreatedAt()
   createdAt!: Date;
 
-  @ColumnTemplate.UpdateDate(BillingCouponPropSnake.updated_at)
+  @UpdatedAt()
   updatedAt!: Date;
 
-  @ColumnTemplate.DeleteDate(BillingCouponPropSnake.deleted_at)
+  @DeletedAt()
   deletedAt!: Date | null;
 }

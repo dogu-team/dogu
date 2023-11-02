@@ -1,4 +1,4 @@
-import { camelToSnakeCasePropertiesOf, propertiesOf } from '@dogu-tech/common';
+import { propertiesOf } from '@dogu-tech/common';
 
 export interface BillingTokenBase {
   billingTokenId: string;
@@ -9,5 +9,4 @@ export interface BillingTokenBase {
   deletedAt: Date | null;
 }
 
-export const BillingTokenPropCamel = propertiesOf<BillingTokenBase>();
-export const BillingTokenPropSnake = camelToSnakeCasePropertiesOf<BillingTokenBase>();
+export const BillingTokenProp = propertiesOf<BillingTokenBase>();

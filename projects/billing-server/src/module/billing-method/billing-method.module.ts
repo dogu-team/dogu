@@ -6,4 +6,4 @@ import { BillingMethodNiceService } from './billing-method-nice.service';
   providers: [BillingMethodNiceCaller, BillingMethodNiceService],
   exports: [BillingMethodNiceService],
 })
-export class BillingMethodNiceModule {}
+export class BillingMethodModule {}

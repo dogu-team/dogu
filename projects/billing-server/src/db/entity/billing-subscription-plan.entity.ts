@@ -1,74 +1,66 @@
-import {
-  BillingCategory,
-  BillingCurrency,
-  BillingPeriod,
-  BillingSubscriptionPlanBase,
-  BillingSubscriptionPlanPropCamel,
-  BillingSubscriptionPlanPropSnake,
-  BillingSubscriptionPlanType,
-} from '@dogu-private/console';
+import { BillingCategory, BillingCurrency, BillingPeriod, BillingSubscriptionPlanBase, BillingSubscriptionPlanType } from '@dogu-private/console';
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 import { BillingCoupon } from './billing-coupon.entity';
 import { BillingOrganization } from './billing-organization.entity';
 import { BillingSubscriptionPlanSource } from './billing-subscription-plan-source.entity';
-import { ColumnTemplate } from './util/decorators';
+import { CreatedAt, DateColumn, DeletedAt, UpdatedAt } from './util/decorators';
 
-@Entity('billing_subscription_plan')
+@Entity()
 export class BillingSubscriptionPlan implements BillingSubscriptionPlanBase {
-  @PrimaryColumn('uuid', { name: BillingSubscriptionPlanPropSnake.billing_subscription_plan_id })
+  @PrimaryColumn('uuid')
   billingSubscriptionPlanId!: string;
 
-  @Column({ type: 'enum', name: BillingSubscriptionPlanPropSnake.category, enum: BillingCategory })
+  @Column({ type: 'enum', enum: BillingCategory })
   category!: BillingCategory;
 
-  @Column({ type: 'enum', name: BillingSubscriptionPlanPropSnake.type, enum: BillingSubscriptionPlanType })
+  @Column({ type: 'enum', enum: BillingSubscriptionPlanType })
   type!: BillingSubscriptionPlanType;
 
-  @Column({ type: 'integer', name: BillingSubscriptionPlanPropSnake.option })
+  @Column({ type: 'integer' })
   option!: number;
 
-  @Column({ type: 'enum', name: BillingSubscriptionPlanPropSnake.currency, enum: BillingCurrency })
+  @Column({ type: 'enum', enum: BillingCurrency })
   currency!: BillingCurrency;
 
-  @Column({ type: 'enum', name: BillingSubscriptionPlanPropSnake.period, enum: BillingPeriod })
+  @Column({ type: 'enum', enum: BillingPeriod })
   period!: BillingPeriod;
 
-  @Column({ type: 'integer', name: BillingSubscriptionPlanPropSnake.price })
+  @Column({ type: 'integer' })
   price!: number;
 
-  @Column({ type: 'uuid', name: BillingSubscriptionPlanPropSnake.billing_organization_id })
+  @Column({ type: 'uuid' })
   billingOrganizationId!: string;
 
-  @Column({ type: 'uuid', name: BillingSubscriptionPlanPropSnake.billing_subscription_plan_source_id, nullable: true })
+  @Column({ type: 'uuid', nullable: true })
   billingSubscriptionPlanSourceId!: string | null;
 
-  @Column({ type: 'uuid', name: BillingSubscriptionPlanPropSnake.billing_coupon_id, nullable: true })
+  @Column({ type: 'uuid', nullable: true })
   billingCouponId!: string | null;
 
-  @Column({ type: 'integer', name: BillingSubscriptionPlanPropSnake.billing_coupon_remaining_apply_count, nullable: true })
+  @Column({ type: 'integer', nullable: true })
   billingCouponRemainingApplyCount!: number | null;
 
-  @ColumnTemplate.CreateDate(BillingSubscriptionPlanPropSnake.created_at)
+  @DateColumn()
+  lastPurchasedAt!: Date;
+
+  @CreatedAt()
   createdAt!: Date;
 
-  @ColumnTemplate.UpdateDate(BillingSubscriptionPlanPropSnake.updated_at)
+  @UpdatedAt()
   updatedAt!: Date;
 
-  @ColumnTemplate.DeleteDate(BillingSubscriptionPlanPropSnake.deleted_at)
+  @DeletedAt()
   deletedAt!: Date | null;
 
   @ManyToOne(() => BillingOrganization, (billingOrganization) => billingOrganization.billingSubscriptionPlans)
-  @JoinColumn({ name: BillingSubscriptionPlanPropSnake.billing_organization_id, referencedColumnName: BillingSubscriptionPlanPropCamel.billingOrganizationId })
+  @JoinColumn()
   billingOrganization?: BillingOrganization;
 
   @ManyToOne(() => BillingCoupon)
-  @JoinColumn({ name: BillingSubscriptionPlanPropSnake.billing_coupon_id, referencedColumnName: BillingSubscriptionPlanPropCamel.billingCouponId })
+  @JoinColumn()
   billingCoupon?: BillingCoupon;
 
   @ManyToOne(() => BillingSubscriptionPlanSource)
-  @JoinColumn({
-    name: BillingSubscriptionPlanPropSnake.billing_subscription_plan_source_id,
-    referencedColumnName: BillingSubscriptionPlanPropCamel.billingSubscriptionPlanSourceId,
-  })
+  @JoinColumn()
   billingSubscriptionPlanSource?: BillingSubscriptionPlanSource;
 }

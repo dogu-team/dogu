@@ -1,4 +1,4 @@
-import { camelToSnakeCasePropertiesOf, IsFilledString, propertiesOf } from '@dogu-tech/common';
+import { IsFilledString, propertiesOf } from '@dogu-tech/common';
 import { IsNumber, IsUUID } from 'class-validator';
 import { BillingOrganizationBase } from './billing-organization';
 
@@ -16,8 +16,7 @@ export interface BillingMethodNiceBase {
   billingOrganization?: BillingOrganizationBase;
 }
 
-export const BillingMethodNicePropCamel = propertiesOf<BillingMethodNiceBase>();
-export const BillingMethodNicePropSnake = camelToSnakeCasePropertiesOf<BillingMethodNiceBase>();
+export const BillingMethodNiceProp = propertiesOf<BillingMethodNiceBase>();
 
 export class SubscribeRegistNiceDto {
   @IsFilledString()

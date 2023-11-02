@@ -1,46 +1,39 @@
-import {
-  BillingCategory,
-  BillingCurrency,
-  BillingPeriod,
-  BillingSubscriptionPlanSourceBase,
-  BillingSubscriptionPlanSourcePropSnake,
-  BillingSubscriptionPlanType,
-} from '@dogu-private/console';
+import { BillingCategory, BillingCurrency, BillingPeriod, BillingSubscriptionPlanSourceBase, BillingSubscriptionPlanType } from '@dogu-private/console';
 import { Column, Entity, PrimaryColumn } from 'typeorm';
-import { ColumnTemplate } from './util/decorators';
+import { CreatedAt, DeletedAt, UpdatedAt } from './util/decorators';
 
-@Entity('billing_subscription_plan_source')
+@Entity()
 export class BillingSubscriptionPlanSource implements BillingSubscriptionPlanSourceBase {
-  @PrimaryColumn('uuid', { name: BillingSubscriptionPlanSourcePropSnake.billing_subscription_plan_source_id })
+  @PrimaryColumn('uuid')
   billingSubscriptionPlanSourceId!: string;
 
-  @Column({ type: 'enum', name: BillingSubscriptionPlanSourcePropSnake.category, enum: BillingCategory })
+  @Column({ type: 'enum', enum: BillingCategory })
   category!: BillingCategory;
 
-  @Column({ type: 'enum', name: BillingSubscriptionPlanSourcePropSnake.type, enum: BillingSubscriptionPlanType })
+  @Column({ type: 'enum', enum: BillingSubscriptionPlanType })
   type!: BillingSubscriptionPlanType;
 
-  @Column({ type: 'integer', name: BillingSubscriptionPlanSourcePropSnake.option })
+  @Column({ type: 'integer' })
   option!: number;
 
-  @Column({ type: 'enum', name: BillingSubscriptionPlanSourcePropSnake.currency, enum: BillingCurrency })
+  @Column({ type: 'enum', enum: BillingCurrency })
   currency!: BillingCurrency;
 
-  @Column({ type: 'enum', name: BillingSubscriptionPlanSourcePropSnake.period, enum: BillingPeriod })
+  @Column({ type: 'enum', enum: BillingPeriod })
   period!: BillingPeriod;
 
-  @Column({ type: 'integer', name: BillingSubscriptionPlanSourcePropSnake.price })
+  @Column({ type: 'integer' })
   price!: number;
 
-  @Column({ type: 'uuid', name: BillingSubscriptionPlanSourcePropSnake.billing_organization_id })
+  @Column({ type: 'uuid' })
   billingOrganizationId!: string;
 
-  @ColumnTemplate.CreateDate(BillingSubscriptionPlanSourcePropSnake.created_at)
+  @CreatedAt()
   createdAt!: Date;
 
-  @ColumnTemplate.UpdateDate(BillingSubscriptionPlanSourcePropSnake.updated_at)
+  @UpdatedAt()
   updatedAt!: Date;
 
-  @ColumnTemplate.DeleteDate(BillingSubscriptionPlanSourcePropSnake.deleted_at)
+  @DeletedAt()
   deletedAt!: Date | null;
 }

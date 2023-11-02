@@ -1,12 +1,18 @@
-import { BillingOrganizationPropCamel, CreateBillingOrganizationDto, CreateOrUpdateBillingOrganizationWithNiceDto, FindBillingOrganizationDto } from '@dogu-private/console';
+import {
+  BillingCategory,
+  BillingOrganizationProp,
+  CreateBillingOrganizationDto,
+  CreateOrUpdateBillingOrganizationWithNiceDto,
+  FindBillingOrganizationDto,
+} from '@dogu-private/console';
 import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
+import { DataSource, EntityManager } from 'typeorm';
 import { v4 } from 'uuid';
 import { BillingMethodNice } from '../../db/entity/billing-method-nice.entity';
 import { BillingOrganization } from '../../db/entity/billing-organization.entity';
 import { retrySerialize } from '../../db/utils';
-import { BillingMethodNiceService } from '../billing-method-nice/billing-method-nice.service';
+import { BillingMethodNiceService } from '../billing-method/billing-method-nice.service';
 import { DoguLogger } from '../logger/logger';
 
 @Injectable()
@@ -23,7 +29,7 @@ export class BillingOrganizationService {
       const billingOrganization = await manager
         .getRepository(BillingOrganization)
         .createQueryBuilder(BillingOrganization.name)
-        .leftJoinAndSelect(`${BillingOrganization.name}.${BillingOrganizationPropCamel.billingMethodNice}`, BillingMethodNice.name)
+        .leftJoinAndSelect(`${BillingOrganization.name}.${BillingOrganizationProp.billingMethodNice}`, BillingMethodNice.name)
         .where({ organizationId })
         .getOne();
       return billingOrganization;
@@ -62,5 +68,14 @@ export class BillingOrganizationService {
     const { billingOrganizationId } = billingOrganization;
     const billingMethodNice = await this.billingMethodNiceService.createOrUpdate({ ...dto, billingOrganizationId });
     return { ...billingOrganization, billingMethodNice };
+  }
+
+  static async findWithSubscriptionPlans(manager: EntityManager, organizationId: string, category: BillingCategory): Promise<BillingOrganization | null> {
+    return await manager
+      .getRepository(BillingOrganization)
+      .createQueryBuilder(BillingOrganization.name)
+      .leftJoinAndSelect(`${BillingOrganization.name}.${BillingOrganizationProp.billingSubscriptionPlans}`, BillingOrganizationProp.billingSubscriptionPlans)
+      .where({ organizationId, category })
+      .getOne();
   }
 }

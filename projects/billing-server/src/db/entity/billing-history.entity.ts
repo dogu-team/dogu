@@ -1,52 +1,38 @@
-import {
-  BillingHistoryAndBillingSubscriptionPlanPropCamel,
-  BillingHistoryAndBillingSubscriptionPlanPropSnake,
-  BillingHistoryBase,
-  BillingHistoryPropCamel,
-  BillingHistoryPropSnake,
-} from '@dogu-private/console';
+import { BillingHistoryBase, BillingHistoryProp, BillingSubscriptionPlanProp } from '@dogu-private/console';
 import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, PrimaryColumn } from 'typeorm';
-import { BillingHistoryAndBillingSubscriptionPlanTableName } from './billing-history-and-billing-subscription-plan.entity';
 import { BillingOrganization } from './billing-organization.entity';
 import { BillingSubscriptionPlan } from './billing-subscription-plan.entity';
-import { ColumnTemplate } from './util/decorators';
+import { CreatedAt, DateColumn, DeletedAt, UpdatedAt } from './util/decorators';
 
-@Entity('billing_history')
+@Entity()
 export class BillingHistory implements BillingHistoryBase {
-  @PrimaryColumn('uuid', { name: BillingHistoryPropSnake.billing_history_id })
+  @PrimaryColumn('uuid')
   billingHistoryId!: string;
 
-  @ColumnTemplate.Date(BillingHistoryPropSnake.purchased_at, false)
+  @DateColumn()
   purchasedAt!: Date;
 
-  @Column({ type: 'uuid', name: BillingHistoryPropSnake.billing_organization_id })
+  @Column({ type: 'uuid' })
   billingOrganizationId!: string;
 
-  @ColumnTemplate.CreateDate(BillingHistoryPropSnake.created_at)
+  @CreatedAt()
   createdAt!: Date;
 
-  @ColumnTemplate.UpdateDate(BillingHistoryPropSnake.updated_at)
+  @UpdatedAt()
   updatedAt!: Date;
 
-  @ColumnTemplate.DeleteDate(BillingHistoryPropSnake.deleted_at)
+  @DeletedAt()
   deletedAt!: Date | null;
 
   @ManyToOne(() => BillingOrganization)
-  @JoinColumn({ name: BillingHistoryPropSnake.billing_organization_id, referencedColumnName: BillingHistoryPropCamel.billingOrganizationId })
+  @JoinColumn()
   billingOrganization?: BillingOrganization;
 
-  @ManyToMany(() => BillingSubscriptionPlan, { createForeignKeyConstraints: false })
+  @ManyToMany(() => BillingSubscriptionPlan)
   @JoinTable({
-    name: BillingHistoryAndBillingSubscriptionPlanTableName,
-    joinColumn: {
-      name: BillingHistoryAndBillingSubscriptionPlanPropSnake.billing_history_id,
-      referencedColumnName: BillingHistoryAndBillingSubscriptionPlanPropCamel.billingHistoryId,
-    },
-    inverseJoinColumn: {
-      name: BillingHistoryAndBillingSubscriptionPlanPropSnake.billing_subscription_plan_id,
-      referencedColumnName: BillingHistoryAndBillingSubscriptionPlanPropCamel.billingSubscriptionPlanId,
-    },
-    synchronize: false,
+    name: 'billing_history_and_billing_subscription_plan',
+    joinColumn: { name: BillingHistoryProp.billingHistoryId },
+    inverseJoinColumn: { name: BillingSubscriptionPlanProp.billingSubscriptionPlanId },
   })
   billingSubscriptionPlans?: BillingSubscriptionPlan[];
 }

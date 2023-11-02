@@ -1,4 +1,4 @@
-import { camelToSnakeCasePropertiesOf, IsFilledString, propertiesOf } from '@dogu-tech/common';
+import { IsFilledString, propertiesOf } from '@dogu-tech/common';
 import { IsIn, IsUUID } from 'class-validator';
 import { BillingCategory } from './billing';
 import { BillingMethodNiceBase } from './billing-method-nice';
@@ -8,7 +8,13 @@ export interface BillingOrganizationBase {
   billingOrganizationId: string;
   organizationId: string;
   category: BillingCategory;
+
+  /**
+   * @note monthly purchase date and yearly purchase date are same with first purchase date
+   */
   firstPurchasedAt: Date | null;
+  lastMonthlyPurchasedAt: Date | null;
+  lastYearlyPurchasedAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date | null;
@@ -16,8 +22,7 @@ export interface BillingOrganizationBase {
   billingMethodNice?: BillingMethodNiceBase;
 }
 
-export const BillingOrganizationPropCamel = propertiesOf<BillingOrganizationBase>();
-export const BillingOrganizationPropSnake = camelToSnakeCasePropertiesOf<BillingOrganizationBase>();
+export const BillingOrganizationProp = propertiesOf<BillingOrganizationBase>();
 
 export class FindBillingOrganizationDto {
   @IsUUID()
