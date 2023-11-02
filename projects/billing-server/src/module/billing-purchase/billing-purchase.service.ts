@@ -13,17 +13,12 @@ import { DataSource } from 'typeorm';
 import { retrySerialize } from '../../db/utils';
 import { BillingHistoryService } from '../billing-history/billing-history.service';
 import { BillingMethodNiceCaller } from '../billing-method/billing-method-nice.caller';
-import { createOrUpdateMethodNice, createPurchase } from '../billing-method/billing-method-nice.serializables';
+import { createOrUpdateMethodNice } from '../billing-method/billing-method-nice.serializables';
 import { BillingMethodNiceService } from '../billing-method/billing-method-nice.service';
-import {
-  findOrganizationWithMethodAndSubscriptionPlans,
-  findOrganizationWithSubscriptionPlans,
-  registerUsedCoupon,
-} from '../billing-organization/billing-organization.serializables';
+import { findOrganizationWithMethodAndSubscriptionPlans, findOrganizationWithSubscriptionPlans } from '../billing-organization/billing-organization.serializables';
 import { BillingOrganizationService } from '../billing-organization/billing-organization.service';
-import { createSubscriptionPlan, unsubscribeRemainingSubscriptionPlans } from '../billing-subscription-plan/billing-subscription-plan.serializables';
 import { DoguLogger } from '../logger/logger';
-import { getSubscriptionPreview } from './billing-purchase.serializables';
+import { getSubscriptionPreview, processPurchaseSubscription } from './billing-purchase.serializables';
 
 @Injectable()
 export class BillingPurchaseService {
@@ -56,6 +51,7 @@ export class BillingPurchaseService {
 
   async createPurchaseSubscription(dto: CreatePurchaseSubscriptionDto): Promise<CreatePurchaseSubscriptionResponse> {
     return await retrySerialize(this.logger, this.dataSource, async (context) => {
+      const { manager } = context;
       const billingOrganization = await findOrganizationWithMethodAndSubscriptionPlans(context, dto);
       if (!billingOrganization) {
         return {
@@ -83,47 +79,11 @@ export class BillingPurchaseService {
         };
       }
 
-      const createPurchaseResult = await createPurchase(context, this.billingMethodNiceCaller, {
-        billingMethodNiceId: billingOrganization.billingMethodNice?.billingMethodNiceId,
-        period: billingSubscriptionPreview.subscriptionPlan.period,
-        amount: billingSubscriptionPreview.totalPrice,
-        // TODO: change to goodsName
-        goodsName: billingSubscriptionPreview.subscriptionPlan.type,
+      return await processPurchaseSubscription(context, this.billingMethodNiceCaller, {
+        billingMethodNice: billingOrganization.billingMethodNice,
+        billingOrganization,
+        billingSubscriptionPreview,
       });
-      if (!createPurchaseResult.ok) {
-        return {
-          ok: false,
-          resultCode: createPurchaseResult.resultCode,
-        };
-      }
-
-      const createSubscriptionPlanResult = await createSubscriptionPlan(context, {
-        billingOrganizationId: billingOrganization.billingOrganizationId,
-        subscriptionPlanSourceData: billingSubscriptionPreview.subscriptionPlan,
-        lastPurchasedPrice: billingSubscriptionPreview.totalPrice,
-      });
-      if (!createSubscriptionPlanResult.ok) {
-        return {
-          ok: false,
-          resultCode: createSubscriptionPlanResult.resultCode,
-        };
-      }
-
-      const remainingSubscriptionPlanIds = billingSubscriptionPreview.remainingPlans.map((plan) => plan.billingSubscriptionPlanId);
-      await unsubscribeRemainingSubscriptionPlans(context, remainingSubscriptionPlanIds);
-
-      if (billingSubscriptionPreview.coupon) {
-        await registerUsedCoupon(context, {
-          billingOrganizationId: billingOrganization.billingOrganizationId,
-          billingCouponId: billingSubscriptionPreview.coupon.billingCouponId,
-        });
-      }
-
-      // TODO: create history
-      return {
-        ok: true,
-        resultCode: resultCode('ok'),
-      };
     });
   }
 
@@ -158,47 +118,11 @@ export class BillingPurchaseService {
         },
       });
 
-      const createPurchaseResult = await createPurchase(context, this.billingMethodNiceCaller, {
-        billingMethodNiceId: billingMethodNice.billingMethodNiceId,
-        period: billingSubscriptionPreview.subscriptionPlan.period,
-        amount: billingSubscriptionPreview.totalPrice,
-        // TODO: change to goodsName
-        goodsName: billingSubscriptionPreview.subscriptionPlan.type,
+      return await processPurchaseSubscription(context, this.billingMethodNiceCaller, {
+        billingMethodNice,
+        billingOrganization,
+        billingSubscriptionPreview,
       });
-      if (!createPurchaseResult.ok) {
-        return {
-          ok: false,
-          resultCode: createPurchaseResult.resultCode,
-        };
-      }
-
-      const createSubscriptionPlanResult = await createSubscriptionPlan(context, {
-        billingOrganizationId: billingOrganization.billingOrganizationId,
-        subscriptionPlanSourceData: billingSubscriptionPreview.subscriptionPlan,
-        lastPurchasedPrice: billingSubscriptionPreview.totalPrice,
-      });
-      if (!createSubscriptionPlanResult.ok) {
-        return {
-          ok: false,
-          resultCode: createSubscriptionPlanResult.resultCode,
-        };
-      }
-
-      const remainingSubscriptionPlanIds = billingSubscriptionPreview.remainingPlans.map((plan) => plan.billingSubscriptionPlanId);
-      await unsubscribeRemainingSubscriptionPlans(context, remainingSubscriptionPlanIds);
-
-      if (billingSubscriptionPreview.coupon) {
-        await registerUsedCoupon(context, {
-          billingOrganizationId: billingOrganization.billingOrganizationId,
-          billingCouponId: billingSubscriptionPreview.coupon.billingCouponId,
-        });
-      }
-
-      // TODO: create history
-      return {
-        ok: true,
-        resultCode: resultCode('ok'),
-      };
     });
   }
 }

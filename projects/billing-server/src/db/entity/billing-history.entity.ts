@@ -25,10 +25,10 @@ export class BillingHistory implements BillingHistoryBase {
   deletedAt!: Date | null;
 
   @ManyToOne(() => BillingOrganization)
-  @JoinColumn()
+  @JoinColumn({ name: BillingHistoryProp.billingOrganizationId })
   billingOrganization?: BillingOrganization;
 
-  @ManyToMany(() => BillingSubscriptionPlan)
+  @ManyToMany(() => BillingSubscriptionPlan, (billingSubscriptionPlan) => billingSubscriptionPlan.billingHistories)
   @JoinTable({
     name: 'billing_history_and_billing_subscription_plan',
     joinColumn: { name: BillingHistoryProp.billingHistoryId },

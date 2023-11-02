@@ -2,6 +2,7 @@ import {
   BillingCategory,
   BillingCouponBase,
   BillingCurrency,
+  BillingMethodNiceBase,
   BillingPeriod,
   BillingResultCode,
   BillingSubscriptionPlanInfo,
@@ -11,14 +12,22 @@ import {
   BillingSubscriptionPlanPriceMap,
   BillingSubscriptionPlanSourceData,
   BillingSubscriptionPlanType,
+  CreatePurchaseSubscriptionResponse,
   GetBillingSubscriptionPreviewResponse,
+  GetBillingSubscriptionPreviewResponseSuccess,
   resultCode,
 } from '@dogu-private/console';
 import _ from 'lodash';
+import { v4 } from 'uuid';
+import { BillingHistory } from '../../db/entity/billing-history.entity';
 import { BillingOrganization } from '../../db/entity/billing-organization.entity';
 import { BillingSubscriptionPlanSource } from '../../db/entity/billing-subscription-plan-source.entity';
 import { RetrySerializeContext } from '../../db/utils';
 import { validateCoupon } from '../billing-coupon/billing-coupon.serializables';
+import { BillingMethodNiceCaller } from '../billing-method/billing-method-nice.caller';
+import { createPurchase } from '../billing-method/billing-method-nice.serializables';
+import { registerUsedCoupon } from '../billing-organization/billing-organization.serializables';
+import { createSubscriptionPlan, unsubscribeRemainingSubscriptionPlans } from '../billing-subscription-plan/billing-subscription-plan.serializables';
 import {
   calculateCouponFactor,
   calculateElapsedDays,
@@ -349,4 +358,70 @@ export async function getSubscriptionPreview(context: RetrySerializeContext, dto
       }
     }
   }
+}
+
+export interface ProcessPurchaseDto {
+  billingOrganization: BillingOrganization;
+  billingMethodNice: BillingMethodNiceBase;
+  billingSubscriptionPreview: GetBillingSubscriptionPreviewResponseSuccess;
+}
+
+export async function processPurchaseSubscription(
+  context: RetrySerializeContext,
+  billingMethodNiceCaller: BillingMethodNiceCaller,
+  dto: ProcessPurchaseDto,
+): Promise<CreatePurchaseSubscriptionResponse> {
+  const { manager } = context;
+  const { billingOrganization, billingMethodNice, billingSubscriptionPreview } = dto;
+  const createPurchaseResult = await createPurchase(context, billingMethodNiceCaller, {
+    billingMethodNiceId: billingMethodNice.billingMethodNiceId,
+    period: billingSubscriptionPreview.subscriptionPlan.period,
+    amount: billingSubscriptionPreview.totalPrice,
+    // TODO: change to goodsName
+    goodsName: 'dogu technologies',
+  });
+  if (!createPurchaseResult.ok) {
+    return {
+      ok: false,
+      resultCode: createPurchaseResult.resultCode,
+    };
+  }
+
+  const createSubscriptionPlanResult = await createSubscriptionPlan(context, {
+    billingOrganizationId: billingOrganization.billingOrganizationId,
+    subscriptionPlanSourceData: billingSubscriptionPreview.subscriptionPlan,
+    lastPurchasedPrice: billingSubscriptionPreview.totalPrice,
+  });
+  if (!createSubscriptionPlanResult.ok) {
+    return {
+      ok: false,
+      resultCode: createSubscriptionPlanResult.resultCode,
+    };
+  }
+
+  const remainingSubscriptionPlanIds = billingSubscriptionPreview.remainingPlans.map((plan) => plan.billingSubscriptionPlanId);
+  await unsubscribeRemainingSubscriptionPlans(context, remainingSubscriptionPlanIds);
+
+  if (billingSubscriptionPreview.coupon) {
+    await registerUsedCoupon(context, {
+      billingOrganizationId: billingOrganization.billingOrganizationId,
+      billingCouponId: billingSubscriptionPreview.coupon.billingCouponId,
+    });
+  }
+
+  {
+    const created = manager.getRepository(BillingHistory).create({
+      billingHistoryId: v4(),
+      billingOrganizationId: billingOrganization.billingOrganizationId,
+      purchasedAt: new Date(),
+    });
+    created.billingSubscriptionPlans ??= [];
+    created.billingSubscriptionPlans.push(createSubscriptionPlanResult.subscriptionPlan);
+    await manager.getRepository(BillingHistory).save(created);
+  }
+
+  return {
+    ok: true,
+    resultCode: resultCode('ok'),
+  };
 }

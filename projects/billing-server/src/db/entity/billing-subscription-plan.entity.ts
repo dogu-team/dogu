@@ -1,6 +1,7 @@
 import { BillingCategory, BillingCurrency, BillingPeriod, BillingSubscriptionPlanBase, BillingSubscriptionPlanProp, BillingSubscriptionPlanType } from '@dogu-private/console';
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToMany, ManyToOne, PrimaryColumn } from 'typeorm';
 import { BillingCoupon } from './billing-coupon.entity';
+import { BillingHistory } from './billing-history.entity';
 import { BillingOrganization } from './billing-organization.entity';
 import { BillingSubscriptionPlanSource } from './billing-subscription-plan-source.entity';
 import { CreatedAt, DateColumn, DeletedAt, UpdatedAt } from './util/decorators';
@@ -66,4 +67,7 @@ export class BillingSubscriptionPlan implements BillingSubscriptionPlanBase {
   @ManyToOne(() => BillingSubscriptionPlanSource)
   @JoinColumn({ name: BillingSubscriptionPlanProp.billingSubscriptionPlanSourceId })
   billingSubscriptionPlanSource?: BillingSubscriptionPlanSource;
+
+  @ManyToMany(() => BillingHistory, (billingHistory) => billingHistory.billingSubscriptionPlans)
+  billingHistories?: BillingHistory[];
 }
