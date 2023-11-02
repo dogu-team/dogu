@@ -22,8 +22,7 @@ const DeviceControlMetaState = PrivateProtocol.DeviceControlMetaState;
 
 interface BlockAppInfo {
   bundleId: string;
-  uninstall?: true;
-  runtime?: true;
+  uninstall: true;
 }
 
 const UninstallSystemAppList: string[] = [];
@@ -142,23 +141,6 @@ const BlockAppList: BlockAppInfo[] = [
     bundleId: 'com.apple.Translate',
     uninstall: true,
   },
-  // access block
-  {
-    bundleId: 'com.apple.Preferences',
-    runtime: true,
-  },
-  {
-    bundleId: 'com.apple.mobilephone',
-    runtime: true,
-  },
-  {
-    bundleId: 'com.apple.MobileSMS',
-    runtime: true,
-  },
-  {
-    bundleId: 'com.apple.DocumentsApp',
-    runtime: true,
-  },
 ];
 
 const RunningBoardProcessName = 'runningboardd';
@@ -235,17 +217,6 @@ export class IosSharedDeviceService implements Zombieable {
     if (this.reset.isResetting) {
       return;
     }
-    // await this.wda.waitUntilSessionId();
-    // const activeApps = await this.wda.getActiveAppList();
-    // for (const app of activeApps) {
-    //   if (BlockAppList.find((item) => item.runtime && item.bundleId === app.bundleId)) {
-    //     if (this.reset.isResetting) {
-    //       return;
-    //     }
-    //     await this.wda.terminateApp(app.bundleId);
-    //   }
-    // }
-    // await delay(1000);
   }
 
   onDie(): void {}

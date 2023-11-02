@@ -107,7 +107,6 @@ actor TouchControlPlayer: IControlPlayer {
         ],
       ]
     ])
-    //    let elapsedTime = Date().unixTimeMilliseconds - beginTime
     lastPlayTime = up.control.timeStamp
 
     var result = Inner_Types_CfGdcDaControlResult()
