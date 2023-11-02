@@ -47,6 +47,15 @@ function calculateNextPurchaseAt(billingOrganization: BillingOrganization, perio
   }
 }
 
+function parseDiscountPercent(value: number | null): number {
+  const monthlyDiscountPercent = value == null ? 0 : value;
+  return monthlyDiscountPercent;
+}
+
+function discountPercentToFactor(percent: number): number {
+  return (100 - percent) / 100;
+}
+
 function calculateCouponFactor(coupon: BillingCouponBase | null, period: BillingPeriod): number {
   if (!coupon) {
     return 1;
@@ -54,14 +63,12 @@ function calculateCouponFactor(coupon: BillingCouponBase | null, period: Billing
 
   switch (period) {
     case 'monthly': {
-      const monthlyDiscountPercent = coupon.monthlyDiscountPercent ?? 100;
-      const normalizedCouponFactor = monthlyDiscountPercent / 100;
-      return normalizedCouponFactor;
+      const monthlyDiscountPercent = parseDiscountPercent(coupon.monthlyDiscountPercent);
+      return discountPercentToFactor(monthlyDiscountPercent);
     }
     case 'yearly': {
-      const yearlyDiscountPercent = coupon.yearlyDiscountPercent ?? 100;
-      const normalizedCouponFactor = yearlyDiscountPercent / 100;
-      return normalizedCouponFactor;
+      const yearlyDiscountPercent = parseDiscountPercent(coupon.yearlyDiscountPercent);
+      return discountPercentToFactor(yearlyDiscountPercent);
     }
     default:
       assertUnreachable(period);
@@ -75,31 +82,25 @@ function calculateNextCouponFactor(coupon: BillingCouponBase | null, period: Bil
 
   switch (period) {
     case 'monthly': {
-      const monthlyDiscountPercent = coupon.monthlyDiscountPercent ?? 100;
+      const monthlyDiscountPercent = parseDiscountPercent(coupon.monthlyDiscountPercent);
       if (coupon.monthlyApplyCount === null) {
         // @note apply infinitly
-        const normalizedNextCouponFactor = monthlyDiscountPercent / 100;
-        return normalizedNextCouponFactor;
+        return discountPercentToFactor(monthlyDiscountPercent);
       } else if (coupon.monthlyApplyCount > 1) {
-        const normalizedNextCouponFactor = monthlyDiscountPercent / 100;
-        return normalizedNextCouponFactor;
+        return discountPercentToFactor(monthlyDiscountPercent);
       } else {
-        const normalizedNextCouponFactor = 1;
-        return normalizedNextCouponFactor;
+        return 1;
       }
     }
     case 'yearly': {
-      const yearlyDiscountPercent = coupon.yearlyDiscountPercent ?? 100;
+      const yearlyDiscountPercent = parseDiscountPercent(coupon.yearlyDiscountPercent);
       if (coupon.yearlyApplyCount === null) {
         // @note apply infinitly
-        const normalizedNextCouponFactor = yearlyDiscountPercent / 100;
-        return normalizedNextCouponFactor;
+        return discountPercentToFactor(yearlyDiscountPercent);
       } else if (coupon.yearlyApplyCount > 1) {
-        const normalizedNextCouponFactor = yearlyDiscountPercent / 100;
-        return normalizedNextCouponFactor;
+        return discountPercentToFactor(yearlyDiscountPercent);
       } else {
-        const normalizedNextCouponFactor = 1;
-        return normalizedNextCouponFactor;
+        return 1;
       }
     }
     default:

@@ -14,6 +14,8 @@ export const BillingCouponReason = [
   'coupon-invalid-monthly-apply-count',
   'coupon-invalid-yearly-apply-count',
   'coupon-null-argument',
+  'coupon-invalid-monthly-discount-percent',
+  'coupon-invalid-yearly-discount-percent',
 ] as const;
 export type BillingCouponReason = (typeof BillingCouponReason)[number];
 

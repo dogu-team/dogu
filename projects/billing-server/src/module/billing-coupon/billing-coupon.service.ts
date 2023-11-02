@@ -67,8 +67,16 @@ export class BillingCouponService {
       return { ok: false, reason: 'coupon-all-used', coupon: null };
     }
 
+    if (billingCoupon.monthlyDiscountPercent !== null && (0 > billingCoupon.monthlyDiscountPercent || billingCoupon.monthlyDiscountPercent > 100)) {
+      return { ok: false, reason: 'coupon-invalid-monthly-discount-percent', coupon: null };
+    }
+
     if (billingCoupon.monthlyDiscountPercent !== null && billingCoupon.monthlyApplyCount === 0) {
       return { ok: false, reason: 'coupon-invalid-monthly-apply-count', coupon: null };
+    }
+
+    if (billingCoupon.yearlyDiscountPercent !== null && (0 > billingCoupon.yearlyDiscountPercent || billingCoupon.yearlyDiscountPercent > 100)) {
+      return { ok: false, reason: 'coupon-invalid-yearly-discount-percent', coupon: null };
     }
 
     if (billingCoupon.yearlyDiscountPercent !== null && billingCoupon.yearlyApplyCount === 0) {
