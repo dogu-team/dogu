@@ -22,7 +22,7 @@ export class BillingSubscriptionPlanSource implements BillingSubscriptionPlanSou
   @Column({ type: 'enum', enum: BillingPeriod })
   period!: BillingPeriod;
 
-  @Column({ type: 'integer' })
+  @Column({ type: 'double precision' })
   originPrice!: number;
 
   @Column({ type: 'uuid' })

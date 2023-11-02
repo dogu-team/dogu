@@ -1,4 +1,4 @@
-import { BillingCategory, BillingCurrency, BillingPeriod, BillingSubscriptionPlanBase, BillingSubscriptionPlanType } from '@dogu-private/console';
+import { BillingCategory, BillingCurrency, BillingPeriod, BillingSubscriptionPlanBase, BillingSubscriptionPlanProp, BillingSubscriptionPlanType } from '@dogu-private/console';
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 import { BillingCoupon } from './billing-coupon.entity';
 import { BillingOrganization } from './billing-organization.entity';
@@ -25,10 +25,10 @@ export class BillingSubscriptionPlan implements BillingSubscriptionPlanBase {
   @Column({ type: 'enum', enum: BillingPeriod })
   period!: BillingPeriod;
 
-  @Column({ type: 'integer' })
+  @Column({ type: 'double precision' })
   originPrice!: number;
 
-  @Column({ type: 'integer' })
+  @Column({ type: 'double precision' })
   lastPurchasedPrice!: number;
 
   @Column({ type: 'uuid' })
@@ -56,14 +56,14 @@ export class BillingSubscriptionPlan implements BillingSubscriptionPlanBase {
   deletedAt!: Date | null;
 
   @ManyToOne(() => BillingOrganization, (billingOrganization) => billingOrganization.billingSubscriptionPlans)
-  @JoinColumn()
+  @JoinColumn({ name: BillingSubscriptionPlanProp.billingOrganizationId })
   billingOrganization?: BillingOrganization;
 
   @ManyToOne(() => BillingCoupon)
-  @JoinColumn()
+  @JoinColumn({ name: BillingSubscriptionPlanProp.billingCouponId })
   billingCoupon?: BillingCoupon;
 
   @ManyToOne(() => BillingSubscriptionPlanSource)
-  @JoinColumn()
+  @JoinColumn({ name: BillingSubscriptionPlanProp.billingSubscriptionPlanSourceId })
   billingSubscriptionPlanSource?: BillingSubscriptionPlanSource;
 }

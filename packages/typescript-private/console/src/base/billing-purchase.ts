@@ -34,7 +34,7 @@ import { BillingCouponBase } from './billing-coupon';
  * case 112 - duplicated subscription plan
  */
 
-export class BillingSubscriptionPlanDto {
+export class BillingSubscriptionPlanPreviewDto {
   @IsIn(BillingCategory)
   category!: BillingCategory;
 
@@ -56,13 +56,9 @@ export class BillingSubscriptionPlanDto {
   couponCode?: string;
 }
 
-export class GetBillingSubscriptionPreviewDto {
+export class GetBillingSubscriptionPreviewDto extends BillingSubscriptionPlanPreviewDto {
   @IsUUID()
   organizationId!: string;
-
-  @ValidateNested()
-  @Type(() => BillingSubscriptionPlanDto)
-  billingSubscriptionPlan!: BillingSubscriptionPlanDto;
 }
 
 export interface RemainingPlan {

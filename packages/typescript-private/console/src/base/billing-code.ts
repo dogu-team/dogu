@@ -5,6 +5,7 @@ export const BillingResultCodeMap = {
 
   // organization
   'organization-not-found': 100,
+  'organization-method-nice-not-found': 101,
 
   // coupon
   'coupon-not-found': 200,
@@ -25,6 +26,9 @@ export const BillingResultCodeMap = {
   'subscription-plan-category-not-matched': 304,
   'subscription-plan-currency-not-matched': 305,
   'subscription-plan-duplicated': 306,
+
+  // method nice
+  'method-nice-bid-not-found': 400,
 };
 
 export type BillingReason = keyof typeof BillingResultCodeMap;

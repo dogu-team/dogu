@@ -8,6 +8,6 @@ import { BillingMethodNiceService } from './billing-method-nice.service';
 @Module({
   imports: [forwardRef(() => BillingOrganizationModule), BillingHistoryModule],
   providers: [BillingMethodNiceCaller, BillingMethodNiceService],
-  exports: [BillingMethodNiceService],
+  exports: [BillingMethodNiceService, BillingMethodNiceCaller],
 })
 export class BillingMethodModule {}

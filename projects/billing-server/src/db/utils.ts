@@ -90,7 +90,10 @@ export async function retrySerialize<T>(
         if (code === '40001' || code === '40P01') {
           logger.warn(`retrySerialize.catch serialization failure. retry after`, { tryCount, retryCount, retryInterval, error });
           await new Promise((resolve) => setTimeout(resolve, retryInterval));
+          continue;
         }
+
+        throw error;
       }
     }
   } finally {

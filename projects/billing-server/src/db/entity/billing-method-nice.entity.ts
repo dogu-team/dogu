@@ -1,4 +1,4 @@
-import { BillingMethodNiceBase, BillingOrganizationProp } from '@dogu-private/console';
+import { BillingMethodNiceBase, BillingMethodNiceProp } from '@dogu-private/console';
 import { Column, Entity, JoinColumn, OneToOne, PrimaryColumn } from 'typeorm';
 import { BillingOrganization } from './billing-organization.entity';
 import { CreatedAt, DateColumn, DeletedAt, UpdatedAt } from './util/decorators';
@@ -39,6 +39,6 @@ export class BillingMethodNice implements BillingMethodNiceBase {
   deletedAt!: Date | null;
 
   @OneToOne(() => BillingOrganization)
-  @JoinColumn({ name: BillingOrganizationProp.billingOrganizationId })
+  @JoinColumn({ name: BillingMethodNiceProp.billingOrganizationId })
   billingOrganization?: BillingOrganization;
 }

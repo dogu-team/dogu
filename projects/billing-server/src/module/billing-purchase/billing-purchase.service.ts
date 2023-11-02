@@ -12,9 +12,12 @@ import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { retrySerialize } from '../../db/utils';
 import { BillingHistoryService } from '../billing-history/billing-history.service';
+import { BillingMethodNiceCaller } from '../billing-method/billing-method-nice.caller';
+import { createOrUpdateMethodNice, createPurchase } from '../billing-method/billing-method-nice.serializables';
 import { BillingMethodNiceService } from '../billing-method/billing-method-nice.service';
-import { findOrganizationWithSubscriptionPlans } from '../billing-organization/billing-organization.serializables';
+import { findOrganizationWithMethodAndSubscriptionPlans, findOrganizationWithSubscriptionPlans } from '../billing-organization/billing-organization.serializables';
 import { BillingOrganizationService } from '../billing-organization/billing-organization.service';
+import { createSubscriptionPlan } from '../billing-subscription-plan/billing-subscription-plan.serializables';
 import { DoguLogger } from '../logger/logger';
 import { getSubscriptionPreview } from './billing-purchase.serializables';
 
@@ -27,6 +30,7 @@ export class BillingPurchaseService {
     private readonly billingMethodNiceService: BillingMethodNiceService,
     private readonly billingOrganizationService: BillingOrganizationService,
     private readonly billingHistoryService: BillingHistoryService,
+    private readonly billingMethodNiceCaller: BillingMethodNiceCaller,
   ) {}
 
   async getSubscriptionPreview(dto: GetBillingSubscriptionPreviewDto): Promise<GetBillingSubscriptionPreviewResponse> {
@@ -41,14 +45,14 @@ export class BillingPurchaseService {
 
       return await getSubscriptionPreview(context, {
         billingOrganization,
-        billingSubscriptionPlan: dto.billingSubscriptionPlan,
+        billingSubscriptionPlan: dto,
       });
     });
   }
 
   async createPurchaseSubscription(dto: CreatePurchaseSubscriptionDto): Promise<CreatePurchaseSubscriptionResponse> {
     return await retrySerialize(this.logger, this.dataSource, async (context) => {
-      const billingOrganization = await findOrganizationWithSubscriptionPlans(context, dto);
+      const billingOrganization = await findOrganizationWithMethodAndSubscriptionPlans(context, dto);
       if (!billingOrganization) {
         return {
           ok: false,
@@ -58,7 +62,7 @@ export class BillingPurchaseService {
 
       const billingSubscriptionPreview = await getSubscriptionPreview(context, {
         billingOrganization,
-        billingSubscriptionPlan: dto.billingSubscriptionPlan,
+        billingSubscriptionPlan: dto,
       });
 
       if (!billingSubscriptionPreview.ok) {
@@ -68,13 +72,51 @@ export class BillingPurchaseService {
         };
       }
 
-      throw new Error('not implemented');
+      if (!billingOrganization.billingMethodNice) {
+        return {
+          ok: false,
+          resultCode: resultCode('organization-method-nice-not-found'),
+        };
+      }
+
+      const createPurchaseResult = await createPurchase(context, this.billingMethodNiceCaller, {
+        billingMethodNiceId: billingOrganization.billingMethodNice?.billingMethodNiceId,
+        period: billingSubscriptionPreview.subscriptionPlan.period,
+        amount: billingSubscriptionPreview.totalPrice,
+        // TODO: change to goodsName
+        goodsName: billingSubscriptionPreview.subscriptionPlan.type,
+      });
+      if (!createPurchaseResult.ok) {
+        return {
+          ok: false,
+          resultCode: createPurchaseResult.resultCode,
+        };
+      }
+
+      const createSubscriptionPlanResult = await createSubscriptionPlan(context, {
+        billingOrganizationId: billingOrganization.billingOrganizationId,
+        subscriptionPlanSourceData: billingSubscriptionPreview.subscriptionPlan,
+        lastPurchasedPrice: billingSubscriptionPreview.totalPrice,
+      });
+      if (!createSubscriptionPlanResult.ok) {
+        return {
+          ok: false,
+          resultCode: createSubscriptionPlanResult.resultCode,
+        };
+      }
+
+      // TODO: create history
+      return {
+        ok: true,
+        resultCode: resultCode('ok'),
+      };
     });
   }
 
   async createPurchaseSubscriptionWithNewCard(dto: CreatePurchaseSubscriptionWithNewCardDto): Promise<CreatePurchaseSubscriptionWithNewCardResponse> {
     return await retrySerialize(this.logger, this.dataSource, async (context) => {
-      const billingOrganization = await findOrganizationWithSubscriptionPlans(context, dto);
+      const { registerCard } = dto;
+      const billingOrganization = await findOrganizationWithMethodAndSubscriptionPlans(context, dto);
       if (!billingOrganization) {
         return {
           ok: false,
@@ -84,7 +126,7 @@ export class BillingPurchaseService {
 
       const billingSubscriptionPreview = await getSubscriptionPreview(context, {
         billingOrganization,
-        billingSubscriptionPlan: dto.billingSubscriptionPlan,
+        billingSubscriptionPlan: dto,
       });
 
       if (!billingSubscriptionPreview.ok) {
@@ -94,7 +136,44 @@ export class BillingPurchaseService {
         };
       }
 
-      throw new Error('not implemented');
+      const billingMethodNice = await createOrUpdateMethodNice(context, this.billingMethodNiceCaller, {
+        billingOrganizationId: billingOrganization.billingOrganizationId,
+        subscribeRegist: {
+          registerCard,
+        },
+      });
+
+      const createPurchaseResult = await createPurchase(context, this.billingMethodNiceCaller, {
+        billingMethodNiceId: billingMethodNice.billingMethodNiceId,
+        period: billingSubscriptionPreview.subscriptionPlan.period,
+        amount: billingSubscriptionPreview.totalPrice,
+        // TODO: change to goodsName
+        goodsName: billingSubscriptionPreview.subscriptionPlan.type,
+      });
+      if (!createPurchaseResult.ok) {
+        return {
+          ok: false,
+          resultCode: createPurchaseResult.resultCode,
+        };
+      }
+
+      const createSubscriptionPlanResult = await createSubscriptionPlan(context, {
+        billingOrganizationId: billingOrganization.billingOrganizationId,
+        subscriptionPlanSourceData: billingSubscriptionPreview.subscriptionPlan,
+        lastPurchasedPrice: billingSubscriptionPreview.totalPrice,
+      });
+      if (!createSubscriptionPlanResult.ok) {
+        return {
+          ok: false,
+          resultCode: createSubscriptionPlanResult.resultCode,
+        };
+      }
+
+      // TODO: create history
+      return {
+        ok: true,
+        resultCode: resultCode('ok'),
+      };
     });
   }
 }

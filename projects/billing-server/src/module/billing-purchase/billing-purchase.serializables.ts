@@ -4,9 +4,9 @@ import {
   BillingCurrency,
   BillingPeriod,
   BillingResultCode,
-  BillingSubscriptionPlanDto,
   BillingSubscriptionPlanInfo,
   BillingSubscriptionPlanMap,
+  BillingSubscriptionPlanPreviewDto,
   BillingSubscriptionPlanPrice,
   BillingSubscriptionPlanPriceMap,
   BillingSubscriptionPlanSourceData,
@@ -166,7 +166,7 @@ export async function parseCoupon(context: RetrySerializeContext, organizationId
 
 export interface GetSubscriptionPreviewDto {
   billingOrganization: BillingOrganization;
-  billingSubscriptionPlan: BillingSubscriptionPlanDto;
+  billingSubscriptionPlan: BillingSubscriptionPlanPreviewDto;
 }
 
 export async function getSubscriptionPreview(context: RetrySerializeContext, dto: GetSubscriptionPreviewDto): Promise<GetBillingSubscriptionPreviewResponse> {
