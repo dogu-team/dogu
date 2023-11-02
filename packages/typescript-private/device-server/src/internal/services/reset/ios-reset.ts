@@ -1,5 +1,5 @@
 import { Serial, SerialPrintable } from '@dogu-private/types';
-import { delay, filterAsync, loop, loopTime, usingAsnyc } from '@dogu-tech/common';
+import { delay, filterAsync, loop, loopTime, Repeat, usingAsnyc } from '@dogu-tech/common';
 import { boxBox } from 'intersects';
 import { AppiumContextImpl, WDIOElement } from '../../../appium/appium.context';
 import { IdeviceInstaller } from '../../externals/cli/ideviceinstaller';
@@ -98,6 +98,7 @@ export class IosResetService {
     }
   }
 
+  @Repeat({ repeatCount: 2, repeatInterval: 100 })
   private async logoutApppleAccount(iosDriver: IosWebDriver): Promise<void> {
     await usingAsnyc(
       {
@@ -105,6 +106,7 @@ export class IosResetService {
           await iosDriver.relaunchApp('com.apple.Preferences');
         },
         dispose: async () => {
+          await delay(2000);
           await iosDriver.terminateApp('com.apple.Preferences');
         },
       },
@@ -124,6 +126,7 @@ export class IosResetService {
     );
   }
 
+  @Repeat({ repeatCount: 2, repeatInterval: 100 })
   private async clearSafariCache(iosDriver: IosWebDriver): Promise<void> {
     await usingAsnyc(
       {
@@ -131,6 +134,7 @@ export class IosResetService {
           await iosDriver.relaunchApp('com.apple.Preferences');
         },
         dispose: async () => {
+          await delay(2000);
           await iosDriver.terminateApp('com.apple.Preferences');
         },
       },
@@ -146,6 +150,7 @@ export class IosResetService {
     );
   }
 
+  @Repeat({ repeatCount: 2, repeatInterval: 100 })
   private async clearPhotoImages(iosDriver: IosWebDriver): Promise<void> {
     const { logger } = this;
 
@@ -155,6 +160,7 @@ export class IosResetService {
           await iosDriver.relaunchApp('com.apple.mobileslideshow');
         },
         dispose: async () => {
+          await delay(2000);
           await iosDriver.terminateApp('com.apple.mobileslideshow');
         },
       },
@@ -195,6 +201,7 @@ export class IosResetService {
     );
   }
 
+  @Repeat({ repeatCount: 2, repeatInterval: 100 })
   private async clearPhotoAlbums(iosDriver: IosWebDriver): Promise<void> {
     await usingAsnyc(
       {
@@ -202,6 +209,7 @@ export class IosResetService {
           await iosDriver.relaunchApp('com.apple.mobileslideshow');
         },
         dispose: async () => {
+          await delay(2000);
           await iosDriver.terminateApp('com.apple.mobileslideshow');
         },
       },
@@ -221,6 +229,7 @@ export class IosResetService {
     );
   }
 
+  @Repeat({ repeatCount: 2, repeatInterval: 100 })
   private async clearPhotosRecentlyDeleted(iosDriver: IosWebDriver): Promise<void> {
     await usingAsnyc(
       {
@@ -228,36 +237,32 @@ export class IosResetService {
           await iosDriver.relaunchApp('com.apple.mobileslideshow');
         },
         dispose: async () => {
+          await delay(2000);
           await iosDriver.terminateApp('com.apple.mobileslideshow');
         },
       },
       async () => {
-        const DeleteRepeatCount = 2;
+        const recentlyDeleted = await iosDriver.scrollDownToSelector(new IosClassChainSelector('**/XCUIElementTypeStaticText[`label == "Recently Deleted"`]'));
+        await recentlyDeleted.click();
 
-        for await (const _ of loop(300, DeleteRepeatCount)) {
-          await iosDriver.relaunchApp('com.apple.mobileslideshow');
-
-          const recentlyDeleted = await iosDriver.scrollDownToSelector(new IosClassChainSelector('**/XCUIElementTypeStaticText[`label == "Recently Deleted"`]'));
-          await recentlyDeleted.click();
-
-          const title = await iosDriver.rawDriver.$(new IosClassChainSelector('**/XCUIElementTypeOther[`label == "Recently Deleted"`]').build());
-          if (title.error) {
-            throw new Error('Recently Deleted title should show');
-          }
-
-          const images = await iosDriver.waitElementsExist(new IosClassChainSelector('**/XCUIElementTypeImage'), { seconds: 3 });
-          if (0 === images.length) {
-            continue;
-          }
-
-          await iosDriver.clickSelector(new IosClassChainSelector('**/XCUIElementTypeButton[`label == "Select"`]'));
-          await iosDriver.clickSelector(new IosAccessibilitiySelector('Delete All'));
-          await iosDriver.clickSelector(new IosAccessibilitiySelector('Delete From This iPhone'));
+        const title = await iosDriver.rawDriver.$(new IosClassChainSelector('**/XCUIElementTypeOther[`label == "Recently Deleted"`]').build());
+        if (title.error) {
+          throw new Error('Recently Deleted title should show');
         }
+
+        const images = await iosDriver.waitElementsExist(new IosClassChainSelector('**/XCUIElementTypeImage'), { seconds: 3 });
+        if (0 === images.length) {
+          return;
+        }
+
+        await iosDriver.clickSelector(new IosClassChainSelector('**/XCUIElementTypeButton[`label == "Select"`]'));
+        await iosDriver.clickSelector(new IosAccessibilitiySelector('Delete All'));
+        await iosDriver.clickSelector(new IosAccessibilitiySelector('Delete From This iPhone'));
       },
     );
   }
 
+  @Repeat({ repeatCount: 2, repeatInterval: 100 })
   private async clearPhotosSuggestionAndFeedbacks(iosDriver: IosWebDriver): Promise<void> {
     await usingAsnyc(
       {
@@ -265,6 +270,7 @@ export class IosResetService {
           await iosDriver.relaunchApp('com.apple.Preferences');
         },
         dispose: async () => {
+          await delay(2000);
           await iosDriver.terminateApp('com.apple.Preferences');
         },
       },
@@ -281,6 +287,7 @@ export class IosResetService {
     );
   }
 
+  @Repeat({ repeatCount: 2, repeatInterval: 100 })
   private async clearFilesOnMyiPhone(iosDriver: IosWebDriver, helper: IosResetHelper): Promise<void> {
     await usingAsnyc(
       {
@@ -288,6 +295,7 @@ export class IosResetService {
           await iosDriver.relaunchApp('com.apple.DocumentsApp');
         },
         dispose: async () => {
+          await delay(2000);
           await iosDriver.terminateApp('com.apple.DocumentsApp');
         },
       },
@@ -324,6 +332,7 @@ export class IosResetService {
     );
   }
 
+  @Repeat({ repeatCount: 2, repeatInterval: 100 })
   private async clearFilesRecentlyDeleted(iosDriver: IosWebDriver, helper: IosResetHelper): Promise<void> {
     await usingAsnyc(
       {
@@ -331,35 +340,31 @@ export class IosResetService {
           await iosDriver.relaunchApp('com.apple.DocumentsApp');
         },
         dispose: async () => {
+          await delay(2000);
           await iosDriver.terminateApp('com.apple.DocumentsApp');
         },
       },
       async () => {
-        const DeleteRepeatCount = 2;
+        await helper.enterFilesBrowseHome();
 
-        for await (const _ of loop(300, DeleteRepeatCount)) {
-          await iosDriver.relaunchApp('com.apple.DocumentsApp');
-          await helper.enterFilesBrowseHome();
+        await iosDriver.clickSelector(new IosAccessibilitiySelector('Recently Deleted'));
+        await delay(1000);
 
-          await iosDriver.clickSelector(new IosAccessibilitiySelector('Recently Deleted'));
-          await delay(1000);
-
-          const cellsTry = await iosDriver.waitElementsExist(new IosClassChainSelector('**/XCUIElementTypeCell'), { seconds: 3 });
-          if (cellsTry.length === 0) {
-            continue;
-          }
-
-          await iosDriver.clickSelector(new IosAccessibilitiySelector('DOC.itemCollectionMenuButton.Ellipsis'));
-          await iosDriver.clickSelector(new IosAccessibilitiySelector('Icons'));
-          await iosDriver.clickSelector(new IosAccessibilitiySelector('DOC.itemCollectionMenuButton.Ellipsis'));
-          await iosDriver.clickSelector(new IosAccessibilitiySelector('View Options'));
-          await iosDriver.clickSelector(new IosAccessibilitiySelector('DOC.groupMenuButton.none'));
-
-          await iosDriver.clickSelector(new IosAccessibilitiySelector('DOC.itemCollectionMenuButton.Ellipsis'));
-          await iosDriver.clickSelector(new IosAccessibilitiySelector('Select'));
-          await iosDriver.clickSelector(new IosAccessibilitiySelector('Delete All'));
-          await iosDriver.clickSelector(new IosAccessibilitiySelector('Delete'));
+        const cellsTry = await iosDriver.waitElementsExist(new IosClassChainSelector('**/XCUIElementTypeCell'), { seconds: 3 });
+        if (cellsTry.length === 0) {
+          return;
         }
+
+        await iosDriver.clickSelector(new IosAccessibilitiySelector('DOC.itemCollectionMenuButton.Ellipsis'));
+        await iosDriver.clickSelector(new IosAccessibilitiySelector('Icons'));
+        await iosDriver.clickSelector(new IosAccessibilitiySelector('DOC.itemCollectionMenuButton.Ellipsis'));
+        await iosDriver.clickSelector(new IosAccessibilitiySelector('View Options'));
+        await iosDriver.clickSelector(new IosAccessibilitiySelector('DOC.groupMenuButton.none'));
+
+        await iosDriver.clickSelector(new IosAccessibilitiySelector('DOC.itemCollectionMenuButton.Ellipsis'));
+        await iosDriver.clickSelector(new IosAccessibilitiySelector('Select'));
+        await iosDriver.clickSelector(new IosAccessibilitiySelector('Delete All'));
+        await iosDriver.clickSelector(new IosAccessibilitiySelector('Delete'));
       },
     );
   }
@@ -371,6 +376,7 @@ export class IosResetService {
           await iosDriver.relaunchApp('com.apple.Preferences');
         },
         dispose: async () => {
+          await delay(2000);
           await iosDriver.terminateApp('com.apple.Preferences');
         },
       },

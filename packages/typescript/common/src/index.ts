@@ -14,6 +14,7 @@ export * from './processes';
 export * from './property-proxies';
 export * from './queue/size-prefixed-recv-queue';
 export * from './registry';
+export * from './repeat';
 export * from './retry';
 export * from './strings/functions';
 export * from './strings/stringifier';
