@@ -1,4 +1,4 @@
-import { BillingCategory, BillingOrganizationBase } from '@dogu-private/console';
+import { BillingCategory, BillingCurrency, BillingOrganizationBase } from '@dogu-private/console';
 import { Column, Entity, OneToMany, OneToOne, PrimaryColumn } from 'typeorm';
 import { BillingMethodNice } from './billing-method-nice.entity';
 import { BillingSubscriptionPlan } from './billing-subscription-plan.entity';
@@ -14,6 +14,9 @@ export class BillingOrganization implements BillingOrganizationBase {
 
   @Column({ type: 'enum', enum: BillingCategory })
   category!: BillingCategory;
+
+  @Column({ type: 'enum', enum: BillingCurrency, nullable: true })
+  currency!: BillingCurrency | null;
 
   @DateColumn({ nullable: true })
   firstPurchasedAt!: Date | null;

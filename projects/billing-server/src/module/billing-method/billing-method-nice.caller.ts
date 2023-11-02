@@ -48,9 +48,9 @@ export class BillingMethodNiceCaller {
    * @see https://github.com/nicepayments/nicepay-manual/blob/main/api/payment-subscribe.md#%EB%B9%8C%ED%82%A4%EB%B0%9C%EA%B8%89
    */
   async subscribeRegist(dto: SubscribeRegistNiceDto): Promise<SubscribeRegistNiceResponse> {
-    const { cardNo, expYear, expMonth, idNo, cardPw } = dto;
+    const { cardNumber, expirationYear, expirationMonth, idNumber, cardPasswordFirst2Digits } = dto;
     const path = '/subscribe/regist';
-    const rawString = `cardNo=${cardNo}&expYear=${expYear}&expMonth=${expMonth}&idNo=${idNo}&cardPw=${cardPw}`;
+    const rawString = `cardNo=${cardNumber}&expYear=${expirationYear}&expMonth=${expirationMonth}&idNo=${idNumber}&cardPw=${cardPasswordFirst2Digits}`;
     const encData = aes256(rawString);
     const orderId = v4();
     const body = {

@@ -95,6 +95,6 @@ export class BillingCouponService {
       return { ok: false, reason: 'coupon-already-used', coupon: null };
     }
 
-    return { ok: true, reason: 'coupon-not-used', coupon: billingCoupon };
+    return { ok: true, reason: 'coupon-available', coupon: billingCoupon };
   }
 }

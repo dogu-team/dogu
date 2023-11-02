@@ -26,7 +26,7 @@ export class BillingSubscriptionPlan implements BillingSubscriptionPlanBase {
   period!: BillingPeriod;
 
   @Column({ type: 'integer' })
-  price!: number;
+  originPrice!: number;
 
   @Column({ type: 'uuid' })
   billingOrganizationId!: string;
@@ -41,7 +41,7 @@ export class BillingSubscriptionPlan implements BillingSubscriptionPlanBase {
   billingCouponRemainingApplyCount!: number | null;
 
   @DateColumn()
-  lastPurchasedAt!: Date;
+  unsubscribedAt!: Date | null;
 
   @CreatedAt()
   createdAt!: Date;

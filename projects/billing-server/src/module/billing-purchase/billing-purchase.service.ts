@@ -10,6 +10,10 @@ import {
   BillingSubscriptionPlanSourceData,
   BillingSubscriptionPlanType,
   BillingSubscriptionPreviewReason,
+  CreatePurchaseSubscriptionDto,
+  CreatePurchaseSubscriptionResponse,
+  CreatePurchaseSubscriptionWithNewCardDto,
+  CreatePurchaseSubscriptionWithNewCardResponse,
   GetBillingSubscriptionPreviewDto,
   GetBillingSubscriptionPreviewResponse,
 } from '@dogu-private/console';
@@ -23,6 +27,7 @@ import { BillingOrganization } from '../../db/entity/billing-organization.entity
 import { BillingSubscriptionPlanSource } from '../../db/entity/billing-subscription-plan-source.entity';
 import { retrySerialize } from '../../db/utils';
 import { BillingCouponService } from '../billing-coupon/billing-coupon.service';
+import { BillingMethodNiceService } from '../billing-method/billing-method-nice.service';
 import { BillingOrganizationService } from '../billing-organization/billing-organization.service';
 import { DoguLogger } from '../logger/logger';
 
@@ -130,198 +135,58 @@ function getElapsedDays(period: BillingPeriod, today: Date, lastPurchasedAt: Dat
   }
 }
 
+function parseCurrency(billingOrganization: BillingOrganization, argumentCurrency: BillingCurrency): BillingCurrency {
+  const currency = billingOrganization.currency ?? argumentCurrency;
+  return currency;
+}
+
 @Injectable()
 export class BillingPurchaseService {
   constructor(
     private readonly logger: DoguLogger,
     @InjectDataSource()
     private readonly dataSource: DataSource,
+    private readonly billingMethodNiceService: BillingMethodNiceService,
+    private readonly billingOrganizationService: BillingOrganizationService,
   ) {}
 
   async getSubscriptionPreview(dto: GetBillingSubscriptionPreviewDto): Promise<GetBillingSubscriptionPreviewResponse> {
     return await retrySerialize(this.logger, this.dataSource, async (manager) => {
-      const { organizationId, couponCode, subscriptionPlanType, subscriptionPlanOption, category, currency, period } = dto;
-      const billingOrganization = await BillingOrganizationService.findWithSubscriptionPlans(manager, organizationId, category);
-      if (!billingOrganization) {
+      return await BillingPurchaseService.getSubscriptionPreview(manager, dto);
+    });
+  }
+
+  async createPurchaseSubscription(dto: CreatePurchaseSubscriptionDto): Promise<CreatePurchaseSubscriptionResponse> {
+    return await retrySerialize(this.logger, this.dataSource, async (manager) => {
+      return await BillingPurchaseService.createPurchaseSubscription(manager, this.billingMethodNiceService, dto);
+    });
+  }
+
+  async createPurchaseSubscriptionWithNewCard(dto: CreatePurchaseSubscriptionWithNewCardDto): Promise<CreatePurchaseSubscriptionWithNewCardResponse> {
+    return await retrySerialize(this.logger, this.dataSource, async (manager) => {
+      let billingOrganization: BillingOrganization | undefined;
+      try {
+        billingOrganization = await this.billingOrganizationService.createOrUpdateWithNice(dto);
+      } catch (error) {
+        this.logger.error(error);
         return {
           ok: false,
-          reason: 'organization-not-found',
-          totalPrice: null,
-          nextPurchasePrice: null,
-          nextPurchaseAt: null,
-          subscriptionPlan: null,
-          coupon: null,
-          elapsedPlans: [],
-          remainingPlans: [],
+          reason: 'invalid-card',
         };
       }
 
-      if (category !== billingOrganization.category) {
+      const createPurchaseSubscriptionResult = await BillingPurchaseService.createPurchaseSubscription(manager, this.billingMethodNiceService, dto);
+      if (!createPurchaseSubscriptionResult.ok) {
         return {
-          ok: false,
-          reason: 'category-not-matched',
-          totalPrice: null,
-          nextPurchasePrice: null,
-          nextPurchaseAt: null,
-          subscriptionPlan: null,
-          coupon: null,
-          elapsedPlans: [],
-          remainingPlans: [],
+          ok: createPurchaseSubscriptionResult.ok,
+          reason: createPurchaseSubscriptionResult.reason,
         };
       }
 
-      const { billingOrganizationId, firstPurchasedAt } = billingOrganization;
-      const billingSubscriptionPlans = billingOrganization.billingSubscriptionPlans ?? [];
-      if (billingSubscriptionPlans.length > 0 && billingSubscriptionPlans.some((plan) => plan.currency !== currency)) {
-        return {
-          ok: false,
-          reason: 'currency-not-matched',
-          totalPrice: null,
-          nextPurchasePrice: null,
-          nextPurchaseAt: null,
-          subscriptionPlan: null,
-          coupon: null,
-          elapsedPlans: [],
-          remainingPlans: [],
-        };
-      }
-
-      const parseSubscriptionPlanResult = await BillingPurchaseService.parseSubscriptionPlan(
-        manager,
-        billingOrganizationId,
-        subscriptionPlanType,
-        category,
-        subscriptionPlanOption,
-        currency,
-        period,
-      );
-      if (!parseSubscriptionPlanResult.ok) {
-        return {
-          ok: parseSubscriptionPlanResult.ok,
-          reason: parseSubscriptionPlanResult.reason,
-          totalPrice: null,
-          nextPurchasePrice: null,
-          nextPurchaseAt: null,
-          subscriptionPlan: null,
-          coupon: null,
-          elapsedPlans: [],
-          remainingPlans: [],
-        };
-      }
-
-      const { subscriptionPlan } = parseSubscriptionPlanResult;
-      if (!subscriptionPlan) {
-        throw new Error('source data must not be null');
-      }
-
-      const parseCouponResult = await BillingPurchaseService.parseCoupon(manager, organizationId, couponCode);
-      if (!parseCouponResult.ok) {
-        return {
-          ok: parseCouponResult.ok,
-          reason: parseCouponResult.reason,
-          totalPrice: null,
-          nextPurchasePrice: null,
-          nextPurchaseAt: null,
-          subscriptionPlan: null,
-          coupon: null,
-          elapsedPlans: [],
-          remainingPlans: [],
-        };
-      }
-
-      const { coupon } = parseCouponResult;
-      const normalizedCouponFactor = calculateCouponFactor(coupon, period);
-      const normalizedNextCouponFactor = calculateNextCouponFactor(coupon, period);
-      const isSubscribing = billingSubscriptionPlans.length > 0;
-      if (!isSubscribing) {
-        const totalPrice = subscriptionPlan.price * normalizedCouponFactor;
-        return {
-          ok: true,
-          reason: 'available',
-          totalPrice,
-          nextPurchasePrice: subscriptionPlan.price,
-          nextPurchaseAt: calculateNextPurchaseAt(billingOrganization, period),
-          subscriptionPlan,
-          coupon,
-          elapsedPlans: [],
-          remainingPlans: [],
-        };
-      } else {
-        const subscribedPlan = billingSubscriptionPlans.find((plan) => plan.type === subscriptionPlanType);
-        if (!subscribedPlan) {
-          const totalPrice = subscriptionPlan.price * normalizedCouponFactor;
-          const nextPurchaseAt = calculateNextPurchaseAt(billingOrganization, period);
-          const nextPurchasePrice =
-            subscriptionPlan.price * normalizedNextCouponFactor + billingSubscriptionPlans.filter((plan) => plan.period === 'monthly').reduce((acc, plan) => acc + plan.price, 0);
-          return {
-            ok: true,
-            reason: 'available',
-            totalPrice,
-            nextPurchasePrice,
-            nextPurchaseAt,
-            subscriptionPlan,
-            coupon,
-            elapsedPlans: [],
-            remainingPlans: [],
-          };
-        } else {
-          const upgradePlanOption = subscribedPlan.option < subscriptionPlanOption;
-          const downgradePlanOption = subscribedPlan.option > subscriptionPlanOption;
-          const noChangePlanOption = subscribedPlan.option === subscriptionPlanOption;
-          const upgradePlanPeriod = subscribedPlan.period === 'monthly' && period === 'yearly';
-          const downgradePlanPeriod = subscribedPlan.period === 'yearly' && period === 'monthly';
-          const noChangePlanPeriod = subscribedPlan.period === period;
-          if (noChangePlanOption && noChangePlanPeriod) {
-            return {
-              ok: false,
-              reason: 'duplicated-subscription-plan',
-              totalPrice: null,
-              nextPurchasePrice: null,
-              nextPurchaseAt: null,
-              subscriptionPlan: null,
-              coupon: null,
-              elapsedPlans: [],
-              remainingPlans: [],
-            };
-          }
-
-          if (upgradePlanOption) {
-            if (upgradePlanPeriod) {
-              throw new Error('not implemented');
-            } else if (downgradePlanPeriod) {
-              throw new Error('not implemented');
-            } else if (noChangePlanPeriod) {
-              throw new Error('not implemented');
-            } else {
-              throw new Error('must not be reachable');
-            }
-          } else if (downgradePlanOption) {
-            if (upgradePlanPeriod) {
-              throw new Error('not implemented');
-            } else if (downgradePlanPeriod) {
-              throw new Error('not implemented');
-            } else if (noChangePlanPeriod) {
-              throw new Error('not implemented');
-            } else {
-              throw new Error('must not be reachable');
-            }
-          } else if (noChangePlanOption) {
-            if (upgradePlanPeriod) {
-              throw new Error('not implemented');
-            } else if (downgradePlanPeriod) {
-              throw new Error('not implemented');
-            } else if (noChangePlanPeriod) {
-              throw new Error('not implemented');
-            } else {
-              throw new Error('must not be reachable');
-            }
-          } else {
-            throw new Error('must not be reachable');
-          }
-        }
-      }
-
-      throw new Error('must not be reachable');
+      return {
+        ok: true,
+        reason: 'purchased',
+      };
     });
   }
 
@@ -370,12 +235,12 @@ export class BillingPurchaseService {
       return { ok: false, reason: 'currency-not-found', subscriptionPlan: null };
     }
 
-    const price = _.get(billingSubscriptionPlanPrice, period) as number | undefined;
-    if (price === undefined) {
+    const originPrice = _.get(billingSubscriptionPlanPrice, period) as number | undefined;
+    if (originPrice === undefined) {
       return { ok: false, reason: 'period-not-found', subscriptionPlan: null };
     }
 
-    return { ok: true, reason: 'available', subscriptionPlan: { type, category, option, currency, period, price } };
+    return { ok: true, reason: 'available', subscriptionPlan: { type, category, option, currency, period, originPrice } };
   }
 
   private static async parseCoupon(
@@ -396,6 +261,178 @@ export class BillingPurchaseService {
       ok,
       reason,
       coupon: coupon ?? null,
+    };
+  }
+
+  private static async getSubscriptionPreview(manager: EntityManager, dto: GetBillingSubscriptionPreviewDto): Promise<GetBillingSubscriptionPreviewResponse> {
+    const { organizationId, couponCode, subscriptionPlanType, subscriptionPlanOption, category, period } = dto;
+    const billingOrganization = await BillingOrganizationService.findWithSubscriptionPlans(manager, organizationId, category);
+    if (!billingOrganization) {
+      return {
+        ok: false,
+        reason: 'organization-not-found',
+      };
+    }
+
+    if (category !== billingOrganization.category) {
+      return {
+        ok: false,
+        reason: 'category-not-matched',
+      };
+    }
+
+    const { billingOrganizationId, firstPurchasedAt } = billingOrganization;
+    const currency = parseCurrency(billingOrganization, dto.currency);
+    const billingSubscriptionPlans = billingOrganization.billingSubscriptionPlans ?? [];
+    if (billingSubscriptionPlans.length > 0 && billingSubscriptionPlans.some((plan) => plan.currency !== currency)) {
+      return {
+        ok: false,
+        reason: 'currency-not-matched',
+      };
+    }
+
+    const parseSubscriptionPlanResult = await BillingPurchaseService.parseSubscriptionPlan(
+      manager,
+      billingOrganizationId,
+      subscriptionPlanType,
+      category,
+      subscriptionPlanOption,
+      currency,
+      period,
+    );
+    if (!parseSubscriptionPlanResult.ok) {
+      return {
+        ok: parseSubscriptionPlanResult.ok,
+        reason: parseSubscriptionPlanResult.reason,
+      };
+    }
+
+    const { subscriptionPlan } = parseSubscriptionPlanResult;
+    if (!subscriptionPlan) {
+      throw new Error('source data must not be null');
+    }
+
+    const parseCouponResult = await BillingPurchaseService.parseCoupon(manager, organizationId, couponCode);
+    if (!parseCouponResult.ok) {
+      return {
+        ok: parseCouponResult.ok,
+        reason: parseCouponResult.reason,
+      };
+    }
+
+    const { coupon } = parseCouponResult;
+    const normalizedCouponFactor = calculateCouponFactor(coupon, period);
+    const normalizedNextCouponFactor = calculateNextCouponFactor(coupon, period);
+    const isSubscribing = billingSubscriptionPlans.length > 0;
+    if (!isSubscribing) {
+      const totalPrice = subscriptionPlan.originPrice * normalizedCouponFactor;
+      return {
+        ok: true,
+        reason: 'available',
+        totalPrice,
+        tax: 0,
+        nextPurchaseTotalPrice: subscriptionPlan.originPrice,
+        nextPurchaseAt: calculateNextPurchaseAt(billingOrganization, period),
+        subscriptionPlan,
+        coupon,
+        elapsedPlans: [],
+        remainingPlans: [],
+      };
+    } else {
+      const subscribedPlan = billingSubscriptionPlans.find((plan) => plan.type === subscriptionPlanType);
+      if (!subscribedPlan) {
+        const totalPrice = subscriptionPlan.originPrice * normalizedCouponFactor;
+        const nextPurchaseAt = calculateNextPurchaseAt(billingOrganization, period);
+        const nextPurchaseTotalPrice =
+          subscriptionPlan.originPrice * normalizedNextCouponFactor +
+          billingSubscriptionPlans.filter((plan) => plan.period === 'monthly').reduce((acc, plan) => acc + plan.originPrice, 0);
+        return {
+          ok: true,
+          reason: 'available',
+          totalPrice,
+          tax: 0,
+          nextPurchaseTotalPrice,
+          nextPurchaseAt,
+          subscriptionPlan,
+          coupon,
+          elapsedPlans: [],
+          remainingPlans: [],
+        };
+      } else {
+        const upgradePlanOption = subscribedPlan.option < subscriptionPlanOption;
+        const downgradePlanOption = subscribedPlan.option > subscriptionPlanOption;
+        const noChangePlanOption = subscribedPlan.option === subscriptionPlanOption;
+        const upgradePlanPeriod = subscribedPlan.period === 'monthly' && period === 'yearly';
+        const downgradePlanPeriod = subscribedPlan.period === 'yearly' && period === 'monthly';
+        const noChangePlanPeriod = subscribedPlan.period === period;
+        if (noChangePlanOption && noChangePlanPeriod) {
+          return {
+            ok: false,
+            reason: 'duplicated-subscription-plan',
+          };
+        }
+
+        if (upgradePlanOption) {
+          if (upgradePlanPeriod) {
+            throw new Error('not implemented');
+          } else if (downgradePlanPeriod) {
+            throw new Error('not implemented');
+          } else if (noChangePlanPeriod) {
+            throw new Error('not implemented');
+          } else {
+            throw new Error('must not be reachable');
+          }
+        } else if (downgradePlanOption) {
+          if (upgradePlanPeriod) {
+            throw new Error('not implemented');
+          } else if (downgradePlanPeriod) {
+            throw new Error('not implemented');
+          } else if (noChangePlanPeriod) {
+            throw new Error('not implemented');
+          } else {
+            throw new Error('must not be reachable');
+          }
+        } else if (noChangePlanOption) {
+          if (upgradePlanPeriod) {
+            throw new Error('not implemented');
+          } else if (downgradePlanPeriod) {
+            throw new Error('not implemented');
+          } else if (noChangePlanPeriod) {
+            throw new Error('not implemented');
+          } else {
+            throw new Error('must not be reachable');
+          }
+        } else {
+          throw new Error('must not be reachable');
+        }
+      }
+    }
+
+    throw new Error('must not be reachable');
+  }
+
+  private static async createPurchaseSubscription(
+    manager: EntityManager,
+    billingMethodNiceService: BillingMethodNiceService,
+    dto: CreatePurchaseSubscriptionDto,
+  ): Promise<CreatePurchaseSubscriptionResponse> {
+    const getSubscriptionPreview = await BillingPurchaseService.getSubscriptionPreview(manager, dto);
+    if (!getSubscriptionPreview.ok) {
+      return {
+        ok: false,
+        reason: getSubscriptionPreview.reason,
+      };
+    }
+
+    await billingMethodNiceService.createPurchase({
+      organizationId: dto.organizationId,
+      amount: getSubscriptionPreview.totalPrice,
+      goodsName: dto.subscriptionPlanType,
+    });
+
+    return {
+      ok: true,
+      reason: 'purchased',
     };
   }
 }

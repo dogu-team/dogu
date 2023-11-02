@@ -1,5 +1,6 @@
+import { IsFilledString } from '@dogu-tech/common';
 import { Type } from 'class-transformer';
-import { IsIn, IsNumber, IsOptional, IsString, IsUUID } from 'class-validator';
+import { buildMessage, IsIn, IsNumber, IsOptional, IsString, IsUUID, Length, ValidateBy, ValidateNested } from 'class-validator';
 import { BillingSubscriptionPlanSourceData } from '..';
 import { BillingCategory, BillingCurrency, BillingPeriod, BillingSubscriptionPlanType } from './billing';
 import { BillingCouponBase, BillingCouponReason } from './billing-coupon';
@@ -73,13 +74,14 @@ export class GetBillingSubscriptionPreviewDto {
 }
 
 export interface RemainingPlan {
+  billingSubscriptionPlanId: string;
   category: BillingCategory;
   type: BillingSubscriptionPlanType;
   option: number;
   period: BillingPeriod;
   currency: BillingCurrency;
   amount: number;
-  remainingDays: number;
+  nextPurchasedAt: Date;
 }
 
 export interface ElapsedPlan {
@@ -89,17 +91,83 @@ export interface ElapsedPlan {
   period: BillingPeriod;
   currency: BillingCurrency;
   amount: number;
-  elapsedDays: number;
+  lastPurchasedAt: Date;
 }
 
-export interface GetBillingSubscriptionPreviewResponse {
-  ok: boolean;
+export interface GetBillingSubscriptionPreviewResponseFailure {
+  ok: false;
   reason: BillingSubscriptionPreviewReason;
-  totalPrice: number | null;
-  nextPurchasePrice: number | null;
-  nextPurchaseAt: Date | null;
-  subscriptionPlan: BillingSubscriptionPlanSourceData | null;
+}
+
+export interface GetBillingSubscriptionPreviewResponseSuccess {
+  ok: true;
+  reason: BillingSubscriptionPreviewReason;
+  totalPrice: number;
+  nextPurchaseTotalPrice: number;
+  nextPurchaseAt: Date;
+  tax: number;
+  subscriptionPlan: BillingSubscriptionPlanSourceData;
   coupon: BillingCouponBase | null;
   elapsedPlans: ElapsedPlan[];
   remainingPlans: RemainingPlan[];
+}
+
+export type GetBillingSubscriptionPreviewResponse = GetBillingSubscriptionPreviewResponseFailure | GetBillingSubscriptionPreviewResponseSuccess;
+
+export class CreatePurchaseSubscriptionDto extends GetBillingSubscriptionPreviewDto {}
+
+export const BillingSubscriptionPurchaseReason = [...BillingSubscriptionPreviewReason, 'purchased'] as const;
+export type BillingSubscriptionPurchaseReason = (typeof BillingSubscriptionPurchaseReason)[number];
+
+export interface CreatePurchaseSubscriptionResponse {
+  ok: boolean;
+  reason: BillingSubscriptionPurchaseReason;
+}
+
+export class RegisterCardDto {
+  @IsFilledString()
+  @Length(16, 16)
+  cardNumber!: string;
+
+  @IsFilledString()
+  @Length(2, 2)
+  expirationYear!: string;
+
+  @IsFilledString()
+  @Length(2, 2)
+  expirationMonth!: string;
+
+  @IsFilledString()
+  @ValidateBy({
+    name: 'isIdNumber',
+    constraints: [],
+    validator: {
+      validate: (value: unknown) => {
+        if (typeof value !== 'string') {
+          return false;
+        }
+        return value.length === 6 || value.length === 10;
+      },
+      defaultMessage: buildMessage((eachPrefix) => eachPrefix + '$property must be 6 or 10 digits'),
+    },
+  })
+  idNumber!: string;
+
+  @IsFilledString()
+  @Length(2, 2)
+  cardPasswordFirst2Digits!: string;
+}
+
+export class CreatePurchaseSubscriptionWithNewCardDto extends CreatePurchaseSubscriptionDto {
+  @ValidateNested()
+  @Type(() => RegisterCardDto)
+  registerCard!: RegisterCardDto;
+}
+
+export const BillingSubscriptionPurchaseWithNewCardReason = [...BillingSubscriptionPurchaseReason, 'invalid-card'] as const;
+export type BillingSubscriptionPurchaseWithNewCardReason = (typeof BillingSubscriptionPurchaseWithNewCardReason)[number];
+
+export interface CreatePurchaseSubscriptionWithNewCardResponse {
+  ok: boolean;
+  reason: BillingSubscriptionPurchaseWithNewCardReason;
 }

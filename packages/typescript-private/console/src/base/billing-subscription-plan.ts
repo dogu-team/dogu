@@ -10,7 +10,7 @@ export interface BillingSubscriptionPlanBase extends BillingSubscriptionPlanSour
   billingCouponId: string | null;
   billingCouponRemainingApplyCount: number | null;
   billingSubscriptionPlanSourceId: string | null;
-  lastPurchasedAt: Date;
+  unsubscribedAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date | null;

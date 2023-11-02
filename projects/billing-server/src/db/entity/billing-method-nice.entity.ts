@@ -1,4 +1,4 @@
-import { BillingMethodNiceBase } from '@dogu-private/console';
+import { BillingMethodNiceBase, BillingOrganizationProp } from '@dogu-private/console';
 import { Column, Entity, JoinColumn, OneToOne, PrimaryColumn } from 'typeorm';
 import { BillingOrganization } from './billing-organization.entity';
 import { CreatedAt, DeletedAt, UpdatedAt } from './util/decorators';
@@ -21,7 +21,7 @@ export class BillingMethodNice implements BillingMethodNiceBase {
   cardName!: string | null;
 
   @Column({ type: 'character varying', nullable: true })
-  cardNoLast4!: string | null;
+  cardNumberLast4Digits!: string | null;
 
   @Column({ type: 'jsonb', nullable: true })
   subscribeRegistResponse!: Record<string, unknown> | null;
@@ -35,7 +35,7 @@ export class BillingMethodNice implements BillingMethodNiceBase {
   @DeletedAt()
   deletedAt!: Date | null;
 
-  @OneToOne(() => BillingOrganization, (billingOrganization) => billingOrganization.billingMethodNice)
-  @JoinColumn()
+  @OneToOne(() => BillingOrganization)
+  @JoinColumn({ name: BillingOrganizationProp.billingOrganizationId })
   billingOrganization?: BillingOrganization;
 }

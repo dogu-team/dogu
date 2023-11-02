@@ -1,13 +1,16 @@
-import { IsFilledString, propertiesOf } from '@dogu-tech/common';
-import { IsIn, IsUUID } from 'class-validator';
-import { BillingCategory } from './billing';
+import { propertiesOf } from '@dogu-tech/common';
+import { Type } from 'class-transformer';
+import { IsIn, IsUUID, ValidateNested } from 'class-validator';
+import { BillingCategory, BillingCurrency } from './billing';
 import { BillingMethodNiceBase } from './billing-method-nice';
+import { RegisterCardDto } from './billing-purchase';
 import { BillingSubscriptionPlanBase } from './billing-subscription-plan';
 
 export interface BillingOrganizationBase {
   billingOrganizationId: string;
   organizationId: string;
   category: BillingCategory;
+  currency: BillingCurrency | null;
 
   /**
    * @note monthly purchase date and yearly purchase date are same with first purchase date
@@ -44,18 +47,7 @@ export class CreateOrUpdateBillingOrganizationWithNiceDto {
   @IsIn(BillingCategory)
   category!: BillingCategory;
 
-  @IsFilledString()
-  cardNo!: string;
-
-  @IsFilledString()
-  expYear!: string;
-
-  @IsFilledString()
-  expMonth!: string;
-
-  @IsFilledString()
-  idNo!: string;
-
-  @IsFilledString()
-  cardPw!: string;
+  @ValidateNested()
+  @Type(() => RegisterCardDto)
+  registerCard!: RegisterCardDto;
 }

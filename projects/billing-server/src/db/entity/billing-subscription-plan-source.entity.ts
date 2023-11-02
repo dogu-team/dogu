@@ -23,7 +23,7 @@ export class BillingSubscriptionPlanSource implements BillingSubscriptionPlanSou
   period!: BillingPeriod;
 
   @Column({ type: 'integer' })
-  price!: number;
+  originPrice!: number;
 
   @Column({ type: 'uuid' })
   billingOrganizationId!: string;

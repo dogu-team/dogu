@@ -1,11 +1,12 @@
-import { CreateOrUpdateBillingMethodNiceDto } from '@dogu-private/console';
+import { CreateOrUpdateBillingMethodNiceDto, CreatePurchaseBillingMethodNiceDto } from '@dogu-private/console';
 import { errorify } from '@dogu-tech/common';
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { v4 } from 'uuid';
 import { BillingMethodNice } from '../../db/entity/billing-method-nice.entity';
 import { retrySerialize } from '../../db/utils';
+import { BillingOrganizationService } from '../billing-organization/billing-organization.service';
 import { DoguLogger } from '../logger/logger';
 import { BillingMethodNiceCaller } from './billing-method-nice.caller';
 
@@ -15,6 +16,8 @@ export class BillingMethodNiceService {
     private readonly logger: DoguLogger,
     @InjectDataSource() private readonly dataSource: DataSource,
     private readonly billingMethodNiceCaller: BillingMethodNiceCaller,
+    @Inject(forwardRef(() => BillingOrganizationService))
+    private readonly billingOrganizationService: BillingOrganizationService,
   ) {}
 
   async createOrUpdate(dto: CreateOrUpdateBillingMethodNiceDto): Promise<BillingMethodNice> {
@@ -36,8 +39,8 @@ export class BillingMethodNiceService {
         this.logger,
         this.dataSource,
         async (manager) => {
-          const { billingOrganizationId, cardNo } = dto;
-          const cardNoLast4 = cardNo.slice(-4);
+          const { billingOrganizationId, cardNumber } = dto;
+          const cardNumberLast4Digits = cardNumber.slice(-4);
           const billingOrganization = await manager.getRepository(BillingMethodNice).findOne({ where: { billingOrganizationId } });
           bid = billingOrganization?.bid ?? null;
           await subscribeExpire();
@@ -51,7 +54,7 @@ export class BillingMethodNiceService {
               bid,
               cardCode,
               cardName,
-              cardNoLast4,
+              cardNumberLast4Digits,
               subscribeRegistResponse: subscribeRegistResponse as unknown as Record<string, unknown>,
             });
             const saved = await manager.getRepository(BillingMethodNice).save(updated);
@@ -64,7 +67,7 @@ export class BillingMethodNiceService {
             bid,
             cardCode,
             cardName,
-            cardNoLast4,
+            cardNumberLast4Digits,
             subscribeRegistResponse: subscribeRegistResponse as unknown as Record<string, unknown>,
           });
           const saved = await manager.getRepository(BillingMethodNice).save(created);
@@ -85,5 +88,20 @@ export class BillingMethodNiceService {
 
       throw new InternalServerErrorException(error);
     }
+  }
+
+  async createPurchase(dto: CreatePurchaseBillingMethodNiceDto): Promise<void> {
+    const { organizationId, amount, goodsName } = dto;
+    const billingOrganization = await this.billingOrganizationService.find({ organizationId });
+    if (!billingOrganization?.billingMethodNice?.bid) {
+      throw new InternalServerErrorException('payment method not found');
+    }
+
+    const response = await this.billingMethodNiceCaller.subscribePayments({
+      bid: billingOrganization?.billingMethodNice?.bid,
+      amount,
+      goodsName,
+    });
+    this.logger.info('BillingMethodNiceService.createPurchase.subscribePayments', { response });
   }
 }

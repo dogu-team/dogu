@@ -5,7 +5,7 @@ import {
   CreateOrUpdateBillingOrganizationWithNiceDto,
   FindBillingOrganizationDto,
 } from '@dogu-private/console';
-import { ConflictException, Injectable } from '@nestjs/common';
+import { ConflictException, forwardRef, Inject, Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource, EntityManager } from 'typeorm';
 import { v4 } from 'uuid';
@@ -19,7 +19,9 @@ import { DoguLogger } from '../logger/logger';
 export class BillingOrganizationService {
   constructor(
     private readonly logger: DoguLogger,
-    @InjectDataSource() private readonly dataSource: DataSource,
+    @InjectDataSource()
+    private readonly dataSource: DataSource,
+    @Inject(forwardRef(() => BillingMethodNiceService))
     private readonly billingMethodNiceService: BillingMethodNiceService,
   ) {}
 
@@ -66,7 +68,7 @@ export class BillingOrganizationService {
     });
 
     const { billingOrganizationId } = billingOrganization;
-    const billingMethodNice = await this.billingMethodNiceService.createOrUpdate({ ...dto, billingOrganizationId });
+    const billingMethodNice = await this.billingMethodNiceService.createOrUpdate({ ...dto.registerCard, billingOrganizationId });
     return { ...billingOrganization, billingMethodNice };
   }
 

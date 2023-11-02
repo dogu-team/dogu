@@ -7,7 +7,7 @@ export interface BillingSubscriptionPlanSourceData {
   option: number;
   currency: BillingCurrency;
   period: BillingPeriod;
-  price: number;
+  originPrice: number;
 }
 
 export interface BillingSubscriptionPlanSourceBase extends BillingSubscriptionPlanSourceData {

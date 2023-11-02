@@ -1,6 +1,7 @@
 import { IsFilledString, propertiesOf } from '@dogu-tech/common';
 import { IsNumber, IsUUID } from 'class-validator';
 import { BillingOrganizationBase } from './billing-organization';
+import { RegisterCardDto } from './billing-purchase';
 
 export interface BillingMethodNiceBase {
   billingMethodNiceId: string;
@@ -8,7 +9,7 @@ export interface BillingMethodNiceBase {
   bid: string | null;
   cardCode: string | null;
   cardName: string | null;
-  cardNoLast4: string | null;
+  cardNumberLast4Digits: string | null;
   subscribeRegistResponse: Record<string, unknown> | null;
   createdAt: Date;
   updatedAt: Date;
@@ -18,22 +19,7 @@ export interface BillingMethodNiceBase {
 
 export const BillingMethodNiceProp = propertiesOf<BillingMethodNiceBase>();
 
-export class SubscribeRegistNiceDto {
-  @IsFilledString()
-  cardNo!: string;
-
-  @IsFilledString()
-  expYear!: string;
-
-  @IsFilledString()
-  expMonth!: string;
-
-  @IsFilledString()
-  idNo!: string;
-
-  @IsFilledString()
-  cardPw!: string;
-}
+export class SubscribeRegistNiceDto extends RegisterCardDto {}
 
 /**
  * @example
@@ -112,6 +98,17 @@ export interface SubscribeExpireNiceResponse {
 export class SubscribePaymentsNiceDto {
   @IsFilledString()
   bid!: string;
+
+  @IsNumber()
+  amount!: number;
+
+  @IsFilledString()
+  goodsName!: string;
+}
+
+export class CreatePurchaseBillingMethodNiceDto {
+  @IsFilledString()
+  organizationId!: string;
 
   @IsNumber()
   amount!: number;

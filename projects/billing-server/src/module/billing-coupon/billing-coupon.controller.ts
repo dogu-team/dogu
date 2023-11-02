@@ -1,5 +1,5 @@
 import { GetAvailableBillingCouponsDto, ValidateBillingCouponDto, ValidateBillingCouponResponse } from '@dogu-private/console';
-import { Controller, Get, Query } from '@nestjs/common';
+import { BadRequestException, Controller, Get, Query } from '@nestjs/common';
 import { BillingCoupon } from '../../db/entity/billing-coupon.entity';
 import { BillingTokenPermission } from '../auth/guard/billing-token.guard';
 import { BillingCouponService } from './billing-coupon.service';
@@ -11,7 +11,12 @@ export class BillingCouponController {
   @Get('/validate')
   @BillingTokenPermission()
   async validateBillingCoupon(@Query() dto: ValidateBillingCouponDto): Promise<ValidateBillingCouponResponse> {
-    return await this.billingCouponService.validateBillingCoupon(dto);
+    const response = await this.billingCouponService.validateBillingCoupon(dto);
+    if (!response.ok) {
+      throw new BadRequestException(response.reason);
+    }
+
+    return response;
   }
 
   @Get('/available')

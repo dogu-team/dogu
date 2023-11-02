@@ -9,7 +9,7 @@ export const BillingCouponReason = [
   'coupon-expired',
   'organization-not-found',
   'coupon-already-used',
-  'coupon-not-used',
+  'coupon-available',
   'coupon-all-used',
   'coupon-invalid-monthly-apply-count',
   'coupon-invalid-yearly-apply-count',
