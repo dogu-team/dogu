@@ -54,6 +54,7 @@ func (h *IosControlHandler) OnParamList(param *params.CfGdcDaParamList) bool {
 	paramsToSend := &params.DcIdaParamList{
 		Params: []*params.DcIdaParam{},
 	}
+	log.Inst.Info("IosInputTrack 1")
 	for i := 0; i < len(param.Params); i++ {
 		switch a := param.Params[i].Value.(type) {
 		case *params.CfGdcDaParam_CfGdcDaControlParam:

@@ -1,5 +1,6 @@
 import Combine
-import Foundation
+import WebDriverAgentLib
+
 
 enum WebDriverConstants {
   static let defaultTimeout: TimeInterval = 3  // seconds
@@ -121,11 +122,12 @@ public actor WebDriverClient {
   }
 
   public func homescreen() async throws {
-    _ = try await request(method: .post, pathQuery: "/wda/homescreen", body: .empty)
+//    try XCUIDevice.shared.fb_goToHomescreen()
+    try XCUIDevice.shared.fb_pressButton("home", forDuration: 100)
   }
 
   public func pressButton(_ button: String) async throws {
-    _ = try await request(method: .post, pathQuery: "/session/\(sessionID)/wda/pressButton", body: .dict(["name": button, "duration": 0]))
+    try XCUIDevice.shared.fb_pressButton(button, forDuration: 10)
   }
 
   private func request(method: HttpMethod, pathQuery: String, body: HttpRequestBody, timeout: TimeInterval = WebDriverConstants.defaultTimeout) async throws -> Data {

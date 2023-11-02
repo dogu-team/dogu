@@ -47,8 +47,7 @@ class InputBlocker {
           })
       }
   }
-  
-  
+
   @MainActor
   func blockTap(position: CGPoint) async throws -> Bool {
     let apps = XCUIApplication.fb_activeAppsInfo()
@@ -104,7 +103,6 @@ class InputBlocker {
     return false
   }
 
-
   @MainActor
   private func blockOnSpringboard() async throws -> Bool {
     if !self.config.isDeviceShare {
@@ -115,12 +113,37 @@ class InputBlocker {
     guard let session = FBSession.active() else {
       throw Error.sessionNotFound
     }
-    //    return false
-    let controlCenterView: XCUIElement = session.activeApplication.otherElements["ControlCenterView"]
+    if try await self.blockControlCenter(app: session.activeApplication) {
+      return true
+    }
+
+    if try await self.blockRemoveApp(app: session.activeApplication) {
+      return true
+    }
+
+    return false
+  }
+
+  @MainActor
+  private func blockControlCenter(app: FBApplication) async throws -> Bool {
+    let controlCenterView: XCUIElement = app.otherElements["ControlCenterView"]
     if !controlCenterView.exists {
       return false
     }
-    try XCUIDevice.shared.fb_pressButton("home", forDuration: 300)
+    try await webDriverClient.homescreen()
+    try await webDriverClient.homescreen()
+
+    return true
+  }
+
+  @MainActor
+  private func blockRemoveApp(app: FBApplication) async throws -> Bool {
+    let removeButton: XCUIElement = app.buttons["Delete App"]
+    if !removeButton.exists {
+      return false
+    }
+    try await webDriverClient.homescreen()
+    try await webDriverClient.homescreen()
 
     return true
   }
