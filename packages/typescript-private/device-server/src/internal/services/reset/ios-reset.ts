@@ -13,6 +13,35 @@ export interface IosResetInfo {
 
 const ResetExpireTime = 10 * 60 * 1000;
 
+class IosResetHelper {
+  constructor(private iosDriver: IosWebDriver) {}
+
+  async enterFilesBrowseHome(): Promise<void> {
+    const { iosDriver } = this;
+    const windowRect = await iosDriver.rawDriver.getWindowRect();
+
+    // click bottom right
+    let browserButtons = await iosDriver.rawDriver.$$(new IosClassChainSelector('**/XCUIElementTypeButton[`label == "Browse"`]').build());
+    for (const button of browserButtons) {
+      const pos = await button.getLocation();
+      if (pos.x > windowRect.width / 2 && pos.y > windowRect.height / 2) {
+        await button.click();
+        break;
+      }
+    }
+
+    // click top left
+    browserButtons = await iosDriver.rawDriver.$$(new IosClassChainSelector('**/XCUIElementTypeButton[`label == "Browse"`]').build());
+    for (const button of browserButtons) {
+      const pos = await button.getLocation();
+      if (pos.x < windowRect.width / 2 && pos.y < windowRect.height / 2) {
+        await button.click();
+        break;
+      }
+    }
+  }
+}
+
 export class IosResetService {
   private timer: CheckTimer;
   private _isResetting = false;
@@ -498,35 +527,6 @@ export class IosResetService {
         }
         const widget = targetWidgets[0];
         await iosDriver.removeWidget(widget);
-      }
-    }
-  }
-}
-
-class IosResetHelper {
-  constructor(private iosDriver: IosWebDriver) {}
-
-  async enterFilesBrowseHome(): Promise<void> {
-    const { iosDriver } = this;
-    const windowRect = await iosDriver.rawDriver.getWindowRect();
-
-    // click bottom right
-    let browserButtons = await iosDriver.rawDriver.$$(new IosClassChainSelector('**/XCUIElementTypeButton[`label == "Browse"`]').build());
-    for (const button of browserButtons) {
-      const pos = await button.getLocation();
-      if (pos.x > windowRect.width / 2 && pos.y > windowRect.height / 2) {
-        await button.click();
-        break;
-      }
-    }
-
-    // click top left
-    browserButtons = await iosDriver.rawDriver.$$(new IosClassChainSelector('**/XCUIElementTypeButton[`label == "Browse"`]').build());
-    for (const button of browserButtons) {
-      const pos = await button.getLocation();
-      if (pos.x < windowRect.width / 2 && pos.y < windowRect.height / 2) {
-        await button.click();
-        break;
       }
     }
   }

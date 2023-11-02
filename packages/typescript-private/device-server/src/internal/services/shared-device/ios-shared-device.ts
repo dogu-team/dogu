@@ -3,6 +3,7 @@ import { delay, FilledPrintable, loopTime, usingAsnyc } from '@dogu-tech/common'
 import child_process from 'child_process';
 import { AppiumContextImpl } from '../../../appium/appium.context';
 import { env } from '../../../env';
+import { config } from '../../config';
 import { IdeviceInstaller } from '../../externals/cli/ideviceinstaller';
 import { WebdriverAgentProcess } from '../../externals/cli/webdriver-agent-process';
 import { IosAccessibilitiySelector, IosWebDriver } from '../../externals/webdriver/ios-webdriver';
@@ -184,9 +185,9 @@ export class IosSharedDeviceService implements Zombieable {
       throw new Error(`IosResetService.clearSafariCache driver is null`);
     }
 
-    if (await this.reset.isDirty()) {
-      // await this.timer.check(`IosResetService.setup.reset`, this.reset.reset(this.appiumContext));
-      // throw new Error(`IosResetService.revive. device is dirty. so trigger reset ${serial}`);
+    if ((await this.reset.isDirty()) && !config.externalIosDeviceAgent.use) {
+      await this.timer.check(`IosResetService.setup.reset`, this.reset.reset(this.appiumContext));
+      throw new Error(`IosResetService.revive. device is dirty. so trigger reset ${serial}`);
     }
     const installer = new IdeviceInstaller(serial, logger);
     const uninstallApps = BlockAppList.filter((item) => item.uninstall).map((item) => item.bundleId);

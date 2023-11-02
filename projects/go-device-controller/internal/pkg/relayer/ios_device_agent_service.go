@@ -37,8 +37,6 @@ func (s *IosDeviceAgentService) SendMessage(params *params.DcIdaParamList) error
 	var err error
 	serverUrl := s.getUrlFunc()
 
-	log.Inst.Info("IosInputTrack 2")
-
 	if nil == s.conn || nil == s.reader {
 		conn, err := reconnectIosDeviceAgent(s.getUrlFunc, 9999, 1)
 		if nil == conn {
@@ -51,15 +49,12 @@ func (s *IosDeviceAgentService) SendMessage(params *params.DcIdaParamList) error
 		s.recvQueue.Clear()
 	}
 
-	log.Inst.Info("IosInputTrack 3")
-
 	out, err := proto.Marshal(params)
 	if err != nil {
 		log.Inst.Error("IosDeviceAgentService.marshal failed", zap.Error(err))
 		return err
 	}
 
-	log.Inst.Info("IosInputTrack 4")
 	buf := utils.PrefixBytesWithSize(out)
 	_, err = s.conn.Write(buf)
 	if err != nil {
