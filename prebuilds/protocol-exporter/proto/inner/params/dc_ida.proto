@@ -16,6 +16,7 @@ message DcIdaParam {
     types.DcIdaIsPortListeningParam dc_ida_is_port_listening_param = 3;
     types.DcIdaQueryProfileParam dc_ida_query_profile_param = 4;
     types.CfGdcDaControlParam dc_gdc_da_control_param = 5;
+    types.DcIdaSwitchInputBlockParam dc_ida_switch_input_block_param = 6;
   }
 }
 
@@ -27,6 +28,7 @@ message DcIdaResult {
     types.DcIdaIsPortListeningResult dc_ida_is_port_listening_result = 3;
     types.DcIdaQueryProfileResult dc_ida_query_profile_result = 4;
     types.CfGdcDaControlResult dc_gdc_da_control_result = 5;
+    types.DcIdaSwitchInputBlockResult dc_ida_switch_input_block_result = 6;
   }
 }
 

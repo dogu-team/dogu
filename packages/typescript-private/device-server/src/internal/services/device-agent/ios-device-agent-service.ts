@@ -2,6 +2,7 @@ import { OneofUnionTypes, Platform, PrivateProtocol, Serial } from '@dogu-privat
 import { delay, Printable, SizePrefixedRecvQueue, stringify } from '@dogu-tech/common';
 import EventEmitter from 'events';
 import { Socket } from 'net';
+import { env } from '../../../env';
 import { DeviceAgentService } from '../../services/device-agent/device-agent-service';
 import { Zombieable, ZombieProps, ZombieQueriable } from '../zombie/zombie-component';
 import { ZombieServiceInstance } from '../zombie/zombie-service';
@@ -29,7 +30,12 @@ export class IosDeviceAgentService implements DeviceAgentService, Zombieable {
   private seq = 0;
   private zombieWaiter: ZombieQueriable;
 
-  constructor(public readonly serial: Serial, private readonly screenPort: number, private readonly serverPort: number, private readonly logger: Printable) {
+  constructor(
+    public readonly serial: Serial,
+    private readonly screenPort: number,
+    private readonly serverPort: number,
+    private readonly logger: Printable,
+  ) {
     this.zombieWaiter = ZombieServiceInstance.addComponent(this);
     this.client = new Socket();
     this.isConnected = false;
@@ -77,6 +83,7 @@ export class IosDeviceAgentService implements DeviceAgentService, Zombieable {
 
   async revive(): Promise<void> {
     await this.connect();
+    await this.sendWithProtobuf('dcIdaSwitchInputBlockParam', 'dcIdaSwitchInputBlockResult', { isBlock: env.DOGU_IS_DEVICE_SHARE === true });
   }
 
   onDie(): void | Promise<void> {

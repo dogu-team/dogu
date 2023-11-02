@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.DcIdaQueryProfileResult = exports.DcIdaQueryProfileParam = exports.DcIdaIsPortListeningResult = exports.DcIdaIsPortListeningParam = exports.DcIdaGetSystemInfoResult = exports.DcIdaGetSystemInfoParam = exports.DcIdaRunAppResult = exports.DcIdaRunAppParam = void 0;
+exports.DcIdaSwitchInputBlockResult = exports.DcIdaSwitchInputBlockParam = exports.DcIdaQueryProfileResult = exports.DcIdaQueryProfileParam = exports.DcIdaIsPortListeningResult = exports.DcIdaIsPortListeningParam = exports.DcIdaGetSystemInfoResult = exports.DcIdaGetSystemInfoParam = exports.DcIdaRunAppResult = exports.DcIdaRunAppParam = void 0;
 /* eslint-disable */
 const minimal_1 = __importDefault(require("protobufjs/minimal"));
 const errors_1 = require("../../outer/errors");
@@ -369,6 +369,80 @@ exports.DcIdaQueryProfileResult = {
     fromPartial(object) {
         const message = createBaseDcIdaQueryProfileResult();
         message.info = object.info !== undefined && object.info !== null ? runtime_info_1.RuntimeInfo.fromPartial(object.info) : undefined;
+        return message;
+    },
+};
+function createBaseDcIdaSwitchInputBlockParam() {
+    return { isBlock: false };
+}
+exports.DcIdaSwitchInputBlockParam = {
+    encode(message, writer = minimal_1.default.Writer.create()) {
+        if (message.isBlock === true) {
+            writer.uint32(8).bool(message.isBlock);
+        }
+        return writer;
+    },
+    decode(input, length) {
+        const reader = input instanceof minimal_1.default.Reader ? input : new minimal_1.default.Reader(input);
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = createBaseDcIdaSwitchInputBlockParam();
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                case 1:
+                    message.isBlock = reader.bool();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+            }
+        }
+        return message;
+    },
+    fromJSON(object) {
+        return { isBlock: isSet(object.isBlock) ? Boolean(object.isBlock) : false };
+    },
+    toJSON(message) {
+        const obj = {};
+        message.isBlock !== undefined && (obj.isBlock = message.isBlock);
+        return obj;
+    },
+    fromPartial(object) {
+        const message = createBaseDcIdaSwitchInputBlockParam();
+        message.isBlock = object.isBlock ?? false;
+        return message;
+    },
+};
+function createBaseDcIdaSwitchInputBlockResult() {
+    return {};
+}
+exports.DcIdaSwitchInputBlockResult = {
+    encode(_, writer = minimal_1.default.Writer.create()) {
+        return writer;
+    },
+    decode(input, length) {
+        const reader = input instanceof minimal_1.default.Reader ? input : new minimal_1.default.Reader(input);
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = createBaseDcIdaSwitchInputBlockResult();
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+            }
+        }
+        return message;
+    },
+    fromJSON(_) {
+        return {};
+    },
+    toJSON(_) {
+        const obj = {};
+        return obj;
+    },
+    fromPartial(_) {
+        const message = createBaseDcIdaSwitchInputBlockResult();
         return message;
     },
 };

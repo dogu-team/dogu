@@ -42,3 +42,10 @@ message DcIdaQueryProfileParam {
 message DcIdaQueryProfileResult {
   outer.profile.RuntimeInfo info = 1;
 }
+
+message DcIdaSwitchInputBlockParam {
+  bool is_block = 1;
+}
+
+message DcIdaSwitchInputBlockResult {
+}

@@ -158,6 +158,30 @@ object DcIdaResultKt {
     fun hasDcGdcDaControlResult(): kotlin.Boolean {
       return _builder.hasDcGdcDaControlResult()
     }
+
+    /**
+     * <code>.inner.types.DcIdaSwitchInputBlockResult dc_ida_switch_input_block_result = 6;</code>
+     */
+    var dcIdaSwitchInputBlockResult: com.dogu.protocol.generated.inner.types.DcIda.DcIdaSwitchInputBlockResult
+      @JvmName("getDcIdaSwitchInputBlockResult")
+      get() = _builder.getDcIdaSwitchInputBlockResult()
+      @JvmName("setDcIdaSwitchInputBlockResult")
+      set(value) {
+        _builder.setDcIdaSwitchInputBlockResult(value)
+      }
+    /**
+     * <code>.inner.types.DcIdaSwitchInputBlockResult dc_ida_switch_input_block_result = 6;</code>
+     */
+    fun clearDcIdaSwitchInputBlockResult() {
+      _builder.clearDcIdaSwitchInputBlockResult()
+    }
+    /**
+     * <code>.inner.types.DcIdaSwitchInputBlockResult dc_ida_switch_input_block_result = 6;</code>
+     * @return Whether the dcIdaSwitchInputBlockResult field is set.
+     */
+    fun hasDcIdaSwitchInputBlockResult(): kotlin.Boolean {
+      return _builder.hasDcIdaSwitchInputBlockResult()
+    }
     val valueCase: com.dogu.protocol.generated.inner.params.DcIda.DcIdaResult.ValueCase
       @JvmName("getValueCase")
       get() = _builder.getValueCase()
@@ -185,4 +209,7 @@ val com.dogu.protocol.generated.inner.params.DcIda.DcIdaResultOrBuilder.dcIdaQue
 
 val com.dogu.protocol.generated.inner.params.DcIda.DcIdaResultOrBuilder.dcGdcDaControlResultOrNull: com.dogu.protocol.generated.inner.types.CfGdcDa.CfGdcDaControlResult?
   get() = if (hasDcGdcDaControlResult()) getDcGdcDaControlResult() else null
+
+val com.dogu.protocol.generated.inner.params.DcIda.DcIdaResultOrBuilder.dcIdaSwitchInputBlockResultOrNull: com.dogu.protocol.generated.inner.types.DcIda.DcIdaSwitchInputBlockResult?
+  get() = if (hasDcIdaSwitchInputBlockResult()) getDcIdaSwitchInputBlockResult() else null
 

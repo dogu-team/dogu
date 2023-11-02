@@ -210,6 +210,7 @@
 		A6E7687D2AF384EF00F2D595 /* ScrollControlPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6E7687C2AF384EF00F2D595 /* ScrollControlPlayer.swift */; };
 		A6E7687F2AF384F900F2D595 /* ScrollControlBroker.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6E7687E2AF384F900F2D595 /* ScrollControlBroker.swift */; };
 		A6E768812AF385EB00F2D595 /* ScrollControlStructures.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6E768802AF385EB00F2D595 /* ScrollControlStructures.swift */; };
+		A6E768832AF38BB300F2D595 /* GlobalVariable.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6E768822AF38BB300F2D595 /* GlobalVariable.swift */; };
 		A6F836112AACF83F007E319B /* LiveCheckSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6F836102AACF83F007E319B /* LiveCheckSession.swift */; };
 		AD6C26941CF2379700F8B5FF /* FBAlert.h in Headers */ = {isa = PBXBuildFile; fileRef = AD6C26921CF2379700F8B5FF /* FBAlert.h */; };
 		AD6C26951CF2379700F8B5FF /* FBAlert.m in Sources */ = {isa = PBXBuildFile; fileRef = AD6C26931CF2379700F8B5FF /* FBAlert.m */; };
@@ -431,7 +432,7 @@
 		EE9B76A81CF7A43900275851 /* FBLogger.h in Headers */ = {isa = PBXBuildFile; fileRef = EE9B76A31CF7A43900275851 /* FBLogger.h */; };
 		EE9B76A91CF7A43900275851 /* FBLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = EE9B76A41CF7A43900275851 /* FBLogger.m */; };
 		EE9B76AA1CF7A43900275851 /* FBMacros.h in Headers */ = {isa = PBXBuildFile; fileRef = EE9B76A51CF7A43900275851 /* FBMacros.h */; };
-		EEBBD48B1D47746D00656A81 /* XCUIElement+FBFind.h in Headers */ = {isa = PBXBuildFile; fileRef = EEBBD4891D47746D00656A81 /* XCUIElement+FBFind.h */; };
+		EEBBD48B1D47746D00656A81 /* XCUIElement+FBFind.h in Headers */ = {isa = PBXBuildFile; fileRef = EEBBD4891D47746D00656A81 /* XCUIElement+FBFind.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		EEBBD48C1D47746D00656A81 /* XCUIElement+FBFind.m in Sources */ = {isa = PBXBuildFile; fileRef = EEBBD48A1D47746D00656A81 /* XCUIElement+FBFind.m */; };
 		EEC9EED620064FAA00BC0D5B /* XCUICoordinate+FBFix.h in Headers */ = {isa = PBXBuildFile; fileRef = EEC9EED420064FAA00BC0D5B /* XCUICoordinate+FBFix.h */; };
 		EEC9EED720064FAA00BC0D5B /* XCUICoordinate+FBFix.m in Sources */ = {isa = PBXBuildFile; fileRef = EEC9EED520064FAA00BC0D5B /* XCUICoordinate+FBFix.m */; };
@@ -780,6 +781,7 @@
 		A6E7687C2AF384EF00F2D595 /* ScrollControlPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollControlPlayer.swift; sourceTree = "<group>"; };
 		A6E7687E2AF384F900F2D595 /* ScrollControlBroker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollControlBroker.swift; sourceTree = "<group>"; };
 		A6E768802AF385EB00F2D595 /* ScrollControlStructures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollControlStructures.swift; sourceTree = "<group>"; };
+		A6E768822AF38BB300F2D595 /* GlobalVariable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalVariable.swift; sourceTree = "<group>"; };
 		A6F836102AACF83F007E319B /* LiveCheckSession.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LiveCheckSession.swift; sourceTree = "<group>"; };
 		AD6C26921CF2379700F8B5FF /* FBAlert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FBAlert.h; path = WebDriverAgentLib/FBAlert.h; sourceTree = SOURCE_ROOT; };
 		AD6C26931CF2379700F8B5FF /* FBAlert.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = FBAlert.m; path = WebDriverAgentLib/FBAlert.m; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
@@ -1167,6 +1169,7 @@
 				A65D24132AF275C2003A2149 /* Constants.swift */,
 				A6E768782AF334E300F2D595 /* InputBlocker.swift */,
 				A6E7687A2AF3679B00F2D595 /* DuplicateCallGuarder.swift */,
+				A6E768822AF38BB300F2D595 /* GlobalVariable.swift */,
 			);
 			path = IOSDeviceAgentLib;
 			sourceTree = "<group>";
@@ -2043,6 +2046,7 @@
 				EE7E271C1D06C69F001BEC7B /* FBDebugLogDelegateDecorator.h in Headers */,
 				EE158B5F1CBD47A000A3E3F0 /* WebDriverAgentLib.h in Headers */,
 				AD6C269C1CF2494200F8B5FF /* XCUIApplication+FBHelpers.h in Headers */,
+				EEBBD48B1D47746D00656A81 /* XCUIElement+FBFind.h in Headers */,
 				715AFAC11FFA29180053896D /* FBScreen.h in Headers */,
 				EE6B64FD1D0F86EF00E85F5D /* XCTestPrivateSymbols.h in Headers */,
 				713AE575243A53BE0000D657 /* FBW3CActionsHelpers.h in Headers */,
@@ -2212,7 +2216,6 @@
 				EE35AD311E3B77D600A02D78 /* XCKeyboardLayout.h in Headers */,
 				EE35AD3B1E3B77D600A02D78 /* XCTAsyncActivity-Protocol.h in Headers */,
 				EE35AD251E3B77D600A02D78 /* XCActivityRecord.h in Headers */,
-				EEBBD48B1D47746D00656A81 /* XCUIElement+FBFind.h in Headers */,
 				EE35AD631E3B77D600A02D78 /* XCTTestRunSessionDelegate-Protocol.h in Headers */,
 				EE35AD431E3B77D600A02D78 /* XCTestCaseSuite.h in Headers */,
 				EE35AD091E3B77D600A02D78 /* _XCInternalTestRun.h in Headers */,
@@ -2541,6 +2544,7 @@
 				A6A9D6DC2AA9DD4400D7FECD /* WebDriverClient.swift in Sources */,
 				2867C32825C55849B5F39AD2 /* KeyControlPlayer.swift in Sources */,
 				A6A9D7142AA9DD6A00D7FECD /* outer_profile_runtime_info.pb.swift in Sources */,
+				A6E768832AF38BB300F2D595 /* GlobalVariable.swift in Sources */,
 				2867C8BF12210997C13124B6 /* ControlProcessor.swift in Sources */,
 				A65D24142AF275C2003A2149 /* Constants.swift in Sources */,
 				A6A9D6D92AA9DD4400D7FECD /* ProtoPlatform+NodeJSConversion.swift in Sources */,

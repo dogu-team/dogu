@@ -1,10 +1,3 @@
-//
-//  InputBlocker.swift
-//  IOSDeviceAgentLib
-//
-//  Created by jenkins on 2023/11/02.
-//  Copyright © 2023 Dogu. All rights reserved.
-//
 import Combine
 import WebDriverAgentLib
 
@@ -50,6 +43,10 @@ class InputBlocker {
 
   @MainActor
   func blockTap(position: CGPoint) async throws -> Bool {
+    if !GlobalVariable.IsInputBlockAvailable {
+      return false
+    }
+
     let apps = XCUIApplication.fb_activeAppsInfo()
     let isSpringboard = apps.contains(where: { app in
       guard let bundleId = app["bundleId"] as? String else {
@@ -79,7 +76,7 @@ class InputBlocker {
 
   @MainActor
   private func blockApp() async throws -> Bool {
-    if !self.config.isDeviceShare {
+    if !GlobalVariable.IsInputBlockAvailable {
       return false
     }
     let apps = XCUIApplication.fb_activeAppsInfo()
@@ -105,65 +102,22 @@ class InputBlocker {
 
   @MainActor
   private func blockOnSpringboard() async throws -> Bool {
-    if !self.config.isDeviceShare {
-      return false
-    }
-
     try await self.webDriverClient.setSessionIfNotSet()
     guard let session = FBSession.active() else {
       throw Error.sessionNotFound
     }
-    if try await self.blockControlCenter(app: session.activeApplication) {
-      return true
-    }
+    let match =  session.activeApplication.fb_descendants(matching: NSPredicate( format:"name == 'ControlCenterView' or label == 'Delete App' or name == 'Screen Broadcasting'"), shouldReturnAfterFirstMatch:true).first
 
-    if try await self.blockRemoveApp(app: session.activeApplication) {
-      return true
-    }
-    
-    if try await self.blockStopBroadcasting(app: session.activeApplication) {
+    if nil != match && match!.exists {
+      let cancelButton = match!.buttons["Cancel"]
+      if cancelButton.exists {
+        cancelButton.tap()
+      }
+      try await webDriverClient.homescreen()
+      try await webDriverClient.homescreen()
       return true
     }
 
     return false
   }
-
-  @MainActor
-  private func blockControlCenter(app: FBApplication) async throws -> Bool {
-    let controlCenterView: XCUIElement = app.otherElements["ControlCenterView"]
-    if !controlCenterView.exists {
-      return false
-    }
-    try await webDriverClient.homescreen()
-    try await webDriverClient.homescreen()
-
-    return true
-  }
-
-  @MainActor
-  private func blockRemoveApp(app: FBApplication) async throws -> Bool {
-    let removeButton: XCUIElement = app.buttons["Delete App"]
-    if !removeButton.exists {
-      return false
-    }
-    try await webDriverClient.homescreen()
-    try await webDriverClient.homescreen()
-
-    return true
-  }
-  
-  @MainActor
-  private func blockStopBroadcasting(app: FBApplication) async throws -> Bool {
-    let broadcastAlert: XCUIElement = app.alerts["Screen Broadcasting"]
-    if !broadcastAlert.exists {
-      return false
-    }
-    let cancelButton = broadcastAlert.buttons["Cancel"]
-    if cancelButton.exists {
-      cancelButton.tap()
-    }
-
-    return true
-  }
-
 }

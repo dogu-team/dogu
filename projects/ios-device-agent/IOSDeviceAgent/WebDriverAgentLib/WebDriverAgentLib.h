@@ -20,6 +20,7 @@ FOUNDATION_EXPORT const unsigned char WebDriverAgentLib_VersionString[];
 #import <WebDriverAgentLib/XCUIElement.h>
 #import <WebDriverAgentLib/XCUIApplication.h>
 #import <WebDriverAgentLib/XCUIElement+FBWebDriverAttributes.h>
+#import <WebDriverAgentLib/XCUIElement+FBFind.h>
 #import <WebDriverAgentLib/FBApplication.h>
 #import <WebDriverAgentLib/FBMathUtils.h>
 #import <WebDriverAgentLib/FBElement.h>

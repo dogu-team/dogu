@@ -73,6 +73,17 @@ public final class DcIda {
      */
     com.dogu.protocol.generated.inner.types.CfGdcDa.CfGdcDaControlParam getDcGdcDaControlParam();
 
+    /**
+     * <code>.inner.types.DcIdaSwitchInputBlockParam dc_ida_switch_input_block_param = 6;</code>
+     * @return Whether the dcIdaSwitchInputBlockParam field is set.
+     */
+    boolean hasDcIdaSwitchInputBlockParam();
+    /**
+     * <code>.inner.types.DcIdaSwitchInputBlockParam dc_ida_switch_input_block_param = 6;</code>
+     * @return The dcIdaSwitchInputBlockParam.
+     */
+    com.dogu.protocol.generated.inner.types.DcIda.DcIdaSwitchInputBlockParam getDcIdaSwitchInputBlockParam();
+
     public com.dogu.protocol.generated.inner.params.DcIda.DcIdaParam.ValueCase getValueCase();
   }
   /**
@@ -93,6 +104,7 @@ public final class DcIda {
       DC_IDA_IS_PORT_LISTENING_PARAM(3),
       DC_IDA_QUERY_PROFILE_PARAM(4),
       DC_GDC_DA_CONTROL_PARAM(5),
+      DC_IDA_SWITCH_INPUT_BLOCK_PARAM(6),
       VALUE_NOT_SET(0);
       private final int value;
       private ValueCase(int value) {
@@ -113,6 +125,7 @@ public final class DcIda {
           case 3: return DC_IDA_IS_PORT_LISTENING_PARAM;
           case 4: return DC_IDA_QUERY_PROFILE_PARAM;
           case 5: return DC_GDC_DA_CONTROL_PARAM;
+          case 6: return DC_IDA_SWITCH_INPUT_BLOCK_PARAM;
           case 0: return VALUE_NOT_SET;
           default: return null;
         }
@@ -405,6 +418,56 @@ public final class DcIda {
      */
     private void clearDcGdcDaControlParam() {
       if (valueCase_ == 5) {
+        valueCase_ = 0;
+        value_ = null;
+      }
+    }
+
+    public static final int DC_IDA_SWITCH_INPUT_BLOCK_PARAM_FIELD_NUMBER = 6;
+    /**
+     * <code>.inner.types.DcIdaSwitchInputBlockParam dc_ida_switch_input_block_param = 6;</code>
+     */
+    @java.lang.Override
+    public boolean hasDcIdaSwitchInputBlockParam() {
+      return valueCase_ == 6;
+    }
+    /**
+     * <code>.inner.types.DcIdaSwitchInputBlockParam dc_ida_switch_input_block_param = 6;</code>
+     */
+    @java.lang.Override
+    public com.dogu.protocol.generated.inner.types.DcIda.DcIdaSwitchInputBlockParam getDcIdaSwitchInputBlockParam() {
+      if (valueCase_ == 6) {
+         return (com.dogu.protocol.generated.inner.types.DcIda.DcIdaSwitchInputBlockParam) value_;
+      }
+      return com.dogu.protocol.generated.inner.types.DcIda.DcIdaSwitchInputBlockParam.getDefaultInstance();
+    }
+    /**
+     * <code>.inner.types.DcIdaSwitchInputBlockParam dc_ida_switch_input_block_param = 6;</code>
+     */
+    private void setDcIdaSwitchInputBlockParam(com.dogu.protocol.generated.inner.types.DcIda.DcIdaSwitchInputBlockParam value) {
+      value.getClass();
+  value_ = value;
+      valueCase_ = 6;
+    }
+    /**
+     * <code>.inner.types.DcIdaSwitchInputBlockParam dc_ida_switch_input_block_param = 6;</code>
+     */
+    private void mergeDcIdaSwitchInputBlockParam(com.dogu.protocol.generated.inner.types.DcIda.DcIdaSwitchInputBlockParam value) {
+      value.getClass();
+  if (valueCase_ == 6 &&
+          value_ != com.dogu.protocol.generated.inner.types.DcIda.DcIdaSwitchInputBlockParam.getDefaultInstance()) {
+        value_ = com.dogu.protocol.generated.inner.types.DcIda.DcIdaSwitchInputBlockParam.newBuilder((com.dogu.protocol.generated.inner.types.DcIda.DcIdaSwitchInputBlockParam) value_)
+            .mergeFrom(value).buildPartial();
+      } else {
+        value_ = value;
+      }
+      valueCase_ = 6;
+    }
+    /**
+     * <code>.inner.types.DcIdaSwitchInputBlockParam dc_ida_switch_input_block_param = 6;</code>
+     */
+    private void clearDcIdaSwitchInputBlockParam() {
+      if (valueCase_ == 6) {
         valueCase_ = 0;
         value_ = null;
       }
@@ -785,6 +848,54 @@ public final class DcIda {
         return this;
       }
 
+      /**
+       * <code>.inner.types.DcIdaSwitchInputBlockParam dc_ida_switch_input_block_param = 6;</code>
+       */
+      @java.lang.Override
+      public boolean hasDcIdaSwitchInputBlockParam() {
+        return instance.hasDcIdaSwitchInputBlockParam();
+      }
+      /**
+       * <code>.inner.types.DcIdaSwitchInputBlockParam dc_ida_switch_input_block_param = 6;</code>
+       */
+      @java.lang.Override
+      public com.dogu.protocol.generated.inner.types.DcIda.DcIdaSwitchInputBlockParam getDcIdaSwitchInputBlockParam() {
+        return instance.getDcIdaSwitchInputBlockParam();
+      }
+      /**
+       * <code>.inner.types.DcIdaSwitchInputBlockParam dc_ida_switch_input_block_param = 6;</code>
+       */
+      public Builder setDcIdaSwitchInputBlockParam(com.dogu.protocol.generated.inner.types.DcIda.DcIdaSwitchInputBlockParam value) {
+        copyOnWrite();
+        instance.setDcIdaSwitchInputBlockParam(value);
+        return this;
+      }
+      /**
+       * <code>.inner.types.DcIdaSwitchInputBlockParam dc_ida_switch_input_block_param = 6;</code>
+       */
+      public Builder setDcIdaSwitchInputBlockParam(
+          com.dogu.protocol.generated.inner.types.DcIda.DcIdaSwitchInputBlockParam.Builder builderForValue) {
+        copyOnWrite();
+        instance.setDcIdaSwitchInputBlockParam(builderForValue.build());
+        return this;
+      }
+      /**
+       * <code>.inner.types.DcIdaSwitchInputBlockParam dc_ida_switch_input_block_param = 6;</code>
+       */
+      public Builder mergeDcIdaSwitchInputBlockParam(com.dogu.protocol.generated.inner.types.DcIda.DcIdaSwitchInputBlockParam value) {
+        copyOnWrite();
+        instance.mergeDcIdaSwitchInputBlockParam(value);
+        return this;
+      }
+      /**
+       * <code>.inner.types.DcIdaSwitchInputBlockParam dc_ida_switch_input_block_param = 6;</code>
+       */
+      public Builder clearDcIdaSwitchInputBlockParam() {
+        copyOnWrite();
+        instance.clearDcIdaSwitchInputBlockParam();
+        return this;
+      }
+
       // @@protoc_insertion_point(builder_scope:inner.params.DcIdaParam)
     }
     @java.lang.Override
@@ -808,11 +919,12 @@ public final class DcIda {
               com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningParam.class,
               com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryProfileParam.class,
               com.dogu.protocol.generated.inner.types.CfGdcDa.CfGdcDaControlParam.class,
+              com.dogu.protocol.generated.inner.types.DcIda.DcIdaSwitchInputBlockParam.class,
               "seq_",
             };
             java.lang.String info =
-                "\u0000\u0006\u0001\u0000\u0001\n\u0006\u0000\u0000\u0000\u0001<\u0000\u0002<\u0000" +
-                "\u0003<\u0000\u0004<\u0000\u0005<\u0000\n\u0006";
+                "\u0000\u0007\u0001\u0000\u0001\n\u0007\u0000\u0000\u0000\u0001<\u0000\u0002<\u0000" +
+                "\u0003<\u0000\u0004<\u0000\u0005<\u0000\u0006<\u0000\n\u0006";
             return newMessageInfo(DEFAULT_INSTANCE, info, objects);
         }
         // fall through
@@ -932,6 +1044,17 @@ public final class DcIda {
      */
     com.dogu.protocol.generated.inner.types.CfGdcDa.CfGdcDaControlResult getDcGdcDaControlResult();
 
+    /**
+     * <code>.inner.types.DcIdaSwitchInputBlockResult dc_ida_switch_input_block_result = 6;</code>
+     * @return Whether the dcIdaSwitchInputBlockResult field is set.
+     */
+    boolean hasDcIdaSwitchInputBlockResult();
+    /**
+     * <code>.inner.types.DcIdaSwitchInputBlockResult dc_ida_switch_input_block_result = 6;</code>
+     * @return The dcIdaSwitchInputBlockResult.
+     */
+    com.dogu.protocol.generated.inner.types.DcIda.DcIdaSwitchInputBlockResult getDcIdaSwitchInputBlockResult();
+
     public com.dogu.protocol.generated.inner.params.DcIda.DcIdaResult.ValueCase getValueCase();
   }
   /**
@@ -952,6 +1075,7 @@ public final class DcIda {
       DC_IDA_IS_PORT_LISTENING_RESULT(3),
       DC_IDA_QUERY_PROFILE_RESULT(4),
       DC_GDC_DA_CONTROL_RESULT(5),
+      DC_IDA_SWITCH_INPUT_BLOCK_RESULT(6),
       VALUE_NOT_SET(0);
       private final int value;
       private ValueCase(int value) {
@@ -972,6 +1096,7 @@ public final class DcIda {
           case 3: return DC_IDA_IS_PORT_LISTENING_RESULT;
           case 4: return DC_IDA_QUERY_PROFILE_RESULT;
           case 5: return DC_GDC_DA_CONTROL_RESULT;
+          case 6: return DC_IDA_SWITCH_INPUT_BLOCK_RESULT;
           case 0: return VALUE_NOT_SET;
           default: return null;
         }
@@ -1264,6 +1389,56 @@ public final class DcIda {
      */
     private void clearDcGdcDaControlResult() {
       if (valueCase_ == 5) {
+        valueCase_ = 0;
+        value_ = null;
+      }
+    }
+
+    public static final int DC_IDA_SWITCH_INPUT_BLOCK_RESULT_FIELD_NUMBER = 6;
+    /**
+     * <code>.inner.types.DcIdaSwitchInputBlockResult dc_ida_switch_input_block_result = 6;</code>
+     */
+    @java.lang.Override
+    public boolean hasDcIdaSwitchInputBlockResult() {
+      return valueCase_ == 6;
+    }
+    /**
+     * <code>.inner.types.DcIdaSwitchInputBlockResult dc_ida_switch_input_block_result = 6;</code>
+     */
+    @java.lang.Override
+    public com.dogu.protocol.generated.inner.types.DcIda.DcIdaSwitchInputBlockResult getDcIdaSwitchInputBlockResult() {
+      if (valueCase_ == 6) {
+         return (com.dogu.protocol.generated.inner.types.DcIda.DcIdaSwitchInputBlockResult) value_;
+      }
+      return com.dogu.protocol.generated.inner.types.DcIda.DcIdaSwitchInputBlockResult.getDefaultInstance();
+    }
+    /**
+     * <code>.inner.types.DcIdaSwitchInputBlockResult dc_ida_switch_input_block_result = 6;</code>
+     */
+    private void setDcIdaSwitchInputBlockResult(com.dogu.protocol.generated.inner.types.DcIda.DcIdaSwitchInputBlockResult value) {
+      value.getClass();
+  value_ = value;
+      valueCase_ = 6;
+    }
+    /**
+     * <code>.inner.types.DcIdaSwitchInputBlockResult dc_ida_switch_input_block_result = 6;</code>
+     */
+    private void mergeDcIdaSwitchInputBlockResult(com.dogu.protocol.generated.inner.types.DcIda.DcIdaSwitchInputBlockResult value) {
+      value.getClass();
+  if (valueCase_ == 6 &&
+          value_ != com.dogu.protocol.generated.inner.types.DcIda.DcIdaSwitchInputBlockResult.getDefaultInstance()) {
+        value_ = com.dogu.protocol.generated.inner.types.DcIda.DcIdaSwitchInputBlockResult.newBuilder((com.dogu.protocol.generated.inner.types.DcIda.DcIdaSwitchInputBlockResult) value_)
+            .mergeFrom(value).buildPartial();
+      } else {
+        value_ = value;
+      }
+      valueCase_ = 6;
+    }
+    /**
+     * <code>.inner.types.DcIdaSwitchInputBlockResult dc_ida_switch_input_block_result = 6;</code>
+     */
+    private void clearDcIdaSwitchInputBlockResult() {
+      if (valueCase_ == 6) {
         valueCase_ = 0;
         value_ = null;
       }
@@ -1644,6 +1819,54 @@ public final class DcIda {
         return this;
       }
 
+      /**
+       * <code>.inner.types.DcIdaSwitchInputBlockResult dc_ida_switch_input_block_result = 6;</code>
+       */
+      @java.lang.Override
+      public boolean hasDcIdaSwitchInputBlockResult() {
+        return instance.hasDcIdaSwitchInputBlockResult();
+      }
+      /**
+       * <code>.inner.types.DcIdaSwitchInputBlockResult dc_ida_switch_input_block_result = 6;</code>
+       */
+      @java.lang.Override
+      public com.dogu.protocol.generated.inner.types.DcIda.DcIdaSwitchInputBlockResult getDcIdaSwitchInputBlockResult() {
+        return instance.getDcIdaSwitchInputBlockResult();
+      }
+      /**
+       * <code>.inner.types.DcIdaSwitchInputBlockResult dc_ida_switch_input_block_result = 6;</code>
+       */
+      public Builder setDcIdaSwitchInputBlockResult(com.dogu.protocol.generated.inner.types.DcIda.DcIdaSwitchInputBlockResult value) {
+        copyOnWrite();
+        instance.setDcIdaSwitchInputBlockResult(value);
+        return this;
+      }
+      /**
+       * <code>.inner.types.DcIdaSwitchInputBlockResult dc_ida_switch_input_block_result = 6;</code>
+       */
+      public Builder setDcIdaSwitchInputBlockResult(
+          com.dogu.protocol.generated.inner.types.DcIda.DcIdaSwitchInputBlockResult.Builder builderForValue) {
+        copyOnWrite();
+        instance.setDcIdaSwitchInputBlockResult(builderForValue.build());
+        return this;
+      }
+      /**
+       * <code>.inner.types.DcIdaSwitchInputBlockResult dc_ida_switch_input_block_result = 6;</code>
+       */
+      public Builder mergeDcIdaSwitchInputBlockResult(com.dogu.protocol.generated.inner.types.DcIda.DcIdaSwitchInputBlockResult value) {
+        copyOnWrite();
+        instance.mergeDcIdaSwitchInputBlockResult(value);
+        return this;
+      }
+      /**
+       * <code>.inner.types.DcIdaSwitchInputBlockResult dc_ida_switch_input_block_result = 6;</code>
+       */
+      public Builder clearDcIdaSwitchInputBlockResult() {
+        copyOnWrite();
+        instance.clearDcIdaSwitchInputBlockResult();
+        return this;
+      }
+
       // @@protoc_insertion_point(builder_scope:inner.params.DcIdaResult)
     }
     @java.lang.Override
@@ -1667,11 +1890,12 @@ public final class DcIda {
               com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningResult.class,
               com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryProfileResult.class,
               com.dogu.protocol.generated.inner.types.CfGdcDa.CfGdcDaControlResult.class,
+              com.dogu.protocol.generated.inner.types.DcIda.DcIdaSwitchInputBlockResult.class,
               "seq_",
             };
             java.lang.String info =
-                "\u0000\u0006\u0001\u0000\u0001\n\u0006\u0000\u0000\u0000\u0001<\u0000\u0002<\u0000" +
-                "\u0003<\u0000\u0004<\u0000\u0005<\u0000\n\u0006";
+                "\u0000\u0007\u0001\u0000\u0001\n\u0007\u0000\u0000\u0000\u0001<\u0000\u0002<\u0000" +
+                "\u0003<\u0000\u0004<\u0000\u0005<\u0000\u0006<\u0000\n\u0006";
             return newMessageInfo(DEFAULT_INSTANCE, info, objects);
         }
         // fall through
