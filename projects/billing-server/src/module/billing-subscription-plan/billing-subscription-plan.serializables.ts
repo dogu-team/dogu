@@ -1,4 +1,5 @@
 import { BillingResultCode, BillingSubscriptionPlanSourceData, resultCode } from '@dogu-private/console';
+import { In } from 'typeorm';
 import { v4 } from 'uuid';
 import { BillingSubscriptionPlan } from '../../db/entity/billing-subscription-plan.entity';
 import { RetrySerializeContext } from '../../db/utils';
@@ -45,4 +46,16 @@ export async function createSubscriptionPlan(context: RetrySerializeContext, dto
     resultCode: resultCode('ok'),
     subscriptionPlan: billingSubscriptionPlan,
   };
+}
+
+export async function unsubscribeRemainingSubscriptionPlans(context: RetrySerializeContext, remainingSubscriptionPlanIds: string[]): Promise<void> {
+  const { manager } = context;
+  await manager.getRepository(BillingSubscriptionPlan).update(
+    {
+      billingSubscriptionPlanId: In(remainingSubscriptionPlanIds),
+    },
+    {
+      unsubscribedAt: new Date(),
+    },
+  );
 }

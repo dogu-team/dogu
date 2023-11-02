@@ -15,9 +15,13 @@ import { BillingHistoryService } from '../billing-history/billing-history.servic
 import { BillingMethodNiceCaller } from '../billing-method/billing-method-nice.caller';
 import { createOrUpdateMethodNice, createPurchase } from '../billing-method/billing-method-nice.serializables';
 import { BillingMethodNiceService } from '../billing-method/billing-method-nice.service';
-import { findOrganizationWithMethodAndSubscriptionPlans, findOrganizationWithSubscriptionPlans } from '../billing-organization/billing-organization.serializables';
+import {
+  findOrganizationWithMethodAndSubscriptionPlans,
+  findOrganizationWithSubscriptionPlans,
+  registerUsedCoupon,
+} from '../billing-organization/billing-organization.serializables';
 import { BillingOrganizationService } from '../billing-organization/billing-organization.service';
-import { createSubscriptionPlan } from '../billing-subscription-plan/billing-subscription-plan.serializables';
+import { createSubscriptionPlan, unsubscribeRemainingSubscriptionPlans } from '../billing-subscription-plan/billing-subscription-plan.serializables';
 import { DoguLogger } from '../logger/logger';
 import { getSubscriptionPreview } from './billing-purchase.serializables';
 
@@ -105,6 +109,16 @@ export class BillingPurchaseService {
         };
       }
 
+      const remainingSubscriptionPlanIds = billingSubscriptionPreview.remainingPlans.map((plan) => plan.billingSubscriptionPlanId);
+      await unsubscribeRemainingSubscriptionPlans(context, remainingSubscriptionPlanIds);
+
+      if (billingSubscriptionPreview.coupon) {
+        await registerUsedCoupon(context, {
+          billingOrganizationId: billingOrganization.billingOrganizationId,
+          billingCouponId: billingSubscriptionPreview.coupon.billingCouponId,
+        });
+      }
+
       // TODO: create history
       return {
         ok: true,
@@ -115,6 +129,7 @@ export class BillingPurchaseService {
 
   async createPurchaseSubscriptionWithNewCard(dto: CreatePurchaseSubscriptionWithNewCardDto): Promise<CreatePurchaseSubscriptionWithNewCardResponse> {
     return await retrySerialize(this.logger, this.dataSource, async (context) => {
+      const { manager } = context;
       const { registerCard } = dto;
       const billingOrganization = await findOrganizationWithMethodAndSubscriptionPlans(context, dto);
       if (!billingOrganization) {
@@ -167,6 +182,16 @@ export class BillingPurchaseService {
           ok: false,
           resultCode: createSubscriptionPlanResult.resultCode,
         };
+      }
+
+      const remainingSubscriptionPlanIds = billingSubscriptionPreview.remainingPlans.map((plan) => plan.billingSubscriptionPlanId);
+      await unsubscribeRemainingSubscriptionPlans(context, remainingSubscriptionPlanIds);
+
+      if (billingSubscriptionPreview.coupon) {
+        await registerUsedCoupon(context, {
+          billingOrganizationId: billingOrganization.billingOrganizationId,
+          billingCouponId: billingSubscriptionPreview.coupon.billingCouponId,
+        });
       }
 
       // TODO: create history

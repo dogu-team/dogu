@@ -43,7 +43,7 @@ export class BillingSubscriptionPlan implements BillingSubscriptionPlanBase {
   @Column({ type: 'integer', nullable: true })
   billingCouponRemainingApplyCount!: number | null;
 
-  @DateColumn()
+  @DateColumn({ nullable: true })
   unsubscribedAt!: Date | null;
 
   @CreatedAt()
