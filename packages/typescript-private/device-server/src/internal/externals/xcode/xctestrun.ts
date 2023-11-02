@@ -1,6 +1,5 @@
 import fs from 'fs';
 import plist from 'plist';
-import { env } from '../../../env';
 
 export class Xctestrun {
   private constructor(readonly filePath: string) {}
@@ -20,7 +19,6 @@ export class Xctestrun {
           const environment = Reflect.get(runner, 'EnvironmentVariables') as Record<string, string>;
           environment.DOGU_IOS_DEVICE_AGENT_WEB_DRIVER_PORT = `${webDriverPort}`;
           environment.DOGU_IOS_DEVICE_AGENT_GRPC_PORT = `${grpcPort}`;
-          environment.DOGU_IOS_DEVICE_AGENT_IS_DEVICE_SHARE = env.DOGU_IS_DEVICE_SHARE ? '1' : '0';
           await fs.promises.writeFile(this.filePath, plist.build(value));
           return;
         }

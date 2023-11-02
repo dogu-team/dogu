@@ -311,6 +311,7 @@ public enum Inner_Types_DeviceControlAction: SwiftProtobuf.Enum {
   public static let iosActionDownUnspecified = unspecified
   public static let iosActionUp = aosKeyeventActionUp
   public static let iosActionMove = aosKeyeventActionMultiple
+  public static let iosActionScroll = aosMotioneventActionScroll
   case UNRECOGNIZED(Int)
 
   public init() {
@@ -1999,7 +2000,7 @@ extension Inner_Types_DeviceControlAction: SwiftProtobuf._ProtoNameProviding {
     5: .same(proto: "DEVICE_CONTROL_ACTION_AOS_MOTIONEVENT_ACTION_POINTER_DOWN"),
     6: .same(proto: "DEVICE_CONTROL_ACTION_AOS_MOTIONEVENT_ACTION_POINTER_UP"),
     7: .same(proto: "DEVICE_CONTROL_ACTION_AOS_MOTIONEVENT_ACTION_HOVER_MOVE"),
-    8: .same(proto: "DEVICE_CONTROL_ACTION_AOS_MOTIONEVENT_ACTION_SCROLL"),
+    8: .aliased(proto: "DEVICE_CONTROL_ACTION_AOS_MOTIONEVENT_ACTION_SCROLL", aliases: ["DEVICE_CONTROL_ACTION_IOS_ACTION_SCROLL"]),
     9: .same(proto: "DEVICE_CONTROL_ACTION_AOS_MOTIONEVENT_ACTION_HOVER_ENTER"),
     10: .same(proto: "DEVICE_CONTROL_ACTION_AOS_MOTIONEVENT_ACTION_HOVER_EXIT"),
     11: .same(proto: "DEVICE_CONTROL_ACTION_AOS_MOTIONEVENT_ACTION_BUTTON_PRESS"),

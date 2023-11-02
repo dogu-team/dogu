@@ -31,6 +31,9 @@ exports.DcIdaParam = {
         if (message.value?.$case === 'dcGdcDaControlParam') {
             cf_gdc_da_1.CfGdcDaControlParam.encode(message.value.dcGdcDaControlParam, writer.uint32(42).fork()).ldelim();
         }
+        if (message.value?.$case === 'dcIdaSwitchInputBlockParam') {
+            dc_ida_1.DcIdaSwitchInputBlockParam.encode(message.value.dcIdaSwitchInputBlockParam, writer.uint32(50).fork()).ldelim();
+        }
         return writer;
     },
     decode(input, length) {
@@ -73,6 +76,12 @@ exports.DcIdaParam = {
                         dcGdcDaControlParam: cf_gdc_da_1.CfGdcDaControlParam.decode(reader, reader.uint32()),
                     };
                     break;
+                case 6:
+                    message.value = {
+                        $case: 'dcIdaSwitchInputBlockParam',
+                        dcIdaSwitchInputBlockParam: dc_ida_1.DcIdaSwitchInputBlockParam.decode(reader, reader.uint32()),
+                    };
+                    break;
                 default:
                     reader.skipType(tag & 7);
                     break;
@@ -105,7 +114,12 @@ exports.DcIdaParam = {
                                     $case: 'dcGdcDaControlParam',
                                     dcGdcDaControlParam: cf_gdc_da_1.CfGdcDaControlParam.fromJSON(object.dcGdcDaControlParam),
                                 }
-                                : undefined,
+                                : isSet(object.dcIdaSwitchInputBlockParam)
+                                    ? {
+                                        $case: 'dcIdaSwitchInputBlockParam',
+                                        dcIdaSwitchInputBlockParam: dc_ida_1.DcIdaSwitchInputBlockParam.fromJSON(object.dcIdaSwitchInputBlockParam),
+                                    }
+                                    : undefined,
         };
     },
     toJSON(message) {
@@ -120,6 +134,8 @@ exports.DcIdaParam = {
             (obj.dcIdaQueryProfileParam = message.value?.dcIdaQueryProfileParam ? dc_ida_1.DcIdaQueryProfileParam.toJSON(message.value?.dcIdaQueryProfileParam) : undefined);
         message.value?.$case === 'dcGdcDaControlParam' &&
             (obj.dcGdcDaControlParam = message.value?.dcGdcDaControlParam ? cf_gdc_da_1.CfGdcDaControlParam.toJSON(message.value?.dcGdcDaControlParam) : undefined);
+        message.value?.$case === 'dcIdaSwitchInputBlockParam' &&
+            (obj.dcIdaSwitchInputBlockParam = message.value?.dcIdaSwitchInputBlockParam ? dc_ida_1.DcIdaSwitchInputBlockParam.toJSON(message.value?.dcIdaSwitchInputBlockParam) : undefined);
         return obj;
     },
     fromPartial(object) {
@@ -155,6 +171,12 @@ exports.DcIdaParam = {
                 dcGdcDaControlParam: cf_gdc_da_1.CfGdcDaControlParam.fromPartial(object.value.dcGdcDaControlParam),
             };
         }
+        if (object.value?.$case === 'dcIdaSwitchInputBlockParam' && object.value?.dcIdaSwitchInputBlockParam !== undefined && object.value?.dcIdaSwitchInputBlockParam !== null) {
+            message.value = {
+                $case: 'dcIdaSwitchInputBlockParam',
+                dcIdaSwitchInputBlockParam: dc_ida_1.DcIdaSwitchInputBlockParam.fromPartial(object.value.dcIdaSwitchInputBlockParam),
+            };
+        }
         return message;
     },
 };
@@ -180,6 +202,9 @@ exports.DcIdaResult = {
         }
         if (message.value?.$case === 'dcGdcDaControlResult') {
             cf_gdc_da_1.CfGdcDaControlResult.encode(message.value.dcGdcDaControlResult, writer.uint32(42).fork()).ldelim();
+        }
+        if (message.value?.$case === 'dcIdaSwitchInputBlockResult') {
+            dc_ida_1.DcIdaSwitchInputBlockResult.encode(message.value.dcIdaSwitchInputBlockResult, writer.uint32(50).fork()).ldelim();
         }
         return writer;
     },
@@ -223,6 +248,12 @@ exports.DcIdaResult = {
                         dcGdcDaControlResult: cf_gdc_da_1.CfGdcDaControlResult.decode(reader, reader.uint32()),
                     };
                     break;
+                case 6:
+                    message.value = {
+                        $case: 'dcIdaSwitchInputBlockResult',
+                        dcIdaSwitchInputBlockResult: dc_ida_1.DcIdaSwitchInputBlockResult.decode(reader, reader.uint32()),
+                    };
+                    break;
                 default:
                     reader.skipType(tag & 7);
                     break;
@@ -255,7 +286,12 @@ exports.DcIdaResult = {
                                     $case: 'dcGdcDaControlResult',
                                     dcGdcDaControlResult: cf_gdc_da_1.CfGdcDaControlResult.fromJSON(object.dcGdcDaControlResult),
                                 }
-                                : undefined,
+                                : isSet(object.dcIdaSwitchInputBlockResult)
+                                    ? {
+                                        $case: 'dcIdaSwitchInputBlockResult',
+                                        dcIdaSwitchInputBlockResult: dc_ida_1.DcIdaSwitchInputBlockResult.fromJSON(object.dcIdaSwitchInputBlockResult),
+                                    }
+                                    : undefined,
         };
     },
     toJSON(message) {
@@ -271,6 +307,8 @@ exports.DcIdaResult = {
             (obj.dcIdaQueryProfileResult = message.value?.dcIdaQueryProfileResult ? dc_ida_1.DcIdaQueryProfileResult.toJSON(message.value?.dcIdaQueryProfileResult) : undefined);
         message.value?.$case === 'dcGdcDaControlResult' &&
             (obj.dcGdcDaControlResult = message.value?.dcGdcDaControlResult ? cf_gdc_da_1.CfGdcDaControlResult.toJSON(message.value?.dcGdcDaControlResult) : undefined);
+        message.value?.$case === 'dcIdaSwitchInputBlockResult' &&
+            (obj.dcIdaSwitchInputBlockResult = message.value?.dcIdaSwitchInputBlockResult ? dc_ida_1.DcIdaSwitchInputBlockResult.toJSON(message.value?.dcIdaSwitchInputBlockResult) : undefined);
         return obj;
     },
     fromPartial(object) {
@@ -304,6 +342,12 @@ exports.DcIdaResult = {
             message.value = {
                 $case: 'dcGdcDaControlResult',
                 dcGdcDaControlResult: cf_gdc_da_1.CfGdcDaControlResult.fromPartial(object.value.dcGdcDaControlResult),
+            };
+        }
+        if (object.value?.$case === 'dcIdaSwitchInputBlockResult' && object.value?.dcIdaSwitchInputBlockResult !== undefined && object.value?.dcIdaSwitchInputBlockResult !== null) {
+            message.value = {
+                $case: 'dcIdaSwitchInputBlockResult',
+                dcIdaSwitchInputBlockResult: dc_ida_1.DcIdaSwitchInputBlockResult.fromPartial(object.value.dcIdaSwitchInputBlockResult),
             };
         }
         return message;

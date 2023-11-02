@@ -3,7 +3,6 @@ import Foundation
 struct Config {
   var webDriverPort: Int32 = 0
   var grpcPort: Int32 = 0
-  var isDeviceShare: Bool = false
 }
 
 final class EnvironmentParser {
@@ -30,14 +29,6 @@ final class EnvironmentParser {
       throw Error.invalidGrpcPort(grpcPort)
     }
 
-    let isDeviceShare = ProcessInfo.processInfo.environment["DOGU_IOS_DEVICE_AGENT_IS_DEVICE_SHARE"]
-    guard let isDeviceShareString = isDeviceShare,
-      !isDeviceShareString.isEmpty,
-      let isDeviceShareBool = Int32(isDeviceShareString) == 1 ? true : false
-    else {
-      throw Error.invalidIsDeviceShare(isDeviceShare)
-    }
-
-    return Config(webDriverPort: webDriverPortNumber, grpcPort: grpcPortNumber, isDeviceShare: isDeviceShareBool)
+    return Config(webDriverPort: webDriverPortNumber, grpcPort: grpcPortNumber)
   }
 }

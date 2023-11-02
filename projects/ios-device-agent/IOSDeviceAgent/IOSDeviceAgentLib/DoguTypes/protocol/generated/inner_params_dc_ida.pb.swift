@@ -69,6 +69,14 @@ public struct Inner_Params_DcIdaParam {
     set {value = .dcGdcDaControlParam(newValue)}
   }
 
+  public var dcIdaSwitchInputBlockParam: Inner_Types_DcIdaSwitchInputBlockParam {
+    get {
+      if case .dcIdaSwitchInputBlockParam(let v)? = value {return v}
+      return Inner_Types_DcIdaSwitchInputBlockParam()
+    }
+    set {value = .dcIdaSwitchInputBlockParam(newValue)}
+  }
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public enum OneOf_Value: Equatable {
@@ -77,6 +85,7 @@ public struct Inner_Params_DcIdaParam {
     case dcIdaIsPortListeningParam(Inner_Types_DcIdaIsPortListeningParam)
     case dcIdaQueryProfileParam(Inner_Types_DcIdaQueryProfileParam)
     case dcGdcDaControlParam(Inner_Types_CfGdcDaControlParam)
+    case dcIdaSwitchInputBlockParam(Inner_Types_DcIdaSwitchInputBlockParam)
 
   #if !swift(>=4.1)
     public static func ==(lhs: Inner_Params_DcIdaParam.OneOf_Value, rhs: Inner_Params_DcIdaParam.OneOf_Value) -> Bool {
@@ -102,6 +111,10 @@ public struct Inner_Params_DcIdaParam {
       }()
       case (.dcGdcDaControlParam, .dcGdcDaControlParam): return {
         guard case .dcGdcDaControlParam(let l) = lhs, case .dcGdcDaControlParam(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.dcIdaSwitchInputBlockParam, .dcIdaSwitchInputBlockParam): return {
+        guard case .dcIdaSwitchInputBlockParam(let l) = lhs, case .dcIdaSwitchInputBlockParam(let r) = rhs else { preconditionFailure() }
         return l == r
       }()
       default: return false
@@ -162,6 +175,14 @@ public struct Inner_Params_DcIdaResult {
     set {value = .dcGdcDaControlResult(newValue)}
   }
 
+  public var dcIdaSwitchInputBlockResult: Inner_Types_DcIdaSwitchInputBlockResult {
+    get {
+      if case .dcIdaSwitchInputBlockResult(let v)? = value {return v}
+      return Inner_Types_DcIdaSwitchInputBlockResult()
+    }
+    set {value = .dcIdaSwitchInputBlockResult(newValue)}
+  }
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public enum OneOf_Value: Equatable {
@@ -170,6 +191,7 @@ public struct Inner_Params_DcIdaResult {
     case dcIdaIsPortListeningResult(Inner_Types_DcIdaIsPortListeningResult)
     case dcIdaQueryProfileResult(Inner_Types_DcIdaQueryProfileResult)
     case dcGdcDaControlResult(Inner_Types_CfGdcDaControlResult)
+    case dcIdaSwitchInputBlockResult(Inner_Types_DcIdaSwitchInputBlockResult)
 
   #if !swift(>=4.1)
     public static func ==(lhs: Inner_Params_DcIdaResult.OneOf_Value, rhs: Inner_Params_DcIdaResult.OneOf_Value) -> Bool {
@@ -195,6 +217,10 @@ public struct Inner_Params_DcIdaResult {
       }()
       case (.dcGdcDaControlResult, .dcGdcDaControlResult): return {
         guard case .dcGdcDaControlResult(let l) = lhs, case .dcGdcDaControlResult(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.dcIdaSwitchInputBlockResult, .dcIdaSwitchInputBlockResult): return {
+        guard case .dcIdaSwitchInputBlockResult(let l) = lhs, case .dcIdaSwitchInputBlockResult(let r) = rhs else { preconditionFailure() }
         return l == r
       }()
       default: return false
@@ -252,6 +278,7 @@ extension Inner_Params_DcIdaParam: SwiftProtobuf.Message, SwiftProtobuf._Message
     3: .standard(proto: "dc_ida_is_port_listening_param"),
     4: .standard(proto: "dc_ida_query_profile_param"),
     5: .standard(proto: "dc_gdc_da_control_param"),
+    6: .standard(proto: "dc_ida_switch_input_block_param"),
   ]
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -325,6 +352,19 @@ extension Inner_Params_DcIdaParam: SwiftProtobuf.Message, SwiftProtobuf._Message
           self.value = .dcGdcDaControlParam(v)
         }
       }()
+      case 6: try {
+        var v: Inner_Types_DcIdaSwitchInputBlockParam?
+        var hadOneofValue = false
+        if let current = self.value {
+          hadOneofValue = true
+          if case .dcIdaSwitchInputBlockParam(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.value = .dcIdaSwitchInputBlockParam(v)
+        }
+      }()
       case 10: try { try decoder.decodeSingularFixed32Field(value: &self.seq) }()
       default: break
       }
@@ -357,6 +397,10 @@ extension Inner_Params_DcIdaParam: SwiftProtobuf.Message, SwiftProtobuf._Message
       guard case .dcGdcDaControlParam(let v)? = self.value else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 5)
     }()
+    case .dcIdaSwitchInputBlockParam?: try {
+      guard case .dcIdaSwitchInputBlockParam(let v)? = self.value else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 6)
+    }()
     case nil: break
     }
     if self.seq != 0 {
@@ -382,6 +426,7 @@ extension Inner_Params_DcIdaResult: SwiftProtobuf.Message, SwiftProtobuf._Messag
     3: .standard(proto: "dc_ida_is_port_listening_result"),
     4: .standard(proto: "dc_ida_query_profile_result"),
     5: .standard(proto: "dc_gdc_da_control_result"),
+    6: .standard(proto: "dc_ida_switch_input_block_result"),
   ]
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -455,6 +500,19 @@ extension Inner_Params_DcIdaResult: SwiftProtobuf.Message, SwiftProtobuf._Messag
           self.value = .dcGdcDaControlResult(v)
         }
       }()
+      case 6: try {
+        var v: Inner_Types_DcIdaSwitchInputBlockResult?
+        var hadOneofValue = false
+        if let current = self.value {
+          hadOneofValue = true
+          if case .dcIdaSwitchInputBlockResult(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.value = .dcIdaSwitchInputBlockResult(v)
+        }
+      }()
       case 10: try { try decoder.decodeSingularFixed32Field(value: &self.seq) }()
       default: break
       }
@@ -486,6 +544,10 @@ extension Inner_Params_DcIdaResult: SwiftProtobuf.Message, SwiftProtobuf._Messag
     case .dcGdcDaControlResult?: try {
       guard case .dcGdcDaControlResult(let v)? = self.value else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 5)
+    }()
+    case .dcIdaSwitchInputBlockResult?: try {
+      guard case .dcIdaSwitchInputBlockResult(let v)? = self.value else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 6)
     }()
     case nil: break
     }

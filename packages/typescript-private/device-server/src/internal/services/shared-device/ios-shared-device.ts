@@ -3,6 +3,7 @@ import { delay, FilledPrintable, loopTime, usingAsnyc } from '@dogu-tech/common'
 import child_process from 'child_process';
 import { AppiumContextImpl } from '../../../appium/appium.context';
 import { env } from '../../../env';
+import { config } from '../../config';
 import { IdeviceInstaller } from '../../externals/cli/ideviceinstaller';
 import { WebdriverAgentProcess } from '../../externals/cli/webdriver-agent-process';
 import { IosAccessibilitiySelector, IosWebDriver } from '../../externals/webdriver/ios-webdriver';
@@ -22,8 +23,7 @@ const DeviceControlMetaState = PrivateProtocol.DeviceControlMetaState;
 
 interface BlockAppInfo {
   bundleId: string;
-  uninstall?: true;
-  runtime?: true;
+  uninstall: true;
 }
 
 const UninstallSystemAppList: string[] = [];
@@ -142,23 +142,6 @@ const BlockAppList: BlockAppInfo[] = [
     bundleId: 'com.apple.Translate',
     uninstall: true,
   },
-  // access block
-  {
-    bundleId: 'com.apple.Preferences',
-    runtime: true,
-  },
-  {
-    bundleId: 'com.apple.mobilephone',
-    runtime: true,
-  },
-  {
-    bundleId: 'com.apple.MobileSMS',
-    runtime: true,
-  },
-  {
-    bundleId: 'com.apple.DocumentsApp',
-    runtime: true,
-  },
 ];
 
 const RunningBoardProcessName = 'runningboardd';
@@ -202,9 +185,9 @@ export class IosSharedDeviceService implements Zombieable {
       throw new Error(`IosResetService.clearSafariCache driver is null`);
     }
 
-    if (await this.reset.isDirty()) {
-      // await this.timer.check(`IosResetService.setup.reset`, this.reset.reset(this.appiumContext));
-      // throw new Error(`IosResetService.revive. device is dirty. so trigger reset ${serial}`);
+    if ((await this.reset.isDirty()) && !config.externalIosDeviceAgent.use) {
+      await this.timer.check(`IosResetService.setup.reset`, this.reset.reset(this.appiumContext));
+      throw new Error(`IosResetService.revive. device is dirty. so trigger reset ${serial}`);
     }
     const installer = new IdeviceInstaller(serial, logger);
     const uninstallApps = BlockAppList.filter((item) => item.uninstall).map((item) => item.bundleId);
@@ -235,17 +218,6 @@ export class IosSharedDeviceService implements Zombieable {
     if (this.reset.isResetting) {
       return;
     }
-    await this.wda.waitUntilSessionId();
-    const activeApps = await this.wda.getActiveAppList();
-    for (const app of activeApps) {
-      if (BlockAppList.find((item) => item.runtime && item.bundleId === app.bundleId)) {
-        if (this.reset.isResetting) {
-          return;
-        }
-        await this.wda.terminateApp(app.bundleId);
-      }
-    }
-    await delay(1000);
   }
 
   onDie(): void {}

@@ -424,6 +424,7 @@ var DeviceControlAction;
     DeviceControlAction[DeviceControlAction["DEVICE_CONTROL_ACTION_IOS_ACTION_DOWN_UNSPECIFIED"] = 0] = "DEVICE_CONTROL_ACTION_IOS_ACTION_DOWN_UNSPECIFIED";
     DeviceControlAction[DeviceControlAction["DEVICE_CONTROL_ACTION_IOS_ACTION_UP"] = 1] = "DEVICE_CONTROL_ACTION_IOS_ACTION_UP";
     DeviceControlAction[DeviceControlAction["DEVICE_CONTROL_ACTION_IOS_ACTION_MOVE"] = 2] = "DEVICE_CONTROL_ACTION_IOS_ACTION_MOVE";
+    DeviceControlAction[DeviceControlAction["DEVICE_CONTROL_ACTION_IOS_ACTION_SCROLL"] = 8] = "DEVICE_CONTROL_ACTION_IOS_ACTION_SCROLL";
     DeviceControlAction[DeviceControlAction["UNRECOGNIZED"] = -1] = "UNRECOGNIZED";
 })(DeviceControlAction = exports.DeviceControlAction || (exports.DeviceControlAction = {}));
 function deviceControlActionFromJSON(object) {
@@ -500,6 +501,9 @@ function deviceControlActionFromJSON(object) {
         case 2:
         case 'DEVICE_CONTROL_ACTION_IOS_ACTION_MOVE':
             return DeviceControlAction.DEVICE_CONTROL_ACTION_IOS_ACTION_MOVE;
+        case 8:
+        case 'DEVICE_CONTROL_ACTION_IOS_ACTION_SCROLL':
+            return DeviceControlAction.DEVICE_CONTROL_ACTION_IOS_ACTION_SCROLL;
         case -1:
         case 'UNRECOGNIZED':
         default:
@@ -557,6 +561,8 @@ function deviceControlActionToJSON(object) {
             return 'DEVICE_CONTROL_ACTION_IOS_ACTION_UP';
         case DeviceControlAction.DEVICE_CONTROL_ACTION_IOS_ACTION_MOVE:
             return 'DEVICE_CONTROL_ACTION_IOS_ACTION_MOVE';
+        case DeviceControlAction.DEVICE_CONTROL_ACTION_IOS_ACTION_SCROLL:
+            return 'DEVICE_CONTROL_ACTION_IOS_ACTION_SCROLL';
         case DeviceControlAction.UNRECOGNIZED:
         default:
             return 'UNRECOGNIZED';

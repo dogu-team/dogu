@@ -495,6 +495,7 @@ export class IosChannel implements DeviceChannel {
 
   async reset(): Promise<void> {
     const { logger } = this;
+    await this.deviceAgent.sendWithProtobuf('dcIdaSwitchInputBlockParam', 'dcIdaSwitchInputBlockResult', { isBlock: false });
     const appiumContextImpl = await checkTime(`IosChannel.reset.waitUntilBuiltin`, this._appiumContext.waitUntilBuiltin(), logger);
     await checkTime(`IosChannel.reset.reset`, this._reset.reset(appiumContextImpl), logger);
   }

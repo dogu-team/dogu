@@ -76,6 +76,8 @@ actor ControlSessionListener: IControlSessionListener {
           controlResult.set(result: errorControlResult)
         })
       break
+    case .dcIdaSwitchInputBlockParam(let param):
+      GlobalVariable.IsInputBlockAvailable = param.isBlock
     default:
       Log.shared.debug("ControlSessionListener.onParam  unknown param: \(abstractParam)")
       break
