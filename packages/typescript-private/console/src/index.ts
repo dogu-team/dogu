@@ -1,6 +1,7 @@
 import 'reflect-metadata';
 
 export * from './base/billing';
+export * from './base/billing-code';
 export * from './base/billing-coupon';
 export * from './base/billing-history';
 export * from './base/billing-method-nice';

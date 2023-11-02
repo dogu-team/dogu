@@ -1,6 +1,5 @@
-import { BillingOrganizationProp, SelfHostedLicenseBase } from '@dogu-private/console';
-import { Column, Entity, JoinColumn, OneToOne, PrimaryColumn } from 'typeorm';
-import { BillingOrganization } from './billing-organization.entity';
+import { SelfHostedLicenseBase } from '@dogu-private/console';
+import { Column, Entity, PrimaryColumn } from 'typeorm';
 import { CreatedAt, DateColumn, DeletedAt, UpdatedAt } from './util/decorators';
 
 @Entity()
@@ -46,8 +45,4 @@ export class SelfHostedLicense implements SelfHostedLicenseBase {
 
   @DeletedAt()
   deletedAt!: Date | null;
-
-  @OneToOne(() => BillingOrganization, { nullable: true, createForeignKeyConstraints: false })
-  @JoinColumn({ referencedColumnName: BillingOrganizationProp.organizationId })
-  billingOrganization?: BillingOrganization | null;
 }

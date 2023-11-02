@@ -21,6 +21,7 @@
     "class-transformer": "0.5.1",
     "class-validator": "0.14.0",
     "js-yaml": "4.1.0",
+    "lodash": "4.17.21",
     "reflect-metadata": "0.1.13",
     "xmldom": "0.6.0"
   },

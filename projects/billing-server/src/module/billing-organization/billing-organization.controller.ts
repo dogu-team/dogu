@@ -1,5 +1,5 @@
-import { CreateBillingOrganizationDto, CreateOrUpdateBillingOrganizationWithNiceDto, FindBillingOrganizationDto } from '@dogu-private/console';
-import { Body, Controller, Get, NotFoundException, Post, Put, Query } from '@nestjs/common';
+import { FindBillingOrganizationDto } from '@dogu-private/console';
+import { Controller, Get, NotFoundException, Query } from '@nestjs/common';
 import { BillingOrganization } from '../../db/entity/billing-organization.entity';
 import { BillingTokenPermission } from '../auth/guard/billing-token.guard';
 import { BillingOrganizationService } from './billing-organization.service';
@@ -10,9 +10,9 @@ export class BillingOrganizationController {
 
   @Get()
   @BillingTokenPermission()
-  async find(@Query() dto: FindBillingOrganizationDto): Promise<BillingOrganization> {
+  async findOrganizationWithMethod(@Query() dto: FindBillingOrganizationDto): Promise<BillingOrganization> {
     const { organizationId } = dto;
-    const billingOrganization = await this.billingOrganizationService.find(dto);
+    const billingOrganization = await this.billingOrganizationService.findOrganizationWithMethod(dto);
     if (!billingOrganization) {
       throw new NotFoundException(`BillingOrganization not found by organizationId ${organizationId}`);
     }
@@ -20,15 +20,27 @@ export class BillingOrganizationController {
     return billingOrganization;
   }
 
-  @Post()
+  @Get('/with-subscription-plans')
   @BillingTokenPermission()
-  async create(@Body() dto: CreateBillingOrganizationDto): Promise<BillingOrganization> {
-    return await this.billingOrganizationService.create(dto);
+  async findOrganizationWithSubscriptionPlans(@Query() dto: FindBillingOrganizationDto): Promise<BillingOrganization> {
+    const { organizationId } = dto;
+    const billingOrganization = await this.billingOrganizationService.findOrganizationWithSubscriptionPlans(dto);
+    if (!billingOrganization) {
+      throw new NotFoundException(`BillingOrganization not found by organizationId ${organizationId}`);
+    }
+
+    return billingOrganization;
   }
 
-  @Put()
+  @Get('/with-method-and-subscription-plans')
   @BillingTokenPermission()
-  async createOrUpdate(@Body() dto: CreateOrUpdateBillingOrganizationWithNiceDto): Promise<BillingOrganization> {
-    return await this.billingOrganizationService.createOrUpdateWithNice(dto);
+  async findOrganizationWithMethodAndSubscriptionPlans(@Query() dto: FindBillingOrganizationDto): Promise<BillingOrganization> {
+    const { organizationId } = dto;
+    const billingOrganization = await this.billingOrganizationService.findOrganizationWithMethodAndSubscriptionPlans(dto);
+    if (!billingOrganization) {
+      throw new NotFoundException(`BillingOrganization not found by organizationId ${organizationId}`);
+    }
+
+    return billingOrganization;
   }
 }

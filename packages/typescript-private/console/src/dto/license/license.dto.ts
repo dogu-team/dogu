@@ -35,6 +35,7 @@ export interface LicenseErrorInfo {
   isLicenseServerDisConnected: boolean;
   unKnownError: boolean;
 }
+
 export interface SelfHostedLicenseResponse extends SelfHostedLicenseBase {
   errorInfo: LicenseErrorInfo | null;
   isCommunityEdition: boolean;

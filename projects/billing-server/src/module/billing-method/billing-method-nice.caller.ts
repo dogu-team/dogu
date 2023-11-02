@@ -1,10 +1,10 @@
 import {
-  SubscribeExpireNiceDto,
-  SubscribeExpireNiceResponse,
-  SubscribePaymentsNiceDto,
-  SubscribePaymentsNiceResponse,
-  SubscribeRegistNiceDto,
-  SubscribeRegistNiceResponse,
+  NiceSubscribeExpireDto,
+  NiceSubscribeExpireResponse,
+  NiceSubscribePaymentsDto,
+  NiceSubscribePaymentsResponse,
+  NiceSubscribeRegistDto,
+  NiceSubscribeRegistResponse,
 } from '@dogu-private/console';
 import { setAxiosErrorFilterToIntercepter } from '@dogu-tech/common';
 import { Injectable } from '@nestjs/common';
@@ -47,8 +47,8 @@ export class BillingMethodNiceCaller {
   /**
    * @see https://github.com/nicepayments/nicepay-manual/blob/main/api/payment-subscribe.md#%EB%B9%8C%ED%82%A4%EB%B0%9C%EA%B8%89
    */
-  async subscribeRegist(dto: SubscribeRegistNiceDto): Promise<SubscribeRegistNiceResponse> {
-    const { cardNumber, expirationYear, expirationMonth, idNumber, cardPasswordFirst2Digits } = dto;
+  async subscribeRegist(dto: NiceSubscribeRegistDto): Promise<NiceSubscribeRegistResponse> {
+    const { cardNumber, expirationYear, expirationMonth, idNumber, cardPasswordFirst2Digits } = dto.registerCard;
     const path = '/subscribe/regist';
     const rawString = `cardNo=${cardNumber}&expYear=${expirationYear}&expMonth=${expirationMonth}&idNo=${idNumber}&cardPw=${cardPasswordFirst2Digits}`;
     const encData = aes256(rawString);
@@ -59,7 +59,7 @@ export class BillingMethodNiceCaller {
       orderId,
     };
     this.logger.info('NicePay subscribe/regist request', { path, body });
-    const response = await this.client.post<SubscribeRegistNiceResponse>(path, body);
+    const response = await this.client.post<NiceSubscribeRegistResponse>(path, body);
     const { data } = response;
     this.logger.info('NicePay subscribe/regist response', { data });
 
@@ -81,7 +81,7 @@ export class BillingMethodNiceCaller {
   /**
    * @see https://github.com/nicepayments/nicepay-manual/blob/main/api/payment-subscribe.md#%EB%B9%8C%ED%82%A4%EC%82%AD%EC%A0%9C
    */
-  async subscribeExpire(dto: SubscribeExpireNiceDto): Promise<SubscribeExpireNiceResponse> {
+  async subscribeExpire(dto: NiceSubscribeExpireDto): Promise<NiceSubscribeExpireResponse> {
     const { bid } = dto;
     const path = `/subscribe/${bid}/expire`;
     const orderId = v4();
@@ -89,7 +89,7 @@ export class BillingMethodNiceCaller {
       orderId,
     };
     this.logger.info('NicePay subscribe/expire request', { path, body });
-    const response = await this.client.post<SubscribeExpireNiceResponse>(path, body);
+    const response = await this.client.post<NiceSubscribeExpireResponse>(path, body);
     const { data } = response;
     this.logger.info('NicePay subscribe/expire response', { data });
 
@@ -107,7 +107,7 @@ export class BillingMethodNiceCaller {
   /**
    * @see https://github.com/nicepayments/nicepay-manual/blob/main/api/payment-subscribe.md#%EB%B9%8C%ED%82%A4%EC%8A%B9%EC%9D%B8
    */
-  async subscribePayments(dto: SubscribePaymentsNiceDto): Promise<SubscribePaymentsNiceResponse> {
+  async subscribePayments(dto: NiceSubscribePaymentsDto): Promise<NiceSubscribePaymentsResponse> {
     const { bid, amount, goodsName } = dto;
     const path = `/subscribe/${bid}/payments`;
     const orderId = v4();
@@ -119,7 +119,7 @@ export class BillingMethodNiceCaller {
       orderId,
     };
     this.logger.info('NicePay subscribe/payments request', { path, body });
-    const response = await this.client.post<SubscribePaymentsNiceResponse>(path, body);
+    const response = await this.client.post<NiceSubscribePaymentsResponse>(path, body);
     const { data } = response;
     this.logger.info('NicePay subscribe/payments response', { data });
 

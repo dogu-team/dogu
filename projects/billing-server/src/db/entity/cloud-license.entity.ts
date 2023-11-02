@@ -1,4 +1,4 @@
-import { BillingOrganizationProp, CloudLicenseBase } from '@dogu-private/console';
+import { CloudLicenseBase, CloudLicenseProp } from '@dogu-private/console';
 import { OrganizationId } from '@dogu-private/types';
 import { Column, Entity, JoinColumn, OneToOne, PrimaryColumn } from 'typeorm';
 import { BillingOrganization } from './billing-organization.entity';
@@ -8,6 +8,9 @@ import { CreatedAt, DeletedAt, UpdatedAt } from './util/decorators';
 export class CloudLicense implements CloudLicenseBase {
   @PrimaryColumn('uuid')
   cloudLicenseId!: string;
+
+  @Column({ type: 'uuid', unique: true })
+  billingOrganizationId!: string;
 
   @Column({ type: 'uuid', unique: true })
   organizationId!: OrganizationId;
@@ -27,7 +30,7 @@ export class CloudLicense implements CloudLicenseBase {
   @DeletedAt()
   deletedAt!: Date | null;
 
-  @OneToOne(() => BillingOrganization, { nullable: true, createForeignKeyConstraints: false })
-  @JoinColumn({ referencedColumnName: BillingOrganizationProp.organizationId })
-  billingOrganization?: BillingOrganization | null;
+  @OneToOne(() => BillingOrganization)
+  @JoinColumn({ name: CloudLicenseProp.billingOrganizationId })
+  billingOrganization?: BillingOrganization;
 }

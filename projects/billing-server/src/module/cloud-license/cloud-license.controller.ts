@@ -14,13 +14,13 @@ export class CloudLicenseController {
 
   @Post()
   @BillingTokenPermission()
-  async createLicense(@Body() dto: CreateCloudLicenseDto): Promise<CloudLicense> {
-    return await this.cloudLicenseService.createLicense(dto);
+  async createCloudLicense(@Body() dto: CreateCloudLicenseDto): Promise<CloudLicense> {
+    return await this.cloudLicenseService.createCloudLicense(dto);
   }
 
   @Get()
   @BillingTokenPermission()
-  async findLicense(@Query() dto: FindCloudLicenseDto): Promise<CloudLicense> {
-    return await this.cloudLicenseService.findLicense(dto);
+  async findCloudLicense(@Query() dto: FindCloudLicenseDto): Promise<CloudLicense> {
+    return await this.cloudLicenseService.findCloudLicense(dto);
   }
 }

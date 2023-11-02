@@ -15,13 +15,13 @@ export class SelfHostedLicenseController {
 
   @Post()
   @BillingTokenPermission()
-  async createLicense(@Body() dto: CreateSelfHostedLicenseDto): Promise<SelfHostedLicense> {
-    return await this.selfHostedLicenseService.createLicense(dto);
+  async createSelfHostedLicense(@Body() dto: CreateSelfHostedLicenseDto): Promise<SelfHostedLicense> {
+    return await this.selfHostedLicenseService.createSelfHostedLicense(dto);
   }
 
   @Get()
   @SelfHostedLicensePermission()
-  async findLicense(@SelfHostedLicenseUser() dto: SelfHostedLicenseUser): Promise<SelfHostedLicense> {
-    return await this.selfHostedLicenseService.findLicense(dto);
+  async findSelfHostedLicense(@SelfHostedLicenseUser() dto: SelfHostedLicenseUser): Promise<SelfHostedLicense> {
+    return await this.selfHostedLicenseService.findSelfHostedLicense(dto);
   }
 }

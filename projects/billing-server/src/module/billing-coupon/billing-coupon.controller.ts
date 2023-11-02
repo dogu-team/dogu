@@ -11,17 +11,17 @@ export class BillingCouponController {
   @Get('/validate')
   @BillingTokenPermission()
   async validateBillingCoupon(@Query() dto: ValidateBillingCouponDto): Promise<ValidateBillingCouponResponse> {
-    const response = await this.billingCouponService.validateBillingCoupon(dto);
+    const response = await this.billingCouponService.validateCoupon(dto);
     if (!response.ok) {
-      throw new BadRequestException(response.reason);
+      throw new BadRequestException(response.resultCode);
     }
 
     return response;
   }
 
-  @Get('/available')
+  @Get('/availables')
   @BillingTokenPermission()
   async getAvailableBillingCoupons(@Query() dto: GetAvailableBillingCouponsDto): Promise<BillingCoupon[]> {
-    return await this.billingCouponService.getAvailableBillingCoupons(dto);
+    return await this.billingCouponService.getAvailableCoupons(dto);
   }
 }

@@ -1,0 +1,41 @@
+import { CreateSelfHostedLicenseDto } from '@dogu-private/console';
+import { stringify } from '@dogu-tech/common';
+import { ConflictException, NotFoundException } from '@nestjs/common';
+import { v4 } from 'uuid';
+import { SelfHostedLicense } from '../../db/entity/self-hosted-license.entity';
+import { RetrySerializeContext } from '../../db/utils';
+import { LicenseKeyService } from '../common/license-key.service';
+import { FindSelfHostedLicenseQueryDto } from './self-hosted-license.dto';
+
+export async function findSelfHostedLicense(context: RetrySerializeContext, dto: FindSelfHostedLicenseQueryDto): Promise<SelfHostedLicense> {
+  const { manager } = context;
+  const { organizationId, licenseKey } = dto;
+  const license = await manager.getRepository(SelfHostedLicense).createQueryBuilder(SelfHostedLicense.name).where({ organizationId, licenseKey }).getOne();
+
+  if (!license) {
+    throw new NotFoundException(`Organization does not have a self-hosted license. organizationId: ${organizationId}`);
+  }
+
+  return license;
+}
+
+export async function createSelfHostedLicense(context: RetrySerializeContext, dto: CreateSelfHostedLicenseDto): Promise<SelfHostedLicense> {
+  const { manager } = context;
+  const { organizationId, companyName, expiredAt } = dto;
+  const existingLicense = await manager.getRepository(SelfHostedLicense).findOne({ where: { organizationId, companyName } });
+
+  if (existingLicense) {
+    throw new ConflictException(`Organization already has a self-hosted license. organizationId: ${stringify(organizationId)}`);
+  }
+
+  const licenseKey = LicenseKeyService.createLicensKey();
+  const license = manager.getRepository(SelfHostedLicense).create({
+    selfHostedLicenseId: v4(),
+    organizationId,
+    companyName,
+    expiredAt,
+    licenseKey,
+  });
+  const rv = await manager.getRepository(SelfHostedLicense).save(license);
+  return rv;
+}

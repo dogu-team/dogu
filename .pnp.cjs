@@ -7451,6 +7451,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["class-transformer", "npm:0.5.1"],\
             ["class-validator", "npm:0.14.0"],\
             ["js-yaml", "npm:4.1.0"],\
+            ["lodash", "npm:4.17.21"],\
             ["nodemon", "npm:2.0.22"],\
             ["reflect-metadata", "npm:0.1.13"],\
             ["shx", "npm:0.3.4"],\

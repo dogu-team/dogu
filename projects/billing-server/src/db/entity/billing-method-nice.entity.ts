@@ -1,7 +1,7 @@
 import { BillingMethodNiceBase, BillingOrganizationProp } from '@dogu-private/console';
 import { Column, Entity, JoinColumn, OneToOne, PrimaryColumn } from 'typeorm';
 import { BillingOrganization } from './billing-organization.entity';
-import { CreatedAt, DeletedAt, UpdatedAt } from './util/decorators';
+import { CreatedAt, DateColumn, DeletedAt, UpdatedAt } from './util/decorators';
 
 @Entity()
 export class BillingMethodNice implements BillingMethodNiceBase {
@@ -25,6 +25,9 @@ export class BillingMethodNice implements BillingMethodNiceBase {
 
   @Column({ type: 'jsonb', nullable: true })
   subscribeRegistResponse!: Record<string, unknown> | null;
+
+  @DateColumn({ nullable: true })
+  subscribeRegistAt!: Date | null;
 
   @CreatedAt()
   createdAt!: Date;

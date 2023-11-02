@@ -1,5 +1,6 @@
 import { IsFilledString, propertiesOf } from '@dogu-tech/common';
-import { IsNumber, IsUUID } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsNumber, IsUUID, ValidateNested } from 'class-validator';
 import { BillingOrganizationBase } from './billing-organization';
 import { RegisterCardDto } from './billing-purchase';
 
@@ -11,6 +12,7 @@ export interface BillingMethodNiceBase {
   cardName: string | null;
   cardNumberLast4Digits: string | null;
   subscribeRegistResponse: Record<string, unknown> | null;
+  subscribeRegistAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date | null;
@@ -19,7 +21,20 @@ export interface BillingMethodNiceBase {
 
 export const BillingMethodNiceProp = propertiesOf<BillingMethodNiceBase>();
 
-export class SubscribeRegistNiceDto extends RegisterCardDto {}
+export class NiceSubscribeRegistDto {
+  @ValidateNested()
+  @Type(() => RegisterCardDto)
+  registerCard!: RegisterCardDto;
+}
+
+export class CreateOrUpdateMethodNiceDto {
+  @IsUUID()
+  billingOrganizationId!: string;
+
+  @ValidateNested()
+  @Type(() => NiceSubscribeRegistDto)
+  subscribeRegist!: NiceSubscribeRegistDto;
+}
 
 /**
  * @example
@@ -45,7 +60,7 @@ export class SubscribeRegistNiceDto extends RegisterCardDto {}
  *  cardName: null
  * }
  */
-export interface SubscribeRegistNiceResponse {
+export interface NiceSubscribeRegistResponse {
   resultCode: string;
   resultMsg: string;
   tid: string;
@@ -57,12 +72,7 @@ export interface SubscribeRegistNiceResponse {
   messageSource?: string;
 }
 
-export class CreateOrUpdateBillingMethodNiceDto extends SubscribeRegistNiceDto {
-  @IsUUID()
-  billingOrganizationId!: string;
-}
-
-export class SubscribeExpireNiceDto {
+export class NiceSubscribeExpireDto {
   @IsFilledString()
   bid!: string;
 }
@@ -86,7 +96,7 @@ export class SubscribeExpireNiceDto {
  *  authDate: null
  * }
  */
-export interface SubscribeExpireNiceResponse {
+export interface NiceSubscribeExpireResponse {
   resultCode: string;
   resultMsg: string;
   tid: string;
@@ -95,7 +105,7 @@ export interface SubscribeExpireNiceResponse {
   authDate: string | null;
 }
 
-export class SubscribePaymentsNiceDto {
+export class NiceSubscribePaymentsDto {
   @IsFilledString()
   bid!: string;
 
@@ -106,19 +116,8 @@ export class SubscribePaymentsNiceDto {
   goodsName!: string;
 }
 
-export class CreatePurchaseBillingMethodNiceDto {
-  @IsFilledString()
-  organizationId!: string;
-
-  @IsNumber()
-  amount!: number;
-
-  @IsFilledString()
-  goodsName!: string;
-}
-
-export const NicePaymentStatus = ['', 'paid', 'ready', 'failed', 'cancelled', 'partialCancelled', 'expired'] as const;
-export type NicePaymentStatus = (typeof NicePaymentStatus)[number];
+export const NiceStatus = ['', 'paid', 'ready', 'failed', 'cancelled', 'partialCancelled', 'expired'] as const;
+export type NiceStatus = (typeof NiceStatus)[number];
 
 export const NiceChannel = ['pc', 'mobile'] as const;
 export type NiceChannel = (typeof NiceChannel)[number];
@@ -214,7 +213,7 @@ export type NiceCurrency = (typeof NiceCurrency)[number];
  *  messageSource: null
  * }
  */
-export interface SubscribePaymentsNiceResponse {
+export interface NiceSubscribePaymentsResponse {
   resultCode: string;
   resultMsg: string;
   tid: string;
@@ -222,7 +221,7 @@ export interface SubscribePaymentsNiceResponse {
   orderId: string;
   ediDate: string | null;
   signature: string | null;
-  status: NicePaymentStatus;
+  status: NiceStatus;
   paidAt: string;
   failedAt: string;
   cancelledAt: string;
@@ -263,5 +262,3 @@ export interface SubscribePaymentsNiceResponse {
   bid: string;
   messageSource: string | null;
 }
-
-export interface CreatePurchaseBillingMethodNiceResponse extends SubscribePaymentsNiceResponse {}

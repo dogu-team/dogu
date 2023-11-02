@@ -25,15 +25,24 @@ function defaultSerializableTransactionOptions(): Required<SerializableTransacti
   };
 }
 
+export type OnAfterRollback = (error: Error) => Promise<void>;
+
 export interface RetrySerializeHandler {
-  onAfterRollback?: (error: Error) => Promise<void>;
+  onAfterRollback?: OnAfterRollback;
 }
 
+export interface RetrySerializeContext {
+  logger: DoguLogger;
+  manager: EntityManager;
+  registerOnAfterRollback: (onAfterRollback: OnAfterRollback) => void;
+}
+
+export type RetrySerializeFunction<T> = (context: RetrySerializeContext) => Promise<T>;
+
 export async function retrySerialize<T>(
-  logger: DoguLogger,
+  logger: DoguLogger, //
   dataSource: DataSource,
-  fn: (manager: EntityManager) => Promise<T>,
-  handler?: RetrySerializeHandler,
+  fn: RetrySerializeFunction<T>,
   options?: SerializableTransactionOptions,
 ): Promise<T> {
   const { retryCount, retryInterval } = { ...defaultSerializableTransactionOptions(), ...options };
@@ -42,9 +51,16 @@ export async function retrySerialize<T>(
 
   try {
     for (let tryCount = 1; tryCount <= retryCount; tryCount++) {
+      const onAfterRollbacks = new Set<OnAfterRollback>();
       try {
         await queryRunner.startTransaction('SERIALIZABLE');
-        const result = await fn(queryRunner.manager);
+        const result = await fn({
+          logger,
+          manager: queryRunner.manager,
+          registerOnAfterRollback: (onAfterRollback) => {
+            onAfterRollbacks.add(onAfterRollback);
+          },
+        });
         await queryRunner.commitTransaction();
         return result;
       } catch (e) {
@@ -52,10 +68,12 @@ export async function retrySerialize<T>(
         logger.warn('retrySerialize.catch transaction failed', { tryCount, error });
         await queryRunner.rollbackTransaction();
 
-        try {
-          await handler?.onAfterRollback?.(error);
-        } catch (error) {
-          logger.error('retrySerialize.catch onAfterRollback failed', { error: errorify(error) });
+        for (const onAfterRollback of onAfterRollbacks) {
+          try {
+            await onAfterRollback(error);
+          } catch (e) {
+            logger.error('retrySerialize.catch onAfterRollback failed', { error: errorify(e) });
+          }
         }
 
         if (tryCount === retryCount) {

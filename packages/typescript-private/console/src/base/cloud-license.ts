@@ -5,13 +5,14 @@ import { BillingOrganizationBase } from './billing-organization';
 
 export interface CloudLicenseBase {
   cloudLicenseId: string;
+  billingOrganizationId: string;
   organizationId: OrganizationId;
   liveTestingRemainingFreeSeconds: number;
   liveTestingParallelCount: number;
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date | null;
-  billingOrganization?: BillingOrganizationBase | null;
+  billingOrganization?: BillingOrganizationBase;
 }
 
 export const CloudLicenseProp = propertiesOf<CloudLicenseBase>();

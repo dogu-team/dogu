@@ -29,7 +29,8 @@ export class CloudLicenseLiveTestingGateway implements OnGatewayConnection {
     webSocket.on('message', (data) => {
       (async (): Promise<void> => {
         const sendMessage = await transformAndValidate(CloudLicenseMessage.LiveTestingSend, JSON.parse(rawToString(data)));
-        const remainingFreeSeconds = await retrySerialize(this.logger, this.dataSource, async (manager) => {
+        const remainingFreeSeconds = await retrySerialize(this.logger, this.dataSource, async (context) => {
+          const { manager } = context;
           const cloudLicense = await manager.getRepository(CloudLicense).findOne({
             where: {
               cloudLicenseId: sendMessage.cloudLicenseId,

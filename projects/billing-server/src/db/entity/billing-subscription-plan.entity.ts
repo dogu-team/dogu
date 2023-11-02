@@ -28,6 +28,9 @@ export class BillingSubscriptionPlan implements BillingSubscriptionPlanBase {
   @Column({ type: 'integer' })
   originPrice!: number;
 
+  @Column({ type: 'integer' })
+  lastPurchasedPrice!: number;
+
   @Column({ type: 'uuid' })
   billingOrganizationId!: string;
 

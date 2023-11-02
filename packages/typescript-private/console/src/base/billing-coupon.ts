@@ -1,23 +1,9 @@
 import { IsFilledString, propertiesOf } from '@dogu-tech/common';
 import { IsUUID } from 'class-validator';
+import { BillingResultCode } from '..';
 
 export const BillingCouponType = ['basic', 'promotion'] as const;
 export type BillingCouponType = (typeof BillingCouponType)[number];
-
-export const BillingCouponReason = [
-  'coupon-not-found',
-  'coupon-expired',
-  'organization-not-found',
-  'coupon-already-used',
-  'coupon-available',
-  'coupon-all-used',
-  'coupon-invalid-monthly-apply-count',
-  'coupon-invalid-yearly-apply-count',
-  'coupon-null-argument',
-  'coupon-invalid-monthly-discount-percent',
-  'coupon-invalid-yearly-discount-percent',
-] as const;
-export type BillingCouponReason = (typeof BillingCouponReason)[number];
 
 export interface BillingCouponBase {
   billingCouponId: string;
@@ -50,7 +36,7 @@ export class ValidateBillingCouponDto {
 
 export interface ValidateBillingCouponResponse {
   ok: boolean;
-  reason: BillingCouponReason;
+  resultCode: BillingResultCode;
   coupon: BillingCouponBase | null;
 }
 

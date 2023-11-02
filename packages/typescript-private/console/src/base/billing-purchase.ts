@@ -1,9 +1,9 @@
 import { IsFilledString } from '@dogu-tech/common';
 import { Type } from 'class-transformer';
 import { buildMessage, IsIn, IsNumber, IsOptional, IsString, IsUUID, Length, ValidateBy, ValidateNested } from 'class-validator';
-import { BillingSubscriptionPlanSourceData } from '..';
+import { BillingResultCode, BillingSubscriptionPlanSourceData } from '..';
 import { BillingCategory, BillingCurrency, BillingPeriod, BillingSubscriptionPlanType } from './billing';
-import { BillingCouponBase, BillingCouponReason } from './billing-coupon';
+import { BillingCouponBase } from './billing-coupon';
 
 /**
  * @description
@@ -34,33 +34,16 @@ import { BillingCouponBase, BillingCouponReason } from './billing-coupon';
  * case 112 - duplicated subscription plan
  */
 
-export const BillingSubscriptionPreviewReason = [
-  ...BillingCouponReason,
-  'available',
-  'currency-not-found',
-  'period-not-found',
-  'subscription-plan-type-not-found',
-  'subscription-plan-option-not-found',
-  'first-purchased-at-not-found',
-  'category-not-matched',
-  'currency-not-matched',
-  'duplicated-subscription-plan',
-] as const;
-export type BillingSubscriptionPreviewReason = (typeof BillingSubscriptionPreviewReason)[number];
-
-export class GetBillingSubscriptionPreviewDto {
-  @IsUUID()
-  organizationId!: string;
-
+export class BillingSubscriptionPlanDto {
   @IsIn(BillingCategory)
   category!: BillingCategory;
 
   @IsIn(BillingSubscriptionPlanType)
-  subscriptionPlanType!: BillingSubscriptionPlanType;
+  type!: BillingSubscriptionPlanType;
 
   @IsNumber()
   @Type(() => Number)
-  subscriptionPlanOption!: number;
+  option!: number;
 
   @IsIn(BillingCurrency)
   currency!: BillingCurrency;
@@ -73,6 +56,15 @@ export class GetBillingSubscriptionPreviewDto {
   couponCode?: string;
 }
 
+export class GetBillingSubscriptionPreviewDto {
+  @IsUUID()
+  organizationId!: string;
+
+  @ValidateNested()
+  @Type(() => BillingSubscriptionPlanDto)
+  billingSubscriptionPlan!: BillingSubscriptionPlanDto;
+}
+
 export interface RemainingPlan {
   billingSubscriptionPlanId: string;
   category: BillingCategory;
@@ -81,7 +73,7 @@ export interface RemainingPlan {
   period: BillingPeriod;
   currency: BillingCurrency;
   amount: number;
-  nextPurchasedAt: Date;
+  nextPurchaseAt: Date;
 }
 
 export interface ElapsedPlan {
@@ -96,12 +88,12 @@ export interface ElapsedPlan {
 
 export interface GetBillingSubscriptionPreviewResponseFailure {
   ok: false;
-  reason: BillingSubscriptionPreviewReason;
+  resultCode: BillingResultCode;
 }
 
 export interface GetBillingSubscriptionPreviewResponseSuccess {
   ok: true;
-  reason: BillingSubscriptionPreviewReason;
+  resultCode: BillingResultCode;
   totalPrice: number;
   nextPurchaseTotalPrice: number;
   nextPurchaseAt: Date;
@@ -116,12 +108,9 @@ export type GetBillingSubscriptionPreviewResponse = GetBillingSubscriptionPrevie
 
 export class CreatePurchaseSubscriptionDto extends GetBillingSubscriptionPreviewDto {}
 
-export const BillingSubscriptionPurchaseReason = [...BillingSubscriptionPreviewReason, 'purchased'] as const;
-export type BillingSubscriptionPurchaseReason = (typeof BillingSubscriptionPurchaseReason)[number];
-
 export interface CreatePurchaseSubscriptionResponse {
   ok: boolean;
-  reason: BillingSubscriptionPurchaseReason;
+  resultCode: BillingResultCode;
 }
 
 export class RegisterCardDto {
@@ -164,10 +153,7 @@ export class CreatePurchaseSubscriptionWithNewCardDto extends CreatePurchaseSubs
   registerCard!: RegisterCardDto;
 }
 
-export const BillingSubscriptionPurchaseWithNewCardReason = [...BillingSubscriptionPurchaseReason, 'invalid-card'] as const;
-export type BillingSubscriptionPurchaseWithNewCardReason = (typeof BillingSubscriptionPurchaseWithNewCardReason)[number];
-
 export interface CreatePurchaseSubscriptionWithNewCardResponse {
   ok: boolean;
-  reason: BillingSubscriptionPurchaseWithNewCardReason;
+  resultCode: BillingResultCode;
 }
