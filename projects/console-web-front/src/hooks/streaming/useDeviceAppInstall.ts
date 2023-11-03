@@ -55,6 +55,10 @@ const useDeviceAppInstall = (
 
         setIsInstalling(true);
         await deviceHostClientRef.current.downloadSharedResource(hostFilePath, path, file.size);
+        // resign app for ios
+        if (option.isCloudDevice && file.name.endsWith('.ipa')) {
+          await deviceHostClientRef.current.resignApp({ filePath: hostFilePath });
+        }
         await deviceClientRef?.current?.installApp(serial, hostFilePath);
         await deviceClientRef?.current?.runApp(serial, hostFilePath);
         await deviceHostClientRef.current.removeTemp({
