@@ -41,6 +41,10 @@ ResponsiveWebTestingPage.getLayout = (page) => {
 };
 
 export const getServerSideProps: GetServerSideProps<OrganizationServerSideProps> = async (context) => {
+  return {
+    notFound: true,
+  };
+
   if (process.env.DOGU_RUN_TYPE === 'self-hosted') {
     return {
       notFound: true,
