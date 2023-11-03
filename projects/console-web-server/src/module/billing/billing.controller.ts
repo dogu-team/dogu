@@ -1,4 +1,4 @@
-import { CallBillingApiResponse } from '@dogu-private/console';
+import { BillingCouponBase, CallBillingApiResponse, GetBillingSubscriptionPreviewResponse, ValidateBillingCouponResponse } from '@dogu-private/console';
 import { Controller, Get, Query } from '@nestjs/common';
 
 import { ORGANIZATION_ROLE } from '../auth/auth.types';
@@ -16,8 +16,8 @@ export class BillingController {
   // coupon
   @Get('/coupons/validate')
   @OrganizationPermission(ORGANIZATION_ROLE.ADMIN)
-  async validateCoupon(@Query() query: object): Promise<CallBillingApiResponse> {
-    return await this.billingCaller.callBillingApi({
+  async validateCoupon(@Query() query: object): Promise<CallBillingApiResponse<ValidateBillingCouponResponse>> {
+    return await this.billingCaller.callBillingApi<ValidateBillingCouponResponse>({
       method: 'GET',
       path: 'billing/coupons/validate',
       query,
@@ -26,8 +26,8 @@ export class BillingController {
 
   @Get('/coupons/availables')
   @OrganizationPermission(ORGANIZATION_ROLE.ADMIN)
-  async findAvailableCoupon(@Query() query: object): Promise<CallBillingApiResponse> {
-    return await this.billingCaller.callBillingApi({
+  async findAvailableCoupon(@Query() query: object): Promise<CallBillingApiResponse<BillingCouponBase[]>> {
+    return await this.billingCaller.callBillingApi<BillingCouponBase[]>({
       method: 'GET',
       path: 'billing/coupons/availables',
       query,
@@ -37,8 +37,8 @@ export class BillingController {
   // purchase
   @Get('/purchase/preview')
   @OrganizationPermission(ORGANIZATION_ROLE.ADMIN)
-  async getSubscriptionPreview(@Query() query: object): Promise<CallBillingApiResponse> {
-    return await this.billingCaller.callBillingApi({
+  async getSubscriptionPreview(@Query() query: object): Promise<CallBillingApiResponse<GetBillingSubscriptionPreviewResponse>> {
+    return await this.billingCaller.callBillingApi<GetBillingSubscriptionPreviewResponse>({
       method: 'GET',
       path: 'billing/purchase/preview',
       query,

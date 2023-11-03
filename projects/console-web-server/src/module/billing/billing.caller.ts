@@ -25,10 +25,10 @@ export class BillingCaller {
     }
   }
 
-  async callBillingApi(dto: CallBillingApiDto): Promise<CallBillingApiResponse> {
+  async callBillingApi<B>(dto: CallBillingApiDto): Promise<CallBillingApiResponse<B>> {
     const { method, path, query, body } = dto;
     try {
-      const response = await this.api.request<Record<string, unknown>>({
+      const response = await this.api.request<B>({
         method,
         url: path,
         params: query,

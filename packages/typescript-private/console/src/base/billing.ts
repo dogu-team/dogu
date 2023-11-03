@@ -303,8 +303,8 @@ export class CallBillingApiDto {
   // version!: number;
 }
 
-export interface CallBillingApiResponse {
+export interface CallBillingApiResponse<B> {
   status?: number;
-  body?: Record<string, unknown>;
+  body?: B;
   errorMessage?: string;
 }
