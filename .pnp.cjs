@@ -212,8 +212,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:projects/nexus-initializer"\
       },\
       {\
-        "name": "test-service",\
-        "reference": "workspace:projects/test-service"\
+        "name": "test-executor",\
+        "reference": "workspace:projects/test-executor"\
       },\
       {\
         "name": "validators",\
@@ -273,7 +273,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["protocol-exporter", ["workspace:prebuilds/protocol-exporter"]],\
       ["pytest-dogu-sdk", ["workspace:packages/python/pytest-dogu-sdk"]],\
       ["routine-interface-exporter", ["workspace:prebuilds/routine-interface-exporter"]],\
-      ["test-service", ["workspace:projects/test-service"]],\
+      ["test-executor", ["workspace:projects/test-executor"]],\
       ["validators", ["workspace:validators"]]\
     ],\
     "fallbackPool": [\
@@ -7450,6 +7450,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./packages/typescript-private/console/",\
           "packageDependencies": [\
             ["@dogu-private/console", "workspace:packages/typescript-private/console"],\
+            ["@dogu-private/device-data", "workspace:packages/typescript-private/device-data"],\
             ["@dogu-private/types", "workspace:packages/typescript-private/types"],\
             ["@dogu-tech/common", "workspace:packages/typescript/common"],\
             ["@dogu-tech/console-gamium", "workspace:packages/typescript/console-gamium"],\
@@ -20749,6 +20750,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@ant-design/icons", "virtual:28b444ca65aca9f6532815a467e94245056189ac01976539aa2f4fb241137b45c9697a2074b54444c9d1c779b8e60e1a1140c79b811d2daaa176852048e428eb#npm:5.0.1"],\
             ["@dogu-private/console", "workspace:packages/typescript-private/console"],\
             ["@dogu-private/device-data", "workspace:packages/typescript-private/device-data"],\
+            ["@dogu-private/sdk", "workspace:packages/typescript-private/sdk"],\
             ["@dogu-private/types", "workspace:packages/typescript-private/types"],\
             ["@dogu-private/webrtc", "workspace:packages/typescript-private/webrtc"],\
             ["@dogu-tech/action-common", "workspace:packages/typescript/action-common"],\
@@ -39375,10 +39377,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["selenium-webdriver", [\
-        ["npm:4.11.1", {\
-          "packageLocation": "./.yarn/unplugged/selenium-webdriver-npm-4.11.1-1bbd94970b/node_modules/selenium-webdriver/",\
+        ["npm:4.14.0", {\
+          "packageLocation": "./.yarn/unplugged/selenium-webdriver-npm-4.14.0-d5b6074d32/node_modules/selenium-webdriver/",\
           "packageDependencies": [\
-            ["selenium-webdriver", "npm:4.11.1"],\
+            ["selenium-webdriver", "npm:4.14.0"],\
             ["jszip", "npm:3.10.1"],\
             ["tmp", "npm:0.2.1"],\
             ["ws", "virtual:5d989e67e8ca83aa0556255791fdcac55623c9ccb3281b72bd3861d249df0961376ab2c76ee45bf4750178857c5c30bac3bb628af955e16567e426f9e366b233#npm:8.14.2"]\
@@ -41423,11 +41425,11 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
-      ["test-service", [\
-        ["workspace:projects/test-service", {\
-          "packageLocation": "./projects/test-service/",\
+      ["test-executor", [\
+        ["workspace:projects/test-executor", {\
+          "packageLocation": "./projects/test-executor/",\
           "packageDependencies": [\
-            ["test-service", "workspace:projects/test-service"],\
+            ["test-executor", "workspace:projects/test-executor"],\
             ["@dogu-private/device-data", "workspace:packages/typescript-private/device-data"],\
             ["@dogu-private/sdk", "workspace:packages/typescript-private/sdk"],\
             ["@google-cloud/run", "npm:1.0.2"],\
@@ -41440,7 +41442,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["lodash", "npm:4.17.21"],\
             ["openai", "npm:3.3.0"],\
             ["playwright", "npm:1.37.1"],\
-            ["selenium-webdriver", "npm:4.11.1"],\
+            ["selenium-webdriver", "npm:4.14.0"],\
             ["sharp", "npm:0.32.4"],\
             ["ts-node", "virtual:f2635a2fcff48218c189c72f8ec68a58c0c9a493231eeb25fc0d4d97932a237dd3a38bfaa7c8a6d4be36984c08b243589188d7525f771fc6d7018c6cf79aeba1#npm:10.9.1"],\
             ["typescript", "patch:typescript@npm%3A4.7.4#~builtin<compat/typescript>::version=4.7.4&hash=65a307"]\

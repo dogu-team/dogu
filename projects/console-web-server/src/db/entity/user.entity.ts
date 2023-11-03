@@ -39,6 +39,7 @@ import { ProjectApplication } from './project-application.entity';
 import { UserAndInvitationToken } from './relations/user-and-invitation-token.entity';
 import { UserAndResetPasswordToken } from './relations/user-and-reset-password-token.entity';
 import { UserAndVerificationToken } from './relations/user-and-verification-token.entity';
+import { TestExecutor } from './test-executor.entity';
 import { UserEmailPreference } from './user-email-preference.entity';
 import { UserSns } from './user-sns.entity';
 
@@ -184,4 +185,7 @@ export class User extends BaseEntity implements UserBase {
 
   @OneToMany(() => ChangeLogUserReaction, (reaction) => reaction.user, { cascade: ['soft-remove'] })
   changeLogReactions?: ChangeLogUserReactionTraitsBase[];
+
+  @OneToMany(() => TestExecutor, (executor) => executor.creator)
+  testExecutors?: TestExecutor[];
 }

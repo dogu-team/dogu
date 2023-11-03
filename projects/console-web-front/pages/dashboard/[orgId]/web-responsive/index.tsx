@@ -7,10 +7,9 @@ import { NextPageWithLayout } from 'pages/_app';
 import ConsoleLayout from 'src/components/layouts/ConsoleLayout';
 import OrganizationSideBar from 'src/components/layouts/OrganizationSideBar';
 import { getOrganizationPageServerSideProps, OrganizationServerSideProps } from 'src/ssr/organization';
-import { flexRowSpaceBetweenStyle } from '../../../../src/styles/box';
-import LiveChat from '../../../../src/components/external/livechat';
-import H6 from '../../../../src/components/common/headings/H6';
-import VendorMarketShare from '../../../../src/components/web-responsive/generator/VendorMarketShare';
+import LiveChat from 'src/components/external/livechat';
+import WebResponsiveHistoryList from 'src/components/web-responsive/list/WebResponsiveHistoryList';
+import TableListView from 'src/components/common/TableListView';
 
 const ResponsiveWebTestingPage: NextPageWithLayout<OrganizationServerSideProps> = ({ user, organization }) => {
   const { t } = useTranslation();
@@ -18,9 +17,11 @@ const ResponsiveWebTestingPage: NextPageWithLayout<OrganizationServerSideProps> 
   return (
     <>
       <Head>
-        <title>Responsive Web Testing - {organization.name} | Dogu</title>
+        <title>Web Responsive Checker - {organization.name} | Dogu</title>
       </Head>
-      <Box></Box>
+      <Box>
+        <TableListView top={null} table={<WebResponsiveHistoryList />} />
+      </Box>
       <LiveChat
         user={{
           name: user.name,
@@ -34,7 +35,7 @@ const ResponsiveWebTestingPage: NextPageWithLayout<OrganizationServerSideProps> 
 
 ResponsiveWebTestingPage.getLayout = (page) => {
   return (
-    <ConsoleLayout {...page.props} sidebar={<OrganizationSideBar />} titleI18nKey="organization:responsiveWebPageTitle">
+    <ConsoleLayout {...page.props} sidebar={<OrganizationSideBar />} titleI18nKey="organization:webResponsivePageTitle">
       {page}
     </ConsoleLayout>
   );
@@ -58,4 +59,5 @@ export default ResponsiveWebTestingPage;
 
 const Box = styled.div`
   display: flex;
+  width: 100%;
 `;

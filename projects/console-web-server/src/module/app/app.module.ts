@@ -44,6 +44,7 @@ import { RedisModule } from '../redis/redis.module';
 import { RegisteryModule } from '../registery/registery.module';
 import { RemoteModule } from '../remote/remote.module';
 import { RoutineModule } from '../routine/routine.module';
+import { TestExecutorModule } from '../test-executor/test-executor.module';
 import { UserModule } from '../user/user.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -94,6 +95,7 @@ const BASE_MODULES = [
   CloudDeviceModule,
   LiveSessionModule,
   RedisModule,
+  TestExecutorModule,
 ];
 
 @Module({

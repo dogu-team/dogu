@@ -3053,6 +3053,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@dogu-private/console@workspace:packages/typescript-private/console"
   dependencies:
+    "@dogu-private/device-data": "workspace:^"
     "@dogu-private/types": "workspace:^"
     "@dogu-tech/common": "workspace:^"
     "@dogu-tech/console-gamium": "workspace:^"
@@ -13446,6 +13447,7 @@ __metadata:
     "@ant-design/icons": 5.0.1
     "@dogu-private/console": "workspace:^"
     "@dogu-private/device-data": "workspace:^"
+    "@dogu-private/sdk": "workspace:^"
     "@dogu-private/types": "workspace:^"
     "@dogu-private/webrtc": "workspace:^"
     "@dogu-tech/action-common": "workspace:^"
@@ -29492,17 +29494,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"selenium-webdriver@npm:4.11.1":
-  version: 4.11.1
-  resolution: "selenium-webdriver@npm:4.11.1"
-  dependencies:
-    jszip: ^3.10.1
-    tmp: ^0.2.1
-    ws: ">=8.13.0"
-  checksum: 316bf848093bf61f1a10b2460eca51be6057478f061d16cadf10d052fc88d13fff4ddfe8dbda00d546a49660d130f51976f075a0c1550385bc8be671e3a30c99
-  languageName: node
-  linkType: hard
-
 "selenium-webdriver@npm:4.3.0":
   version: 4.3.0
   resolution: "selenium-webdriver@npm:4.3.0"
@@ -29511,6 +29502,17 @@ __metadata:
     tmp: ^0.2.1
     ws: ">=8.7.0"
   checksum: 886a1369a473b62798ffc94ee552ae8c17c56ad3f4afacc6d4e05a397fceb12bc2a74e6348f34f64d20eb4097678e5905bf5dc8768be7c65a725d2bb4502ccd2
+  languageName: node
+  linkType: hard
+
+"selenium-webdriver@npm:^4.14.0":
+  version: 4.14.0
+  resolution: "selenium-webdriver@npm:4.14.0"
+  dependencies:
+    jszip: ^3.10.1
+    tmp: ^0.2.1
+    ws: ">=8.14.2"
+  checksum: 9ffc4c9e0f04814d348cce8b2a864ac64993837e3d25ac64c715b7856776aecbb55618d344e35e190c52e2613d5c56b23da51ebcad1a0727534d1c2d0c84977f
   languageName: node
   linkType: hard
 
@@ -31302,9 +31304,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"test-service@workspace:projects/test-service":
+"test-executor@workspace:projects/test-executor":
   version: 0.0.0-use.local
-  resolution: "test-service@workspace:projects/test-service"
+  resolution: "test-executor@workspace:projects/test-executor"
   dependencies:
     "@dogu-private/device-data": "workspace:^"
     "@dogu-private/sdk": "workspace:^"
@@ -31318,7 +31320,7 @@ __metadata:
     lodash: 4.17.21
     openai: 3.3.0
     playwright: 1.37.1
-    selenium-webdriver: 4.11.1
+    selenium-webdriver: ^4.14.0
     sharp: 0.32.4
     ts-node: 10.9.1
     typescript: 4.7.4
@@ -33523,7 +33525,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ws@npm:8.14.2, ws@npm:>=8.13.0":
+"ws@npm:8.14.2, ws@npm:>=8.14.2":
   version: 8.14.2
   resolution: "ws@npm:8.14.2"
   peerDependencies:

@@ -89,36 +89,36 @@ const OrganizationSideBar = () => {
           ],
         }
       : null,
-    // process.env.NEXT_PUBLIC_ENV !== 'self-hosted'
-    //   ? {
-    //       type: 'group',
-    //       label: collapsed ? null : 'Web',
-    //       children: [
-    //         {
-    //           key: 'web-responsive',
-    //           icon: collapsed ? (
-    //             <StyledIconLink
-    //               selected={router.asPath === `/dashboard/${orgId}/web-responsive`}
-    //               href={`/dashboard/${orgId}/web-responsive`}
-    //             >
-    //               <MdOutlineWeb />
-    //             </StyledIconLink>
-    //           ) : undefined,
-    //           label: collapsed ? (
-    //             t('organization:responsiveWebPageTitle')
-    //           ) : (
-    //             <SideBarMenu
-    //               icon={<MdOutlineWeb style={{ fontSize: '1.2rem' }} />}
-    //               path={`/dashboard/${orgId}/web-responsive`}
-    //               text={t('organization:responsiveWebPageTitle')}
-    //               accessId={process.env.NEXT_PUBLIC_ENV !== 'production' ? 'side-bar-web-responsive' : undefined}
-    //             />
-    //           ),
-    //           style: { borderRadius: '6px' },
-    //         },
-    //       ],
-    //     }
-    //   : null,
+    process.env.NEXT_PUBLIC_ENV !== 'self-hosted'
+      ? {
+          type: 'group',
+          label: collapsed ? null : 'Web',
+          children: [
+            {
+              key: 'web-responsive',
+              icon: collapsed ? (
+                <StyledIconLink
+                  selected={router.asPath === `/dashboard/${orgId}/web-responsive`}
+                  href={`/dashboard/${orgId}/web-responsive`}
+                >
+                  <MdOutlineWeb />
+                </StyledIconLink>
+              ) : undefined,
+              label: collapsed ? (
+                t('organization:responsiveWebPageTitle')
+              ) : (
+                <SideBarMenu
+                  icon={<MdOutlineWeb style={{ fontSize: '1.2rem' }} />}
+                  path={`/dashboard/${orgId}/web-responsive`}
+                  text={t('organization:responsiveWebPageTitle')}
+                  accessId={process.env.NEXT_PUBLIC_ENV !== 'production' ? 'side-bar-web-responsive' : undefined}
+                />
+              ),
+              style: { borderRadius: '6px' },
+            },
+          ],
+        }
+      : null,
     {
       type: 'group',
       label: collapsed ? null : 'Test Automation',

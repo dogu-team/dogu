@@ -17,6 +17,7 @@
     "@ant-design/icons": "5.0.1",
     "@dogu-private/console": "workspace:^",
     "@dogu-private/device-data": "workspace:^",
+    "@dogu-private/sdk": "workspace:^",
     "@dogu-private/types": "workspace:^",
     "@dogu-private/webrtc": "workspace:^",
     "@dogu-tech/action-common": "workspace:^",

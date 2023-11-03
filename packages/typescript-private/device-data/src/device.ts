@@ -122,3 +122,26 @@ export const devices: Device[] = [
   new Device('iPhone 7', 'Apple', 2016, { viewportWidth: 375, viewportHeight: 667, pixelRatio: 2 }),
   new Device('iPhone SE (1st Gen)', 'Apple', 2016, { viewportWidth: 320, viewportHeight: 568, pixelRatio: 2 }),
 ];
+
+type DevicesByDisplay = {
+  [display: string]: Device[];
+};
+
+export function getDevicesByDisplay(includeVendors: Vendor[]) {
+  const devicesByDisplay: DevicesByDisplay = {};
+
+  for (const device of devices) {
+    if (includeVendors.includes(device.vendor)) {
+      const display = `${device.screen.viewportWidth}x${device.screen.viewportHeight}`;
+      const deviceByDisplay = devicesByDisplay[display];
+
+      if (deviceByDisplay) {
+        deviceByDisplay.push(device);
+      } else {
+        devicesByDisplay[display] = [device];
+      }
+    }
+  }
+
+  return devicesByDisplay;
+}

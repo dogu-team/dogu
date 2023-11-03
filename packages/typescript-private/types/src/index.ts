@@ -70,6 +70,8 @@ export * from './routine-step';
 export * from './screen';
 export * from './subscribe-user';
 export * from './team';
+export * from './test-executor';
+export * from './test-executor-web-responsive';
 export * from './token';
 export * from './user';
 export * from './user-and-invitation-token/index';
