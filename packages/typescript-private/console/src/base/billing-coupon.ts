@@ -1,5 +1,5 @@
 import { IsFilledString, propertiesOf } from '@dogu-tech/common';
-import { IsUUID } from 'class-validator';
+import { IsIn, IsNotEmpty, IsNumber, IsOptional, IsUUID } from 'class-validator';
 import { BillingResultCode } from '..';
 
 export const BillingCouponType = ['basic', 'promotion'] as const;
@@ -46,4 +46,32 @@ export class GetAvailableBillingCouponsDto {
 
   @IsFilledString()
   type!: BillingCouponType;
+}
+
+export class CreateBillingCouponDto {
+  @IsFilledString()
+  code!: string;
+
+  @IsIn(BillingCouponType)
+  type!: BillingCouponType;
+
+  @IsOptional()
+  @IsNumber()
+  monthlyDiscountPercent?: number;
+
+  @IsOptional()
+  @IsNumber()
+  monthlyApplyCount?: number;
+
+  @IsOptional()
+  @IsNumber()
+  yearlyDiscountPercent?: number;
+
+  @IsOptional()
+  @IsNumber()
+  yearlyApplyCount?: number;
+
+  @IsNotEmpty()
+  @IsNumber()
+  remainingAvailableCount!: number;
 }

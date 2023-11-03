@@ -3,10 +3,12 @@ import {
   BillingOrganizationProp,
   BillingOrganizationUsedBillingCouponProp,
   BillingResultCode,
+  CreateBillingCouponDto,
   GetAvailableBillingCouponsDto,
   resultCode,
   ValidateBillingCouponDto,
 } from '@dogu-private/console';
+import { v4 } from 'uuid';
 import { BillingCoupon } from '../../db/entity/billing-coupon.entity';
 import { BillingOrganizationUsedBillingCoupon } from '../../db/entity/billing-organization-used-billing-coupon.entity';
 import { BillingOrganization } from '../../db/entity/billing-organization.entity';
@@ -129,4 +131,21 @@ export async function getAvailableCoupons(context: RetrySerializeContext, dto: G
     })
     .andWhere({ type })
     .getMany();
+}
+
+export async function createBillingCoupon(context: RetrySerializeContext, dto: CreateBillingCouponDto): Promise<BillingCoupon> {
+  const { manager } = context;
+  const { code, type, monthlyApplyCount, monthlyDiscountPercent, yearlyApplyCount, yearlyDiscountPercent, remainingAvailableCount } = dto;
+  const coupon = manager.getRepository(BillingCoupon).create({
+    billingCouponId: v4(),
+    code,
+    type,
+    monthlyDiscountPercent: monthlyDiscountPercent ?? null,
+    monthlyApplyCount: monthlyApplyCount ?? null,
+    yearlyDiscountPercent: yearlyDiscountPercent ?? null,
+    yearlyApplyCount: yearlyApplyCount ?? null,
+    remainingAvailableCount,
+    expiredAt: null,
+  });
+  return await manager.getRepository(BillingCoupon).save(coupon);
 }

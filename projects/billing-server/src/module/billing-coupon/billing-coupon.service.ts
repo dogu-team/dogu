@@ -1,11 +1,11 @@
-import { GetAvailableBillingCouponsDto, ValidateBillingCouponDto } from '@dogu-private/console';
+import { CreateBillingCouponDto, GetAvailableBillingCouponsDto, ValidateBillingCouponDto } from '@dogu-private/console';
 import { Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { BillingCoupon } from '../../db/entity/billing-coupon.entity';
 import { retrySerialize } from '../../db/utils';
 import { DoguLogger } from '../logger/logger';
-import { getAvailableCoupons, ValidateBillingCouponResponse, validateCoupon } from './billing-coupon.serializables';
+import { createBillingCoupon, getAvailableCoupons, ValidateBillingCouponResponse, validateCoupon } from './billing-coupon.serializables';
 
 @Injectable()
 export class BillingCouponService {
@@ -23,6 +23,12 @@ export class BillingCouponService {
   async getAvailableCoupons(dto: GetAvailableBillingCouponsDto): Promise<BillingCoupon[]> {
     return await retrySerialize(this.logger, this.dataSource, async (context) => {
       return await getAvailableCoupons(context, dto);
+    });
+  }
+
+  async createBillingCoupon(dto: CreateBillingCouponDto): Promise<BillingCoupon> {
+    return await retrySerialize(this.logger, this.dataSource, async (context) => {
+      return await createBillingCoupon(context, dto);
     });
   }
 }
