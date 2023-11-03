@@ -1,6 +1,7 @@
 import { BufferLogger, MixedLogger, Printable, stringify } from '@dogu-tech/common';
 import childProcess from 'child_process';
 import lodash from 'lodash';
+import { HostPaths } from '.';
 import { ChildProcessError } from './errors/child-process-error';
 
 type ExecOptions = {
@@ -12,6 +13,7 @@ function defaultExecOptions(): ExecOptions {
     encoding: 'utf8',
     timeout: 20 * 1000,
     shell: process.platform === 'win32' ? 'cmd.exe' : undefined,
+    cwd: HostPaths.doguHomePath,
   };
 }
 
