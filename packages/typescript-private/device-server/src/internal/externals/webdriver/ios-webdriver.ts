@@ -116,6 +116,7 @@ export class IosWebDriver {
         continue;
       }
       await elem.click();
+      await delay(500);
       return;
     }
     throw new Error(`IosWebDriver.clickSelector ${selector.build()} failed, error ${lastError}`);
