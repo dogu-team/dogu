@@ -16,7 +16,7 @@ import {
   SerialPrintable,
   StreamingAnswer,
 } from '@dogu-private/types';
-import { Closable, errorify, loopTime, Milisecond, MixedLogger, Printable, PromiseOrValue, stringify } from '@dogu-tech/common';
+import { Closable, delay, errorify, MixedLogger, Printable, PromiseOrValue, stringify } from '@dogu-tech/common';
 import { AppiumCapabilities, BrowserInstallation, StreamingOfferDto } from '@dogu-tech/device-client-common';
 import { ChildProcessError, killChildProcess } from '@dogu-tech/node';
 import { ChildProcess } from 'child_process';
@@ -269,19 +269,15 @@ export class IosChannel implements DeviceChannel {
     if (config.externalIosDeviceAgent.use) {
       return;
     }
-    if (!IosResetService.isDirty(serial)) {
+    if (!(await IosResetService.isDirty(serial))) {
       return;
     }
     if (env.DOGU_DEVICE_IOS_RESTART_ON_INIT) {
       await IdeviceDiagnostics.restart(serial, logger);
-      for await (const _ of loopTime({ period: { seconds: 3 }, expire: { minutes: 5 } })) {
-        const deviceInfosFromXctrace = await Xctrace.listDevices(logger, { timeout: Milisecond.t2Minutes }).catch((e) => []);
-        if (deviceInfosFromXctrace.find((deviceInfo) => deviceInfo.serial === serial)) {
-          break;
-        }
-      }
-      const deviceInfosFromXctrace = await Xctrace.listDevices(logger, { timeout: Milisecond.t2Minutes }).catch((e) => []);
-      if (!deviceInfosFromXctrace.find((deviceInfo) => deviceInfo.serial === serial)) {
+      try {
+        await delay(1000);
+        await Xctrace.waitUntilConnected(serial, logger);
+      } catch {
         throw new Error(`Device ${serial} is not found after restart. Please check the usb connection.`);
       }
     }

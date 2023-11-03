@@ -1,9 +1,9 @@
 import { Serial, SerialPrintable } from '@dogu-private/types';
-import { delay, filterAsync, loop, loopTime, Repeat, usingAsnyc } from '@dogu-tech/common';
+import { delay, filterAsync, loop, loopTime, Repeat, retry, Retry, usingAsnyc } from '@dogu-tech/common';
 import { boxBox } from 'intersects';
 import { AppiumContextImpl, WDIOElement } from '../../../appium/appium.context';
 import { IdeviceInstaller } from '../../externals/cli/ideviceinstaller';
-import { IdeviceDiagnostics } from '../../externals/index';
+import { IdeviceDiagnostics, Xctrace } from '../../externals/index';
 import { IosAccessibilitiySelector, IosClassChainSelector, IosPredicateStringSelector, IosWebDriver } from '../../externals/webdriver/ios-webdriver';
 import { CheckTimer } from '../../util/check-time';
 
@@ -209,6 +209,7 @@ export class IosResetService {
   /*
    * Reset device and reboot
    */
+  @Retry({ retryCount: 5, retryInterval: 1000 })
   async reset(appiumContext: AppiumContextImpl): Promise<void> {
     const { serial, logger } = this;
     const driver = appiumContext.driver();
@@ -246,7 +247,13 @@ export class IosResetService {
         await this.check('IosResetService.reset.resetSettings', this.resetSettings(iosDriver));
         await this.check('IosResetService.reset.removeWidgets', this.removeWidgets(iosDriver));
         await this.check('IosResetService.reset.removeUserApps', this.removeUserApps()); // last step because this removes appium
-        await this.check('IosResetService.reset.restart', IdeviceDiagnostics.restart(serial, logger));
+        await this.check(
+          'IosResetService.reset.restart',
+          retry(async (): Promise<string> => await IdeviceDiagnostics.restart(serial, logger), { retryCount: 5, retryInterval: 1000 }).catch((e) => {
+            logger.error(`IosResetService.reset.restart error but tried many times so ignore error`, { serial, error: e });
+          }),
+        );
+        await this.check('IosResetService.reset.waitUntilDisonnected', Xctrace.waitUntilDisonnected(serial, logger)); // last step because this removes appium
         IosResetService.map.set(serial, { lastResetTime: Date.now() });
       },
     );
