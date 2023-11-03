@@ -29,6 +29,7 @@ interface BillingPlanPurchaseStore {
   updateIsAnnual: (isAnnual: boolean) => void;
   updateCoupon: (coupon: string | null) => void;
   updateCardForm: (cardForm: FormInstance | null) => void;
+  reset: () => void;
 }
 
 const useBillingPlanPurchaseStore = create<BillingPlanPurchaseStore>()(
@@ -45,6 +46,8 @@ const useBillingPlanPurchaseStore = create<BillingPlanPurchaseStore>()(
     updateIsAnnual: (isAnnual) => set({ isAnnual, coupon: null }),
     updateCoupon: (coupon) => set({ coupon }),
     updateCardForm: (cardForm) => set({ cardForm }),
+    reset: () =>
+      set({ license: null, billingGroupType: null, selectedPlan: null, isAnnual: false, coupon: null, cardForm: null }),
   })),
 );
 

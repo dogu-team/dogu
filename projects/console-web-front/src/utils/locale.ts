@@ -3,7 +3,11 @@ export const langToLocaleMapper = {
   en: 'en-US',
 };
 
-export const getLocaleFormattedDate = (lang: string, date: Date, options?: Intl.DateTimeFormatOptions): string => {
+export const getLocaleFormattedDate = (
+  lang: string | undefined = 'en',
+  date: Date,
+  options?: Intl.DateTimeFormatOptions,
+): string => {
   const locale = langToLocaleMapper[lang as keyof typeof langToLocaleMapper] ?? 'en-US';
   return new Intl.DateTimeFormat(locale, options).format(date);
 };

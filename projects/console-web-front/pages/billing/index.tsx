@@ -1,4 +1,5 @@
 import { CloudLicenseBase, SelfHostedLicenseBase, UserBase } from '@dogu-private/console';
+import { Button } from 'antd';
 import { GetServerSideProps } from 'next';
 import useTranslation from 'next-translate/useTranslation';
 import styled from 'styled-components';
@@ -35,6 +36,9 @@ const BillingPage: NextPageWithLayout<BillingPageProps> = ({ me, license }) => {
           <UpgradePlanButton license={license} groupType={null} type="primary">
             {t('upgradePlanButtonTitle')}
           </UpgradePlanButton>
+          <Button danger type="text" style={{ marginLeft: '.5rem' }}>
+            {t('cancelSubscriptionButtonTitle')}
+          </Button>
         </div>
       </Content>
       <Content>

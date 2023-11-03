@@ -19,6 +19,7 @@ const UpgradePlanModal: React.FC<Props> = ({ isOpen, close }) => {
     (state) => [state.selectedPlan, state.updateSelectedPlan],
     shallow,
   );
+  const reset = useBillingPlanPurchaseStore((state) => state.reset);
   const { t } = useTranslation('billing');
   // const [isSelected, setIsSelected] = useState(false);
 
@@ -27,8 +28,10 @@ const UpgradePlanModal: React.FC<Props> = ({ isOpen, close }) => {
   // };
 
   const handleClose = () => {
-    updateSelectedPlan(null);
     close();
+    setTimeout(() => {
+      reset();
+    }, 500);
   };
 
   return (

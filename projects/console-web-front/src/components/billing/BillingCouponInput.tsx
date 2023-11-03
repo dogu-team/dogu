@@ -1,6 +1,9 @@
+import { CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import { Button, Input } from 'antd';
+import useTranslation from 'next-translate/useTranslation';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
+import { shallow } from 'zustand/shallow';
 
 import { validateBillingCoupon } from '../../api/billing';
 import useRequest from '../../hooks/useRequest';
@@ -13,7 +16,11 @@ const BillingCouponInput: React.FC<Props> = () => {
   const [couponError, setCouponError] = useState<string | null>(null);
   const [validateBillingCouponLoading, requestValidateBillingCoupon] = useRequest(validateBillingCoupon);
   const license = useBillingPlanPurchaseStore((state) => state.license);
-  const updateBillingCoupon = useBillingPlanPurchaseStore((state) => state.updateCoupon);
+  const [billingCoupon, updateBillingCoupon] = useBillingPlanPurchaseStore(
+    (state) => [state.coupon, state.updateCoupon],
+    shallow,
+  );
+  const { t } = useTranslation('billing');
 
   useEffect(() => {
     useBillingPlanPurchaseStore.subscribe(
@@ -41,26 +48,37 @@ const BillingCouponInput: React.FC<Props> = () => {
       });
 
       if (rv.errorMessage) {
-        setCouponError('Invalid coupon code');
+        setCouponError(t('invalidCouponCodeText'));
+        updateBillingCoupon(null);
       } else {
+        setCouponError(null);
         updateBillingCoupon(couponInputValue);
       }
     } catch (e) {}
   };
 
   return couponInputValue === null ? (
-    <CouponTextButton onClick={() => setCouponInputValue('')}>Have a coupon?</CouponTextButton>
+    <CouponTextButton onClick={() => setCouponInputValue('')}>{t('haveCouponCodeText')}</CouponTextButton>
   ) : (
     <div>
       <Input.Search
-        enterButton={<Button>Apply</Button>}
+        enterButton={<Button>{t('applyCouponButtonText')}</Button>}
         onSearch={checkCoupon}
         value={couponInputValue}
         onChange={handleCouponChange}
         loading={validateBillingCouponLoading}
         placeholder="Code"
       />
-      {couponError && <CouponErrorText>{couponError}</CouponErrorText>}
+      {couponError && (
+        <CouponInfoText style={{ color: '#ff0000' }}>
+          <CloseCircleOutlined /> {couponError}
+        </CouponInfoText>
+      )}
+      {!!billingCoupon && (
+        <CouponInfoText style={{ color: 'green' }}>
+          <CheckCircleOutlined /> {t('couponAppliedText')}
+        </CouponInfoText>
+      )}
     </div>
   );
 };
@@ -75,7 +93,6 @@ const CouponTextButton = styled.button`
   font-size: 0.8rem;
 `;
 
-const CouponErrorText = styled.p`
-  color: #ff0000;
-  font-size: 0.8rem;
+const CouponInfoText = styled.p`
+  font-size: 0.7rem;
 `;
