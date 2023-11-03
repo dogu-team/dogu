@@ -41,7 +41,7 @@ export class IosDeviceAgentService implements DeviceAgentService, Zombieable {
     this.isConnected = false;
 
     this.client.on('connect', () => {
-      logger.debug?.('IosDeviceAgentService. client connect');
+      logger.info('IosDeviceAgentService. client connect');
       this.isConnected = true;
     });
 
@@ -55,13 +55,12 @@ export class IosDeviceAgentService implements DeviceAgentService, Zombieable {
 
     this.client.on('close', (isError: boolean) => {
       logger.error('IosDeviceAgentService. client close');
-      this.isConnected = false;
       ZombieServiceInstance.notifyDie(this, `IosDeviceAgentService. client close`);
     });
 
     this.client.on('end', () => {
-      logger.debug?.('IosDeviceAgentService. client end');
-      this.isConnected = false;
+      logger.info('IosDeviceAgentService. client end');
+      ZombieServiceInstance.notifyDie(this, `IosDeviceAgentService. client end`);
     });
 
     this.client.on('data', (data: Buffer) => {
@@ -90,6 +89,7 @@ export class IosDeviceAgentService implements DeviceAgentService, Zombieable {
     if (this.isConnected) {
       this.client.resetAndDestroy();
     }
+    this.isConnected = false;
   }
 
   delete(): void {
@@ -180,6 +180,9 @@ export class IosDeviceAgentService implements DeviceAgentService, Zombieable {
     for (let i = 0; i < tryCount; i++) {
       const isConnected = await new Promise<boolean>((resolve, reject) => {
         this.client.once('close', (isError: boolean) => {
+          resolve(false);
+        });
+        this.client.once('end', (isError: boolean) => {
           resolve(false);
         });
         this.client.connect({ host: '127.0.0.1', port: this.serverPort }, () => {
