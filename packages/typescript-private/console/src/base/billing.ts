@@ -298,6 +298,9 @@ export class CallBillingApiDto {
 
   @IsOptionalObject()
   body?: object;
+
+  // @IsNumber()
+  // version!: number;
 }
 
 export interface CallBillingApiResponse {

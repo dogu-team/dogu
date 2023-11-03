@@ -2,7 +2,6 @@ import { CheckOutlined } from '@ant-design/icons';
 import { BillingSubscriptionPlanInfo, BillingSubscriptionPlanType } from '@dogu-private/console';
 import { Button, Divider, Select, SelectProps } from 'antd';
 import useTranslation from 'next-translate/useTranslation';
-import Link from 'next/link';
 import { useState } from 'react';
 import styled from 'styled-components';
 

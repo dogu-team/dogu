@@ -1,5 +1,5 @@
-import { CallBillingApiDto, CallBillingApiResponse } from '@dogu-private/console';
-import { Body, Controller, Get, Patch, Post } from '@nestjs/common';
+import { CallBillingApiResponse } from '@dogu-private/console';
+import { Controller, Get, Query } from '@nestjs/common';
 
 import { ORGANIZATION_ROLE } from '../auth/auth.types';
 import { OrganizationPermission } from '../auth/decorators';
@@ -13,27 +13,35 @@ export class BillingController {
     private readonly billingCaller: BillingCaller,
   ) {}
 
-  @Get('payment-method')
+  // coupon
+  @Get('/coupons/validate')
   @OrganizationPermission(ORGANIZATION_ROLE.ADMIN)
-  getPaymentMethod(): any {
-    return this.billingService.getPaymentMethod();
+  async validateCoupon(@Query() query: object): Promise<CallBillingApiResponse> {
+    return await this.billingCaller.callBillingApi({
+      method: 'GET',
+      path: 'billing/coupons/validate',
+      query,
+    });
   }
 
-  @Patch('payment-method')
+  @Get('/coupons/availables')
   @OrganizationPermission(ORGANIZATION_ROLE.ADMIN)
-  updatePaymentMethod(): any {
-    return this.billingService.updatePaymentMethod();
+  async findAvailableCoupon(@Query() query: object): Promise<CallBillingApiResponse> {
+    return await this.billingCaller.callBillingApi({
+      method: 'GET',
+      path: 'billing/coupons/availables',
+      query,
+    });
   }
 
-  @Get('invoices')
+  // purchase
+  @Get('/purchase/preview')
   @OrganizationPermission(ORGANIZATION_ROLE.ADMIN)
-  getBillingHistory(): any {
-    return this.billingService.getBillingHistory();
-  }
-
-  @Post()
-  @OrganizationPermission(ORGANIZATION_ROLE.ADMIN)
-  async callBillingApi(@Body() dto: CallBillingApiDto): Promise<CallBillingApiResponse> {
-    return this.billingCaller.callBillingApi(dto);
+  async getSubscriptionPreview(@Query() query: object): Promise<CallBillingApiResponse> {
+    return await this.billingCaller.callBillingApi({
+      method: 'GET',
+      path: 'billing/purchase/preview',
+      query,
+    });
   }
 }

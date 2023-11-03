@@ -1,10 +1,10 @@
 import { ProjectId } from '@dogu-private/types';
 import { GetServerSideProps } from 'next';
 
-export const buildQueryPraramsByObject = (obj: { [key: string]: string }) => {
+export const buildQueryPraramsByObject = (obj: object) => {
   const param = new URLSearchParams();
   Object.keys(obj).forEach((key) => {
-    param.append(key, obj[key]);
+    param.append(key, `${obj[key as keyof typeof obj]}`);
   });
 
   return param.toString();

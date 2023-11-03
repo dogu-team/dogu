@@ -1,25 +1,44 @@
-import { Button, Divider, Input, Tag } from 'antd';
+import { BillingCategory, CallBillingApiResponse, GetBillingSubscriptionPreviewDto } from '@dogu-private/console';
+import { Button, Divider, Tag } from 'antd';
 import useTranslation from 'next-translate/useTranslation';
-import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import useSWR from 'swr';
 import styled from 'styled-components';
 
 import { planDescriptionInfoMap } from '../../resources/plan';
 import useBillingPlanPurchaseStore from '../../stores/billing-plan-purchase';
 import { getLocaleFormattedPrice } from '../../utils/locale';
 import ErrorBox from '../common/boxes/ErrorBox';
+import BillingCouponInput from './BillingCouponInput';
+import { swrAuthFetcher } from '../../api';
+import { buildQueryPraramsByObject } from '../../utils/query';
 
 interface Props {}
 
 const BillingCalculatedPreview: React.FC<Props> = ({}) => {
-  const [couponInputValue, setCouponInputValue] = useState<string | null>(null);
-  const [couponError, setCouponError] = useState<string | null>(null);
   const cardForm = useBillingPlanPurchaseStore((state) => state.cardForm);
-  const updateBillingCoupon = useBillingPlanPurchaseStore((state) => state.updateCoupon);
   const selectedPlan = useBillingPlanPurchaseStore((state) => state.selectedPlan);
   const isAnnual = useBillingPlanPurchaseStore((state) => state.isAnnual);
+  const couponCode = useBillingPlanPurchaseStore((state) => state.coupon);
+  const license = useBillingPlanPurchaseStore((state) => state.license);
+
+  const dto: GetBillingSubscriptionPreviewDto = {
+    organizationId: license?.organizationId ?? '',
+    category: 'cloud',
+    period: isAnnual ? 'yearly' : 'monthly',
+    subscriptionPlanType: selectedPlan?.planType ?? 'live-testing',
+    subscriptionPlanOption: selectedPlan?.option ?? 1,
+    currency: 'KRW',
+    couponCode: couponCode ?? undefined,
+  };
+  const { data, isLoading } = useSWR<CallBillingApiResponse>(
+    !!license && selectedPlan && `/billing/purchase/preview?${buildQueryPraramsByObject(dto)}`,
+    swrAuthFetcher,
+    {
+      revalidateOnFocus: false,
+    },
+  );
+
   const { t } = useTranslation('billing');
-  const router = useRouter();
 
   const handlePurchase = async () => {
     if (!cardForm) {
@@ -27,28 +46,6 @@ const BillingCalculatedPreview: React.FC<Props> = ({}) => {
     }
     const values = await cardForm.validateFields();
     console.log(values);
-  };
-
-  useEffect(() => {
-    useBillingPlanPurchaseStore.subscribe(
-      (state) => state.isAnnual,
-      () => {
-        setCouponInputValue(null);
-        setCouponError(null);
-      },
-    );
-  });
-
-  const handleCouponChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCouponInputValue(e.target.value);
-  };
-
-  const checkCoupon = async () => {
-    try {
-      // TODO: check coupon
-      // updateBillingCoupon(couponInputValue);
-      // setCouponError('Invalid coupon');
-    } catch (e) {}
   };
 
   if (!selectedPlan) {
@@ -139,20 +136,7 @@ const BillingCalculatedPreview: React.FC<Props> = ({}) => {
       </Content>
 
       <Content>
-        {couponInputValue === null ? (
-          <CouponTextButton onClick={() => setCouponInputValue('')}>Have a coupon?</CouponTextButton>
-        ) : (
-          <div>
-            <Input.Search
-              enterButton={<Button>Apply</Button>}
-              onSearch={checkCoupon}
-              value={couponInputValue}
-              onChange={handleCouponChange}
-              placeholder="Code"
-            />
-            {couponError && <CouponErrorText>{couponError}</CouponErrorText>}
-          </div>
-        )}
+        <BillingCouponInput />
       </Content>
 
       <Button type="primary" onClick={handlePurchase} style={{ width: '100%' }}>
@@ -219,19 +203,6 @@ const CalculatedPriceContent = styled.div`
 const TotalText = styled.span`
   font-size: 1.4rem;
   font-weight: 600;
-`;
-
-const CouponTextButton = styled.button`
-  padding: 0.2rem 0;
-  background-color: transparent;
-  text-decoration: underline;
-  color: ${(props) => props.theme.main.colors.gray3};
-  font-size: 0.8rem;
-`;
-
-const CouponErrorText = styled.p`
-  color: #ff0000;
-  font-size: 0.8rem;
 `;
 
 const Agreement = styled.p`
