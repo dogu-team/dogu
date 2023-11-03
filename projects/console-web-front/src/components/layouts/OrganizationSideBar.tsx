@@ -121,7 +121,7 @@ const OrganizationSideBar = () => {
       : null,
     {
       type: 'group',
-      label: collapsed ? null : 'E2E Test Automation',
+      label: collapsed ? null : 'Test Automation',
       children: [
         {
           key: 'project',
