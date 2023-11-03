@@ -1,0 +1,10 @@
+undecided:
+  - dogu
+  - android-device-agent
+  - billing-server
+  - console-web-front
+  - console-web-server
+  - dogu-agent
+  - host-agent
+  - nexus-initializer
+  - test-executor
