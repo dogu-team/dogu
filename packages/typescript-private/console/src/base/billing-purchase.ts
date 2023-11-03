@@ -82,6 +82,10 @@ export interface ElapsedPlan {
   lastPurchasedAt: Date;
 }
 
+export interface CouponPreviewResponse extends BillingCouponBase {
+  discountAmount: number;
+}
+
 export interface GetBillingSubscriptionPreviewResponseFailure {
   ok: false;
   resultCode: BillingResultCode;
@@ -95,7 +99,7 @@ export interface GetBillingSubscriptionPreviewResponseSuccess {
   nextPurchaseAt: Date;
   tax: number;
   subscriptionPlan: BillingSubscriptionPlanSourceData;
-  coupon: BillingCouponBase | null;
+  coupon: CouponPreviewResponse | null;
   elapsedPlans: ElapsedPlan[];
   remainingPlans: RemainingPlan[];
 }

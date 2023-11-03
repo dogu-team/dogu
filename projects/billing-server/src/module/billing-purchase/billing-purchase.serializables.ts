@@ -12,6 +12,7 @@ import {
   BillingSubscriptionPlanPriceMap,
   BillingSubscriptionPlanSourceData,
   BillingSubscriptionPlanType,
+  CouponPreviewResponse,
   CreatePurchaseSubscriptionResponse,
   GetBillingSubscriptionPreviewResponse,
   GetBillingSubscriptionPreviewResponseSuccess,
@@ -228,6 +229,12 @@ export async function getSubscriptionPreview(context: RetrySerializeContext, dto
   const normalizedCouponFactor = calculateCouponFactor(coupon, subscriptionPlan.period);
   const normalizedNextCouponFactor = calculateNextCouponFactor(coupon, subscriptionPlan.period);
   const currentSubscriptionPlanPrice = subscriptionPlanSource.originPrice * normalizedCouponFactor;
+  const couponResponse: CouponPreviewResponse | null = coupon
+    ? {
+        ...coupon,
+        discountAmount: Math.floor(subscriptionPlanSource.originPrice - currentSubscriptionPlanPrice),
+      }
+    : null;
 
   const isSubscribing = subscriptionPlans.length > 0;
   if (!isSubscribing) {
@@ -240,7 +247,7 @@ export async function getSubscriptionPreview(context: RetrySerializeContext, dto
       nextPurchaseTotalPrice: Math.floor(subscriptionPlanSource.originPrice),
       nextPurchaseAt: calculateNextPurchaseAt(billingOrganization, subscriptionPlan.period),
       subscriptionPlan: subscriptionPlanSource,
-      coupon,
+      coupon: couponResponse,
       elapsedPlans: [],
       remainingPlans: [],
     };
@@ -260,7 +267,7 @@ export async function getSubscriptionPreview(context: RetrySerializeContext, dto
         nextPurchaseTotalPrice: Math.floor(nextPurchaseTotalPrice),
         nextPurchaseAt,
         subscriptionPlan: subscriptionPlanSource,
-        coupon,
+        coupon: couponResponse,
         elapsedPlans: [],
         remainingPlans: [],
       };
@@ -302,7 +309,7 @@ export async function getSubscriptionPreview(context: RetrySerializeContext, dto
             nextPurchaseTotalPrice: Math.floor(subscriptionPlanSource.originPrice),
             nextPurchaseAt,
             subscriptionPlan: subscriptionPlanSource,
-            coupon,
+            coupon: couponResponse,
             elapsedPlans: [
               {
                 category: subscriptionPlanSource.category,
