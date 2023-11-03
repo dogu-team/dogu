@@ -1,5 +1,6 @@
-import { loop, loopTime, TimeOptions } from '@dogu-tech/common';
+import { delay, FilledPrintable, loop, loopTime, PrefixLogger, retry, TimeOptions } from '@dogu-tech/common';
 import WebDriverIO from 'webdriverio';
+import { WebdriverAgentProcess } from '../cli/webdriver-agent-process';
 export type WDIOElement = WebDriverIO.Element<'async'>;
 
 export interface IosSelector {
@@ -30,42 +31,94 @@ export class IosPredicateStringSelector {
   }
 }
 
+export class IosButtonPredicateStringSelector {
+  constructor(private selector: string) {}
+
+  build(): string {
+    return new IosPredicateStringSelector(`type == 'XCUIElementTypeButton' && label == '${this.selector}'`).build();
+  }
+}
+
 export class IosWebDriver {
-  constructor(private driver: WebdriverIO.Browser) {}
+  constructor(
+    private driver: WebdriverIO.Browser,
+    private wda: WebdriverAgentProcess,
+    private logger: FilledPrintable,
+  ) {}
 
   get rawDriver(): WebdriverIO.Browser {
     return this.driver;
   }
 
   async relaunchApp(bundleId: string): Promise<void> {
-    const { driver } = this;
     await this.terminateApp(bundleId);
-    await driver.execute('mobile: launchApp', {
-      bundleId,
-    });
+    await this.launchApp(bundleId);
+  }
+
+  async launchApp(bundleId: string): Promise<void> {
+    const { wda, logger } = this;
+    await retry(
+      async () => {
+        await wda.launchApp(bundleId);
+        for await (const _ of loopTime({ period: { seconds: 1 }, expire: { seconds: 5 } })) {
+          const apps = await wda.getActiveAppList();
+          const some = apps.some((app) => app.bundleId === bundleId);
+          if (some) {
+            await delay(1000);
+            return;
+          }
+        }
+        throw new Error(`IosWebDriver.launchApp ${bundleId} failed. app not active`);
+      },
+      { retryCount: 6, retryInterval: 1000, printable: new PrefixLogger(logger, 'IosWebDriver.launchApp') },
+    );
   }
 
   async terminateApp(bundleId: string): Promise<void> {
-    const { driver } = this;
-    await driver.execute('mobile: terminateApp', {
-      bundleId,
-    });
+    const { wda, logger } = this;
+
+    await retry(
+      async () => {
+        const apps = await wda.getActiveAppList();
+        const some = apps.some((app) => app.bundleId === bundleId);
+        if (!some) {
+          return;
+        }
+        await wda.terminateApp(bundleId);
+        for await (const _ of loopTime({ period: { seconds: 1 }, expire: { seconds: 5 } })) {
+          const apps = await wda.getActiveAppList();
+          const some = apps.some((app) => app.bundleId === bundleId);
+          if (!some) {
+            await delay(1000);
+            return;
+          }
+        }
+        throw new Error(`IosWebDriver.terminateApp ${bundleId} failed. app still active`);
+      },
+      { retryCount: 6, retryInterval: 1000, printable: new PrefixLogger(logger, 'IosWebDriver.terminateApp') },
+    );
   }
 
   async home(): Promise<void> {
-    const { driver } = this;
-    await driver.execute('mobile: pressButton', {
-      name: 'home',
-      duration: 0.3,
-    });
+    const { wda } = this;
+    await wda.goToHome();
+    await delay(1000); // To prevent delay press home make launching app hide
   }
 
   async clickSelector(selector: IosSelector): Promise<void> {
     const { driver } = this;
-    const WaitTimeout = 10_000;
-    const elem = await driver.$(selector.build());
-    await elem.waitForEnabled({ timeout: WaitTimeout });
-    await elem.click();
+    const WaitTimeout = 5_000;
+    let lastError = '';
+    for await (const _ of loopTime({ period: { milliseconds: 500 }, expire: { milliseconds: WaitTimeout } })) {
+      const elem = await driver.$(selector.build());
+      if (elem.error) {
+        lastError = elem.error.message;
+        continue;
+      }
+      await elem.click();
+      return;
+    }
+    throw new Error(`IosWebDriver.clickSelector ${selector.build()} failed, error ${lastError}`);
   }
 
   async waitElementsExist(selector: IosSelector, timeOption: TimeOptions): Promise<WDIOElement[]> {
@@ -121,7 +174,24 @@ export class IosWebDriver {
 
   async removeWidget(elem: WDIOElement): Promise<void> {
     await elem.touchAction([{ action: 'longPress' }, 'release']);
-    await this.clickSelector(new IosAccessibilitiySelector('com.apple.springboardhome.application-shortcut-item.remove-widget'));
-    await this.clickSelector(new IosAccessibilitiySelector('Remove'));
+    await retry(
+      async () => {
+        const removeStacks = await this.waitElementsExist(new IosButtonPredicateStringSelector('Remove Stack'), { seconds: 3 });
+        if (0 < removeStacks.length) {
+          await removeStacks[0].click();
+          await this.clickSelector(new IosButtonPredicateStringSelector('Remove'));
+          return;
+        }
+        const removeWidgets = await this.waitElementsExist(new IosButtonPredicateStringSelector('Remove Widget'), { seconds: 3 });
+        if (0 < removeWidgets.length) {
+          await removeWidgets[0].click();
+          await this.clickSelector(new IosButtonPredicateStringSelector('Remove'));
+          return;
+        }
+        await this.clickSelector(new IosAccessibilitiySelector('com.apple.springboardhome.application-shortcut-item.remove-widget'));
+        await this.clickSelector(new IosButtonPredicateStringSelector('Remove'));
+      },
+      { retryCount: 3, retryInterval: 1000, printable: new PrefixLogger(this.logger, 'IosWebDriver.removeWidget') },
+    );
   }
 }

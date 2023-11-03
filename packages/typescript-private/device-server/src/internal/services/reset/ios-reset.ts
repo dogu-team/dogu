@@ -1,10 +1,17 @@
 import { Serial, SerialPrintable } from '@dogu-private/types';
-import { delay, filterAsync, loop, loopTime, Repeat, retry, Retry, usingAsnyc } from '@dogu-tech/common';
+import { delay, filterAsync, loop, loopTime, PrefixLogger, Repeat, retry, usingAsnyc } from '@dogu-tech/common';
 import { boxBox } from 'intersects';
 import { AppiumContextImpl, WDIOElement } from '../../../appium/appium.context';
 import { IdeviceInstaller } from '../../externals/cli/ideviceinstaller';
+import { WebdriverAgentProcess } from '../../externals/cli/webdriver-agent-process';
 import { IdeviceDiagnostics, Xctrace } from '../../externals/index';
-import { IosAccessibilitiySelector, IosClassChainSelector, IosPredicateStringSelector, IosWebDriver } from '../../externals/webdriver/ios-webdriver';
+import {
+  IosAccessibilitiySelector,
+  IosButtonPredicateStringSelector,
+  IosClassChainSelector,
+  IosPredicateStringSelector,
+  IosWebDriver,
+} from '../../externals/webdriver/ios-webdriver';
 import { CheckTimer } from '../../util/check-time';
 
 interface BlockAppInfo {
@@ -133,6 +140,7 @@ export interface IosResetInfo {
 
 const ResetExpireTime = 10 * 60 * 1000;
 const SleepBeforeTerminate = 2000;
+const SleepBeforeTerminateLong = 4000;
 
 class IosResetHelper {
   constructor(private iosDriver: IosWebDriver) {}
@@ -209,53 +217,57 @@ export class IosResetService {
   /*
    * Reset device and reboot
    */
-  @Retry({ retryCount: 5, retryInterval: 1000 })
-  async reset(appiumContext: AppiumContextImpl): Promise<void> {
+  async reset(appiumContext: AppiumContextImpl, wda: WebdriverAgentProcess): Promise<void> {
     const { serial, logger } = this;
-    const driver = appiumContext.driver();
-    if (!driver) {
-      throw new Error(`IosResetService.clearSafariCache driver is null`);
-    }
-    const iosDriver = new IosWebDriver(driver);
-    const helper = new IosResetHelper(iosDriver);
+    await retry(
+      async (): Promise<void> => {
+        const driver = appiumContext.driver();
+        if (!driver) {
+          throw new Error(`IosResetService.clearSafariCache driver is null`);
+        }
+        const iosDriver = new IosWebDriver(driver, wda, logger);
+        const helper = new IosResetHelper(iosDriver);
 
-    await usingAsnyc(
-      {
-        create: async () => {
-          this.logger.info(`IosResetService.reset begin`, { serial });
-          await delay(0);
-        },
-        dispose: async () => {
-          this._state = null;
-          this.logger.info(`IosResetService.reset end`, { serial });
-          await delay(0);
-        },
-      },
-      async () => {
-        await iosDriver.home();
-        await this.check('IosResetService.reset.removeSystemApps', this.removeSystemApps());
-        await iosDriver.home();
-        await this.check('IosResetService.reset.logoutApppleAccount', this.logoutApppleAccount(iosDriver));
-        await this.check('IosResetService.reset.clearSafariCache', this.clearSafariCache(iosDriver));
-        await this.check('IosResetService.reset.clearPhotoImages', this.clearPhotoImages(iosDriver));
-        await this.check('IosResetService.reset.clearPhotoAlbums', this.clearPhotoAlbums(iosDriver));
-        await this.check('IosResetService.reset.clearPhotosRecentlyDeleted', this.clearPhotosRecentlyDeleted(iosDriver));
-        await this.check('IosResetService.reset.clearPhotosSuggestionAndFeedbacks', this.clearPhotosSuggestionAndFeedbacks(iosDriver));
-        await this.check('IosResetService.reset.clearFilesOnMyiPhone', this.clearFilesOnMyiPhone(iosDriver, helper));
-        await this.check('IosResetService.reset.clearFilesTags', this.clearFilesTags(iosDriver, helper));
-        await this.check('IosResetService.reset.clearFilesRecentlyDeleted', this.clearFilesRecentlyDeleted(iosDriver, helper));
-        await this.check('IosResetService.reset.resetSettings', this.resetSettings(iosDriver));
-        await this.check('IosResetService.reset.removeWidgets', this.removeWidgets(iosDriver));
-        await this.check('IosResetService.reset.removeUserApps', this.removeUserApps()); // last step because this removes appium
-        await this.check(
-          'IosResetService.reset.restart',
-          retry(async (): Promise<string> => await IdeviceDiagnostics.restart(serial, logger), { retryCount: 5, retryInterval: 1000 }).catch((e) => {
-            logger.error(`IosResetService.reset.restart error but tried many times so ignore error`, { serial, error: e });
-          }),
+        await usingAsnyc(
+          {
+            create: async () => {
+              this.logger.info(`IosResetService.reset begin`, { serial });
+              await delay(0);
+            },
+            dispose: async () => {
+              this._state = null;
+              this.logger.info(`IosResetService.reset end`, { serial });
+              await delay(0);
+            },
+          },
+          async () => {
+            await iosDriver.home();
+            await this.check('IosResetService.reset.removeSystemApps', this.removeSystemApps());
+            await iosDriver.home();
+            await this.check('IosResetService.reset.logoutAppleAccount', this.logoutAppleAccount(iosDriver));
+            await this.check('IosResetService.reset.clearSafariCache', this.clearSafariCache(iosDriver));
+            await this.check('IosResetService.reset.clearPhotoImages', this.clearPhotoImages(iosDriver));
+            await this.check('IosResetService.reset.clearPhotoAlbums', this.clearPhotoAlbums(iosDriver));
+            await this.check('IosResetService.reset.clearPhotosRecentlyDeleted', this.clearPhotosRecentlyDeleted(iosDriver));
+            await this.check('IosResetService.reset.clearPhotosSuggestionAndFeedbacks', this.clearPhotosSuggestionAndFeedbacks(iosDriver));
+            await this.check('IosResetService.reset.clearFilesOnMyiPhone', this.clearFilesOnMyiPhone(iosDriver, helper));
+            await this.check('IosResetService.reset.clearFilesTags', this.clearFilesTags(iosDriver, helper));
+            await this.check('IosResetService.reset.clearFilesRecentlyDeleted', this.clearFilesRecentlyDeleted(iosDriver, helper));
+            await this.check('IosResetService.reset.resetSettings', this.resetSettings(iosDriver));
+            await this.check('IosResetService.reset.removeWidgets', this.removeWidgets(iosDriver));
+            await this.check('IosResetService.reset.removeUserApps', this.removeUserApps()); // last step because this removes appium
+            await this.check(
+              'IosResetService.reset.restart',
+              retry(async (): Promise<string> => await IdeviceDiagnostics.restart(serial, logger), { retryCount: 5, retryInterval: 1000 }).catch((e) => {
+                logger.error(`IosResetService.reset.restart error but tried many times so ignore error`, { serial, error: e });
+              }),
+            );
+            await this.check('IosResetService.reset.waitUntilDisonnected', Xctrace.waitUntilDisonnected(serial, logger));
+            IosResetService.map.set(serial, { lastResetTime: Date.now() });
+          },
         );
-        await this.check('IosResetService.reset.waitUntilDisonnected', Xctrace.waitUntilDisonnected(serial, logger)); // last step because this removes appium
-        IosResetService.map.set(serial, { lastResetTime: Date.now() });
       },
+      { retryCount: 5, retryInterval: 1000, printable: new PrefixLogger(logger, 'IosResetService.reset') },
     );
   }
 
@@ -276,7 +288,7 @@ export class IosResetService {
   }
 
   @Repeat({ repeatCount: ClearRepeatCount, repeatInterval: 100 })
-  private async logoutApppleAccount(iosDriver: IosWebDriver): Promise<void> {
+  private async logoutAppleAccount(iosDriver: IosWebDriver): Promise<void> {
     await usingAsnyc(
       {
         create: async () => {
@@ -345,7 +357,7 @@ export class IosResetService {
         },
       },
       async () => {
-        await iosDriver.clickSelector(new IosAccessibilitiySelector('Library'));
+        await iosDriver.clickSelector(new IosButtonPredicateStringSelector('Library'));
 
         let loopCount = 0;
         logger.info(`IosResetService.clearPhotoImages loopCount: ${loopCount++}`);
@@ -354,7 +366,7 @@ export class IosResetService {
           return;
         }
 
-        await iosDriver.clickSelector(new IosAccessibilitiySelector('All Photos'));
+        await iosDriver.clickSelector(new IosButtonPredicateStringSelector('All Photos'));
         await iosDriver.clickSelector(new IosClassChainSelector('**/XCUIElementTypeButton[`label == "Select"`]'));
 
         const cancelButton = await iosDriver.waitElementExist(new IosClassChainSelector('**/XCUIElementTypeButton[`label == "Cancel"`]'), { seconds: 3 });
@@ -375,7 +387,7 @@ export class IosResetService {
           await image.click();
         }
 
-        await iosDriver.clickSelector(new IosAccessibilitiySelector('Delete'));
+        await iosDriver.clickSelector(new IosButtonPredicateStringSelector('Delete'));
         await iosDriver.clickSelector(new IosPredicateStringSelector(`type == 'XCUIElementTypeButton' && name CONTAINS 'Delete '`));
       },
     );
@@ -395,9 +407,9 @@ export class IosResetService {
         },
       },
       async () => {
-        await iosDriver.clickSelector(new IosAccessibilitiySelector('Albums'));
+        await iosDriver.clickSelector(new IosButtonPredicateStringSelector('Albums'));
         await iosDriver.clickSelector(new IosClassChainSelector('**/XCUIElementTypeStaticText[`label == "See All"`]'));
-        await iosDriver.clickSelector(new IosAccessibilitiySelector('Edit'));
+        await iosDriver.clickSelector(new IosButtonPredicateStringSelector('Edit'));
 
         const deleteDialogBtns = await iosDriver.waitElementsExist(new IosPredicateStringSelector(`type == 'XCUIElementTypeButton' && name CONTAINS 'Delete,'`), { seconds: 3 });
         if (deleteDialogBtns.length === 0) {
@@ -405,7 +417,7 @@ export class IosResetService {
         }
         await deleteDialogBtns[0].click();
 
-        await iosDriver.clickSelector(new IosAccessibilitiySelector('Delete'));
+        await iosDriver.clickSelector(new IosButtonPredicateStringSelector('Delete'));
       },
     );
   }
@@ -419,7 +431,7 @@ export class IosResetService {
           await iosDriver.relaunchApp('com.apple.mobileslideshow');
         },
         dispose: async () => {
-          await delay(SleepBeforeTerminate);
+          await delay(SleepBeforeTerminateLong);
           await iosDriver.terminateApp('com.apple.mobileslideshow');
         },
       },
@@ -427,15 +439,20 @@ export class IosResetService {
         const recentlyDeleted = await iosDriver.scrollDownToSelector(new IosClassChainSelector('**/XCUIElementTypeStaticText[`label == "Recently Deleted"`]'));
         await recentlyDeleted.click();
 
-        const title = await iosDriver.waitElementExist(new IosClassChainSelector('**/XCUIElementTypeOther[`label == "Recently Deleted"`]'), { seconds: 3 });
+        await delay(2000); // wait for change. It's hard to determine loading done
+
         const images = await iosDriver.waitElementsExist(new IosClassChainSelector('**/XCUIElementTypeImage'), { seconds: 3 });
         if (0 === images.length) {
           return;
         }
 
         await iosDriver.clickSelector(new IosClassChainSelector('**/XCUIElementTypeButton[`label == "Select"`]'));
-        await iosDriver.clickSelector(new IosAccessibilitiySelector('Delete All'));
-        await iosDriver.clickSelector(new IosAccessibilitiySelector('Delete From This iPhone'));
+        await iosDriver.clickSelector(new IosButtonPredicateStringSelector('Delete All'));
+        try {
+          await iosDriver.clickSelector(new IosButtonPredicateStringSelector('Delete From This iPhone'));
+        } catch (e) {
+          await iosDriver.clickSelector(new IosButtonPredicateStringSelector('Delete Photo'));
+        }
       },
     );
   }
@@ -456,11 +473,10 @@ export class IosResetService {
       async () => {
         await iosDriver.clickSelector(new IosClassChainSelector('**/XCUIElementTypeCell[`label == "Photos"`]'));
 
-        await iosDriver.clickSelector(new IosAccessibilitiySelector('ResetBlacklistedMemoryFeatures'));
-
+        await iosDriver.clickSelector(new IosAccessibilitiySelector('ResetPeopleFeedback'));
         await iosDriver.clickSelector(new IosAccessibilitiySelector('Reset'));
 
-        await iosDriver.clickSelector(new IosAccessibilitiySelector('ResetPeopleFeedback'));
+        await iosDriver.clickSelector(new IosAccessibilitiySelector('ResetBlacklistedMemoryFeatures'));
         await iosDriver.clickSelector(new IosAccessibilitiySelector('Reset'));
       },
     );
@@ -486,10 +502,13 @@ export class IosResetService {
         await iosDriver.clickSelector(new IosAccessibilitiySelector('On My iPhone'));
 
         await iosDriver.clickSelector(new IosAccessibilitiySelector('DOC.itemCollectionMenuButton.Ellipsis'));
-        await iosDriver.clickSelector(new IosAccessibilitiySelector('Icons'));
+        await iosDriver.clickSelector(new IosButtonPredicateStringSelector('Icons'));
         await iosDriver.clickSelector(new IosAccessibilitiySelector('DOC.itemCollectionMenuButton.Ellipsis'));
-        await iosDriver.clickSelector(new IosAccessibilitiySelector('View Options'));
-        await iosDriver.clickSelector(new IosAccessibilitiySelector('DOC.groupMenuButton.none'));
+        const viewOptions = await iosDriver.waitElementsExist(new IosButtonPredicateStringSelector('View Options'), { seconds: 2 });
+        if (0 < viewOptions.length) {
+          await viewOptions[0].click();
+          await iosDriver.clickSelector(new IosAccessibilitiySelector('DOC.groupMenuButton.none'));
+        }
 
         const cellsTry = await iosDriver.waitElementsExist(new IosClassChainSelector('**/XCUIElementTypeCell'), { seconds: 3 });
         if (cellsTry.length === 0) {
@@ -497,7 +516,7 @@ export class IosResetService {
         }
 
         await iosDriver.clickSelector(new IosAccessibilitiySelector('DOC.itemCollectionMenuButton.Ellipsis'));
-        await iosDriver.clickSelector(new IosAccessibilitiySelector('Select'));
+        await iosDriver.clickSelector(new IosButtonPredicateStringSelector('Select'));
 
         const cells = await iosDriver.waitElementsExist(new IosClassChainSelector('**/XCUIElementTypeCell'), { seconds: 3 });
         for (const cell of cells) {
@@ -507,7 +526,7 @@ export class IosResetService {
           }
           await cell.click();
         }
-        await iosDriver.clickSelector(new IosAccessibilitiySelector('Delete'));
+        await iosDriver.clickSelector(new IosButtonPredicateStringSelector('Delete'));
       },
     );
   }
@@ -528,8 +547,8 @@ export class IosResetService {
       async () => {
         await helper.enterFilesBrowseHome();
 
-        await iosDriver.clickSelector(new IosAccessibilitiySelector('More'));
-        await iosDriver.clickSelector(new IosAccessibilitiySelector('Edit'));
+        await iosDriver.clickSelector(new IosButtonPredicateStringSelector('More'));
+        await iosDriver.clickSelector(new IosButtonPredicateStringSelector('Edit'));
         for await (const _ of loop(100)) {
           const remove = await iosDriver.waitElementsExist(new IosClassChainSelector('**/XCUIElementTypeImage[`label == "remove"`]'), { seconds: 3 });
           if (0 === remove.length) {
@@ -538,7 +557,7 @@ export class IosResetService {
           await remove[0].click();
           await iosDriver.clickSelector(new IosClassChainSelector('**/XCUIElementTypeButton[`label == "Delete"`]'));
         }
-        await iosDriver.clickSelector(new IosAccessibilitiySelector('Done'));
+        await iosDriver.clickSelector(new IosButtonPredicateStringSelector('Done'));
       },
     );
   }
@@ -552,7 +571,7 @@ export class IosResetService {
           await iosDriver.relaunchApp('com.apple.DocumentsApp');
         },
         dispose: async () => {
-          await delay(SleepBeforeTerminate);
+          await delay(SleepBeforeTerminateLong);
           await iosDriver.terminateApp('com.apple.DocumentsApp');
         },
       },
@@ -568,62 +587,76 @@ export class IosResetService {
         }
 
         await iosDriver.clickSelector(new IosAccessibilitiySelector('DOC.itemCollectionMenuButton.Ellipsis'));
-        await iosDriver.clickSelector(new IosAccessibilitiySelector('Icons'));
+        await iosDriver.clickSelector(new IosButtonPredicateStringSelector('Icons'));
         await iosDriver.clickSelector(new IosAccessibilitiySelector('DOC.itemCollectionMenuButton.Ellipsis'));
-        await iosDriver.clickSelector(new IosAccessibilitiySelector('View Options'));
-        await iosDriver.clickSelector(new IosAccessibilitiySelector('DOC.groupMenuButton.none'));
+        const viewOptions = await iosDriver.waitElementsExist(new IosButtonPredicateStringSelector('View Options'), { seconds: 2 });
+        if (0 < viewOptions.length) {
+          await viewOptions[0].click();
+          await iosDriver.clickSelector(new IosAccessibilitiySelector('DOC.groupMenuButton.none'));
+        }
 
         await iosDriver.clickSelector(new IosAccessibilitiySelector('DOC.itemCollectionMenuButton.Ellipsis'));
-        await iosDriver.clickSelector(new IosAccessibilitiySelector('Select'));
-        await iosDriver.clickSelector(new IosAccessibilitiySelector('Delete All'));
-        await iosDriver.clickSelector(new IosAccessibilitiySelector('Delete'));
+        await iosDriver.clickSelector(new IosButtonPredicateStringSelector('Select'));
+        await iosDriver.clickSelector(new IosButtonPredicateStringSelector('Delete All'));
+        await iosDriver.clickSelector(new IosButtonPredicateStringSelector('Delete'));
       },
     );
   }
 
   private async resetSettings(iosDriver: IosWebDriver): Promise<void> {
-    await usingAsnyc(
-      {
-        create: async () => {
-          await iosDriver.home();
-          await iosDriver.relaunchApp('com.apple.Preferences');
-        },
-        dispose: async () => {
-          await delay(SleepBeforeTerminate);
-          await iosDriver.terminateApp('com.apple.Preferences');
-        },
-      },
-      async () => {
-        await iosDriver.clickSelector(new IosAccessibilitiySelector('General'));
+    let isResetKeyboardDone = false;
+    let isResetHomeDone = false;
+    await retry(
+      async () =>
+        await usingAsnyc(
+          {
+            create: async () => {
+              await iosDriver.home();
+              await iosDriver.relaunchApp('com.apple.Preferences');
+            },
+            dispose: async () => {
+              await delay(SleepBeforeTerminate);
+              await iosDriver.terminateApp('com.apple.Preferences');
+            },
+          },
+          async () => {
+            await iosDriver.clickSelector(new IosAccessibilitiySelector('General'));
 
-        await iosDriver.clickSelector(new IosAccessibilitiySelector('Transfer or Reset iPhone'));
+            await iosDriver.clickSelector(new IosAccessibilitiySelector('Transfer or Reset iPhone'));
 
-        await iosDriver.clickSelector(new IosClassChainSelector('**/XCUIElementTypeStaticText[`label == "Reset"`]'));
-        await iosDriver.clickSelector(new IosAccessibilitiySelector('Reset Keyboard Dictionary'));
-        await iosDriver.clickSelector(new IosAccessibilitiySelector('Reset Dictionary'));
+            if (!isResetKeyboardDone) {
+              await iosDriver.clickSelector(new IosClassChainSelector('**/XCUIElementTypeStaticText[`label == "Reset"`]'));
+              await iosDriver.clickSelector(new IosButtonPredicateStringSelector('Reset Keyboard Dictionary'));
+              await iosDriver.clickSelector(new IosButtonPredicateStringSelector('Reset Dictionary'));
+              isResetKeyboardDone = true;
+            }
 
-        await iosDriver.clickSelector(new IosClassChainSelector('**/XCUIElementTypeStaticText[`label == "Reset"`]'));
-        await iosDriver.clickSelector(new IosAccessibilitiySelector('Reset Home Screen Layout'));
-        await iosDriver.clickSelector(new IosAccessibilitiySelector('Reset Home Screen'));
+            if (!isResetHomeDone) {
+              await iosDriver.clickSelector(new IosClassChainSelector('**/XCUIElementTypeStaticText[`label == "Reset"`]'));
+              await iosDriver.clickSelector(new IosButtonPredicateStringSelector('Reset Home Screen Layout'));
+              await iosDriver.clickSelector(new IosButtonPredicateStringSelector('Reset Home Screen'));
+              isResetHomeDone = true;
+            }
 
-        await iosDriver.clickSelector(new IosClassChainSelector('**/XCUIElementTypeStaticText[`label == "Reset"`]'));
-        await iosDriver.clickSelector(new IosAccessibilitiySelector('Reset Location & Privacy'));
-        await iosDriver.clickSelector(new IosAccessibilitiySelector('Reset Settings'));
+            await iosDriver.clickSelector(new IosClassChainSelector('**/XCUIElementTypeStaticText[`label == "Reset"`]'));
+            await iosDriver.clickSelector(new IosButtonPredicateStringSelector('Reset Location & Privacy'));
+            await iosDriver.clickSelector(new IosButtonPredicateStringSelector('Reset Settings'));
 
-        for await (const _ of loopTime({ period: { milliseconds: 300 }, expire: { seconds: 10 } })) {
-          try {
-            await iosDriver.clickSelector(new IosAccessibilitiySelector('Trust'));
-            break;
-          } catch (e) {}
-        }
-      },
+            for await (const _ of loopTime({ period: { milliseconds: 300 }, expire: { seconds: 10 } })) {
+              try {
+                await iosDriver.clickSelector(new IosButtonPredicateStringSelector('Trust'));
+                break;
+              } catch (e) {}
+            }
+          },
+        ),
+      { retryCount: 7, retryInterval: 1000, printable: new PrefixLogger(this.logger, 'IosResetService.resetSettings') },
     );
   }
 
   private async removeWidgets(iosDriver: IosWebDriver): Promise<void> {
     await iosDriver.home();
     await iosDriver.home();
-    await iosDriver.relaunchApp('com.apple.springboard');
 
     const MaxWidgetsCount = 100;
     // remove home widgets

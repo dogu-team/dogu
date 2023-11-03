@@ -118,7 +118,7 @@ export class IosDeviceAgentProcess {
       reset,
       logger,
     );
-    await ret.xctest.zombieWaiter.waitUntilAlive({ maxReviveCount: 30 });
+    await ret.xctest.zombieWaiter.waitUntilAlive({ maxReviveCount: 5 });
     await ret.screenTunnel.zombieWaiter.waitUntilAlive({ maxReviveCount: 30 });
     await ret.grpcTunnel.zombieWaiter.waitUntilAlive({ maxReviveCount: 30 });
 
@@ -275,8 +275,8 @@ class ZombieIdaXCTest implements Zombieable {
       return false;
     }
 
-    if (!this.iosDeviceAgentService.connected) {
-      this._error = 'client not connected';
+    if (!this.iosDeviceAgentService.isAlive) {
+      this._error = 'client not alive';
       return false;
     }
     const surfaceStatus = await this.streamingService.getSurfaceStatus(this.serial).catch(() => {

@@ -1,5 +1,5 @@
 import { Platform, PrivateProtocol, Serial } from '@dogu-private/types';
-import { delay, FilledPrintable, loopTime, usingAsnyc } from '@dogu-tech/common';
+import { delay, FilledPrintable, usingAsnyc } from '@dogu-tech/common';
 import child_process from 'child_process';
 import { AppiumContextImpl } from '../../../appium/appium.context';
 import { env } from '../../../env';
@@ -55,18 +55,18 @@ export class IosSharedDeviceService implements Zombieable {
     if (!env.DOGU_IS_DEVICE_SHARE) {
       return;
     }
-    const { serial, printable: logger } = this;
+    const { serial, printable: logger, wda, appiumContext } = this;
     const driver = this.appiumContext.driver();
     if (!driver) {
       throw new Error(`IosResetService.clearSafariCache driver is null`);
     }
 
     if ((await this.reset.isDirty()) && !config.externalIosDeviceAgent.use) {
-      await this.timer.check(`IosResetService.setup.reset`, this.reset.reset(this.appiumContext));
+      await this.timer.check(`IosResetService.setup.reset`, this.reset.reset(appiumContext, wda));
       throw new Error(`IosResetService.revive. device is dirty. so trigger reset ${serial}`);
     }
 
-    const iosDriver = new IosWebDriver(driver);
+    const iosDriver = new IosWebDriver(driver, wda, logger);
     await this.checkEnglish(iosDriver);
 
     await this.reset.makeDirty();
@@ -111,18 +111,5 @@ export class IosSharedDeviceService implements Zombieable {
         }
       },
     );
-  }
-
-  private async blockControlCenterEnglish(iosDriver: IosWebDriver): Promise<void> {
-    for await (const _ of loopTime({ period: { milliseconds: 300 }, expire: { minutes: 5 } })) {
-      const elem = await iosDriver.rawDriver.$('~ControlCenterView');
-      if (elem.error) {
-        continue;
-      }
-      await iosDriver.rawDriver.execute('mobile: pressButton', {
-        name: 'home',
-        duration: 0.3,
-      });
-    }
   }
 }

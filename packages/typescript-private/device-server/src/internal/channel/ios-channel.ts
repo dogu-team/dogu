@@ -493,10 +493,10 @@ export class IosChannel implements DeviceChannel {
   }
 
   async reset(): Promise<void> {
-    const { logger } = this;
+    const { logger, webdriverAgentProcess } = this;
     await this.deviceAgent.sendWithProtobuf('dcIdaSwitchInputBlockParam', 'dcIdaSwitchInputBlockResult', { isBlock: false });
     const appiumContextImpl = await checkTime(`IosChannel.reset.waitUntilBuiltin`, this._appiumContext.waitUntilBuiltin(), logger);
-    await checkTime(`IosChannel.reset.reset`, this._reset.reset(appiumContextImpl), logger);
+    await checkTime(`IosChannel.reset.reset`, this._reset.reset(appiumContextImpl, webdriverAgentProcess), logger);
   }
 
   joinWifi(ssid: string, password: string): PromiseOrValue<void> {

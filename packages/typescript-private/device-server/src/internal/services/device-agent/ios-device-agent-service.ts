@@ -26,7 +26,6 @@ export class IosDeviceAgentService implements DeviceAgentService, Zombieable {
   private readonly client: Socket;
   private protoAPIRetEmitter = new ProtoAPIEmitterImpl();
   private readonly recvQueue = new SizePrefixedRecvQueue();
-  private isConnected: boolean;
   private seq = 0;
   private zombieWaiter: ZombieQueriable;
 
@@ -38,11 +37,9 @@ export class IosDeviceAgentService implements DeviceAgentService, Zombieable {
   ) {
     this.zombieWaiter = ZombieServiceInstance.addComponent(this);
     this.client = new Socket();
-    this.isConnected = false;
 
     this.client.on('connect', () => {
       logger.info('IosDeviceAgentService. client connect');
-      this.isConnected = true;
     });
 
     this.client.on('error', (error: Error) => {
@@ -86,10 +83,11 @@ export class IosDeviceAgentService implements DeviceAgentService, Zombieable {
   }
 
   onDie(reason: string): void | Promise<void> {
-    if (this.isConnected) {
+    try {
       this.client.resetAndDestroy();
+    } catch (e) {
+      this.logger.error(`IosDeviceAgentService.onDie reset error: ${stringify(e)}`);
     }
-    this.isConnected = false;
   }
 
   delete(): void {
@@ -104,12 +102,12 @@ export class IosDeviceAgentService implements DeviceAgentService, Zombieable {
     return `127.0.0.1:${this.serverPort}`;
   }
 
-  get connected(): boolean {
-    return this.isConnected;
-  }
-
   async install(): Promise<void> {
     return Promise.resolve();
+  }
+
+  get isAlive(): boolean {
+    return this.zombieWaiter.isAlive();
   }
 
   async sendWithProtobuf<
