@@ -14,7 +14,7 @@ import { logger, rendererLogger } from './log/logger.instance';
 })();
 
 import { errorify } from '@dogu-tech/common';
-import { killSelfProcess } from '@dogu-tech/node';
+import { killSelfProcess, maxLogPeriod, openDeleteOldFiles } from '@dogu-tech/node';
 import * as Sentry from '@sentry/electron/main';
 import installExtension, { REACT_DEVELOPER_TOOLS } from 'electron-devtools-installer';
 import electronDl from 'electron-dl';
@@ -69,6 +69,8 @@ app.whenReady().then(async () => {
     .then((name) => logger.info(`Added Extension:  ${name}`))
     .catch((err) => logger.error('An error occurred: ', err));
 
+  await openDeleteOldLogs();
+
   await ServicesOpenStatusService.instance.openServices(async () => {
     RendererLogService.open();
     ThemeService.open();
@@ -116,6 +118,10 @@ process.on('unhandledRejection', async (reason, promise) => {
 const cleanup = () => {
   killSelfProcess();
 };
+
+async function openDeleteOldLogs(): Promise<void> {
+  await openDeleteOldFiles(LogsPath, maxLogPeriod, '1d', logger);
+}
 
 const quitSignalAndEvents = ['beforeExit', 'exit', 'SIGINT', 'SIGTERM', 'SIGQUIT', 'SIGABRT'];
 for (const event of quitSignalAndEvents) {
