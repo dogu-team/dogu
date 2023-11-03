@@ -81,7 +81,7 @@ export class DeviceHostResignAppFileService {
       const args = [resignShellPath, `"${appPath}"`, `"${identityName}"`, '-p', provisioningProfilePath, resignedAppPath].join(' ');
 
       this.logger.info('DeviceHostResignAppFileService.resign', { args });
-      const result = await ChildProcess.exec(args, {});
+      const result = await ChildProcess.exec(args, { cwd: HostPaths.doguHomePath });
       this.logger.info('DeviceHostResignAppFileService.resign done', { result });
 
       await fs.promises.rm(appPath, { recursive: true, force: true });
