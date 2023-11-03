@@ -1,4 +1,4 @@
-import { BillingCategory, CallBillingApiResponse, GetBillingSubscriptionPreviewDto } from '@dogu-private/console';
+import { CallBillingApiResponse, GetBillingSubscriptionPreviewDto } from '@dogu-private/console';
 import { Button, Divider, Tag } from 'antd';
 import useTranslation from 'next-translate/useTranslation';
 import useSWR from 'swr';
@@ -25,8 +25,8 @@ const BillingCalculatedPreview: React.FC<Props> = ({}) => {
     organizationId: license?.organizationId ?? '',
     category: 'cloud',
     period: isAnnual ? 'yearly' : 'monthly',
-    subscriptionPlanType: selectedPlan?.planType ?? 'live-testing',
-    subscriptionPlanOption: selectedPlan?.option ?? 1,
+    type: selectedPlan?.planType ?? 'live-testing',
+    option: selectedPlan?.option ?? 1,
     currency: 'KRW',
     couponCode: couponCode ?? undefined,
   };
