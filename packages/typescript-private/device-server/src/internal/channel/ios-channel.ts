@@ -165,7 +165,7 @@ export class IosChannel implements DeviceChannel {
       wdaForwardPort,
     );
     const appiumWaiter = ZombieServiceInstance.addComponent(appiumContextProxy);
-    await appiumWaiter.waitUntilAlive(100);
+    await appiumWaiter.waitUntilAlive({ maxReviveCount: 100 });
     logger.verbose('appium context started');
 
     const reset = new IosResetService(serial, logger);
@@ -400,7 +400,7 @@ export class IosChannel implements DeviceChannel {
 
     const newTunnel = new ZombieTunnel(serial, hostPort, devicePort, logger);
     this.tunnels.push(newTunnel);
-    await newTunnel.zombieWaiter.waitUntilAlive();
+    await newTunnel.zombieWaiter.waitUntilAlive({ maxReviveCount: 10 });
   }
 
   unforward(hostPort: number): void {

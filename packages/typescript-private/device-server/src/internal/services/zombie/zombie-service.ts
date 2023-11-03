@@ -14,7 +14,10 @@ export interface ZombieChecker {
 }
 
 export class ZombieService {
-  constructor(private checkers: ZombieChecker[] = [], private befTime = 0) {}
+  constructor(
+    private checkers: ZombieChecker[] = [],
+    private befTime = 0,
+  ) {}
 
   update(): void {
     for (const checker of this.checkers) {
@@ -71,6 +74,7 @@ export class ZombieService {
       updateCount: 0,
     };
     this.checkers.push(ret);
+    zombieLogger.info(`ZombieService.addComponent ${zombieable.name} added`);
     return new ZombieQueriable(ret.component);
   }
 
@@ -80,6 +84,7 @@ export class ZombieService {
     if (target == null) {
       return;
     }
+    zombieLogger.info(`ZombieService.notifyDie ${target.component.impl.name}, ${closeReason} notified`);
     target.component.onDie(closeReason).catch((e: Error) => {
       zombieLogger.error(`ZombieComponent ${target.component.impl.name} onDie failed error:${stringify(e, { compact: true })}`);
     });

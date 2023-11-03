@@ -48,7 +48,7 @@ export class IosSharedDeviceService implements Zombieable {
   }
 
   get props(): ZombieProps {
-    return { serial: this.serial, resetting: this.reset.isResetting };
+    return { serial: this.serial, reset_state: this.reset.state };
   }
 
   async setup(): Promise<void> {
@@ -91,7 +91,7 @@ export class IosSharedDeviceService implements Zombieable {
     }
   }
 
-  onDie(): void {}
+  onDie(reason: string): void {}
 
   private async checkEnglish(iosDriver: IosWebDriver): Promise<void> {
     await usingAsnyc(

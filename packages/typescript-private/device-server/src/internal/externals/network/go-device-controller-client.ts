@@ -42,7 +42,12 @@ export class GoDeviceControllerGrpcClient extends GrpcClientBase implements Zomb
   static _deviceMap = new Map<string, DcGdcDeviceContext>(); // When debugging go-device-controller. The entire device list exists globally and is for synchronization..
   _deviceMap = new Map<string, DcGdcDeviceContext>();
 
-  constructor(public readonly platform: Platform, public readonly goDeviceController: GoDeviceControllerProcess, serverUrl: string, timeoutSeconds: number) {
+  constructor(
+    public readonly platform: Platform,
+    public readonly goDeviceController: GoDeviceControllerProcess,
+    serverUrl: string,
+    timeoutSeconds: number,
+  ) {
     super(serverUrl, timeoutSeconds);
     this.zombieWaiter = ZombieServiceInstance.addComponent(this);
   }
@@ -201,7 +206,7 @@ export class GoDeviceControllerGrpcClient extends GrpcClientBase implements Zomb
     await delay(5000);
   }
 
-  onDie(): void {
+  onDie(reason: string): void {
     if (this.client) {
       this.client.close();
       this.client = null;

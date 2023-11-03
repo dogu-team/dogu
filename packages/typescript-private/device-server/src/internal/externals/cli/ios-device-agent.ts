@@ -118,9 +118,9 @@ export class IosDeviceAgentProcess {
       reset,
       logger,
     );
-    await ret.xctest.zombieWaiter.waitUntilAlive(10);
-    await ret.screenTunnel.zombieWaiter.waitUntilAlive(10);
-    await ret.grpcTunnel.zombieWaiter.waitUntilAlive(10);
+    await ret.xctest.zombieWaiter.waitUntilAlive({ maxReviveCount: 30 });
+    await ret.screenTunnel.zombieWaiter.waitUntilAlive({ maxReviveCount: 30 });
+    await ret.grpcTunnel.zombieWaiter.waitUntilAlive({ maxReviveCount: 30 });
 
     return ret;
   }
@@ -225,7 +225,7 @@ class ZombieIdaXCTest implements Zombieable {
     this.xctestrun = XcodeBuild.testWithoutBuilding('ida', xctestrunPath, this.serial, { idleLogTimeoutMillis: Milisecond.t1Minute + Milisecond.t30Seconds }, this.logger);
     this.xctestrun.proc.on('close', () => {
       this.xctestrun = null;
-      ZombieServiceInstance.notifyDie(this);
+      ZombieServiceInstance.notifyDie(this, `Proc closed`);
     });
 
     for await (const _ of loopTime({ period: { seconds: 3 }, expire: { minutes: 5 } })) {
@@ -249,7 +249,7 @@ class ZombieIdaXCTest implements Zombieable {
     if (!(await this.isHealth())) {
       this.healthFailCount++;
       if (this.healthFailCount > 3) {
-        ZombieServiceInstance.notifyDie(this);
+        ZombieServiceInstance.notifyDie(this, `health check failed ${this.healthFailCount}`);
       }
       return;
     } else {
@@ -258,9 +258,9 @@ class ZombieIdaXCTest implements Zombieable {
     await delay(3000);
   }
 
-  onDie(): void {
-    this.logger.debug?.(`ZombieIdaXCTest.onDie`);
-    this.xctestrun?.kill('ZombieIdaXCTest.onDie');
+  onDie(reason: string): void {
+    this.logger.debug?.(`ZombieIdaXCTest.onDie ${reason}`);
+    this.xctestrun?.kill(reason);
   }
 
   private async isHealth(): Promise<boolean> {

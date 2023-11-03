@@ -114,7 +114,7 @@ export class NullAppiumContext implements AppiumContext {
   async revive(): Promise<void> {
     return Promise.resolve();
   }
-  onDie(): void | Promise<void> {
+  onDie(reason: string): void | Promise<void> {
     return Promise.resolve();
   }
 
@@ -268,7 +268,7 @@ export class AppiumContextImpl implements AppiumContext {
     }
   }
 
-  async onDie(): Promise<void> {
+  async onDie(reason: string): Promise<void> {
     if (!this._data) {
       return;
     }

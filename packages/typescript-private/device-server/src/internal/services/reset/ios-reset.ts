@@ -167,7 +167,7 @@ const ClearRepeatCount = 1;
 
 export class IosResetService {
   private timer: CheckTimer;
-  private _isResetting = false;
+  private _state: string | null = null;
   private static map: Map<Serial, IosResetInfo> = new Map(); // Hold for process lifetime
   constructor(
     private serial: Serial,
@@ -177,7 +177,11 @@ export class IosResetService {
   }
 
   get isResetting(): boolean {
-    return this._isResetting;
+    return this._state !== null;
+  }
+
+  get state(): string | null {
+    return this._state;
   }
 
   async makeDirty(): Promise<void> {
@@ -217,33 +221,32 @@ export class IosResetService {
     await usingAsnyc(
       {
         create: async () => {
-          this._isResetting = true;
           this.logger.info(`IosResetService.reset begin`, { serial });
           await delay(0);
         },
         dispose: async () => {
-          this._isResetting = false;
+          this._state = null;
           this.logger.info(`IosResetService.reset end`, { serial });
           await delay(0);
         },
       },
       async () => {
         await iosDriver.home();
-        await this.timer.check('IosResetService.reset.removeSystemApps', this.removeSystemApps());
+        await this.check('IosResetService.reset.removeSystemApps', this.removeSystemApps());
         await iosDriver.home();
-        await this.timer.check('IosResetService.reset.logoutApppleAccount', this.logoutApppleAccount(iosDriver));
-        await this.timer.check('IosResetService.reset.clearSafariCache', this.clearSafariCache(iosDriver));
-        await this.timer.check('IosResetService.reset.clearPhotoImages', this.clearPhotoImages(iosDriver));
-        await this.timer.check('IosResetService.reset.clearPhotoAlbums', this.clearPhotoAlbums(iosDriver));
-        await this.timer.check('IosResetService.reset.clearPhotosRecentlyDeleted', this.clearPhotosRecentlyDeleted(iosDriver));
-        await this.timer.check('IosResetService.reset.clearPhotosSuggestionAndFeedbacks', this.clearPhotosSuggestionAndFeedbacks(iosDriver));
-        await this.timer.check('IosResetService.reset.clearFilesOnMyiPhone', this.clearFilesOnMyiPhone(iosDriver, helper));
-        await this.timer.check('IosResetService.reset.clearFilesTags', this.clearFilesTags(iosDriver, helper));
-        await this.timer.check('IosResetService.reset.clearFilesRecentlyDeleted', this.clearFilesRecentlyDeleted(iosDriver, helper));
-        await this.timer.check('IosResetService.reset.resetSettings', this.resetSettings(iosDriver));
-        await this.timer.check('IosResetService.reset.removeWidgets', this.removeWidgets(iosDriver));
-        await this.timer.check('IosResetService.reset.removeUserApps', this.removeUserApps()); // last step because this removes appium
-        await this.timer.check('IosResetService.reset.restart', IdeviceDiagnostics.restart(serial, logger));
+        await this.check('IosResetService.reset.logoutApppleAccount', this.logoutApppleAccount(iosDriver));
+        await this.check('IosResetService.reset.clearSafariCache', this.clearSafariCache(iosDriver));
+        await this.check('IosResetService.reset.clearPhotoImages', this.clearPhotoImages(iosDriver));
+        await this.check('IosResetService.reset.clearPhotoAlbums', this.clearPhotoAlbums(iosDriver));
+        await this.check('IosResetService.reset.clearPhotosRecentlyDeleted', this.clearPhotosRecentlyDeleted(iosDriver));
+        await this.check('IosResetService.reset.clearPhotosSuggestionAndFeedbacks', this.clearPhotosSuggestionAndFeedbacks(iosDriver));
+        await this.check('IosResetService.reset.clearFilesOnMyiPhone', this.clearFilesOnMyiPhone(iosDriver, helper));
+        await this.check('IosResetService.reset.clearFilesTags', this.clearFilesTags(iosDriver, helper));
+        await this.check('IosResetService.reset.clearFilesRecentlyDeleted', this.clearFilesRecentlyDeleted(iosDriver, helper));
+        await this.check('IosResetService.reset.resetSettings', this.resetSettings(iosDriver));
+        await this.check('IosResetService.reset.removeWidgets', this.removeWidgets(iosDriver));
+        await this.check('IosResetService.reset.removeUserApps', this.removeUserApps()); // last step because this removes appium
+        await this.check('IosResetService.reset.restart', IdeviceDiagnostics.restart(serial, logger));
         IosResetService.map.set(serial, { lastResetTime: Date.now() });
       },
     );
@@ -674,5 +677,10 @@ export class IosResetService {
         await iosDriver.removeWidget(widget);
       }
     }
+  }
+
+  async check<T>(name: string, promise: Promise<T>): Promise<T> {
+    this._state = name;
+    return this.timer.check(name, promise);
   }
 }

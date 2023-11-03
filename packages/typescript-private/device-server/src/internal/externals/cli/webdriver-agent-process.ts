@@ -49,8 +49,8 @@ export class WebdriverAgentProcess {
       throw new Error(`WebdriverAgent can't be executed on ${serial}`);
     }
     const ret = new WebdriverAgentProcess(serial, wdaHostPort, logger);
-    await ret.xctest.zombieWaiter.waitUntilAlive();
-    await ret.wdaTunnel.zombieWaiter.waitUntilAlive();
+    await ret.xctest.zombieWaiter.waitUntilAlive({ maxReviveCount: 30 });
+    await ret.wdaTunnel.zombieWaiter.waitUntilAlive({ maxReviveCount: 30 });
     return ret;
   }
 
@@ -123,7 +123,7 @@ export class WebdriverAgentProcess {
       this.logger.warn('sessionId is undefined. so skip goToHome');
       return;
     }
-    await client.post(`/wda/homescreen`);
+    await client.post(`/session/${sessionId}/wda/pressButton`, { name: 'home', duration: 100 }, { headers: { 'Content-Type': 'application/json' } });
   }
 
   /*
@@ -196,7 +196,7 @@ class ZombieWdaXCTest implements Zombieable {
     this.client = axios.create({
       baseURL: `http://127.0.0.1:${wdaHostPort}`,
       httpAgent: new http.Agent({ keepAlive: true, maxSockets: 1, maxTotalSockets: 1, maxFreeSockets: 0 }),
-      timeout: 5000,
+      timeout: 10000,
       maxRedirects: 10,
       maxContentLength: 50 * 1000 * 1000,
     });
@@ -223,21 +223,20 @@ class ZombieWdaXCTest implements Zombieable {
   }
 
   async update(): Promise<void> {
+    await delay(3000);
     if (!(await this.isHealth())) {
       this.healthFailCount++;
-      if (this.healthFailCount > 3) {
-        ZombieServiceInstance.notifyDie(this);
+      if (this.healthFailCount > 5) {
+        ZombieServiceInstance.notifyDie(this, `HelathCheck Failed error: ${this.error}`);
       }
       return;
     } else {
       this.healthFailCount = 0;
     }
-    await delay(3000);
   }
 
-  onDie(): void {
-    this.printable.debug?.(`ZombieWdaXCTest.onDie`);
-    this.xctestrun?.kill('ZombieWdaXCTest.onDie');
+  onDie(reason: string): void {
+    this.xctestrun?.kill(reason);
   }
 
   private async isHealth(): Promise<boolean> {
@@ -286,7 +285,7 @@ class ZombieWdaXCTest implements Zombieable {
     this.xctestrun = XcodeBuild.testWithoutBuilding('wda', xctestrun.filePath, this.serial, { idleLogTimeoutMillis: Milisecond.t1Minute + Milisecond.t30Seconds }, logger);
     this.xctestrun.proc.on('close', () => {
       this.xctestrun = null;
-      ZombieServiceInstance.notifyDie(this);
+      ZombieServiceInstance.notifyDie(this, `xctestrun close`);
     });
 
     for await (const _ of loopTime({ period: { seconds: 3 }, expire: { minutes: 3 } })) {

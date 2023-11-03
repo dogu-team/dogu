@@ -14,7 +14,12 @@ export class GoDeviceControllerProcess implements Zombieable {
   private zombieWaiter: ZombieQueriable;
   private proc: child_process.ChildProcess | null = null;
 
-  constructor(public readonly platform: Platform, public readonly port: number, public readonly deviceServerPort: number, private readonly logger: FilledPrintable) {
+  constructor(
+    public readonly platform: Platform,
+    public readonly port: number,
+    public readonly deviceServerPort: number,
+    private readonly logger: FilledPrintable,
+  ) {
     this.zombieWaiter = ZombieServiceInstance.addComponent(this);
   }
 
@@ -57,7 +62,7 @@ export class GoDeviceControllerProcess implements Zombieable {
     await Promise.resolve();
   }
 
-  onDie(): void {
+  onDie(reason: string): void {
     if (this.proc) {
       killChildProcess(this.proc).catch((e) => {
         const error = errorify(e);

@@ -86,7 +86,7 @@ export class IosDeviceAgentService implements DeviceAgentService, Zombieable {
     await this.sendWithProtobuf('dcIdaSwitchInputBlockParam', 'dcIdaSwitchInputBlockResult', { isBlock: env.DOGU_IS_DEVICE_SHARE === true });
   }
 
-  onDie(): void | Promise<void> {
+  onDie(reason: string): void | Promise<void> {
     if (this.isConnected) {
       this.client.resetAndDestroy();
     }

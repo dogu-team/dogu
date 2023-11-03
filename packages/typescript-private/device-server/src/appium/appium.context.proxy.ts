@@ -75,7 +75,7 @@ export class AppiumContextProxy implements AppiumContext, Zombieable {
     await this.implZombie.waitUntilAlive();
   }
 
-  onDie(): void {
+  onDie(reason: string): void {
     // noop
   }
 

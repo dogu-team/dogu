@@ -410,7 +410,7 @@ export class AndroidSharedDeviceService implements Zombieable {
     await delay(3000);
   }
 
-  onDie(): void | Promise<void> {
+  onDie(reason: string): void | Promise<void> {
     this.killLogcatProcess();
   }
 
