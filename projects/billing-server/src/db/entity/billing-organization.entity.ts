@@ -22,13 +22,16 @@ export class BillingOrganization implements BillingOrganizationBase {
   timezoneOffset!: string | null;
 
   @DateColumn({ nullable: true })
-  subscriptionStartedAt!: Date | null;
+  yearlyCalculationStartedAt!: Date | null;
 
   @DateColumn({ nullable: true })
-  yearlySubscriptionExpiredAt!: Date | null;
+  yearlyCalculationExpiredAt!: Date | null;
 
   @DateColumn({ nullable: true })
-  monthlySubscriptionExpiredAt!: Date | null;
+  monthlyCalculationStartedAt!: Date | null;
+
+  @DateColumn({ nullable: true })
+  monthlyCalculationExpiredAt!: Date | null;
 
   @CreatedAt()
   createdAt!: Date;

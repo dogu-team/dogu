@@ -1,8 +1,8 @@
 import { CloudLicenseBase, CloudLicenseProp } from '@dogu-private/console';
 import { OrganizationId } from '@dogu-private/types';
 import { Column, Entity, JoinColumn, OneToOne, PrimaryColumn } from 'typeorm';
+import { CreatedAt, DeletedAt, UpdatedAt } from '../decorators';
 import { BillingOrganization } from './billing-organization.entity';
-import { CreatedAt, DeletedAt, UpdatedAt } from './util/decorators';
 
 @Entity()
 export class CloudLicense implements CloudLicenseBase {

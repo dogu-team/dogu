@@ -13,7 +13,7 @@ export type BillingPeriod = (typeof BillingPeriod)[number];
 export type BillingSubscriptionPlanPrice = Record<BillingPeriod, number>;
 export type BillingSubscriptionPlanPriceMap = Record<BillingCurrency, BillingSubscriptionPlanPrice>;
 
-export interface BillingSubscriptionPlanInfo {
+export interface BillingSubscriptionPlanOptionInfo {
   category: BillingCategory;
   optionMap: Record<number, BillingSubscriptionPlanPriceMap>;
 }
@@ -28,7 +28,7 @@ export const BillingPlanGroupMap: Record<BillingSubscriptionGroupType, BillingSu
   'live-testing-group': ['live-testing'],
 };
 
-export const BillingSubscriptionPlanMap: Record<BillingSubscriptionPlanType, BillingSubscriptionPlanInfo> = {
+export const BillingSubscriptionPlanMap: Record<BillingSubscriptionPlanType, BillingSubscriptionPlanOptionInfo> = {
   'live-testing': {
     category: 'cloud',
     optionMap: {
@@ -320,3 +320,10 @@ export interface BillingSubscriptionPlanData {
 
 export const BillingMethod = ['nice'] as const;
 export type BillingMethod = (typeof BillingMethod)[number];
+
+export const BillingGracePeriodDays = 3;
+
+export const BillingLicenseStatus = ['not-expired', 'within-grace-period', 'expired'] as const;
+export type BillingLicenseStatus = (typeof BillingLicenseStatus)[number];
+
+export const TimezoneOffsetPattern = /^(?<sign>[+-])(?<hours>\d{2}):(?<minutes>\d{2})$/;

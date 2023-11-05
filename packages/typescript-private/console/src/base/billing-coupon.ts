@@ -15,10 +15,26 @@ export interface BillingCouponBase {
    * @example 10 10% discount
    */
   monthlyDiscountPercent: number | null;
+
+  /**
+   * @description null unlimited apply
+   */
   monthlyApplyCount: number | null;
+
+  /**
+   * @example 10 10% discount
+   */
   yearlyDiscountPercent: number | null;
+
+  /**
+   * @description null unlimited apply
+   */
   yearlyApplyCount: number | null;
   remainingAvailableCount: number | null;
+
+  /**
+   * @description null unlimited expiration
+   */
   expiredAt: Date | null;
   createdAt: Date;
   updatedAt: Date;

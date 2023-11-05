@@ -2,10 +2,15 @@ export const BillingResultCodeMap = {
   // common
   ok: 0,
   'unexpected-error': 1,
+  'division-by-zero': 2,
 
   // organization
   'organization-not-found': 100,
   'organization-method-nice-not-found': 101,
+  'organization-monthly-calculation-started-at-not-found': 102,
+  'organization-monthly-calculation-expired-at-not-found': 103,
+  'organization-yearly-calculation-started-at-not-found': 104,
+  'organization-yearly-calculation-expired-at-not-found': 105,
 
   // coupon
   'coupon-not-found': 200,
@@ -13,10 +18,9 @@ export const BillingResultCodeMap = {
   'coupon-already-used': 202,
   'coupon-all-used': 203,
   'coupon-invalid-monthly-apply-count': 204,
-  'coupon-invalid-yearly-apply-count': 205,
-  'coupon-null-argument': 206,
-  'coupon-invalid-monthly-discount-percent': 207,
-  'coupon-invalid-yearly-discount-percent': 208,
+  'coupon-invalid-monthly-discount-percent': 205,
+  'coupon-invalid-yearly-apply-count': 206,
+  'coupon-invalid-yearly-discount-percent': 207,
 
   // subscription plan
   'subscription-plan-currency-not-found': 300,
@@ -26,9 +30,21 @@ export const BillingResultCodeMap = {
   'subscription-plan-category-not-matched': 304,
   'subscription-plan-currency-not-matched': 305,
   'subscription-plan-duplicated': 306,
+  'subscription-plan-not-upgrade': 307,
 
   // method nice
   'method-nice-bid-not-found': 400,
+
+  // timezone
+  'timezone-offset-not-found': 500,
+  'timezone-offset-not-matched': 501,
+  'timezone-offset-sign-not-matched': 502,
+  'timezone-offset-hours-not-matched': 503,
+  'timezone-offset-minutes-not-matched': 504,
+  'timezone-offset-hours-range-not-matched': 505,
+  'timezone-offset-minutes-range-not-matched': 506,
+  'timezone-offset-hours-not-number': 507,
+  'timezone-offset-minutes-not-number': 508,
 };
 
 export type BillingReason = keyof typeof BillingResultCodeMap;

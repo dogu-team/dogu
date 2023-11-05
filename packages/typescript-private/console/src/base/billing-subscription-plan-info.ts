@@ -18,11 +18,17 @@ export interface BillingSubscriptionPlanInfoBase extends BillingSubscriptionPlan
   billingSubscriptionPlanInfoId: string;
   billingOrganizationId: string;
   billingCouponId: string | null;
+
+  /**
+   * @description null means unlimited
+   */
   billingCouponRemainingApplyCount: number | null;
   billingSubscriptionPlanSourceId: string | null;
-  discountedAmount: number | null;
+  discountedAmount: number;
   changeRequestedPeriod: BillingPeriod | null;
   changeRequestedOption: number | null;
+  changeRequestedOriginPrice: number | null;
+  changeRequestedDiscountedAmount: number | null;
   unsubscribedAt: Date | null;
   state: BillingSubscriptionPlanState;
   createdAt: Date;

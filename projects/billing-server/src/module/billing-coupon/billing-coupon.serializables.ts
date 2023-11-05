@@ -162,4 +162,43 @@ export async function createBillingCoupon(context: RetrySerializeContext, dto: C
     expiredAt: null,
   });
   return await manager.getRepository(BillingCoupon).save(coupon);
+export interface ParseCouponOptions {
+  context: RetrySerializeContext;
+  organizationId: string;
+  couponCode: string | undefined;
+}
+
+export interface ParseCouponResultFailure {
+  ok: false;
+  resultCode: BillingResultCode;
+}
+
+export interface ParseCouponResultSuccess {
+  ok: true;
+  coupon: BillingCoupon | null;
+}
+
+export type ParseCouponResult = ParseCouponResultFailure | ParseCouponResultSuccess;
+
+export async function parseCoupon(options: ParseCouponOptions): Promise<ParseCouponResult> {
+  const { context, organizationId, couponCode } = options;
+  if (couponCode === undefined) {
+    return {
+      ok: true,
+      coupon: null,
+    };
+  }
+
+  const validateResult = await validateCoupon(context, { organizationId, code: couponCode });
+  if (!validateResult.ok) {
+    return {
+      ok: false,
+      resultCode: validateResult.resultCode,
+    };
+  }
+
+  return {
+    ok: true,
+    coupon: validateResult.coupon,
+  };
 }

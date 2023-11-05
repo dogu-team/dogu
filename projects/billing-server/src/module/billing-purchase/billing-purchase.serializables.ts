@@ -1,13 +1,8 @@
 import {
-  BillingCategory,
-  BillingCouponBase,
-  BillingCurrency,
   BillingMethodNiceBase,
   BillingPeriod,
   BillingResultCode,
   BillingSubscriptionPlanData,
-  BillingSubscriptionPlanInfo,
-  BillingSubscriptionPlanMap,
   BillingSubscriptionPlanPreviewDto,
   BillingSubscriptionPlanPrice,
   BillingSubscriptionPlanPriceMap,
@@ -15,141 +10,98 @@ import {
   CouponPreviewResponse,
   CreatePurchaseSubscriptionResponse,
   GetBillingSubscriptionPreviewResponse,
-  GetBillingSubscriptionPreviewResponseSuccess,
   resultCode,
 } from '@dogu-private/console';
-import _ from 'lodash';
+import { assertUnreachable } from '@dogu-tech/common';
 import { v4 } from 'uuid';
+import { BillingCoupon } from '../../db/entity/billing-coupon.entity';
+import { BillingHistory } from '../../db/entity/billing-history.entity';
 import { BillingOrganization } from '../../db/entity/billing-organization.entity';
-import { BillingPurchaseHistory } from '../../db/entity/billing-purchase-history.entity';
+import { BillingSubscriptionPlanInfo } from '../../db/entity/billing-subscription-plan-info.entity';
 import { BillingSubscriptionPlanSource } from '../../db/entity/billing-subscription-plan-source.entity';
 import { RetrySerializeContext } from '../../db/utils';
-import { validateCoupon } from '../billing-coupon/billing-coupon.serializables';
+import { parseCoupon } from '../billing-coupon/billing-coupon.serializables';
+import { calculateCouponFactor } from '../billing-coupon/billing-coupon.utils';
 import { BillingMethodNiceCaller } from '../billing-method/billing-method-nice.caller';
 import { createPurchase } from '../billing-method/billing-method-nice.serializables';
 import { registerUsedCoupon } from '../billing-organization/billing-organization.serializables';
-import { createSubscriptionPlan, unsubscribeRemainingSubscriptionPlans } from '../billing-subscription-plan/billing-subscription-plan.serializables';
+import { createSubscriptionPlanInfo } from '../billing-subscription-plan-info/billing-subscription-plan-info.serializables';
 import {
-  calculateCouponFactor,
-  calculateElapsedDays,
-  calculateNextCouponFactor,
-  calculateNextPurchaseAt,
-  calculateNextPurchaseTotalPriceFromSubscriptionPlans,
-  calculatePeriodDays,
-  calculateRemainingDays,
-  getLastPurchasedAt,
+  calculateNextPurchaseAmount,
+  CalculateNextPurchaseAmountResultFailure,
+  CalculateNextPurchaseAmountResultSuccess,
+} from '../billing-subscription-plan-info/billing-subscription-plan-info.utils';
+import { parseSubscriptionPlanData } from '../billing-subscription-source/billing-subscription-source.serializables';
+import {
+  calculateElapsedPlan,
+  calculateLocalNextPurchaseDate,
+  calculateRemainingPlan,
+  createCalculationExpiredAt,
+  createCalculationStartedAtFromNow,
+  parseTimezoneOffset,
   resolveCurrency,
+  resolveTimezoneOffset,
+  TimezoneOffset,
 } from './billing-purchase.utils';
 
-export interface ParseSubscriptionPlanDataResultFailure {
+export interface CalculateNextPurchaseTotalPriceOptions {
+  subscriptionPlanInfos: BillingSubscriptionPlanInfo[];
+  subscriptionPlanData: BillingSubscriptionPlanData;
+  period: BillingPeriod;
+  nextPlanPurchaseAmount: number;
+}
+
+export interface CalculateNextPurchaseTotalPriceResultFailure {
   ok: false;
   resultCode: BillingResultCode;
 }
 
-export interface ParseSubscriptionPlanDataResultSuccess {
+export interface CalculateNextPurchaseTotalPriceResultSuccess {
   ok: true;
-  resultCode: BillingResultCode;
-  subscriptionPlanData: BillingSubscriptionPlanData;
+  nextPurchaseTotalPrice: number;
 }
 
-export type ParseSubscriptionPlanDataResult = ParseSubscriptionPlanDataResultFailure | ParseSubscriptionPlanDataResultSuccess;
+export type CalculateNextPurchaseTotalPriceResult = CalculateNextPurchaseTotalPriceResultFailure | CalculateNextPurchaseTotalPriceResultSuccess;
 
-export async function parseSubscriptionPlanData(
-  context: RetrySerializeContext,
-  billingOrganizationId: string,
-  type: BillingSubscriptionPlanType,
-  category: BillingCategory,
-  option: number,
-  currency: BillingCurrency,
-  period: BillingPeriod,
-): Promise<ParseSubscriptionPlanDataResult> {
-  const { manager } = context;
-  const billingSubscriptionPlanSource = await manager.getRepository(BillingSubscriptionPlanSource).findOne({
-    where: {
-      billingOrganizationId,
-      type,
-      category,
-      option,
-      currency,
-      period,
-    },
-  });
+export function calculateNextPurchaseTotalPrice(options: CalculateNextPurchaseTotalPriceOptions): CalculateNextPurchaseTotalPriceResult {
+  const { subscriptionPlanInfos, subscriptionPlanData, period, nextPlanPurchaseAmount } = options;
+  const otherRequestedPeriodInfos = subscriptionPlanInfos
+    .filter((plan) => plan.type !== subscriptionPlanData.type)
+    .filter((plan) => {
+      if (plan.state === 'change-period-requested' || plan.state === 'change-option-and-period-requested') {
+        return plan.changeRequestedPeriod === period;
+      }
 
-  if (billingSubscriptionPlanSource) {
-    return {
-      ok: true,
-      resultCode: resultCode('ok'),
-      subscriptionPlanData: {
-        type: billingSubscriptionPlanSource.type,
-        category: billingSubscriptionPlanSource.category,
-        option: billingSubscriptionPlanSource.option,
-        currency: billingSubscriptionPlanSource.currency,
-        period: billingSubscriptionPlanSource.period,
-        originPrice: billingSubscriptionPlanSource.originPrice,
-      },
-    };
-  }
-
-  // validate subscription plan type
-  const billingSubscriptionPlanInfo = _.get(BillingSubscriptionPlanMap, type) as BillingSubscriptionPlanInfo | undefined;
-  if (!billingSubscriptionPlanInfo) {
+      return plan.period === period;
+    });
+  const otherRequestedPeriodNextPurchaseAmounts = otherRequestedPeriodInfos.map(calculateNextPurchaseAmount);
+  const failedOtherRequestedPeriodNextPurchaseAmounts = otherRequestedPeriodNextPurchaseAmounts.filter((result) => !result.ok) as CalculateNextPurchaseAmountResultFailure[];
+  if (failedOtherRequestedPeriodNextPurchaseAmounts.length > 0) {
     return {
       ok: false,
-      resultCode: resultCode('subscription-plan-type-not-found'),
+      resultCode: failedOtherRequestedPeriodNextPurchaseAmounts[0].resultCode,
     };
   }
-
-  if (billingSubscriptionPlanInfo.category !== category) {
-    return {
-      ok: false,
-      resultCode: resultCode('subscription-plan-category-not-matched'),
-    };
-  }
-
-  const billingSubscriptionPlanPriceMap = _.get(billingSubscriptionPlanInfo.optionMap, option) as BillingSubscriptionPlanPriceMap | undefined;
-  if (!billingSubscriptionPlanPriceMap) {
-    return {
-      ok: false,
-      resultCode: resultCode('subscription-plan-option-not-found'),
-    };
-  }
-
-  const billingSubscriptionPlanPrice = _.get(billingSubscriptionPlanPriceMap, currency) as BillingSubscriptionPlanPrice | undefined;
-  if (!billingSubscriptionPlanPrice) {
-    return {
-      ok: false,
-      resultCode: resultCode('subscription-plan-currency-not-found'),
-    };
-  }
-
-  const originPrice = _.get(billingSubscriptionPlanPrice, period) as number | undefined;
-  if (originPrice === undefined) {
-    return {
-      ok: false,
-      resultCode: resultCode('subscription-plan-period-not-found'),
-    };
-  }
-
+  const succeededOtherRequestedPeriodNextPurchaseAmounts = otherRequestedPeriodNextPurchaseAmounts.filter((result) => result.ok) as CalculateNextPurchaseAmountResultSuccess[];
+  const otherRequestedPeriodNextPurchaseAmount = succeededOtherRequestedPeriodNextPurchaseAmounts.reduce((acc, cur) => acc + cur.amount, 0);
+  const nextPurchaseTotalPrice = Math.floor(nextPlanPurchaseAmount + otherRequestedPeriodNextPurchaseAmount);
   return {
     ok: true,
-    resultCode: resultCode('ok'),
-    subscriptionPlanData: {
-      type,
-      category,
-      option,
-      currency,
-      period,
-      originPrice,
-    },
+    nextPurchaseTotalPrice,
   };
 }
 
-export interface ParseCouponResultFailure {
+export interface PreprocessPurchaseSubscriptionOptions {
+  organization: BillingOrganization;
+  subscriptionPlan: BillingSubscriptionPlanPreviewDto;
+}
+
+export interface PreprocessPurchaseSubscriptionResultFailure {
   ok: false;
   resultCode: BillingResultCode;
 }
 
-export interface ParseCouponResultSuccess {
+export interface PreprocessPurchaseSubscriptionResultSuccess {
   ok: true;
   resultCode: BillingResultCode;
   coupon: BillingCouponBase | null;
@@ -157,7 +109,7 @@ export interface ParseCouponResultSuccess {
 
 export type ParseCouponResult = ParseCouponResultFailure | ParseCouponResultSuccess;
 
-export async function parseCoupon(context: RetrySerializeContext, organizationId: string, couponCode: string | undefined, period: BillingPeriod): Promise<ParseCouponResult> {
+export async function parseCoupon(context: RetrySerializeContext, organizationId: string, couponCode: string | undefined): Promise<ParseCouponResult> {
   if (couponCode === undefined) {
     return {
       ok: true,
@@ -166,7 +118,7 @@ export async function parseCoupon(context: RetrySerializeContext, organizationId
     };
   }
 
-  const validateResult = await validateCoupon(context, { organizationId, code: couponCode, period });
+  const validateResult = await validateCoupon(context, { organizationId, code: couponCode });
   if (!validateResult.ok) {
     return {
       ok: false,
@@ -186,36 +138,48 @@ export interface GetSubscriptionPreviewDto {
   billingSubscriptionPlan: BillingSubscriptionPlanPreviewDto;
 }
 
-export async function getSubscriptionPreview(context: RetrySerializeContext, dto: GetSubscriptionPreviewDto): Promise<GetBillingSubscriptionPreviewResponse> {
-  const { manager } = context;
-  const { billingOrganization } = dto;
-  const subscriptionPlan = dto.billingSubscriptionPlan;
-  if (billingOrganization.category !== subscriptionPlan.category) {
+export async function preprocessPurchaseSubscription(
+  context: RetrySerializeContext,
+  options: PreprocessPurchaseSubscriptionOptions,
+): Promise<PreprocessPurchaseSubscriptionResult> {
+  const { organization } = options;
+  const subscriptionPlan = options.subscriptionPlan;
+  if (organization.category !== subscriptionPlan.category) {
     return {
       ok: false,
       resultCode: resultCode('subscription-plan-category-not-matched'),
     };
   }
 
-  const { billingOrganizationId, organizationId } = billingOrganization;
-  const currency = resolveCurrency(billingOrganization, subscriptionPlan.currency);
-  const subscriptionPlans = billingOrganization.billingSubscriptionPlans ?? [];
-  if (subscriptionPlans.length > 0 && subscriptionPlans.some((plan) => plan.currency !== currency)) {
+  const { billingOrganizationId, organizationId } = organization;
+  const currency = resolveCurrency(organization, subscriptionPlan.currency);
+  const timezoneOffsetString = resolveTimezoneOffset(organization, subscriptionPlan.timezoneOffset);
+  const parseTimezoneOffsetResult = parseTimezoneOffset(timezoneOffsetString);
+  if (!parseTimezoneOffsetResult.ok) {
+    return {
+      ok: false,
+      resultCode: parseTimezoneOffsetResult.resultCode,
+    };
+  }
+  const { timezoneOffset } = parseTimezoneOffsetResult;
+
+  const subscriptionPlanInfos = organization.billingSubscriptionPlanInfos ?? [];
+  if (subscriptionPlanInfos.length > 0 && subscriptionPlanInfos.some((plan) => plan.currency !== currency)) {
     return {
       ok: false,
       resultCode: resultCode('subscription-plan-currency-not-matched'),
     };
   }
 
-  const parseSubscriptionPlanDataResult = await parseSubscriptionPlanData(
+  const parseSubscriptionPlanDataResult = await parseSubscriptionPlanData({
     context, //
     billingOrganizationId,
-    subscriptionPlan.type,
-    subscriptionPlan.category,
-    subscriptionPlan.option,
+    type: subscriptionPlan.type,
+    category: subscriptionPlan.category,
+    option: subscriptionPlan.option,
     currency,
-    subscriptionPlan.period,
-  );
+    period: subscriptionPlan.period,
+  });
   if (!parseSubscriptionPlanDataResult.ok) {
     return {
       ok: parseSubscriptionPlanDataResult.ok,
@@ -224,7 +188,7 @@ export async function getSubscriptionPreview(context: RetrySerializeContext, dto
   }
 
   const { subscriptionPlanData } = parseSubscriptionPlanDataResult;
-  const parseCouponResult = await parseCoupon(context, organizationId, subscriptionPlan.couponCode, subscriptionPlan.period);
+  const parseCouponResult = await parseCoupon(context, organizationId, subscriptionPlan.couponCode);
   if (!parseCouponResult.ok) {
     return {
       ok: parseCouponResult.ok,
@@ -233,167 +197,140 @@ export async function getSubscriptionPreview(context: RetrySerializeContext, dto
   }
 
   const { coupon } = parseCouponResult;
-  const normalizedCouponFactor = calculateCouponFactor(coupon, subscriptionPlan.period);
-  const normalizedNextCouponFactor = calculateNextCouponFactor(coupon, subscriptionPlan.period);
-  const currentSubscriptionPlanPrice = subscriptionPlanData.originPrice * normalizedCouponFactor;
-  const couponResponse: CouponPreviewResponse | null = coupon
-    ? {
-        ...coupon,
-        discountAmount: Math.floor(subscriptionPlanSource.originPrice - currentSubscriptionPlanPrice),
-      }
-    : null;
-  const currentSubscriptionPlanPrice = subscriptionPlanData.originPrice * normalizedCouponFactor;
+  const { couponFactor, nextCouponFactor } = calculateCouponFactor({
+    coupon,
+    period,
+  });
+  const currentPlanPurchaseAmount = subscriptionPlanData.originPrice * couponFactor;
+  const currentPlanDiscountAmount = subscriptionPlanData.originPrice - currentPlanPurchaseAmount;
 
-  const isSubscribing = subscriptionPlans.length > 0;
-  if (!isSubscribing) {
-    const totalPrice = currentSubscriptionPlanPrice;
+  const nextPlanPurchaseAmount = subscriptionPlanData.originPrice * nextCouponFactor;
+  const localNextPurchaseDate = calculateLocalNextPurchaseDate({ organization, period, timezoneOffset });
+  const calculateNextPurchaseTotalPriceResult = calculateNextPurchaseTotalPrice({
+    subscriptionPlanInfos,
+    subscriptionPlanData,
+    period,
+    nextPlanPurchaseAmount,
+  });
+  if (!calculateNextPurchaseTotalPriceResult.ok) {
+    return {
+      ok: false,
+      resultCode: calculateNextPurchaseTotalPriceResult.resultCode,
+    };
+  }
+  const { nextPurchaseTotalPrice } = calculateNextPurchaseTotalPriceResult;
+
+  const foundSubscriptionPlanInfo = subscriptionPlanInfos.find((plan) => plan.type === subscriptionPlanData.type);
+  if (foundSubscriptionPlanInfo === undefined) {
+    const totalPrice = currentPlanPurchaseAmount;
     return {
       ok: true,
-      resultCode: resultCode('ok'),
-      totalPrice: Math.floor(totalPrice),
-      tax: 0,
-      nextPurchaseTotalPrice: Math.floor(subscriptionPlanData.originPrice),
-      nextPurchaseAt: calculateNextPurchaseAt(billingOrganization, subscriptionPlan.period),
-      coupon: couponResponse,
-      subscriptionPlan: subscriptionPlanData,
-      elapsedPlans: [],
-      remainingPlans: [],
-    };
-  } else {
-    const toChangeSubscriptionPlan = subscriptionPlans.find((plan) => plan.type === subscriptionPlan.type);
-    if (!toChangeSubscriptionPlan) {
-      const totalPrice = currentSubscriptionPlanPrice;
-      const nextPurchaseAt = calculateNextPurchaseAt(billingOrganization, subscriptionPlan.period);
-      const nextPurchaseTotalPrice =
-        subscriptionPlanData.originPrice * normalizedNextCouponFactor + calculateNextPurchaseTotalPriceFromSubscriptionPlans(subscriptionPlans, subscriptionPlan.period);
-
-      return {
+      previewResponse: {
         ok: true,
         resultCode: resultCode('ok'),
         totalPrice: Math.floor(totalPrice),
         tax: 0,
-        nextPurchaseTotalPrice: Math.floor(nextPurchaseTotalPrice),
-        nextPurchaseAt,
-        coupon: couponResponse,
+        nextPurchaseTotalPrice,
+        nextPurchaseDate: localNextPurchaseDate,
         subscriptionPlan: subscriptionPlanData,
         elapsedPlans: [],
         remainingPlans: [],
+      },
+      subscriptionPlanData,
+      subscriptionPlanSource,
+      coupon,
+      discountedAmount: currentPlanDiscountAmount,
+      totalPrice,
+      timezoneOffset,
+    };
+  } else {
+    const upgradePlanOption = foundSubscriptionPlanInfo.option < subscriptionPlanData.option;
+    const upgradePlanPeriod = foundSubscriptionPlanInfo.period === 'monthly' && subscriptionPlanData.period === 'yearly';
+    if (upgradePlanOption || upgradePlanPeriod) {
+      const calculateRemaningPlanResult = calculateRemainingPlan({
+        organization,
+        foundSubscriptionPlanInfo,
+        period,
+        timezoneOffset,
+      });
+      if (!calculateRemaningPlanResult.ok) {
+        return {
+          ok: false,
+          resultCode: calculateRemaningPlanResult.resultCode,
+        };
+      }
+
+      const { remainingPlan } = calculateRemaningPlanResult;
+
+      const calculateElapsedPlanResult = calculateElapsedPlan({
+        organization,
+        subscriptionPlanData,
+        timezoneOffset,
+        discountedAmount: currentPlanDiscountAmount,
+      });
+      if (!calculateElapsedPlanResult.ok) {
+        return {
+          ok: false,
+          resultCode: calculateElapsedPlanResult.resultCode,
+        };
+      }
+
+      const { elapsedPlan } = calculateElapsedPlanResult;
+      const totalPrice = currentPlanPurchaseAmount - remainingPlan.amount - elapsedPlan.amount;
+      return {
+        ok: true,
+        previewResponse: {
+          ok: true,
+          resultCode: resultCode('ok'),
+          totalPrice: Math.floor(totalPrice),
+          tax: 0,
+          nextPurchaseTotalPrice,
+          nextPurchaseDate: localNextPurchaseDate,
+          subscriptionPlan: subscriptionPlanData,
+          coupon,
+          elapsedPlans: [elapsedPlan],
+          remainingPlans: [remainingPlan],
+        },
+        subscriptionPlanData,
+        subscriptionPlanSource,
+        coupon,
+        discountedAmount: currentPlanDiscountAmount,
+        totalPrice,
+        timezoneOffset,
       };
     } else {
-      const upgradePlanOption = toChangeSubscriptionPlan.option < subscriptionPlan.option;
-      const downgradePlanOption = toChangeSubscriptionPlan.option > subscriptionPlan.option;
-      const noChangePlanOption = toChangeSubscriptionPlan.option === subscriptionPlan.option;
-      const upgradePlanPeriod = toChangeSubscriptionPlan.period === 'monthly' && subscriptionPlan.period === 'yearly';
-      const downgradePlanPeriod = toChangeSubscriptionPlan.period === 'yearly' && subscriptionPlan.period === 'monthly';
-      const noChangePlanPeriod = toChangeSubscriptionPlan.period === subscriptionPlan.period;
-
-      if (upgradePlanOption) {
-        if (upgradePlanPeriod) {
-          throw new Error('not implemented');
-        } else if (downgradePlanPeriod) {
-          throw new Error('not implemented');
-        } else if (noChangePlanPeriod) {
-          const nextPurchaseAt = calculateNextPurchaseAt(billingOrganization, subscriptionPlan.period);
-          const remainingDays = calculateRemainingDays(subscriptionPlan.period, nextPurchaseAt);
-          const periodDays = calculatePeriodDays(billingOrganization, subscriptionPlan.period, nextPurchaseAt);
-          const lastPurchasedPrice = toChangeSubscriptionPlan.lastPurchasedPrice;
-          const remainingAmount = (lastPurchasedPrice * remainingDays) / periodDays;
-
-          const lastPurchasedAt = getLastPurchasedAt(billingOrganization, subscriptionPlan.period);
-          if (lastPurchasedAt === null) {
-            throw new Error('last purchased at must not be null');
-          }
-
-          const elapsedDays = calculateElapsedDays(subscriptionPlan.period, lastPurchasedAt);
-          const elapsedAmount = (currentSubscriptionPlanPrice * elapsedDays) / periodDays;
-          const totalPrice = remainingAmount + elapsedAmount + currentSubscriptionPlanPrice;
-
-          // TODO: keep coupon?
-          return {
-            ok: true,
-            resultCode: resultCode('ok'),
-            totalPrice: Math.floor(totalPrice),
-            tax: 0,
-            nextPurchaseTotalPrice: Math.floor(subscriptionPlanData.originPrice),
-            nextPurchaseAt,
-            coupon: couponResponse,
-            subscriptionPlan: subscriptionPlanData,
-            elapsedPlans: [
-              {
-                category: subscriptionPlanData.category,
-                type: subscriptionPlanData.type,
-                option: subscriptionPlanData.option,
-                period: subscriptionPlanData.period,
-                currency: subscriptionPlanData.currency,
-                amount: Math.floor(elapsedAmount),
-                lastPurchasedAt,
-              },
-            ],
-            remainingPlans: [
-              {
-                billingSubscriptionPlanId: toChangeSubscriptionPlan.billingSubscriptionPlanId,
-                category: toChangeSubscriptionPlan.category,
-                type: toChangeSubscriptionPlan.type,
-                option: toChangeSubscriptionPlan.option,
-                period: toChangeSubscriptionPlan.period,
-                currency: toChangeSubscriptionPlan.currency,
-                amount: Math.floor(remainingAmount),
-                nextPurchaseAt,
-              },
-            ],
-          };
-        } else {
-          throw new Error('must not be reachable');
-        }
-      } else if (downgradePlanOption) {
-        if (upgradePlanPeriod) {
-          throw new Error('not implemented');
-        } else if (downgradePlanPeriod) {
-          throw new Error('not implemented');
-        } else if (noChangePlanPeriod) {
-          throw new Error('not implemented');
-        } else {
-          throw new Error('must not be reachable');
-        }
-      } else if (noChangePlanOption) {
-        if (upgradePlanPeriod) {
-          throw new Error('not implemented');
-        } else if (downgradePlanPeriod) {
-          throw new Error('not implemented');
-        } else if (noChangePlanPeriod) {
-          return {
-            ok: false,
-            resultCode: resultCode('subscription-plan-duplicated'),
-          };
-        } else {
-          throw new Error('must not be reachable');
-        }
-      } else {
-        throw new Error('must not be reachable');
-      }
+      return {
+        ok: false,
+        resultCode: resultCode('subscription-plan-not-upgrade'),
+      };
     }
   }
 }
 
-export interface ProcessPurchaseDto {
-  billingOrganization: BillingOrganization;
-  billingMethodNice: BillingMethodNiceBase;
-  billingSubscriptionPreview: GetBillingSubscriptionPreviewResponseSuccess;
+export interface ProcessPurchaseSubscriptionOptions {
+  organization: BillingOrganization;
+  methodNice: BillingMethodNiceBase;
+  subscriptionPlanData: BillingSubscriptionPlanData;
+  subscriptionPlanSource: BillingSubscriptionPlanSource | null;
+  coupon: BillingCoupon | null;
+  totalPrice: number;
+  discountedAmount: number;
+  timezoneOffset: TimezoneOffset;
+  previewResponse: GetBillingSubscriptionPreviewResponse;
 }
 
 export async function processPurchaseSubscription(
   context: RetrySerializeContext,
   billingMethodNiceCaller: BillingMethodNiceCaller,
-  dto: ProcessPurchaseDto,
+  options: ProcessPurchaseSubscriptionOptions,
 ): Promise<CreatePurchaseSubscriptionResponse> {
   const { manager } = context;
-  const { billingOrganization, billingMethodNice, billingSubscriptionPreview } = dto;
+  const { organization, methodNice, totalPrice, coupon, discountedAmount, subscriptionPlanData, subscriptionPlanSource, timezoneOffset, previewResponse } = options;
   const createPurchaseResult = await createPurchase(context, billingMethodNiceCaller, {
-    billingMethodNiceId: billingMethodNice.billingMethodNiceId,
-    period: billingSubscriptionPreview.subscriptionPlan.period,
-    amount: billingSubscriptionPreview.totalPrice,
+    billingMethodNiceId: methodNice.billingMethodNiceId,
     // TODO: change to goodsName
-    goodsName: 'dogu technologies',
+    goodsName: 'Dogu Technologies',
+    amount: totalPrice,
   });
   if (!createPurchaseResult.ok) {
     return {
@@ -402,36 +339,89 @@ export async function processPurchaseSubscription(
     };
   }
 
-  const createSubscriptionPlanResult = await createSubscriptionPlan(context, {
-    billingOrganizationId: billingOrganization.billingOrganizationId,
-    subscriptionPlanSourceData: billingSubscriptionPreview.subscriptionPlan,
-    lastPurchasedPrice: billingSubscriptionPreview.totalPrice,
+  // update organization
+  if (organization.currency === null) {
+    organization.currency = subscriptionPlanData.currency;
+  }
+  switch (subscriptionPlanData.period) {
+    case 'monthly': {
+      if (organization.monthlyCalculationExpiredAt === null) {
+        organization.monthlyCalculationStartedAt = createCalculationStartedAtFromNow(timezoneOffset);
+      } else {
+        organization.monthlyCalculationStartedAt = organization.monthlyCalculationExpiredAt;
+      }
+      organization.monthlyCalculationExpiredAt = createCalculationExpiredAt(organization.monthlyCalculationStartedAt, subscriptionPlanData.period);
+      break;
+    }
+    case 'yearly': {
+      if (organization.yearlyCalculationExpiredAt === null) {
+        organization.yearlyCalculationStartedAt = createCalculationStartedAtFromNow(timezoneOffset);
+      } else {
+        organization.yearlyCalculationStartedAt = organization.yearlyCalculationExpiredAt;
+      }
+      organization.yearlyCalculationExpiredAt = createCalculationExpiredAt(organization.yearlyCalculationStartedAt, subscriptionPlanData.period);
+      break;
+    }
+    default: {
+      assertUnreachable(subscriptionPlanData.period);
+    }
+  }
+  await manager.getRepository(BillingOrganization).save(organization);
+
+  // update coupon
+  let billingCouponId: string | null = null;
+  let billingCouponRemainingApplyCount: number | null = null;
+  if (coupon) {
+    if (coupon.remainingAvailableCount && coupon.remainingAvailableCount > 0) {
+      coupon.remainingAvailableCount -= 1;
+    }
+    await manager.getRepository(BillingCoupon).save(coupon);
+
+    billingCouponId = coupon.billingCouponId;
+    switch (subscriptionPlanData.period) {
+      case 'monthly': {
+        billingCouponRemainingApplyCount = coupon.monthlyApplyCount;
+        break;
+      }
+      case 'yearly': {
+        billingCouponRemainingApplyCount = coupon.yearlyApplyCount;
+        break;
+      }
+      default: {
+        assertUnreachable(subscriptionPlanData.period);
+      }
+    }
+
+    await registerUsedCoupon(context, {
+      billingOrganizationId: organization.billingOrganizationId,
+      billingCouponId: coupon.billingCouponId,
+    });
+  }
+
+  const createSubscriptionPlanInfoResult = await createSubscriptionPlanInfo(context, {
+    billingOrganizationId: organization.billingOrganizationId,
+    subscriptionPlanData,
+    discountedAmount,
+    billingCouponId,
+    billingCouponRemainingApplyCount,
+    billingSubscriptionPlanSourceId: subscriptionPlanSource?.billingSubscriptionPlanSourceId ?? null,
   });
-  if (!createSubscriptionPlanResult.ok) {
+  if (!createSubscriptionPlanInfoResult.ok) {
     return {
       ok: false,
-      resultCode: createSubscriptionPlanResult.resultCode,
+      resultCode: createSubscriptionPlanInfoResult.resultCode,
     };
   }
 
-  const remainingSubscriptionPlanIds = billingSubscriptionPreview.remainingPlans.map((plan) => plan.billingSubscriptionPlanId);
-  await unsubscribeRemainingSubscriptionPlans(context, remainingSubscriptionPlanIds);
-
-  if (billingSubscriptionPreview.coupon) {
-    await registerUsedCoupon(context, {
-      billingOrganizationId: billingOrganization.billingOrganizationId,
-      billingCouponId: billingSubscriptionPreview.coupon.billingCouponId,
-    });
-  }
-
   {
-    const created = manager.getRepository(BillingPurchaseHistory).create({
-      billingPurchaseHistoryId: v4(),
-      billingOrganizationId: billingOrganization.billingOrganizationId,
+    const created = manager.getRepository(BillingHistory).create({
+      billingHistoryId: v4(),
+      billingOrganizationId: organization.billingOrganizationId,
       purchasedAt: new Date(),
       niceSubscribePaymentsResponse: createPurchaseResult.response as unknown as Record<string, unknown>,
+      previewResponse: previewResponse as unknown as Record<string, unknown>,
     });
-    await manager.getRepository(BillingPurchaseHistory).save(created);
+    await manager.getRepository(BillingHistory).save(created);
   }
 
   return {

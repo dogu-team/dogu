@@ -48,14 +48,20 @@ export class BillingSubscriptionPlanInfo implements BillingSubscriptionPlanInfoB
   @Column({ type: 'integer', nullable: true })
   billingCouponRemainingApplyCount!: number | null;
 
-  @Column({ type: 'double precision', nullable: true })
-  discountedAmount!: number | null;
+  @Column({ type: 'double precision' })
+  discountedAmount!: number;
 
   @Column({ type: 'enum', enum: BillingPeriod, nullable: true })
   changeRequestedPeriod!: BillingPeriod | null;
 
   @Column({ type: 'integer', nullable: true })
   changeRequestedOption!: number | null;
+
+  @Column({ type: 'double precision', nullable: true })
+  changeRequestedOriginPrice!: number | null;
+
+  @Column({ type: 'double precision', nullable: true })
+  changeRequestedDiscountedAmount!: number | null;
 
   @Column({ type: 'enum', enum: BillingSubscriptionPlanState })
   state!: BillingSubscriptionPlanState;

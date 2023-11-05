@@ -16,9 +16,26 @@ export interface BillingOrganizationBase {
    * @description format (+|-)\d{2}:\d{2}
    */
   timezoneOffset: string | null;
-  subscriptionStartedAt: Date | null;
-  yearlySubscriptionExpiredAt: Date | null;
-  monthlySubscriptionExpiredAt: Date | null;
+
+  /**
+   * @description this value is used for yearly purchase days calculation.
+   */
+  yearlyCalculationStartedAt: Date | null;
+
+  /**
+   * @description this value is used for yearly purchase days calculation.
+   */
+  yearlyCalculationExpiredAt: Date | null;
+
+  /**
+   * @description this value is used for monthly purchase days calculation.
+   */
+  monthlyCalculationStartedAt: Date | null;
+
+  /**
+   * @description this value is used for monthly purchase days calculation.
+   */
+  monthlyCalculationExpiredAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date | null;

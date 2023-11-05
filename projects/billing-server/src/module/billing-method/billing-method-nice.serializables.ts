@@ -1,5 +1,5 @@
-import { BillingMethodNiceProp, BillingPeriod, BillingResultCode, CreateOrUpdateMethodNiceDto, NiceSubscribePaymentsResponse, resultCode } from '@dogu-private/console';
-import { assertUnreachable, errorify } from '@dogu-tech/common';
+import { BillingMethodNiceProp, BillingResultCode, CreateOrUpdateMethodNiceDto, NiceSubscribePaymentsResponse } from '@dogu-private/console';
+import { errorify } from '@dogu-tech/common';
 import { v4 } from 'uuid';
 import { BillingMethodNice } from '../../db/entity/billing-method-nice.entity';
 import { BillingOrganization } from '../../db/entity/billing-organization.entity';
@@ -63,9 +63,8 @@ export async function createOrUpdateMethodNice(
   return saved;
 }
 
-export interface CreateNicePurchaseDto {
+export interface CreateNicePurchaseOptions {
   billingMethodNiceId: string;
-  period: BillingPeriod;
   amount: number;
   goodsName: string;
 }
@@ -77,7 +76,6 @@ export interface CreateNicePurchaseResultFailure {
 
 export interface CreateNicePurchaseResultSuccess {
   ok: true;
-  resultCode: BillingResultCode;
   response: NiceSubscribePaymentsResponse;
 }
 
@@ -86,10 +84,10 @@ export type CreateNicePurchaseResult = CreateNicePurchaseResultFailure | CreateN
 export async function createPurchase(
   context: RetrySerializeContext,
   billingMethodNiceCaller: BillingMethodNiceCaller,
-  dto: CreateNicePurchaseDto,
+  options: CreateNicePurchaseOptions,
 ): Promise<CreateNicePurchaseResult> {
   const { logger, manager, registerOnAfterRollback } = context;
-  const { billingMethodNiceId, period, amount, goodsName } = dto;
+  const { billingMethodNiceId, amount, goodsName } = options;
   const billingMethodNice = await manager.getRepository(BillingMethodNice).findOne({
     where: {
       billingMethodNiceId,
@@ -120,49 +118,12 @@ export async function createPurchase(
     throw new Error(`billingOrganization not found: ${billingMethodNiceId}`);
   }
 
-  switch (period) {
-    case 'monthly': {
-      billingOrganization.lastMonthlyPurchasedAt = new Date();
-      break;
-    }
-    case 'yearly': {
-      billingOrganization.lastYearlyPurchasedAt = new Date();
-      break;
-    }
-    default:
-      assertUnreachable(period);
-  }
-
   const saved = await manager.getRepository(BillingOrganization).save({
     ...billingOrganization,
-  });
-  registerOnAfterRollback(async () => {
-    const billingOrganization = await manager.getRepository(BillingOrganization).findOne({
-      where: {
-        billingOrganizationId: saved.billingOrganizationId,
-      },
-    });
-    if (!billingOrganization) {
-      throw new Error(`billingOrganization not found: ${saved.billingOrganizationId}`);
-    }
-
-    switch (period) {
-      case 'monthly': {
-        billingOrganization.lastMonthlyPurchasedAt = null;
-        break;
-      }
-      case 'yearly': {
-        billingOrganization.lastYearlyPurchasedAt = null;
-        break;
-      }
-      default:
-        assertUnreachable(period);
-    }
   });
 
   return {
     ok: true,
-    resultCode: resultCode('ok'),
     response,
   };
 }

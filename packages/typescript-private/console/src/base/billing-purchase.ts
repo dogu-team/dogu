@@ -1,7 +1,7 @@
 import { IsFilledString } from '@dogu-tech/common';
 import { Type } from 'class-transformer';
 import { buildMessage, IsIn, IsNumber, IsOptional, IsString, IsUUID, Length, ValidateBy, ValidateNested } from 'class-validator';
-import { BillingCategory, BillingCurrency, BillingPeriod, BillingSubscriptionPlanData, BillingSubscriptionPlanType } from './billing';
+import { BillingCategory, BillingCurrency, BillingPeriod, BillingSubscriptionPlanData, BillingSubscriptionPlanType, TimezoneOffsetPattern } from './billing';
 import { BillingResultCode } from './billing-code';
 import { BillingCouponBase } from './billing-coupon';
 
@@ -25,6 +25,21 @@ export class BillingSubscriptionPlanPreviewDto {
   @IsString()
   @IsOptional()
   couponCode?: string;
+
+  @ValidateBy({
+    name: 'isTimezoneOffset',
+    constraints: [],
+    validator: {
+      validate: (value: unknown) => {
+        if (typeof value !== 'string') {
+          return false;
+        }
+        return value.match(TimezoneOffsetPattern) !== null;
+      },
+      defaultMessage: buildMessage((eachPrefix) => eachPrefix + '$property must be timezone offset format (+|-)HH:mm'),
+    },
+  })
+  timezoneOffset!: string;
 }
 
 export class GetBillingSubscriptionPreviewDto extends BillingSubscriptionPlanPreviewDto {
@@ -33,14 +48,13 @@ export class GetBillingSubscriptionPreviewDto extends BillingSubscriptionPlanPre
 }
 
 export interface RemainingPlan {
-  billingSubscriptionPlanId: string;
   category: BillingCategory;
   type: BillingSubscriptionPlanType;
   option: number;
   period: BillingPeriod;
   currency: BillingCurrency;
   amount: number;
-  nextPurchaseAt: Date;
+  remaningDays: number;
 }
 
 export interface ElapsedPlan {
@@ -50,7 +64,7 @@ export interface ElapsedPlan {
   period: BillingPeriod;
   currency: BillingCurrency;
   amount: number;
-  lastPurchasedAt: Date;
+  elapsedDays: number;
 }
 
 export interface CouponPreviewResponse extends BillingCouponBase {
@@ -67,7 +81,7 @@ export interface GetBillingSubscriptionPreviewResponseSuccess {
   resultCode: BillingResultCode;
   totalPrice: number;
   nextPurchaseTotalPrice: number;
-  nextPurchaseAt: Date;
+  nextPurchaseDate: Date;
   tax: number;
   coupon: CouponPreviewResponse | null;
   subscriptionPlan: BillingSubscriptionPlanData;
@@ -97,7 +111,6 @@ export class RegisterCardDto {
   @Length(2, 2)
   expirationMonth!: string;
 
-  @IsFilledString()
   @ValidateBy({
     name: 'isIdNumber',
     constraints: [],

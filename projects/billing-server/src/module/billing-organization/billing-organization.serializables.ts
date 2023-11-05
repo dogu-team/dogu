@@ -1,9 +1,10 @@
 import { BillingOrganizationProp, BillingSubscriptionPlanProp, CreateBillingOrganizationDto, FindBillingOrganizationDto } from '@dogu-private/console';
 import { ConflictException } from '@nestjs/common';
 import { v4 } from 'uuid';
+import { BillingMethodNice } from '../../db/entity/billing-method-nice.entity';
 import { BillingOrganizationUsedBillingCoupon } from '../../db/entity/billing-organization-used-billing-coupon.entity';
 import { BillingOrganization } from '../../db/entity/billing-organization.entity';
-import { BillingSubscriptionPlan } from '../../db/entity/billing-subscription-plan.entity';
+import { BillingSubscriptionPlanInfo } from '../../db/entity/billing-subscription-plan-info.entity';
 import { RetrySerializeContext } from '../../db/utils';
 
 export async function findOrganizationWithSubscriptionPlans(context: RetrySerializeContext, dto: FindBillingOrganizationDto): Promise<BillingOrganization | null> {
@@ -13,9 +14,9 @@ export async function findOrganizationWithSubscriptionPlans(context: RetrySerial
     .getRepository(BillingOrganization)
     .createQueryBuilder(BillingOrganization.name)
     .leftJoinAndSelect(
-      `${BillingOrganization.name}.${BillingOrganizationProp.billingSubscriptionPlans}`,
-      BillingSubscriptionPlan.name,
-      `${BillingSubscriptionPlan.name}.${BillingSubscriptionPlanProp.unsubscribedAt} IS NULL`,
+      `${BillingOrganization.name}.${BillingOrganizationProp.billingSubscriptionPlanInfos}`,
+      BillingSubscriptionPlanInfo.name,
+      `${BillingSubscriptionPlanInfo.name}.${BillingSubscriptionPlanProp.unsubscribedAt} IS NULL`,
     )
     .where({ organizationId })
     .getOne();
@@ -27,7 +28,7 @@ export async function findOrganizationWithMethod(context: RetrySerializeContext,
   return await manager
     .getRepository(BillingOrganization)
     .createQueryBuilder(BillingOrganization.name)
-    .leftJoinAndSelect(`${BillingOrganization.name}.${BillingOrganizationProp.billingMethodNice}`, BillingOrganizationProp.billingMethodNice)
+    .leftJoinAndSelect(`${BillingOrganization.name}.${BillingOrganizationProp.billingMethodNice}`, BillingMethodNice.name)
     .where({ organizationId })
     .getOne();
 }
@@ -38,11 +39,11 @@ export async function findOrganizationWithMethodAndSubscriptionPlans(context: Re
   return await manager
     .getRepository(BillingOrganization)
     .createQueryBuilder(BillingOrganization.name)
-    .leftJoinAndSelect(`${BillingOrganization.name}.${BillingOrganizationProp.billingMethodNice}`, BillingOrganizationProp.billingMethodNice)
+    .leftJoinAndSelect(`${BillingOrganization.name}.${BillingOrganizationProp.billingMethodNice}`, BillingMethodNice.name)
     .leftJoinAndSelect(
-      `${BillingOrganization.name}.${BillingOrganizationProp.billingSubscriptionPlans}`,
-      BillingSubscriptionPlan.name,
-      `${BillingSubscriptionPlan.name}.${BillingSubscriptionPlanProp.unsubscribedAt} IS NULL`,
+      `${BillingOrganization.name}.${BillingOrganizationProp.billingSubscriptionPlanInfos}`,
+      BillingSubscriptionPlanInfo.name,
+      `${BillingSubscriptionPlanInfo.name}.${BillingSubscriptionPlanProp.unsubscribedAt} IS NULL`,
     )
     .where({ organizationId })
     .getOne();
