@@ -1,6 +1,6 @@
 import { BillingTokenBase } from '@dogu-private/console';
 import { Column, Entity, PrimaryColumn } from 'typeorm';
-import { CreatedAt, DateColumn, DeletedAt, UpdatedAt } from './util/decorators';
+import { CreatedAt, DateColumn, DeletedAt, UpdatedAt } from '../decorators';
 
 @Entity()
 export class BillingToken implements BillingTokenBase {

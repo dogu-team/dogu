@@ -1,16 +1,7 @@
 import { propertiesOf } from '@dogu-tech/common';
-import { BillingCategory, BillingCurrency, BillingPeriod, BillingSubscriptionPlanType } from './billing';
+import { BillingSubscriptionPlanData } from './billing';
 
-export interface BillingSubscriptionPlanSourceData {
-  category: BillingCategory;
-  type: BillingSubscriptionPlanType;
-  option: number;
-  currency: BillingCurrency;
-  period: BillingPeriod;
-  originPrice: number;
-}
-
-export interface BillingSubscriptionPlanSourceBase extends BillingSubscriptionPlanSourceData {
+export interface BillingSubscriptionPlanSourceBase extends BillingSubscriptionPlanData {
   billingSubscriptionPlanSourceId: string;
   billingOrganizationId: string;
   createdAt: Date;

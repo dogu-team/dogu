@@ -4,7 +4,7 @@ import { IsIn, IsUUID, ValidateNested } from 'class-validator';
 import { BillingCategory, BillingCurrency } from './billing';
 import { BillingMethodNiceBase } from './billing-method-nice';
 import { RegisterCardDto } from './billing-purchase';
-import { BillingSubscriptionPlanBase } from './billing-subscription-plan';
+import { BillingSubscriptionPlanInfoBase } from './billing-subscription-plan-info';
 
 export interface BillingOrganizationBase {
   billingOrganizationId: string;
@@ -13,15 +13,16 @@ export interface BillingOrganizationBase {
   currency: BillingCurrency | null;
 
   /**
-   * @note monthly purchase date and yearly purchase date are same with first purchase date
+   * @description format (+|-)\d{2}:\d{2}
    */
-  firstPurchasedAt: Date | null;
-  lastMonthlyPurchasedAt: Date | null;
-  lastYearlyPurchasedAt: Date | null;
+  timezoneOffset: string | null;
+  subscriptionStartedAt: Date | null;
+  yearlySubscriptionExpiredAt: Date | null;
+  monthlySubscriptionExpiredAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date | null;
-  billingSubscriptionPlans?: BillingSubscriptionPlanBase[];
+  billingSubscriptionPlanInfos?: BillingSubscriptionPlanInfoBase[];
   billingMethodNice?: BillingMethodNiceBase;
 }
 

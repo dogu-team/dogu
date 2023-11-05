@@ -28,7 +28,7 @@ export async function findCloudLicense(context: RetrySerializeContext, dto: Find
   const { organizationId } = dto;
   const license = await manager.getRepository(CloudLicense).findOne({
     where: { organizationId },
-    relations: [CloudLicenseProp.billingOrganization, `${CloudLicenseProp.billingOrganization}.${BillingOrganizationProp.billingSubscriptionPlans}`],
+    relations: [CloudLicenseProp.billingOrganization, `${CloudLicenseProp.billingOrganization}.${BillingOrganizationProp.billingSubscriptionPlanInfos}`],
   });
 
   if (!license) {

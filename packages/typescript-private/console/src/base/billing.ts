@@ -308,3 +308,15 @@ export interface CallBillingApiResponse<B> {
   body?: B;
   errorMessage?: string;
 }
+
+export interface BillingSubscriptionPlanData {
+  category: BillingCategory;
+  type: BillingSubscriptionPlanType;
+  option: number;
+  currency: BillingCurrency;
+  period: BillingPeriod;
+  originPrice: number;
+}
+
+export const BillingMethod = ['nice'] as const;
+export type BillingMethod = (typeof BillingMethod)[number];

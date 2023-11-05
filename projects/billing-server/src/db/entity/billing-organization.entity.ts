@@ -1,8 +1,8 @@
 import { BillingCategory, BillingCurrency, BillingOrganizationBase } from '@dogu-private/console';
 import { Column, Entity, OneToMany, OneToOne, PrimaryColumn } from 'typeorm';
+import { CreatedAt, DateColumn, DeletedAt, UpdatedAt } from '../decorators';
 import { BillingMethodNice } from './billing-method-nice.entity';
-import { BillingSubscriptionPlan } from './billing-subscription-plan.entity';
-import { CreatedAt, DateColumn, DeletedAt, UpdatedAt } from './util/decorators';
+import { BillingSubscriptionPlanInfo } from './billing-subscription-plan-info.entity';
 
 @Entity()
 export class BillingOrganization implements BillingOrganizationBase {
@@ -18,14 +18,17 @@ export class BillingOrganization implements BillingOrganizationBase {
   @Column({ type: 'enum', enum: BillingCurrency, nullable: true })
   currency!: BillingCurrency | null;
 
-  @DateColumn({ nullable: true })
-  firstPurchasedAt!: Date | null;
+  @Column({ type: 'character varying', nullable: true })
+  timezoneOffset!: string | null;
 
   @DateColumn({ nullable: true })
-  lastMonthlyPurchasedAt!: Date | null;
+  subscriptionStartedAt!: Date | null;
 
   @DateColumn({ nullable: true })
-  lastYearlyPurchasedAt!: Date | null;
+  yearlySubscriptionExpiredAt!: Date | null;
+
+  @DateColumn({ nullable: true })
+  monthlySubscriptionExpiredAt!: Date | null;
 
   @CreatedAt()
   createdAt!: Date;
@@ -36,8 +39,8 @@ export class BillingOrganization implements BillingOrganizationBase {
   @DeletedAt()
   deletedAt!: Date | null;
 
-  @OneToMany(() => BillingSubscriptionPlan, (billingSubscriptionPlan) => billingSubscriptionPlan.billingOrganization)
-  billingSubscriptionPlans?: BillingSubscriptionPlan[];
+  @OneToMany(() => BillingSubscriptionPlanInfo, (billingSubscriptionPlanInfo) => billingSubscriptionPlanInfo.billingOrganization)
+  billingSubscriptionPlanInfos?: BillingSubscriptionPlanInfo[];
 
   @OneToOne(() => BillingMethodNice, (billingMethodNice) => billingMethodNice.billingOrganization)
   billingMethodNice?: BillingMethodNice;

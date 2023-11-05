@@ -1,6 +1,6 @@
 import { BillingCategory, BillingCurrency, BillingPeriod, BillingSubscriptionPlanSourceBase, BillingSubscriptionPlanType } from '@dogu-private/console';
 import { Column, Entity, PrimaryColumn } from 'typeorm';
-import { CreatedAt, DeletedAt, UpdatedAt } from './util/decorators';
+import { CreatedAt, DeletedAt, UpdatedAt } from '../decorators';
 
 @Entity()
 export class BillingSubscriptionPlanSource implements BillingSubscriptionPlanSourceBase {

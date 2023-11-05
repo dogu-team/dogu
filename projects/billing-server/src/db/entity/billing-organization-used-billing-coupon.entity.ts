@@ -1,6 +1,6 @@
 import { BillingOrganizationUsedBillingCouponBase } from '@dogu-private/console';
 import { Entity, PrimaryColumn } from 'typeorm';
-import { CreatedAt, DeletedAt, UpdatedAt } from './util/decorators';
+import { CreatedAt, DeletedAt, UpdatedAt } from '../decorators';
 
 @Entity()
 export class BillingOrganizationUsedBillingCoupon implements BillingOrganizationUsedBillingCouponBase {

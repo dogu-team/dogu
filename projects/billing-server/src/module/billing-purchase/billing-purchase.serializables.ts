@@ -5,12 +5,12 @@ import {
   BillingMethodNiceBase,
   BillingPeriod,
   BillingResultCode,
+  BillingSubscriptionPlanData,
   BillingSubscriptionPlanInfo,
   BillingSubscriptionPlanMap,
   BillingSubscriptionPlanPreviewDto,
   BillingSubscriptionPlanPrice,
   BillingSubscriptionPlanPriceMap,
-  BillingSubscriptionPlanSourceData,
   BillingSubscriptionPlanType,
   CouponPreviewResponse,
   CreatePurchaseSubscriptionResponse,
@@ -20,8 +20,8 @@ import {
 } from '@dogu-private/console';
 import _ from 'lodash';
 import { v4 } from 'uuid';
-import { BillingHistory } from '../../db/entity/billing-history.entity';
 import { BillingOrganization } from '../../db/entity/billing-organization.entity';
+import { BillingPurchaseHistory } from '../../db/entity/billing-purchase-history.entity';
 import { BillingSubscriptionPlanSource } from '../../db/entity/billing-subscription-plan-source.entity';
 import { RetrySerializeContext } from '../../db/utils';
 import { validateCoupon } from '../billing-coupon/billing-coupon.serializables';
@@ -41,20 +41,20 @@ import {
   resolveCurrency,
 } from './billing-purchase.utils';
 
-export interface ParseSubscriptionPlanSourceResultFailure {
+export interface ParseSubscriptionPlanDataResultFailure {
   ok: false;
   resultCode: BillingResultCode;
 }
 
-export interface ParseSubscriptionPlanSourceResultSuccess {
+export interface ParseSubscriptionPlanDataResultSuccess {
   ok: true;
   resultCode: BillingResultCode;
-  subscriptionPlanSource: BillingSubscriptionPlanSourceData;
+  subscriptionPlanData: BillingSubscriptionPlanData;
 }
 
-export type ParseSubscriptionPlanSourceResult = ParseSubscriptionPlanSourceResultFailure | ParseSubscriptionPlanSourceResultSuccess;
+export type ParseSubscriptionPlanDataResult = ParseSubscriptionPlanDataResultFailure | ParseSubscriptionPlanDataResultSuccess;
 
-export async function parseSubscriptionPlanSource(
+export async function parseSubscriptionPlanData(
   context: RetrySerializeContext,
   billingOrganizationId: string,
   type: BillingSubscriptionPlanType,
@@ -62,7 +62,7 @@ export async function parseSubscriptionPlanSource(
   option: number,
   currency: BillingCurrency,
   period: BillingPeriod,
-): Promise<ParseSubscriptionPlanSourceResult> {
+): Promise<ParseSubscriptionPlanDataResult> {
   const { manager } = context;
   const billingSubscriptionPlanSource = await manager.getRepository(BillingSubscriptionPlanSource).findOne({
     where: {
@@ -79,7 +79,14 @@ export async function parseSubscriptionPlanSource(
     return {
       ok: true,
       resultCode: resultCode('ok'),
-      subscriptionPlanSource: billingSubscriptionPlanSource,
+      subscriptionPlanData: {
+        type: billingSubscriptionPlanSource.type,
+        category: billingSubscriptionPlanSource.category,
+        option: billingSubscriptionPlanSource.option,
+        currency: billingSubscriptionPlanSource.currency,
+        period: billingSubscriptionPlanSource.period,
+        originPrice: billingSubscriptionPlanSource.originPrice,
+      },
     };
   }
 
@@ -126,7 +133,7 @@ export async function parseSubscriptionPlanSource(
   return {
     ok: true,
     resultCode: resultCode('ok'),
-    subscriptionPlanSource: {
+    subscriptionPlanData: {
       type,
       category,
       option,
@@ -190,7 +197,7 @@ export async function getSubscriptionPreview(context: RetrySerializeContext, dto
     };
   }
 
-  const { billingOrganizationId, organizationId, firstPurchasedAt } = billingOrganization;
+  const { billingOrganizationId, organizationId } = billingOrganization;
   const currency = resolveCurrency(billingOrganization, subscriptionPlan.currency);
   const subscriptionPlans = billingOrganization.billingSubscriptionPlans ?? [];
   if (subscriptionPlans.length > 0 && subscriptionPlans.some((plan) => plan.currency !== currency)) {
@@ -200,7 +207,7 @@ export async function getSubscriptionPreview(context: RetrySerializeContext, dto
     };
   }
 
-  const parseSubscriptionPlanSourceResult = await parseSubscriptionPlanSource(
+  const parseSubscriptionPlanDataResult = await parseSubscriptionPlanData(
     context, //
     billingOrganizationId,
     subscriptionPlan.type,
@@ -209,14 +216,14 @@ export async function getSubscriptionPreview(context: RetrySerializeContext, dto
     currency,
     subscriptionPlan.period,
   );
-  if (!parseSubscriptionPlanSourceResult.ok) {
+  if (!parseSubscriptionPlanDataResult.ok) {
     return {
-      ok: parseSubscriptionPlanSourceResult.ok,
-      resultCode: parseSubscriptionPlanSourceResult.resultCode,
+      ok: parseSubscriptionPlanDataResult.ok,
+      resultCode: parseSubscriptionPlanDataResult.resultCode,
     };
   }
 
-  const { subscriptionPlanSource } = parseSubscriptionPlanSourceResult;
+  const { subscriptionPlanData } = parseSubscriptionPlanDataResult;
   const parseCouponResult = await parseCoupon(context, organizationId, subscriptionPlan.couponCode, subscriptionPlan.period);
   if (!parseCouponResult.ok) {
     return {
@@ -228,13 +235,14 @@ export async function getSubscriptionPreview(context: RetrySerializeContext, dto
   const { coupon } = parseCouponResult;
   const normalizedCouponFactor = calculateCouponFactor(coupon, subscriptionPlan.period);
   const normalizedNextCouponFactor = calculateNextCouponFactor(coupon, subscriptionPlan.period);
-  const currentSubscriptionPlanPrice = subscriptionPlanSource.originPrice * normalizedCouponFactor;
+  const currentSubscriptionPlanPrice = subscriptionPlanData.originPrice * normalizedCouponFactor;
   const couponResponse: CouponPreviewResponse | null = coupon
     ? {
         ...coupon,
         discountAmount: Math.floor(subscriptionPlanSource.originPrice - currentSubscriptionPlanPrice),
       }
     : null;
+  const currentSubscriptionPlanPrice = subscriptionPlanData.originPrice * normalizedCouponFactor;
 
   const isSubscribing = subscriptionPlans.length > 0;
   if (!isSubscribing) {
@@ -244,10 +252,10 @@ export async function getSubscriptionPreview(context: RetrySerializeContext, dto
       resultCode: resultCode('ok'),
       totalPrice: Math.floor(totalPrice),
       tax: 0,
-      nextPurchaseTotalPrice: Math.floor(subscriptionPlanSource.originPrice),
+      nextPurchaseTotalPrice: Math.floor(subscriptionPlanData.originPrice),
       nextPurchaseAt: calculateNextPurchaseAt(billingOrganization, subscriptionPlan.period),
-      subscriptionPlan: subscriptionPlanSource,
       coupon: couponResponse,
+      subscriptionPlan: subscriptionPlanData,
       elapsedPlans: [],
       remainingPlans: [],
     };
@@ -257,7 +265,7 @@ export async function getSubscriptionPreview(context: RetrySerializeContext, dto
       const totalPrice = currentSubscriptionPlanPrice;
       const nextPurchaseAt = calculateNextPurchaseAt(billingOrganization, subscriptionPlan.period);
       const nextPurchaseTotalPrice =
-        subscriptionPlanSource.originPrice * normalizedNextCouponFactor + calculateNextPurchaseTotalPriceFromSubscriptionPlans(subscriptionPlans, subscriptionPlan.period);
+        subscriptionPlanData.originPrice * normalizedNextCouponFactor + calculateNextPurchaseTotalPriceFromSubscriptionPlans(subscriptionPlans, subscriptionPlan.period);
 
       return {
         ok: true,
@@ -266,8 +274,8 @@ export async function getSubscriptionPreview(context: RetrySerializeContext, dto
         tax: 0,
         nextPurchaseTotalPrice: Math.floor(nextPurchaseTotalPrice),
         nextPurchaseAt,
-        subscriptionPlan: subscriptionPlanSource,
         coupon: couponResponse,
+        subscriptionPlan: subscriptionPlanData,
         elapsedPlans: [],
         remainingPlans: [],
       };
@@ -306,17 +314,17 @@ export async function getSubscriptionPreview(context: RetrySerializeContext, dto
             resultCode: resultCode('ok'),
             totalPrice: Math.floor(totalPrice),
             tax: 0,
-            nextPurchaseTotalPrice: Math.floor(subscriptionPlanSource.originPrice),
+            nextPurchaseTotalPrice: Math.floor(subscriptionPlanData.originPrice),
             nextPurchaseAt,
-            subscriptionPlan: subscriptionPlanSource,
             coupon: couponResponse,
+            subscriptionPlan: subscriptionPlanData,
             elapsedPlans: [
               {
-                category: subscriptionPlanSource.category,
-                type: subscriptionPlanSource.type,
-                option: subscriptionPlanSource.option,
-                period: subscriptionPlanSource.period,
-                currency: subscriptionPlanSource.currency,
+                category: subscriptionPlanData.category,
+                type: subscriptionPlanData.type,
+                option: subscriptionPlanData.option,
+                period: subscriptionPlanData.period,
+                currency: subscriptionPlanData.currency,
                 amount: Math.floor(elapsedAmount),
                 lastPurchasedAt,
               },
@@ -417,15 +425,13 @@ export async function processPurchaseSubscription(
   }
 
   {
-    const created = manager.getRepository(BillingHistory).create({
-      billingHistoryId: v4(),
+    const created = manager.getRepository(BillingPurchaseHistory).create({
+      billingPurchaseHistoryId: v4(),
       billingOrganizationId: billingOrganization.billingOrganizationId,
       purchasedAt: new Date(),
-      subscribePaymentsResponse: createPurchaseResult.response as unknown as Record<string, unknown>,
+      niceSubscribePaymentsResponse: createPurchaseResult.response as unknown as Record<string, unknown>,
     });
-    created.billingSubscriptionPlans ??= [];
-    created.billingSubscriptionPlans.push(createSubscriptionPlanResult.subscriptionPlan);
-    await manager.getRepository(BillingHistory).save(created);
+    await manager.getRepository(BillingPurchaseHistory).save(created);
   }
 
   return {

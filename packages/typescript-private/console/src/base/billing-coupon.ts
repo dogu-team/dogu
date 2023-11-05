@@ -1,6 +1,7 @@
 import { IsFilledString, propertiesOf } from '@dogu-tech/common';
 import { IsIn, IsNotEmpty, IsNumber, IsOptional, IsUUID } from 'class-validator';
-import { BillingPeriod, BillingResultCode } from '..';
+import { BillingPeriod } from './billing';
+import { BillingResultCode } from './billing-code';
 
 export const BillingCouponType = ['basic', 'promotion'] as const;
 export type BillingCouponType = (typeof BillingCouponType)[number];

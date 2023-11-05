@@ -1,38 +1,9 @@
 import { IsFilledString } from '@dogu-tech/common';
 import { Type } from 'class-transformer';
 import { buildMessage, IsIn, IsNumber, IsOptional, IsString, IsUUID, Length, ValidateBy, ValidateNested } from 'class-validator';
-import { BillingResultCode, BillingSubscriptionPlanSourceData } from '..';
-import { BillingCategory, BillingCurrency, BillingPeriod, BillingSubscriptionPlanType } from './billing';
+import { BillingCategory, BillingCurrency, BillingPeriod, BillingSubscriptionPlanData, BillingSubscriptionPlanType } from './billing';
+import { BillingResultCode } from './billing-code';
 import { BillingCouponBase } from './billing-coupon';
-
-/**
- * @description
- * subscription plan = { type * option * currency * period }
- * case 1 - subscription plan not found and subscribe plan
- * case 2 - subscription plan found and subscribe other plan
- * case 3 - upgrade subscription plan option
- * case 4 - upgrade subscription plan period
- * case 5 - upgrade subscription plan option and period
- * case 6 - downgrade subscription plan option
- * case 7 - downgrade subscription plan period
- * case 8 - downgrade subscription plan option and period
- * case 9 - unsubscribe plan and remaining plan found
- * case 10 - unsubscribe plan and remaining plan not found
- *
- * case 100 - organization not found
- * case 101 - category not matched
- * case 102 - currency not matched
- * case 103 - subscription plan not found
- * case 104 - subscription plan type not found
- * case 105 - subscription plan option not found
- * case 106 - subscription plan source not found
- * case 107 - currency not found
- * case 108 - period not found
- * case 109 - coupon not found
- * case 110 - coupon expired
- * case 111 - coupon already used
- * case 112 - duplicated subscription plan
- */
 
 export class BillingSubscriptionPlanPreviewDto {
   @IsIn(BillingCategory)
@@ -98,8 +69,8 @@ export interface GetBillingSubscriptionPreviewResponseSuccess {
   nextPurchaseTotalPrice: number;
   nextPurchaseAt: Date;
   tax: number;
-  subscriptionPlan: BillingSubscriptionPlanSourceData;
   coupon: CouponPreviewResponse | null;
+  subscriptionPlan: BillingSubscriptionPlanData;
   elapsedPlans: ElapsedPlan[];
   remainingPlans: RemainingPlan[];
 }
