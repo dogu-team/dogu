@@ -162,6 +162,8 @@ export async function createBillingCoupon(context: RetrySerializeContext, dto: C
     expiredAt: null,
   });
   return await manager.getRepository(BillingCoupon).save(coupon);
+}
+
 export interface ParseCouponOptions {
   context: RetrySerializeContext;
   organizationId: string;

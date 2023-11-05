@@ -4,9 +4,6 @@ import {
   BillingResultCode,
   BillingSubscriptionPlanData,
   BillingSubscriptionPlanPreviewDto,
-  BillingSubscriptionPlanPrice,
-  BillingSubscriptionPlanPriceMap,
-  BillingSubscriptionPlanType,
   CouponPreviewResponse,
   CreatePurchaseSubscriptionResponse,
   GetBillingSubscriptionPreviewResponse,
@@ -203,6 +200,12 @@ export async function preprocessPurchaseSubscription(
   });
   const currentPlanPurchaseAmount = subscriptionPlanData.originPrice * couponFactor;
   const currentPlanDiscountAmount = subscriptionPlanData.originPrice - currentPlanPurchaseAmount;
+  const couponPreviewResponse: CouponPreviewResponse | null = coupon
+    ? {
+        ...coupon,
+        discountAmount: currentPlanDiscountAmount,
+      }
+    : null;
 
   const nextPlanPurchaseAmount = subscriptionPlanData.originPrice * nextCouponFactor;
   const localNextPurchaseDate = calculateLocalNextPurchaseDate({ organization, period, timezoneOffset });
@@ -235,6 +238,7 @@ export async function preprocessPurchaseSubscription(
         subscriptionPlan: subscriptionPlanData,
         elapsedPlans: [],
         remainingPlans: [],
+        coupon: couponPreviewResponse,
       },
       subscriptionPlanData,
       subscriptionPlanSource,
@@ -287,7 +291,7 @@ export async function preprocessPurchaseSubscription(
           nextPurchaseTotalPrice,
           nextPurchaseDate: localNextPurchaseDate,
           subscriptionPlan: subscriptionPlanData,
-          coupon,
+          coupon: couponPreviewResponse,
           elapsedPlans: [elapsedPlan],
           remainingPlans: [remainingPlan],
         },
