@@ -20,3 +20,16 @@ export interface FindBillingMethodResultSuccess {
 }
 
 export type FindBillingMethodResponse = FindBillingMethodResultFailure | FindBillingMethodResultSuccess;
+
+export interface UpdateBillingMethodResposneFailure {
+  ok: false;
+  resultCode: BillingResultCode;
+}
+
+export interface UpdateBillingMethodResponseSuccess {
+  ok: true;
+  resultCode: BillingResultCode;
+  methods: BillingMethodNiceBase[];
+}
+
+export type UpdateBillingMethodResponse = UpdateBillingMethodResposneFailure | UpdateBillingMethodResponseSuccess;

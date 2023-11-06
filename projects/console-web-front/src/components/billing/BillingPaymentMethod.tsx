@@ -1,29 +1,26 @@
 import { EditOutlined } from '@ant-design/icons';
-import { CallBillingApiResponse, FindBillingMethodResponse } from '@dogu-private/console';
+import { FindBillingMethodResultSuccess } from '@dogu-private/console';
 import { OrganizationId } from '@dogu-private/types';
-import { Button, Form, Modal } from 'antd';
+import { Form, Modal } from 'antd';
 import styled from 'styled-components';
-import useSWR from 'swr';
 
-import { swrAuthFetcher } from '../../api';
+import { updatePaymentMethod } from '../../api/billing';
 import useModal from '../../hooks/useModal';
-import ErrorBox from '../common/boxes/ErrorBox';
+import useRequest from '../../hooks/useRequest';
+import { parseNicePaymentMethodFormValues } from '../../utils/billing';
 import BillingMethodRegistrationForm, { BillingMethodRegistrationFormValues } from './BillingMethodRegistrationForm';
 
 interface Props {
+  methods: FindBillingMethodResultSuccess['methods'];
   organizationId: OrganizationId;
 }
 
-const BillingPaymentMethod: React.FC<Props> = ({ organizationId }) => {
-  const { data, isLoading } = useSWR<CallBillingApiResponse<FindBillingMethodResponse>>(
-    `/billing/methods?organizationId=${organizationId}`,
-    swrAuthFetcher,
-    {
-      revalidateOnFocus: false,
-    },
-  );
+const BillingPaymentMethod: React.FC<Props> = ({ methods, organizationId }) => {
   const [isOpen, openModal, closeModal] = useModal();
   const [form] = Form.useForm<BillingMethodRegistrationFormValues>();
+  const [updateLoading, requestUpdate] = useRequest(updatePaymentMethod);
+
+  const currentMethod = methods[0];
 
   const handleCloseModal = () => {
     closeModal();
@@ -34,45 +31,21 @@ const BillingPaymentMethod: React.FC<Props> = ({ organizationId }) => {
     const values = await form.validateFields();
 
     try {
+      await requestUpdate({
+        organizationId,
+        registerCard: parseNicePaymentMethodFormValues(values),
+      });
     } catch (e) {}
   };
-
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-
-  if (!data || data.errorMessage || !data.body?.ok) {
-    return <ErrorBox title="Something went wrong" desc="Failed to find payment methods" />;
-  }
-
-  if (!data.body.methods || data.body.methods.length === 0) {
-    return (
-      <div>
-        <Button type="primary" onClick={() => openModal()}>
-          Add payment method
-        </Button>
-
-        <Modal
-          open={isOpen}
-          closable
-          centered
-          destroyOnClose
-          title="Add your payment method"
-          onCancel={handleCloseModal}
-          onOk={handleFinish}
-        >
-          <BillingMethodRegistrationForm form={form} />
-        </Modal>
-      </div>
-    );
-  }
 
   return (
     <Box>
       <CardDetail>
-        Card number: **** **** **** {data.body.methods[0].cardNumberLast4Digits} {`(${data.body.methods[0].cardName})`}
+        Card number: **** **** **** {currentMethod.cardNumberLast4Digits} {`(${currentMethod.cardName})`}
       </CardDetail>
-      <CardDetail>Expiration date: MM / YYYY</CardDetail>
+      <CardDetail>
+        Expiration date: {currentMethod.expirationMonth} / {currentMethod.expirationYear}
+      </CardDetail>
 
       <div>
         <EditCardButton

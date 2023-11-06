@@ -1,3 +1,4 @@
+import { OrganizationId } from '@dogu-private/types';
 import { IsFilledString, propertiesOf } from '@dogu-tech/common';
 import { Type } from 'class-transformer';
 import { IsNumber, IsUUID, ValidateNested } from 'class-validator';
@@ -36,6 +37,11 @@ export class CreateOrUpdateMethodNiceDto {
   @ValidateNested()
   @Type(() => NiceSubscribeRegistDto)
   subscribeRegist!: NiceSubscribeRegistDto;
+}
+
+export class UpdateMethodNiceDto extends NiceSubscribeRegistDto {
+  @IsUUID()
+  organizationId!: OrganizationId;
 }
 
 /**

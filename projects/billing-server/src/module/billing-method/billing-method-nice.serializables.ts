@@ -6,6 +6,8 @@ import {
   FindBillingMethodResponse,
   NiceSubscribePaymentsResponse,
   resultCode,
+  UpdateBillingMethodResponse,
+  UpdateMethodNiceDto,
 } from '@dogu-private/console';
 import { errorify } from '@dogu-tech/common';
 import { v4 } from 'uuid';
@@ -161,12 +163,47 @@ export async function findBillingMethods(context: RetrySerializeContext, dto: Fi
     where: {
       billingOrganizationId: billingOrganization.billingOrganizationId,
     },
-    select: ['cardCode', 'cardName', 'cardNumberLast4Digits'],
+    select: ['cardCode', 'cardName', 'cardNumberLast4Digits', 'expirationMonth', 'expirationYear'],
   });
 
   return {
     ok: true,
     resultCode: resultCode('ok'),
     methods: billingMethods,
+  };
+}
+
+export async function updateBillingMethod(
+  context: RetrySerializeContext,
+  billingMethodNiceCaller: BillingMethodNiceCaller,
+  dto: UpdateMethodNiceDto,
+): Promise<UpdateBillingMethodResponse> {
+  const { manager } = context;
+  const { registerCard } = dto;
+
+  const billingOrganization = await manager.getRepository(BillingOrganization).findOne({
+    where: {
+      organizationId: dto.organizationId,
+    },
+  });
+
+  if (!billingOrganization) {
+    return {
+      ok: false,
+      resultCode: resultCode('organization-not-found'),
+    };
+  }
+
+  const rv = await createOrUpdateMethodNice(context, billingMethodNiceCaller, {
+    billingOrganizationId: billingOrganization.billingOrganizationId,
+    subscribeRegist: {
+      registerCard,
+    },
+  });
+
+  return {
+    ok: true,
+    resultCode: resultCode('ok'),
+    methods: [rv],
   };
 }

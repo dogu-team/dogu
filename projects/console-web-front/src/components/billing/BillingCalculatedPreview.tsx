@@ -20,6 +20,7 @@ import { buildQueryPraramsByObject } from '../../utils/query';
 import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd';
 import useRequest from '../../hooks/useRequest';
 import { purchasePlanWithNewCard } from '../../api/billing';
+import { parseNicePaymentMethodFormValues } from '../../utils/billing';
 
 interface Props {}
 
@@ -56,6 +57,14 @@ const BillingCalculatedPreview: React.FC<Props> = ({}) => {
     return <ErrorBox title="Oops" desc="Plan not selected" />;
   }
 
+  if (isLoading) {
+    <Box>
+      <LoadingWrapper style={{ height: '500px' }}>
+        <LoadingOutlined />
+      </LoadingWrapper>
+    </Box>;
+  }
+
   if (!data?.body?.ok || data?.errorMessage) {
     return <ErrorBox title="Oops" desc={data?.errorMessage ?? 'Failed to get preview'} />;
   }
@@ -81,13 +90,7 @@ const BillingCalculatedPreview: React.FC<Props> = ({}) => {
         currency: 'KRW',
         period: isAnnualSubscription ? 'yearly' : 'monthly',
         couponCode: couponCode ?? undefined,
-        registerCard: {
-          cardNumber: values.card.replaceAll(' ', ''),
-          expirationMonth: values.expiry.split(' / ')[0],
-          expirationYear: values.expiry.split(' / ')[1],
-          idNumber: values.legalNumber,
-          cardPasswordFirst2Digits: values.password,
-        },
+        registerCard: parseNicePaymentMethodFormValues(values),
       });
 
       if (rv.errorMessage || !rv.body?.ok) {
@@ -103,12 +106,6 @@ const BillingCalculatedPreview: React.FC<Props> = ({}) => {
 
   return (
     <Box>
-      {isLoading && (
-        <LoadingWrapper style={{ height: '500px' }}>
-          <LoadingOutlined />
-        </LoadingWrapper>
-      )}
-
       <Content>
         <div>
           <Tag color="success">New</Tag>

@@ -4,9 +4,10 @@ import {
   CreatePurchaseSubscriptionWithNewCardResponse,
   FindBillingMethodResponse,
   GetBillingSubscriptionPreviewResponse,
+  UpdateBillingMethodResponse,
   ValidateBillingCouponResponse,
 } from '@dogu-private/console';
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Post, Put, Query } from '@nestjs/common';
 
 import { ORGANIZATION_ROLE } from '../auth/auth.types';
 import { OrganizationPermission } from '../auth/decorators';
@@ -71,6 +72,17 @@ export class BillingController {
       method: 'GET',
       path: 'billing/methods',
       query,
+    });
+  }
+
+  @Put('/methods')
+  @OrganizationPermission(ORGANIZATION_ROLE.ADMIN)
+  async updateBillingMethod(@Query() query: object, @Body() body: object): Promise<CallBillingApiResponse<UpdateBillingMethodResponse>> {
+    return await this.billingCaller.callBillingApi<UpdateBillingMethodResponse>({
+      method: 'PUT',
+      path: 'billing/methods',
+      query,
+      body,
     });
   }
 }

@@ -329,6 +329,7 @@ export async function processPurchaseSubscription(
     purchasedAt: new Date(),
     niceSubscribePaymentsResponse: createPurchaseResult.response as unknown as Record<string, unknown>,
     previewResponse: previewResponse as unknown as Record<string, unknown>,
+    method: 'nice',
   });
   await manager.getRepository(BillingHistory).save(billingHistory);
 

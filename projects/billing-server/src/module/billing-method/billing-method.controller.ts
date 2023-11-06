@@ -1,5 +1,5 @@
-import { FindBillingMethodDto, FindBillingMethodResponse } from '@dogu-private/console';
-import { Controller, Get, Query } from '@nestjs/common';
+import { FindBillingMethodDto, FindBillingMethodResponse, UpdateBillingMethodResponse, UpdateMethodNiceDto } from '@dogu-private/console';
+import { Body, Controller, Get, Put, Query } from '@nestjs/common';
 
 import { BillingTokenPermission } from '../auth/guard/billing-token.guard';
 import { BillingMethodNiceService } from './billing-method-nice.service';
@@ -17,5 +17,11 @@ export class BillingMethodController {
    */
   async findBillingMethod(@Query() dto: FindBillingMethodDto): Promise<FindBillingMethodResponse> {
     return await this.billingMethodNiceService.findBillingMethods(dto);
+  }
+
+  @Put()
+  @BillingTokenPermission()
+  async updateBillingMethod(@Body() dto: UpdateMethodNiceDto): Promise<UpdateBillingMethodResponse> {
+    return await this.billingMethodNiceService.updateBillingMethod(dto);
   }
 }

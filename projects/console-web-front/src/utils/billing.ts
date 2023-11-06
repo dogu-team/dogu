@@ -2,8 +2,10 @@ import {
   BillingSubscriptionPlanInfoBase,
   BillingSubscriptionPlanType,
   CloudLicenseBase,
+  RegisterCardDto,
   SelfHostedLicenseBase,
 } from '@dogu-private/console';
+import { BillingMethodRegistrationFormValues } from '../components/billing/BillingMethodRegistrationForm';
 
 export const getSubscriptionPlansFromLicense = (
   license: CloudLicenseBase | SelfHostedLicenseBase,
@@ -22,4 +24,14 @@ export const getSubscriptionPlansFromLicense = (
 
     return usingPlans ?? [];
   }
+};
+
+export const parseNicePaymentMethodFormValues = (values: BillingMethodRegistrationFormValues): RegisterCardDto => {
+  return {
+    cardNumber: values.card.replaceAll(' ', ''),
+    expirationMonth: values.expiry.split(' / ')[0],
+    expirationYear: values.expiry.split(' / ')[1],
+    idNumber: values.legalNumber,
+    cardPasswordFirst2Digits: values.password,
+  };
 };

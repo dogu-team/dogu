@@ -131,6 +131,7 @@ export class BillingPurchaseService {
         },
       });
 
+      billingOrganization.billingMethodNice = billingMethodNice;
       return await processPurchaseSubscription(context, this.billingMethodNiceCaller, {
         billingMethodNice,
         billingOrganization,

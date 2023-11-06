@@ -1,11 +1,18 @@
-import { CloudLicenseBase, SelfHostedLicenseBase, UserBase } from '@dogu-private/console';
+import {
+  CallBillingApiResponse,
+  CloudLicenseBase,
+  FindBillingMethodResponse,
+  FindBillingMethodResultSuccess,
+  SelfHostedLicenseBase,
+  UserBase,
+} from '@dogu-private/console';
 import { OrganizationId } from '@dogu-private/types';
-import { Button } from 'antd';
 import { GetServerSideProps } from 'next';
 import useTranslation from 'next-translate/useTranslation';
 import styled from 'styled-components';
 
 import { getCloudLicenseInServerSide, getSelfHostedLicenseInServerSide } from '../../enterprise/api/license';
+import { getPaymentMethodsInServerSide } from '../../src/api/billing';
 import BillingInvoiceList from '../../src/components/billing/BillingInvoiceList';
 import BillingPaymentMethod from '../../src/components/billing/BillingPaymentMethod';
 import BillingSubscribedPlanList from '../../src/components/billing/BillingSubscribedPlanList';
@@ -19,10 +26,13 @@ import { NextPageWithLayout } from '../_app';
 interface BillingPageProps {
   me: UserBase;
   license: CloudLicenseBase | SelfHostedLicenseBase;
+  paymentMethodsResponse: CallBillingApiResponse<FindBillingMethodResponse>;
 }
 
-const BillingPage: NextPageWithLayout<BillingPageProps> = ({ me, license }) => {
+const BillingPage: NextPageWithLayout<BillingPageProps> = ({ me, license, paymentMethodsResponse }) => {
   const { t } = useTranslation('billing');
+
+  const hasRegisteredPaymentMethod = paymentMethodsResponse.body?.ok && paymentMethodsResponse.body.methods.length > 0;
 
   return (
     <Box>
@@ -37,19 +47,23 @@ const BillingPage: NextPageWithLayout<BillingPageProps> = ({ me, license }) => {
           <UpgradePlanButton license={license} groupType={null} type="primary">
             {t('upgradePlanButtonTitle')}
           </UpgradePlanButton>
-          <Button danger type="text" style={{ marginLeft: '.5rem' }}>
-            {t('cancelSubscriptionButtonTitle')}
-          </Button>
         </div>
       </Content>
-      <Content>
-        <TitleWrapper>
-          <ContentTitle>{t('billingPaymentMethodTitle')}</ContentTitle>
-        </TitleWrapper>
-        <ContentInner>
-          <BillingPaymentMethod organizationId={license.organizationId as OrganizationId} />
-        </ContentInner>
-      </Content>
+      {hasRegisteredPaymentMethod && (
+        <Content>
+          <TitleWrapper>
+            <ContentTitle>{t('billingPaymentMethodTitle')}</ContentTitle>
+          </TitleWrapper>
+          <ContentInner>
+            <BillingPaymentMethod
+              methods={
+                (paymentMethodsResponse as CallBillingApiResponse<FindBillingMethodResultSuccess>).body?.methods ?? []
+              }
+              organizationId={license.organizationId as OrganizationId}
+            />
+          </ContentInner>
+        </Content>
+      )}
       <Content>
         <TitleWrapper>
           <ContentTitle>{t('billingInvoiceTitle')}</ContentTitle>
@@ -72,7 +86,7 @@ BillingPage.getLayout = (page) => {
   );
 };
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
+export const getServerSideProps: GetServerSideProps<BillingPageProps> = async (context) => {
   try {
     const [me, license] = await Promise.all([
       checkLoginInServerSide(context),
@@ -80,17 +94,27 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         ? getSelfHostedLicenseInServerSide(context)
         : getCloudLicenseInServerSide(context),
     ]);
+    const paymentMethods = await getPaymentMethodsInServerSide(context, {
+      organizationId: license.organizationId as OrganizationId,
+    });
+
+    if (!me) {
+      return {
+        notFound: true,
+      };
+    }
 
     return {
       props: {
         me,
         license,
+        paymentMethodsResponse: paymentMethods,
       },
     };
   } catch (e) {}
 
   return {
-    props: {},
+    notFound: true,
   };
 };
 
