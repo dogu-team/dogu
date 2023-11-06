@@ -141,6 +141,7 @@ export interface IosResetInfo {
 const ResetExpireTime = 10 * 60 * 1000;
 const SleepBeforeTerminate = 2000;
 const SleepBeforeTerminateLong = 4000;
+const LoopPeriod = 100;
 
 class IosResetHelper {
   constructor(private iosDriver: IosWebDriver) {}
@@ -550,7 +551,7 @@ export class IosResetService {
 
         await iosDriver.clickSelector(new IosButtonPredicateStringSelector('More'));
         await iosDriver.clickSelector(new IosButtonPredicateStringSelector('Edit'));
-        for await (const _ of loop(100)) {
+        for await (const _ of loop(LoopPeriod)) {
           const remove = await iosDriver.waitElementsExist(new IosClassChainSelector('**/XCUIElementTypeImage[`label == "remove"`]'), { seconds: 3 });
           if (0 === remove.length) {
             break;
@@ -670,7 +671,7 @@ export class IosResetService {
       async () => {
         const MaxWidgetsCount = 100;
         // remove home widgets
-        for await (const _ of loop(300, MaxWidgetsCount)) {
+        for await (const _ of loop(LoopPeriod, MaxWidgetsCount)) {
           const widgets = await iosDriver.waitElementsExist(new IosClassChainSelector('**/XCUIElementTypeIcon[`label == "Waiting…"`]'), { seconds: 3 });
           if (0 === widgets.length) {
             break;
@@ -682,7 +683,7 @@ export class IosResetService {
         {
           const windowRect = await iosDriver.rawDriver.getWindowRect();
           const findLeftScrollView = async (): Promise<WDIOElement> => {
-            for await (const counter of loop(1000, 3)) {
+            for await (const counter of loop(LoopPeriod, 3)) {
               await iosDriver.rawDriver.touchAction([
                 {
                   action: 'longPress',
@@ -710,7 +711,7 @@ export class IosResetService {
           const scrollView = await findLeftScrollView();
 
           const skipLabels = ['Batteries'];
-          for await (const _ of loop(300, MaxWidgetsCount)) {
+          for await (const _ of loop(LoopPeriod, MaxWidgetsCount)) {
             const widgets = await IosWebDriver.waitElemElementsExist(scrollView, new IosClassChainSelector('**/XCUIElementTypeIcon'), { seconds: 3 });
 
             const targetWidgets = await filterAsync(widgets, async (widget) => {
@@ -743,7 +744,7 @@ export class IosResetService {
         },
       },
       async () => {
-        for await (const _ of loop(500)) {
+        for await (const _ of loop(LoopPeriod)) {
           const elems = await iosDriver.waitElementsExist(new IosAccessibilitiySelector('NotificationCell'), { seconds: 3 });
           if (0 === elems.length) {
             break;

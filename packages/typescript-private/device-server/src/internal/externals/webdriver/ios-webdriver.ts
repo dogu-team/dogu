@@ -1,4 +1,4 @@
-import { delay, FilledPrintable, loop, loopTime, PrefixLogger, retry, TimeOptions } from '@dogu-tech/common';
+import { delay, FilledPrintable, loop, loopTime, PrefixLogger, retry, time, TimeOptions } from '@dogu-tech/common';
 import WebDriverIO from 'webdriverio';
 import { WebdriverAgentProcess } from '../cli/webdriver-agent-process';
 export type WDIOElement = WebDriverIO.Element<'async'>;
@@ -39,6 +39,9 @@ export class IosButtonPredicateStringSelector {
   }
 }
 
+const AppSwitchLoopPeriod: TimeOptions = { milliseconds: 200 };
+const WaitElementsPeriod: TimeOptions = { milliseconds: 200 };
+
 export class IosWebDriver {
   constructor(
     private driver: WebdriverIO.Browser,
@@ -60,7 +63,7 @@ export class IosWebDriver {
     await retry(
       async () => {
         await wda.launchApp(bundleId);
-        for await (const _ of loopTime({ period: { seconds: 1 }, expire: { seconds: 5 } })) {
+        for await (const _ of loopTime({ period: AppSwitchLoopPeriod, expire: { seconds: 5 } })) {
           const apps = await wda.getActiveAppList();
           const some = apps.some((app) => app.bundleId === bundleId);
           if (some) {
@@ -85,7 +88,7 @@ export class IosWebDriver {
           return;
         }
         await wda.terminateApp(bundleId);
-        for await (const _ of loopTime({ period: { seconds: 1 }, expire: { seconds: 5 } })) {
+        for await (const _ of loopTime({ period: AppSwitchLoopPeriod, expire: { seconds: 5 } })) {
           const apps = await wda.getActiveAppList();
           const some = apps.some((app) => app.bundleId === bundleId);
           if (!some) {
@@ -109,7 +112,7 @@ export class IosWebDriver {
     const { driver } = this;
     const WaitTimeout = 5_000;
     let lastError = '';
-    for await (const _ of loopTime({ period: { milliseconds: 200 }, expire: { milliseconds: WaitTimeout } })) {
+    for await (const _ of loopTime({ period: WaitElementsPeriod, expire: { milliseconds: WaitTimeout } })) {
       const elem = await driver.$(selector.build());
       if (elem.error) {
         lastError = elem.error.message;
@@ -124,7 +127,7 @@ export class IosWebDriver {
 
   async waitElementsExist(selector: IosSelector, timeOption: TimeOptions): Promise<WDIOElement[]> {
     const { driver } = this;
-    for await (const _ of loopTime({ period: { milliseconds: 200 }, expire: timeOption })) {
+    for await (const _ of loopTime({ period: WaitElementsPeriod, expire: timeOption })) {
       const elems = await driver.$$(selector.build());
       if (0 < elems.length) {
         return elems;
@@ -135,7 +138,7 @@ export class IosWebDriver {
 
   async waitElementExist(selector: IosSelector, timeOption: TimeOptions): Promise<WDIOElement> {
     const { driver } = this;
-    for await (const _ of loopTime({ period: { milliseconds: 200 }, expire: timeOption })) {
+    for await (const _ of loopTime({ period: WaitElementsPeriod, expire: timeOption })) {
       const elem = await driver.$(selector.build());
       if (elem.error) {
         continue;
@@ -146,7 +149,7 @@ export class IosWebDriver {
   }
 
   static async waitElemElementsExist(elem: WDIOElement, selector: IosSelector, timeOption: TimeOptions): Promise<WDIOElement[]> {
-    for await (const _ of loopTime({ period: { milliseconds: 500 }, expire: timeOption })) {
+    for await (const _ of loopTime({ period: WaitElementsPeriod, expire: timeOption })) {
       const elems = await elem.$$(selector.build());
       if (0 < elems.length) {
         return elems;
@@ -159,7 +162,7 @@ export class IosWebDriver {
     const { driver } = this;
     const MaxScrollCount = 30;
 
-    for await (const _ of loop(300, MaxScrollCount)) {
+    for await (const _ of loop(time(WaitElementsPeriod), MaxScrollCount)) {
       const elem = await driver.$(selector.build());
       if (elem.error) {
         await driver.execute('mobile: scroll', {
