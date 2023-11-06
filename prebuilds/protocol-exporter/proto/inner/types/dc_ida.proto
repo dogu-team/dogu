@@ -49,3 +49,9 @@ message DcIdaSwitchInputBlockParam {
 
 message DcIdaSwitchInputBlockResult {
 }
+
+message DcIdaSubscribeAlertParam {
+}
+
+message DcIdaSubscribeAlertResult {
+}

@@ -84,6 +84,17 @@ public final class DcIda {
      */
     com.dogu.protocol.generated.inner.types.DcIda.DcIdaSwitchInputBlockParam getDcIdaSwitchInputBlockParam();
 
+    /**
+     * <code>.inner.types.DcIdaSubscribeAlertParam dc_ida_subscribe_alert_param = 1000;</code>
+     * @return Whether the dcIdaSubscribeAlertParam field is set.
+     */
+    boolean hasDcIdaSubscribeAlertParam();
+    /**
+     * <code>.inner.types.DcIdaSubscribeAlertParam dc_ida_subscribe_alert_param = 1000;</code>
+     * @return The dcIdaSubscribeAlertParam.
+     */
+    com.dogu.protocol.generated.inner.types.DcIda.DcIdaSubscribeAlertParam getDcIdaSubscribeAlertParam();
+
     public com.dogu.protocol.generated.inner.params.DcIda.DcIdaParam.ValueCase getValueCase();
   }
   /**
@@ -105,6 +116,7 @@ public final class DcIda {
       DC_IDA_QUERY_PROFILE_PARAM(4),
       DC_GDC_DA_CONTROL_PARAM(5),
       DC_IDA_SWITCH_INPUT_BLOCK_PARAM(6),
+      DC_IDA_SUBSCRIBE_ALERT_PARAM(1000),
       VALUE_NOT_SET(0);
       private final int value;
       private ValueCase(int value) {
@@ -126,6 +138,7 @@ public final class DcIda {
           case 4: return DC_IDA_QUERY_PROFILE_PARAM;
           case 5: return DC_GDC_DA_CONTROL_PARAM;
           case 6: return DC_IDA_SWITCH_INPUT_BLOCK_PARAM;
+          case 1000: return DC_IDA_SUBSCRIBE_ALERT_PARAM;
           case 0: return VALUE_NOT_SET;
           default: return null;
         }
@@ -468,6 +481,56 @@ public final class DcIda {
      */
     private void clearDcIdaSwitchInputBlockParam() {
       if (valueCase_ == 6) {
+        valueCase_ = 0;
+        value_ = null;
+      }
+    }
+
+    public static final int DC_IDA_SUBSCRIBE_ALERT_PARAM_FIELD_NUMBER = 1000;
+    /**
+     * <code>.inner.types.DcIdaSubscribeAlertParam dc_ida_subscribe_alert_param = 1000;</code>
+     */
+    @java.lang.Override
+    public boolean hasDcIdaSubscribeAlertParam() {
+      return valueCase_ == 1000;
+    }
+    /**
+     * <code>.inner.types.DcIdaSubscribeAlertParam dc_ida_subscribe_alert_param = 1000;</code>
+     */
+    @java.lang.Override
+    public com.dogu.protocol.generated.inner.types.DcIda.DcIdaSubscribeAlertParam getDcIdaSubscribeAlertParam() {
+      if (valueCase_ == 1000) {
+         return (com.dogu.protocol.generated.inner.types.DcIda.DcIdaSubscribeAlertParam) value_;
+      }
+      return com.dogu.protocol.generated.inner.types.DcIda.DcIdaSubscribeAlertParam.getDefaultInstance();
+    }
+    /**
+     * <code>.inner.types.DcIdaSubscribeAlertParam dc_ida_subscribe_alert_param = 1000;</code>
+     */
+    private void setDcIdaSubscribeAlertParam(com.dogu.protocol.generated.inner.types.DcIda.DcIdaSubscribeAlertParam value) {
+      value.getClass();
+  value_ = value;
+      valueCase_ = 1000;
+    }
+    /**
+     * <code>.inner.types.DcIdaSubscribeAlertParam dc_ida_subscribe_alert_param = 1000;</code>
+     */
+    private void mergeDcIdaSubscribeAlertParam(com.dogu.protocol.generated.inner.types.DcIda.DcIdaSubscribeAlertParam value) {
+      value.getClass();
+  if (valueCase_ == 1000 &&
+          value_ != com.dogu.protocol.generated.inner.types.DcIda.DcIdaSubscribeAlertParam.getDefaultInstance()) {
+        value_ = com.dogu.protocol.generated.inner.types.DcIda.DcIdaSubscribeAlertParam.newBuilder((com.dogu.protocol.generated.inner.types.DcIda.DcIdaSubscribeAlertParam) value_)
+            .mergeFrom(value).buildPartial();
+      } else {
+        value_ = value;
+      }
+      valueCase_ = 1000;
+    }
+    /**
+     * <code>.inner.types.DcIdaSubscribeAlertParam dc_ida_subscribe_alert_param = 1000;</code>
+     */
+    private void clearDcIdaSubscribeAlertParam() {
+      if (valueCase_ == 1000) {
         valueCase_ = 0;
         value_ = null;
       }
@@ -896,6 +959,54 @@ public final class DcIda {
         return this;
       }
 
+      /**
+       * <code>.inner.types.DcIdaSubscribeAlertParam dc_ida_subscribe_alert_param = 1000;</code>
+       */
+      @java.lang.Override
+      public boolean hasDcIdaSubscribeAlertParam() {
+        return instance.hasDcIdaSubscribeAlertParam();
+      }
+      /**
+       * <code>.inner.types.DcIdaSubscribeAlertParam dc_ida_subscribe_alert_param = 1000;</code>
+       */
+      @java.lang.Override
+      public com.dogu.protocol.generated.inner.types.DcIda.DcIdaSubscribeAlertParam getDcIdaSubscribeAlertParam() {
+        return instance.getDcIdaSubscribeAlertParam();
+      }
+      /**
+       * <code>.inner.types.DcIdaSubscribeAlertParam dc_ida_subscribe_alert_param = 1000;</code>
+       */
+      public Builder setDcIdaSubscribeAlertParam(com.dogu.protocol.generated.inner.types.DcIda.DcIdaSubscribeAlertParam value) {
+        copyOnWrite();
+        instance.setDcIdaSubscribeAlertParam(value);
+        return this;
+      }
+      /**
+       * <code>.inner.types.DcIdaSubscribeAlertParam dc_ida_subscribe_alert_param = 1000;</code>
+       */
+      public Builder setDcIdaSubscribeAlertParam(
+          com.dogu.protocol.generated.inner.types.DcIda.DcIdaSubscribeAlertParam.Builder builderForValue) {
+        copyOnWrite();
+        instance.setDcIdaSubscribeAlertParam(builderForValue.build());
+        return this;
+      }
+      /**
+       * <code>.inner.types.DcIdaSubscribeAlertParam dc_ida_subscribe_alert_param = 1000;</code>
+       */
+      public Builder mergeDcIdaSubscribeAlertParam(com.dogu.protocol.generated.inner.types.DcIda.DcIdaSubscribeAlertParam value) {
+        copyOnWrite();
+        instance.mergeDcIdaSubscribeAlertParam(value);
+        return this;
+      }
+      /**
+       * <code>.inner.types.DcIdaSubscribeAlertParam dc_ida_subscribe_alert_param = 1000;</code>
+       */
+      public Builder clearDcIdaSubscribeAlertParam() {
+        copyOnWrite();
+        instance.clearDcIdaSubscribeAlertParam();
+        return this;
+      }
+
       // @@protoc_insertion_point(builder_scope:inner.params.DcIdaParam)
     }
     @java.lang.Override
@@ -921,10 +1032,11 @@ public final class DcIda {
               com.dogu.protocol.generated.inner.types.CfGdcDa.CfGdcDaControlParam.class,
               com.dogu.protocol.generated.inner.types.DcIda.DcIdaSwitchInputBlockParam.class,
               "seq_",
+              com.dogu.protocol.generated.inner.types.DcIda.DcIdaSubscribeAlertParam.class,
             };
             java.lang.String info =
-                "\u0000\u0007\u0001\u0000\u0001\n\u0007\u0000\u0000\u0000\u0001<\u0000\u0002<\u0000" +
-                "\u0003<\u0000\u0004<\u0000\u0005<\u0000\u0006<\u0000\n\u0006";
+                "\u0000\b\u0001\u0000\u0001\u03e8\b\u0000\u0000\u0000\u0001<\u0000\u0002<\u0000\u0003" +
+                "<\u0000\u0004<\u0000\u0005<\u0000\u0006<\u0000\n\u0006\u03e8<\u0000";
             return newMessageInfo(DEFAULT_INSTANCE, info, objects);
         }
         // fall through
@@ -1055,6 +1167,17 @@ public final class DcIda {
      */
     com.dogu.protocol.generated.inner.types.DcIda.DcIdaSwitchInputBlockResult getDcIdaSwitchInputBlockResult();
 
+    /**
+     * <code>.inner.types.DcIdaSubscribeAlertResult dc_ida_subscribe_alert_result = 1000;</code>
+     * @return Whether the dcIdaSubscribeAlertResult field is set.
+     */
+    boolean hasDcIdaSubscribeAlertResult();
+    /**
+     * <code>.inner.types.DcIdaSubscribeAlertResult dc_ida_subscribe_alert_result = 1000;</code>
+     * @return The dcIdaSubscribeAlertResult.
+     */
+    com.dogu.protocol.generated.inner.types.DcIda.DcIdaSubscribeAlertResult getDcIdaSubscribeAlertResult();
+
     public com.dogu.protocol.generated.inner.params.DcIda.DcIdaResult.ValueCase getValueCase();
   }
   /**
@@ -1076,6 +1199,7 @@ public final class DcIda {
       DC_IDA_QUERY_PROFILE_RESULT(4),
       DC_GDC_DA_CONTROL_RESULT(5),
       DC_IDA_SWITCH_INPUT_BLOCK_RESULT(6),
+      DC_IDA_SUBSCRIBE_ALERT_RESULT(1000),
       VALUE_NOT_SET(0);
       private final int value;
       private ValueCase(int value) {
@@ -1097,6 +1221,7 @@ public final class DcIda {
           case 4: return DC_IDA_QUERY_PROFILE_RESULT;
           case 5: return DC_GDC_DA_CONTROL_RESULT;
           case 6: return DC_IDA_SWITCH_INPUT_BLOCK_RESULT;
+          case 1000: return DC_IDA_SUBSCRIBE_ALERT_RESULT;
           case 0: return VALUE_NOT_SET;
           default: return null;
         }
@@ -1439,6 +1564,56 @@ public final class DcIda {
      */
     private void clearDcIdaSwitchInputBlockResult() {
       if (valueCase_ == 6) {
+        valueCase_ = 0;
+        value_ = null;
+      }
+    }
+
+    public static final int DC_IDA_SUBSCRIBE_ALERT_RESULT_FIELD_NUMBER = 1000;
+    /**
+     * <code>.inner.types.DcIdaSubscribeAlertResult dc_ida_subscribe_alert_result = 1000;</code>
+     */
+    @java.lang.Override
+    public boolean hasDcIdaSubscribeAlertResult() {
+      return valueCase_ == 1000;
+    }
+    /**
+     * <code>.inner.types.DcIdaSubscribeAlertResult dc_ida_subscribe_alert_result = 1000;</code>
+     */
+    @java.lang.Override
+    public com.dogu.protocol.generated.inner.types.DcIda.DcIdaSubscribeAlertResult getDcIdaSubscribeAlertResult() {
+      if (valueCase_ == 1000) {
+         return (com.dogu.protocol.generated.inner.types.DcIda.DcIdaSubscribeAlertResult) value_;
+      }
+      return com.dogu.protocol.generated.inner.types.DcIda.DcIdaSubscribeAlertResult.getDefaultInstance();
+    }
+    /**
+     * <code>.inner.types.DcIdaSubscribeAlertResult dc_ida_subscribe_alert_result = 1000;</code>
+     */
+    private void setDcIdaSubscribeAlertResult(com.dogu.protocol.generated.inner.types.DcIda.DcIdaSubscribeAlertResult value) {
+      value.getClass();
+  value_ = value;
+      valueCase_ = 1000;
+    }
+    /**
+     * <code>.inner.types.DcIdaSubscribeAlertResult dc_ida_subscribe_alert_result = 1000;</code>
+     */
+    private void mergeDcIdaSubscribeAlertResult(com.dogu.protocol.generated.inner.types.DcIda.DcIdaSubscribeAlertResult value) {
+      value.getClass();
+  if (valueCase_ == 1000 &&
+          value_ != com.dogu.protocol.generated.inner.types.DcIda.DcIdaSubscribeAlertResult.getDefaultInstance()) {
+        value_ = com.dogu.protocol.generated.inner.types.DcIda.DcIdaSubscribeAlertResult.newBuilder((com.dogu.protocol.generated.inner.types.DcIda.DcIdaSubscribeAlertResult) value_)
+            .mergeFrom(value).buildPartial();
+      } else {
+        value_ = value;
+      }
+      valueCase_ = 1000;
+    }
+    /**
+     * <code>.inner.types.DcIdaSubscribeAlertResult dc_ida_subscribe_alert_result = 1000;</code>
+     */
+    private void clearDcIdaSubscribeAlertResult() {
+      if (valueCase_ == 1000) {
         valueCase_ = 0;
         value_ = null;
       }
@@ -1867,6 +2042,54 @@ public final class DcIda {
         return this;
       }
 
+      /**
+       * <code>.inner.types.DcIdaSubscribeAlertResult dc_ida_subscribe_alert_result = 1000;</code>
+       */
+      @java.lang.Override
+      public boolean hasDcIdaSubscribeAlertResult() {
+        return instance.hasDcIdaSubscribeAlertResult();
+      }
+      /**
+       * <code>.inner.types.DcIdaSubscribeAlertResult dc_ida_subscribe_alert_result = 1000;</code>
+       */
+      @java.lang.Override
+      public com.dogu.protocol.generated.inner.types.DcIda.DcIdaSubscribeAlertResult getDcIdaSubscribeAlertResult() {
+        return instance.getDcIdaSubscribeAlertResult();
+      }
+      /**
+       * <code>.inner.types.DcIdaSubscribeAlertResult dc_ida_subscribe_alert_result = 1000;</code>
+       */
+      public Builder setDcIdaSubscribeAlertResult(com.dogu.protocol.generated.inner.types.DcIda.DcIdaSubscribeAlertResult value) {
+        copyOnWrite();
+        instance.setDcIdaSubscribeAlertResult(value);
+        return this;
+      }
+      /**
+       * <code>.inner.types.DcIdaSubscribeAlertResult dc_ida_subscribe_alert_result = 1000;</code>
+       */
+      public Builder setDcIdaSubscribeAlertResult(
+          com.dogu.protocol.generated.inner.types.DcIda.DcIdaSubscribeAlertResult.Builder builderForValue) {
+        copyOnWrite();
+        instance.setDcIdaSubscribeAlertResult(builderForValue.build());
+        return this;
+      }
+      /**
+       * <code>.inner.types.DcIdaSubscribeAlertResult dc_ida_subscribe_alert_result = 1000;</code>
+       */
+      public Builder mergeDcIdaSubscribeAlertResult(com.dogu.protocol.generated.inner.types.DcIda.DcIdaSubscribeAlertResult value) {
+        copyOnWrite();
+        instance.mergeDcIdaSubscribeAlertResult(value);
+        return this;
+      }
+      /**
+       * <code>.inner.types.DcIdaSubscribeAlertResult dc_ida_subscribe_alert_result = 1000;</code>
+       */
+      public Builder clearDcIdaSubscribeAlertResult() {
+        copyOnWrite();
+        instance.clearDcIdaSubscribeAlertResult();
+        return this;
+      }
+
       // @@protoc_insertion_point(builder_scope:inner.params.DcIdaResult)
     }
     @java.lang.Override
@@ -1892,10 +2115,11 @@ public final class DcIda {
               com.dogu.protocol.generated.inner.types.CfGdcDa.CfGdcDaControlResult.class,
               com.dogu.protocol.generated.inner.types.DcIda.DcIdaSwitchInputBlockResult.class,
               "seq_",
+              com.dogu.protocol.generated.inner.types.DcIda.DcIdaSubscribeAlertResult.class,
             };
             java.lang.String info =
-                "\u0000\u0007\u0001\u0000\u0001\n\u0007\u0000\u0000\u0000\u0001<\u0000\u0002<\u0000" +
-                "\u0003<\u0000\u0004<\u0000\u0005<\u0000\u0006<\u0000\n\u0006";
+                "\u0000\b\u0001\u0000\u0001\u03e8\b\u0000\u0000\u0000\u0001<\u0000\u0002<\u0000\u0003" +
+                "<\u0000\u0004<\u0000\u0005<\u0000\u0006<\u0000\n\u0006\u03e8<\u0000";
             return newMessageInfo(DEFAULT_INSTANCE, info, objects);
         }
         // fall through

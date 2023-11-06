@@ -1,5 +1,5 @@
 import { OneofUnionTypes, Platform, PrivateProtocol, Serial } from '@dogu-private/types';
-import { delay, Printable, SizePrefixedRecvQueue, stringify } from '@dogu-tech/common';
+import { delay, Printable, SizePrefixedRecvQueue, stringify, SyncClosable } from '@dogu-tech/common';
 import EventEmitter from 'events';
 import { Socket } from 'net';
 import { env } from '../../../env';
@@ -28,6 +28,8 @@ export class IosDeviceAgentService implements DeviceAgentService, Zombieable {
   private readonly recvQueue = new SizePrefixedRecvQueue();
   private seq = 0;
   private zombieWaiter: ZombieQueriable;
+  public name = 'iOSDeviceAgentService';
+  public platform = Platform.PLATFORM_IOS;
 
   constructor(
     public readonly serial: Serial,
@@ -79,7 +81,7 @@ export class IosDeviceAgentService implements DeviceAgentService, Zombieable {
 
   async revive(): Promise<void> {
     await this.connect();
-    await this.sendWithProtobuf('dcIdaSwitchInputBlockParam', 'dcIdaSwitchInputBlockResult', { isBlock: env.DOGU_IS_DEVICE_SHARE === true });
+    await this.send('dcIdaSwitchInputBlockParam', 'dcIdaSwitchInputBlockResult', { isBlock: env.DOGU_IS_DEVICE_SHARE === true });
   }
 
   onDie(reason: string): void | Promise<void> {
@@ -92,6 +94,13 @@ export class IosDeviceAgentService implements DeviceAgentService, Zombieable {
 
   delete(): void {
     ZombieServiceInstance.deleteComponent(this);
+  }
+
+  get props(): ZombieProps {
+    return { serverPort: this.serverPort };
+  }
+  get printable(): Printable {
+    return this.logger;
   }
 
   get screenUrl(): string {
@@ -110,61 +119,66 @@ export class IosDeviceAgentService implements DeviceAgentService, Zombieable {
     return this.zombieWaiter.isAlive();
   }
 
-  async sendWithProtobuf<
+  async send<
     ParamKey extends DcIdaParamKeys & keyof DcIdaParamUnionPick<ParamKey>,
     ResultKey extends DcIdaResultKeys & keyof DcIdaResultUnionPick<ResultKey>,
     ParamValue extends DcIdaParamUnionPickValue<ParamKey>,
     ResultValue extends DcIdaResultUnionPickValue<ResultKey>,
   >(paramKey: ParamKey, resultKey: ResultKey, paramValue: ParamValue, timeout = 10000): Promise<ResultValue | null> {
-    const { logger } = this;
-    return new Promise((resolve) => {
-      if (!this.client) {
-        logger.error('IosDeviceAgentService.sendWithProtobuf this.client is null');
-        return null;
-      }
-      const seq = this.getSeq();
-
-      // complete handle
-      this.protoAPIRetEmitter.once(seq.toString(), (data: DcIdaResult) => {
-        if (data.value?.$case !== resultKey) {
-          logger.error(`IosDeviceAgentService.sendWithProtobuf ${resultKey} is null`);
-          resolve(null);
-          return;
-        }
-        const returnObj = data.value as DcIdaResultUnionPick<ResultKey>;
-        if (returnObj == null) {
-          logger.error('IosDeviceAgentService.sendWithProtobuf returnObj is null');
-          resolve(null);
-          return;
-        }
-        resolve(returnObj[resultKey] as ResultValue);
+    return new Promise<ResultValue | null>((resolve) => {
+      this.sendInternal(paramKey, resultKey, paramValue, timeout, (result: ResultValue | null, closable: SyncClosable) => {
+        closable.close();
+        resolve(result);
       });
-
-      // timeout handle
-      setTimeout(() => {
-        resolve(null);
-      }, timeout);
-
-      // request
-      const paramObj = {
-        $case: paramKey,
-        [paramKey]: paramValue,
-      } as unknown as DcIdaParamUnionPick<ParamKey>;
-
-      const castedParam: DcIdaParam = {
-        seq: seq,
-        value: paramObj,
-      };
-      const castedParamList: DcIdaParamList = {
-        params: [castedParam],
-      };
-      const message = DcIdaParamList.encode(castedParamList).finish();
-      const sizeBuffer = Buffer.alloc(4);
-      sizeBuffer.writeUInt32LE(message.byteLength, 0);
-
-      const bufferConcated = Buffer.concat([sizeBuffer, Buffer.from(message)]);
-      this.client.write(bufferConcated);
     });
+  }
+
+  private sendInternal<
+    ParamKey extends DcIdaParamKeys & keyof DcIdaParamUnionPick<ParamKey>,
+    ResultKey extends DcIdaResultKeys & keyof DcIdaResultUnionPick<ResultKey>,
+    ParamValue extends DcIdaParamUnionPickValue<ParamKey>,
+    ResultValue extends DcIdaResultUnionPickValue<ResultKey>,
+  >(paramKey: ParamKey, resultKey: ResultKey, paramValue: ParamValue, timeout = 10000, onResult: (result: ResultValue | null, closable: SyncClosable) => void): void {
+    const { logger } = this;
+    let isResolved = false;
+
+    const seq = this.getSeq();
+
+    const resolve = (result: ResultValue | null): void => {
+      if (isResolved) {
+        return;
+      }
+      isResolved = true;
+      onResult(result, { close: () => this.protoAPIRetEmitter.removeAllListeners(seq.toString()) });
+    };
+    if (!this.client) {
+      logger.error('IosDeviceAgentService.sendWithProtobuf this.client is null');
+      resolve(null);
+      return;
+    }
+
+    // complete handle
+    this.protoAPIRetEmitter.on(seq.toString(), (data: DcIdaResult) => {
+      if (data.value?.$case !== resultKey) {
+        logger.error(`IosDeviceAgentService.sendWithProtobuf ${resultKey} is null`);
+        resolve(null);
+        return;
+      }
+      const returnObj = data.value as DcIdaResultUnionPick<ResultKey>;
+      resolve(returnObj[resultKey] as ResultValue);
+    });
+
+    // timeout handle
+    setTimeout(() => {
+      resolve(null);
+    }, timeout);
+
+    // request
+    const paramObj = {
+      $case: paramKey,
+      [paramKey]: paramValue,
+    } as unknown as DcIdaParamUnionPick<ParamKey>;
+    this.client.write(buildParam(seq, paramObj));
   }
 
   private async connect(tryCount = 10): Promise<void> {
@@ -202,19 +216,6 @@ export class IosDeviceAgentService implements DeviceAgentService, Zombieable {
     this.seq += 1;
     return ret;
   }
-
-  get name(): string {
-    return `iOSDeviceAgentService`;
-  }
-  get platform(): Platform {
-    return Platform.PLATFORM_IOS;
-  }
-  get props(): ZombieProps {
-    return { serverPort: this.serverPort };
-  }
-  get printable(): Printable {
-    return this.logger;
-  }
 }
 
 interface ProtoAPIEmitter {
@@ -222,3 +223,19 @@ interface ProtoAPIEmitter {
 }
 
 class ProtoAPIEmitterImpl extends EventEmitter implements ProtoAPIEmitter {}
+
+function buildParam<ParamKey extends DcIdaParamKeys & keyof DcIdaParamUnionPick<ParamKey>>(seq: number, paramObj: DcIdaParamUnionPick<ParamKey>): Buffer {
+  const castedParam: DcIdaParam = {
+    seq: seq,
+    value: paramObj,
+  };
+  const castedParamList: DcIdaParamList = {
+    params: [castedParam],
+  };
+  const message = DcIdaParamList.encode(castedParamList).finish();
+  const sizeBuffer = Buffer.alloc(4);
+  sizeBuffer.writeUInt32LE(message.byteLength, 0);
+
+  const bufferConcated = Buffer.concat([sizeBuffer, Buffer.from(message)]);
+  return bufferConcated;
+}

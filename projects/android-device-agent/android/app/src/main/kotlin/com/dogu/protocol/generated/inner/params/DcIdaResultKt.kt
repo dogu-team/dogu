@@ -182,6 +182,30 @@ object DcIdaResultKt {
     fun hasDcIdaSwitchInputBlockResult(): kotlin.Boolean {
       return _builder.hasDcIdaSwitchInputBlockResult()
     }
+
+    /**
+     * <code>.inner.types.DcIdaSubscribeAlertResult dc_ida_subscribe_alert_result = 1000;</code>
+     */
+    var dcIdaSubscribeAlertResult: com.dogu.protocol.generated.inner.types.DcIda.DcIdaSubscribeAlertResult
+      @JvmName("getDcIdaSubscribeAlertResult")
+      get() = _builder.getDcIdaSubscribeAlertResult()
+      @JvmName("setDcIdaSubscribeAlertResult")
+      set(value) {
+        _builder.setDcIdaSubscribeAlertResult(value)
+      }
+    /**
+     * <code>.inner.types.DcIdaSubscribeAlertResult dc_ida_subscribe_alert_result = 1000;</code>
+     */
+    fun clearDcIdaSubscribeAlertResult() {
+      _builder.clearDcIdaSubscribeAlertResult()
+    }
+    /**
+     * <code>.inner.types.DcIdaSubscribeAlertResult dc_ida_subscribe_alert_result = 1000;</code>
+     * @return Whether the dcIdaSubscribeAlertResult field is set.
+     */
+    fun hasDcIdaSubscribeAlertResult(): kotlin.Boolean {
+      return _builder.hasDcIdaSubscribeAlertResult()
+    }
     val valueCase: com.dogu.protocol.generated.inner.params.DcIda.DcIdaResult.ValueCase
       @JvmName("getValueCase")
       get() = _builder.getValueCase()
@@ -212,4 +236,7 @@ val com.dogu.protocol.generated.inner.params.DcIda.DcIdaResultOrBuilder.dcGdcDaC
 
 val com.dogu.protocol.generated.inner.params.DcIda.DcIdaResultOrBuilder.dcIdaSwitchInputBlockResultOrNull: com.dogu.protocol.generated.inner.types.DcIda.DcIdaSwitchInputBlockResult?
   get() = if (hasDcIdaSwitchInputBlockResult()) getDcIdaSwitchInputBlockResult() else null
+
+val com.dogu.protocol.generated.inner.params.DcIda.DcIdaResultOrBuilder.dcIdaSubscribeAlertResultOrNull: com.dogu.protocol.generated.inner.types.DcIda.DcIdaSubscribeAlertResult?
+  get() = if (hasDcIdaSubscribeAlertResult()) getDcIdaSubscribeAlertResult() else null
 

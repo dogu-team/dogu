@@ -408,7 +408,7 @@ export class IosChannel implements DeviceChannel {
   }
 
   async isPortListening(port: number): Promise<boolean> {
-    const res = await this.deviceAgent.sendWithProtobuf('dcIdaIsPortListeningParam', 'dcIdaIsPortListeningResult', { port });
+    const res = await this.deviceAgent.send('dcIdaIsPortListeningParam', 'dcIdaIsPortListeningResult', { port });
     return res?.isListening ?? false;
   }
 
@@ -478,7 +478,7 @@ export class IosChannel implements DeviceChannel {
     const installedAppNames = await MobileDevice.listApps(serial, logger);
     const dotAppPath = await this.findDotAppPath(appPath);
     const bundleId = await MobileDevice.getBundleId(dotAppPath, logger);
-    const result = await this.deviceAgent.sendWithProtobuf('dcIdaRunappParam', 'dcIdaRunappResult', {
+    const result = await this.deviceAgent.send('dcIdaRunappParam', 'dcIdaRunappResult', {
       appPath,
       installedAppNames,
       bundleId,
@@ -499,7 +499,7 @@ export class IosChannel implements DeviceChannel {
 
   async reset(): Promise<void> {
     const { logger, webdriverAgentProcess } = this;
-    await this.deviceAgent.sendWithProtobuf('dcIdaSwitchInputBlockParam', 'dcIdaSwitchInputBlockResult', { isBlock: false });
+    await this.deviceAgent.send('dcIdaSwitchInputBlockParam', 'dcIdaSwitchInputBlockResult', { isBlock: false });
     const appiumContextImpl = await checkTime(`IosChannel.reset.waitUntilBuiltin`, this._appiumContext.waitUntilBuiltin(), logger);
     await checkTime(`IosChannel.reset.reset`, this._reset.reset(appiumContextImpl, webdriverAgentProcess), logger);
   }

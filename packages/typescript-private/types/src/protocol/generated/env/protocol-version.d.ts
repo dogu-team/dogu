@@ -1,1 +1,1 @@
-export declare const DOGU_PROTOCOL_VERSION = "8fd8b0ef9973b35c1c21ec9bce192927";
+export declare const DOGU_PROTOCOL_VERSION = "491b02c87b97345f9a99838ba9681d17";

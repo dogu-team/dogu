@@ -498,6 +498,82 @@ func (*DcIdaSwitchInputBlockResult) Descriptor() ([]byte, []int) {
 	return file_inner_types_dc_ida_proto_rawDescGZIP(), []int{9}
 }
 
+type DcIdaSubscribeAlertParam struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *DcIdaSubscribeAlertParam) Reset() {
+	*x = DcIdaSubscribeAlertParam{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_inner_types_dc_ida_proto_msgTypes[10]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *DcIdaSubscribeAlertParam) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DcIdaSubscribeAlertParam) ProtoMessage() {}
+
+func (x *DcIdaSubscribeAlertParam) ProtoReflect() protoreflect.Message {
+	mi := &file_inner_types_dc_ida_proto_msgTypes[10]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DcIdaSubscribeAlertParam.ProtoReflect.Descriptor instead.
+func (*DcIdaSubscribeAlertParam) Descriptor() ([]byte, []int) {
+	return file_inner_types_dc_ida_proto_rawDescGZIP(), []int{10}
+}
+
+type DcIdaSubscribeAlertResult struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *DcIdaSubscribeAlertResult) Reset() {
+	*x = DcIdaSubscribeAlertResult{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_inner_types_dc_ida_proto_msgTypes[11]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *DcIdaSubscribeAlertResult) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DcIdaSubscribeAlertResult) ProtoMessage() {}
+
+func (x *DcIdaSubscribeAlertResult) ProtoReflect() protoreflect.Message {
+	mi := &file_inner_types_dc_ida_proto_msgTypes[11]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DcIdaSubscribeAlertResult.ProtoReflect.Descriptor instead.
+func (*DcIdaSubscribeAlertResult) Descriptor() ([]byte, []int) {
+	return file_inner_types_dc_ida_proto_rawDescGZIP(), []int{11}
+}
+
 var File_inner_types_dc_ida_proto protoreflect.FileDescriptor
 
 var file_inner_types_dc_ida_proto_rawDesc = []byte{
@@ -552,14 +628,17 @@ var file_inner_types_dc_ida_proto_rawDesc = []byte{
 	0x6f, 0x63, 0x6b, 0x18, 0x01, 0x20, 0x01, 0x28, 0x08, 0x52, 0x07, 0x69, 0x73, 0x42, 0x6c, 0x6f,
 	0x63, 0x6b, 0x22, 0x1d, 0x0a, 0x1b, 0x44, 0x63, 0x49, 0x64, 0x61, 0x53, 0x77, 0x69, 0x74, 0x63,
 	0x68, 0x49, 0x6e, 0x70, 0x75, 0x74, 0x42, 0x6c, 0x6f, 0x63, 0x6b, 0x52, 0x65, 0x73, 0x75, 0x6c,
-	0x74, 0x42, 0x6a, 0x0a, 0x27, 0x63, 0x6f, 0x6d, 0x2e, 0x64, 0x6f, 0x67, 0x75, 0x2e, 0x70, 0x72,
-	0x6f, 0x74, 0x6f, 0x63, 0x6f, 0x6c, 0x2e, 0x67, 0x65, 0x6e, 0x65, 0x72, 0x61, 0x74, 0x65, 0x64,
-	0x2e, 0x69, 0x6e, 0x6e, 0x65, 0x72, 0x2e, 0x74, 0x79, 0x70, 0x65, 0x73, 0x5a, 0x3f, 0x67, 0x6f,
-	0x2d, 0x64, 0x65, 0x76, 0x69, 0x63, 0x65, 0x2d, 0x63, 0x6f, 0x6e, 0x74, 0x72, 0x6f, 0x6c, 0x6c,
-	0x65, 0x72, 0x2f, 0x74, 0x79, 0x70, 0x65, 0x73, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x63, 0x6f,
-	0x6c, 0x2f, 0x67, 0x65, 0x6e, 0x65, 0x72, 0x61, 0x74, 0x65, 0x64, 0x2f, 0x70, 0x72, 0x6f, 0x74,
-	0x6f, 0x2f, 0x69, 0x6e, 0x6e, 0x65, 0x72, 0x2f, 0x74, 0x79, 0x70, 0x65, 0x73, 0x62, 0x06, 0x70,
-	0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x74, 0x22, 0x1a, 0x0a, 0x18, 0x44, 0x63, 0x49, 0x64, 0x61, 0x53, 0x75, 0x62, 0x73, 0x63, 0x72,
+	0x69, 0x62, 0x65, 0x41, 0x6c, 0x65, 0x72, 0x74, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x22, 0x1b, 0x0a,
+	0x19, 0x44, 0x63, 0x49, 0x64, 0x61, 0x53, 0x75, 0x62, 0x73, 0x63, 0x72, 0x69, 0x62, 0x65, 0x41,
+	0x6c, 0x65, 0x72, 0x74, 0x52, 0x65, 0x73, 0x75, 0x6c, 0x74, 0x42, 0x6a, 0x0a, 0x27, 0x63, 0x6f,
+	0x6d, 0x2e, 0x64, 0x6f, 0x67, 0x75, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x63, 0x6f, 0x6c, 0x2e,
+	0x67, 0x65, 0x6e, 0x65, 0x72, 0x61, 0x74, 0x65, 0x64, 0x2e, 0x69, 0x6e, 0x6e, 0x65, 0x72, 0x2e,
+	0x74, 0x79, 0x70, 0x65, 0x73, 0x5a, 0x3f, 0x67, 0x6f, 0x2d, 0x64, 0x65, 0x76, 0x69, 0x63, 0x65,
+	0x2d, 0x63, 0x6f, 0x6e, 0x74, 0x72, 0x6f, 0x6c, 0x6c, 0x65, 0x72, 0x2f, 0x74, 0x79, 0x70, 0x65,
+	0x73, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x63, 0x6f, 0x6c, 0x2f, 0x67, 0x65, 0x6e, 0x65, 0x72,
+	0x61, 0x74, 0x65, 0x64, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2f, 0x69, 0x6e, 0x6e, 0x65, 0x72,
+	0x2f, 0x74, 0x79, 0x70, 0x65, 0x73, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -574,7 +653,7 @@ func file_inner_types_dc_ida_proto_rawDescGZIP() []byte {
 	return file_inner_types_dc_ida_proto_rawDescData
 }
 
-var file_inner_types_dc_ida_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
+var file_inner_types_dc_ida_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
 var file_inner_types_dc_ida_proto_goTypes = []interface{}{
 	(*DcIdaRunAppParam)(nil),            // 0: inner.types.DcIdaRunAppParam
 	(*DcIdaRunAppResult)(nil),           // 1: inner.types.DcIdaRunAppResult
@@ -586,14 +665,16 @@ var file_inner_types_dc_ida_proto_goTypes = []interface{}{
 	(*DcIdaQueryProfileResult)(nil),     // 7: inner.types.DcIdaQueryProfileResult
 	(*DcIdaSwitchInputBlockParam)(nil),  // 8: inner.types.DcIdaSwitchInputBlockParam
 	(*DcIdaSwitchInputBlockResult)(nil), // 9: inner.types.DcIdaSwitchInputBlockResult
-	(*outer.ErrorResult)(nil),           // 10: outer.ErrorResult
-	(*profile.ProfileMethod)(nil),       // 11: outer.profile.ProfileMethod
-	(*profile.RuntimeInfo)(nil),         // 12: outer.profile.RuntimeInfo
+	(*DcIdaSubscribeAlertParam)(nil),    // 10: inner.types.DcIdaSubscribeAlertParam
+	(*DcIdaSubscribeAlertResult)(nil),   // 11: inner.types.DcIdaSubscribeAlertResult
+	(*outer.ErrorResult)(nil),           // 12: outer.ErrorResult
+	(*profile.ProfileMethod)(nil),       // 13: outer.profile.ProfileMethod
+	(*profile.RuntimeInfo)(nil),         // 14: outer.profile.RuntimeInfo
 }
 var file_inner_types_dc_ida_proto_depIdxs = []int32{
-	10, // 0: inner.types.DcIdaRunAppResult.error:type_name -> outer.ErrorResult
-	11, // 1: inner.types.DcIdaQueryProfileParam.profile_methods:type_name -> outer.profile.ProfileMethod
-	12, // 2: inner.types.DcIdaQueryProfileResult.info:type_name -> outer.profile.RuntimeInfo
+	12, // 0: inner.types.DcIdaRunAppResult.error:type_name -> outer.ErrorResult
+	13, // 1: inner.types.DcIdaQueryProfileParam.profile_methods:type_name -> outer.profile.ProfileMethod
+	14, // 2: inner.types.DcIdaQueryProfileResult.info:type_name -> outer.profile.RuntimeInfo
 	3,  // [3:3] is the sub-list for method output_type
 	3,  // [3:3] is the sub-list for method input_type
 	3,  // [3:3] is the sub-list for extension type_name
@@ -727,6 +808,30 @@ func file_inner_types_dc_ida_proto_init() {
 				return nil
 			}
 		}
+		file_inner_types_dc_ida_proto_msgTypes[10].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*DcIdaSubscribeAlertParam); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_inner_types_dc_ida_proto_msgTypes[11].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*DcIdaSubscribeAlertResult); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -734,7 +839,7 @@ func file_inner_types_dc_ida_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_inner_types_dc_ida_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   10,
+			NumMessages:   12,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

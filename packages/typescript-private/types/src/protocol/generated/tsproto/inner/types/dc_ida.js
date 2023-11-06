@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.DcIdaSwitchInputBlockResult = exports.DcIdaSwitchInputBlockParam = exports.DcIdaQueryProfileResult = exports.DcIdaQueryProfileParam = exports.DcIdaIsPortListeningResult = exports.DcIdaIsPortListeningParam = exports.DcIdaGetSystemInfoResult = exports.DcIdaGetSystemInfoParam = exports.DcIdaRunAppResult = exports.DcIdaRunAppParam = void 0;
+exports.DcIdaSubscribeAlertResult = exports.DcIdaSubscribeAlertParam = exports.DcIdaSwitchInputBlockResult = exports.DcIdaSwitchInputBlockParam = exports.DcIdaQueryProfileResult = exports.DcIdaQueryProfileParam = exports.DcIdaIsPortListeningResult = exports.DcIdaIsPortListeningParam = exports.DcIdaGetSystemInfoResult = exports.DcIdaGetSystemInfoParam = exports.DcIdaRunAppResult = exports.DcIdaRunAppParam = void 0;
 /* eslint-disable */
 const minimal_1 = __importDefault(require("protobufjs/minimal"));
 const errors_1 = require("../../outer/errors");
@@ -443,6 +443,72 @@ exports.DcIdaSwitchInputBlockResult = {
     },
     fromPartial(_) {
         const message = createBaseDcIdaSwitchInputBlockResult();
+        return message;
+    },
+};
+function createBaseDcIdaSubscribeAlertParam() {
+    return {};
+}
+exports.DcIdaSubscribeAlertParam = {
+    encode(_, writer = minimal_1.default.Writer.create()) {
+        return writer;
+    },
+    decode(input, length) {
+        const reader = input instanceof minimal_1.default.Reader ? input : new minimal_1.default.Reader(input);
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = createBaseDcIdaSubscribeAlertParam();
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+            }
+        }
+        return message;
+    },
+    fromJSON(_) {
+        return {};
+    },
+    toJSON(_) {
+        const obj = {};
+        return obj;
+    },
+    fromPartial(_) {
+        const message = createBaseDcIdaSubscribeAlertParam();
+        return message;
+    },
+};
+function createBaseDcIdaSubscribeAlertResult() {
+    return {};
+}
+exports.DcIdaSubscribeAlertResult = {
+    encode(_, writer = minimal_1.default.Writer.create()) {
+        return writer;
+    },
+    decode(input, length) {
+        const reader = input instanceof minimal_1.default.Reader ? input : new minimal_1.default.Reader(input);
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = createBaseDcIdaSubscribeAlertResult();
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+            }
+        }
+        return message;
+    },
+    fromJSON(_) {
+        return {};
+    },
+    toJSON(_) {
+        const obj = {};
+        return obj;
+    },
+    fromPartial(_) {
+        const message = createBaseDcIdaSubscribeAlertResult();
         return message;
     },
 };

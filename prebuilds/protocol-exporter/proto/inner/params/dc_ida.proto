@@ -17,6 +17,7 @@ message DcIdaParam {
     types.DcIdaQueryProfileParam dc_ida_query_profile_param = 4;
     types.CfGdcDaControlParam dc_gdc_da_control_param = 5;
     types.DcIdaSwitchInputBlockParam dc_ida_switch_input_block_param = 6;
+    types.DcIdaSubscribeAlertParam dc_ida_subscribe_alert_param = 1000;
   }
 }
 
@@ -29,6 +30,7 @@ message DcIdaResult {
     types.DcIdaQueryProfileResult dc_ida_query_profile_result = 4;
     types.CfGdcDaControlResult dc_gdc_da_control_result = 5;
     types.DcIdaSwitchInputBlockResult dc_ida_switch_input_block_result = 6;
+    types.DcIdaSubscribeAlertResult dc_ida_subscribe_alert_result = 1000;
   }
 }
 

@@ -160,6 +160,26 @@ public struct Inner_Types_DcIdaSwitchInputBlockResult {
   public init() {}
 }
 
+public struct Inner_Types_DcIdaSubscribeAlertParam {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public struct Inner_Types_DcIdaSubscribeAlertResult {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
 #if swift(>=5.5) && canImport(_Concurrency)
 extension Inner_Types_DcIdaRunAppParam: @unchecked Sendable {}
 extension Inner_Types_DcIdaRunAppResult: @unchecked Sendable {}
@@ -171,6 +191,8 @@ extension Inner_Types_DcIdaQueryProfileParam: @unchecked Sendable {}
 extension Inner_Types_DcIdaQueryProfileResult: @unchecked Sendable {}
 extension Inner_Types_DcIdaSwitchInputBlockParam: @unchecked Sendable {}
 extension Inner_Types_DcIdaSwitchInputBlockResult: @unchecked Sendable {}
+extension Inner_Types_DcIdaSubscribeAlertParam: @unchecked Sendable {}
+extension Inner_Types_DcIdaSubscribeAlertResult: @unchecked Sendable {}
 #endif  // swift(>=5.5) && canImport(_Concurrency)
 
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
@@ -492,6 +514,44 @@ extension Inner_Types_DcIdaSwitchInputBlockResult: SwiftProtobuf.Message, SwiftP
   }
 
   public static func ==(lhs: Inner_Types_DcIdaSwitchInputBlockResult, rhs: Inner_Types_DcIdaSwitchInputBlockResult) -> Bool {
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Inner_Types_DcIdaSubscribeAlertParam: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".DcIdaSubscribeAlertParam"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap()
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let _ = try decoder.nextFieldNumber() {
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Inner_Types_DcIdaSubscribeAlertParam, rhs: Inner_Types_DcIdaSubscribeAlertParam) -> Bool {
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Inner_Types_DcIdaSubscribeAlertResult: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".DcIdaSubscribeAlertResult"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap()
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let _ = try decoder.nextFieldNumber() {
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Inner_Types_DcIdaSubscribeAlertResult, rhs: Inner_Types_DcIdaSubscribeAlertResult) -> Bool {
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

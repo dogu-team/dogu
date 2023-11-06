@@ -44,7 +44,7 @@ export class IosSystemInfoService {
       return 'unknown';
     });
     info.system.manufacturer = 'Apple Inc.';
-    const deviceAgentInfo = await this.service.sendWithProtobuf('dcIdaGetSystemInfoParam', 'dcIdaGetSystemInfoResult', {});
+    const deviceAgentInfo = await this.service.send('dcIdaGetSystemInfoParam', 'dcIdaGetSystemInfoResult', {});
     info.graphics.displays.push({
       vendor: '',
       vendorId: '',
@@ -54,7 +54,7 @@ export class IosSystemInfoService {
       resolutionX: deviceAgentInfo?.screenWidth ?? 0,
       resolutionY: deviceAgentInfo?.screenHeight ?? 0,
     });
-    const profileResult = await this.service.sendWithProtobuf('dcIdaQueryProfileParam', 'dcIdaQueryProfileResult', {
+    const profileResult = await this.service.send('dcIdaQueryProfileParam', 'dcIdaQueryProfileResult', {
       profileMethods: [ProfileMethods.Ios.MemVmStatistics],
     });
     info.memLayout.push({ size: profileResult?.info?.mems[0].total ?? 0 });

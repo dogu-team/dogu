@@ -1,6 +1,6 @@
 import _m0 from 'protobufjs/minimal';
 import { CfGdcDaControlParam, CfGdcDaControlResult } from '../types/cf_gdc_da';
-import { DcIdaGetSystemInfoParam, DcIdaGetSystemInfoResult, DcIdaIsPortListeningParam, DcIdaIsPortListeningResult, DcIdaQueryProfileParam, DcIdaQueryProfileResult, DcIdaRunAppParam, DcIdaRunAppResult, DcIdaSwitchInputBlockParam, DcIdaSwitchInputBlockResult } from '../types/dc_ida';
+import { DcIdaGetSystemInfoParam, DcIdaGetSystemInfoResult, DcIdaIsPortListeningParam, DcIdaIsPortListeningResult, DcIdaQueryProfileParam, DcIdaQueryProfileResult, DcIdaRunAppParam, DcIdaRunAppResult, DcIdaSubscribeAlertParam, DcIdaSubscribeAlertResult, DcIdaSwitchInputBlockParam, DcIdaSwitchInputBlockResult } from '../types/dc_ida';
 export interface DcIdaParam {
     seq: number;
     value?: {
@@ -21,6 +21,9 @@ export interface DcIdaParam {
     } | {
         $case: 'dcIdaSwitchInputBlockParam';
         dcIdaSwitchInputBlockParam: DcIdaSwitchInputBlockParam;
+    } | {
+        $case: 'dcIdaSubscribeAlertParam';
+        dcIdaSubscribeAlertParam: DcIdaSubscribeAlertParam;
     };
 }
 export interface DcIdaResult {
@@ -43,6 +46,9 @@ export interface DcIdaResult {
     } | {
         $case: 'dcIdaSwitchInputBlockResult';
         dcIdaSwitchInputBlockResult: DcIdaSwitchInputBlockResult;
+    } | {
+        $case: 'dcIdaSubscribeAlertResult';
+        dcIdaSubscribeAlertResult: DcIdaSubscribeAlertResult;
     };
 }
 export interface DcIdaParamList {
@@ -120,6 +126,10 @@ export declare const DcIdaParam: {
             } | undefined;
         } & {
             $case: "dcIdaSwitchInputBlockParam";
+        }) | ({
+            dcIdaSubscribeAlertParam?: {} | undefined;
+        } & {
+            $case: "dcIdaSubscribeAlertParam";
         }) | undefined;
     } & {
         seq?: number | undefined;
@@ -316,8 +326,15 @@ export declare const DcIdaParam: {
                 isBlock?: boolean | undefined;
             } & { [K_15 in Exclude<keyof I["value"]["dcIdaSwitchInputBlockParam"], "isBlock">]: never; }) | undefined;
             $case: "dcIdaSwitchInputBlockParam";
-        } & { [K_16 in Exclude<keyof I["value"], "$case" | "dcIdaSwitchInputBlockParam">]: never; }) | undefined;
-    } & { [K_17 in Exclude<keyof I, keyof DcIdaParam>]: never; }>(object: I): DcIdaParam;
+        } & { [K_16 in Exclude<keyof I["value"], "$case" | "dcIdaSwitchInputBlockParam">]: never; }) | ({
+            dcIdaSubscribeAlertParam?: {} | undefined;
+        } & {
+            $case: "dcIdaSubscribeAlertParam";
+        } & {
+            dcIdaSubscribeAlertParam?: ({} & {} & { [K_17 in Exclude<keyof I["value"]["dcIdaSubscribeAlertParam"], never>]: never; }) | undefined;
+            $case: "dcIdaSubscribeAlertParam";
+        } & { [K_18 in Exclude<keyof I["value"], "$case" | "dcIdaSubscribeAlertParam">]: never; }) | undefined;
+    } & { [K_19 in Exclude<keyof I, keyof DcIdaParam>]: never; }>(object: I): DcIdaParam;
 };
 export declare const DcIdaResult: {
     encode(message: DcIdaResult, writer?: _m0.Writer): _m0.Writer;
@@ -461,6 +478,10 @@ export declare const DcIdaResult: {
             dcIdaSwitchInputBlockResult?: {} | undefined;
         } & {
             $case: "dcIdaSwitchInputBlockResult";
+        }) | ({
+            dcIdaSubscribeAlertResult?: {} | undefined;
+        } & {
+            $case: "dcIdaSubscribeAlertResult";
         }) | undefined;
     } & {
         seq?: number | undefined;
@@ -1213,8 +1234,15 @@ export declare const DcIdaResult: {
         } & {
             dcIdaSwitchInputBlockResult?: ({} & {} & { [K_41 in Exclude<keyof I["value"]["dcIdaSwitchInputBlockResult"], never>]: never; }) | undefined;
             $case: "dcIdaSwitchInputBlockResult";
-        } & { [K_42 in Exclude<keyof I["value"], "$case" | "dcIdaSwitchInputBlockResult">]: never; }) | undefined;
-    } & { [K_43 in Exclude<keyof I, keyof DcIdaResult>]: never; }>(object: I): DcIdaResult;
+        } & { [K_42 in Exclude<keyof I["value"], "$case" | "dcIdaSwitchInputBlockResult">]: never; }) | ({
+            dcIdaSubscribeAlertResult?: {} | undefined;
+        } & {
+            $case: "dcIdaSubscribeAlertResult";
+        } & {
+            dcIdaSubscribeAlertResult?: ({} & {} & { [K_43 in Exclude<keyof I["value"]["dcIdaSubscribeAlertResult"], never>]: never; }) | undefined;
+            $case: "dcIdaSubscribeAlertResult";
+        } & { [K_44 in Exclude<keyof I["value"], "$case" | "dcIdaSubscribeAlertResult">]: never; }) | undefined;
+    } & { [K_45 in Exclude<keyof I, keyof DcIdaResult>]: never; }>(object: I): DcIdaResult;
 };
 export declare const DcIdaParamList: {
     encode(message: DcIdaParamList, writer?: _m0.Writer): _m0.Writer;
@@ -1286,6 +1314,10 @@ export declare const DcIdaParamList: {
                 } | undefined;
             } & {
                 $case: "dcIdaSwitchInputBlockParam";
+            }) | ({
+                dcIdaSubscribeAlertParam?: {} | undefined;
+            } & {
+                $case: "dcIdaSubscribeAlertParam";
             }) | undefined;
         }[] | undefined;
     } & {
@@ -1353,6 +1385,10 @@ export declare const DcIdaParamList: {
                 } | undefined;
             } & {
                 $case: "dcIdaSwitchInputBlockParam";
+            }) | ({
+                dcIdaSubscribeAlertParam?: {} | undefined;
+            } & {
+                $case: "dcIdaSubscribeAlertParam";
             }) | undefined;
         }[] & ({
             seq?: number | undefined;
@@ -1418,6 +1454,10 @@ export declare const DcIdaParamList: {
                 } | undefined;
             } & {
                 $case: "dcIdaSwitchInputBlockParam";
+            }) | ({
+                dcIdaSubscribeAlertParam?: {} | undefined;
+            } & {
+                $case: "dcIdaSubscribeAlertParam";
             }) | undefined;
         } & {
             seq?: number | undefined;
@@ -1614,8 +1654,15 @@ export declare const DcIdaParamList: {
                     isBlock?: boolean | undefined;
                 } & { [K_15 in Exclude<keyof I["params"][number]["value"]["dcIdaSwitchInputBlockParam"], "isBlock">]: never; }) | undefined;
                 $case: "dcIdaSwitchInputBlockParam";
-            } & { [K_16 in Exclude<keyof I["params"][number]["value"], "$case" | "dcIdaSwitchInputBlockParam">]: never; }) | undefined;
-        } & { [K_17 in Exclude<keyof I["params"][number], keyof DcIdaParam>]: never; })[] & { [K_18 in Exclude<keyof I["params"], keyof {
+            } & { [K_16 in Exclude<keyof I["params"][number]["value"], "$case" | "dcIdaSwitchInputBlockParam">]: never; }) | ({
+                dcIdaSubscribeAlertParam?: {} | undefined;
+            } & {
+                $case: "dcIdaSubscribeAlertParam";
+            } & {
+                dcIdaSubscribeAlertParam?: ({} & {} & { [K_17 in Exclude<keyof I["params"][number]["value"]["dcIdaSubscribeAlertParam"], never>]: never; }) | undefined;
+                $case: "dcIdaSubscribeAlertParam";
+            } & { [K_18 in Exclude<keyof I["params"][number]["value"], "$case" | "dcIdaSubscribeAlertParam">]: never; }) | undefined;
+        } & { [K_19 in Exclude<keyof I["params"][number], keyof DcIdaParam>]: never; })[] & { [K_20 in Exclude<keyof I["params"], keyof {
             seq?: number | undefined;
             value?: ({
                 dcIdaRunappParam?: {
@@ -1679,9 +1726,13 @@ export declare const DcIdaParamList: {
                 } | undefined;
             } & {
                 $case: "dcIdaSwitchInputBlockParam";
+            }) | ({
+                dcIdaSubscribeAlertParam?: {} | undefined;
+            } & {
+                $case: "dcIdaSubscribeAlertParam";
             }) | undefined;
         }[]>]: never; }) | undefined;
-    } & { [K_19 in Exclude<keyof I, "params">]: never; }>(object: I): DcIdaParamList;
+    } & { [K_21 in Exclude<keyof I, "params">]: never; }>(object: I): DcIdaParamList;
 };
 export declare const DcIdaResultList: {
     encode(message: DcIdaResultList, writer?: _m0.Writer): _m0.Writer;
@@ -1826,6 +1877,10 @@ export declare const DcIdaResultList: {
                 dcIdaSwitchInputBlockResult?: {} | undefined;
             } & {
                 $case: "dcIdaSwitchInputBlockResult";
+            }) | ({
+                dcIdaSubscribeAlertResult?: {} | undefined;
+            } & {
+                $case: "dcIdaSubscribeAlertResult";
             }) | undefined;
         }[] | undefined;
     } & {
@@ -1966,6 +2021,10 @@ export declare const DcIdaResultList: {
                 dcIdaSwitchInputBlockResult?: {} | undefined;
             } & {
                 $case: "dcIdaSwitchInputBlockResult";
+            }) | ({
+                dcIdaSubscribeAlertResult?: {} | undefined;
+            } & {
+                $case: "dcIdaSubscribeAlertResult";
             }) | undefined;
         }[] & ({
             seq?: number | undefined;
@@ -2104,6 +2163,10 @@ export declare const DcIdaResultList: {
                 dcIdaSwitchInputBlockResult?: {} | undefined;
             } & {
                 $case: "dcIdaSwitchInputBlockResult";
+            }) | ({
+                dcIdaSubscribeAlertResult?: {} | undefined;
+            } & {
+                $case: "dcIdaSubscribeAlertResult";
             }) | undefined;
         } & {
             seq?: number | undefined;
@@ -2856,8 +2919,15 @@ export declare const DcIdaResultList: {
             } & {
                 dcIdaSwitchInputBlockResult?: ({} & {} & { [K_41 in Exclude<keyof I["results"][number]["value"]["dcIdaSwitchInputBlockResult"], never>]: never; }) | undefined;
                 $case: "dcIdaSwitchInputBlockResult";
-            } & { [K_42 in Exclude<keyof I["results"][number]["value"], "$case" | "dcIdaSwitchInputBlockResult">]: never; }) | undefined;
-        } & { [K_43 in Exclude<keyof I["results"][number], keyof DcIdaResult>]: never; })[] & { [K_44 in Exclude<keyof I["results"], keyof {
+            } & { [K_42 in Exclude<keyof I["results"][number]["value"], "$case" | "dcIdaSwitchInputBlockResult">]: never; }) | ({
+                dcIdaSubscribeAlertResult?: {} | undefined;
+            } & {
+                $case: "dcIdaSubscribeAlertResult";
+            } & {
+                dcIdaSubscribeAlertResult?: ({} & {} & { [K_43 in Exclude<keyof I["results"][number]["value"]["dcIdaSubscribeAlertResult"], never>]: never; }) | undefined;
+                $case: "dcIdaSubscribeAlertResult";
+            } & { [K_44 in Exclude<keyof I["results"][number]["value"], "$case" | "dcIdaSubscribeAlertResult">]: never; }) | undefined;
+        } & { [K_45 in Exclude<keyof I["results"][number], keyof DcIdaResult>]: never; })[] & { [K_46 in Exclude<keyof I["results"], keyof {
             seq?: number | undefined;
             value?: ({
                 dcIdaRunappResult?: {
@@ -2994,7 +3064,11 @@ export declare const DcIdaResultList: {
                 dcIdaSwitchInputBlockResult?: {} | undefined;
             } & {
                 $case: "dcIdaSwitchInputBlockResult";
+            }) | ({
+                dcIdaSubscribeAlertResult?: {} | undefined;
+            } & {
+                $case: "dcIdaSubscribeAlertResult";
             }) | undefined;
         }[]>]: never; }) | undefined;
-    } & { [K_45 in Exclude<keyof I, "results">]: never; }>(object: I): DcIdaResultList;
+    } & { [K_47 in Exclude<keyof I, "results">]: never; }>(object: I): DcIdaResultList;
 };
