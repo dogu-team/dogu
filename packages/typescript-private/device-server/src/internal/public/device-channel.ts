@@ -1,4 +1,5 @@
 import {
+  DeviceAlert,
   DeviceSystemInfo,
   DeviceWindowInfo,
   ErrorResult,
@@ -12,7 +13,7 @@ import {
   Serial,
   StreamingAnswer,
 } from '@dogu-private/types';
-import { Closable, Printable, PromiseOrValue } from '@dogu-tech/common';
+import { AsyncClosable, Closable, Printable, PromiseOrValue } from '@dogu-tech/common';
 import { AppiumCapabilities, BrowserInstallation, StreamingOfferDto } from '@dogu-tech/device-client-common';
 import { Observable } from 'rxjs';
 import { DeviceWebDriver } from '../../alias';
@@ -40,6 +41,7 @@ export interface DeviceHealthStatus {
 }
 
 export type LogHandler = Pick<Printable, 'info' | 'error'>;
+export type AlertHandler = (alert: DeviceAlert) => void;
 
 export interface DeviceServerService {
   get httpRequestRelayService(): HttpRequestRelayService;
@@ -84,6 +86,7 @@ export interface DeviceChannel {
   joinWifi(ssid: string, password: string): PromiseOrValue<void>;
   isPortListening(port: number): PromiseOrValue<boolean>;
   getWindows(): PromiseOrValue<DeviceWindowInfo[]>;
+  subscribeAlert(handler: AlertHandler): PromiseOrValue<AsyncClosable>;
 
   // app
   uninstallApp(appPath: string, handler: LogHandler): PromiseOrValue<void>;

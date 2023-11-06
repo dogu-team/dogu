@@ -16,7 +16,7 @@ import {
   SerialPrintable,
   StreamingAnswer,
 } from '@dogu-private/types';
-import { Closable, delay, errorify, MixedLogger, Printable, PromiseOrValue, stringify } from '@dogu-tech/common';
+import { AsyncClosable, Closable, delay, errorify, MixedLogger, Printable, PromiseOrValue, stringify } from '@dogu-tech/common';
 import { AppiumCapabilities, BrowserInstallation, StreamingOfferDto } from '@dogu-tech/device-client-common';
 import { ChildProcessError, killChildProcess } from '@dogu-tech/node';
 import { ChildProcess } from 'child_process';
@@ -41,7 +41,7 @@ import { IosDeviceAgentProcess } from '../externals/cli/ios-device-agent';
 import { ZombieTunnel } from '../externals/cli/mobiledevice-tunnel';
 import { WebdriverAgentProcess } from '../externals/cli/webdriver-agent-process';
 import { IosWebDriverInfo } from '../externals/webdriver/ios-webdriver';
-import { DeviceChannel, DeviceChannelOpenParam, DeviceHealthStatus, DeviceServerService, LogHandler } from '../public/device-channel';
+import { AlertHandler, DeviceChannel, DeviceChannelOpenParam, DeviceHealthStatus, DeviceServerService, LogHandler } from '../public/device-channel';
 import { IosDeviceAgentService } from '../services/device-agent/ios-device-agent-service';
 import { IosDisplayProfileService, IosProfileService } from '../services/profile/ios-profiler';
 import { ProfileServices } from '../services/profile/profile-service';
@@ -414,6 +414,11 @@ export class IosChannel implements DeviceChannel {
 
   getWindows(): DeviceWindowInfo[] {
     return [];
+  }
+
+  async subscribeAlert(handler: AlertHandler): Promise<AsyncClosable> {
+    throw new Error('Method not implemented.');
+    await Promise.resolve();
   }
 
   private async findDotAppPath(appPath: string): Promise<string> {

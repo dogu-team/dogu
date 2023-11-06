@@ -14,7 +14,7 @@ import {
   Serial,
   StreamingAnswer,
 } from '@dogu-private/types';
-import { Closable, PromiseOrValue, stringify } from '@dogu-tech/common';
+import { AsyncClosable, Closable, PromiseOrValue, stringify } from '@dogu-tech/common';
 import { BrowserInstallation, StreamingOfferDto } from '@dogu-tech/device-client-common';
 import { ChildProcess, isFreePort } from '@dogu-tech/node';
 import { Observable } from 'rxjs';
@@ -25,7 +25,7 @@ import { SeleniumDeviceWebDriverHandler } from '../../device-webdriver/selenium.
 import { GamiumContext } from '../../gamium/gamium.context';
 import { deviceInfoLogger, logger } from '../../logger/logger.instance';
 import { DesktopCapturer } from '../externals/index';
-import { DeviceChannel, DeviceChannelOpenParam, DeviceHealthStatus, DeviceServerService, LogHandler } from '../public/device-channel';
+import { AlertHandler, DeviceChannel, DeviceChannelOpenParam, DeviceHealthStatus, DeviceServerService, LogHandler } from '../public/device-channel';
 import { DeviceAgentService } from '../services/device-agent/device-agent-service';
 import { NullDeviceAgentService } from '../services/device-agent/null-device-agent-service';
 import { DesktopProfileService } from '../services/profile/desktop-profiler';
@@ -182,6 +182,11 @@ export class WindowsChannel implements DeviceChannel {
 
   async getWindows(): Promise<DeviceWindowInfo[]> {
     return await DesktopCapturer.getWindows(logger);
+  }
+
+  async subscribeAlert(handler: AlertHandler): Promise<AsyncClosable> {
+    throw new Error('Method not implemented.');
+    await Promise.resolve();
   }
 
   uninstallApp(appPath: string, handler: LogHandler): void {

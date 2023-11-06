@@ -18,7 +18,7 @@ import {
   SerialPrintable,
   StreamingAnswer,
 } from '@dogu-private/types';
-import { Closable, errorify, MixedLogger, Printable, stringify } from '@dogu-tech/common';
+import { AsyncClosable, Closable, errorify, MixedLogger, Printable, stringify } from '@dogu-tech/common';
 import { AppiumCapabilities, BrowserInstallation, StreamingOfferDto } from '@dogu-tech/device-client-common';
 import { killChildProcess, killProcessOnPort } from '@dogu-tech/node';
 import { ChildProcess } from 'child_process';
@@ -37,7 +37,7 @@ import { deviceInfoLogger } from '../../logger/logger.instance';
 import { createAndroidLogger, SerialLogger } from '../../logger/serial-logger.instance';
 import { AdbSerial, AppiumAdb } from '../externals';
 import { getManifestFromApp } from '../externals/apk/apk-util';
-import { DeviceChannel, DeviceChannelOpenParam, DeviceHealthStatus, DeviceServerService, LogHandler } from '../public/device-channel';
+import { AlertHandler, DeviceChannel, DeviceChannelOpenParam, DeviceHealthStatus, DeviceServerService, LogHandler } from '../public/device-channel';
 import { AndroidDeviceAgentService } from '../services/device-agent/android-device-agent-service';
 import { AndroidAdbProfileService, AndroidDisplayProfileService } from '../services/profile/android-profiler';
 import { ProfileServices } from '../services/profile/profile-service';
@@ -317,6 +317,11 @@ export class AndroidChannel implements DeviceChannel {
 
   getWindows(): DeviceWindowInfo[] {
     return [];
+  }
+
+  async subscribeAlert(handler: AlertHandler): Promise<AsyncClosable> {
+    throw new Error('Method not implemented.');
+    await Promise.resolve();
   }
 
   async subscribeLog(args: string[], handler: LogHandler): Promise<Closable> {
