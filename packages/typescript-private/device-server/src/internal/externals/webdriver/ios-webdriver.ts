@@ -109,7 +109,7 @@ export class IosWebDriver {
     const { driver } = this;
     const WaitTimeout = 5_000;
     let lastError = '';
-    for await (const _ of loopTime({ period: { milliseconds: 500 }, expire: { milliseconds: WaitTimeout } })) {
+    for await (const _ of loopTime({ period: { milliseconds: 200 }, expire: { milliseconds: WaitTimeout } })) {
       const elem = await driver.$(selector.build());
       if (elem.error) {
         lastError = elem.error.message;
@@ -124,7 +124,7 @@ export class IosWebDriver {
 
   async waitElementsExist(selector: IosSelector, timeOption: TimeOptions): Promise<WDIOElement[]> {
     const { driver } = this;
-    for await (const _ of loopTime({ period: { milliseconds: 500 }, expire: timeOption })) {
+    for await (const _ of loopTime({ period: { milliseconds: 200 }, expire: timeOption })) {
       const elems = await driver.$$(selector.build());
       if (0 < elems.length) {
         return elems;
@@ -135,7 +135,7 @@ export class IosWebDriver {
 
   async waitElementExist(selector: IosSelector, timeOption: TimeOptions): Promise<WDIOElement> {
     const { driver } = this;
-    for await (const _ of loopTime({ period: { milliseconds: 500 }, expire: timeOption })) {
+    for await (const _ of loopTime({ period: { milliseconds: 200 }, expire: timeOption })) {
       const elem = await driver.$(selector.build());
       if (elem.error) {
         continue;
@@ -177,15 +177,10 @@ export class IosWebDriver {
     await elem.touchAction([{ action: 'longPress' }, 'release']);
     await retry(
       async () => {
-        const removeStacks = await this.waitElementsExist(new IosButtonPredicateStringSelector('Remove Stack'), { seconds: 3 });
-        if (0 < removeStacks.length) {
-          await removeStacks[0].click();
-          await this.clickSelector(new IosButtonPredicateStringSelector('Remove'));
-          return;
-        }
-        const removeWidgets = await this.waitElementsExist(new IosButtonPredicateStringSelector('Remove Widget'), { seconds: 3 });
-        if (0 < removeWidgets.length) {
-          await removeWidgets[0].click();
+        // Remove Stack or Remove Widget
+        const removeTopButtons = await this.waitElementsExist(new IosPredicateStringSelector(`type == 'XCUIElementTypeButton' && name CONTAINS 'Remove '`), { seconds: 3 });
+        if (0 < removeTopButtons.length) {
+          await removeTopButtons[0].click();
           await this.clickSelector(new IosButtonPredicateStringSelector('Remove'));
           return;
         }
