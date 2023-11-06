@@ -180,7 +180,6 @@ export function calculateNextPurchaseDate(options: CalculateLocalNextPurchaseDat
 export interface CalculateRemainingPlanOptions {
   billingOrganization: BillingOrganization;
   foundBillingSubscriptionPlanInfo: BillingSubscriptionPlanInfo;
-  period: BillingPeriod;
   now: Date;
 }
 
@@ -197,100 +196,104 @@ export interface CalculateRemainingPlanResultSuccess {
 export type CalculateRemainingPlanResult = CalculateRemainingPlanResultFailure | CalculateRemainingPlanResultSuccess;
 
 export function calculateRemainingPlan(options: CalculateRemainingPlanOptions): CalculateRemainingPlanResult {
-  const { billingOrganization, foundBillingSubscriptionPlanInfo, period } = options;
-  switch (period) {
-    case 'monthly': {
-      if (billingOrganization.monthlyStartedAt === null) {
+  const { billingOrganization, foundBillingSubscriptionPlanInfo } = options;
+  switch (foundBillingSubscriptionPlanInfo.period) {
+    case 'monthly':
+      {
+        if (billingOrganization.monthlyStartedAt === null) {
+          return {
+            ok: false,
+            resultCode: resultCode('organization-monthly-started-at-not-found'),
+          };
+        }
+
+        if (billingOrganization.monthlyExpiredAt === null) {
+          return {
+            ok: false,
+            resultCode: resultCode('organization-monthly-expired-at-not-found'),
+          };
+        }
+
+        const calculateRefundResult = calculateRemaningDiscount({
+          originPrice: foundBillingSubscriptionPlanInfo.originPrice,
+          discountedAmount: foundBillingSubscriptionPlanInfo.discountedAmount,
+          startedAt: billingOrganization.monthlyStartedAt,
+          expiredAt: billingOrganization.monthlyExpiredAt,
+          now: options.now,
+        });
+
+        if (!calculateRefundResult.ok) {
+          return {
+            ok: false,
+            resultCode: calculateRefundResult.resultCode,
+          };
+        }
+
+        const { remainingDiscountedAmount } = calculateRefundResult;
+        const remainingPlan: RemainingPlan = {
+          category: foundBillingSubscriptionPlanInfo.category,
+          type: foundBillingSubscriptionPlanInfo.type,
+          option: foundBillingSubscriptionPlanInfo.option,
+          period: foundBillingSubscriptionPlanInfo.period,
+          currency: foundBillingSubscriptionPlanInfo.currency,
+          remainingDiscountedAmount: remainingDiscountedAmount,
+          remainingDays: calculateRefundResult.remainingDays,
+        };
         return {
-          ok: false,
-          resultCode: resultCode('organization-monthly-started-at-not-found'),
+          ok: true,
+          remainingPlan,
         };
       }
+      break;
+    case 'yearly':
+      {
+        if (billingOrganization.yearlyStartedAt === null) {
+          return {
+            ok: false,
+            resultCode: resultCode('organization-yearly-started-at-not-found'),
+          };
+        }
 
-      if (billingOrganization.monthlyExpiredAt === null) {
+        if (billingOrganization.yearlyExpiredAt === null) {
+          return {
+            ok: false,
+            resultCode: resultCode('organization-yearly-expired-at-not-found'),
+          };
+        }
+
+        const calculateRefundResult = calculateRemaningDiscount({
+          originPrice: foundBillingSubscriptionPlanInfo.originPrice,
+          discountedAmount: foundBillingSubscriptionPlanInfo.discountedAmount,
+          startedAt: billingOrganization.yearlyStartedAt,
+          expiredAt: billingOrganization.yearlyExpiredAt,
+          now: options.now,
+        });
+
+        if (!calculateRefundResult.ok) {
+          return {
+            ok: false,
+            resultCode: calculateRefundResult.resultCode,
+          };
+        }
+
+        const { remainingDiscountedAmount } = calculateRefundResult;
+        const remainingPlan: RemainingPlan = {
+          category: foundBillingSubscriptionPlanInfo.category,
+          type: foundBillingSubscriptionPlanInfo.type,
+          option: foundBillingSubscriptionPlanInfo.option,
+          period: foundBillingSubscriptionPlanInfo.period,
+          currency: foundBillingSubscriptionPlanInfo.currency,
+          remainingDiscountedAmount: remainingDiscountedAmount,
+          remainingDays: calculateRefundResult.remainingDays,
+        };
         return {
-          ok: false,
-          resultCode: resultCode('organization-monthly-expired-at-not-found'),
+          ok: true,
+          remainingPlan,
         };
       }
-
-      const calculateRefundResult = calculateRemaningDiscount({
-        originPrice: foundBillingSubscriptionPlanInfo.originPrice,
-        discountedAmount: foundBillingSubscriptionPlanInfo.discountedAmount,
-        startedAt: billingOrganization.monthlyStartedAt,
-        expiredAt: billingOrganization.monthlyExpiredAt,
-        now: options.now,
-      });
-
-      if (!calculateRefundResult.ok) {
-        return {
-          ok: false,
-          resultCode: calculateRefundResult.resultCode,
-        };
-      }
-
-      const { remainingDiscountedAmount } = calculateRefundResult;
-      const remainingPlan: RemainingPlan = {
-        category: foundBillingSubscriptionPlanInfo.category,
-        type: foundBillingSubscriptionPlanInfo.type,
-        option: foundBillingSubscriptionPlanInfo.option,
-        period: foundBillingSubscriptionPlanInfo.period,
-        currency: foundBillingSubscriptionPlanInfo.currency,
-        remainingDiscountedAmount: remainingDiscountedAmount,
-        remainingDays: calculateRefundResult.remainingDays,
-      };
-      return {
-        ok: true,
-        remainingPlan,
-      };
-    }
-    case 'yearly': {
-      if (billingOrganization.yearlyStartedAt === null) {
-        return {
-          ok: false,
-          resultCode: resultCode('organization-yearly-started-at-not-found'),
-        };
-      }
-
-      if (billingOrganization.yearlyExpiredAt === null) {
-        return {
-          ok: false,
-          resultCode: resultCode('organization-yearly-expired-at-not-found'),
-        };
-      }
-
-      const calculateRefundResult = calculateRemaningDiscount({
-        originPrice: foundBillingSubscriptionPlanInfo.originPrice,
-        discountedAmount: foundBillingSubscriptionPlanInfo.discountedAmount,
-        startedAt: billingOrganization.yearlyStartedAt,
-        expiredAt: billingOrganization.yearlyExpiredAt,
-        now: options.now,
-      });
-
-      if (!calculateRefundResult.ok) {
-        return {
-          ok: false,
-          resultCode: calculateRefundResult.resultCode,
-        };
-      }
-
-      const { remainingDiscountedAmount } = calculateRefundResult;
-      const remainingPlan: RemainingPlan = {
-        category: foundBillingSubscriptionPlanInfo.category,
-        type: foundBillingSubscriptionPlanInfo.type,
-        option: foundBillingSubscriptionPlanInfo.option,
-        period: foundBillingSubscriptionPlanInfo.period,
-        currency: foundBillingSubscriptionPlanInfo.currency,
-        remainingDiscountedAmount: remainingDiscountedAmount,
-        remainingDays: calculateRefundResult.remainingDays,
-      };
-      return {
-        ok: true,
-        remainingPlan,
-      };
-    }
+      break;
     default: {
-      assertUnreachable(period);
+      assertUnreachable(foundBillingSubscriptionPlanInfo.period);
     }
   }
 }
@@ -319,25 +322,13 @@ export function calculateElapsedPlan(options: CalculateElapsedPlanOptions): Calc
   const { period } = billingSubscriptionPlanData;
   switch (period) {
     case 'monthly': {
-      if (billingOrganization.monthlyStartedAt === null) {
-        return {
-          ok: false,
-          resultCode: resultCode('organization-monthly-started-at-not-found'),
-        };
-      }
-
-      if (billingOrganization.monthlyExpiredAt === null) {
-        return {
-          ok: false,
-          resultCode: resultCode('organization-monthly-expired-at-not-found'),
-        };
-      }
-
+      const monthlyStartedAt = billingOrganization.monthlyStartedAt ?? createStartedAt(options.now);
+      const monthlyExpiredAt = billingOrganization.monthlyExpiredAt ?? createExpiredAt(monthlyStartedAt, 'monthly');
       const calculateElapsedDiscountResult = calculateElapsedDiscount({
         originPrice: billingSubscriptionPlanData.originPrice,
         discountedAmount,
-        startedAt: billingOrganization.monthlyStartedAt,
-        expiredAt: billingOrganization.monthlyExpiredAt,
+        startedAt: monthlyStartedAt,
+        expiredAt: monthlyExpiredAt,
         now: options.now,
       });
 
@@ -364,25 +355,13 @@ export function calculateElapsedPlan(options: CalculateElapsedPlanOptions): Calc
       };
     }
     case 'yearly': {
-      if (billingOrganization.yearlyStartedAt === null) {
-        return {
-          ok: false,
-          resultCode: resultCode('organization-yearly-started-at-not-found'),
-        };
-      }
-
-      if (billingOrganization.yearlyExpiredAt === null) {
-        return {
-          ok: false,
-          resultCode: resultCode('organization-yearly-expired-at-not-found'),
-        };
-      }
-
+      const yearlyStartedAt = billingOrganization.yearlyStartedAt ?? createStartedAt(options.now);
+      const yearlyExpiredAt = billingOrganization.yearlyExpiredAt ?? createExpiredAt(yearlyStartedAt, 'yearly');
       const calculateElapsedDiscountResult = calculateElapsedDiscount({
         originPrice: billingSubscriptionPlanData.originPrice,
         discountedAmount,
-        startedAt: billingOrganization.yearlyStartedAt,
-        expiredAt: billingOrganization.yearlyExpiredAt,
+        startedAt: yearlyStartedAt,
+        expiredAt: yearlyExpiredAt,
         now: options.now,
       });
       if (!calculateElapsedDiscountResult.ok) {

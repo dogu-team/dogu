@@ -172,20 +172,19 @@ export async function processPurchaseSubscriptionPreview(
     const nextPurchaseAmount = Math.floor(billingSubscriptionPlanData.originPrice * nextCouponFactor);
 
     if (upgradePlanOption || upgradePlanPeriod) {
-      const calculateRemaningPlanResult = calculateRemainingPlan({
+      const calculateRemainingPlanResult = calculateRemainingPlan({
         billingOrganization,
         foundBillingSubscriptionPlanInfo,
-        period: billingSubscriptionPlanData.period,
         now,
       });
-      if (!calculateRemaningPlanResult.ok) {
+      if (!calculateRemainingPlanResult.ok) {
         return {
           ok: false,
-          resultCode: calculateRemaningPlanResult.resultCode,
+          resultCode: calculateRemainingPlanResult.resultCode,
         };
       }
 
-      const { remainingPlan } = calculateRemaningPlanResult;
+      const { remainingPlan } = calculateRemainingPlanResult;
 
       const calculateElapsedPlanResult = calculateElapsedPlan({
         billingOrganization,

@@ -38,6 +38,7 @@ export class BillingSchedulerService implements OnModuleInit, OnModuleDestroy {
         await retrySerialize(this.logger, this.dataSource, async (context) => {
           const { manager } = context;
           await Promise.resolve();
+          // manager.getRepository(BillingOrganization).createQueryBuilder().leftJoinAndSelect(BillingOrga);
         });
       } catch (error) {
         this.logger.error('BillingSchedulerService.run.interval error', { error: errorify(error) });
