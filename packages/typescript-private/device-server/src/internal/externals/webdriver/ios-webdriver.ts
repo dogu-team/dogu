@@ -1,4 +1,5 @@
-import { delay, FilledPrintable, loop, loopTime, PrefixLogger, retry, time, TimeOptions } from '@dogu-tech/common';
+import { delay, FilledPrintable, loop, loopTime, PrefixLogger, retry, time, TimeOptions, usingAsnyc } from '@dogu-tech/common';
+import semver from 'semver';
 import WebDriverIO from 'webdriverio';
 import { WebdriverAgentProcess } from '../cli/webdriver-agent-process';
 export type WDIOElement = WebDriverIO.Element<'async'>;
@@ -42,10 +43,28 @@ export class IosButtonPredicateStringSelector {
 const AppSwitchLoopPeriod: TimeOptions = { milliseconds: 200 };
 const WaitElementsPeriod: TimeOptions = { milliseconds: 200 };
 
+export class IosWebDriverInfo {
+  constructor(
+    public isIpad: boolean,
+    private osVersion: semver.SemVer,
+  ) {}
+
+  get isIpadAndSystemAppHasSidebar(): boolean {
+    if (!this.isIpad) {
+      return false;
+    }
+    if (semver.lt(this.osVersion, '14.0.0')) {
+      return false;
+    }
+    return true;
+  }
+}
+
 export class IosWebDriver {
   constructor(
     private driver: WebdriverIO.Browser,
     private wda: WebdriverAgentProcess,
+    private info: IosWebDriverInfo,
     private logger: FilledPrintable,
   ) {}
 
@@ -123,6 +142,17 @@ export class IosWebDriver {
       return;
     }
     throw new Error(`IosWebDriver.clickSelector ${selector.build()} failed, error ${lastError}`);
+  }
+
+  async clickSelectors(selectors: IosSelector[]): Promise<void> {
+    for (const selector of selectors) {
+      try {
+        await this.clickSelector(selector);
+        return;
+      } catch (e) {}
+    }
+
+    throw new Error(`IosWebDriver.tryClickSelectors ${selectors.map((s) => s.build()).join(', ')} all failed`);
   }
 
   async waitElementsExist(selector: IosSelector, timeOption: TimeOptions): Promise<WDIOElement[]> {
@@ -212,5 +242,33 @@ export class IosWebDriver {
       'release',
     ]);
     await this.waitElementExist(new IosAccessibilitiySelector('lockscreen-date-view'), { seconds: 3 });
+  }
+
+  async openSystemAppToggleMenu(value: string): Promise<void> {
+    const { info } = this;
+
+    await usingAsnyc(
+      {
+        create: async () => {
+          if (!info.isIpadAndSystemAppHasSidebar) {
+            return;
+          }
+          throw new Error(`Should unfold each menus`);
+          const elems = await this.waitElementsExist(new IosButtonPredicateStringSelector(value), { seconds: 3 });
+          if (0 === elems.length) {
+            await this.clickSelector(new IosButtonPredicateStringSelector('Show Sidebar'));
+          }
+        },
+        dispose: async () => {
+          if (!info.isIpadAndSystemAppHasSidebar) {
+            return;
+          }
+          await this.clickSelector(new IosButtonPredicateStringSelector('Hide Sidebar'));
+        },
+      },
+      async () => {
+        await this.clickSelector(new IosButtonPredicateStringSelector(value));
+      },
+    );
   }
 }

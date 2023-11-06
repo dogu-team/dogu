@@ -1,16 +1,34 @@
 import { DefaultDeviceSystemInfo, DeviceSystemInfo, ProfileMethods, Serial } from '@dogu-private/types';
-import { Printable } from '@dogu-tech/common';
+import { Printable, retry } from '@dogu-tech/common';
+import semver, { SemVer } from 'semver';
 import { MobileDevice } from '../../externals';
 import { IosDeviceAgentService } from '../device-agent/ios-device-agent-service';
 
 export class IosSystemInfoService {
-  constructor(private readonly service: IosDeviceAgentService, private readonly logger: Printable) {}
+  constructor(
+    private readonly service: IosDeviceAgentService,
+    private readonly logger: Printable,
+  ) {}
 
-  static async getVersion(serial: Serial, logger: Printable): Promise<string | undefined> {
-    return await MobileDevice.getProductVersion(serial, logger).catch((error) => {
-      logger.error(error);
-      return undefined;
-    });
+  static async getVersion(serial: Serial, logger: Printable): Promise<SemVer> {
+    return await retry(
+      async () => {
+        const productVersion = await MobileDevice.getProductVersion(serial, logger).catch((error) => {
+          logger.error(error);
+          return undefined;
+        });
+
+        if (!productVersion) {
+          throw new Error(`iOS version is null. serial: ${serial}`);
+        }
+        const version = semver.coerce(productVersion);
+        if (!version) {
+          throw new Error(`iOS version is invalid. serial: ${serial}, version: ${productVersion}`);
+        }
+        return version;
+      },
+      { retryCount: 3, retryInterval: 200, printable: logger },
+    );
   }
 
   async createSystemInfo(serial: Serial): Promise<DeviceSystemInfo> {

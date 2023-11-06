@@ -40,6 +40,7 @@ import { IdeviceInstaller } from '../externals/cli/ideviceinstaller';
 import { IosDeviceAgentProcess } from '../externals/cli/ios-device-agent';
 import { ZombieTunnel } from '../externals/cli/mobiledevice-tunnel';
 import { WebdriverAgentProcess } from '../externals/cli/webdriver-agent-process';
+import { IosWebDriverInfo } from '../externals/webdriver/ios-webdriver';
 import { DeviceChannel, DeviceChannelOpenParam, DeviceHealthStatus, DeviceServerService, LogHandler } from '../public/device-channel';
 import { IosDeviceAgentService } from '../services/device-agent/ios-device-agent-service';
 import { IosDisplayProfileService, IosProfileService } from '../services/profile/ios-profiler';
@@ -120,11 +121,8 @@ export class IosChannel implements DeviceChannel {
     const logger = createIosLogger(param.serial);
 
     const productVersion = await IosSystemInfoService.getVersion(serial, logger);
-    if (productVersion) {
-      const version = semver.coerce(productVersion);
-      if (version && semver.lt(version, '14.0.0')) {
-        throw new Error(`iOS version must be 14 or higher. current version: ${productVersion}`);
-      }
+    if (semver.lt(productVersion, '14.0.0')) {
+      throw new Error(`iOS version must be 14 or higher. current version: ${productVersion.inspect()}`);
     }
 
     const isWdaReady = await WebdriverAgentProcess.isReady(serial);
@@ -168,9 +166,11 @@ export class IosChannel implements DeviceChannel {
     await appiumWaiter.waitUntilAlive({ maxReviveCount: 100 });
     logger.verbose('appium context started');
 
-    const reset = new IosResetService(serial, logger);
+    const isIpad = await MobileDevice.getProductType(serial, logger).then((type) => type?.startsWith('iPad'));
+    const iosWdInfo = new IosWebDriverInfo(isIpad, productVersion);
+    const reset = new IosResetService(serial, iosWdInfo, logger);
     const appiumContextImpl = await appiumContextProxy.waitUntilBuiltin();
-    const shared = new IosSharedDeviceService(serial, wda, reset, appiumContextImpl, logger);
+    const shared = new IosSharedDeviceService(serial, wda, reset, appiumContextImpl, iosWdInfo, logger);
     await shared.setup();
     await shared.wait();
 
