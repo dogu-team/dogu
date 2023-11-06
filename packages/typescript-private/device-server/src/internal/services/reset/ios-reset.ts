@@ -656,108 +656,131 @@ export class IosResetService {
   }
 
   private async removeWidgets(iosDriver: IosWebDriver): Promise<void> {
-    await iosDriver.home();
-    await iosDriver.home();
+    await usingAsnyc(
+      {
+        create: async () => {
+          await iosDriver.home();
+          await iosDriver.home();
+        },
+        dispose: async () => {
+          await delay(SleepBeforeTerminate);
+          await iosDriver.home();
+        },
+      },
+      async () => {
+        const MaxWidgetsCount = 100;
+        // remove home widgets
+        for await (const _ of loop(300, MaxWidgetsCount)) {
+          const widgets = await iosDriver.waitElementsExist(new IosClassChainSelector('**/XCUIElementTypeIcon[`label == "Waiting…"`]'), { seconds: 3 });
+          if (0 === widgets.length) {
+            break;
+          }
+          await iosDriver.removeWidget(widgets[0]);
+        }
 
-    const MaxWidgetsCount = 100;
-    // remove home widgets
-    for await (const _ of loop(300, MaxWidgetsCount)) {
-      const widgets = await iosDriver.waitElementsExist(new IosClassChainSelector('**/XCUIElementTypeIcon[`label == "Waiting…"`]'), { seconds: 3 });
-      if (0 === widgets.length) {
-        break;
-      }
-      await iosDriver.removeWidget(widgets[0]);
-    }
-
-    // remove left widgets
-    {
-      const windowRect = await iosDriver.rawDriver.getWindowRect();
-      const findLeftScrollView = async (): Promise<WDIOElement> => {
-        for await (const counter of loop(1000, 3)) {
-          await iosDriver.rawDriver.touchAction([
-            {
-              action: 'longPress',
-              x: windowRect.width / 2,
-              y: windowRect.height / 2,
-            },
-            {
-              action: 'moveTo',
-              x: windowRect.width - 10,
-              y: windowRect.height / 2,
-            },
-            'release',
-          ]);
-          const scrollView = await iosDriver.waitElementsExist(new IosAccessibilitiySelector('left-of-home-scroll-view'), { seconds: 3 });
-          if (0 === scrollView.length) {
-            if (!counter.isLast()) {
-              continue;
+        // remove left widgets
+        {
+          const windowRect = await iosDriver.rawDriver.getWindowRect();
+          const findLeftScrollView = async (): Promise<WDIOElement> => {
+            for await (const counter of loop(1000, 3)) {
+              await iosDriver.rawDriver.touchAction([
+                {
+                  action: 'longPress',
+                  x: windowRect.width / 2,
+                  y: windowRect.height / 2,
+                },
+                {
+                  action: 'moveTo',
+                  x: windowRect.width - 10,
+                  y: windowRect.height / 2,
+                },
+                'release',
+              ]);
+              const scrollView = await iosDriver.waitElementsExist(new IosAccessibilitiySelector('left-of-home-scroll-view'), { seconds: 3 });
+              if (0 === scrollView.length) {
+                if (!counter.isLast()) {
+                  continue;
+                }
+                throw new Error('scrollView not found');
+              }
+              return scrollView[0];
             }
             throw new Error('scrollView not found');
-          }
-          return scrollView[0];
-        }
-        throw new Error('scrollView not found');
-      };
-      const scrollView = await findLeftScrollView();
+          };
+          const scrollView = await findLeftScrollView();
 
-      const skipLabels = ['Batteries'];
-      for await (const _ of loop(300, MaxWidgetsCount)) {
-        const widgets = await IosWebDriver.waitElemElementsExist(scrollView, new IosClassChainSelector('**/XCUIElementTypeIcon'), { seconds: 3 });
+          const skipLabels = ['Batteries'];
+          for await (const _ of loop(300, MaxWidgetsCount)) {
+            const widgets = await IosWebDriver.waitElemElementsExist(scrollView, new IosClassChainSelector('**/XCUIElementTypeIcon'), { seconds: 3 });
 
-        const targetWidgets = await filterAsync(widgets, async (widget) => {
-          const label = await widget.getAttribute('label');
-          if (skipLabels.includes(label)) {
-            return false;
+            const targetWidgets = await filterAsync(widgets, async (widget) => {
+              const label = await widget.getAttribute('label');
+              if (skipLabels.includes(label)) {
+                return false;
+              }
+              return true;
+            });
+            if (0 === targetWidgets.length) {
+              break;
+            }
+            const widget = targetWidgets[0];
+            await iosDriver.removeWidget(widget);
           }
-          return true;
-        });
-        if (0 === targetWidgets.length) {
-          break;
         }
-        const widget = targetWidgets[0];
-        await iosDriver.removeWidget(widget);
-      }
-    }
+      },
+    );
   }
 
   private async clearNotifications(iosDriver: IosWebDriver): Promise<void> {
-    await iosDriver.openNotificationCenter();
-    for await (const _ of loop(500)) {
-      const elems = await iosDriver.waitElementsExist(new IosAccessibilitiySelector('NotificationCell'), { seconds: 3 });
-      if (0 === elems.length) {
-        break;
-      }
-      const elemAndLoc = await Promise.all(
-        elems.map(async (elem) => {
+    await usingAsnyc(
+      {
+        create: async () => {
+          await iosDriver.openNotificationCenter();
+        },
+        dispose: async () => {
+          await delay(SleepBeforeTerminate);
+          await iosDriver.home();
+        },
+      },
+      async () => {
+        for await (const _ of loop(500)) {
+          const elems = await iosDriver.waitElementsExist(new IosAccessibilitiySelector('NotificationCell'), { seconds: 3 });
+          if (0 === elems.length) {
+            break;
+          }
+          const elemAndLoc = await Promise.all(
+            elems.map(async (elem) => {
+              const elemPos = await elem.getLocation();
+              return { elem, elemPos };
+            }),
+          );
+          elemAndLoc.sort((a, b) => a.elemPos.y - b.elemPos.y);
+          const elem = elemAndLoc[0].elem;
+
           const elemPos = await elem.getLocation();
-          return { elem, elemPos };
-        }),
-      );
-      elemAndLoc.sort((a, b) => a.elemPos.y - b.elemPos.y);
-      const elem = elemAndLoc[0].elem;
+          const elemSize = await elem.getSize();
+          const elemCenter = {
+            x: elemPos.x + elemSize.width / 2,
+            y: elemPos.y + elemSize.height / 2,
+          };
 
-      const elemPos = await elem.getLocation();
-      const elemSize = await elem.getSize();
-      const elemCenter = {
-        x: elemPos.x + elemSize.width / 2,
-        y: elemPos.y + elemSize.height / 2,
-      };
-
-      // longpress to left
-      await iosDriver.rawDriver.touchAction([
-        {
-          action: 'longPress',
-          x: Math.floor(elemCenter.x + elemSize.width * 0.48),
-          y: elemCenter.y,
-        },
-        {
-          action: 'moveTo',
-          x: Math.floor(elemCenter.x - elemSize.width * 0.48),
-          y: elemCenter.y,
-        },
-        'release',
-      ]);
-    }
+          // longpress to left
+          await iosDriver.rawDriver.touchAction([
+            {
+              action: 'longPress',
+              x: Math.floor(elemCenter.x + elemSize.width * 0.48),
+              y: elemCenter.y,
+            },
+            {
+              action: 'moveTo',
+              x: Math.floor(elemCenter.x - elemSize.width * 0.48),
+              y: elemCenter.y,
+            },
+            'release',
+          ]);
+        }
+      },
+    );
   }
 
   async check<T>(name: string, promise: Promise<T>): Promise<T> {
