@@ -39,6 +39,12 @@ export const BillingResultCodeMap = {
 
   // method nice
   'method-nice-bid-not-found': 400,
+
+  // cloud license
+  'cloud-license-not-found': 500,
+
+  // self-hosted license
+  'self-hosted-license-not-found': 600,
 };
 
 export type BillingReason = keyof typeof BillingResultCodeMap;

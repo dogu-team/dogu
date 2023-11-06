@@ -21,6 +21,7 @@ import { BillingMethodNiceCaller } from '../billing-method/billing-method-nice.c
 import { createPurchase } from '../billing-method/billing-method-nice.serializables';
 import { createOrUpdateBillingSubscriptionPlanInfoAndCoupon } from '../billing-subscription-plan-info/billing-subscription-plan-info.serializables';
 import { parseBillingSubscriptionPlanData } from '../billing-subscription-source/billing-subscription-source.serializables';
+import { applyCloudLicense } from '../cloud-license/cloud-license.serializables';
 import { calculateElapsedPlan, calculateRemainingPlan, createExpiredAt, createStartedAt, resolveCurrency } from './billing-purchase.utils';
 
 export interface ProcessPurchaseSubscriptionPreviewOptions {
@@ -335,12 +336,12 @@ export async function processPurchaseSubscription(
   switch (billingOrganization.category) {
     case 'cloud':
       {
-        // TODO
+        await applyCloudLicense(context, { billingSubscriptionPlanInfo: createSubscriptionPlanInfoAndCouponResult.billingSubscriptionPlanInfo });
       }
       break;
     case 'self-hosted':
       {
-        // TODO
+        // noop
       }
       break;
     default: {

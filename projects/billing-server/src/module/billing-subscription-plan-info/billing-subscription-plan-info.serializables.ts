@@ -65,7 +65,7 @@ export interface CreateOrUpdateBillingSubscriptionPlanInfoAndCouponResultFailure
 
 export interface CreateOrUpdateBillingSubscriptionPlanInfoAndCouponResultSuccess {
   ok: true;
-  subscriptionPlanInfo: BillingSubscriptionPlanInfo;
+  billingSubscriptionPlanInfo: BillingSubscriptionPlanInfo;
 }
 
 export type CreateOrUpdateBillingSubscriptionPlanInfoAndCouponResult =
@@ -115,7 +115,7 @@ export async function createOrUpdateBillingSubscriptionPlanInfoAndCoupon(
     await manager.getRepository(BillingSubscriptionPlanInfo).save(found);
     return {
       ok: true,
-      subscriptionPlanInfo: found,
+      billingSubscriptionPlanInfo: found,
     };
   }
 
@@ -138,6 +138,6 @@ export async function createOrUpdateBillingSubscriptionPlanInfoAndCoupon(
   logger.info('createSubscriptionPlanInfo', { billingSubscriptionPlanInfo });
   return {
     ok: true,
-    subscriptionPlanInfo: billingSubscriptionPlanInfo,
+    billingSubscriptionPlanInfo: billingSubscriptionPlanInfo,
   };
 }
