@@ -1,11 +1,3 @@
-//
-//  ControlSessionHandler.swift
-//  IOSDeviceAgentLib
-//
-//  Created by jenkins on 2023/09/07.
-//  Copyright © 2023 Dogu. All rights reserved.
-//
-
 import Foundation
 
 actor ControlSessionListener: IControlSessionListener {

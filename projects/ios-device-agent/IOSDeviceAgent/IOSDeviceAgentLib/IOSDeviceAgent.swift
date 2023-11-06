@@ -1,5 +1,6 @@
 import Foundation
 import Network
+import XCTest
 
 //import UIKit
 
@@ -38,6 +39,7 @@ public final class IOSDeviceAgent {
 
   private func openInternal() throws {
     self.config = try EnvironmentParser().parse()
+    
     let screenSize = WebDriverAgentLibUtils.screenSize()
     Task.catchable(
       {

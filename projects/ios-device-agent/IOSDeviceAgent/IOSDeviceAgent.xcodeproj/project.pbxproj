@@ -155,6 +155,7 @@
 		A60A189E2A83B51C0009FAEE /* Profiler.swift in Sources */ = {isa = PBXBuildFile; fileRef = A60A189D2A83B51C0009FAEE /* Profiler.swift */; };
 		A61FD12B2A7CA530008AFCBB /* Network.swift in Sources */ = {isa = PBXBuildFile; fileRef = A61FD12A2A7CA530008AFCBB /* Network.swift */; };
 		A6278B122A30C58100F48325 /* UnknownSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6278B112A30C58100F48325 /* UnknownSession.swift */; };
+		A62943D12AF89DA1000CF67C /* XCUIElementExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A62943D02AF89DA1000CF67C /* XCUIElementExtension.swift */; };
 		A64995C2299CCAEF00238E2A /* ControlResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = A64995C1299CCAEF00238E2A /* ControlResult.swift */; };
 		A65D24142AF275C2003A2149 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = A65D24132AF275C2003A2149 /* Constants.swift */; };
 		A69289572A2739BF0026DC33 /* ReplayKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A69289562A2739BF0026DC33 /* ReplayKit.framework */; };
@@ -727,6 +728,7 @@
 		A60A189D2A83B51C0009FAEE /* Profiler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Profiler.swift; sourceTree = "<group>"; };
 		A61FD12A2A7CA530008AFCBB /* Network.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Network.swift; sourceTree = "<group>"; };
 		A6278B112A30C58100F48325 /* UnknownSession.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UnknownSession.swift; sourceTree = "<group>"; };
+		A62943D02AF89DA1000CF67C /* XCUIElementExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XCUIElementExtension.swift; sourceTree = "<group>"; };
 		A64995C1299CCAEF00238E2A /* ControlResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlResult.swift; sourceTree = "<group>"; };
 		A65D24132AF275C2003A2149 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		A69289552A2739BF0026DC33 /* DoguScreen.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = DoguScreen.appex; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1170,6 +1172,7 @@
 				A6E768782AF334E300F2D595 /* InputBlocker.swift */,
 				A6E7687A2AF3679B00F2D595 /* DuplicateCallGuarder.swift */,
 				A6E768822AF38BB300F2D595 /* GlobalVariable.swift */,
+				A62943D02AF89DA1000CF67C /* XCUIElementExtension.swift */,
 			);
 			path = IOSDeviceAgentLib;
 			sourceTree = "<group>";
@@ -2507,6 +2510,7 @@
 				140E05CD294055CD00A32DB5 /* TouchControlStructures.swift in Sources */,
 				A6E7687F2AF384F900F2D595 /* ScrollControlBroker.swift in Sources */,
 				A6A9D76B2AA9EB0400D7FECD /* SizePrefixedRecvQueue.swift in Sources */,
+				A62943D12AF89DA1000CF67C /* XCUIElementExtension.swift in Sources */,
 				140E05CC294055CD00A32DB5 /* WebDriverAgentLibUtils.swift in Sources */,
 				A6E768812AF385EB00F2D595 /* ScrollControlStructures.swift in Sources */,
 				A6A9D7042AA9DD6900D7FECD /* outer_streaming_webrtc.pb.swift in Sources */,

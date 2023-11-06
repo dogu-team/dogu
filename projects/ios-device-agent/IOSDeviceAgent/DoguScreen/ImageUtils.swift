@@ -1,11 +1,3 @@
-//
-//  ImageUtils.swift
-//  DoguScreen
-//
-//  Created by jenkins on 2023/06/04.
-//  Copyright © 2023 Dogu. All rights reserved.
-//
-
 import AVFoundation
 import Accelerate
 import ReplayKit
@@ -108,7 +100,7 @@ func rotateYpCbCr8BiPlanar(imageBuffer: CVImageBuffer, orientation: CGImagePrope
   let lumaWidth = CVPixelBufferGetWidthOfPlane(imageBuffer, 0)
   let lumaHeight = CVPixelBufferGetHeightOfPlane(imageBuffer, 0)
   let lumaBytesPerRow = CVPixelBufferGetBytesPerRowOfPlane(imageBuffer, 0)
-//  NSLog("lumaWidth: %d, lumaHeight: %d, lumaBytesPerRow: %d", lumaWidth, lumaHeight, lumaBytesPerRow)
+  //  NSLog("lumaWidth: %d, lumaHeight: %d, lumaBytesPerRow: %d", lumaWidth, lumaHeight, lumaBytesPerRow)
   // Create a vImage buffer for the luma plane
   var lumaBuffer = vImage_Buffer(data: lumaPlane, height: vImagePixelCount(lumaHeight), width: vImagePixelCount(lumaWidth), rowBytes: lumaBytesPerRow)
 
@@ -122,7 +114,7 @@ func rotateYpCbCr8BiPlanar(imageBuffer: CVImageBuffer, orientation: CGImagePrope
   let chromaWidth = CVPixelBufferGetWidthOfPlane(imageBuffer, 1)
   let chromaHeight = CVPixelBufferGetHeightOfPlane(imageBuffer, 1)
   let chromaBytesPerRow = CVPixelBufferGetBytesPerRowOfPlane(imageBuffer, 1)
-//  NSLog("chromaWidth: %d, chromaHeight: %d, chromaBytesPerRow: %d", chromaWidth, chromaHeight, chromaBytesPerRow)
+  //  NSLog("chromaWidth: %d, chromaHeight: %d, chromaBytesPerRow: %d", chromaWidth, chromaHeight, chromaBytesPerRow)
 
   // Create a vImage buffer for the chroma plane
   var chromaBuffer = vImage_Buffer(data: chromaPlane, height: vImagePixelCount(chromaHeight), width: vImagePixelCount(chromaWidth), rowBytes: chromaBytesPerRow)
@@ -149,10 +141,10 @@ func rotateYpCbCr8BiPlanar(imageBuffer: CVImageBuffer, orientation: CGImagePrope
   let outputHeight = CVPixelBufferGetHeight(outputBuffer)
   let outputDataSize = CVPixelBufferGetDataSize(outputBuffer)
   let outputBytesPerRow = CVPixelBufferGetBytesPerRow(outputBuffer)
-//  NSLog(
-//    "outputPlaneCount: %d, outputWidth: %d, outputHeight: %d, outputDataSize: %d, outputBytesPerRow: %d", outputPlaneCount, outputWidth, outputHeight, outputDataSize,
-//    outputBytesPerRow
-//  )
+  //  NSLog(
+  //    "outputPlaneCount: %d, outputWidth: %d, outputHeight: %d, outputDataSize: %d, outputBytesPerRow: %d", outputPlaneCount, outputWidth, outputHeight, outputDataSize,
+  //    outputBytesPerRow
+  //  )
 
   // Get the luma (Y) plane of the output buffer
   //  guard let outputLumaPlane = CVPixelBufferGetBaseAddressOfPlane(outputBuffer, 0) else {
@@ -167,9 +159,9 @@ func rotateYpCbCr8BiPlanar(imageBuffer: CVImageBuffer, orientation: CGImagePrope
   let outputLumaBytesPerRow = CVPixelBufferGetBytesPerRowOfPlane(outputBuffer, 0)
   var outputLumaBuffer = vImage_Buffer(
     data: outputLumaPlane, height: vImagePixelCount(outputLumaHeight), width: vImagePixelCount(outputLumaWidth), rowBytes: outputLumaBytesPerRow)
-//  NSLog(
-//    "outputLumaWidth: %d, outputLumaHeight: %d, outputLumaBytesPerRow: %d", outputLumaWidth, outputLumaHeight,
-//    outputLumaBytesPerRow)
+  //  NSLog(
+  //    "outputLumaWidth: %d, outputLumaHeight: %d, outputLumaBytesPerRow: %d", outputLumaWidth, outputLumaHeight,
+  //    outputLumaBytesPerRow)
 
   // Get the chroma (CbCr) plane of the output buffer
   guard let outputChromaPlane = CVPixelBufferGetBaseAddressOfPlane(outputBuffer, 1) else {
@@ -183,9 +175,9 @@ func rotateYpCbCr8BiPlanar(imageBuffer: CVImageBuffer, orientation: CGImagePrope
   let outputChromaBytesPerRow = CVPixelBufferGetBytesPerRowOfPlane(outputBuffer, 1)
   var outputChromaBuffer = vImage_Buffer(
     data: outputChromaPlane, height: vImagePixelCount(outputChromaHeight), width: vImagePixelCount(outputChromaWidth), rowBytes: outputChromaBytesPerRow)
-//  NSLog(
-//    "outputChromaWidth: %d, outputChromaHeight: %d, outputChromaBytesPerRow: %d", outputChromaWidth, outputChromaHeight,
-//    outputChromaBytesPerRow)
+  //  NSLog(
+  //    "outputChromaWidth: %d, outputChromaHeight: %d, outputChromaBytesPerRow: %d", outputChromaWidth, outputChromaHeight,
+  //    outputChromaBytesPerRow)
 
   // Rotate the luma plane
   var err = vImageRotate90_Planar8(&lumaBuffer, &outputLumaBuffer, UInt8(rotationConstant), 0, vImage_Flags(kvImageNoFlags))

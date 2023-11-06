@@ -1,10 +1,3 @@
-//
-//  Network.swift
-//  IOSDeviceAgentLib
-//
-//  Copyright © 2023 Dogu. All rights reserved.
-//
-
 import Foundation
 import Network
 

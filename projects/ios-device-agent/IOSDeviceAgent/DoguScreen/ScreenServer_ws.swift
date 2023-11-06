@@ -1,11 +1,3 @@
-//
-//  ScreenServer.swift
-//  DoguScreen
-//
-//  Created by jenkins on 2023/06/01.
-//  Copyright © 2023 Dogu. All rights reserved.
-//
-
 import Foundation
 import NIO
 import NIOHTTP1
