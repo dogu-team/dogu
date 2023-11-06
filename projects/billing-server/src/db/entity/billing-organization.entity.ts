@@ -18,20 +18,17 @@ export class BillingOrganization implements BillingOrganizationBase {
   @Column({ type: 'enum', enum: BillingCurrency, nullable: true })
   currency!: BillingCurrency | null;
 
-  @Column({ type: 'character varying', nullable: true })
-  timezoneOffset!: string | null;
+  @DateColumn({ nullable: true })
+  yearlyStartedAt!: Date | null;
 
   @DateColumn({ nullable: true })
-  yearlyCalculationStartedAt!: Date | null;
+  yearlyExpiredAt!: Date | null;
 
   @DateColumn({ nullable: true })
-  yearlyCalculationExpiredAt!: Date | null;
+  monthlyStartedAt!: Date | null;
 
   @DateColumn({ nullable: true })
-  monthlyCalculationStartedAt!: Date | null;
-
-  @DateColumn({ nullable: true })
-  monthlyCalculationExpiredAt!: Date | null;
+  monthlyExpiredAt!: Date | null;
 
   @CreatedAt()
   createdAt!: Date;

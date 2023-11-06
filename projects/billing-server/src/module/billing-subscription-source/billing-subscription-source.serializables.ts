@@ -15,7 +15,7 @@ import _ from 'lodash';
 import { BillingSubscriptionPlanSource } from '../../db/entity/billing-subscription-plan-source.entity';
 import { RetrySerializeContext } from '../../db/utils';
 
-export interface ParseSubscriptionPlanDataOptions {
+export interface ParseBillingSubscriptionPlanDataOptions {
   context: RetrySerializeContext;
   billingOrganizationId: string;
   type: BillingSubscriptionPlanType;
@@ -25,20 +25,20 @@ export interface ParseSubscriptionPlanDataOptions {
   period: BillingPeriod;
 }
 
-export interface ParseSubscriptionPlanDataResultFailure {
+export interface ParseBillingSubscriptionPlanDataResultFailure {
   ok: false;
   resultCode: BillingResultCode;
 }
 
-export interface ParseSubscriptionPlanDataResultSuccess {
+export interface ParseBillingSubscriptionPlanDataResultSuccess {
   ok: true;
-  subscriptionPlanData: BillingSubscriptionPlanData;
-  subscriptionPlanSource: BillingSubscriptionPlanSource | null;
+  billingSubscriptionPlanData: BillingSubscriptionPlanData;
+  billingSubscriptionPlanSource: BillingSubscriptionPlanSource | null;
 }
 
-export type ParseSubscriptionPlanDataResult = ParseSubscriptionPlanDataResultFailure | ParseSubscriptionPlanDataResultSuccess;
+export type ParseBillingSubscriptionPlanDataResult = ParseBillingSubscriptionPlanDataResultFailure | ParseBillingSubscriptionPlanDataResultSuccess;
 
-export async function parseSubscriptionPlanData(options: ParseSubscriptionPlanDataOptions): Promise<ParseSubscriptionPlanDataResult> {
+export async function parseBillingSubscriptionPlanData(options: ParseBillingSubscriptionPlanDataOptions): Promise<ParseBillingSubscriptionPlanDataResult> {
   const { context, billingOrganizationId, type, category, option, currency, period } = options;
   const { manager } = context;
   const billingSubscriptionPlanSource = await manager.getRepository(BillingSubscriptionPlanSource).findOne({
@@ -55,7 +55,7 @@ export async function parseSubscriptionPlanData(options: ParseSubscriptionPlanDa
   if (billingSubscriptionPlanSource) {
     return {
       ok: true,
-      subscriptionPlanData: {
+      billingSubscriptionPlanData: {
         type: billingSubscriptionPlanSource.type,
         category: billingSubscriptionPlanSource.category,
         option: billingSubscriptionPlanSource.option,
@@ -63,7 +63,7 @@ export async function parseSubscriptionPlanData(options: ParseSubscriptionPlanDa
         period: billingSubscriptionPlanSource.period,
         originPrice: billingSubscriptionPlanSource.originPrice,
       },
-      subscriptionPlanSource: billingSubscriptionPlanSource,
+      billingSubscriptionPlanSource,
     };
   }
 
@@ -109,7 +109,7 @@ export async function parseSubscriptionPlanData(options: ParseSubscriptionPlanDa
 
   return {
     ok: true,
-    subscriptionPlanData: {
+    billingSubscriptionPlanData: {
       type,
       category,
       option,
@@ -117,6 +117,6 @@ export async function parseSubscriptionPlanData(options: ParseSubscriptionPlanDa
       period,
       originPrice,
     },
-    subscriptionPlanSource: null,
+    billingSubscriptionPlanSource: null,
   };
 }

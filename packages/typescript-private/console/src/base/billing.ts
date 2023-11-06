@@ -325,5 +325,3 @@ export const BillingGracePeriodDays = 3;
 
 export const BillingLicenseStatus = ['not-expired', 'within-grace-period', 'expired'] as const;
 export type BillingLicenseStatus = (typeof BillingLicenseStatus)[number];
-
-export const TimezoneOffsetPattern = /^(?<sign>[+-])(?<hours>\d{2}):(?<minutes>\d{2})$/;

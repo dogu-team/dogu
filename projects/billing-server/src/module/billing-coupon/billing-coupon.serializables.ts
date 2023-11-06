@@ -2,6 +2,7 @@ import {
   BillingCouponProp,
   BillingOrganizationProp,
   BillingOrganizationUsedBillingCouponProp,
+  BillingPeriod,
   BillingResultCode,
   CreateBillingCouponDto,
   GetAvailableBillingCouponsDto,
@@ -168,6 +169,7 @@ export interface ParseCouponOptions {
   context: RetrySerializeContext;
   organizationId: string;
   couponCode: string | undefined;
+  period: BillingPeriod;
 }
 
 export interface ParseCouponResultFailure {
@@ -183,7 +185,7 @@ export interface ParseCouponResultSuccess {
 export type ParseCouponResult = ParseCouponResultFailure | ParseCouponResultSuccess;
 
 export async function parseCoupon(options: ParseCouponOptions): Promise<ParseCouponResult> {
-  const { context, organizationId, couponCode } = options;
+  const { context, organizationId, couponCode, period } = options;
   if (couponCode === undefined) {
     return {
       ok: true,
@@ -191,7 +193,7 @@ export async function parseCoupon(options: ParseCouponOptions): Promise<ParseCou
     };
   }
 
-  const validateResult = await validateCoupon(context, { organizationId, code: couponCode });
+  const validateResult = await validateCoupon(context, { organizationId, code: couponCode, period });
   if (!validateResult.ok) {
     return {
       ok: false,

@@ -15,10 +15,10 @@ import { BillingHistoryService } from '../billing-history/billing-history.servic
 import { BillingMethodNiceCaller } from '../billing-method/billing-method-nice.caller';
 import { createOrUpdateMethodNice } from '../billing-method/billing-method-nice.serializables';
 import { BillingMethodNiceService } from '../billing-method/billing-method-nice.service';
-import { findOrganizationWithMethodAndSubscriptionPlans, findOrganizationWithSubscriptionPlans } from '../billing-organization/billing-organization.serializables';
+import { findBillingOrganizationWithMethodAndSubscriptionPlans, findBillingOrganizationWithSubscriptionPlans } from '../billing-organization/billing-organization.serializables';
 import { BillingOrganizationService } from '../billing-organization/billing-organization.service';
 import { DoguLogger } from '../logger/logger';
-import { preprocessPurchaseSubscription, processPurchaseSubscription } from './billing-purchase.serializables';
+import { processPurchaseSubscription, processPurchaseSubscriptionPreview } from './billing-purchase.serializables';
 
 @Injectable()
 export class BillingPurchaseService {
@@ -34,53 +34,52 @@ export class BillingPurchaseService {
 
   async getSubscriptionPreview(dto: GetBillingSubscriptionPreviewDto): Promise<GetBillingSubscriptionPreviewResponse> {
     return await retrySerialize(this.logger, this.dataSource, async (context) => {
-      const organization = await findOrganizationWithSubscriptionPlans(context, dto);
-      if (!organization) {
+      const billingOrganization = await findBillingOrganizationWithSubscriptionPlans(context, dto);
+      if (!billingOrganization) {
         return {
           ok: false,
           resultCode: resultCode('organization-not-found'),
         };
       }
 
-      const preprocessPurchaseSubscriptionResult = await preprocessPurchaseSubscription(context, {
-        organization,
-        subscriptionPlan: dto,
+      const processPurchaseSubscriptionPreviewResult = await processPurchaseSubscriptionPreview(context, {
+        billingOrganization,
+        dto,
       });
-      if (!preprocessPurchaseSubscriptionResult.ok) {
+      if (!processPurchaseSubscriptionPreviewResult.ok) {
         return {
           ok: false,
-          resultCode: preprocessPurchaseSubscriptionResult.resultCode,
+          resultCode: processPurchaseSubscriptionPreviewResult.resultCode,
         };
       }
 
-      return preprocessPurchaseSubscriptionResult.previewResponse;
+      return processPurchaseSubscriptionPreviewResult.previewResponse;
     });
   }
 
   async createPurchaseSubscription(dto: CreatePurchaseSubscriptionDto): Promise<CreatePurchaseSubscriptionResponse> {
     return await retrySerialize(this.logger, this.dataSource, async (context) => {
       const { manager } = context;
-      const organization = await findOrganizationWithMethodAndSubscriptionPlans(context, dto);
-      if (!organization) {
+      const billingOrganization = await findBillingOrganizationWithMethodAndSubscriptionPlans(context, dto);
+      if (!billingOrganization) {
         return {
           ok: false,
           resultCode: resultCode('organization-not-found'),
         };
       }
 
-      const preprocessPurchaseSubscriptionResult = await preprocessPurchaseSubscription(context, {
-        organization,
-        subscriptionPlan: dto,
+      const processPurchaseSubscriptionPreviewResult = await processPurchaseSubscriptionPreview(context, {
+        billingOrganization,
+        dto,
       });
-
-      if (!preprocessPurchaseSubscriptionResult.ok) {
+      if (!processPurchaseSubscriptionPreviewResult.ok) {
         return {
           ok: false,
-          resultCode: preprocessPurchaseSubscriptionResult.resultCode,
+          resultCode: processPurchaseSubscriptionPreviewResult.resultCode,
         };
       }
 
-      if (!organization.billingMethodNice) {
+      if (!billingOrganization.billingMethodNice) {
         return {
           ok: false,
           resultCode: resultCode('organization-method-nice-not-found'),
@@ -88,15 +87,16 @@ export class BillingPurchaseService {
       }
 
       return await processPurchaseSubscription(context, this.billingMethodNiceCaller, {
-        methodNice: organization.billingMethodNice,
-        organization,
-        subscriptionPlanData: preprocessPurchaseSubscriptionResult.subscriptionPlanData,
-        subscriptionPlanSource: preprocessPurchaseSubscriptionResult.subscriptionPlanSource,
-        coupon: preprocessPurchaseSubscriptionResult.coupon,
-        totalPrice: preprocessPurchaseSubscriptionResult.totalPrice,
-        discountedAmount: preprocessPurchaseSubscriptionResult.discountedAmount,
-        timezoneOffset: preprocessPurchaseSubscriptionResult.timezoneOffset,
-        previewResponse: preprocessPurchaseSubscriptionResult.previewResponse,
+        billingMethodNice: billingOrganization.billingMethodNice,
+        billingOrganization,
+        billingSubscriptionPlanData: processPurchaseSubscriptionPreviewResult.billingSubscriptionPlanData,
+        billingSubscriptionPlanSource: processPurchaseSubscriptionPreviewResult.billingSubscriptionPlanSource,
+        newCoupon: processPurchaseSubscriptionPreviewResult.newCoupon,
+        oldCoupon: processPurchaseSubscriptionPreviewResult.oldCoupon,
+        totalPrice: processPurchaseSubscriptionPreviewResult.totalPrice,
+        discountedAmount: processPurchaseSubscriptionPreviewResult.discountedAmount,
+        previewResponse: processPurchaseSubscriptionPreviewResult.previewResponse,
+        now: processPurchaseSubscriptionPreviewResult.now,
       });
     });
   }
@@ -105,43 +105,43 @@ export class BillingPurchaseService {
     return await retrySerialize(this.logger, this.dataSource, async (context) => {
       const { manager } = context;
       const { registerCard } = dto;
-      const organization = await findOrganizationWithMethodAndSubscriptionPlans(context, dto);
-      if (!organization) {
+      const billingOrganization = await findBillingOrganizationWithMethodAndSubscriptionPlans(context, dto);
+      if (!billingOrganization) {
         return {
           ok: false,
           resultCode: resultCode('organization-not-found'),
         };
       }
 
-      const preprocessPurchaseSubscriptionResult = await preprocessPurchaseSubscription(context, {
-        organization,
-        subscriptionPlan: dto,
+      const processPurchaseSubscriptionPreviewResult = await processPurchaseSubscriptionPreview(context, {
+        billingOrganization,
+        dto,
       });
-
-      if (!preprocessPurchaseSubscriptionResult.ok) {
+      if (!processPurchaseSubscriptionPreviewResult.ok) {
         return {
           ok: false,
-          resultCode: preprocessPurchaseSubscriptionResult.resultCode,
+          resultCode: processPurchaseSubscriptionPreviewResult.resultCode,
         };
       }
 
       const billingMethodNice = await createOrUpdateMethodNice(context, this.billingMethodNiceCaller, {
-        billingOrganizationId: organization.billingOrganizationId,
+        billingOrganizationId: billingOrganization.billingOrganizationId,
         subscribeRegist: {
           registerCard,
         },
       });
 
       return await processPurchaseSubscription(context, this.billingMethodNiceCaller, {
-        methodNice: billingMethodNice,
-        organization,
-        subscriptionPlanData: preprocessPurchaseSubscriptionResult.subscriptionPlanData,
-        subscriptionPlanSource: preprocessPurchaseSubscriptionResult.subscriptionPlanSource,
-        coupon: preprocessPurchaseSubscriptionResult.coupon,
-        totalPrice: preprocessPurchaseSubscriptionResult.totalPrice,
-        discountedAmount: preprocessPurchaseSubscriptionResult.discountedAmount,
-        timezoneOffset: preprocessPurchaseSubscriptionResult.timezoneOffset,
-        previewResponse: preprocessPurchaseSubscriptionResult.previewResponse,
+        billingMethodNice,
+        billingOrganization,
+        billingSubscriptionPlanData: processPurchaseSubscriptionPreviewResult.billingSubscriptionPlanData,
+        billingSubscriptionPlanSource: processPurchaseSubscriptionPreviewResult.billingSubscriptionPlanSource,
+        newCoupon: processPurchaseSubscriptionPreviewResult.newCoupon,
+        oldCoupon: processPurchaseSubscriptionPreviewResult.oldCoupon,
+        totalPrice: processPurchaseSubscriptionPreviewResult.totalPrice,
+        discountedAmount: processPurchaseSubscriptionPreviewResult.discountedAmount,
+        previewResponse: processPurchaseSubscriptionPreviewResult.previewResponse,
+        now: processPurchaseSubscriptionPreviewResult.now,
       });
     });
   }

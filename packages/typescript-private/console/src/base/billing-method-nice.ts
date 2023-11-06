@@ -11,6 +11,8 @@ export interface BillingMethodNiceBase {
   cardCode: string | null;
   cardName: string | null;
   cardNumberLast4Digits: string | null;
+  expirationYear: string | null;
+  expirationMonth: string | null;
   subscribeRegistResponse: Record<string, unknown> | null;
   subscribeRegistAt: Date | null;
   createdAt: Date;

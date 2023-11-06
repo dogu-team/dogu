@@ -3,7 +3,7 @@ import { ConflictException, NotFoundException } from '@nestjs/common';
 import { v4 } from 'uuid';
 import { CloudLicense } from '../../db/entity/cloud-license.entity';
 import { RetrySerializeContext } from '../../db/utils';
-import { createOrganization } from '../billing-organization/billing-organization.serializables';
+import { createBillingOrganization } from '../billing-organization/billing-organization.serializables';
 
 export async function createCloudLicense(context: RetrySerializeContext, dto: CreateCloudLicenseDto): Promise<CloudLicense> {
   const { manager } = context;
@@ -13,7 +13,7 @@ export async function createCloudLicense(context: RetrySerializeContext, dto: Cr
     throw new ConflictException(`CloudLicense already exists by organizationId ${organizationId}`);
   }
 
-  const billingOrganization = await createOrganization(context, { organizationId, category: 'cloud' });
+  const billingOrganization = await createBillingOrganization(context, { organizationId, category: 'cloud' });
   const created = manager.getRepository(CloudLicense).create({
     cloudLicenseId: v4(),
     organizationId,

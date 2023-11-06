@@ -7,7 +7,7 @@ import { BillingOrganization } from '../../db/entity/billing-organization.entity
 import { BillingSubscriptionPlanInfo } from '../../db/entity/billing-subscription-plan-info.entity';
 import { RetrySerializeContext } from '../../db/utils';
 
-export async function findOrganizationWithSubscriptionPlans(context: RetrySerializeContext, dto: FindBillingOrganizationDto): Promise<BillingOrganization | null> {
+export async function findBillingOrganizationWithSubscriptionPlans(context: RetrySerializeContext, dto: FindBillingOrganizationDto): Promise<BillingOrganization | null> {
   const { manager } = context;
   const { organizationId } = dto;
   return await manager
@@ -22,7 +22,7 @@ export async function findOrganizationWithSubscriptionPlans(context: RetrySerial
     .getOne();
 }
 
-export async function findOrganizationWithMethod(context: RetrySerializeContext, dto: FindBillingOrganizationDto): Promise<BillingOrganization | null> {
+export async function findBillingOrganizationWithMethod(context: RetrySerializeContext, dto: FindBillingOrganizationDto): Promise<BillingOrganization | null> {
   const { manager } = context;
   const { organizationId } = dto;
   return await manager
@@ -33,7 +33,7 @@ export async function findOrganizationWithMethod(context: RetrySerializeContext,
     .getOne();
 }
 
-export async function findOrganizationWithMethodAndSubscriptionPlans(context: RetrySerializeContext, dto: FindBillingOrganizationDto): Promise<BillingOrganization | null> {
+export async function findBillingOrganizationWithMethodAndSubscriptionPlans(context: RetrySerializeContext, dto: FindBillingOrganizationDto): Promise<BillingOrganization | null> {
   const { manager } = context;
   const { organizationId } = dto;
   return await manager
@@ -49,7 +49,7 @@ export async function findOrganizationWithMethodAndSubscriptionPlans(context: Re
     .getOne();
 }
 
-export async function createOrganization(context: RetrySerializeContext, dto: CreateBillingOrganizationDto): Promise<BillingOrganization> {
+export async function createBillingOrganization(context: RetrySerializeContext, dto: CreateBillingOrganizationDto): Promise<BillingOrganization> {
   const { manager } = context;
   const { organizationId, category } = dto;
   const found = await manager.getRepository(BillingOrganization).findOne({ where: { organizationId } });

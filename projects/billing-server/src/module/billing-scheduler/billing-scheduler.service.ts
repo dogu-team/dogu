@@ -1,9 +1,7 @@
-import { BillingOrganizationProp } from '@dogu-private/console';
 import { errorify } from '@dogu-tech/common';
 import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { setInterval } from 'timers/promises';
 import { DataSource } from 'typeorm';
-import { BillingOrganization } from '../../db/entity/billing-organization.entity';
 import { retrySerialize } from '../../db/utils';
 import { DoguLogger } from '../logger/logger';
 
@@ -39,15 +37,7 @@ export class BillingSchedulerService implements OnModuleInit, OnModuleDestroy {
       try {
         await retrySerialize(this.logger, this.dataSource, async (context) => {
           const { manager } = context;
-          const organizations = await manager
-            .createQueryBuilder(BillingOrganization, BillingOrganization.name)
-            .select()
-            .where(`${BillingOrganizationProp.yearlyCalculationExpiredAt} IS NOT NULL`)
-            .andWhere(`${BillingOrganizationProp.yearlyCalculationExpiredAt} - INTERVAL '1 day' < NOW()`)
-            .getMany();
-
-          // for (const organization of organizations) {
-          // }
+          await Promise.resolve();
         });
       } catch (error) {
         this.logger.error('BillingSchedulerService.run.interval error', { error: errorify(error) });

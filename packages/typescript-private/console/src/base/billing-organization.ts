@@ -13,29 +13,24 @@ export interface BillingOrganizationBase {
   currency: BillingCurrency | null;
 
   /**
-   * @description format (+|-)\d{2}:\d{2}
+   * @description this value is used for yearly purchase days calculation.
    */
-  timezoneOffset: string | null;
+  yearlyStartedAt: Date | null;
 
   /**
    * @description this value is used for yearly purchase days calculation.
    */
-  yearlyCalculationStartedAt: Date | null;
-
-  /**
-   * @description this value is used for yearly purchase days calculation.
-   */
-  yearlyCalculationExpiredAt: Date | null;
+  yearlyExpiredAt: Date | null;
 
   /**
    * @description this value is used for monthly purchase days calculation.
    */
-  monthlyCalculationStartedAt: Date | null;
+  monthlyStartedAt: Date | null;
 
   /**
    * @description this value is used for monthly purchase days calculation.
    */
-  monthlyCalculationExpiredAt: Date | null;
+  monthlyExpiredAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date | null;

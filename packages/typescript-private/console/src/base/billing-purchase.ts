@@ -1,7 +1,7 @@
 import { IsFilledString } from '@dogu-tech/common';
 import { Type } from 'class-transformer';
 import { buildMessage, IsIn, IsNumber, IsOptional, IsString, IsUUID, Length, ValidateBy, ValidateNested } from 'class-validator';
-import { BillingCategory, BillingCurrency, BillingPeriod, BillingSubscriptionPlanData, BillingSubscriptionPlanType, TimezoneOffsetPattern } from './billing';
+import { BillingCategory, BillingCurrency, BillingPeriod, BillingSubscriptionPlanData, BillingSubscriptionPlanType } from './billing';
 import { BillingResultCode } from './billing-code';
 import { BillingCouponBase } from './billing-coupon';
 
@@ -25,21 +25,6 @@ export class BillingSubscriptionPlanPreviewDto {
   @IsString()
   @IsOptional()
   couponCode?: string;
-
-  @ValidateBy({
-    name: 'isTimezoneOffset',
-    constraints: [],
-    validator: {
-      validate: (value: unknown) => {
-        if (typeof value !== 'string') {
-          return false;
-        }
-        return value.match(TimezoneOffsetPattern) !== null;
-      },
-      defaultMessage: buildMessage((eachPrefix) => eachPrefix + '$property must be timezone offset format (+|-)HH:mm'),
-    },
-  })
-  timezoneOffset!: string;
 }
 
 export class GetBillingSubscriptionPreviewDto extends BillingSubscriptionPlanPreviewDto {
@@ -53,8 +38,8 @@ export interface RemainingPlan {
   option: number;
   period: BillingPeriod;
   currency: BillingCurrency;
-  amount: number;
-  remaningDays: number;
+  remainingDiscountedAmount: number;
+  remainingDays: number;
 }
 
 export interface ElapsedPlan {
@@ -63,12 +48,12 @@ export interface ElapsedPlan {
   option: number;
   period: BillingPeriod;
   currency: BillingCurrency;
-  amount: number;
+  elapsedDiscountedAmount: number;
   elapsedDays: number;
 }
 
 export interface CouponPreviewResponse extends BillingCouponBase {
-  discountAmount: number;
+  discountedAmount: number;
 }
 
 export interface GetBillingSubscriptionPreviewResponseFailure {
@@ -81,7 +66,7 @@ export interface GetBillingSubscriptionPreviewResponseSuccess {
   resultCode: BillingResultCode;
   totalPrice: number;
   nextPurchaseTotalPrice: number;
-  nextPurchaseDate: Date;
+  nextPurchasedAt: Date;
   tax: number;
   coupon: CouponPreviewResponse | null;
   subscriptionPlan: BillingSubscriptionPlanData;

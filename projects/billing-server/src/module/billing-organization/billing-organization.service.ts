@@ -6,10 +6,10 @@ import { BillingOrganization } from '../../db/entity/billing-organization.entity
 import { retrySerialize } from '../../db/utils';
 import { DoguLogger } from '../logger/logger';
 import {
-  createOrganization,
-  findOrganizationWithMethod,
-  findOrganizationWithMethodAndSubscriptionPlans,
-  findOrganizationWithSubscriptionPlans,
+  createBillingOrganization,
+  findBillingOrganizationWithMethod,
+  findBillingOrganizationWithMethodAndSubscriptionPlans,
+  findBillingOrganizationWithSubscriptionPlans,
 } from './billing-organization.serializables';
 
 @Injectable()
@@ -22,25 +22,25 @@ export class BillingOrganizationService {
 
   async findOrganizationWithMethod(dto: FindBillingOrganizationDto): Promise<BillingOrganization | null> {
     return await retrySerialize(this.logger, this.dataSource, async (context) => {
-      return await findOrganizationWithMethod(context, dto);
+      return await findBillingOrganizationWithMethod(context, dto);
     });
   }
 
   async findOrganizationWithSubscriptionPlans(dto: FindBillingOrganizationDto): Promise<BillingOrganization | null> {
     return await retrySerialize(this.logger, this.dataSource, async (context) => {
-      return await findOrganizationWithSubscriptionPlans(context, dto);
+      return await findBillingOrganizationWithSubscriptionPlans(context, dto);
     });
   }
 
   async findOrganizationWithMethodAndSubscriptionPlans(dto: FindBillingOrganizationDto): Promise<BillingOrganization | null> {
     return await retrySerialize(this.logger, this.dataSource, async (context) => {
-      return await findOrganizationWithMethodAndSubscriptionPlans(context, dto);
+      return await findBillingOrganizationWithMethodAndSubscriptionPlans(context, dto);
     });
   }
 
   async createOrganization(dto: CreateBillingOrganizationDto): Promise<BillingOrganization> {
     return await retrySerialize(this.logger, this.dataSource, async (context) => {
-      return await createOrganization(context, dto);
+      return await createBillingOrganization(context, dto);
     });
   }
 }

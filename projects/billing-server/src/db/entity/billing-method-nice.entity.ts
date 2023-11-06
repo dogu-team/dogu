@@ -23,6 +23,12 @@ export class BillingMethodNice implements BillingMethodNiceBase {
   @Column({ type: 'character varying', nullable: true })
   cardNumberLast4Digits!: string | null;
 
+  @Column({ type: 'character varying', nullable: true })
+  expirationYear!: string | null;
+
+  @Column({ type: 'character varying', nullable: true })
+  expirationMonth!: string | null;
+
   @Column({ type: 'jsonb', nullable: true })
   subscribeRegistResponse!: Record<string, unknown> | null;
 
