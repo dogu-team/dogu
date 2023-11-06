@@ -1,17 +1,20 @@
 import { propertiesOf } from '@dogu-tech/common';
+import { Type } from 'class-transformer';
+import { IsIn, IsNumber, IsOptional } from 'class-validator';
 import { BillingPeriod, BillingSubscriptionPlanData } from './billing';
 import { BillingCouponBase } from './billing-coupon';
 import { BillingOrganizationBase } from './billing-organization';
 import { BillingSubscriptionPlanSourceBase } from './billing-subscription-plan-source';
 
-export const BillingSubscriptionPlanState = [
-  'subscribed',
-  'unsubscribed',
+export const RequestableBillingSubscriptionPlanState = [
   'unsubscribe-requested',
   'change-option-requested',
   'change-period-requested',
   'change-option-and-period-requested',
 ] as const;
+export type RequestableBillingSubscriptionPlanState = (typeof RequestableBillingSubscriptionPlanState)[number];
+
+export const BillingSubscriptionPlanState = ['subscribed', 'unsubscribed', ...RequestableBillingSubscriptionPlanState] as const;
 export type BillingSubscriptionPlanState = (typeof BillingSubscriptionPlanState)[number];
 
 export interface BillingSubscriptionPlanInfoBase extends BillingSubscriptionPlanData {
@@ -40,3 +43,17 @@ export interface BillingSubscriptionPlanInfoBase extends BillingSubscriptionPlan
 }
 
 export const BillingSubscriptionPlanProp = propertiesOf<BillingSubscriptionPlanInfoBase>();
+
+export class UpdateBillingSubscriptionPlanInfoDto {
+  @IsIn(RequestableBillingSubscriptionPlanState)
+  state!: RequestableBillingSubscriptionPlanState;
+
+  @IsIn(BillingPeriod)
+  @IsOptional()
+  changeRequestedPeriod?: BillingPeriod;
+
+  @IsNumber()
+  @Type(() => Number)
+  @IsOptional()
+  changeRequestedOption?: number;
+}

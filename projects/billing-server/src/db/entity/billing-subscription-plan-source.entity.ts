@@ -1,6 +1,14 @@
-import { BillingCategory, BillingCurrency, BillingPeriod, BillingSubscriptionPlanSourceBase, BillingSubscriptionPlanType } from '@dogu-private/console';
-import { Column, Entity, PrimaryColumn } from 'typeorm';
+import {
+  BillingCategory,
+  BillingCurrency,
+  BillingPeriod,
+  BillingSubscriptionPlanSourceBase,
+  BillingSubscriptionPlanSourceProp,
+  BillingSubscriptionPlanType,
+} from '@dogu-private/console';
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 import { CreatedAt, DeletedAt, UpdatedAt } from '../decorators';
+import { BillingOrganization } from './billing-organization.entity';
 
 @Entity()
 export class BillingSubscriptionPlanSource implements BillingSubscriptionPlanSourceBase {
@@ -36,4 +44,8 @@ export class BillingSubscriptionPlanSource implements BillingSubscriptionPlanSou
 
   @DeletedAt()
   deletedAt!: Date | null;
+
+  @ManyToOne(() => BillingOrganization, (billingOrganization) => billingOrganization.billingSubscriptionPlanSources)
+  @JoinColumn({ name: BillingSubscriptionPlanSourceProp.billingOrganizationId })
+  billingOrganization?: BillingOrganization;
 }

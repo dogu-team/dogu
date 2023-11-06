@@ -5,6 +5,7 @@ import { BillingCategory, BillingCurrency } from './billing';
 import { BillingMethodNiceBase } from './billing-method-nice';
 import { RegisterCardDto } from './billing-purchase';
 import { BillingSubscriptionPlanInfoBase } from './billing-subscription-plan-info';
+import { BillingSubscriptionPlanSourceBase } from './billing-subscription-plan-source';
 
 export interface BillingOrganizationBase {
   billingOrganizationId: string;
@@ -35,6 +36,7 @@ export interface BillingOrganizationBase {
   updatedAt: Date;
   deletedAt: Date | null;
   billingSubscriptionPlanInfos?: BillingSubscriptionPlanInfoBase[];
+  billingSubscriptionPlanSources?: BillingSubscriptionPlanSourceBase[];
   billingMethodNice?: BillingMethodNiceBase;
 }
 

@@ -3,6 +3,7 @@ import { Column, Entity, OneToMany, OneToOne, PrimaryColumn } from 'typeorm';
 import { CreatedAt, DateColumn, DeletedAt, UpdatedAt } from '../decorators';
 import { BillingMethodNice } from './billing-method-nice.entity';
 import { BillingSubscriptionPlanInfo } from './billing-subscription-plan-info.entity';
+import { BillingSubscriptionPlanSource } from './billing-subscription-plan-source.entity';
 
 @Entity()
 export class BillingOrganization implements BillingOrganizationBase {
@@ -41,6 +42,9 @@ export class BillingOrganization implements BillingOrganizationBase {
 
   @OneToMany(() => BillingSubscriptionPlanInfo, (billingSubscriptionPlanInfo) => billingSubscriptionPlanInfo.billingOrganization)
   billingSubscriptionPlanInfos?: BillingSubscriptionPlanInfo[];
+
+  @OneToMany(() => BillingSubscriptionPlanSource, (billingSubscriptionPlanSource) => billingSubscriptionPlanSource.billingOrganization)
+  billingSubscriptionPlanSources?: BillingSubscriptionPlanSource[];
 
   @OneToOne(() => BillingMethodNice, (billingMethodNice) => billingMethodNice.billingOrganization)
   billingMethodNice?: BillingMethodNice;

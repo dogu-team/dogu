@@ -16,7 +16,6 @@ import { BillingSubscriptionPlanSource } from '../../db/entity/billing-subscript
 import { RetrySerializeContext } from '../../db/utils';
 
 export interface ParseBillingSubscriptionPlanDataOptions {
-  context: RetrySerializeContext;
   billingOrganizationId: string;
   type: BillingSubscriptionPlanType;
   category: BillingCategory;
@@ -38,8 +37,11 @@ export interface ParseBillingSubscriptionPlanDataResultSuccess {
 
 export type ParseBillingSubscriptionPlanDataResult = ParseBillingSubscriptionPlanDataResultFailure | ParseBillingSubscriptionPlanDataResultSuccess;
 
-export async function parseBillingSubscriptionPlanData(options: ParseBillingSubscriptionPlanDataOptions): Promise<ParseBillingSubscriptionPlanDataResult> {
-  const { context, billingOrganizationId, type, category, option, currency, period } = options;
+export async function parseBillingSubscriptionPlanData(
+  context: RetrySerializeContext,
+  options: ParseBillingSubscriptionPlanDataOptions,
+): Promise<ParseBillingSubscriptionPlanDataResult> {
+  const { billingOrganizationId, type, category, option, currency, period } = options;
   const { manager } = context;
   const billingSubscriptionPlanSource = await manager.getRepository(BillingSubscriptionPlanSource).findOne({
     where: {
