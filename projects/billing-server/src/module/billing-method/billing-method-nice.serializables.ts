@@ -1,4 +1,12 @@
-import { BillingMethodNiceProp, BillingResultCode, CreateOrUpdateMethodNiceDto, NiceSubscribePaymentsResponse } from '@dogu-private/console';
+import {
+  BillingMethodNiceProp,
+  BillingResultCode,
+  CreateOrUpdateMethodNiceDto,
+  FindBillingMethodDto,
+  FindBillingMethodResponse,
+  NiceSubscribePaymentsResponse,
+  resultCode,
+} from '@dogu-private/console';
 import { errorify } from '@dogu-tech/common';
 import { v4 } from 'uuid';
 import { BillingMethodNice } from '../../db/entity/billing-method-nice.entity';
@@ -129,5 +137,36 @@ export async function createPurchase(
   return {
     ok: true,
     response,
+  };
+}
+
+export async function findBillingMethods(context: RetrySerializeContext, dto: FindBillingMethodDto): Promise<FindBillingMethodResponse> {
+  const { manager } = context;
+  const { organizationId } = dto;
+
+  const billingOrganization = await manager.getRepository(BillingOrganization).findOne({
+    where: {
+      organizationId,
+    },
+  });
+
+  if (!billingOrganization) {
+    return {
+      ok: false,
+      resultCode: resultCode('organization-not-found'),
+    };
+  }
+
+  const billingMethods = await manager.getRepository(BillingMethodNice).find({
+    where: {
+      billingOrganizationId: billingOrganization.billingOrganizationId,
+    },
+    select: ['cardCode', 'cardName', 'cardNumberLast4Digits'],
+  });
+
+  return {
+    ok: true,
+    resultCode: resultCode('ok'),
+    methods: billingMethods,
   };
 }

@@ -20,12 +20,8 @@ const UpgradePlanModal: React.FC<Props> = ({ isOpen, close }) => {
     shallow,
   );
   const reset = useBillingPlanPurchaseStore((state) => state.reset);
+  const updateCoupon = useBillingPlanPurchaseStore((state) => state.updateCoupon);
   const { t } = useTranslation('billing');
-  // const [isSelected, setIsSelected] = useState(false);
-
-  // const handleClickUpgrade = () => {
-  //   setIsSelected(true);
-  // };
 
   const handleClose = () => {
     close();
@@ -34,18 +30,18 @@ const UpgradePlanModal: React.FC<Props> = ({ isOpen, close }) => {
     }, 500);
   };
 
+  const handleBack = () => {
+    updateCoupon(null);
+    updateSelectedPlan(null);
+  };
+
   return (
     <Modal
       title={
         <FlexRow style={{ justifyContent: 'space-between' }}>
           <FlexRow>
             {!!selectedPlan && (
-              <Button
-                icon={<ArrowLeftOutlined />}
-                style={{ marginRight: '.25rem' }}
-                type="text"
-                onClick={() => updateSelectedPlan(null)}
-              />
+              <Button icon={<ArrowLeftOutlined />} style={{ marginRight: '.25rem' }} type="text" onClick={handleBack} />
             )}
             <p>{t('upgradePlanModalTitle')}</p>
           </FlexRow>

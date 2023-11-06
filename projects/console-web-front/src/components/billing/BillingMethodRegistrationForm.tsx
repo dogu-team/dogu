@@ -3,7 +3,7 @@ import useTranslation from 'next-translate/useTranslation';
 import React, { useEffect, useRef } from 'react';
 import styled from 'styled-components';
 
-export interface BillingRegistrationFormValues {
+export interface BillingMethodRegistrationFormValues {
   card: string;
   expiry: string;
   password: string;
@@ -11,10 +11,10 @@ export interface BillingRegistrationFormValues {
 }
 
 interface Props {
-  form: FormInstance<BillingRegistrationFormValues>;
+  form: FormInstance<BillingMethodRegistrationFormValues>;
 }
 
-const BillingRegistrationForm: React.FC<Props> = ({ form }) => {
+const BillingMethodRegistrationForm: React.FC<Props> = ({ form }) => {
   const cardRef = useRef<InputRef>(null);
   const expiryRef = useRef<InputRef>(null);
   const passwordRef = useRef<InputRef>(null);
@@ -70,14 +70,13 @@ const BillingRegistrationForm: React.FC<Props> = ({ form }) => {
   };
 
   return (
-    <StyledForm
-      form={form}
-      layout="vertical"
-      onFinish={(values) => {
-        console.log(values);
-      }}
-    >
-      <Form.Item name="card" label={t('paymentFormCardNumberLabel')}>
+    <StyledForm form={form} layout="vertical" id="billing-method-form">
+      <Form.Item
+        name="card"
+        label={t('paymentFormCardNumberLabel')}
+        validateTrigger="onBlur"
+        rules={[{ required: true, message: 'Enter your card number', len: 19 }]}
+      >
         <Input
           required
           name="1"
@@ -93,7 +92,12 @@ const BillingRegistrationForm: React.FC<Props> = ({ form }) => {
         />
       </Form.Item>
       <Box style={{ gap: '4rem' }}>
-        <Form.Item name="expiry" label={t('paymentFormExpiryLabel')}>
+        <Form.Item
+          name="expiry"
+          label={t('paymentFormExpiryLabel')}
+          validateTrigger="onBlur"
+          rules={[{ required: true, message: 'Enter card expiry', len: 7 }]}
+        >
           <Input
             style={{ width: '100px' }}
             required
@@ -109,7 +113,12 @@ const BillingRegistrationForm: React.FC<Props> = ({ form }) => {
           />
         </Form.Item>
         <div style={{ position: 'relative' }}>
-          <Form.Item name="password" label={t('paymentFormPasswordLabel')}>
+          <Form.Item
+            name="password"
+            label={t('paymentFormPasswordLabel')}
+            validateTrigger="onBlur"
+            rules={[{ required: true, message: 'Enter password', len: 2 }]}
+          >
             <Input
               type="password"
               style={{ width: '50px' }}
@@ -127,7 +136,12 @@ const BillingRegistrationForm: React.FC<Props> = ({ form }) => {
           <div style={{ position: 'absolute', left: '58px', bottom: '30px' }}>● ●</div>
         </div>
       </Box>
-      <Form.Item name="legalNumber" label={t('paymentFormBirthdayLabel')}>
+      <Form.Item
+        name="legalNumber"
+        label={t('paymentFormBirthdayLabel')}
+        validateTrigger="onBlur"
+        rules={[{ required: true, message: 'Fill the blank', min: 6, max: 10 }]}
+      >
         <Input
           ref={legalNumberRef}
           required
@@ -143,11 +157,10 @@ const BillingRegistrationForm: React.FC<Props> = ({ form }) => {
   );
 };
 
-export default BillingRegistrationForm;
+export default BillingMethodRegistrationForm;
 
 const StyledForm = styled(Form)`
-  flex: 1;
-  flex-shrink: 0;
+  width: 100%;
 `;
 
 const Box = styled.div`

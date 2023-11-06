@@ -49,7 +49,7 @@ const BillingCouponInput: React.FC<Props> = () => {
         period: isAnnual ? 'yearly' : 'monthly',
       });
 
-      if (rv.errorMessage) {
+      if (rv.errorMessage || !rv.body?.ok) {
         setCouponError(t('invalidCouponCodeText'));
         updateBillingCoupon(null);
       } else {

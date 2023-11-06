@@ -4,6 +4,7 @@ export * from './base/billing';
 export * from './base/billing-code';
 export * from './base/billing-coupon';
 export * from './base/billing-history';
+export * from './base/billing-method';
 export * from './base/billing-method-nice';
 export * from './base/billing-organization';
 export * from './base/billing-organization-used-billing-coupon';

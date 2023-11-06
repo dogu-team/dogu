@@ -1,5 +1,6 @@
 import { IsFilledString, propertiesOf } from '@dogu-tech/common';
 import { IsIn, IsNotEmpty, IsNumber, IsOptional, IsUUID } from 'class-validator';
+
 import { BillingPeriod } from './billing';
 import { BillingResultCode } from './billing-code';
 

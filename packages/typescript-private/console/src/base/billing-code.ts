@@ -34,6 +34,9 @@ export const BillingResultCodeMap = {
   'subscription-plan-duplicated': 307,
   'subscription-plan-not-upgrade': 308,
 
+  // method
+  'billing-method-not-found': 404,
+
   // method nice
   'method-nice-bid-not-found': 400,
 };

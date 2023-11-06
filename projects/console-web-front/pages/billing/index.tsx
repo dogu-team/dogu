@@ -1,4 +1,5 @@
 import { CloudLicenseBase, SelfHostedLicenseBase, UserBase } from '@dogu-private/console';
+import { OrganizationId } from '@dogu-private/types';
 import { Button } from 'antd';
 import { GetServerSideProps } from 'next';
 import useTranslation from 'next-translate/useTranslation';
@@ -7,7 +8,7 @@ import styled from 'styled-components';
 import { getCloudLicenseInServerSide, getSelfHostedLicenseInServerSide } from '../../enterprise/api/license';
 import BillingInvoiceList from '../../src/components/billing/BillingInvoiceList';
 import BillingPaymentMethod from '../../src/components/billing/BillingPaymentMethod';
-import BillingSubscribedPlanDashboard from '../../src/components/billing/BillingSubscribedPlanDashboard';
+import BillingSubscribedPlanList from '../../src/components/billing/BillingSubscribedPlanList';
 import UpgradePlanButton from '../../src/components/billing/UpgradePlanButton';
 import LiveChat from '../../src/components/external/livechat';
 import ConsoleBasicLayout from '../../src/components/layouts/ConsoleBasicLayout';
@@ -29,7 +30,7 @@ const BillingPage: NextPageWithLayout<BillingPageProps> = ({ me, license }) => {
         <TitleWrapper>
           <ContentTitle>{t('currentPlanText')}</ContentTitle>
           <ContentInner>
-            <BillingSubscribedPlanDashboard license={license} />
+            <BillingSubscribedPlanList license={license} />
           </ContentInner>
         </TitleWrapper>
         <div>
@@ -46,7 +47,7 @@ const BillingPage: NextPageWithLayout<BillingPageProps> = ({ me, license }) => {
           <ContentTitle>{t('billingPaymentMethodTitle')}</ContentTitle>
         </TitleWrapper>
         <ContentInner>
-          <BillingPaymentMethod />
+          <BillingPaymentMethod organizationId={license.organizationId as OrganizationId} />
         </ContentInner>
       </Content>
       <Content>

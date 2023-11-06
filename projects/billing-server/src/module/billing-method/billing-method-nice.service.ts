@@ -1,19 +1,22 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { FindBillingMethodDto, FindBillingMethodResponse } from '@dogu-private/console';
+import { Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
-import { BillingHistoryService } from '../billing-history/billing-history.service';
-import { BillingOrganizationService } from '../billing-organization/billing-organization.service';
+
+import { retrySerialize } from '../../db/utils';
 import { DoguLogger } from '../logger/logger';
-import { BillingMethodNiceCaller } from './billing-method-nice.caller';
+import { findBillingMethods } from './billing-method-nice.serializables';
 
 @Injectable()
 export class BillingMethodNiceService {
   constructor(
     private readonly logger: DoguLogger,
     @InjectDataSource() private readonly dataSource: DataSource,
-    private readonly billingMethodNiceCaller: BillingMethodNiceCaller,
-    @Inject(forwardRef(() => BillingOrganizationService))
-    private readonly billingOrganizationService: BillingOrganizationService,
-    private readonly billingHistoryService: BillingHistoryService,
   ) {}
+
+  async findBillingMethods(dto: FindBillingMethodDto): Promise<FindBillingMethodResponse> {
+    return await retrySerialize(this.logger, this.dataSource, async (context) => {
+      return await findBillingMethods(context, dto);
+    });
+  }
 }

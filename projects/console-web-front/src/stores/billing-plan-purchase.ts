@@ -8,7 +8,8 @@ import {
 import { FormInstance } from 'antd';
 import { create } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
-import { BillingRegistrationFormValues } from '../components/billing/BillingCardRegistrationForm';
+
+import { BillingMethodRegistrationFormValues } from '../components/billing/BillingMethodRegistrationForm';
 
 type SelectedPlan = {
   planType: BillingSubscriptionPlanType;
@@ -22,7 +23,7 @@ interface BillingPlanPurchaseStore {
   selectedPlan: SelectedPlan | null;
   isAnnual: boolean;
   coupon: string | null;
-  cardForm: FormInstance<BillingRegistrationFormValues> | null;
+  cardForm: FormInstance<BillingMethodRegistrationFormValues> | null;
   updateLicense: (license: CloudLicenseBase | SelfHostedLicenseBase | null) => void;
   updateBillingGroupType: (billingGroupType: BillingSubscriptionGroupType | null) => void;
   updateSelectedPlan: (selectedPlan: SelectedPlan | null) => void;

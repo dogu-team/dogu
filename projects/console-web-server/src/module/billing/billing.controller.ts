@@ -1,5 +1,12 @@
-import { BillingCouponBase, CallBillingApiResponse, GetBillingSubscriptionPreviewResponse, ValidateBillingCouponResponse } from '@dogu-private/console';
-import { Controller, Get, Query } from '@nestjs/common';
+import {
+  BillingCouponBase,
+  CallBillingApiResponse,
+  CreatePurchaseSubscriptionWithNewCardResponse,
+  FindBillingMethodResponse,
+  GetBillingSubscriptionPreviewResponse,
+  ValidateBillingCouponResponse,
+} from '@dogu-private/console';
+import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 
 import { ORGANIZATION_ROLE } from '../auth/auth.types';
 import { OrganizationPermission } from '../auth/decorators';
@@ -41,6 +48,28 @@ export class BillingController {
     return await this.billingCaller.callBillingApi<GetBillingSubscriptionPreviewResponse>({
       method: 'GET',
       path: 'billing/purchase/preview',
+      query,
+    });
+  }
+
+  @Post('/purchase/new-card')
+  @OrganizationPermission(ORGANIZATION_ROLE.ADMIN)
+  async createPurchaseSubscriptionWithNewCard(@Query() query: object, @Body() body: object): Promise<CallBillingApiResponse<CreatePurchaseSubscriptionWithNewCardResponse>> {
+    return await this.billingCaller.callBillingApi<CreatePurchaseSubscriptionWithNewCardResponse>({
+      method: 'POST',
+      path: 'billing/purchase/new-card',
+      query,
+      body,
+    });
+  }
+
+  // methods
+  @Get('/methods')
+  @OrganizationPermission(ORGANIZATION_ROLE.ADMIN)
+  async findBillingMethods(@Query() query: object): Promise<CallBillingApiResponse<FindBillingMethodResponse>> {
+    return await this.billingCaller.callBillingApi<FindBillingMethodResponse>({
+      method: 'GET',
+      path: 'billing/methods',
       query,
     });
   }

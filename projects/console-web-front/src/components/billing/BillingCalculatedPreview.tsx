@@ -8,6 +8,7 @@ import useTranslation from 'next-translate/useTranslation';
 import useSWR from 'swr';
 import styled from 'styled-components';
 import { useRouter } from 'next/router';
+import { LoadingOutlined } from '@ant-design/icons';
 
 import { planDescriptionInfoMap } from '../../resources/plan';
 import useBillingPlanPurchaseStore from '../../stores/billing-plan-purchase';
@@ -16,7 +17,9 @@ import ErrorBox from '../common/boxes/ErrorBox';
 import BillingCouponInput from './BillingCouponInput';
 import { swrAuthFetcher } from '../../api';
 import { buildQueryPraramsByObject } from '../../utils/query';
-import { LoadingOutlined } from '@ant-design/icons';
+import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd';
+import useRequest from '../../hooks/useRequest';
+import { purchasePlanWithNewCard } from '../../api/billing';
 
 interface Props {}
 
@@ -27,6 +30,7 @@ const BillingCalculatedPreview: React.FC<Props> = ({}) => {
   const couponCode = useBillingPlanPurchaseStore((state) => state.coupon);
   const license = useBillingPlanPurchaseStore((state) => state.license);
   const router = useRouter();
+  const [purchaseWithNewCardLoading, requestPurchaseWithNewCard] = useRequest(purchasePlanWithNewCard);
 
   const dto: GetBillingSubscriptionPreviewDto = {
     organizationId: license?.organizationId ?? '',
@@ -48,14 +52,6 @@ const BillingCalculatedPreview: React.FC<Props> = ({}) => {
 
   const { t } = useTranslation('billing');
 
-  const handlePurchase = async () => {
-    if (!cardForm) {
-      return;
-    }
-    const values = await cardForm.validateFields();
-    console.log(values);
-  };
-
   if (!selectedPlan) {
     return <ErrorBox title="Oops" desc="Plan not selected" />;
   }
@@ -69,6 +65,41 @@ const BillingCalculatedPreview: React.FC<Props> = ({}) => {
   const originPricePerMonth = isAnnualSubscription
     ? data.body.subscriptionPlan.originPrice / 12
     : data.body.subscriptionPlan.originPrice;
+
+  const handlePurchase = async () => {
+    if (!cardForm || !license?.organizationId || !selectedPlan) {
+      return;
+    }
+
+    const values = await cardForm.validateFields();
+    try {
+      const rv = await requestPurchaseWithNewCard({
+        organizationId: license.organizationId,
+        category: selectedPlan?.category,
+        type: selectedPlan?.planType,
+        option: selectedPlan?.option,
+        currency: 'KRW',
+        period: isAnnualSubscription ? 'yearly' : 'monthly',
+        couponCode: couponCode ?? undefined,
+        registerCard: {
+          cardNumber: values.card.replaceAll(' ', ''),
+          expirationMonth: values.expiry.split(' / ')[0],
+          expirationYear: values.expiry.split(' / ')[1],
+          idNumber: values.legalNumber,
+          cardPasswordFirst2Digits: values.password,
+        },
+      });
+
+      if (rv.errorMessage || !rv.body?.ok) {
+        sendErrorNotification('Failed to purchase plan! Please contact us.');
+        return;
+      }
+
+      sendSuccessNotification('Successfully purchased plan!');
+    } catch (e) {
+      sendErrorNotification('Failed to purchase plan! Please contact us.');
+    }
+  };
 
   return (
     <Box>
@@ -108,7 +139,15 @@ const BillingCalculatedPreview: React.FC<Props> = ({}) => {
           <div style={{ margin: '.5rem 0' }}>
             <CalculatedPriceContent>
               <span>{t('subscriptionAdjustmentTitle')}</span>
-              <b className="minus">{getLocaleFormattedPrice('ko', -400)}</b>
+              <b className="minus">
+                {getLocaleFormattedPrice(
+                  'ko',
+                  -(
+                    data.body.elapsedPlans.reduce((amount, plan) => amount + plan.elapsedDiscountedAmount, 0) +
+                    data.body.remainingPlans.reduce((amount, plan) => amount + plan.remainingDiscountedAmount, 0)
+                  ),
+                )}
+              </b>
             </CalculatedPriceContent>
 
             {/* elapsed */}
@@ -121,7 +160,7 @@ const BillingCalculatedPreview: React.FC<Props> = ({}) => {
                     <div key={plan.type} style={{ fontSize: '.8rem', marginBottom: '.25rem' }}>
                       <CalculatedPriceContent style={{ fontSize: '.85rem' }}>
                         <p style={{ fontWeight: '500' }}>{t(planDescriptionInfoMap[plan.type].titleI18nKey)}</p>
-                        <b className="minus">{getLocaleFormattedPrice('ko', -200)}</b>
+                        <b className="minus">{getLocaleFormattedPrice('ko', -plan.elapsedDiscountedAmount)}</b>
                       </CalculatedPriceContent>
                       <OptionDescription style={{ fontSize: '.75rem' }}>
                         {plan.period === 'yearly' ? `${t('billedAnnuallyText')} | ` : ''}
@@ -145,7 +184,7 @@ const BillingCalculatedPreview: React.FC<Props> = ({}) => {
                     <div key={plan.type} style={{ fontSize: '.8rem', marginBottom: '.25rem' }}>
                       <CalculatedPriceContent style={{ fontSize: '.85rem' }}>
                         <p style={{ fontWeight: '500' }}>{t(planDescriptionInfoMap[plan.type].titleI18nKey)}</p>
-                        <b className="minus">{getLocaleFormattedPrice('ko', -200)}</b>
+                        <b className="minus">{getLocaleFormattedPrice('ko', -plan.remainingDiscountedAmount)}</b>
                       </CalculatedPriceContent>
                       <OptionDescription style={{ fontSize: '.75rem' }}>
                         {plan.period === 'yearly' ? `${t('billedAnnuallyText')} | ` : ''}
@@ -223,7 +262,12 @@ const BillingCalculatedPreview: React.FC<Props> = ({}) => {
       <Content>
         <BillingCouponInput />
       </Content>
-      <Button type="primary" onClick={handlePurchase} style={{ width: '100%' }} loading={isLoading}>
+      <Button
+        type="primary"
+        onClick={handlePurchase}
+        style={{ width: '100%' }}
+        loading={isLoading || purchaseWithNewCardLoading}
+      >
         {t('purchaseButtonText')}
       </Button>
       <div style={{ marginTop: '.2rem' }}>
