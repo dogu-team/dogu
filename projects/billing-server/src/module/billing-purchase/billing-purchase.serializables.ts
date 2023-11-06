@@ -332,6 +332,22 @@ export async function processPurchaseSubscription(
   });
   await manager.getRepository(BillingHistory).save(billingHistory);
 
+  switch (billingOrganization.category) {
+    case 'cloud':
+      {
+        // TODO
+      }
+      break;
+    case 'self-hosted':
+      {
+        // TODO
+      }
+      break;
+    default: {
+      assertUnreachable(billingOrganization.category);
+    }
+  }
+
   return {
     ok: true,
     resultCode: resultCode('ok'),

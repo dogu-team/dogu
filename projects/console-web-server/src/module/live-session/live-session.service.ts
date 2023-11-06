@@ -261,7 +261,7 @@ export class LiveSessionService {
       throw new HttpException(`Live testing parallel count exceeded. liveTestingParallelCount: ${cloudLicense.liveTestingParallelCount}`, HttpStatus.PAYMENT_REQUIRED);
     }
 
-    const isLiveTestingSubscribing = cloudLicense.billingOrganization?.billingSubscriptionPlans?.find((plan) => plan.type === 'live-testing');
+    const isLiveTestingSubscribing = cloudLicense.billingOrganization?.billingSubscriptionPlanInfos?.find((plan) => plan.type === 'live-testing');
     if (!isLiveTestingSubscribing && cloudLicense.liveTestingRemainingFreeSeconds <= 0) {
       throw new HttpException(`Live testing is not subscribed. remainingFreeSeconds: ${cloudLicense.liveTestingRemainingFreeSeconds}`, HttpStatus.PAYMENT_REQUIRED);
     }
