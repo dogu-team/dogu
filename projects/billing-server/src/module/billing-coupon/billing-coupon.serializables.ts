@@ -8,6 +8,7 @@ import {
   resultCode,
   ValidateBillingCouponDto,
 } from '@dogu-private/console';
+import { FindOptionsWhere, IsNull, Not } from 'typeorm';
 import { v4 } from 'uuid';
 import { BillingCoupon } from '../../db/entity/billing-coupon.entity';
 import { BillingOrganizationUsedBillingCoupon } from '../../db/entity/billing-organization-used-billing-coupon.entity';
@@ -30,7 +31,20 @@ export type ValidateBillingCouponResponse = ValidateBillingCouponResponseFailure
 export async function validateCoupon(context: RetrySerializeContext, dto: ValidateBillingCouponDto): Promise<ValidateBillingCouponResponse> {
   const { manager } = context;
   const { organizationId, code } = dto;
-  const billingCoupon = await manager.getRepository(BillingCoupon).findOne({ where: { code } });
+  const findWhereOption: FindOptionsWhere<BillingCoupon> =
+    dto.period === 'monthly'
+      ? {
+          code,
+          monthlyApplyCount: Not(IsNull()),
+          monthlyDiscountPercent: Not(IsNull()),
+        }
+      : {
+          code,
+          yearlyApplyCount: Not(IsNull()),
+          yearlyDiscountPercent: Not(IsNull()),
+        };
+  const billingCoupon = await manager.getRepository(BillingCoupon).findOne({ where: findWhereOption });
+
   if (!billingCoupon) {
     return {
       ok: false,

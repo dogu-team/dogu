@@ -1,6 +1,6 @@
 import { IsFilledString, propertiesOf } from '@dogu-tech/common';
 import { IsIn, IsNotEmpty, IsNumber, IsOptional, IsUUID } from 'class-validator';
-import { BillingResultCode } from '..';
+import { BillingPeriod, BillingResultCode } from '..';
 
 export const BillingCouponType = ['basic', 'promotion'] as const;
 export type BillingCouponType = (typeof BillingCouponType)[number];
@@ -32,6 +32,9 @@ export class ValidateBillingCouponDto {
 
   @IsFilledString()
   code!: string;
+
+  @IsIn(BillingPeriod)
+  period!: BillingPeriod;
 }
 
 export interface ValidateBillingCouponResponse {

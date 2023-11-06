@@ -150,7 +150,7 @@ export interface ParseCouponResultSuccess {
 
 export type ParseCouponResult = ParseCouponResultFailure | ParseCouponResultSuccess;
 
-export async function parseCoupon(context: RetrySerializeContext, organizationId: string, couponCode: string | undefined): Promise<ParseCouponResult> {
+export async function parseCoupon(context: RetrySerializeContext, organizationId: string, couponCode: string | undefined, period: BillingPeriod): Promise<ParseCouponResult> {
   if (couponCode === undefined) {
     return {
       ok: true,
@@ -159,7 +159,7 @@ export async function parseCoupon(context: RetrySerializeContext, organizationId
     };
   }
 
-  const validateResult = await validateCoupon(context, { organizationId, code: couponCode });
+  const validateResult = await validateCoupon(context, { organizationId, code: couponCode, period });
   if (!validateResult.ok) {
     return {
       ok: false,
@@ -217,7 +217,7 @@ export async function getSubscriptionPreview(context: RetrySerializeContext, dto
   }
 
   const { subscriptionPlanSource } = parseSubscriptionPlanSourceResult;
-  const parseCouponResult = await parseCoupon(context, organizationId, subscriptionPlan.couponCode);
+  const parseCouponResult = await parseCoupon(context, organizationId, subscriptionPlan.couponCode, subscriptionPlan.period);
   if (!parseCouponResult.ok) {
     return {
       ok: parseCouponResult.ok,
