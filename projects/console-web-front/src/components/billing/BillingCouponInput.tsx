@@ -16,6 +16,7 @@ const BillingCouponInput: React.FC<Props> = () => {
   const [couponError, setCouponError] = useState<string | null>(null);
   const [validateBillingCouponLoading, requestValidateBillingCoupon] = useRequest(validateBillingCoupon);
   const license = useBillingPlanPurchaseStore((state) => state.license);
+  const isAnnual = useBillingPlanPurchaseStore((state) => state.isAnnual);
   const [billingCoupon, updateBillingCoupon] = useBillingPlanPurchaseStore(
     (state) => [state.coupon, state.updateCoupon],
     shallow,
@@ -45,6 +46,7 @@ const BillingCouponInput: React.FC<Props> = () => {
       const rv = await requestValidateBillingCoupon({
         organizationId: license.organizationId,
         code: couponInputValue,
+        period: isAnnual ? 'yearly' : 'monthly',
       });
 
       if (rv.errorMessage) {

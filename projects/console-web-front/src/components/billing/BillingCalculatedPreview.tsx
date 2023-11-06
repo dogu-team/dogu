@@ -165,7 +165,7 @@ const BillingCalculatedPreview: React.FC<Props> = ({}) => {
           <div style={{ marginTop: '.5rem' }}>
             <CalculatedPriceContent>
               <span>{t('couponLabelText')}</span>
-              <b className="minus">{getLocaleFormattedPrice('ko', -data.body.coupon.discountAmount)}</b>
+              <b className="minus">{getLocaleFormattedPrice('ko', -data.body.coupon.discountedAmount)}</b>
             </CalculatedPriceContent>
             <OptionDescription style={{ fontSize: '.75rem' }}>
               {isAnnualSubscription
@@ -208,7 +208,7 @@ const BillingCalculatedPreview: React.FC<Props> = ({}) => {
           <div style={{ marginTop: '.5rem' }}>
             <NextBillingText>
               {t('nextPurchaseDescriptionText', {
-                date: getLocaleFormattedDate(router.locale, new Date(data.body.nextPurchaseAt), {
+                date: getLocaleFormattedDate(router.locale, new Date(data.body.nextPurchasedAt), {
                   year: 'numeric',
                   month: 'short',
                   day: 'numeric',

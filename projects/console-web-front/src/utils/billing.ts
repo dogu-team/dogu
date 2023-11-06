@@ -1,5 +1,5 @@
 import {
-  BillingSubscriptionPlanBase,
+  BillingSubscriptionPlanInfoBase,
   BillingSubscriptionPlanType,
   CloudLicenseBase,
   SelfHostedLicenseBase,
@@ -8,13 +8,13 @@ import {
 export const getSubscriptionPlansFromLicense = (
   license: CloudLicenseBase | SelfHostedLicenseBase,
   planTypes: BillingSubscriptionPlanType[] | null,
-): BillingSubscriptionPlanBase[] => {
+): BillingSubscriptionPlanInfoBase[] => {
   if ('licenseKey' in license) {
     const selfHostedLicense = license;
     return [];
   } else {
     const cloudLicense = license;
-    const usingPlans = cloudLicense.billingOrganization?.billingSubscriptionPlans;
+    const usingPlans = cloudLicense.billingOrganization?.billingSubscriptionPlanInfos;
 
     if (planTypes) {
       return usingPlans?.filter((plan) => planTypes.includes(plan.type)) || [];

@@ -1,5 +1,5 @@
 import { CheckOutlined } from '@ant-design/icons';
-import { BillingSubscriptionPlanInfo, BillingSubscriptionPlanType } from '@dogu-private/console';
+import { BillingSubscriptionPlanOptionInfo, BillingSubscriptionPlanType } from '@dogu-private/console';
 import { Button, Divider, Select, SelectProps } from 'antd';
 import useTranslation from 'next-translate/useTranslation';
 import { useState } from 'react';
@@ -11,7 +11,7 @@ import { getLocaleFormattedPrice } from '../../utils/locale';
 
 interface Props {
   planType: BillingSubscriptionPlanType;
-  planInfo: BillingSubscriptionPlanInfo;
+  planInfo: BillingSubscriptionPlanOptionInfo;
   descriptionInfo: PlanDescriptionInfo;
 }
 

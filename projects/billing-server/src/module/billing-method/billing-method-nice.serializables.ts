@@ -14,7 +14,7 @@ export async function createOrUpdateMethodNice(
   const { logger, manager, registerOnAfterRollback } = context;
   const { billingOrganizationId, subscribeRegist } = dto;
   const { registerCard } = subscribeRegist;
-  const { cardNumber } = registerCard;
+  const { cardNumber, expirationYear, expirationMonth } = registerCard;
 
   let bid: string | null = null;
   const subscribeExpire = async (): Promise<void> => {
@@ -46,6 +46,8 @@ export async function createOrUpdateMethodNice(
     billingMethodNice.cardNumberLast4Digits = cardNumberLast4Digits;
     billingMethodNice.subscribeRegistResponse = subscribeRegistResponse as unknown as Record<string, unknown>;
     billingMethodNice.subscribeRegistAt = new Date();
+    billingMethodNice.expirationYear = expirationYear;
+    billingMethodNice.expirationMonth = expirationMonth;
   } else {
     billingMethodNice = manager.getRepository(BillingMethodNice).create({
       billingMethodNiceId: v4(),
@@ -56,6 +58,8 @@ export async function createOrUpdateMethodNice(
       cardNumberLast4Digits,
       subscribeRegistResponse: subscribeRegistResponse as unknown as Record<string, unknown>,
       subscribeRegistAt: new Date(),
+      expirationYear,
+      expirationMonth,
     });
   }
 

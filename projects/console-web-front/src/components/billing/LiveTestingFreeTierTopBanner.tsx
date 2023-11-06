@@ -17,7 +17,7 @@ const LiveTestingFreeTierTopBanner: React.FC<Props> = ({ license }) => {
   const me = useAuthStore((state) => state.me);
   const { t } = useTranslation('billing');
 
-  if (!license.billingOrganization?.billingSubscriptionPlans?.length) {
+  if (!license.billingOrganization?.billingSubscriptionPlanInfos?.length) {
     return (
       <Alert
         type="info"

@@ -39,7 +39,7 @@ const BillingSelectPlanStep: React.FC<Props> = ({}) => {
           <b>
             {usingPlans.length > 0
               ? usingPlans.map((plan) => (
-                  <span key={plan.billingSubscriptionPlanId}>{plan.billingSubscriptionPlanId}</span>
+                  <span key={plan.billingSubscriptionPlanInfoId}>{plan.billingSubscriptionPlanInfoId}</span>
                 ))
               : 'Free'}
           </b>
