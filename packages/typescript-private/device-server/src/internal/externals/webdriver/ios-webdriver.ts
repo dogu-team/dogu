@@ -195,4 +195,24 @@ export class IosWebDriver {
       { retryCount: 3, retryInterval: 1000, printable: new PrefixLogger(this.logger, 'IosWebDriver.removeWidget') },
     );
   }
+
+  async openNotificationCenter(): Promise<void> {
+    await this.home();
+    await this.home();
+    const windowRect = await this.rawDriver.getWindowRect();
+    await this.rawDriver.touchAction([
+      {
+        action: 'longPress',
+        x: windowRect.width * 0.01,
+        y: windowRect.height * 0.01,
+      },
+      {
+        action: 'moveTo',
+        x: windowRect.width * 0.01,
+        y: windowRect.height * 0.9,
+      },
+      'release',
+    ]);
+    await this.waitElementExist(new IosAccessibilitiySelector('lockscreen-date-view'), { seconds: 3 });
+  }
 }

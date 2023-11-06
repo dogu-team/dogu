@@ -255,6 +255,7 @@ export class IosResetService {
             await this.check('IosResetService.reset.clearFilesRecentlyDeleted', this.clearFilesRecentlyDeleted(iosDriver, helper));
             await this.check('IosResetService.reset.resetSettings', this.resetSettings(iosDriver));
             await this.check('IosResetService.reset.removeWidgets', this.removeWidgets(iosDriver));
+            await this.check('IosResetService.reset.clearNotifications', this.clearNotifications(iosDriver));
             await this.check('IosResetService.reset.removeUserApps', this.removeUserApps()); // last step because this removes appium
             await this.check(
               'IosResetService.reset.restart',
@@ -716,6 +717,46 @@ export class IosResetService {
         const widget = targetWidgets[0];
         await iosDriver.removeWidget(widget);
       }
+    }
+  }
+
+  private async clearNotifications(iosDriver: IosWebDriver): Promise<void> {
+    await iosDriver.openNotificationCenter();
+    for await (const _ of loop(500)) {
+      const elems = await iosDriver.waitElementsExist(new IosAccessibilitiySelector('NotificationCell'), { seconds: 3 });
+      if (0 === elems.length) {
+        break;
+      }
+      const elemAndLoc = await Promise.all(
+        elems.map(async (elem) => {
+          const elemPos = await elem.getLocation();
+          return { elem, elemPos };
+        }),
+      );
+      elemAndLoc.sort((a, b) => a.elemPos.y - b.elemPos.y);
+      const elem = elemAndLoc[0].elem;
+
+      const elemPos = await elem.getLocation();
+      const elemSize = await elem.getSize();
+      const elemCenter = {
+        x: elemPos.x + elemSize.width / 2,
+        y: elemPos.y + elemSize.height / 2,
+      };
+
+      // longpress to left
+      await iosDriver.rawDriver.touchAction([
+        {
+          action: 'longPress',
+          x: Math.floor(elemCenter.x + elemSize.width * 0.48),
+          y: elemCenter.y,
+        },
+        {
+          action: 'moveTo',
+          x: Math.floor(elemCenter.x - elemSize.width * 0.48),
+          y: elemCenter.y,
+        },
+        'release',
+      ]);
     }
   }
 
