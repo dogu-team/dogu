@@ -244,9 +244,9 @@ export class IosResetService {
             },
           },
           async () => {
-            await iosDriver.home();
+            await iosDriver.homeAndDismissAlert();
             await this.check('IosResetService.reset.removeSystemApps', this.removeSystemApps());
-            await iosDriver.home();
+            await iosDriver.homeAndDismissAlert();
             await this.check('IosResetService.reset.logoutAppleAccount', this.logoutAppleAccount(iosDriver));
             await this.check('IosResetService.reset.clearSafariCache', this.clearSafariCache(iosDriver));
             await this.check('IosResetService.reset.clearPhotoImages', this.clearPhotoImages(iosDriver));
@@ -296,7 +296,7 @@ export class IosResetService {
     await usingAsnyc(
       {
         create: async () => {
-          await iosDriver.home();
+          await iosDriver.homeAndDismissAlert();
           await iosDriver.relaunchApp('com.apple.Preferences');
         },
         dispose: async () => {
@@ -327,7 +327,7 @@ export class IosResetService {
     await usingAsnyc(
       {
         create: async () => {
-          await iosDriver.home();
+          await iosDriver.homeAndDismissAlert();
           await iosDriver.relaunchApp('com.apple.Preferences');
         },
         dispose: async () => {
@@ -358,7 +358,7 @@ export class IosResetService {
     await usingAsnyc(
       {
         create: async () => {
-          await iosDriver.home();
+          await iosDriver.homeAndDismissAlert();
           await iosDriver.relaunchApp('com.apple.mobileslideshow');
         },
         dispose: async () => {
@@ -410,7 +410,7 @@ export class IosResetService {
     await usingAsnyc(
       {
         create: async () => {
-          await iosDriver.home();
+          await iosDriver.homeAndDismissAlert();
           await iosDriver.relaunchApp('com.apple.mobileslideshow');
         },
         dispose: async () => {
@@ -445,7 +445,7 @@ export class IosResetService {
     await usingAsnyc(
       {
         create: async () => {
-          await iosDriver.home();
+          await iosDriver.homeAndDismissAlert();
           await iosDriver.relaunchApp('com.apple.mobileslideshow');
         },
         dispose: async () => {
@@ -483,7 +483,7 @@ export class IosResetService {
     await usingAsnyc(
       {
         create: async () => {
-          await iosDriver.home();
+          await iosDriver.homeAndDismissAlert();
           await iosDriver.relaunchApp('com.apple.Preferences');
         },
         dispose: async () => {
@@ -510,7 +510,7 @@ export class IosResetService {
     await usingAsnyc(
       {
         create: async () => {
-          await iosDriver.home();
+          await iosDriver.homeAndDismissAlert();
           await iosDriver.relaunchApp('com.apple.DocumentsApp');
         },
         dispose: async () => {
@@ -564,7 +564,7 @@ export class IosResetService {
     await usingAsnyc(
       {
         create: async () => {
-          await iosDriver.home();
+          await iosDriver.homeAndDismissAlert();
           await iosDriver.relaunchApp('com.apple.DocumentsApp');
         },
         dispose: async () => {
@@ -610,7 +610,7 @@ export class IosResetService {
     await usingAsnyc(
       {
         create: async () => {
-          await iosDriver.home();
+          await iosDriver.homeAndDismissAlert();
           await iosDriver.relaunchApp('com.apple.DocumentsApp');
         },
         dispose: async () => {
@@ -657,7 +657,7 @@ export class IosResetService {
         await usingAsnyc(
           {
             create: async () => {
-              await iosDriver.home();
+              await iosDriver.homeAndDismissAlert();
               await iosDriver.relaunchApp('com.apple.Preferences');
             },
             dispose: async () => {
@@ -704,12 +704,12 @@ export class IosResetService {
     await usingAsnyc(
       {
         create: async () => {
-          await iosDriver.home();
-          await iosDriver.home();
+          await iosDriver.homeAndDismissAlert();
+          await iosDriver.homeAndDismissAlert();
         },
         dispose: async () => {
           await delay(SleepBeforeTerminate);
-          await iosDriver.home();
+          await iosDriver.homeAndDismissAlert();
         },
       },
       async () => {
@@ -784,7 +784,7 @@ export class IosResetService {
         },
         dispose: async () => {
           await delay(SleepBeforeTerminate);
-          await iosDriver.home();
+          await iosDriver.homeAndDismissAlert();
         },
       },
       async () => {

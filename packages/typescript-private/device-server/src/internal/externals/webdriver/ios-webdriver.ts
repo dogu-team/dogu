@@ -121,8 +121,9 @@ export class IosWebDriver {
     );
   }
 
-  async home(): Promise<void> {
+  async homeAndDismissAlert(): Promise<void> {
     const { wda } = this;
+    await wda.dismissAlert();
     await wda.goToHome();
     await delay(1000); // To prevent delay press home make launching app hide
   }
@@ -225,8 +226,8 @@ export class IosWebDriver {
   }
 
   async openNotificationCenter(): Promise<void> {
-    await this.home();
-    await this.home();
+    await this.homeAndDismissAlert();
+    await this.homeAndDismissAlert();
     const windowRect = await this.rawDriver.getWindowRect();
     await this.rawDriver.touchAction([
       {

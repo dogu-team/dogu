@@ -205,7 +205,7 @@ class ZombieIdaXCTest implements Zombieable {
 
     const xctestrunPath = this.xctestrunfile.filePath;
     await this.webdriverAgentProcess.waitUntilSessionId();
-    await this.webdriverAgentProcess.dissmissAlert();
+    await this.webdriverAgentProcess.dismissAlert();
 
     const installer = new IdeviceInstaller(serial, logger);
     await installer.uninstallApp('com.dogu.IOSDeviceAgentRunner').catch(() => {
@@ -214,7 +214,7 @@ class ZombieIdaXCTest implements Zombieable {
     await installer.uninstallApp('com.dogu.IOSDeviceAgentRunner.xctrunner').catch(() => {
       this.logger.warn?.('uninstallApp com.dogu.IOSDeviceAgentRunner.xctrunner failed');
     });
-    await this.webdriverAgentProcess.dissmissAlert();
+    await this.webdriverAgentProcess.dismissAlert();
 
     await this.xctestrunfile.updateIdaXctestrunFile(this.idaWdaDevicePort, this.grpcPort);
     await this.trySendKill();

@@ -152,7 +152,7 @@ export class WebdriverAgentProcess {
     return activeAppList as ActiveAppInfo[];
   }
 
-  async dissmissAlert(): Promise<void> {
+  async dismissAlert(): Promise<void> {
     const { sessionId, client } = this.xctest;
     if (!sessionId) {
       this.logger.warn('sessionId is undefined. so skip dismiss alert');
