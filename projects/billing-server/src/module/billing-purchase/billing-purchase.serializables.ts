@@ -44,6 +44,7 @@ export interface ProcessPurchaseSubscriptionPreviewResultSuccess {
   totalPrice: number;
   discountedAmount: number;
   now: Date;
+  needPurchase: boolean;
 }
 
 export type ProcessPurchaseSubscriptionPreviewResult = ProcessPurchaseSubscriptionPreviewResultFailure | ProcessPurchaseSubscriptionPreviewResultSuccess;
@@ -143,8 +144,18 @@ export async function processPurchaseSubscriptionPreview(
       discountedAmount: currentDiscountedAmount,
       totalPrice,
       now,
+      needPurchase: true,
     };
   } else {
+    const samePlanOption = foundBillingSubscriptionPlanInfo.option === billingSubscriptionPlanData.option;
+    const samePlanPeriod = foundBillingSubscriptionPlanInfo.period === billingSubscriptionPlanData.period;
+    if (samePlanOption && samePlanPeriod) {
+      return {
+        ok: false,
+        resultCode: resultCode('subscription-plan-duplicated'),
+      };
+    }
+
     const upgradePlanOption = foundBillingSubscriptionPlanInfo.option < billingSubscriptionPlanData.option;
     const upgradePlanPeriod = foundBillingSubscriptionPlanInfo.period === 'monthly' && billingSubscriptionPlanData.period === 'yearly';
 
@@ -222,11 +233,46 @@ export async function processPurchaseSubscriptionPreview(
         discountedAmount: currentDiscountedAmount,
         totalPrice,
         now,
+        needPurchase: true,
       };
     } else {
+      const calculateElapsedPlanResult = calculateElapsedPlan({
+        billingOrganization,
+        billingSubscriptionPlanData,
+        discountedAmount: currentDiscountedAmount,
+        now,
+      });
+      if (!calculateElapsedPlanResult.ok) {
+        return {
+          ok: false,
+          resultCode: calculateElapsedPlanResult.resultCode,
+        };
+      }
+
+      const { elapsedPlan } = calculateElapsedPlanResult;
+      const totalPrice = Math.floor(currentPurchaseAmount - elapsedPlan.elapsedDiscountedAmount);
       return {
-        ok: false,
-        resultCode: resultCode('subscription-plan-not-upgrade'),
+        ok: true,
+        previewResponse: {
+          ok: true,
+          resultCode: resultCode('ok'),
+          totalPrice,
+          tax: 0,
+          nextPurchaseTotalPrice: nextPurchaseAmount,
+          nextPurchasedAt,
+          subscriptionPlan: billingSubscriptionPlanData,
+          coupon: couponPreviewResponse,
+          elapsedPlans: [elapsedPlan],
+          remainingPlans: [],
+        },
+        billingSubscriptionPlanData,
+        billingSubscriptionPlanSource,
+        newCoupon,
+        oldCoupon,
+        discountedAmount: currentDiscountedAmount,
+        totalPrice,
+        now,
+        needPurchase: false,
       };
     }
   }

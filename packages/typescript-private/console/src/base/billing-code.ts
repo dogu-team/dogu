@@ -32,7 +32,6 @@ export const BillingResultCodeMap = {
   'subscription-plan-category-not-matched': 305,
   'subscription-plan-currency-not-matched': 306,
   'subscription-plan-duplicated': 307,
-  'subscription-plan-not-upgrade': 308,
 
   // method
   'billing-method-not-found': 404,

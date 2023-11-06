@@ -88,7 +88,12 @@ export async function createOrUpdateBillingSubscriptionPlanInfoAndCoupon(
   if (found) {
     let billingCouponId: string | null = null;
     let billingCouponRemainingApplyCount: number | null = null;
-    if (newCoupon) {
+    if (newCoupon && oldCoupon) {
+      return {
+        ok: false,
+        resultCode: resultCode('coupon-multiple-proceeds-not-allowed'),
+      };
+    } else if (newCoupon) {
       const processNewCouponResult = await processNewCoupon(context, { newCoupon, billingOrganizationId, period: billingSubscriptionPlanData.period });
       billingCouponId = processNewCouponResult.billingCouponId;
       billingCouponRemainingApplyCount = processNewCouponResult.billingCouponRemainingApplyCount;
@@ -96,10 +101,8 @@ export async function createOrUpdateBillingSubscriptionPlanInfoAndCoupon(
       billingCouponId = oldCoupon.billingCouponId;
       billingCouponRemainingApplyCount = found.billingCouponRemainingApplyCount;
     } else {
-      return {
-        ok: false,
-        resultCode: resultCode('coupon-multiple-proceeds-not-allowed'),
-      };
+      billingCouponId = null;
+      billingCouponRemainingApplyCount = null;
     }
 
     found.category = billingSubscriptionPlanData.category;

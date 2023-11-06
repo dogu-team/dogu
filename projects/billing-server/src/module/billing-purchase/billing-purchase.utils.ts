@@ -69,13 +69,26 @@ export function calculateRemaningDiscount(options: CalculateRemaningDiscountOpti
   const { originPrice, discountedAmount } = options;
   const startedAt = toDateTime(options.startedAt);
   const expiredAt = toDateTime(options.expiredAt);
-  const now = toDateTime(options.now);
+  if (startedAt > expiredAt) {
+    return {
+      ok: false,
+      resultCode: resultCode('unexpected-error'),
+    };
+  }
+
   const totalDays = expiredAt.diff(startedAt, 'days').days;
   if (totalDays === 0) {
     return {
       ok: false,
       resultCode: resultCode('division-by-zero'),
     };
+  }
+
+  let now = toDateTime(options.now);
+  if (now > expiredAt) {
+    now = expiredAt;
+  } else if (now < startedAt) {
+    now = startedAt;
   }
 
   const remainingDays = expiredAt.diff(now, 'days').days;
@@ -121,13 +134,26 @@ export function calculateElapsedDiscount(options: CalculateElapsedDiscountOption
   const { originPrice, discountedAmount } = options;
   const startedAt = toDateTime(options.startedAt);
   const expiredAt = toDateTime(options.expiredAt);
-  const now = toDateTime(options.now);
+  if (startedAt > expiredAt) {
+    return {
+      ok: false,
+      resultCode: resultCode('unexpected-error'),
+    };
+  }
+
   const totalDays = expiredAt.diff(startedAt, 'days').days;
   if (totalDays === 0) {
     return {
       ok: false,
       resultCode: resultCode('division-by-zero'),
     };
+  }
+
+  let now = toDateTime(options.now);
+  if (now > expiredAt) {
+    now = expiredAt;
+  } else if (now < startedAt) {
+    now = startedAt;
   }
 
   const elapsedDays = now.diff(startedAt, 'days').days;

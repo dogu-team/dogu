@@ -79,6 +79,13 @@ export class BillingPurchaseService {
         };
       }
 
+      if (!processPurchaseSubscriptionPreviewResult.needPurchase) {
+        return {
+          ok: true,
+          resultCode: resultCode('ok'),
+        };
+      }
+
       if (!billingOrganization.billingMethodNice) {
         return {
           ok: false,
@@ -130,6 +137,13 @@ export class BillingPurchaseService {
           registerCard,
         },
       });
+
+      if (!processPurchaseSubscriptionPreviewResult.needPurchase) {
+        return {
+          ok: true,
+          resultCode: resultCode('ok'),
+        };
+      }
 
       billingOrganization.billingMethodNice = billingMethodNice;
       return await processPurchaseSubscription(context, this.billingMethodNiceCaller, {
