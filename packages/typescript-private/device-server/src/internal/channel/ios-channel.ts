@@ -559,4 +559,8 @@ export class IosChannel implements DeviceChannel {
       title: result.title,
     };
   }
+
+  async getScreenshot(): Promise<string> {
+    return await this.webdriverAgentProcess.screenshot();
+  }
 }

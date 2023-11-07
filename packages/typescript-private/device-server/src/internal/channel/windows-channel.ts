@@ -259,4 +259,9 @@ export class WindowsChannel implements DeviceChannel {
     throw new Error('Method not implemented.');
     await Promise.resolve();
   }
+
+  async getScreenshot(): Promise<string> {
+    throw new Error('Method not implemented.');
+    await Promise.resolve();
+  }
 }

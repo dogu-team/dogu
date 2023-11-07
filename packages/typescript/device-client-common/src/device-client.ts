@@ -79,6 +79,11 @@ export class DeviceClient extends DeviceHttpClient implements DeviceInterface {
     await this.httpRequest(Device.setGeoLocation, new Device.setGeoLocation.pathProvider(serial), undefined, location);
   }
 
+  async screenshot(serial: Serial): Promise<string> {
+    const response = await this.httpRequest(Device.getScreenshot, new Device.getScreenshot.pathProvider(serial));
+    return response.base64;
+  }
+
   async installApp(serial: Serial, appPath: string): Promise<void> {
     return this.execute(DeviceInstallApp, {
       serial,

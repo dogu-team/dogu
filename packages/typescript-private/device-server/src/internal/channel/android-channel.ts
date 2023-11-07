@@ -446,6 +446,11 @@ export class AndroidChannel implements DeviceChannel {
     throw new Error('Method not implemented.');
     await Promise.resolve();
   }
+
+  async getScreenshot(): Promise<string> {
+    throw new Error('Method not implemented.');
+    await Promise.resolve();
+  }
 }
 
 async function generateSerialUnique(systemInfo: DeviceSystemInfo): Promise<string> {

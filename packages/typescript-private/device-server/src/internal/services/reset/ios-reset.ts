@@ -1,5 +1,5 @@
 import { Serial, SerialPrintable } from '@dogu-private/types';
-import { delay, filterAsync, loop, loopTime, PrefixLogger, Repeat, retry, usingAsnyc } from '@dogu-tech/common';
+import { delay, filterAsync, loop, loopTime, PrefixLogger, Repeat, retry, TimeOptions, usingAsnyc } from '@dogu-tech/common';
 import { boxBox } from 'intersects';
 import { AppiumContextImpl, WDIOElement } from '../../../appium/appium.context';
 import { IdeviceInstaller } from '../../externals/cli/ideviceinstaller';
@@ -143,6 +143,8 @@ const ResetExpireTime = 10 * 60 * 1000;
 const SleepBeforeTerminate = 2000;
 const SleepBeforeTerminateLong = 4000;
 const LoopPeriod = 100;
+
+const WaitlementsTryLongTime: TimeOptions = { seconds: 5 };
 
 class IosResetHelper {
   constructor(private iosDriver: IosWebDriver) {}
@@ -371,7 +373,7 @@ export class IosResetService {
 
         let loopCount = 0;
         logger.info(`IosResetService.clearPhotoImages loopCount: ${loopCount++}`);
-        const imagesTry = await iosDriver.waitElementsExist(new IosClassChainSelector('**/XCUIElementTypeImage'), { seconds: 3 });
+        const imagesTry = await iosDriver.waitElementsExist(new IosClassChainSelector('**/XCUIElementTypeImage'), WaitlementsTryLongTime);
         if (0 === imagesTry.length) {
           return;
         }
@@ -427,7 +429,10 @@ export class IosResetService {
         }
         await iosDriver.clickSelector(new IosButtonPredicateStringSelector('Edit'));
 
-        const deleteDialogBtns = await iosDriver.waitElementsExist(new IosPredicateStringSelector(`type == 'XCUIElementTypeButton' && name CONTAINS 'Delete,'`), { seconds: 3 });
+        const deleteDialogBtns = await iosDriver.waitElementsExist(
+          new IosPredicateStringSelector(`type == 'XCUIElementTypeButton' && name CONTAINS 'Delete,'`),
+          WaitlementsTryLongTime,
+        );
         if (deleteDialogBtns.length === 0) {
           return;
         }
@@ -463,7 +468,7 @@ export class IosResetService {
 
         await delay(2000); // wait for change. It's hard to determine loading done
 
-        const images = await iosDriver.waitElementsExist(new IosClassChainSelector('**/XCUIElementTypeImage'), { seconds: 3 });
+        const images = await iosDriver.waitElementsExist(new IosClassChainSelector('**/XCUIElementTypeImage'), WaitlementsTryLongTime);
         if (0 === images.length) {
           return;
         }
@@ -535,7 +540,7 @@ export class IosResetService {
           await iosDriver.clickSelector(new IosAccessibilitiySelector('DOC.groupMenuButton.none'));
         }
 
-        const cellsTry = await iosDriver.waitElementsExist(new IosClassChainSelector('**/XCUIElementTypeCell'), { seconds: 3 });
+        const cellsTry = await iosDriver.waitElementsExist(new IosClassChainSelector('**/XCUIElementTypeCell'), WaitlementsTryLongTime);
         if (cellsTry.length === 0) {
           return;
         }
@@ -588,7 +593,7 @@ export class IosResetService {
         }
 
         for await (const _ of loop(LoopPeriod)) {
-          const remove = await iosDriver.waitElementsExist(new IosClassChainSelector('**/XCUIElementTypeImage[`label == "remove"`]'), { seconds: 3 });
+          const remove = await iosDriver.waitElementsExist(new IosClassChainSelector('**/XCUIElementTypeImage[`label == "remove"`]'), WaitlementsTryLongTime);
           if (0 === remove.length) {
             break;
           }
@@ -627,7 +632,7 @@ export class IosResetService {
         }
         await delay(1000);
 
-        const cellsTry = await iosDriver.waitElementsExist(new IosClassChainSelector('**/XCUIElementTypeCell'), { seconds: 3 });
+        const cellsTry = await iosDriver.waitElementsExist(new IosClassChainSelector('**/XCUIElementTypeCell'), WaitlementsTryLongTime);
         if (cellsTry.length === 0) {
           return;
         }
@@ -716,7 +721,7 @@ export class IosResetService {
         const MaxWidgetsCount = 100;
         // remove home widgets
         for await (const _ of loop(LoopPeriod, MaxWidgetsCount)) {
-          const widgets = await iosDriver.waitElementsExist(new IosClassChainSelector('**/XCUIElementTypeIcon[`label == "Waiting…"`]'), { seconds: 3 });
+          const widgets = await iosDriver.waitElementsExist(new IosClassChainSelector('**/XCUIElementTypeIcon[`label == "Waiting…"`]'), WaitlementsTryLongTime);
           if (0 === widgets.length) {
             break;
           }
@@ -756,7 +761,7 @@ export class IosResetService {
 
           const skipLabels = ['Batteries'];
           for await (const _ of loop(LoopPeriod, MaxWidgetsCount)) {
-            const widgets = await IosWebDriver.waitElemElementsExist(scrollView, new IosClassChainSelector('**/XCUIElementTypeIcon'), { seconds: 3 });
+            const widgets = await IosWebDriver.waitElemElementsExist(scrollView, new IosClassChainSelector('**/XCUIElementTypeIcon'), WaitlementsTryLongTime);
 
             const targetWidgets = await filterAsync(widgets, async (widget) => {
               const label = await widget.getAttribute('label');
@@ -789,7 +794,7 @@ export class IosResetService {
       },
       async () => {
         for await (const _ of loop(LoopPeriod)) {
-          const elems = await iosDriver.waitElementsExist(new IosAccessibilitiySelector('NotificationCell'), { seconds: 3 });
+          const elems = await iosDriver.waitElementsExist(new IosAccessibilitiySelector('NotificationCell'), WaitlementsTryLongTime);
           if (0 === elems.length) {
             break;
           }

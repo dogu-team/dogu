@@ -88,6 +88,7 @@ export interface DeviceChannel {
 
   // ui
   getAlert(): PromiseOrValue<DeviceAlert | undefined>;
+  getScreenshot(): PromiseOrValue<string>;
 
   // app
   uninstallApp(appPath: string, handler: LogHandler): PromiseOrValue<void>;
