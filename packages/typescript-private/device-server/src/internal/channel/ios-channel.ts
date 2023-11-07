@@ -17,7 +17,7 @@ import {
   SerialPrintable,
   StreamingAnswer,
 } from '@dogu-private/types';
-import { Closable, delay, errorify, MixedLogger, Printable, PromiseOrValue, stringify } from '@dogu-tech/common';
+import { Closable, delay, errorify, MixedLogger, Printable, PromiseOrValue, stringify, TimedCacheAsync } from '@dogu-tech/common';
 import { AppiumCapabilities, BrowserInstallation, StreamingOfferDto } from '@dogu-tech/device-client-common';
 import { ChildProcessError, killChildProcess } from '@dogu-tech/node';
 import { ChildProcess } from 'child_process';
@@ -72,6 +72,7 @@ export class IosLogClosable implements Closable {
 export class IosChannel implements DeviceChannel {
   private tunnels: ZombieTunnel[] = [];
   private _gamiumContext: GamiumContext | null = null;
+  private _alertCache: TimedCacheAsync<DeviceAlert | undefined>;
 
   constructor(
     private readonly _serial: Serial,
@@ -89,6 +90,7 @@ export class IosChannel implements DeviceChannel {
     readonly browserInstallations: BrowserInstallation[],
   ) {
     this.logger.info(`IosChannel created: ${this.serial}`);
+    this._alertCache = new TimedCacheAsync<DeviceAlert | undefined>({ seconds: 1 });
   }
 
   get serial(): Serial {
@@ -548,16 +550,18 @@ export class IosChannel implements DeviceChannel {
   }
 
   async getAlert(): Promise<DeviceAlert | undefined> {
-    const result = await this.deviceAgent.send('dcIdaQueryAlertParam', 'dcIdaQueryAlertResult', {});
-    if (!result) {
-      return undefined;
-    }
-    if (!result.isShow) {
-      return undefined;
-    }
-    return {
-      title: result.title,
-    };
+    return await this._alertCache.update(async () => {
+      const result = await this.deviceAgent.send('dcIdaQueryAlertParam', 'dcIdaQueryAlertResult', {});
+      if (!result) {
+        return undefined;
+      }
+      if (!result.isShow) {
+        return undefined;
+      }
+      return {
+        title: result.title,
+      };
+    });
   }
 
   async getScreenshot(): Promise<string> {
