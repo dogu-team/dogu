@@ -1,11 +1,3 @@
-//
-//  RecordStarter.swift
-//  IOSDeviceAgentLib
-//
-//  Created by jenkins on 2023/06/01.
-//  Copyright © 2023 Dogu. All rights reserved.
-//
-
 import UIKit
 import Vision
 import XCTest

@@ -1,11 +1,3 @@
-//
-//  Session.swift
-//  DoguScreen
-//
-//  Created by jenkins on 2023/06/02.
-//  Copyright © 2023 Dogu. All rights reserved.
-//
-
 import AVFoundation
 import Foundation
 import Network

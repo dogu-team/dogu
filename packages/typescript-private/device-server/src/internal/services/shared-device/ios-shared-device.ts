@@ -5,7 +5,7 @@ import { AppiumContextImpl } from '../../../appium/appium.context';
 import { env } from '../../../env';
 import { config } from '../../config';
 import { WebdriverAgentProcess } from '../../externals/cli/webdriver-agent-process';
-import { IosAccessibilitiySelector, IosWebDriver } from '../../externals/webdriver/ios-webdriver';
+import { IosAccessibilitiySelector, IosWebDriver, IosWebDriverInfo } from '../../externals/webdriver/ios-webdriver';
 import { CheckTimer } from '../../util/check-time';
 import { IosResetService } from '../reset/ios-reset';
 import { Zombieable, ZombieProps, ZombieQueriable } from '../zombie/zombie-component';
@@ -33,6 +33,7 @@ export class IosSharedDeviceService implements Zombieable {
     private wda: WebdriverAgentProcess,
     private reset: IosResetService,
     private appiumContext: AppiumContextImpl,
+    private iosWebDriverInfo: IosWebDriverInfo,
     public printable: FilledPrintable,
   ) {
     this.timer = new CheckTimer(this.printable);
@@ -55,7 +56,10 @@ export class IosSharedDeviceService implements Zombieable {
     if (!env.DOGU_IS_DEVICE_SHARE) {
       return;
     }
-    const { serial, printable: logger, wda, appiumContext } = this;
+    if (config.externalIosDeviceAgent.use) {
+      return;
+    }
+    const { serial, printable: logger, wda, appiumContext, iosWebDriverInfo } = this;
     const driver = this.appiumContext.driver();
     if (!driver) {
       throw new Error(`IosResetService.clearSafariCache driver is null`);
@@ -66,7 +70,7 @@ export class IosSharedDeviceService implements Zombieable {
       throw new Error(`IosResetService.revive. device is dirty. so trigger reset ${serial}`);
     }
 
-    const iosDriver = new IosWebDriver(driver, wda, logger);
+    const iosDriver = new IosWebDriver(driver, wda, iosWebDriverInfo, logger);
     await this.checkEnglish(iosDriver);
 
     await this.reset.makeDirty();
@@ -76,9 +80,7 @@ export class IosSharedDeviceService implements Zombieable {
     if (!env.DOGU_IS_DEVICE_SHARE) {
       return;
     }
-    const { serial, printable: logger } = this;
-    logger.info(`IosSharedDeviceService.revive. begin `, { serial });
-    logger.info(`IosSharedDeviceService.revive. done `, { serial });
+
     await delay(0);
   }
 

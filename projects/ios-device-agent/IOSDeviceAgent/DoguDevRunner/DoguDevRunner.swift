@@ -14,7 +14,6 @@ final class DoguRunner: XCTestCase {
   func testRunner() throws {
 
     let app = XCUIApplication()
-    app.terminate()
     app.launch()
 
     Task {

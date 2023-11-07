@@ -1,4 +1,5 @@
-import { delay, FilledPrintable, loop, loopTime, PrefixLogger, retry, TimeOptions } from '@dogu-tech/common';
+import { delay, FilledPrintable, loop, loopTime, PrefixLogger, retry, time, TimeOptions, usingAsnyc } from '@dogu-tech/common';
+import semver from 'semver';
 import WebDriverIO from 'webdriverio';
 import { WebdriverAgentProcess } from '../cli/webdriver-agent-process';
 export type WDIOElement = WebDriverIO.Element<'async'>;
@@ -39,10 +40,31 @@ export class IosButtonPredicateStringSelector {
   }
 }
 
+const AppSwitchLoopPeriod: TimeOptions = { milliseconds: 200 };
+const WaitElementsPeriod: TimeOptions = { milliseconds: 200 };
+
+export class IosWebDriverInfo {
+  constructor(
+    public isIpad: boolean,
+    private osVersion: semver.SemVer,
+  ) {}
+
+  get isIpadAndSystemAppHasSidebar(): boolean {
+    if (!this.isIpad) {
+      return false;
+    }
+    if (semver.lt(this.osVersion, '14.0.0')) {
+      return false;
+    }
+    return true;
+  }
+}
+
 export class IosWebDriver {
   constructor(
     private driver: WebdriverIO.Browser,
     private wda: WebdriverAgentProcess,
+    private info: IosWebDriverInfo,
     private logger: FilledPrintable,
   ) {}
 
@@ -60,7 +82,7 @@ export class IosWebDriver {
     await retry(
       async () => {
         await wda.launchApp(bundleId);
-        for await (const _ of loopTime({ period: { seconds: 1 }, expire: { seconds: 5 } })) {
+        for await (const _ of loopTime({ period: AppSwitchLoopPeriod, expire: { seconds: 5 } })) {
           const apps = await wda.getActiveAppList();
           const some = apps.some((app) => app.bundleId === bundleId);
           if (some) {
@@ -85,7 +107,7 @@ export class IosWebDriver {
           return;
         }
         await wda.terminateApp(bundleId);
-        for await (const _ of loopTime({ period: { seconds: 1 }, expire: { seconds: 5 } })) {
+        for await (const _ of loopTime({ period: AppSwitchLoopPeriod, expire: { seconds: 5 } })) {
           const apps = await wda.getActiveAppList();
           const some = apps.some((app) => app.bundleId === bundleId);
           if (!some) {
@@ -99,8 +121,9 @@ export class IosWebDriver {
     );
   }
 
-  async home(): Promise<void> {
+  async homeAndDismissAlert(): Promise<void> {
     const { wda } = this;
+    await wda.dismissAlert();
     await wda.goToHome();
     await delay(1000); // To prevent delay press home make launching app hide
   }
@@ -109,7 +132,7 @@ export class IosWebDriver {
     const { driver } = this;
     const WaitTimeout = 5_000;
     let lastError = '';
-    for await (const _ of loopTime({ period: { milliseconds: 500 }, expire: { milliseconds: WaitTimeout } })) {
+    for await (const _ of loopTime({ period: WaitElementsPeriod, expire: { milliseconds: WaitTimeout } })) {
       const elem = await driver.$(selector.build());
       if (elem.error) {
         lastError = elem.error.message;
@@ -122,9 +145,20 @@ export class IosWebDriver {
     throw new Error(`IosWebDriver.clickSelector ${selector.build()} failed, error ${lastError}`);
   }
 
+  async clickSelectors(selectors: IosSelector[]): Promise<void> {
+    for (const selector of selectors) {
+      try {
+        await this.clickSelector(selector);
+        return;
+      } catch (e) {}
+    }
+
+    throw new Error(`IosWebDriver.tryClickSelectors ${selectors.map((s) => s.build()).join(', ')} all failed`);
+  }
+
   async waitElementsExist(selector: IosSelector, timeOption: TimeOptions): Promise<WDIOElement[]> {
     const { driver } = this;
-    for await (const _ of loopTime({ period: { milliseconds: 500 }, expire: timeOption })) {
+    for await (const _ of loopTime({ period: WaitElementsPeriod, expire: timeOption })) {
       const elems = await driver.$$(selector.build());
       if (0 < elems.length) {
         return elems;
@@ -135,7 +169,7 @@ export class IosWebDriver {
 
   async waitElementExist(selector: IosSelector, timeOption: TimeOptions): Promise<WDIOElement> {
     const { driver } = this;
-    for await (const _ of loopTime({ period: { milliseconds: 500 }, expire: timeOption })) {
+    for await (const _ of loopTime({ period: WaitElementsPeriod, expire: timeOption })) {
       const elem = await driver.$(selector.build());
       if (elem.error) {
         continue;
@@ -146,7 +180,7 @@ export class IosWebDriver {
   }
 
   static async waitElemElementsExist(elem: WDIOElement, selector: IosSelector, timeOption: TimeOptions): Promise<WDIOElement[]> {
-    for await (const _ of loopTime({ period: { milliseconds: 500 }, expire: timeOption })) {
+    for await (const _ of loopTime({ period: WaitElementsPeriod, expire: timeOption })) {
       const elems = await elem.$$(selector.build());
       if (0 < elems.length) {
         return elems;
@@ -159,7 +193,7 @@ export class IosWebDriver {
     const { driver } = this;
     const MaxScrollCount = 30;
 
-    for await (const _ of loop(300, MaxScrollCount)) {
+    for await (const _ of loop(time(WaitElementsPeriod), MaxScrollCount)) {
       const elem = await driver.$(selector.build());
       if (elem.error) {
         await driver.execute('mobile: scroll', {
@@ -177,15 +211,10 @@ export class IosWebDriver {
     await elem.touchAction([{ action: 'longPress' }, 'release']);
     await retry(
       async () => {
-        const removeStacks = await this.waitElementsExist(new IosButtonPredicateStringSelector('Remove Stack'), { seconds: 3 });
-        if (0 < removeStacks.length) {
-          await removeStacks[0].click();
-          await this.clickSelector(new IosButtonPredicateStringSelector('Remove'));
-          return;
-        }
-        const removeWidgets = await this.waitElementsExist(new IosButtonPredicateStringSelector('Remove Widget'), { seconds: 3 });
-        if (0 < removeWidgets.length) {
-          await removeWidgets[0].click();
+        // Remove Stack or Remove Widget
+        const removeTopButtons = await this.waitElementsExist(new IosPredicateStringSelector(`type == 'XCUIElementTypeButton' && name CONTAINS 'Remove '`), { seconds: 3 });
+        if (0 < removeTopButtons.length) {
+          await removeTopButtons[0].click();
           await this.clickSelector(new IosButtonPredicateStringSelector('Remove'));
           return;
         }
@@ -193,6 +222,54 @@ export class IosWebDriver {
         await this.clickSelector(new IosButtonPredicateStringSelector('Remove'));
       },
       { retryCount: 3, retryInterval: 1000, printable: new PrefixLogger(this.logger, 'IosWebDriver.removeWidget') },
+    );
+  }
+
+  async openNotificationCenter(): Promise<void> {
+    await this.homeAndDismissAlert();
+    await this.homeAndDismissAlert();
+    const windowRect = await this.rawDriver.getWindowRect();
+    await this.rawDriver.touchAction([
+      {
+        action: 'longPress',
+        x: windowRect.width * 0.01,
+        y: windowRect.height * 0.01,
+      },
+      {
+        action: 'moveTo',
+        x: windowRect.width * 0.01,
+        y: windowRect.height * 0.9,
+      },
+      'release',
+    ]);
+    await this.waitElementExist(new IosAccessibilitiySelector('lockscreen-date-view'), { seconds: 3 });
+  }
+
+  async openSystemAppToggleMenu(value: string): Promise<void> {
+    const { info } = this;
+
+    await usingAsnyc(
+      {
+        create: async () => {
+          if (!info.isIpadAndSystemAppHasSidebar) {
+            return;
+          }
+          throw new Error(`Should unfold each menus`);
+          const elems = await this.waitElementsExist(new IosButtonPredicateStringSelector(value), { seconds: 3 });
+          if (0 === elems.length) {
+            await this.clickSelector(new IosButtonPredicateStringSelector('Show Sidebar'));
+          }
+        },
+        dispose: async () => {
+          if (!info.isIpadAndSystemAppHasSidebar) {
+            return;
+          }
+          await this.clickSelector(new IosButtonPredicateStringSelector('Hide Sidebar'));
+        },
+      },
+      async () => {
+        await this.clickSelector(new IosButtonPredicateStringSelector(value));
+      },
     );
   }
 }

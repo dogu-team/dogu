@@ -13,76 +13,87 @@ public final class DcIda {
       com.google.protobuf.MessageLiteOrBuilder {
 
     /**
-     * <code>fixed32 seq = 10;</code>
+     * <code>fixed32 seq = 1;</code>
      * @return The seq.
      */
     int getSeq();
 
     /**
-     * <code>.inner.types.DcIdaRunAppParam dc_ida_runapp_param = 1;</code>
+     * <code>.inner.types.DcIdaRunAppParam dc_ida_runapp_param = 10;</code>
      * @return Whether the dcIdaRunappParam field is set.
      */
     boolean hasDcIdaRunappParam();
     /**
-     * <code>.inner.types.DcIdaRunAppParam dc_ida_runapp_param = 1;</code>
+     * <code>.inner.types.DcIdaRunAppParam dc_ida_runapp_param = 10;</code>
      * @return The dcIdaRunappParam.
      */
     com.dogu.protocol.generated.inner.types.DcIda.DcIdaRunAppParam getDcIdaRunappParam();
 
     /**
-     * <code>.inner.types.DcIdaGetSystemInfoParam dc_ida_get_system_info_param = 2;</code>
+     * <code>.inner.types.DcIdaGetSystemInfoParam dc_ida_get_system_info_param = 11;</code>
      * @return Whether the dcIdaGetSystemInfoParam field is set.
      */
     boolean hasDcIdaGetSystemInfoParam();
     /**
-     * <code>.inner.types.DcIdaGetSystemInfoParam dc_ida_get_system_info_param = 2;</code>
+     * <code>.inner.types.DcIdaGetSystemInfoParam dc_ida_get_system_info_param = 11;</code>
      * @return The dcIdaGetSystemInfoParam.
      */
     com.dogu.protocol.generated.inner.types.DcIda.DcIdaGetSystemInfoParam getDcIdaGetSystemInfoParam();
 
     /**
-     * <code>.inner.types.DcIdaIsPortListeningParam dc_ida_is_port_listening_param = 3;</code>
+     * <code>.inner.types.DcIdaIsPortListeningParam dc_ida_is_port_listening_param = 12;</code>
      * @return Whether the dcIdaIsPortListeningParam field is set.
      */
     boolean hasDcIdaIsPortListeningParam();
     /**
-     * <code>.inner.types.DcIdaIsPortListeningParam dc_ida_is_port_listening_param = 3;</code>
+     * <code>.inner.types.DcIdaIsPortListeningParam dc_ida_is_port_listening_param = 12;</code>
      * @return The dcIdaIsPortListeningParam.
      */
     com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningParam getDcIdaIsPortListeningParam();
 
     /**
-     * <code>.inner.types.DcIdaQueryProfileParam dc_ida_query_profile_param = 4;</code>
+     * <code>.inner.types.DcIdaQueryProfileParam dc_ida_query_profile_param = 13;</code>
      * @return Whether the dcIdaQueryProfileParam field is set.
      */
     boolean hasDcIdaQueryProfileParam();
     /**
-     * <code>.inner.types.DcIdaQueryProfileParam dc_ida_query_profile_param = 4;</code>
+     * <code>.inner.types.DcIdaQueryProfileParam dc_ida_query_profile_param = 13;</code>
      * @return The dcIdaQueryProfileParam.
      */
     com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryProfileParam getDcIdaQueryProfileParam();
 
     /**
-     * <code>.inner.types.CfGdcDaControlParam dc_gdc_da_control_param = 5;</code>
+     * <code>.inner.types.CfGdcDaControlParam dc_gdc_da_control_param = 14;</code>
      * @return Whether the dcGdcDaControlParam field is set.
      */
     boolean hasDcGdcDaControlParam();
     /**
-     * <code>.inner.types.CfGdcDaControlParam dc_gdc_da_control_param = 5;</code>
+     * <code>.inner.types.CfGdcDaControlParam dc_gdc_da_control_param = 14;</code>
      * @return The dcGdcDaControlParam.
      */
     com.dogu.protocol.generated.inner.types.CfGdcDa.CfGdcDaControlParam getDcGdcDaControlParam();
 
     /**
-     * <code>.inner.types.DcIdaSwitchInputBlockParam dc_ida_switch_input_block_param = 6;</code>
+     * <code>.inner.types.DcIdaSwitchInputBlockParam dc_ida_switch_input_block_param = 15;</code>
      * @return Whether the dcIdaSwitchInputBlockParam field is set.
      */
     boolean hasDcIdaSwitchInputBlockParam();
     /**
-     * <code>.inner.types.DcIdaSwitchInputBlockParam dc_ida_switch_input_block_param = 6;</code>
+     * <code>.inner.types.DcIdaSwitchInputBlockParam dc_ida_switch_input_block_param = 15;</code>
      * @return The dcIdaSwitchInputBlockParam.
      */
     com.dogu.protocol.generated.inner.types.DcIda.DcIdaSwitchInputBlockParam getDcIdaSwitchInputBlockParam();
+
+    /**
+     * <code>.inner.types.DcIdaQueryAlertParam dc_ida_query_alert_param = 16;</code>
+     * @return Whether the dcIdaQueryAlertParam field is set.
+     */
+    boolean hasDcIdaQueryAlertParam();
+    /**
+     * <code>.inner.types.DcIdaQueryAlertParam dc_ida_query_alert_param = 16;</code>
+     * @return The dcIdaQueryAlertParam.
+     */
+    com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryAlertParam getDcIdaQueryAlertParam();
 
     public com.dogu.protocol.generated.inner.params.DcIda.DcIdaParam.ValueCase getValueCase();
   }
@@ -99,12 +110,13 @@ public final class DcIda {
     private int valueCase_ = 0;
     private java.lang.Object value_;
     public enum ValueCase {
-      DC_IDA_RUNAPP_PARAM(1),
-      DC_IDA_GET_SYSTEM_INFO_PARAM(2),
-      DC_IDA_IS_PORT_LISTENING_PARAM(3),
-      DC_IDA_QUERY_PROFILE_PARAM(4),
-      DC_GDC_DA_CONTROL_PARAM(5),
-      DC_IDA_SWITCH_INPUT_BLOCK_PARAM(6),
+      DC_IDA_RUNAPP_PARAM(10),
+      DC_IDA_GET_SYSTEM_INFO_PARAM(11),
+      DC_IDA_IS_PORT_LISTENING_PARAM(12),
+      DC_IDA_QUERY_PROFILE_PARAM(13),
+      DC_GDC_DA_CONTROL_PARAM(14),
+      DC_IDA_SWITCH_INPUT_BLOCK_PARAM(15),
+      DC_IDA_QUERY_ALERT_PARAM(16),
       VALUE_NOT_SET(0);
       private final int value;
       private ValueCase(int value) {
@@ -120,12 +132,13 @@ public final class DcIda {
 
       public static ValueCase forNumber(int value) {
         switch (value) {
-          case 1: return DC_IDA_RUNAPP_PARAM;
-          case 2: return DC_IDA_GET_SYSTEM_INFO_PARAM;
-          case 3: return DC_IDA_IS_PORT_LISTENING_PARAM;
-          case 4: return DC_IDA_QUERY_PROFILE_PARAM;
-          case 5: return DC_GDC_DA_CONTROL_PARAM;
-          case 6: return DC_IDA_SWITCH_INPUT_BLOCK_PARAM;
+          case 10: return DC_IDA_RUNAPP_PARAM;
+          case 11: return DC_IDA_GET_SYSTEM_INFO_PARAM;
+          case 12: return DC_IDA_IS_PORT_LISTENING_PARAM;
+          case 13: return DC_IDA_QUERY_PROFILE_PARAM;
+          case 14: return DC_GDC_DA_CONTROL_PARAM;
+          case 15: return DC_IDA_SWITCH_INPUT_BLOCK_PARAM;
+          case 16: return DC_IDA_QUERY_ALERT_PARAM;
           case 0: return VALUE_NOT_SET;
           default: return null;
         }
@@ -147,10 +160,10 @@ public final class DcIda {
       value_ = null;
     }
 
-    public static final int SEQ_FIELD_NUMBER = 10;
+    public static final int SEQ_FIELD_NUMBER = 1;
     private int seq_;
     /**
-     * <code>fixed32 seq = 10;</code>
+     * <code>fixed32 seq = 1;</code>
      * @return The seq.
      */
     @java.lang.Override
@@ -158,7 +171,7 @@ public final class DcIda {
       return seq_;
     }
     /**
-     * <code>fixed32 seq = 10;</code>
+     * <code>fixed32 seq = 1;</code>
      * @param value The seq to set.
      */
     private void setSeq(int value) {
@@ -166,308 +179,358 @@ public final class DcIda {
       seq_ = value;
     }
     /**
-     * <code>fixed32 seq = 10;</code>
+     * <code>fixed32 seq = 1;</code>
      */
     private void clearSeq() {
       
       seq_ = 0;
     }
 
-    public static final int DC_IDA_RUNAPP_PARAM_FIELD_NUMBER = 1;
+    public static final int DC_IDA_RUNAPP_PARAM_FIELD_NUMBER = 10;
     /**
-     * <code>.inner.types.DcIdaRunAppParam dc_ida_runapp_param = 1;</code>
+     * <code>.inner.types.DcIdaRunAppParam dc_ida_runapp_param = 10;</code>
      */
     @java.lang.Override
     public boolean hasDcIdaRunappParam() {
-      return valueCase_ == 1;
+      return valueCase_ == 10;
     }
     /**
-     * <code>.inner.types.DcIdaRunAppParam dc_ida_runapp_param = 1;</code>
+     * <code>.inner.types.DcIdaRunAppParam dc_ida_runapp_param = 10;</code>
      */
     @java.lang.Override
     public com.dogu.protocol.generated.inner.types.DcIda.DcIdaRunAppParam getDcIdaRunappParam() {
-      if (valueCase_ == 1) {
+      if (valueCase_ == 10) {
          return (com.dogu.protocol.generated.inner.types.DcIda.DcIdaRunAppParam) value_;
       }
       return com.dogu.protocol.generated.inner.types.DcIda.DcIdaRunAppParam.getDefaultInstance();
     }
     /**
-     * <code>.inner.types.DcIdaRunAppParam dc_ida_runapp_param = 1;</code>
+     * <code>.inner.types.DcIdaRunAppParam dc_ida_runapp_param = 10;</code>
      */
     private void setDcIdaRunappParam(com.dogu.protocol.generated.inner.types.DcIda.DcIdaRunAppParam value) {
       value.getClass();
   value_ = value;
-      valueCase_ = 1;
+      valueCase_ = 10;
     }
     /**
-     * <code>.inner.types.DcIdaRunAppParam dc_ida_runapp_param = 1;</code>
+     * <code>.inner.types.DcIdaRunAppParam dc_ida_runapp_param = 10;</code>
      */
     private void mergeDcIdaRunappParam(com.dogu.protocol.generated.inner.types.DcIda.DcIdaRunAppParam value) {
       value.getClass();
-  if (valueCase_ == 1 &&
+  if (valueCase_ == 10 &&
           value_ != com.dogu.protocol.generated.inner.types.DcIda.DcIdaRunAppParam.getDefaultInstance()) {
         value_ = com.dogu.protocol.generated.inner.types.DcIda.DcIdaRunAppParam.newBuilder((com.dogu.protocol.generated.inner.types.DcIda.DcIdaRunAppParam) value_)
             .mergeFrom(value).buildPartial();
       } else {
         value_ = value;
       }
-      valueCase_ = 1;
+      valueCase_ = 10;
     }
     /**
-     * <code>.inner.types.DcIdaRunAppParam dc_ida_runapp_param = 1;</code>
+     * <code>.inner.types.DcIdaRunAppParam dc_ida_runapp_param = 10;</code>
      */
     private void clearDcIdaRunappParam() {
-      if (valueCase_ == 1) {
+      if (valueCase_ == 10) {
         valueCase_ = 0;
         value_ = null;
       }
     }
 
-    public static final int DC_IDA_GET_SYSTEM_INFO_PARAM_FIELD_NUMBER = 2;
+    public static final int DC_IDA_GET_SYSTEM_INFO_PARAM_FIELD_NUMBER = 11;
     /**
-     * <code>.inner.types.DcIdaGetSystemInfoParam dc_ida_get_system_info_param = 2;</code>
+     * <code>.inner.types.DcIdaGetSystemInfoParam dc_ida_get_system_info_param = 11;</code>
      */
     @java.lang.Override
     public boolean hasDcIdaGetSystemInfoParam() {
-      return valueCase_ == 2;
+      return valueCase_ == 11;
     }
     /**
-     * <code>.inner.types.DcIdaGetSystemInfoParam dc_ida_get_system_info_param = 2;</code>
+     * <code>.inner.types.DcIdaGetSystemInfoParam dc_ida_get_system_info_param = 11;</code>
      */
     @java.lang.Override
     public com.dogu.protocol.generated.inner.types.DcIda.DcIdaGetSystemInfoParam getDcIdaGetSystemInfoParam() {
-      if (valueCase_ == 2) {
+      if (valueCase_ == 11) {
          return (com.dogu.protocol.generated.inner.types.DcIda.DcIdaGetSystemInfoParam) value_;
       }
       return com.dogu.protocol.generated.inner.types.DcIda.DcIdaGetSystemInfoParam.getDefaultInstance();
     }
     /**
-     * <code>.inner.types.DcIdaGetSystemInfoParam dc_ida_get_system_info_param = 2;</code>
+     * <code>.inner.types.DcIdaGetSystemInfoParam dc_ida_get_system_info_param = 11;</code>
      */
     private void setDcIdaGetSystemInfoParam(com.dogu.protocol.generated.inner.types.DcIda.DcIdaGetSystemInfoParam value) {
       value.getClass();
   value_ = value;
-      valueCase_ = 2;
+      valueCase_ = 11;
     }
     /**
-     * <code>.inner.types.DcIdaGetSystemInfoParam dc_ida_get_system_info_param = 2;</code>
+     * <code>.inner.types.DcIdaGetSystemInfoParam dc_ida_get_system_info_param = 11;</code>
      */
     private void mergeDcIdaGetSystemInfoParam(com.dogu.protocol.generated.inner.types.DcIda.DcIdaGetSystemInfoParam value) {
       value.getClass();
-  if (valueCase_ == 2 &&
+  if (valueCase_ == 11 &&
           value_ != com.dogu.protocol.generated.inner.types.DcIda.DcIdaGetSystemInfoParam.getDefaultInstance()) {
         value_ = com.dogu.protocol.generated.inner.types.DcIda.DcIdaGetSystemInfoParam.newBuilder((com.dogu.protocol.generated.inner.types.DcIda.DcIdaGetSystemInfoParam) value_)
             .mergeFrom(value).buildPartial();
       } else {
         value_ = value;
       }
-      valueCase_ = 2;
+      valueCase_ = 11;
     }
     /**
-     * <code>.inner.types.DcIdaGetSystemInfoParam dc_ida_get_system_info_param = 2;</code>
+     * <code>.inner.types.DcIdaGetSystemInfoParam dc_ida_get_system_info_param = 11;</code>
      */
     private void clearDcIdaGetSystemInfoParam() {
-      if (valueCase_ == 2) {
+      if (valueCase_ == 11) {
         valueCase_ = 0;
         value_ = null;
       }
     }
 
-    public static final int DC_IDA_IS_PORT_LISTENING_PARAM_FIELD_NUMBER = 3;
+    public static final int DC_IDA_IS_PORT_LISTENING_PARAM_FIELD_NUMBER = 12;
     /**
-     * <code>.inner.types.DcIdaIsPortListeningParam dc_ida_is_port_listening_param = 3;</code>
+     * <code>.inner.types.DcIdaIsPortListeningParam dc_ida_is_port_listening_param = 12;</code>
      */
     @java.lang.Override
     public boolean hasDcIdaIsPortListeningParam() {
-      return valueCase_ == 3;
+      return valueCase_ == 12;
     }
     /**
-     * <code>.inner.types.DcIdaIsPortListeningParam dc_ida_is_port_listening_param = 3;</code>
+     * <code>.inner.types.DcIdaIsPortListeningParam dc_ida_is_port_listening_param = 12;</code>
      */
     @java.lang.Override
     public com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningParam getDcIdaIsPortListeningParam() {
-      if (valueCase_ == 3) {
+      if (valueCase_ == 12) {
          return (com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningParam) value_;
       }
       return com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningParam.getDefaultInstance();
     }
     /**
-     * <code>.inner.types.DcIdaIsPortListeningParam dc_ida_is_port_listening_param = 3;</code>
+     * <code>.inner.types.DcIdaIsPortListeningParam dc_ida_is_port_listening_param = 12;</code>
      */
     private void setDcIdaIsPortListeningParam(com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningParam value) {
       value.getClass();
   value_ = value;
-      valueCase_ = 3;
+      valueCase_ = 12;
     }
     /**
-     * <code>.inner.types.DcIdaIsPortListeningParam dc_ida_is_port_listening_param = 3;</code>
+     * <code>.inner.types.DcIdaIsPortListeningParam dc_ida_is_port_listening_param = 12;</code>
      */
     private void mergeDcIdaIsPortListeningParam(com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningParam value) {
       value.getClass();
-  if (valueCase_ == 3 &&
+  if (valueCase_ == 12 &&
           value_ != com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningParam.getDefaultInstance()) {
         value_ = com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningParam.newBuilder((com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningParam) value_)
             .mergeFrom(value).buildPartial();
       } else {
         value_ = value;
       }
-      valueCase_ = 3;
+      valueCase_ = 12;
     }
     /**
-     * <code>.inner.types.DcIdaIsPortListeningParam dc_ida_is_port_listening_param = 3;</code>
+     * <code>.inner.types.DcIdaIsPortListeningParam dc_ida_is_port_listening_param = 12;</code>
      */
     private void clearDcIdaIsPortListeningParam() {
-      if (valueCase_ == 3) {
+      if (valueCase_ == 12) {
         valueCase_ = 0;
         value_ = null;
       }
     }
 
-    public static final int DC_IDA_QUERY_PROFILE_PARAM_FIELD_NUMBER = 4;
+    public static final int DC_IDA_QUERY_PROFILE_PARAM_FIELD_NUMBER = 13;
     /**
-     * <code>.inner.types.DcIdaQueryProfileParam dc_ida_query_profile_param = 4;</code>
+     * <code>.inner.types.DcIdaQueryProfileParam dc_ida_query_profile_param = 13;</code>
      */
     @java.lang.Override
     public boolean hasDcIdaQueryProfileParam() {
-      return valueCase_ == 4;
+      return valueCase_ == 13;
     }
     /**
-     * <code>.inner.types.DcIdaQueryProfileParam dc_ida_query_profile_param = 4;</code>
+     * <code>.inner.types.DcIdaQueryProfileParam dc_ida_query_profile_param = 13;</code>
      */
     @java.lang.Override
     public com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryProfileParam getDcIdaQueryProfileParam() {
-      if (valueCase_ == 4) {
+      if (valueCase_ == 13) {
          return (com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryProfileParam) value_;
       }
       return com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryProfileParam.getDefaultInstance();
     }
     /**
-     * <code>.inner.types.DcIdaQueryProfileParam dc_ida_query_profile_param = 4;</code>
+     * <code>.inner.types.DcIdaQueryProfileParam dc_ida_query_profile_param = 13;</code>
      */
     private void setDcIdaQueryProfileParam(com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryProfileParam value) {
       value.getClass();
   value_ = value;
-      valueCase_ = 4;
+      valueCase_ = 13;
     }
     /**
-     * <code>.inner.types.DcIdaQueryProfileParam dc_ida_query_profile_param = 4;</code>
+     * <code>.inner.types.DcIdaQueryProfileParam dc_ida_query_profile_param = 13;</code>
      */
     private void mergeDcIdaQueryProfileParam(com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryProfileParam value) {
       value.getClass();
-  if (valueCase_ == 4 &&
+  if (valueCase_ == 13 &&
           value_ != com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryProfileParam.getDefaultInstance()) {
         value_ = com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryProfileParam.newBuilder((com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryProfileParam) value_)
             .mergeFrom(value).buildPartial();
       } else {
         value_ = value;
       }
-      valueCase_ = 4;
+      valueCase_ = 13;
     }
     /**
-     * <code>.inner.types.DcIdaQueryProfileParam dc_ida_query_profile_param = 4;</code>
+     * <code>.inner.types.DcIdaQueryProfileParam dc_ida_query_profile_param = 13;</code>
      */
     private void clearDcIdaQueryProfileParam() {
-      if (valueCase_ == 4) {
+      if (valueCase_ == 13) {
         valueCase_ = 0;
         value_ = null;
       }
     }
 
-    public static final int DC_GDC_DA_CONTROL_PARAM_FIELD_NUMBER = 5;
+    public static final int DC_GDC_DA_CONTROL_PARAM_FIELD_NUMBER = 14;
     /**
-     * <code>.inner.types.CfGdcDaControlParam dc_gdc_da_control_param = 5;</code>
+     * <code>.inner.types.CfGdcDaControlParam dc_gdc_da_control_param = 14;</code>
      */
     @java.lang.Override
     public boolean hasDcGdcDaControlParam() {
-      return valueCase_ == 5;
+      return valueCase_ == 14;
     }
     /**
-     * <code>.inner.types.CfGdcDaControlParam dc_gdc_da_control_param = 5;</code>
+     * <code>.inner.types.CfGdcDaControlParam dc_gdc_da_control_param = 14;</code>
      */
     @java.lang.Override
     public com.dogu.protocol.generated.inner.types.CfGdcDa.CfGdcDaControlParam getDcGdcDaControlParam() {
-      if (valueCase_ == 5) {
+      if (valueCase_ == 14) {
          return (com.dogu.protocol.generated.inner.types.CfGdcDa.CfGdcDaControlParam) value_;
       }
       return com.dogu.protocol.generated.inner.types.CfGdcDa.CfGdcDaControlParam.getDefaultInstance();
     }
     /**
-     * <code>.inner.types.CfGdcDaControlParam dc_gdc_da_control_param = 5;</code>
+     * <code>.inner.types.CfGdcDaControlParam dc_gdc_da_control_param = 14;</code>
      */
     private void setDcGdcDaControlParam(com.dogu.protocol.generated.inner.types.CfGdcDa.CfGdcDaControlParam value) {
       value.getClass();
   value_ = value;
-      valueCase_ = 5;
+      valueCase_ = 14;
     }
     /**
-     * <code>.inner.types.CfGdcDaControlParam dc_gdc_da_control_param = 5;</code>
+     * <code>.inner.types.CfGdcDaControlParam dc_gdc_da_control_param = 14;</code>
      */
     private void mergeDcGdcDaControlParam(com.dogu.protocol.generated.inner.types.CfGdcDa.CfGdcDaControlParam value) {
       value.getClass();
-  if (valueCase_ == 5 &&
+  if (valueCase_ == 14 &&
           value_ != com.dogu.protocol.generated.inner.types.CfGdcDa.CfGdcDaControlParam.getDefaultInstance()) {
         value_ = com.dogu.protocol.generated.inner.types.CfGdcDa.CfGdcDaControlParam.newBuilder((com.dogu.protocol.generated.inner.types.CfGdcDa.CfGdcDaControlParam) value_)
             .mergeFrom(value).buildPartial();
       } else {
         value_ = value;
       }
-      valueCase_ = 5;
+      valueCase_ = 14;
     }
     /**
-     * <code>.inner.types.CfGdcDaControlParam dc_gdc_da_control_param = 5;</code>
+     * <code>.inner.types.CfGdcDaControlParam dc_gdc_da_control_param = 14;</code>
      */
     private void clearDcGdcDaControlParam() {
-      if (valueCase_ == 5) {
+      if (valueCase_ == 14) {
         valueCase_ = 0;
         value_ = null;
       }
     }
 
-    public static final int DC_IDA_SWITCH_INPUT_BLOCK_PARAM_FIELD_NUMBER = 6;
+    public static final int DC_IDA_SWITCH_INPUT_BLOCK_PARAM_FIELD_NUMBER = 15;
     /**
-     * <code>.inner.types.DcIdaSwitchInputBlockParam dc_ida_switch_input_block_param = 6;</code>
+     * <code>.inner.types.DcIdaSwitchInputBlockParam dc_ida_switch_input_block_param = 15;</code>
      */
     @java.lang.Override
     public boolean hasDcIdaSwitchInputBlockParam() {
-      return valueCase_ == 6;
+      return valueCase_ == 15;
     }
     /**
-     * <code>.inner.types.DcIdaSwitchInputBlockParam dc_ida_switch_input_block_param = 6;</code>
+     * <code>.inner.types.DcIdaSwitchInputBlockParam dc_ida_switch_input_block_param = 15;</code>
      */
     @java.lang.Override
     public com.dogu.protocol.generated.inner.types.DcIda.DcIdaSwitchInputBlockParam getDcIdaSwitchInputBlockParam() {
-      if (valueCase_ == 6) {
+      if (valueCase_ == 15) {
          return (com.dogu.protocol.generated.inner.types.DcIda.DcIdaSwitchInputBlockParam) value_;
       }
       return com.dogu.protocol.generated.inner.types.DcIda.DcIdaSwitchInputBlockParam.getDefaultInstance();
     }
     /**
-     * <code>.inner.types.DcIdaSwitchInputBlockParam dc_ida_switch_input_block_param = 6;</code>
+     * <code>.inner.types.DcIdaSwitchInputBlockParam dc_ida_switch_input_block_param = 15;</code>
      */
     private void setDcIdaSwitchInputBlockParam(com.dogu.protocol.generated.inner.types.DcIda.DcIdaSwitchInputBlockParam value) {
       value.getClass();
   value_ = value;
-      valueCase_ = 6;
+      valueCase_ = 15;
     }
     /**
-     * <code>.inner.types.DcIdaSwitchInputBlockParam dc_ida_switch_input_block_param = 6;</code>
+     * <code>.inner.types.DcIdaSwitchInputBlockParam dc_ida_switch_input_block_param = 15;</code>
      */
     private void mergeDcIdaSwitchInputBlockParam(com.dogu.protocol.generated.inner.types.DcIda.DcIdaSwitchInputBlockParam value) {
       value.getClass();
-  if (valueCase_ == 6 &&
+  if (valueCase_ == 15 &&
           value_ != com.dogu.protocol.generated.inner.types.DcIda.DcIdaSwitchInputBlockParam.getDefaultInstance()) {
         value_ = com.dogu.protocol.generated.inner.types.DcIda.DcIdaSwitchInputBlockParam.newBuilder((com.dogu.protocol.generated.inner.types.DcIda.DcIdaSwitchInputBlockParam) value_)
             .mergeFrom(value).buildPartial();
       } else {
         value_ = value;
       }
-      valueCase_ = 6;
+      valueCase_ = 15;
     }
     /**
-     * <code>.inner.types.DcIdaSwitchInputBlockParam dc_ida_switch_input_block_param = 6;</code>
+     * <code>.inner.types.DcIdaSwitchInputBlockParam dc_ida_switch_input_block_param = 15;</code>
      */
     private void clearDcIdaSwitchInputBlockParam() {
-      if (valueCase_ == 6) {
+      if (valueCase_ == 15) {
+        valueCase_ = 0;
+        value_ = null;
+      }
+    }
+
+    public static final int DC_IDA_QUERY_ALERT_PARAM_FIELD_NUMBER = 16;
+    /**
+     * <code>.inner.types.DcIdaQueryAlertParam dc_ida_query_alert_param = 16;</code>
+     */
+    @java.lang.Override
+    public boolean hasDcIdaQueryAlertParam() {
+      return valueCase_ == 16;
+    }
+    /**
+     * <code>.inner.types.DcIdaQueryAlertParam dc_ida_query_alert_param = 16;</code>
+     */
+    @java.lang.Override
+    public com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryAlertParam getDcIdaQueryAlertParam() {
+      if (valueCase_ == 16) {
+         return (com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryAlertParam) value_;
+      }
+      return com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryAlertParam.getDefaultInstance();
+    }
+    /**
+     * <code>.inner.types.DcIdaQueryAlertParam dc_ida_query_alert_param = 16;</code>
+     */
+    private void setDcIdaQueryAlertParam(com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryAlertParam value) {
+      value.getClass();
+  value_ = value;
+      valueCase_ = 16;
+    }
+    /**
+     * <code>.inner.types.DcIdaQueryAlertParam dc_ida_query_alert_param = 16;</code>
+     */
+    private void mergeDcIdaQueryAlertParam(com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryAlertParam value) {
+      value.getClass();
+  if (valueCase_ == 16 &&
+          value_ != com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryAlertParam.getDefaultInstance()) {
+        value_ = com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryAlertParam.newBuilder((com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryAlertParam) value_)
+            .mergeFrom(value).buildPartial();
+      } else {
+        value_ = value;
+      }
+      valueCase_ = 16;
+    }
+    /**
+     * <code>.inner.types.DcIdaQueryAlertParam dc_ida_query_alert_param = 16;</code>
+     */
+    private void clearDcIdaQueryAlertParam() {
+      if (valueCase_ == 16) {
         valueCase_ = 0;
         value_ = null;
       }
@@ -581,7 +644,7 @@ public final class DcIda {
 
 
       /**
-       * <code>fixed32 seq = 10;</code>
+       * <code>fixed32 seq = 1;</code>
        * @return The seq.
        */
       @java.lang.Override
@@ -589,7 +652,7 @@ public final class DcIda {
         return instance.getSeq();
       }
       /**
-       * <code>fixed32 seq = 10;</code>
+       * <code>fixed32 seq = 1;</code>
        * @param value The seq to set.
        * @return This builder for chaining.
        */
@@ -599,7 +662,7 @@ public final class DcIda {
         return this;
       }
       /**
-       * <code>fixed32 seq = 10;</code>
+       * <code>fixed32 seq = 1;</code>
        * @return This builder for chaining.
        */
       public Builder clearSeq() {
@@ -609,21 +672,21 @@ public final class DcIda {
       }
 
       /**
-       * <code>.inner.types.DcIdaRunAppParam dc_ida_runapp_param = 1;</code>
+       * <code>.inner.types.DcIdaRunAppParam dc_ida_runapp_param = 10;</code>
        */
       @java.lang.Override
       public boolean hasDcIdaRunappParam() {
         return instance.hasDcIdaRunappParam();
       }
       /**
-       * <code>.inner.types.DcIdaRunAppParam dc_ida_runapp_param = 1;</code>
+       * <code>.inner.types.DcIdaRunAppParam dc_ida_runapp_param = 10;</code>
        */
       @java.lang.Override
       public com.dogu.protocol.generated.inner.types.DcIda.DcIdaRunAppParam getDcIdaRunappParam() {
         return instance.getDcIdaRunappParam();
       }
       /**
-       * <code>.inner.types.DcIdaRunAppParam dc_ida_runapp_param = 1;</code>
+       * <code>.inner.types.DcIdaRunAppParam dc_ida_runapp_param = 10;</code>
        */
       public Builder setDcIdaRunappParam(com.dogu.protocol.generated.inner.types.DcIda.DcIdaRunAppParam value) {
         copyOnWrite();
@@ -631,7 +694,7 @@ public final class DcIda {
         return this;
       }
       /**
-       * <code>.inner.types.DcIdaRunAppParam dc_ida_runapp_param = 1;</code>
+       * <code>.inner.types.DcIdaRunAppParam dc_ida_runapp_param = 10;</code>
        */
       public Builder setDcIdaRunappParam(
           com.dogu.protocol.generated.inner.types.DcIda.DcIdaRunAppParam.Builder builderForValue) {
@@ -640,7 +703,7 @@ public final class DcIda {
         return this;
       }
       /**
-       * <code>.inner.types.DcIdaRunAppParam dc_ida_runapp_param = 1;</code>
+       * <code>.inner.types.DcIdaRunAppParam dc_ida_runapp_param = 10;</code>
        */
       public Builder mergeDcIdaRunappParam(com.dogu.protocol.generated.inner.types.DcIda.DcIdaRunAppParam value) {
         copyOnWrite();
@@ -648,7 +711,7 @@ public final class DcIda {
         return this;
       }
       /**
-       * <code>.inner.types.DcIdaRunAppParam dc_ida_runapp_param = 1;</code>
+       * <code>.inner.types.DcIdaRunAppParam dc_ida_runapp_param = 10;</code>
        */
       public Builder clearDcIdaRunappParam() {
         copyOnWrite();
@@ -657,21 +720,21 @@ public final class DcIda {
       }
 
       /**
-       * <code>.inner.types.DcIdaGetSystemInfoParam dc_ida_get_system_info_param = 2;</code>
+       * <code>.inner.types.DcIdaGetSystemInfoParam dc_ida_get_system_info_param = 11;</code>
        */
       @java.lang.Override
       public boolean hasDcIdaGetSystemInfoParam() {
         return instance.hasDcIdaGetSystemInfoParam();
       }
       /**
-       * <code>.inner.types.DcIdaGetSystemInfoParam dc_ida_get_system_info_param = 2;</code>
+       * <code>.inner.types.DcIdaGetSystemInfoParam dc_ida_get_system_info_param = 11;</code>
        */
       @java.lang.Override
       public com.dogu.protocol.generated.inner.types.DcIda.DcIdaGetSystemInfoParam getDcIdaGetSystemInfoParam() {
         return instance.getDcIdaGetSystemInfoParam();
       }
       /**
-       * <code>.inner.types.DcIdaGetSystemInfoParam dc_ida_get_system_info_param = 2;</code>
+       * <code>.inner.types.DcIdaGetSystemInfoParam dc_ida_get_system_info_param = 11;</code>
        */
       public Builder setDcIdaGetSystemInfoParam(com.dogu.protocol.generated.inner.types.DcIda.DcIdaGetSystemInfoParam value) {
         copyOnWrite();
@@ -679,7 +742,7 @@ public final class DcIda {
         return this;
       }
       /**
-       * <code>.inner.types.DcIdaGetSystemInfoParam dc_ida_get_system_info_param = 2;</code>
+       * <code>.inner.types.DcIdaGetSystemInfoParam dc_ida_get_system_info_param = 11;</code>
        */
       public Builder setDcIdaGetSystemInfoParam(
           com.dogu.protocol.generated.inner.types.DcIda.DcIdaGetSystemInfoParam.Builder builderForValue) {
@@ -688,7 +751,7 @@ public final class DcIda {
         return this;
       }
       /**
-       * <code>.inner.types.DcIdaGetSystemInfoParam dc_ida_get_system_info_param = 2;</code>
+       * <code>.inner.types.DcIdaGetSystemInfoParam dc_ida_get_system_info_param = 11;</code>
        */
       public Builder mergeDcIdaGetSystemInfoParam(com.dogu.protocol.generated.inner.types.DcIda.DcIdaGetSystemInfoParam value) {
         copyOnWrite();
@@ -696,7 +759,7 @@ public final class DcIda {
         return this;
       }
       /**
-       * <code>.inner.types.DcIdaGetSystemInfoParam dc_ida_get_system_info_param = 2;</code>
+       * <code>.inner.types.DcIdaGetSystemInfoParam dc_ida_get_system_info_param = 11;</code>
        */
       public Builder clearDcIdaGetSystemInfoParam() {
         copyOnWrite();
@@ -705,21 +768,21 @@ public final class DcIda {
       }
 
       /**
-       * <code>.inner.types.DcIdaIsPortListeningParam dc_ida_is_port_listening_param = 3;</code>
+       * <code>.inner.types.DcIdaIsPortListeningParam dc_ida_is_port_listening_param = 12;</code>
        */
       @java.lang.Override
       public boolean hasDcIdaIsPortListeningParam() {
         return instance.hasDcIdaIsPortListeningParam();
       }
       /**
-       * <code>.inner.types.DcIdaIsPortListeningParam dc_ida_is_port_listening_param = 3;</code>
+       * <code>.inner.types.DcIdaIsPortListeningParam dc_ida_is_port_listening_param = 12;</code>
        */
       @java.lang.Override
       public com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningParam getDcIdaIsPortListeningParam() {
         return instance.getDcIdaIsPortListeningParam();
       }
       /**
-       * <code>.inner.types.DcIdaIsPortListeningParam dc_ida_is_port_listening_param = 3;</code>
+       * <code>.inner.types.DcIdaIsPortListeningParam dc_ida_is_port_listening_param = 12;</code>
        */
       public Builder setDcIdaIsPortListeningParam(com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningParam value) {
         copyOnWrite();
@@ -727,7 +790,7 @@ public final class DcIda {
         return this;
       }
       /**
-       * <code>.inner.types.DcIdaIsPortListeningParam dc_ida_is_port_listening_param = 3;</code>
+       * <code>.inner.types.DcIdaIsPortListeningParam dc_ida_is_port_listening_param = 12;</code>
        */
       public Builder setDcIdaIsPortListeningParam(
           com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningParam.Builder builderForValue) {
@@ -736,7 +799,7 @@ public final class DcIda {
         return this;
       }
       /**
-       * <code>.inner.types.DcIdaIsPortListeningParam dc_ida_is_port_listening_param = 3;</code>
+       * <code>.inner.types.DcIdaIsPortListeningParam dc_ida_is_port_listening_param = 12;</code>
        */
       public Builder mergeDcIdaIsPortListeningParam(com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningParam value) {
         copyOnWrite();
@@ -744,7 +807,7 @@ public final class DcIda {
         return this;
       }
       /**
-       * <code>.inner.types.DcIdaIsPortListeningParam dc_ida_is_port_listening_param = 3;</code>
+       * <code>.inner.types.DcIdaIsPortListeningParam dc_ida_is_port_listening_param = 12;</code>
        */
       public Builder clearDcIdaIsPortListeningParam() {
         copyOnWrite();
@@ -753,21 +816,21 @@ public final class DcIda {
       }
 
       /**
-       * <code>.inner.types.DcIdaQueryProfileParam dc_ida_query_profile_param = 4;</code>
+       * <code>.inner.types.DcIdaQueryProfileParam dc_ida_query_profile_param = 13;</code>
        */
       @java.lang.Override
       public boolean hasDcIdaQueryProfileParam() {
         return instance.hasDcIdaQueryProfileParam();
       }
       /**
-       * <code>.inner.types.DcIdaQueryProfileParam dc_ida_query_profile_param = 4;</code>
+       * <code>.inner.types.DcIdaQueryProfileParam dc_ida_query_profile_param = 13;</code>
        */
       @java.lang.Override
       public com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryProfileParam getDcIdaQueryProfileParam() {
         return instance.getDcIdaQueryProfileParam();
       }
       /**
-       * <code>.inner.types.DcIdaQueryProfileParam dc_ida_query_profile_param = 4;</code>
+       * <code>.inner.types.DcIdaQueryProfileParam dc_ida_query_profile_param = 13;</code>
        */
       public Builder setDcIdaQueryProfileParam(com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryProfileParam value) {
         copyOnWrite();
@@ -775,7 +838,7 @@ public final class DcIda {
         return this;
       }
       /**
-       * <code>.inner.types.DcIdaQueryProfileParam dc_ida_query_profile_param = 4;</code>
+       * <code>.inner.types.DcIdaQueryProfileParam dc_ida_query_profile_param = 13;</code>
        */
       public Builder setDcIdaQueryProfileParam(
           com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryProfileParam.Builder builderForValue) {
@@ -784,7 +847,7 @@ public final class DcIda {
         return this;
       }
       /**
-       * <code>.inner.types.DcIdaQueryProfileParam dc_ida_query_profile_param = 4;</code>
+       * <code>.inner.types.DcIdaQueryProfileParam dc_ida_query_profile_param = 13;</code>
        */
       public Builder mergeDcIdaQueryProfileParam(com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryProfileParam value) {
         copyOnWrite();
@@ -792,7 +855,7 @@ public final class DcIda {
         return this;
       }
       /**
-       * <code>.inner.types.DcIdaQueryProfileParam dc_ida_query_profile_param = 4;</code>
+       * <code>.inner.types.DcIdaQueryProfileParam dc_ida_query_profile_param = 13;</code>
        */
       public Builder clearDcIdaQueryProfileParam() {
         copyOnWrite();
@@ -801,21 +864,21 @@ public final class DcIda {
       }
 
       /**
-       * <code>.inner.types.CfGdcDaControlParam dc_gdc_da_control_param = 5;</code>
+       * <code>.inner.types.CfGdcDaControlParam dc_gdc_da_control_param = 14;</code>
        */
       @java.lang.Override
       public boolean hasDcGdcDaControlParam() {
         return instance.hasDcGdcDaControlParam();
       }
       /**
-       * <code>.inner.types.CfGdcDaControlParam dc_gdc_da_control_param = 5;</code>
+       * <code>.inner.types.CfGdcDaControlParam dc_gdc_da_control_param = 14;</code>
        */
       @java.lang.Override
       public com.dogu.protocol.generated.inner.types.CfGdcDa.CfGdcDaControlParam getDcGdcDaControlParam() {
         return instance.getDcGdcDaControlParam();
       }
       /**
-       * <code>.inner.types.CfGdcDaControlParam dc_gdc_da_control_param = 5;</code>
+       * <code>.inner.types.CfGdcDaControlParam dc_gdc_da_control_param = 14;</code>
        */
       public Builder setDcGdcDaControlParam(com.dogu.protocol.generated.inner.types.CfGdcDa.CfGdcDaControlParam value) {
         copyOnWrite();
@@ -823,7 +886,7 @@ public final class DcIda {
         return this;
       }
       /**
-       * <code>.inner.types.CfGdcDaControlParam dc_gdc_da_control_param = 5;</code>
+       * <code>.inner.types.CfGdcDaControlParam dc_gdc_da_control_param = 14;</code>
        */
       public Builder setDcGdcDaControlParam(
           com.dogu.protocol.generated.inner.types.CfGdcDa.CfGdcDaControlParam.Builder builderForValue) {
@@ -832,7 +895,7 @@ public final class DcIda {
         return this;
       }
       /**
-       * <code>.inner.types.CfGdcDaControlParam dc_gdc_da_control_param = 5;</code>
+       * <code>.inner.types.CfGdcDaControlParam dc_gdc_da_control_param = 14;</code>
        */
       public Builder mergeDcGdcDaControlParam(com.dogu.protocol.generated.inner.types.CfGdcDa.CfGdcDaControlParam value) {
         copyOnWrite();
@@ -840,7 +903,7 @@ public final class DcIda {
         return this;
       }
       /**
-       * <code>.inner.types.CfGdcDaControlParam dc_gdc_da_control_param = 5;</code>
+       * <code>.inner.types.CfGdcDaControlParam dc_gdc_da_control_param = 14;</code>
        */
       public Builder clearDcGdcDaControlParam() {
         copyOnWrite();
@@ -849,21 +912,21 @@ public final class DcIda {
       }
 
       /**
-       * <code>.inner.types.DcIdaSwitchInputBlockParam dc_ida_switch_input_block_param = 6;</code>
+       * <code>.inner.types.DcIdaSwitchInputBlockParam dc_ida_switch_input_block_param = 15;</code>
        */
       @java.lang.Override
       public boolean hasDcIdaSwitchInputBlockParam() {
         return instance.hasDcIdaSwitchInputBlockParam();
       }
       /**
-       * <code>.inner.types.DcIdaSwitchInputBlockParam dc_ida_switch_input_block_param = 6;</code>
+       * <code>.inner.types.DcIdaSwitchInputBlockParam dc_ida_switch_input_block_param = 15;</code>
        */
       @java.lang.Override
       public com.dogu.protocol.generated.inner.types.DcIda.DcIdaSwitchInputBlockParam getDcIdaSwitchInputBlockParam() {
         return instance.getDcIdaSwitchInputBlockParam();
       }
       /**
-       * <code>.inner.types.DcIdaSwitchInputBlockParam dc_ida_switch_input_block_param = 6;</code>
+       * <code>.inner.types.DcIdaSwitchInputBlockParam dc_ida_switch_input_block_param = 15;</code>
        */
       public Builder setDcIdaSwitchInputBlockParam(com.dogu.protocol.generated.inner.types.DcIda.DcIdaSwitchInputBlockParam value) {
         copyOnWrite();
@@ -871,7 +934,7 @@ public final class DcIda {
         return this;
       }
       /**
-       * <code>.inner.types.DcIdaSwitchInputBlockParam dc_ida_switch_input_block_param = 6;</code>
+       * <code>.inner.types.DcIdaSwitchInputBlockParam dc_ida_switch_input_block_param = 15;</code>
        */
       public Builder setDcIdaSwitchInputBlockParam(
           com.dogu.protocol.generated.inner.types.DcIda.DcIdaSwitchInputBlockParam.Builder builderForValue) {
@@ -880,7 +943,7 @@ public final class DcIda {
         return this;
       }
       /**
-       * <code>.inner.types.DcIdaSwitchInputBlockParam dc_ida_switch_input_block_param = 6;</code>
+       * <code>.inner.types.DcIdaSwitchInputBlockParam dc_ida_switch_input_block_param = 15;</code>
        */
       public Builder mergeDcIdaSwitchInputBlockParam(com.dogu.protocol.generated.inner.types.DcIda.DcIdaSwitchInputBlockParam value) {
         copyOnWrite();
@@ -888,11 +951,59 @@ public final class DcIda {
         return this;
       }
       /**
-       * <code>.inner.types.DcIdaSwitchInputBlockParam dc_ida_switch_input_block_param = 6;</code>
+       * <code>.inner.types.DcIdaSwitchInputBlockParam dc_ida_switch_input_block_param = 15;</code>
        */
       public Builder clearDcIdaSwitchInputBlockParam() {
         copyOnWrite();
         instance.clearDcIdaSwitchInputBlockParam();
+        return this;
+      }
+
+      /**
+       * <code>.inner.types.DcIdaQueryAlertParam dc_ida_query_alert_param = 16;</code>
+       */
+      @java.lang.Override
+      public boolean hasDcIdaQueryAlertParam() {
+        return instance.hasDcIdaQueryAlertParam();
+      }
+      /**
+       * <code>.inner.types.DcIdaQueryAlertParam dc_ida_query_alert_param = 16;</code>
+       */
+      @java.lang.Override
+      public com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryAlertParam getDcIdaQueryAlertParam() {
+        return instance.getDcIdaQueryAlertParam();
+      }
+      /**
+       * <code>.inner.types.DcIdaQueryAlertParam dc_ida_query_alert_param = 16;</code>
+       */
+      public Builder setDcIdaQueryAlertParam(com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryAlertParam value) {
+        copyOnWrite();
+        instance.setDcIdaQueryAlertParam(value);
+        return this;
+      }
+      /**
+       * <code>.inner.types.DcIdaQueryAlertParam dc_ida_query_alert_param = 16;</code>
+       */
+      public Builder setDcIdaQueryAlertParam(
+          com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryAlertParam.Builder builderForValue) {
+        copyOnWrite();
+        instance.setDcIdaQueryAlertParam(builderForValue.build());
+        return this;
+      }
+      /**
+       * <code>.inner.types.DcIdaQueryAlertParam dc_ida_query_alert_param = 16;</code>
+       */
+      public Builder mergeDcIdaQueryAlertParam(com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryAlertParam value) {
+        copyOnWrite();
+        instance.mergeDcIdaQueryAlertParam(value);
+        return this;
+      }
+      /**
+       * <code>.inner.types.DcIdaQueryAlertParam dc_ida_query_alert_param = 16;</code>
+       */
+      public Builder clearDcIdaQueryAlertParam() {
+        copyOnWrite();
+        instance.clearDcIdaQueryAlertParam();
         return this;
       }
 
@@ -914,17 +1025,18 @@ public final class DcIda {
             java.lang.Object[] objects = new java.lang.Object[] {
               "value_",
               "valueCase_",
+              "seq_",
               com.dogu.protocol.generated.inner.types.DcIda.DcIdaRunAppParam.class,
               com.dogu.protocol.generated.inner.types.DcIda.DcIdaGetSystemInfoParam.class,
               com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningParam.class,
               com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryProfileParam.class,
               com.dogu.protocol.generated.inner.types.CfGdcDa.CfGdcDaControlParam.class,
               com.dogu.protocol.generated.inner.types.DcIda.DcIdaSwitchInputBlockParam.class,
-              "seq_",
+              com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryAlertParam.class,
             };
             java.lang.String info =
-                "\u0000\u0007\u0001\u0000\u0001\n\u0007\u0000\u0000\u0000\u0001<\u0000\u0002<\u0000" +
-                "\u0003<\u0000\u0004<\u0000\u0005<\u0000\u0006<\u0000\n\u0006";
+                "\u0000\b\u0001\u0000\u0001\u0010\b\u0000\u0000\u0000\u0001\u0006\n<\u0000\u000b<" +
+                "\u0000\f<\u0000\r<\u0000\u000e<\u0000\u000f<\u0000\u0010<\u0000";
             return newMessageInfo(DEFAULT_INSTANCE, info, objects);
         }
         // fall through
@@ -984,76 +1096,98 @@ public final class DcIda {
       com.google.protobuf.MessageLiteOrBuilder {
 
     /**
-     * <code>fixed32 seq = 10;</code>
+     * <code>fixed32 seq = 1;</code>
      * @return The seq.
      */
     int getSeq();
 
     /**
-     * <code>.inner.types.DcIdaRunAppResult dc_ida_runapp_result = 1;</code>
+     * <code>optional .outer.ErrorResult error = 2;</code>
+     * @return Whether the error field is set.
+     */
+    boolean hasError();
+    /**
+     * <code>optional .outer.ErrorResult error = 2;</code>
+     * @return The error.
+     */
+    com.dogu.protocol.generated.outer.Errors.ErrorResult getError();
+
+    /**
+     * <code>.inner.types.DcIdaRunAppResult dc_ida_runapp_result = 10;</code>
      * @return Whether the dcIdaRunappResult field is set.
      */
     boolean hasDcIdaRunappResult();
     /**
-     * <code>.inner.types.DcIdaRunAppResult dc_ida_runapp_result = 1;</code>
+     * <code>.inner.types.DcIdaRunAppResult dc_ida_runapp_result = 10;</code>
      * @return The dcIdaRunappResult.
      */
     com.dogu.protocol.generated.inner.types.DcIda.DcIdaRunAppResult getDcIdaRunappResult();
 
     /**
-     * <code>.inner.types.DcIdaGetSystemInfoResult dc_ida_get_system_info_result = 2;</code>
+     * <code>.inner.types.DcIdaGetSystemInfoResult dc_ida_get_system_info_result = 11;</code>
      * @return Whether the dcIdaGetSystemInfoResult field is set.
      */
     boolean hasDcIdaGetSystemInfoResult();
     /**
-     * <code>.inner.types.DcIdaGetSystemInfoResult dc_ida_get_system_info_result = 2;</code>
+     * <code>.inner.types.DcIdaGetSystemInfoResult dc_ida_get_system_info_result = 11;</code>
      * @return The dcIdaGetSystemInfoResult.
      */
     com.dogu.protocol.generated.inner.types.DcIda.DcIdaGetSystemInfoResult getDcIdaGetSystemInfoResult();
 
     /**
-     * <code>.inner.types.DcIdaIsPortListeningResult dc_ida_is_port_listening_result = 3;</code>
+     * <code>.inner.types.DcIdaIsPortListeningResult dc_ida_is_port_listening_result = 12;</code>
      * @return Whether the dcIdaIsPortListeningResult field is set.
      */
     boolean hasDcIdaIsPortListeningResult();
     /**
-     * <code>.inner.types.DcIdaIsPortListeningResult dc_ida_is_port_listening_result = 3;</code>
+     * <code>.inner.types.DcIdaIsPortListeningResult dc_ida_is_port_listening_result = 12;</code>
      * @return The dcIdaIsPortListeningResult.
      */
     com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningResult getDcIdaIsPortListeningResult();
 
     /**
-     * <code>.inner.types.DcIdaQueryProfileResult dc_ida_query_profile_result = 4;</code>
+     * <code>.inner.types.DcIdaQueryProfileResult dc_ida_query_profile_result = 13;</code>
      * @return Whether the dcIdaQueryProfileResult field is set.
      */
     boolean hasDcIdaQueryProfileResult();
     /**
-     * <code>.inner.types.DcIdaQueryProfileResult dc_ida_query_profile_result = 4;</code>
+     * <code>.inner.types.DcIdaQueryProfileResult dc_ida_query_profile_result = 13;</code>
      * @return The dcIdaQueryProfileResult.
      */
     com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryProfileResult getDcIdaQueryProfileResult();
 
     /**
-     * <code>.inner.types.CfGdcDaControlResult dc_gdc_da_control_result = 5;</code>
+     * <code>.inner.types.CfGdcDaControlResult dc_gdc_da_control_result = 14;</code>
      * @return Whether the dcGdcDaControlResult field is set.
      */
     boolean hasDcGdcDaControlResult();
     /**
-     * <code>.inner.types.CfGdcDaControlResult dc_gdc_da_control_result = 5;</code>
+     * <code>.inner.types.CfGdcDaControlResult dc_gdc_da_control_result = 14;</code>
      * @return The dcGdcDaControlResult.
      */
     com.dogu.protocol.generated.inner.types.CfGdcDa.CfGdcDaControlResult getDcGdcDaControlResult();
 
     /**
-     * <code>.inner.types.DcIdaSwitchInputBlockResult dc_ida_switch_input_block_result = 6;</code>
+     * <code>.inner.types.DcIdaSwitchInputBlockResult dc_ida_switch_input_block_result = 15;</code>
      * @return Whether the dcIdaSwitchInputBlockResult field is set.
      */
     boolean hasDcIdaSwitchInputBlockResult();
     /**
-     * <code>.inner.types.DcIdaSwitchInputBlockResult dc_ida_switch_input_block_result = 6;</code>
+     * <code>.inner.types.DcIdaSwitchInputBlockResult dc_ida_switch_input_block_result = 15;</code>
      * @return The dcIdaSwitchInputBlockResult.
      */
     com.dogu.protocol.generated.inner.types.DcIda.DcIdaSwitchInputBlockResult getDcIdaSwitchInputBlockResult();
+
+    /**
+     * <code>.inner.types.DcIdaQueryAlertResult dc_ida_query_alert_result = 16;</code>
+     * @return Whether the dcIdaQueryAlertResult field is set.
+     */
+    boolean hasDcIdaQueryAlertResult();
+    /**
+     * <code>.inner.types.DcIdaQueryAlertResult dc_ida_query_alert_result = 16;</code>
+     * @return The dcIdaQueryAlertResult.
+     */
+    com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryAlertResult getDcIdaQueryAlertResult();
 
     public com.dogu.protocol.generated.inner.params.DcIda.DcIdaResult.ValueCase getValueCase();
   }
@@ -1067,15 +1201,17 @@ public final class DcIda {
       DcIdaResultOrBuilder {
     private DcIdaResult() {
     }
+    private int bitField0_;
     private int valueCase_ = 0;
     private java.lang.Object value_;
     public enum ValueCase {
-      DC_IDA_RUNAPP_RESULT(1),
-      DC_IDA_GET_SYSTEM_INFO_RESULT(2),
-      DC_IDA_IS_PORT_LISTENING_RESULT(3),
-      DC_IDA_QUERY_PROFILE_RESULT(4),
-      DC_GDC_DA_CONTROL_RESULT(5),
-      DC_IDA_SWITCH_INPUT_BLOCK_RESULT(6),
+      DC_IDA_RUNAPP_RESULT(10),
+      DC_IDA_GET_SYSTEM_INFO_RESULT(11),
+      DC_IDA_IS_PORT_LISTENING_RESULT(12),
+      DC_IDA_QUERY_PROFILE_RESULT(13),
+      DC_GDC_DA_CONTROL_RESULT(14),
+      DC_IDA_SWITCH_INPUT_BLOCK_RESULT(15),
+      DC_IDA_QUERY_ALERT_RESULT(16),
       VALUE_NOT_SET(0);
       private final int value;
       private ValueCase(int value) {
@@ -1091,12 +1227,13 @@ public final class DcIda {
 
       public static ValueCase forNumber(int value) {
         switch (value) {
-          case 1: return DC_IDA_RUNAPP_RESULT;
-          case 2: return DC_IDA_GET_SYSTEM_INFO_RESULT;
-          case 3: return DC_IDA_IS_PORT_LISTENING_RESULT;
-          case 4: return DC_IDA_QUERY_PROFILE_RESULT;
-          case 5: return DC_GDC_DA_CONTROL_RESULT;
-          case 6: return DC_IDA_SWITCH_INPUT_BLOCK_RESULT;
+          case 10: return DC_IDA_RUNAPP_RESULT;
+          case 11: return DC_IDA_GET_SYSTEM_INFO_RESULT;
+          case 12: return DC_IDA_IS_PORT_LISTENING_RESULT;
+          case 13: return DC_IDA_QUERY_PROFILE_RESULT;
+          case 14: return DC_GDC_DA_CONTROL_RESULT;
+          case 15: return DC_IDA_SWITCH_INPUT_BLOCK_RESULT;
+          case 16: return DC_IDA_QUERY_ALERT_RESULT;
           case 0: return VALUE_NOT_SET;
           default: return null;
         }
@@ -1118,10 +1255,10 @@ public final class DcIda {
       value_ = null;
     }
 
-    public static final int SEQ_FIELD_NUMBER = 10;
+    public static final int SEQ_FIELD_NUMBER = 1;
     private int seq_;
     /**
-     * <code>fixed32 seq = 10;</code>
+     * <code>fixed32 seq = 1;</code>
      * @return The seq.
      */
     @java.lang.Override
@@ -1129,7 +1266,7 @@ public final class DcIda {
       return seq_;
     }
     /**
-     * <code>fixed32 seq = 10;</code>
+     * <code>fixed32 seq = 1;</code>
      * @param value The seq to set.
      */
     private void setSeq(int value) {
@@ -1137,308 +1274,404 @@ public final class DcIda {
       seq_ = value;
     }
     /**
-     * <code>fixed32 seq = 10;</code>
+     * <code>fixed32 seq = 1;</code>
      */
     private void clearSeq() {
       
       seq_ = 0;
     }
 
-    public static final int DC_IDA_RUNAPP_RESULT_FIELD_NUMBER = 1;
+    public static final int ERROR_FIELD_NUMBER = 2;
+    private com.dogu.protocol.generated.outer.Errors.ErrorResult error_;
     /**
-     * <code>.inner.types.DcIdaRunAppResult dc_ida_runapp_result = 1;</code>
+     * <code>optional .outer.ErrorResult error = 2;</code>
+     */
+    @java.lang.Override
+    public boolean hasError() {
+      return ((bitField0_ & 0x00000001) != 0);
+    }
+    /**
+     * <code>optional .outer.ErrorResult error = 2;</code>
+     */
+    @java.lang.Override
+    public com.dogu.protocol.generated.outer.Errors.ErrorResult getError() {
+      return error_ == null ? com.dogu.protocol.generated.outer.Errors.ErrorResult.getDefaultInstance() : error_;
+    }
+    /**
+     * <code>optional .outer.ErrorResult error = 2;</code>
+     */
+    private void setError(com.dogu.protocol.generated.outer.Errors.ErrorResult value) {
+      value.getClass();
+  error_ = value;
+      bitField0_ |= 0x00000001;
+      }
+    /**
+     * <code>optional .outer.ErrorResult error = 2;</code>
+     */
+    @java.lang.SuppressWarnings({"ReferenceEquality"})
+    private void mergeError(com.dogu.protocol.generated.outer.Errors.ErrorResult value) {
+      value.getClass();
+  if (error_ != null &&
+          error_ != com.dogu.protocol.generated.outer.Errors.ErrorResult.getDefaultInstance()) {
+        error_ =
+          com.dogu.protocol.generated.outer.Errors.ErrorResult.newBuilder(error_).mergeFrom(value).buildPartial();
+      } else {
+        error_ = value;
+      }
+      bitField0_ |= 0x00000001;
+    }
+    /**
+     * <code>optional .outer.ErrorResult error = 2;</code>
+     */
+    private void clearError() {  error_ = null;
+      bitField0_ = (bitField0_ & ~0x00000001);
+    }
+
+    public static final int DC_IDA_RUNAPP_RESULT_FIELD_NUMBER = 10;
+    /**
+     * <code>.inner.types.DcIdaRunAppResult dc_ida_runapp_result = 10;</code>
      */
     @java.lang.Override
     public boolean hasDcIdaRunappResult() {
-      return valueCase_ == 1;
+      return valueCase_ == 10;
     }
     /**
-     * <code>.inner.types.DcIdaRunAppResult dc_ida_runapp_result = 1;</code>
+     * <code>.inner.types.DcIdaRunAppResult dc_ida_runapp_result = 10;</code>
      */
     @java.lang.Override
     public com.dogu.protocol.generated.inner.types.DcIda.DcIdaRunAppResult getDcIdaRunappResult() {
-      if (valueCase_ == 1) {
+      if (valueCase_ == 10) {
          return (com.dogu.protocol.generated.inner.types.DcIda.DcIdaRunAppResult) value_;
       }
       return com.dogu.protocol.generated.inner.types.DcIda.DcIdaRunAppResult.getDefaultInstance();
     }
     /**
-     * <code>.inner.types.DcIdaRunAppResult dc_ida_runapp_result = 1;</code>
+     * <code>.inner.types.DcIdaRunAppResult dc_ida_runapp_result = 10;</code>
      */
     private void setDcIdaRunappResult(com.dogu.protocol.generated.inner.types.DcIda.DcIdaRunAppResult value) {
       value.getClass();
   value_ = value;
-      valueCase_ = 1;
+      valueCase_ = 10;
     }
     /**
-     * <code>.inner.types.DcIdaRunAppResult dc_ida_runapp_result = 1;</code>
+     * <code>.inner.types.DcIdaRunAppResult dc_ida_runapp_result = 10;</code>
      */
     private void mergeDcIdaRunappResult(com.dogu.protocol.generated.inner.types.DcIda.DcIdaRunAppResult value) {
       value.getClass();
-  if (valueCase_ == 1 &&
+  if (valueCase_ == 10 &&
           value_ != com.dogu.protocol.generated.inner.types.DcIda.DcIdaRunAppResult.getDefaultInstance()) {
         value_ = com.dogu.protocol.generated.inner.types.DcIda.DcIdaRunAppResult.newBuilder((com.dogu.protocol.generated.inner.types.DcIda.DcIdaRunAppResult) value_)
             .mergeFrom(value).buildPartial();
       } else {
         value_ = value;
       }
-      valueCase_ = 1;
+      valueCase_ = 10;
     }
     /**
-     * <code>.inner.types.DcIdaRunAppResult dc_ida_runapp_result = 1;</code>
+     * <code>.inner.types.DcIdaRunAppResult dc_ida_runapp_result = 10;</code>
      */
     private void clearDcIdaRunappResult() {
-      if (valueCase_ == 1) {
+      if (valueCase_ == 10) {
         valueCase_ = 0;
         value_ = null;
       }
     }
 
-    public static final int DC_IDA_GET_SYSTEM_INFO_RESULT_FIELD_NUMBER = 2;
+    public static final int DC_IDA_GET_SYSTEM_INFO_RESULT_FIELD_NUMBER = 11;
     /**
-     * <code>.inner.types.DcIdaGetSystemInfoResult dc_ida_get_system_info_result = 2;</code>
+     * <code>.inner.types.DcIdaGetSystemInfoResult dc_ida_get_system_info_result = 11;</code>
      */
     @java.lang.Override
     public boolean hasDcIdaGetSystemInfoResult() {
-      return valueCase_ == 2;
+      return valueCase_ == 11;
     }
     /**
-     * <code>.inner.types.DcIdaGetSystemInfoResult dc_ida_get_system_info_result = 2;</code>
+     * <code>.inner.types.DcIdaGetSystemInfoResult dc_ida_get_system_info_result = 11;</code>
      */
     @java.lang.Override
     public com.dogu.protocol.generated.inner.types.DcIda.DcIdaGetSystemInfoResult getDcIdaGetSystemInfoResult() {
-      if (valueCase_ == 2) {
+      if (valueCase_ == 11) {
          return (com.dogu.protocol.generated.inner.types.DcIda.DcIdaGetSystemInfoResult) value_;
       }
       return com.dogu.protocol.generated.inner.types.DcIda.DcIdaGetSystemInfoResult.getDefaultInstance();
     }
     /**
-     * <code>.inner.types.DcIdaGetSystemInfoResult dc_ida_get_system_info_result = 2;</code>
+     * <code>.inner.types.DcIdaGetSystemInfoResult dc_ida_get_system_info_result = 11;</code>
      */
     private void setDcIdaGetSystemInfoResult(com.dogu.protocol.generated.inner.types.DcIda.DcIdaGetSystemInfoResult value) {
       value.getClass();
   value_ = value;
-      valueCase_ = 2;
+      valueCase_ = 11;
     }
     /**
-     * <code>.inner.types.DcIdaGetSystemInfoResult dc_ida_get_system_info_result = 2;</code>
+     * <code>.inner.types.DcIdaGetSystemInfoResult dc_ida_get_system_info_result = 11;</code>
      */
     private void mergeDcIdaGetSystemInfoResult(com.dogu.protocol.generated.inner.types.DcIda.DcIdaGetSystemInfoResult value) {
       value.getClass();
-  if (valueCase_ == 2 &&
+  if (valueCase_ == 11 &&
           value_ != com.dogu.protocol.generated.inner.types.DcIda.DcIdaGetSystemInfoResult.getDefaultInstance()) {
         value_ = com.dogu.protocol.generated.inner.types.DcIda.DcIdaGetSystemInfoResult.newBuilder((com.dogu.protocol.generated.inner.types.DcIda.DcIdaGetSystemInfoResult) value_)
             .mergeFrom(value).buildPartial();
       } else {
         value_ = value;
       }
-      valueCase_ = 2;
+      valueCase_ = 11;
     }
     /**
-     * <code>.inner.types.DcIdaGetSystemInfoResult dc_ida_get_system_info_result = 2;</code>
+     * <code>.inner.types.DcIdaGetSystemInfoResult dc_ida_get_system_info_result = 11;</code>
      */
     private void clearDcIdaGetSystemInfoResult() {
-      if (valueCase_ == 2) {
+      if (valueCase_ == 11) {
         valueCase_ = 0;
         value_ = null;
       }
     }
 
-    public static final int DC_IDA_IS_PORT_LISTENING_RESULT_FIELD_NUMBER = 3;
+    public static final int DC_IDA_IS_PORT_LISTENING_RESULT_FIELD_NUMBER = 12;
     /**
-     * <code>.inner.types.DcIdaIsPortListeningResult dc_ida_is_port_listening_result = 3;</code>
+     * <code>.inner.types.DcIdaIsPortListeningResult dc_ida_is_port_listening_result = 12;</code>
      */
     @java.lang.Override
     public boolean hasDcIdaIsPortListeningResult() {
-      return valueCase_ == 3;
+      return valueCase_ == 12;
     }
     /**
-     * <code>.inner.types.DcIdaIsPortListeningResult dc_ida_is_port_listening_result = 3;</code>
+     * <code>.inner.types.DcIdaIsPortListeningResult dc_ida_is_port_listening_result = 12;</code>
      */
     @java.lang.Override
     public com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningResult getDcIdaIsPortListeningResult() {
-      if (valueCase_ == 3) {
+      if (valueCase_ == 12) {
          return (com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningResult) value_;
       }
       return com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningResult.getDefaultInstance();
     }
     /**
-     * <code>.inner.types.DcIdaIsPortListeningResult dc_ida_is_port_listening_result = 3;</code>
+     * <code>.inner.types.DcIdaIsPortListeningResult dc_ida_is_port_listening_result = 12;</code>
      */
     private void setDcIdaIsPortListeningResult(com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningResult value) {
       value.getClass();
   value_ = value;
-      valueCase_ = 3;
+      valueCase_ = 12;
     }
     /**
-     * <code>.inner.types.DcIdaIsPortListeningResult dc_ida_is_port_listening_result = 3;</code>
+     * <code>.inner.types.DcIdaIsPortListeningResult dc_ida_is_port_listening_result = 12;</code>
      */
     private void mergeDcIdaIsPortListeningResult(com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningResult value) {
       value.getClass();
-  if (valueCase_ == 3 &&
+  if (valueCase_ == 12 &&
           value_ != com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningResult.getDefaultInstance()) {
         value_ = com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningResult.newBuilder((com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningResult) value_)
             .mergeFrom(value).buildPartial();
       } else {
         value_ = value;
       }
-      valueCase_ = 3;
+      valueCase_ = 12;
     }
     /**
-     * <code>.inner.types.DcIdaIsPortListeningResult dc_ida_is_port_listening_result = 3;</code>
+     * <code>.inner.types.DcIdaIsPortListeningResult dc_ida_is_port_listening_result = 12;</code>
      */
     private void clearDcIdaIsPortListeningResult() {
-      if (valueCase_ == 3) {
+      if (valueCase_ == 12) {
         valueCase_ = 0;
         value_ = null;
       }
     }
 
-    public static final int DC_IDA_QUERY_PROFILE_RESULT_FIELD_NUMBER = 4;
+    public static final int DC_IDA_QUERY_PROFILE_RESULT_FIELD_NUMBER = 13;
     /**
-     * <code>.inner.types.DcIdaQueryProfileResult dc_ida_query_profile_result = 4;</code>
+     * <code>.inner.types.DcIdaQueryProfileResult dc_ida_query_profile_result = 13;</code>
      */
     @java.lang.Override
     public boolean hasDcIdaQueryProfileResult() {
-      return valueCase_ == 4;
+      return valueCase_ == 13;
     }
     /**
-     * <code>.inner.types.DcIdaQueryProfileResult dc_ida_query_profile_result = 4;</code>
+     * <code>.inner.types.DcIdaQueryProfileResult dc_ida_query_profile_result = 13;</code>
      */
     @java.lang.Override
     public com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryProfileResult getDcIdaQueryProfileResult() {
-      if (valueCase_ == 4) {
+      if (valueCase_ == 13) {
          return (com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryProfileResult) value_;
       }
       return com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryProfileResult.getDefaultInstance();
     }
     /**
-     * <code>.inner.types.DcIdaQueryProfileResult dc_ida_query_profile_result = 4;</code>
+     * <code>.inner.types.DcIdaQueryProfileResult dc_ida_query_profile_result = 13;</code>
      */
     private void setDcIdaQueryProfileResult(com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryProfileResult value) {
       value.getClass();
   value_ = value;
-      valueCase_ = 4;
+      valueCase_ = 13;
     }
     /**
-     * <code>.inner.types.DcIdaQueryProfileResult dc_ida_query_profile_result = 4;</code>
+     * <code>.inner.types.DcIdaQueryProfileResult dc_ida_query_profile_result = 13;</code>
      */
     private void mergeDcIdaQueryProfileResult(com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryProfileResult value) {
       value.getClass();
-  if (valueCase_ == 4 &&
+  if (valueCase_ == 13 &&
           value_ != com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryProfileResult.getDefaultInstance()) {
         value_ = com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryProfileResult.newBuilder((com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryProfileResult) value_)
             .mergeFrom(value).buildPartial();
       } else {
         value_ = value;
       }
-      valueCase_ = 4;
+      valueCase_ = 13;
     }
     /**
-     * <code>.inner.types.DcIdaQueryProfileResult dc_ida_query_profile_result = 4;</code>
+     * <code>.inner.types.DcIdaQueryProfileResult dc_ida_query_profile_result = 13;</code>
      */
     private void clearDcIdaQueryProfileResult() {
-      if (valueCase_ == 4) {
+      if (valueCase_ == 13) {
         valueCase_ = 0;
         value_ = null;
       }
     }
 
-    public static final int DC_GDC_DA_CONTROL_RESULT_FIELD_NUMBER = 5;
+    public static final int DC_GDC_DA_CONTROL_RESULT_FIELD_NUMBER = 14;
     /**
-     * <code>.inner.types.CfGdcDaControlResult dc_gdc_da_control_result = 5;</code>
+     * <code>.inner.types.CfGdcDaControlResult dc_gdc_da_control_result = 14;</code>
      */
     @java.lang.Override
     public boolean hasDcGdcDaControlResult() {
-      return valueCase_ == 5;
+      return valueCase_ == 14;
     }
     /**
-     * <code>.inner.types.CfGdcDaControlResult dc_gdc_da_control_result = 5;</code>
+     * <code>.inner.types.CfGdcDaControlResult dc_gdc_da_control_result = 14;</code>
      */
     @java.lang.Override
     public com.dogu.protocol.generated.inner.types.CfGdcDa.CfGdcDaControlResult getDcGdcDaControlResult() {
-      if (valueCase_ == 5) {
+      if (valueCase_ == 14) {
          return (com.dogu.protocol.generated.inner.types.CfGdcDa.CfGdcDaControlResult) value_;
       }
       return com.dogu.protocol.generated.inner.types.CfGdcDa.CfGdcDaControlResult.getDefaultInstance();
     }
     /**
-     * <code>.inner.types.CfGdcDaControlResult dc_gdc_da_control_result = 5;</code>
+     * <code>.inner.types.CfGdcDaControlResult dc_gdc_da_control_result = 14;</code>
      */
     private void setDcGdcDaControlResult(com.dogu.protocol.generated.inner.types.CfGdcDa.CfGdcDaControlResult value) {
       value.getClass();
   value_ = value;
-      valueCase_ = 5;
+      valueCase_ = 14;
     }
     /**
-     * <code>.inner.types.CfGdcDaControlResult dc_gdc_da_control_result = 5;</code>
+     * <code>.inner.types.CfGdcDaControlResult dc_gdc_da_control_result = 14;</code>
      */
     private void mergeDcGdcDaControlResult(com.dogu.protocol.generated.inner.types.CfGdcDa.CfGdcDaControlResult value) {
       value.getClass();
-  if (valueCase_ == 5 &&
+  if (valueCase_ == 14 &&
           value_ != com.dogu.protocol.generated.inner.types.CfGdcDa.CfGdcDaControlResult.getDefaultInstance()) {
         value_ = com.dogu.protocol.generated.inner.types.CfGdcDa.CfGdcDaControlResult.newBuilder((com.dogu.protocol.generated.inner.types.CfGdcDa.CfGdcDaControlResult) value_)
             .mergeFrom(value).buildPartial();
       } else {
         value_ = value;
       }
-      valueCase_ = 5;
+      valueCase_ = 14;
     }
     /**
-     * <code>.inner.types.CfGdcDaControlResult dc_gdc_da_control_result = 5;</code>
+     * <code>.inner.types.CfGdcDaControlResult dc_gdc_da_control_result = 14;</code>
      */
     private void clearDcGdcDaControlResult() {
-      if (valueCase_ == 5) {
+      if (valueCase_ == 14) {
         valueCase_ = 0;
         value_ = null;
       }
     }
 
-    public static final int DC_IDA_SWITCH_INPUT_BLOCK_RESULT_FIELD_NUMBER = 6;
+    public static final int DC_IDA_SWITCH_INPUT_BLOCK_RESULT_FIELD_NUMBER = 15;
     /**
-     * <code>.inner.types.DcIdaSwitchInputBlockResult dc_ida_switch_input_block_result = 6;</code>
+     * <code>.inner.types.DcIdaSwitchInputBlockResult dc_ida_switch_input_block_result = 15;</code>
      */
     @java.lang.Override
     public boolean hasDcIdaSwitchInputBlockResult() {
-      return valueCase_ == 6;
+      return valueCase_ == 15;
     }
     /**
-     * <code>.inner.types.DcIdaSwitchInputBlockResult dc_ida_switch_input_block_result = 6;</code>
+     * <code>.inner.types.DcIdaSwitchInputBlockResult dc_ida_switch_input_block_result = 15;</code>
      */
     @java.lang.Override
     public com.dogu.protocol.generated.inner.types.DcIda.DcIdaSwitchInputBlockResult getDcIdaSwitchInputBlockResult() {
-      if (valueCase_ == 6) {
+      if (valueCase_ == 15) {
          return (com.dogu.protocol.generated.inner.types.DcIda.DcIdaSwitchInputBlockResult) value_;
       }
       return com.dogu.protocol.generated.inner.types.DcIda.DcIdaSwitchInputBlockResult.getDefaultInstance();
     }
     /**
-     * <code>.inner.types.DcIdaSwitchInputBlockResult dc_ida_switch_input_block_result = 6;</code>
+     * <code>.inner.types.DcIdaSwitchInputBlockResult dc_ida_switch_input_block_result = 15;</code>
      */
     private void setDcIdaSwitchInputBlockResult(com.dogu.protocol.generated.inner.types.DcIda.DcIdaSwitchInputBlockResult value) {
       value.getClass();
   value_ = value;
-      valueCase_ = 6;
+      valueCase_ = 15;
     }
     /**
-     * <code>.inner.types.DcIdaSwitchInputBlockResult dc_ida_switch_input_block_result = 6;</code>
+     * <code>.inner.types.DcIdaSwitchInputBlockResult dc_ida_switch_input_block_result = 15;</code>
      */
     private void mergeDcIdaSwitchInputBlockResult(com.dogu.protocol.generated.inner.types.DcIda.DcIdaSwitchInputBlockResult value) {
       value.getClass();
-  if (valueCase_ == 6 &&
+  if (valueCase_ == 15 &&
           value_ != com.dogu.protocol.generated.inner.types.DcIda.DcIdaSwitchInputBlockResult.getDefaultInstance()) {
         value_ = com.dogu.protocol.generated.inner.types.DcIda.DcIdaSwitchInputBlockResult.newBuilder((com.dogu.protocol.generated.inner.types.DcIda.DcIdaSwitchInputBlockResult) value_)
             .mergeFrom(value).buildPartial();
       } else {
         value_ = value;
       }
-      valueCase_ = 6;
+      valueCase_ = 15;
     }
     /**
-     * <code>.inner.types.DcIdaSwitchInputBlockResult dc_ida_switch_input_block_result = 6;</code>
+     * <code>.inner.types.DcIdaSwitchInputBlockResult dc_ida_switch_input_block_result = 15;</code>
      */
     private void clearDcIdaSwitchInputBlockResult() {
-      if (valueCase_ == 6) {
+      if (valueCase_ == 15) {
+        valueCase_ = 0;
+        value_ = null;
+      }
+    }
+
+    public static final int DC_IDA_QUERY_ALERT_RESULT_FIELD_NUMBER = 16;
+    /**
+     * <code>.inner.types.DcIdaQueryAlertResult dc_ida_query_alert_result = 16;</code>
+     */
+    @java.lang.Override
+    public boolean hasDcIdaQueryAlertResult() {
+      return valueCase_ == 16;
+    }
+    /**
+     * <code>.inner.types.DcIdaQueryAlertResult dc_ida_query_alert_result = 16;</code>
+     */
+    @java.lang.Override
+    public com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryAlertResult getDcIdaQueryAlertResult() {
+      if (valueCase_ == 16) {
+         return (com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryAlertResult) value_;
+      }
+      return com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryAlertResult.getDefaultInstance();
+    }
+    /**
+     * <code>.inner.types.DcIdaQueryAlertResult dc_ida_query_alert_result = 16;</code>
+     */
+    private void setDcIdaQueryAlertResult(com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryAlertResult value) {
+      value.getClass();
+  value_ = value;
+      valueCase_ = 16;
+    }
+    /**
+     * <code>.inner.types.DcIdaQueryAlertResult dc_ida_query_alert_result = 16;</code>
+     */
+    private void mergeDcIdaQueryAlertResult(com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryAlertResult value) {
+      value.getClass();
+  if (valueCase_ == 16 &&
+          value_ != com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryAlertResult.getDefaultInstance()) {
+        value_ = com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryAlertResult.newBuilder((com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryAlertResult) value_)
+            .mergeFrom(value).buildPartial();
+      } else {
+        value_ = value;
+      }
+      valueCase_ = 16;
+    }
+    /**
+     * <code>.inner.types.DcIdaQueryAlertResult dc_ida_query_alert_result = 16;</code>
+     */
+    private void clearDcIdaQueryAlertResult() {
+      if (valueCase_ == 16) {
         valueCase_ = 0;
         value_ = null;
       }
@@ -1552,7 +1785,7 @@ public final class DcIda {
 
 
       /**
-       * <code>fixed32 seq = 10;</code>
+       * <code>fixed32 seq = 1;</code>
        * @return The seq.
        */
       @java.lang.Override
@@ -1560,7 +1793,7 @@ public final class DcIda {
         return instance.getSeq();
       }
       /**
-       * <code>fixed32 seq = 10;</code>
+       * <code>fixed32 seq = 1;</code>
        * @param value The seq to set.
        * @return This builder for chaining.
        */
@@ -1570,7 +1803,7 @@ public final class DcIda {
         return this;
       }
       /**
-       * <code>fixed32 seq = 10;</code>
+       * <code>fixed32 seq = 1;</code>
        * @return This builder for chaining.
        */
       public Builder clearSeq() {
@@ -1580,21 +1813,68 @@ public final class DcIda {
       }
 
       /**
-       * <code>.inner.types.DcIdaRunAppResult dc_ida_runapp_result = 1;</code>
+       * <code>optional .outer.ErrorResult error = 2;</code>
+       */
+      @java.lang.Override
+      public boolean hasError() {
+        return instance.hasError();
+      }
+      /**
+       * <code>optional .outer.ErrorResult error = 2;</code>
+       */
+      @java.lang.Override
+      public com.dogu.protocol.generated.outer.Errors.ErrorResult getError() {
+        return instance.getError();
+      }
+      /**
+       * <code>optional .outer.ErrorResult error = 2;</code>
+       */
+      public Builder setError(com.dogu.protocol.generated.outer.Errors.ErrorResult value) {
+        copyOnWrite();
+        instance.setError(value);
+        return this;
+        }
+      /**
+       * <code>optional .outer.ErrorResult error = 2;</code>
+       */
+      public Builder setError(
+          com.dogu.protocol.generated.outer.Errors.ErrorResult.Builder builderForValue) {
+        copyOnWrite();
+        instance.setError(builderForValue.build());
+        return this;
+      }
+      /**
+       * <code>optional .outer.ErrorResult error = 2;</code>
+       */
+      public Builder mergeError(com.dogu.protocol.generated.outer.Errors.ErrorResult value) {
+        copyOnWrite();
+        instance.mergeError(value);
+        return this;
+      }
+      /**
+       * <code>optional .outer.ErrorResult error = 2;</code>
+       */
+      public Builder clearError() {  copyOnWrite();
+        instance.clearError();
+        return this;
+      }
+
+      /**
+       * <code>.inner.types.DcIdaRunAppResult dc_ida_runapp_result = 10;</code>
        */
       @java.lang.Override
       public boolean hasDcIdaRunappResult() {
         return instance.hasDcIdaRunappResult();
       }
       /**
-       * <code>.inner.types.DcIdaRunAppResult dc_ida_runapp_result = 1;</code>
+       * <code>.inner.types.DcIdaRunAppResult dc_ida_runapp_result = 10;</code>
        */
       @java.lang.Override
       public com.dogu.protocol.generated.inner.types.DcIda.DcIdaRunAppResult getDcIdaRunappResult() {
         return instance.getDcIdaRunappResult();
       }
       /**
-       * <code>.inner.types.DcIdaRunAppResult dc_ida_runapp_result = 1;</code>
+       * <code>.inner.types.DcIdaRunAppResult dc_ida_runapp_result = 10;</code>
        */
       public Builder setDcIdaRunappResult(com.dogu.protocol.generated.inner.types.DcIda.DcIdaRunAppResult value) {
         copyOnWrite();
@@ -1602,7 +1882,7 @@ public final class DcIda {
         return this;
       }
       /**
-       * <code>.inner.types.DcIdaRunAppResult dc_ida_runapp_result = 1;</code>
+       * <code>.inner.types.DcIdaRunAppResult dc_ida_runapp_result = 10;</code>
        */
       public Builder setDcIdaRunappResult(
           com.dogu.protocol.generated.inner.types.DcIda.DcIdaRunAppResult.Builder builderForValue) {
@@ -1611,7 +1891,7 @@ public final class DcIda {
         return this;
       }
       /**
-       * <code>.inner.types.DcIdaRunAppResult dc_ida_runapp_result = 1;</code>
+       * <code>.inner.types.DcIdaRunAppResult dc_ida_runapp_result = 10;</code>
        */
       public Builder mergeDcIdaRunappResult(com.dogu.protocol.generated.inner.types.DcIda.DcIdaRunAppResult value) {
         copyOnWrite();
@@ -1619,7 +1899,7 @@ public final class DcIda {
         return this;
       }
       /**
-       * <code>.inner.types.DcIdaRunAppResult dc_ida_runapp_result = 1;</code>
+       * <code>.inner.types.DcIdaRunAppResult dc_ida_runapp_result = 10;</code>
        */
       public Builder clearDcIdaRunappResult() {
         copyOnWrite();
@@ -1628,21 +1908,21 @@ public final class DcIda {
       }
 
       /**
-       * <code>.inner.types.DcIdaGetSystemInfoResult dc_ida_get_system_info_result = 2;</code>
+       * <code>.inner.types.DcIdaGetSystemInfoResult dc_ida_get_system_info_result = 11;</code>
        */
       @java.lang.Override
       public boolean hasDcIdaGetSystemInfoResult() {
         return instance.hasDcIdaGetSystemInfoResult();
       }
       /**
-       * <code>.inner.types.DcIdaGetSystemInfoResult dc_ida_get_system_info_result = 2;</code>
+       * <code>.inner.types.DcIdaGetSystemInfoResult dc_ida_get_system_info_result = 11;</code>
        */
       @java.lang.Override
       public com.dogu.protocol.generated.inner.types.DcIda.DcIdaGetSystemInfoResult getDcIdaGetSystemInfoResult() {
         return instance.getDcIdaGetSystemInfoResult();
       }
       /**
-       * <code>.inner.types.DcIdaGetSystemInfoResult dc_ida_get_system_info_result = 2;</code>
+       * <code>.inner.types.DcIdaGetSystemInfoResult dc_ida_get_system_info_result = 11;</code>
        */
       public Builder setDcIdaGetSystemInfoResult(com.dogu.protocol.generated.inner.types.DcIda.DcIdaGetSystemInfoResult value) {
         copyOnWrite();
@@ -1650,7 +1930,7 @@ public final class DcIda {
         return this;
       }
       /**
-       * <code>.inner.types.DcIdaGetSystemInfoResult dc_ida_get_system_info_result = 2;</code>
+       * <code>.inner.types.DcIdaGetSystemInfoResult dc_ida_get_system_info_result = 11;</code>
        */
       public Builder setDcIdaGetSystemInfoResult(
           com.dogu.protocol.generated.inner.types.DcIda.DcIdaGetSystemInfoResult.Builder builderForValue) {
@@ -1659,7 +1939,7 @@ public final class DcIda {
         return this;
       }
       /**
-       * <code>.inner.types.DcIdaGetSystemInfoResult dc_ida_get_system_info_result = 2;</code>
+       * <code>.inner.types.DcIdaGetSystemInfoResult dc_ida_get_system_info_result = 11;</code>
        */
       public Builder mergeDcIdaGetSystemInfoResult(com.dogu.protocol.generated.inner.types.DcIda.DcIdaGetSystemInfoResult value) {
         copyOnWrite();
@@ -1667,7 +1947,7 @@ public final class DcIda {
         return this;
       }
       /**
-       * <code>.inner.types.DcIdaGetSystemInfoResult dc_ida_get_system_info_result = 2;</code>
+       * <code>.inner.types.DcIdaGetSystemInfoResult dc_ida_get_system_info_result = 11;</code>
        */
       public Builder clearDcIdaGetSystemInfoResult() {
         copyOnWrite();
@@ -1676,21 +1956,21 @@ public final class DcIda {
       }
 
       /**
-       * <code>.inner.types.DcIdaIsPortListeningResult dc_ida_is_port_listening_result = 3;</code>
+       * <code>.inner.types.DcIdaIsPortListeningResult dc_ida_is_port_listening_result = 12;</code>
        */
       @java.lang.Override
       public boolean hasDcIdaIsPortListeningResult() {
         return instance.hasDcIdaIsPortListeningResult();
       }
       /**
-       * <code>.inner.types.DcIdaIsPortListeningResult dc_ida_is_port_listening_result = 3;</code>
+       * <code>.inner.types.DcIdaIsPortListeningResult dc_ida_is_port_listening_result = 12;</code>
        */
       @java.lang.Override
       public com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningResult getDcIdaIsPortListeningResult() {
         return instance.getDcIdaIsPortListeningResult();
       }
       /**
-       * <code>.inner.types.DcIdaIsPortListeningResult dc_ida_is_port_listening_result = 3;</code>
+       * <code>.inner.types.DcIdaIsPortListeningResult dc_ida_is_port_listening_result = 12;</code>
        */
       public Builder setDcIdaIsPortListeningResult(com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningResult value) {
         copyOnWrite();
@@ -1698,7 +1978,7 @@ public final class DcIda {
         return this;
       }
       /**
-       * <code>.inner.types.DcIdaIsPortListeningResult dc_ida_is_port_listening_result = 3;</code>
+       * <code>.inner.types.DcIdaIsPortListeningResult dc_ida_is_port_listening_result = 12;</code>
        */
       public Builder setDcIdaIsPortListeningResult(
           com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningResult.Builder builderForValue) {
@@ -1707,7 +1987,7 @@ public final class DcIda {
         return this;
       }
       /**
-       * <code>.inner.types.DcIdaIsPortListeningResult dc_ida_is_port_listening_result = 3;</code>
+       * <code>.inner.types.DcIdaIsPortListeningResult dc_ida_is_port_listening_result = 12;</code>
        */
       public Builder mergeDcIdaIsPortListeningResult(com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningResult value) {
         copyOnWrite();
@@ -1715,7 +1995,7 @@ public final class DcIda {
         return this;
       }
       /**
-       * <code>.inner.types.DcIdaIsPortListeningResult dc_ida_is_port_listening_result = 3;</code>
+       * <code>.inner.types.DcIdaIsPortListeningResult dc_ida_is_port_listening_result = 12;</code>
        */
       public Builder clearDcIdaIsPortListeningResult() {
         copyOnWrite();
@@ -1724,21 +2004,21 @@ public final class DcIda {
       }
 
       /**
-       * <code>.inner.types.DcIdaQueryProfileResult dc_ida_query_profile_result = 4;</code>
+       * <code>.inner.types.DcIdaQueryProfileResult dc_ida_query_profile_result = 13;</code>
        */
       @java.lang.Override
       public boolean hasDcIdaQueryProfileResult() {
         return instance.hasDcIdaQueryProfileResult();
       }
       /**
-       * <code>.inner.types.DcIdaQueryProfileResult dc_ida_query_profile_result = 4;</code>
+       * <code>.inner.types.DcIdaQueryProfileResult dc_ida_query_profile_result = 13;</code>
        */
       @java.lang.Override
       public com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryProfileResult getDcIdaQueryProfileResult() {
         return instance.getDcIdaQueryProfileResult();
       }
       /**
-       * <code>.inner.types.DcIdaQueryProfileResult dc_ida_query_profile_result = 4;</code>
+       * <code>.inner.types.DcIdaQueryProfileResult dc_ida_query_profile_result = 13;</code>
        */
       public Builder setDcIdaQueryProfileResult(com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryProfileResult value) {
         copyOnWrite();
@@ -1746,7 +2026,7 @@ public final class DcIda {
         return this;
       }
       /**
-       * <code>.inner.types.DcIdaQueryProfileResult dc_ida_query_profile_result = 4;</code>
+       * <code>.inner.types.DcIdaQueryProfileResult dc_ida_query_profile_result = 13;</code>
        */
       public Builder setDcIdaQueryProfileResult(
           com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryProfileResult.Builder builderForValue) {
@@ -1755,7 +2035,7 @@ public final class DcIda {
         return this;
       }
       /**
-       * <code>.inner.types.DcIdaQueryProfileResult dc_ida_query_profile_result = 4;</code>
+       * <code>.inner.types.DcIdaQueryProfileResult dc_ida_query_profile_result = 13;</code>
        */
       public Builder mergeDcIdaQueryProfileResult(com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryProfileResult value) {
         copyOnWrite();
@@ -1763,7 +2043,7 @@ public final class DcIda {
         return this;
       }
       /**
-       * <code>.inner.types.DcIdaQueryProfileResult dc_ida_query_profile_result = 4;</code>
+       * <code>.inner.types.DcIdaQueryProfileResult dc_ida_query_profile_result = 13;</code>
        */
       public Builder clearDcIdaQueryProfileResult() {
         copyOnWrite();
@@ -1772,21 +2052,21 @@ public final class DcIda {
       }
 
       /**
-       * <code>.inner.types.CfGdcDaControlResult dc_gdc_da_control_result = 5;</code>
+       * <code>.inner.types.CfGdcDaControlResult dc_gdc_da_control_result = 14;</code>
        */
       @java.lang.Override
       public boolean hasDcGdcDaControlResult() {
         return instance.hasDcGdcDaControlResult();
       }
       /**
-       * <code>.inner.types.CfGdcDaControlResult dc_gdc_da_control_result = 5;</code>
+       * <code>.inner.types.CfGdcDaControlResult dc_gdc_da_control_result = 14;</code>
        */
       @java.lang.Override
       public com.dogu.protocol.generated.inner.types.CfGdcDa.CfGdcDaControlResult getDcGdcDaControlResult() {
         return instance.getDcGdcDaControlResult();
       }
       /**
-       * <code>.inner.types.CfGdcDaControlResult dc_gdc_da_control_result = 5;</code>
+       * <code>.inner.types.CfGdcDaControlResult dc_gdc_da_control_result = 14;</code>
        */
       public Builder setDcGdcDaControlResult(com.dogu.protocol.generated.inner.types.CfGdcDa.CfGdcDaControlResult value) {
         copyOnWrite();
@@ -1794,7 +2074,7 @@ public final class DcIda {
         return this;
       }
       /**
-       * <code>.inner.types.CfGdcDaControlResult dc_gdc_da_control_result = 5;</code>
+       * <code>.inner.types.CfGdcDaControlResult dc_gdc_da_control_result = 14;</code>
        */
       public Builder setDcGdcDaControlResult(
           com.dogu.protocol.generated.inner.types.CfGdcDa.CfGdcDaControlResult.Builder builderForValue) {
@@ -1803,7 +2083,7 @@ public final class DcIda {
         return this;
       }
       /**
-       * <code>.inner.types.CfGdcDaControlResult dc_gdc_da_control_result = 5;</code>
+       * <code>.inner.types.CfGdcDaControlResult dc_gdc_da_control_result = 14;</code>
        */
       public Builder mergeDcGdcDaControlResult(com.dogu.protocol.generated.inner.types.CfGdcDa.CfGdcDaControlResult value) {
         copyOnWrite();
@@ -1811,7 +2091,7 @@ public final class DcIda {
         return this;
       }
       /**
-       * <code>.inner.types.CfGdcDaControlResult dc_gdc_da_control_result = 5;</code>
+       * <code>.inner.types.CfGdcDaControlResult dc_gdc_da_control_result = 14;</code>
        */
       public Builder clearDcGdcDaControlResult() {
         copyOnWrite();
@@ -1820,21 +2100,21 @@ public final class DcIda {
       }
 
       /**
-       * <code>.inner.types.DcIdaSwitchInputBlockResult dc_ida_switch_input_block_result = 6;</code>
+       * <code>.inner.types.DcIdaSwitchInputBlockResult dc_ida_switch_input_block_result = 15;</code>
        */
       @java.lang.Override
       public boolean hasDcIdaSwitchInputBlockResult() {
         return instance.hasDcIdaSwitchInputBlockResult();
       }
       /**
-       * <code>.inner.types.DcIdaSwitchInputBlockResult dc_ida_switch_input_block_result = 6;</code>
+       * <code>.inner.types.DcIdaSwitchInputBlockResult dc_ida_switch_input_block_result = 15;</code>
        */
       @java.lang.Override
       public com.dogu.protocol.generated.inner.types.DcIda.DcIdaSwitchInputBlockResult getDcIdaSwitchInputBlockResult() {
         return instance.getDcIdaSwitchInputBlockResult();
       }
       /**
-       * <code>.inner.types.DcIdaSwitchInputBlockResult dc_ida_switch_input_block_result = 6;</code>
+       * <code>.inner.types.DcIdaSwitchInputBlockResult dc_ida_switch_input_block_result = 15;</code>
        */
       public Builder setDcIdaSwitchInputBlockResult(com.dogu.protocol.generated.inner.types.DcIda.DcIdaSwitchInputBlockResult value) {
         copyOnWrite();
@@ -1842,7 +2122,7 @@ public final class DcIda {
         return this;
       }
       /**
-       * <code>.inner.types.DcIdaSwitchInputBlockResult dc_ida_switch_input_block_result = 6;</code>
+       * <code>.inner.types.DcIdaSwitchInputBlockResult dc_ida_switch_input_block_result = 15;</code>
        */
       public Builder setDcIdaSwitchInputBlockResult(
           com.dogu.protocol.generated.inner.types.DcIda.DcIdaSwitchInputBlockResult.Builder builderForValue) {
@@ -1851,7 +2131,7 @@ public final class DcIda {
         return this;
       }
       /**
-       * <code>.inner.types.DcIdaSwitchInputBlockResult dc_ida_switch_input_block_result = 6;</code>
+       * <code>.inner.types.DcIdaSwitchInputBlockResult dc_ida_switch_input_block_result = 15;</code>
        */
       public Builder mergeDcIdaSwitchInputBlockResult(com.dogu.protocol.generated.inner.types.DcIda.DcIdaSwitchInputBlockResult value) {
         copyOnWrite();
@@ -1859,11 +2139,59 @@ public final class DcIda {
         return this;
       }
       /**
-       * <code>.inner.types.DcIdaSwitchInputBlockResult dc_ida_switch_input_block_result = 6;</code>
+       * <code>.inner.types.DcIdaSwitchInputBlockResult dc_ida_switch_input_block_result = 15;</code>
        */
       public Builder clearDcIdaSwitchInputBlockResult() {
         copyOnWrite();
         instance.clearDcIdaSwitchInputBlockResult();
+        return this;
+      }
+
+      /**
+       * <code>.inner.types.DcIdaQueryAlertResult dc_ida_query_alert_result = 16;</code>
+       */
+      @java.lang.Override
+      public boolean hasDcIdaQueryAlertResult() {
+        return instance.hasDcIdaQueryAlertResult();
+      }
+      /**
+       * <code>.inner.types.DcIdaQueryAlertResult dc_ida_query_alert_result = 16;</code>
+       */
+      @java.lang.Override
+      public com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryAlertResult getDcIdaQueryAlertResult() {
+        return instance.getDcIdaQueryAlertResult();
+      }
+      /**
+       * <code>.inner.types.DcIdaQueryAlertResult dc_ida_query_alert_result = 16;</code>
+       */
+      public Builder setDcIdaQueryAlertResult(com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryAlertResult value) {
+        copyOnWrite();
+        instance.setDcIdaQueryAlertResult(value);
+        return this;
+      }
+      /**
+       * <code>.inner.types.DcIdaQueryAlertResult dc_ida_query_alert_result = 16;</code>
+       */
+      public Builder setDcIdaQueryAlertResult(
+          com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryAlertResult.Builder builderForValue) {
+        copyOnWrite();
+        instance.setDcIdaQueryAlertResult(builderForValue.build());
+        return this;
+      }
+      /**
+       * <code>.inner.types.DcIdaQueryAlertResult dc_ida_query_alert_result = 16;</code>
+       */
+      public Builder mergeDcIdaQueryAlertResult(com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryAlertResult value) {
+        copyOnWrite();
+        instance.mergeDcIdaQueryAlertResult(value);
+        return this;
+      }
+      /**
+       * <code>.inner.types.DcIdaQueryAlertResult dc_ida_query_alert_result = 16;</code>
+       */
+      public Builder clearDcIdaQueryAlertResult() {
+        copyOnWrite();
+        instance.clearDcIdaQueryAlertResult();
         return this;
       }
 
@@ -1885,17 +2213,20 @@ public final class DcIda {
             java.lang.Object[] objects = new java.lang.Object[] {
               "value_",
               "valueCase_",
+              "bitField0_",
+              "seq_",
+              "error_",
               com.dogu.protocol.generated.inner.types.DcIda.DcIdaRunAppResult.class,
               com.dogu.protocol.generated.inner.types.DcIda.DcIdaGetSystemInfoResult.class,
               com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningResult.class,
               com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryProfileResult.class,
               com.dogu.protocol.generated.inner.types.CfGdcDa.CfGdcDaControlResult.class,
               com.dogu.protocol.generated.inner.types.DcIda.DcIdaSwitchInputBlockResult.class,
-              "seq_",
+              com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryAlertResult.class,
             };
             java.lang.String info =
-                "\u0000\u0007\u0001\u0000\u0001\n\u0007\u0000\u0000\u0000\u0001<\u0000\u0002<\u0000" +
-                "\u0003<\u0000\u0004<\u0000\u0005<\u0000\u0006<\u0000\n\u0006";
+                "\u0000\t\u0001\u0001\u0001\u0010\t\u0000\u0000\u0000\u0001\u0006\u0002\u1009\u0000" +
+                "\n<\u0000\u000b<\u0000\f<\u0000\r<\u0000\u000e<\u0000\u000f<\u0000\u0010<\u0000";
             return newMessageInfo(DEFAULT_INSTANCE, info, objects);
         }
         // fall through

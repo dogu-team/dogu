@@ -1,4 +1,5 @@
 import {
+  DeviceAlert,
   DeviceSystemInfo,
   DeviceWindowInfo,
   ErrorResult,
@@ -84,6 +85,10 @@ export interface DeviceChannel {
   joinWifi(ssid: string, password: string): PromiseOrValue<void>;
   isPortListening(port: number): PromiseOrValue<boolean>;
   getWindows(): PromiseOrValue<DeviceWindowInfo[]>;
+
+  // ui
+  getAlert(): PromiseOrValue<DeviceAlert | undefined>;
+  getScreenshot(): PromiseOrValue<string>;
 
   // app
   uninstallApp(appPath: string, handler: LogHandler): PromiseOrValue<void>;

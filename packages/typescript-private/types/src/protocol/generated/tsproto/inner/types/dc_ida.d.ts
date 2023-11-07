@@ -33,6 +33,12 @@ export interface DcIdaSwitchInputBlockParam {
 }
 export interface DcIdaSwitchInputBlockResult {
 }
+export interface DcIdaQueryAlertParam {
+}
+export interface DcIdaQueryAlertResult {
+    isShow: boolean;
+    title: string;
+}
 export declare const DcIdaRunAppParam: {
     encode(message: DcIdaRunAppParam, writer?: _m0.Writer): _m0.Writer;
     decode(input: _m0.Reader | Uint8Array, length?: number): DcIdaRunAppParam;
@@ -709,4 +715,24 @@ export declare const DcIdaSwitchInputBlockResult: {
     fromJSON(_: any): DcIdaSwitchInputBlockResult;
     toJSON(_: DcIdaSwitchInputBlockResult): unknown;
     fromPartial<I extends {} & {} & { [K in Exclude<keyof I, never>]: never; }>(_: I): DcIdaSwitchInputBlockResult;
+};
+export declare const DcIdaQueryAlertParam: {
+    encode(_: DcIdaQueryAlertParam, writer?: _m0.Writer): _m0.Writer;
+    decode(input: _m0.Reader | Uint8Array, length?: number): DcIdaQueryAlertParam;
+    fromJSON(_: any): DcIdaQueryAlertParam;
+    toJSON(_: DcIdaQueryAlertParam): unknown;
+    fromPartial<I extends {} & {} & { [K in Exclude<keyof I, never>]: never; }>(_: I): DcIdaQueryAlertParam;
+};
+export declare const DcIdaQueryAlertResult: {
+    encode(message: DcIdaQueryAlertResult, writer?: _m0.Writer): _m0.Writer;
+    decode(input: _m0.Reader | Uint8Array, length?: number): DcIdaQueryAlertResult;
+    fromJSON(object: any): DcIdaQueryAlertResult;
+    toJSON(message: DcIdaQueryAlertResult): unknown;
+    fromPartial<I extends {
+        isShow?: boolean | undefined;
+        title?: string | undefined;
+    } & {
+        isShow?: boolean | undefined;
+        title?: string | undefined;
+    } & { [K in Exclude<keyof I, keyof DcIdaQueryAlertResult>]: never; }>(object: I): DcIdaQueryAlertResult;
 };

@@ -1,11 +1,3 @@
-//
-//  ControlResult.swift
-//  IOSDeviceAgentLib
-//
-//  Created by jenkins on 2023/02/15.
-//  Copyright © 2023 Dogu. All rights reserved.
-//
-
 import Foundation
 
 class ControlResult {

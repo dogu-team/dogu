@@ -1,5 +1,5 @@
 import { Platform, Serial } from '@dogu-private/types';
-import { delay, errorify, FilledPrintable, loopTime, Milisecond, setAxiosErrorFilterToIntercepter } from '@dogu-tech/common';
+import { delay, errorify, FilledPrintable, loopTime, Milisecond, setAxiosErrorFilterToIntercepter, stringify } from '@dogu-tech/common';
 import { HostPaths } from '@dogu-tech/node';
 import axios, { AxiosInstance } from 'axios';
 import http from 'http';
@@ -93,7 +93,7 @@ export class WebdriverAgentProcess {
       this.logger.warn('sessionId is undefined. so skip activateApp');
       return;
     }
-    await client.post(`/session/${sessionId}/wda/apps/launch`, { bundleId }, { headers: { 'Content-Type': 'application/json' } });
+    await client.post(`/session/${sessionId}/wda/apps/launch`, { bundleId });
   }
 
   async activateApp(bundleId: string): Promise<void> {
@@ -102,7 +102,7 @@ export class WebdriverAgentProcess {
       this.logger.warn('sessionId is undefined. so skip activateApp');
       return;
     }
-    await client.post(`/session/${sessionId}/wda/apps/activate`, { bundleId }, { headers: { 'Content-Type': 'application/json' } });
+    await client.post(`/session/${sessionId}/wda/apps/activate`, { bundleId });
   }
 
   /*
@@ -114,7 +114,7 @@ export class WebdriverAgentProcess {
       this.logger.warn('sessionId is undefined. so skip terminateApp');
       return;
     }
-    await client.post(`/session/${sessionId}/wda/apps/terminate`, { bundleId }, { headers: { 'Content-Type': 'application/json' } });
+    await client.post(`/session/${sessionId}/wda/apps/terminate`, { bundleId });
   }
 
   async goToHome(): Promise<void> {
@@ -123,7 +123,36 @@ export class WebdriverAgentProcess {
       this.logger.warn('sessionId is undefined. so skip goToHome');
       return;
     }
-    await client.post(`/session/${sessionId}/wda/pressButton`, { name: 'home', duration: 100 }, { headers: { 'Content-Type': 'application/json' } });
+    await client.post(`/session/${sessionId}/wda/pressButton`, { name: 'home', duration: 100 });
+  }
+
+  async screenshot(quality: 'high' | 'default' | 'low' = 'low'): Promise<string> {
+    const { client } = this.xctest;
+
+    const screenshotQuality = quality === 'high' ? 0 : quality === 'default' ? 1 : 2;
+
+    await this.setSettings('screenshotQuality', screenshotQuality);
+    const response = await client.get(`/screenshot`);
+    if (!response || response.status !== 200) {
+      throw new Error(`response is not 200. ${response?.status}`);
+    }
+
+    const value = _.get(response, 'data.value', undefined) as unknown;
+    if (typeof value !== 'string') {
+      throw new Error(`value is not string. ${stringify(value)}`);
+    }
+
+    const base64 = value;
+    return base64;
+  }
+
+  async setSettings(key: string, value: string | number | boolean): Promise<void> {
+    const { sessionId, client } = this.xctest;
+    if (!sessionId) {
+      this.logger.warn('sessionId is undefined. so skip goToHome');
+      return;
+    }
+    await client.post(`/session/${sessionId}/appium/settings`, { settings: { [key]: value } });
   }
 
   /*
@@ -152,7 +181,7 @@ export class WebdriverAgentProcess {
     return activeAppList as ActiveAppInfo[];
   }
 
-  async dissmissAlert(): Promise<void> {
+  async dismissAlert(): Promise<void> {
     const { sessionId, client } = this.xctest;
     if (!sessionId) {
       this.logger.warn('sessionId is undefined. so skip dismiss alert');

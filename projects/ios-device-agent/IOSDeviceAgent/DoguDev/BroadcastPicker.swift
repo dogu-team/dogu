@@ -1,11 +1,3 @@
-//
-//  BroadcastPicker.swift
-//  DoguDev
-//
-//  Created by jenkins on 2023/05/31.
-//  Copyright © 2023 Dogu. All rights reserved.
-//
-
 import Foundation
 import ReplayKit
 import SwiftUI
@@ -25,7 +17,7 @@ struct BroadcastPicker: UIViewRepresentable {
 
   func updateUIView(_ uiView: RPSystemBroadcastPickerView, context: Context) {
     // Optional: You can customize the picker view properties here
-    
+
   }
 
   func clickButtonInSubview() {

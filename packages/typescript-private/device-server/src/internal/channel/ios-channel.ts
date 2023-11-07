@@ -1,5 +1,6 @@
 import {
   CodeUtil,
+  DeviceAlert,
   DeviceSystemInfo,
   DeviceWindowInfo,
   ErrorResult,
@@ -40,6 +41,7 @@ import { IdeviceInstaller } from '../externals/cli/ideviceinstaller';
 import { IosDeviceAgentProcess } from '../externals/cli/ios-device-agent';
 import { ZombieTunnel } from '../externals/cli/mobiledevice-tunnel';
 import { WebdriverAgentProcess } from '../externals/cli/webdriver-agent-process';
+import { IosWebDriverInfo } from '../externals/webdriver/ios-webdriver';
 import { DeviceChannel, DeviceChannelOpenParam, DeviceHealthStatus, DeviceServerService, LogHandler } from '../public/device-channel';
 import { IosDeviceAgentService } from '../services/device-agent/ios-device-agent-service';
 import { IosDisplayProfileService, IosProfileService } from '../services/profile/ios-profiler';
@@ -120,11 +122,8 @@ export class IosChannel implements DeviceChannel {
     const logger = createIosLogger(param.serial);
 
     const productVersion = await IosSystemInfoService.getVersion(serial, logger);
-    if (productVersion) {
-      const version = semver.coerce(productVersion);
-      if (version && semver.lt(version, '14.0.0')) {
-        throw new Error(`iOS version must be 14 or higher. current version: ${productVersion}`);
-      }
+    if (semver.lt(productVersion, '14.0.0')) {
+      throw new Error(`iOS version must be 14 or higher. current version: ${productVersion.inspect()}`);
     }
 
     const isWdaReady = await WebdriverAgentProcess.isReady(serial);
@@ -168,9 +167,11 @@ export class IosChannel implements DeviceChannel {
     await appiumWaiter.waitUntilAlive({ maxReviveCount: 100 });
     logger.verbose('appium context started');
 
-    const reset = new IosResetService(serial, logger);
+    const isIpad = await MobileDevice.getProductType(serial, logger).then((type) => type?.startsWith('iPad'));
+    const iosWdInfo = new IosWebDriverInfo(isIpad, productVersion);
+    const reset = new IosResetService(serial, iosWdInfo, logger);
     const appiumContextImpl = await appiumContextProxy.waitUntilBuiltin();
-    const shared = new IosSharedDeviceService(serial, wda, reset, appiumContextImpl, logger);
+    const shared = new IosSharedDeviceService(serial, wda, reset, appiumContextImpl, iosWdInfo, logger);
     await shared.setup();
     await shared.wait();
 
@@ -408,7 +409,7 @@ export class IosChannel implements DeviceChannel {
   }
 
   async isPortListening(port: number): Promise<boolean> {
-    const res = await this.deviceAgent.sendWithProtobuf('dcIdaIsPortListeningParam', 'dcIdaIsPortListeningResult', { port });
+    const res = await this.deviceAgent.send('dcIdaIsPortListeningParam', 'dcIdaIsPortListeningResult', { port });
     return res?.isListening ?? false;
   }
 
@@ -473,7 +474,7 @@ export class IosChannel implements DeviceChannel {
     const installedAppNames = await MobileDevice.listApps(serial, logger);
     const dotAppPath = await this.findDotAppPath(appPath);
     const bundleId = await MobileDevice.getBundleId(dotAppPath, logger);
-    const result = await this.deviceAgent.sendWithProtobuf('dcIdaRunappParam', 'dcIdaRunappResult', {
+    const result = await this.deviceAgent.send('dcIdaRunappParam', 'dcIdaRunappResult', {
       appPath,
       installedAppNames,
       bundleId,
@@ -494,7 +495,7 @@ export class IosChannel implements DeviceChannel {
 
   async reset(): Promise<void> {
     const { logger, webdriverAgentProcess } = this;
-    await this.deviceAgent.sendWithProtobuf('dcIdaSwitchInputBlockParam', 'dcIdaSwitchInputBlockResult', { isBlock: false });
+    await this.deviceAgent.send('dcIdaSwitchInputBlockParam', 'dcIdaSwitchInputBlockResult', { isBlock: false });
     const appiumContextImpl = await checkTime(`IosChannel.reset.waitUntilBuiltin`, this._appiumContext.waitUntilBuiltin(), logger);
     await checkTime(`IosChannel.reset.reset`, this._reset.reset(appiumContextImpl, webdriverAgentProcess), logger);
   }
@@ -544,5 +545,22 @@ export class IosChannel implements DeviceChannel {
 
   async setGeoLocation(geoLocation: GeoLocation): Promise<void> {
     throw new Error('Method not implemented.');
+  }
+
+  async getAlert(): Promise<DeviceAlert | undefined> {
+    const result = await this.deviceAgent.send('dcIdaQueryAlertParam', 'dcIdaQueryAlertResult', {});
+    if (!result) {
+      return undefined;
+    }
+    if (!result.isShow) {
+      return undefined;
+    }
+    return {
+      title: result.title,
+    };
+  }
+
+  async getScreenshot(): Promise<string> {
+    return await this.webdriverAgentProcess.screenshot();
   }
 }

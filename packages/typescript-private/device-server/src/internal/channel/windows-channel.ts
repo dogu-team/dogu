@@ -1,5 +1,6 @@
 import {
   DefaultDeviceSystemInfo,
+  DeviceAlert,
   DeviceSystemInfo,
   DeviceWindowInfo,
   ErrorResult,
@@ -252,5 +253,15 @@ export class WindowsChannel implements DeviceChannel {
 
   async setGeoLocation(geoLocation: GeoLocation): Promise<void> {
     throw new Error('Method not implemented.');
+  }
+
+  async getAlert(): Promise<DeviceAlert | undefined> {
+    throw new Error('Method not implemented.');
+    await Promise.resolve();
+  }
+
+  async getScreenshot(): Promise<string> {
+    throw new Error('Method not implemented.');
+    await Promise.resolve();
   }
 }

@@ -49,3 +49,11 @@ message DcIdaSwitchInputBlockParam {
 
 message DcIdaSwitchInputBlockResult {
 }
+
+message DcIdaQueryAlertParam {
+}
+
+message DcIdaQueryAlertResult {
+  bool is_show = 1;
+  string title = 2;
+}

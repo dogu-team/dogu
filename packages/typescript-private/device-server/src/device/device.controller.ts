@@ -298,4 +298,22 @@ export class DeviceController {
       },
     };
   }
+
+  @Get(Device.getScreenshot.path)
+  async getScreenshot(@Param('serial') serial: Serial): Promise<Instance<typeof Device.getScreenshot.responseBody>> {
+    const channel = this.scanService.findChannel(serial);
+    if (channel === null) {
+      return deviceNotFoundError(serial);
+    }
+
+    const base64 = await channel.getScreenshot();
+    return {
+      value: {
+        $case: 'data',
+        data: {
+          base64,
+        },
+      },
+    };
+  }
 }

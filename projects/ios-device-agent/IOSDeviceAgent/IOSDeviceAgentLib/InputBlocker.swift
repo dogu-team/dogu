@@ -46,7 +46,7 @@ class InputBlocker {
     if !GlobalVariable.IsInputBlockAvailable {
       return false
     }
-
+    
     let apps = XCUIApplication.fb_activeAppsInfo()
     let isSpringboard = apps.contains(where: { app in
       guard let bundleId = app["bundleId"] as? String else {

@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.DcIdaSwitchInputBlockResult = exports.DcIdaSwitchInputBlockParam = exports.DcIdaQueryProfileResult = exports.DcIdaQueryProfileParam = exports.DcIdaIsPortListeningResult = exports.DcIdaIsPortListeningParam = exports.DcIdaGetSystemInfoResult = exports.DcIdaGetSystemInfoParam = exports.DcIdaRunAppResult = exports.DcIdaRunAppParam = void 0;
+exports.DcIdaQueryAlertResult = exports.DcIdaQueryAlertParam = exports.DcIdaSwitchInputBlockResult = exports.DcIdaSwitchInputBlockParam = exports.DcIdaQueryProfileResult = exports.DcIdaQueryProfileParam = exports.DcIdaIsPortListeningResult = exports.DcIdaIsPortListeningParam = exports.DcIdaGetSystemInfoResult = exports.DcIdaGetSystemInfoParam = exports.DcIdaRunAppResult = exports.DcIdaRunAppParam = void 0;
 /* eslint-disable */
 const minimal_1 = __importDefault(require("protobufjs/minimal"));
 const errors_1 = require("../../outer/errors");
@@ -443,6 +443,91 @@ exports.DcIdaSwitchInputBlockResult = {
     },
     fromPartial(_) {
         const message = createBaseDcIdaSwitchInputBlockResult();
+        return message;
+    },
+};
+function createBaseDcIdaQueryAlertParam() {
+    return {};
+}
+exports.DcIdaQueryAlertParam = {
+    encode(_, writer = minimal_1.default.Writer.create()) {
+        return writer;
+    },
+    decode(input, length) {
+        const reader = input instanceof minimal_1.default.Reader ? input : new minimal_1.default.Reader(input);
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = createBaseDcIdaQueryAlertParam();
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+            }
+        }
+        return message;
+    },
+    fromJSON(_) {
+        return {};
+    },
+    toJSON(_) {
+        const obj = {};
+        return obj;
+    },
+    fromPartial(_) {
+        const message = createBaseDcIdaQueryAlertParam();
+        return message;
+    },
+};
+function createBaseDcIdaQueryAlertResult() {
+    return { isShow: false, title: '' };
+}
+exports.DcIdaQueryAlertResult = {
+    encode(message, writer = minimal_1.default.Writer.create()) {
+        if (message.isShow === true) {
+            writer.uint32(8).bool(message.isShow);
+        }
+        if (message.title !== '') {
+            writer.uint32(18).string(message.title);
+        }
+        return writer;
+    },
+    decode(input, length) {
+        const reader = input instanceof minimal_1.default.Reader ? input : new minimal_1.default.Reader(input);
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = createBaseDcIdaQueryAlertResult();
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                case 1:
+                    message.isShow = reader.bool();
+                    break;
+                case 2:
+                    message.title = reader.string();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+            }
+        }
+        return message;
+    },
+    fromJSON(object) {
+        return {
+            isShow: isSet(object.isShow) ? Boolean(object.isShow) : false,
+            title: isSet(object.title) ? String(object.title) : '',
+        };
+    },
+    toJSON(message) {
+        const obj = {};
+        message.isShow !== undefined && (obj.isShow = message.isShow);
+        message.title !== undefined && (obj.title = message.title);
+        return obj;
+    },
+    fromPartial(object) {
+        const message = createBaseDcIdaQueryAlertResult();
+        message.isShow = object.isShow ?? false;
+        message.title = object.title ?? '';
         return message;
     },
 };

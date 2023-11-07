@@ -1,6 +1,7 @@
 import {
   createLocaleCode,
   DefaultScreenCaptureOption,
+  DeviceAlert,
   DeviceSystemInfo,
   DeviceWindowInfo,
   ErrorResult,
@@ -439,6 +440,16 @@ export class AndroidChannel implements DeviceChannel {
   async setGeoLocation(geoLocation: GeoLocation): Promise<void> {
     const newAppiumAdb = this.appiumAdb.clone({ adbExecTimeout: 1000 * 60 * 3 });
     await newAppiumAdb.setGeoLocation(geoLocation);
+  }
+
+  async getAlert(): Promise<DeviceAlert | undefined> {
+    throw new Error('Method not implemented.');
+    await Promise.resolve();
+  }
+
+  async getScreenshot(): Promise<string> {
+    throw new Error('Method not implemented.');
+    await Promise.resolve();
   }
 }
 
