@@ -4,38 +4,62 @@ import { DateTime } from 'luxon';
 import { BillingOrganization } from '../../db/entity/billing-organization.entity';
 import { BillingSubscriptionPlanInfo } from '../../db/entity/billing-subscription-plan-info.entity';
 
-export function resolveCurrency(billingOrganization: BillingOrganization, argumentCurrency: BillingCurrency): BillingCurrency {
-  const currency = billingOrganization.currency ?? argumentCurrency;
+export function resolveCurrency(billingOrganizationCurrency: BillingCurrency | null, argumentCurrency: BillingCurrency): BillingCurrency {
+  const currency = billingOrganizationCurrency ?? argumentCurrency;
   return currency;
 }
 
-export function toDateTime(date: Date): DateTime {
-  return DateTime.fromJSDate(date);
+export class NormalizedDateTime {
+  static from(normalizedDateTime: NormalizedDateTime): NormalizedDateTime {
+    return new NormalizedDateTime(normalizedDateTime.dateTime);
+  }
+
+  static fromNow(): NormalizedDateTime {
+    const now = DateTime.fromJSDate(new Date());
+    const ceiledNowDateTime = NormalizedDateTime.ceilHours(now);
+    return new NormalizedDateTime(ceiledNowDateTime);
+  }
+
+  static fromDate(date: Date): NormalizedDateTime {
+    const dateTime = DateTime.fromJSDate(date);
+    const ceiledDateTime = NormalizedDateTime.ceilHours(dateTime);
+    return new NormalizedDateTime(ceiledDateTime);
+  }
+
+  static fromDateTime(dateTime: DateTime): NormalizedDateTime {
+    const ceiledDateTime = NormalizedDateTime.ceilHours(dateTime);
+    return new NormalizedDateTime(ceiledDateTime);
+  }
+
+  private static ceilHours(dateTime: DateTime): DateTime {
+    const ceiled = dateTime.minute === 0 && dateTime.second === 0 && dateTime.millisecond === 0;
+    if (ceiled) {
+      return dateTime;
+    }
+
+    return dateTime.startOf('hour').plus({ hours: 1 });
+  }
+
+  constructor(readonly dateTime: DateTime) {}
+
+  get date(): Date {
+    return this.dateTime.toJSDate();
+  }
 }
 
-export function toDate(date: DateTime): Date {
-  return date.toJSDate();
+export function createStartedAt(now: NormalizedDateTime): NormalizedDateTime {
+  return now;
 }
 
-export function floorDays(dateTime: DateTime): DateTime {
-  return dateTime.startOf('day');
-}
-
-export function ceilDays(dateTime: DateTime): DateTime {
-  return floorDays(dateTime).plus({ days: 1 });
-}
-
-export function createStartedAt(now: Date): Date {
-  return toDate(ceilDays(toDateTime(now)));
-}
-
-export function createExpiredAt(startedAt: Date, period: BillingPeriod): Date {
+export function createExpiredAt(startedAt: NormalizedDateTime, period: BillingPeriod): NormalizedDateTime {
   switch (period) {
     case 'monthly': {
-      return toDate(toDateTime(startedAt).plus({ months: 1 }));
+      const expiredAt = startedAt.dateTime.plus({ months: 1 });
+      return NormalizedDateTime.fromDateTime(expiredAt);
     }
     case 'yearly': {
-      return toDate(toDateTime(startedAt).plus({ years: 1 }));
+      const expiredAt = startedAt.dateTime.plus({ years: 1 });
+      return NormalizedDateTime.fromDateTime(expiredAt);
     }
     default: {
       assertUnreachable(period);
@@ -46,9 +70,9 @@ export function createExpiredAt(startedAt: Date, period: BillingPeriod): Date {
 export interface CalculateRemaningDiscountOptions {
   originPrice: number;
   discountedAmount: number;
-  startedAt: Date;
-  expiredAt: Date;
-  now: Date;
+  startedAt: NormalizedDateTime;
+  expiredAt: NormalizedDateTime;
+  now: NormalizedDateTime;
 }
 
 export interface CalculateRemaningDiscountResultFailure {
@@ -66,17 +90,17 @@ export interface CalculateRemaningDiscountResultSuccess {
 export type CalculateRemaningDiscountResult = CalculateRemaningDiscountResultFailure | CalculateRemaningDiscountResultSuccess;
 
 export function calculateRemaningDiscount(options: CalculateRemaningDiscountOptions): CalculateRemaningDiscountResult {
-  const { originPrice, discountedAmount } = options;
-  const startedAt = toDateTime(options.startedAt);
-  const expiredAt = toDateTime(options.expiredAt);
-  if (startedAt > expiredAt) {
+  const { originPrice, discountedAmount, startedAt, expiredAt } = options;
+  if (startedAt.date > expiredAt.date) {
     return {
       ok: false,
       resultCode: resultCode('unexpected-error'),
     };
   }
 
-  const totalDays = expiredAt.diff(startedAt, 'days').days;
+  const startedAtDateTime = startedAt.dateTime;
+  const expiredAtDateTime = expiredAt.dateTime;
+  const totalDays = expiredAtDateTime.diff(startedAtDateTime, 'days').days;
   if (totalDays === 0) {
     return {
       ok: false,
@@ -84,14 +108,14 @@ export function calculateRemaningDiscount(options: CalculateRemaningDiscountOpti
     };
   }
 
-  let now = toDateTime(options.now);
-  if (now > expiredAt) {
+  let now = options.now;
+  if (now.date > expiredAt.date) {
     now = expiredAt;
   } else if (now < startedAt) {
     now = startedAt;
   }
 
-  const remainingDays = expiredAt.diff(now, 'days').days;
+  const remainingDays = expiredAt.dateTime.diff(now.dateTime, 'days').days;
   const remainingDiscountedAmount = (originPrice * remainingDays) / totalDays - discountedAmount;
   if (remainingDiscountedAmount < 0) {
     return {
@@ -111,9 +135,9 @@ export function calculateRemaningDiscount(options: CalculateRemaningDiscountOpti
 export interface CalculateElapsedDiscountOptions {
   originPrice: number;
   discountedAmount: number;
-  startedAt: Date;
-  expiredAt: Date;
-  now: Date;
+  startedAt: NormalizedDateTime;
+  expiredAt: NormalizedDateTime;
+  now: NormalizedDateTime;
 }
 
 export interface CalculateElapsedDiscountResultFailure {
@@ -131,17 +155,15 @@ export interface CalculateElapsedDiscountResultSuccess {
 export type CalculateElapsedDiscountResult = CalculateElapsedDiscountResultFailure | CalculateElapsedDiscountResultSuccess;
 
 export function calculateElapsedDiscount(options: CalculateElapsedDiscountOptions): CalculateElapsedDiscountResult {
-  const { originPrice, discountedAmount } = options;
-  const startedAt = toDateTime(options.startedAt);
-  const expiredAt = toDateTime(options.expiredAt);
-  if (startedAt > expiredAt) {
+  const { originPrice, discountedAmount, startedAt, expiredAt } = options;
+  if (startedAt.date > expiredAt.date) {
     return {
       ok: false,
       resultCode: resultCode('unexpected-error'),
     };
   }
 
-  const totalDays = expiredAt.diff(startedAt, 'days').days;
+  const totalDays = expiredAt.dateTime.diff(startedAt.dateTime, 'days').days;
   if (totalDays === 0) {
     return {
       ok: false,
@@ -149,14 +171,14 @@ export function calculateElapsedDiscount(options: CalculateElapsedDiscountOption
     };
   }
 
-  let now = toDateTime(options.now);
+  let now = options.now;
   if (now > expiredAt) {
     now = expiredAt;
   } else if (now < startedAt) {
     now = startedAt;
   }
 
-  const elapsedDays = now.diff(startedAt, 'days').days;
+  const elapsedDays = now.dateTime.diff(startedAt.dateTime, 'days').days;
   const totalAmount = originPrice - discountedAmount;
   if (totalAmount < 0) {
     return {
@@ -174,39 +196,10 @@ export function calculateElapsedDiscount(options: CalculateElapsedDiscountOption
   };
 }
 
-export interface CalculateLocalNextPurchaseDateOptions {
-  billingOrganization: BillingOrganization;
-  period: BillingPeriod;
-}
-
-export function calculateNextPurchaseDate(options: CalculateLocalNextPurchaseDateOptions): Date {
-  const { billingOrganization, period } = options;
-  switch (period) {
-    case 'monthly': {
-      const { monthlyStartedAt } = billingOrganization;
-      if (monthlyStartedAt === null) {
-        return toDate(ceilDays(toDateTime(new Date())).plus({ months: 1 }).minus({ days: 1 }));
-      } else {
-        return toDate(toDateTime(monthlyStartedAt).plus({ months: 1 }).minus({ days: 1 }));
-      }
-    }
-    case 'yearly': {
-      const { yearlyStartedAt } = billingOrganization;
-      if (yearlyStartedAt === null) {
-        return toDate(ceilDays(toDateTime(new Date())).plus({ years: 1 }).minus({ days: 1 }));
-      } else {
-        return toDate(toDateTime(yearlyStartedAt).plus({ years: 1 }).minus({ days: 1 }));
-      }
-    }
-    default:
-      assertUnreachable(period);
-  }
-}
-
 export interface CalculateRemainingPlanOptions {
   billingOrganization: BillingOrganization;
   foundBillingSubscriptionPlanInfo: BillingSubscriptionPlanInfo;
-  now: Date;
+  now: NormalizedDateTime;
 }
 
 export interface CalculateRemainingPlanResultFailure {
@@ -243,8 +236,8 @@ export function calculateRemainingPlan(options: CalculateRemainingPlanOptions): 
         const calculateRefundResult = calculateRemaningDiscount({
           originPrice: foundBillingSubscriptionPlanInfo.originPrice,
           discountedAmount: foundBillingSubscriptionPlanInfo.discountedAmount,
-          startedAt: billingOrganization.monthlyStartedAt,
-          expiredAt: billingOrganization.monthlyExpiredAt,
+          startedAt: NormalizedDateTime.fromDate(billingOrganization.monthlyStartedAt),
+          expiredAt: NormalizedDateTime.fromDate(billingOrganization.monthlyExpiredAt),
           now: options.now,
         });
 
@@ -290,8 +283,8 @@ export function calculateRemainingPlan(options: CalculateRemainingPlanOptions): 
         const calculateRefundResult = calculateRemaningDiscount({
           originPrice: foundBillingSubscriptionPlanInfo.originPrice,
           discountedAmount: foundBillingSubscriptionPlanInfo.discountedAmount,
-          startedAt: billingOrganization.yearlyStartedAt,
-          expiredAt: billingOrganization.yearlyExpiredAt,
+          startedAt: NormalizedDateTime.fromDate(billingOrganization.yearlyStartedAt),
+          expiredAt: NormalizedDateTime.fromDate(billingOrganization.yearlyExpiredAt),
           now: options.now,
         });
 
@@ -328,7 +321,7 @@ export interface CalculateElapsedPlanOptions {
   billingOrganization: BillingOrganization;
   billingSubscriptionPlanData: BillingSubscriptionPlanData;
   discountedAmount: number;
-  now: Date;
+  now: NormalizedDateTime;
 }
 
 export interface CalculateElapsedPlanResultFailure {
@@ -348,8 +341,10 @@ export function calculateElapsedPlan(options: CalculateElapsedPlanOptions): Calc
   const { period } = billingSubscriptionPlanData;
   switch (period) {
     case 'monthly': {
-      const monthlyStartedAt = billingOrganization.monthlyStartedAt ?? createStartedAt(options.now);
-      const monthlyExpiredAt = billingOrganization.monthlyExpiredAt ?? createExpiredAt(monthlyStartedAt, 'monthly');
+      const monthlyStartedAt = billingOrganization.monthlyStartedAt ? NormalizedDateTime.fromDate(billingOrganization.monthlyStartedAt) : createStartedAt(options.now);
+      const monthlyExpiredAt = billingOrganization.monthlyExpiredAt
+        ? NormalizedDateTime.fromDate(billingOrganization.monthlyExpiredAt)
+        : createExpiredAt(monthlyStartedAt, 'monthly');
       const calculateElapsedDiscountResult = calculateElapsedDiscount({
         originPrice: billingSubscriptionPlanData.originPrice,
         discountedAmount,
@@ -381,8 +376,8 @@ export function calculateElapsedPlan(options: CalculateElapsedPlanOptions): Calc
       };
     }
     case 'yearly': {
-      const yearlyStartedAt = billingOrganization.yearlyStartedAt ?? createStartedAt(options.now);
-      const yearlyExpiredAt = billingOrganization.yearlyExpiredAt ?? createExpiredAt(yearlyStartedAt, 'yearly');
+      const yearlyStartedAt = billingOrganization.yearlyStartedAt ? NormalizedDateTime.fromDate(billingOrganization.yearlyStartedAt) : createStartedAt(options.now);
+      const yearlyExpiredAt = billingOrganization.yearlyExpiredAt ? NormalizedDateTime.fromDate(billingOrganization.yearlyExpiredAt) : createExpiredAt(yearlyStartedAt, 'yearly');
       const calculateElapsedDiscountResult = calculateElapsedDiscount({
         originPrice: billingSubscriptionPlanData.originPrice,
         discountedAmount,
