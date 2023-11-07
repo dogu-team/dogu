@@ -6,6 +6,7 @@ import { env } from '../../../env';
 import { DeviceAgentService } from '../../services/device-agent/device-agent-service';
 import { Zombieable, ZombieProps, ZombieQueriable } from '../zombie/zombie-component';
 import { ZombieServiceInstance } from '../zombie/zombie-service';
+import { IosDeviceAgentZombieSubscriber } from './ios-device-agent-zombie-subscriber';
 
 type DcIdaParam = PrivateProtocol.DcIdaParam;
 type DcIdaResult = PrivateProtocol.DcIdaResult;
@@ -22,6 +23,16 @@ export type DcIdaResultKeys = OneofUnionTypes.UnionValueKeys<DcIdaResult>;
 export type DcIdaResultUnionPick<Key> = OneofUnionTypes.UnionValuePick<DcIdaResult, Key>;
 export type DcIdaResultUnionPickValue<Key extends keyof DcIdaResultUnionPick<Key>> = OneofUnionTypes.UnionValuePickInner<DcIdaResult, Key>;
 
+interface SendOption {
+  timeout: number;
+}
+
+function DefaultSendOption(): SendOption {
+  return { timeout: 10000 };
+}
+
+type ResultCallback<ResultValue> = (result: ResultValue | undefined, error: Error | undefined) => void;
+
 export class IosDeviceAgentService implements DeviceAgentService, Zombieable {
   private readonly client: Socket;
   private protoAPIRetEmitter = new ProtoAPIEmitterImpl();
@@ -30,13 +41,15 @@ export class IosDeviceAgentService implements DeviceAgentService, Zombieable {
   private zombieWaiter: ZombieQueriable;
   public name = 'iOSDeviceAgentService';
   public platform = Platform.PLATFORM_IOS;
+  private subscribers: IosDeviceAgentZombieSubscriber[] = [];
 
   constructor(
     public readonly serial: Serial,
     private readonly screenPort: number,
     private readonly serverPort: number,
-    private readonly logger: Printable,
+    public readonly printable: Printable,
   ) {
+    const { printable: logger } = this;
     this.zombieWaiter = ZombieServiceInstance.addComponent(this);
     this.client = new Socket();
 
@@ -82,13 +95,18 @@ export class IosDeviceAgentService implements DeviceAgentService, Zombieable {
   async revive(): Promise<void> {
     await this.connect();
     await this.send('dcIdaSwitchInputBlockParam', 'dcIdaSwitchInputBlockResult', { isBlock: env.DOGU_IS_DEVICE_SHARE === true });
+    for (const subscriber of this.subscribers) {
+      subscriber.subscribe();
+    }
   }
 
   onDie(reason: string): void | Promise<void> {
+    const { printable: logger } = this;
+    this.protoAPIRetEmitter.removeAllListeners();
     try {
       this.client.resetAndDestroy();
     } catch (e) {
-      this.logger.error(`IosDeviceAgentService.onDie reset error: ${stringify(e)}`);
+      logger.error(`IosDeviceAgentService.onDie reset error: ${stringify(e)}`);
     }
   }
 
@@ -98,9 +116,6 @@ export class IosDeviceAgentService implements DeviceAgentService, Zombieable {
 
   get props(): ZombieProps {
     return { serverPort: this.serverPort };
-  }
-  get printable(): Printable {
-    return this.logger;
   }
 
   get screenUrl(): string {
@@ -124,13 +139,40 @@ export class IosDeviceAgentService implements DeviceAgentService, Zombieable {
     ResultKey extends DcIdaResultKeys & keyof DcIdaResultUnionPick<ResultKey>,
     ParamValue extends DcIdaParamUnionPickValue<ParamKey>,
     ResultValue extends DcIdaResultUnionPickValue<ResultKey>,
-  >(paramKey: ParamKey, resultKey: ResultKey, paramValue: ParamValue, timeout = 10000): Promise<ResultValue | null> {
-    return new Promise<ResultValue | null>((resolve) => {
-      this.sendInternal(paramKey, resultKey, paramValue, timeout, (result: ResultValue | null, closable: SyncClosable) => {
-        closable.close();
-        resolve(result);
-      });
+  >(paramKey: ParamKey, resultKey: ResultKey, paramValue: ParamValue, option: SendOption = DefaultSendOption()): Promise<ResultValue | undefined> {
+    const { printable: logger } = this;
+    return new Promise<ResultValue | undefined>((resolve) => {
+      const closable = this.sendInternal(
+        paramKey,
+        resultKey,
+        paramValue,
+        (result: ResultValue | undefined, error) => {
+          closable.close();
+          if (error) {
+            logger.error(`IosDeviceAgentService.sendInternal error: ${stringify(error)}`);
+          }
+          resolve(result);
+        },
+        option,
+      );
     });
+  }
+
+  subscribe<
+    ParamKey extends DcIdaParamKeys & keyof DcIdaParamUnionPick<ParamKey>,
+    ResultKey extends DcIdaResultKeys & keyof DcIdaResultUnionPick<ResultKey>,
+    ParamValue extends DcIdaParamUnionPickValue<ParamKey>,
+    ResultValue extends DcIdaResultUnionPickValue<ResultKey>,
+  >(paramKey: ParamKey, resultKey: ResultKey, paramValue: ParamValue, onResult: ResultCallback<ResultValue>, option: SendOption = DefaultSendOption()): SyncClosable {
+    const subscriber = new IosDeviceAgentZombieSubscriber({
+      subscribe: () => this.sendInternal(paramKey, resultKey, paramValue, onResult, option),
+      onClose: (): void => {
+        this.subscribers = this.subscribers.filter((item) => item !== subscriber);
+      },
+    });
+    this.subscribers.push(subscriber);
+    subscriber.subscribe();
+    return subscriber;
   }
 
   private sendInternal<
@@ -138,40 +180,39 @@ export class IosDeviceAgentService implements DeviceAgentService, Zombieable {
     ResultKey extends DcIdaResultKeys & keyof DcIdaResultUnionPick<ResultKey>,
     ParamValue extends DcIdaParamUnionPickValue<ParamKey>,
     ResultValue extends DcIdaResultUnionPickValue<ResultKey>,
-  >(paramKey: ParamKey, resultKey: ResultKey, paramValue: ParamValue, timeout = 10000, onResult: (result: ResultValue | null, closable: SyncClosable) => void): void {
-    const { logger } = this;
+  >(paramKey: ParamKey, resultKey: ResultKey, paramValue: ParamValue, onResult: ResultCallback<ResultValue>, option: SendOption = DefaultSendOption()): SyncClosable {
+    const { printable: logger } = this;
     let isResolved = false;
 
     const seq = this.getSeq();
+    const closable = { close: () => this.protoAPIRetEmitter.removeAllListeners(seq.toString()) };
 
-    const resolve = (result: ResultValue | null): void => {
+    const resolve = (result: ResultValue | undefined, error: Error | undefined): void => {
       if (isResolved) {
         return;
       }
       isResolved = true;
-      onResult(result, { close: () => this.protoAPIRetEmitter.removeAllListeners(seq.toString()) });
+      onResult(result, error);
     };
     if (!this.client) {
-      logger.error('IosDeviceAgentService.sendWithProtobuf this.client is null');
-      resolve(null);
-      return;
+      resolve(undefined, new Error('IosDeviceAgentService.sendWithProtobuf this.client is null'));
+      return closable;
     }
 
     // complete handle
     this.protoAPIRetEmitter.on(seq.toString(), (data: DcIdaResult) => {
       if (data.value?.$case !== resultKey) {
-        logger.error(`IosDeviceAgentService.sendWithProtobuf ${resultKey} is null`);
-        resolve(null);
-        return;
+        resolve(undefined, new Error(`IosDeviceAgentService.sendWithProtobuf ${resultKey} is null`));
+        return closable;
       }
       const returnObj = data.value as DcIdaResultUnionPick<ResultKey>;
-      resolve(returnObj[resultKey] as ResultValue);
+      resolve(returnObj[resultKey] as ResultValue, undefined);
     });
 
     // timeout handle
     setTimeout(() => {
-      resolve(null);
-    }, timeout);
+      resolve(undefined, new Error(`IosDeviceAgentService.sendWithProtobuf timeout ${option.timeout}`));
+    }, option.timeout);
 
     // request
     const paramObj = {
@@ -179,10 +220,11 @@ export class IosDeviceAgentService implements DeviceAgentService, Zombieable {
       [paramKey]: paramValue,
     } as unknown as DcIdaParamUnionPick<ParamKey>;
     this.client.write(buildParam(seq, paramObj));
+    return closable;
   }
 
   private async connect(tryCount = 10): Promise<void> {
-    const { logger } = this;
+    const { printable: logger } = this;
     this.recvQueue.clear();
     logger.info(`IosDeviceAgentService.connect ${this.serverPort}`);
     if (this.client.connecting) {

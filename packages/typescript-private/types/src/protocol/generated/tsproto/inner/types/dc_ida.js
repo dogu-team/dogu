@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.DcIdaSubscribeAlertResult = exports.DcIdaSubscribeAlertParam = exports.DcIdaSwitchInputBlockResult = exports.DcIdaSwitchInputBlockParam = exports.DcIdaQueryProfileResult = exports.DcIdaQueryProfileParam = exports.DcIdaIsPortListeningResult = exports.DcIdaIsPortListeningParam = exports.DcIdaGetSystemInfoResult = exports.DcIdaGetSystemInfoParam = exports.DcIdaRunAppResult = exports.DcIdaRunAppParam = void 0;
+exports.DcIdaQueryAlertResult = exports.DcIdaQueryAlertParam = exports.DcIdaSwitchInputBlockResult = exports.DcIdaSwitchInputBlockParam = exports.DcIdaQueryProfileResult = exports.DcIdaQueryProfileParam = exports.DcIdaIsPortListeningResult = exports.DcIdaIsPortListeningParam = exports.DcIdaGetSystemInfoResult = exports.DcIdaGetSystemInfoParam = exports.DcIdaRunAppResult = exports.DcIdaRunAppParam = void 0;
 /* eslint-disable */
 const minimal_1 = __importDefault(require("protobufjs/minimal"));
 const errors_1 = require("../../outer/errors");
@@ -446,17 +446,17 @@ exports.DcIdaSwitchInputBlockResult = {
         return message;
     },
 };
-function createBaseDcIdaSubscribeAlertParam() {
+function createBaseDcIdaQueryAlertParam() {
     return {};
 }
-exports.DcIdaSubscribeAlertParam = {
+exports.DcIdaQueryAlertParam = {
     encode(_, writer = minimal_1.default.Writer.create()) {
         return writer;
     },
     decode(input, length) {
         const reader = input instanceof minimal_1.default.Reader ? input : new minimal_1.default.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
-        const message = createBaseDcIdaSubscribeAlertParam();
+        const message = createBaseDcIdaQueryAlertParam();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
@@ -475,24 +475,30 @@ exports.DcIdaSubscribeAlertParam = {
         return obj;
     },
     fromPartial(_) {
-        const message = createBaseDcIdaSubscribeAlertParam();
+        const message = createBaseDcIdaQueryAlertParam();
         return message;
     },
 };
-function createBaseDcIdaSubscribeAlertResult() {
-    return {};
+function createBaseDcIdaQueryAlertResult() {
+    return { isShow: false };
 }
-exports.DcIdaSubscribeAlertResult = {
-    encode(_, writer = minimal_1.default.Writer.create()) {
+exports.DcIdaQueryAlertResult = {
+    encode(message, writer = minimal_1.default.Writer.create()) {
+        if (message.isShow === true) {
+            writer.uint32(8).bool(message.isShow);
+        }
         return writer;
     },
     decode(input, length) {
         const reader = input instanceof minimal_1.default.Reader ? input : new minimal_1.default.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
-        const message = createBaseDcIdaSubscribeAlertResult();
+        const message = createBaseDcIdaQueryAlertResult();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
+                case 1:
+                    message.isShow = reader.bool();
+                    break;
                 default:
                     reader.skipType(tag & 7);
                     break;
@@ -500,15 +506,17 @@ exports.DcIdaSubscribeAlertResult = {
         }
         return message;
     },
-    fromJSON(_) {
-        return {};
+    fromJSON(object) {
+        return { isShow: isSet(object.isShow) ? Boolean(object.isShow) : false };
     },
-    toJSON(_) {
+    toJSON(message) {
         const obj = {};
+        message.isShow !== undefined && (obj.isShow = message.isShow);
         return obj;
     },
-    fromPartial(_) {
-        const message = createBaseDcIdaSubscribeAlertResult();
+    fromPartial(object) {
+        const message = createBaseDcIdaQueryAlertResult();
+        message.isShow = object.isShow ?? false;
         return message;
     },
 };

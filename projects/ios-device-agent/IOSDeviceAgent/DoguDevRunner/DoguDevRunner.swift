@@ -16,11 +16,6 @@ final class DoguRunner: XCTestCase {
     let app = XCUIApplication()
     app.terminate()
     app.launch()
-    self.addUIInterruptionMonitor(withDescription: "DoguAlertDetection") { (alertElement) -> Bool in
-      let partialPermissionMessage = "to use your location?"
-
-      return false
-    }
 
     Task {
       try await RecordUtils.clickStartBroadcast(app: app, testCase: self)

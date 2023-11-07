@@ -2986,87 +2986,87 @@ public final class DcIda {
     }
   }
 
-  public interface DcIdaSubscribeAlertParamOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:inner.types.DcIdaSubscribeAlertParam)
+  public interface DcIdaQueryAlertParamOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:inner.types.DcIdaQueryAlertParam)
       com.google.protobuf.MessageLiteOrBuilder {
   }
   /**
-   * Protobuf type {@code inner.types.DcIdaSubscribeAlertParam}
+   * Protobuf type {@code inner.types.DcIdaQueryAlertParam}
    */
-  public  static final class DcIdaSubscribeAlertParam extends
+  public  static final class DcIdaQueryAlertParam extends
       com.google.protobuf.GeneratedMessageLite<
-          DcIdaSubscribeAlertParam, DcIdaSubscribeAlertParam.Builder> implements
-      // @@protoc_insertion_point(message_implements:inner.types.DcIdaSubscribeAlertParam)
-      DcIdaSubscribeAlertParamOrBuilder {
-    private DcIdaSubscribeAlertParam() {
+          DcIdaQueryAlertParam, DcIdaQueryAlertParam.Builder> implements
+      // @@protoc_insertion_point(message_implements:inner.types.DcIdaQueryAlertParam)
+      DcIdaQueryAlertParamOrBuilder {
+    private DcIdaQueryAlertParam() {
     }
-    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaSubscribeAlertParam parseFrom(
+    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryAlertParam parseFrom(
         java.nio.ByteBuffer data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return com.google.protobuf.GeneratedMessageLite.parseFrom(
           DEFAULT_INSTANCE, data);
     }
-    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaSubscribeAlertParam parseFrom(
+    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryAlertParam parseFrom(
         java.nio.ByteBuffer data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return com.google.protobuf.GeneratedMessageLite.parseFrom(
           DEFAULT_INSTANCE, data, extensionRegistry);
     }
-    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaSubscribeAlertParam parseFrom(
+    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryAlertParam parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return com.google.protobuf.GeneratedMessageLite.parseFrom(
           DEFAULT_INSTANCE, data);
     }
-    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaSubscribeAlertParam parseFrom(
+    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryAlertParam parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return com.google.protobuf.GeneratedMessageLite.parseFrom(
           DEFAULT_INSTANCE, data, extensionRegistry);
     }
-    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaSubscribeAlertParam parseFrom(byte[] data)
+    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryAlertParam parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return com.google.protobuf.GeneratedMessageLite.parseFrom(
           DEFAULT_INSTANCE, data);
     }
-    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaSubscribeAlertParam parseFrom(
+    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryAlertParam parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return com.google.protobuf.GeneratedMessageLite.parseFrom(
           DEFAULT_INSTANCE, data, extensionRegistry);
     }
-    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaSubscribeAlertParam parseFrom(java.io.InputStream input)
+    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryAlertParam parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageLite.parseFrom(
           DEFAULT_INSTANCE, input);
     }
-    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaSubscribeAlertParam parseFrom(
+    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryAlertParam parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageLite.parseFrom(
           DEFAULT_INSTANCE, input, extensionRegistry);
     }
-    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaSubscribeAlertParam parseDelimitedFrom(java.io.InputStream input)
+    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryAlertParam parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return parseDelimitedFrom(DEFAULT_INSTANCE, input);
     }
-    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaSubscribeAlertParam parseDelimitedFrom(
+    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryAlertParam parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return parseDelimitedFrom(DEFAULT_INSTANCE, input, extensionRegistry);
     }
-    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaSubscribeAlertParam parseFrom(
+    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryAlertParam parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageLite.parseFrom(
           DEFAULT_INSTANCE, input);
     }
-    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaSubscribeAlertParam parseFrom(
+    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryAlertParam parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -3077,25 +3077,25 @@ public final class DcIda {
     public static Builder newBuilder() {
       return (Builder) DEFAULT_INSTANCE.createBuilder();
     }
-    public static Builder newBuilder(com.dogu.protocol.generated.inner.types.DcIda.DcIdaSubscribeAlertParam prototype) {
+    public static Builder newBuilder(com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryAlertParam prototype) {
       return (Builder) DEFAULT_INSTANCE.createBuilder(prototype);
     }
 
     /**
-     * Protobuf type {@code inner.types.DcIdaSubscribeAlertParam}
+     * Protobuf type {@code inner.types.DcIdaQueryAlertParam}
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageLite.Builder<
-          com.dogu.protocol.generated.inner.types.DcIda.DcIdaSubscribeAlertParam, Builder> implements
-        // @@protoc_insertion_point(builder_implements:inner.types.DcIdaSubscribeAlertParam)
-        com.dogu.protocol.generated.inner.types.DcIda.DcIdaSubscribeAlertParamOrBuilder {
-      // Construct using com.dogu.protocol.generated.inner.types.DcIda.DcIdaSubscribeAlertParam.newBuilder()
+          com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryAlertParam, Builder> implements
+        // @@protoc_insertion_point(builder_implements:inner.types.DcIdaQueryAlertParam)
+        com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryAlertParamOrBuilder {
+      // Construct using com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryAlertParam.newBuilder()
       private Builder() {
         super(DEFAULT_INSTANCE);
       }
 
 
-      // @@protoc_insertion_point(builder_scope:inner.types.DcIdaSubscribeAlertParam)
+      // @@protoc_insertion_point(builder_scope:inner.types.DcIdaQueryAlertParam)
     }
     @java.lang.Override
     @java.lang.SuppressWarnings({"unchecked", "fallthrough"})
@@ -3104,7 +3104,7 @@ public final class DcIda {
         java.lang.Object arg0, java.lang.Object arg1) {
       switch (method) {
         case NEW_MUTABLE_INSTANCE: {
-          return new com.dogu.protocol.generated.inner.types.DcIda.DcIdaSubscribeAlertParam();
+          return new com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryAlertParam();
         }
         case NEW_BUILDER: {
           return new Builder();
@@ -3119,13 +3119,13 @@ public final class DcIda {
           return DEFAULT_INSTANCE;
         }
         case GET_PARSER: {
-          com.google.protobuf.Parser<com.dogu.protocol.generated.inner.types.DcIda.DcIdaSubscribeAlertParam> parser = PARSER;
+          com.google.protobuf.Parser<com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryAlertParam> parser = PARSER;
           if (parser == null) {
-            synchronized (com.dogu.protocol.generated.inner.types.DcIda.DcIdaSubscribeAlertParam.class) {
+            synchronized (com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryAlertParam.class) {
               parser = PARSER;
               if (parser == null) {
                 parser =
-                    new DefaultInstanceBasedParser<com.dogu.protocol.generated.inner.types.DcIda.DcIdaSubscribeAlertParam>(
+                    new DefaultInstanceBasedParser<com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryAlertParam>(
                         DEFAULT_INSTANCE);
                 PARSER = parser;
               }
@@ -3144,109 +3144,141 @@ public final class DcIda {
     }
 
 
-    // @@protoc_insertion_point(class_scope:inner.types.DcIdaSubscribeAlertParam)
-    private static final com.dogu.protocol.generated.inner.types.DcIda.DcIdaSubscribeAlertParam DEFAULT_INSTANCE;
+    // @@protoc_insertion_point(class_scope:inner.types.DcIdaQueryAlertParam)
+    private static final com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryAlertParam DEFAULT_INSTANCE;
     static {
-      DcIdaSubscribeAlertParam defaultInstance = new DcIdaSubscribeAlertParam();
+      DcIdaQueryAlertParam defaultInstance = new DcIdaQueryAlertParam();
       // New instances are implicitly immutable so no need to make
       // immutable.
       DEFAULT_INSTANCE = defaultInstance;
       com.google.protobuf.GeneratedMessageLite.registerDefaultInstance(
-        DcIdaSubscribeAlertParam.class, defaultInstance);
+        DcIdaQueryAlertParam.class, defaultInstance);
     }
 
-    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaSubscribeAlertParam getDefaultInstance() {
+    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryAlertParam getDefaultInstance() {
       return DEFAULT_INSTANCE;
     }
 
-    private static volatile com.google.protobuf.Parser<DcIdaSubscribeAlertParam> PARSER;
+    private static volatile com.google.protobuf.Parser<DcIdaQueryAlertParam> PARSER;
 
-    public static com.google.protobuf.Parser<DcIdaSubscribeAlertParam> parser() {
+    public static com.google.protobuf.Parser<DcIdaQueryAlertParam> parser() {
       return DEFAULT_INSTANCE.getParserForType();
     }
   }
 
-  public interface DcIdaSubscribeAlertResultOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:inner.types.DcIdaSubscribeAlertResult)
+  public interface DcIdaQueryAlertResultOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:inner.types.DcIdaQueryAlertResult)
       com.google.protobuf.MessageLiteOrBuilder {
+
+    /**
+     * <code>bool is_show = 1;</code>
+     * @return The isShow.
+     */
+    boolean getIsShow();
   }
   /**
-   * Protobuf type {@code inner.types.DcIdaSubscribeAlertResult}
+   * Protobuf type {@code inner.types.DcIdaQueryAlertResult}
    */
-  public  static final class DcIdaSubscribeAlertResult extends
+  public  static final class DcIdaQueryAlertResult extends
       com.google.protobuf.GeneratedMessageLite<
-          DcIdaSubscribeAlertResult, DcIdaSubscribeAlertResult.Builder> implements
-      // @@protoc_insertion_point(message_implements:inner.types.DcIdaSubscribeAlertResult)
-      DcIdaSubscribeAlertResultOrBuilder {
-    private DcIdaSubscribeAlertResult() {
+          DcIdaQueryAlertResult, DcIdaQueryAlertResult.Builder> implements
+      // @@protoc_insertion_point(message_implements:inner.types.DcIdaQueryAlertResult)
+      DcIdaQueryAlertResultOrBuilder {
+    private DcIdaQueryAlertResult() {
     }
-    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaSubscribeAlertResult parseFrom(
+    public static final int IS_SHOW_FIELD_NUMBER = 1;
+    private boolean isShow_;
+    /**
+     * <code>bool is_show = 1;</code>
+     * @return The isShow.
+     */
+    @java.lang.Override
+    public boolean getIsShow() {
+      return isShow_;
+    }
+    /**
+     * <code>bool is_show = 1;</code>
+     * @param value The isShow to set.
+     */
+    private void setIsShow(boolean value) {
+      
+      isShow_ = value;
+    }
+    /**
+     * <code>bool is_show = 1;</code>
+     */
+    private void clearIsShow() {
+      
+      isShow_ = false;
+    }
+
+    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryAlertResult parseFrom(
         java.nio.ByteBuffer data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return com.google.protobuf.GeneratedMessageLite.parseFrom(
           DEFAULT_INSTANCE, data);
     }
-    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaSubscribeAlertResult parseFrom(
+    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryAlertResult parseFrom(
         java.nio.ByteBuffer data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return com.google.protobuf.GeneratedMessageLite.parseFrom(
           DEFAULT_INSTANCE, data, extensionRegistry);
     }
-    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaSubscribeAlertResult parseFrom(
+    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryAlertResult parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return com.google.protobuf.GeneratedMessageLite.parseFrom(
           DEFAULT_INSTANCE, data);
     }
-    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaSubscribeAlertResult parseFrom(
+    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryAlertResult parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return com.google.protobuf.GeneratedMessageLite.parseFrom(
           DEFAULT_INSTANCE, data, extensionRegistry);
     }
-    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaSubscribeAlertResult parseFrom(byte[] data)
+    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryAlertResult parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return com.google.protobuf.GeneratedMessageLite.parseFrom(
           DEFAULT_INSTANCE, data);
     }
-    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaSubscribeAlertResult parseFrom(
+    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryAlertResult parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return com.google.protobuf.GeneratedMessageLite.parseFrom(
           DEFAULT_INSTANCE, data, extensionRegistry);
     }
-    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaSubscribeAlertResult parseFrom(java.io.InputStream input)
+    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryAlertResult parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageLite.parseFrom(
           DEFAULT_INSTANCE, input);
     }
-    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaSubscribeAlertResult parseFrom(
+    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryAlertResult parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageLite.parseFrom(
           DEFAULT_INSTANCE, input, extensionRegistry);
     }
-    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaSubscribeAlertResult parseDelimitedFrom(java.io.InputStream input)
+    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryAlertResult parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return parseDelimitedFrom(DEFAULT_INSTANCE, input);
     }
-    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaSubscribeAlertResult parseDelimitedFrom(
+    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryAlertResult parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return parseDelimitedFrom(DEFAULT_INSTANCE, input, extensionRegistry);
     }
-    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaSubscribeAlertResult parseFrom(
+    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryAlertResult parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageLite.parseFrom(
           DEFAULT_INSTANCE, input);
     }
-    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaSubscribeAlertResult parseFrom(
+    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryAlertResult parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -3257,25 +3289,53 @@ public final class DcIda {
     public static Builder newBuilder() {
       return (Builder) DEFAULT_INSTANCE.createBuilder();
     }
-    public static Builder newBuilder(com.dogu.protocol.generated.inner.types.DcIda.DcIdaSubscribeAlertResult prototype) {
+    public static Builder newBuilder(com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryAlertResult prototype) {
       return (Builder) DEFAULT_INSTANCE.createBuilder(prototype);
     }
 
     /**
-     * Protobuf type {@code inner.types.DcIdaSubscribeAlertResult}
+     * Protobuf type {@code inner.types.DcIdaQueryAlertResult}
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageLite.Builder<
-          com.dogu.protocol.generated.inner.types.DcIda.DcIdaSubscribeAlertResult, Builder> implements
-        // @@protoc_insertion_point(builder_implements:inner.types.DcIdaSubscribeAlertResult)
-        com.dogu.protocol.generated.inner.types.DcIda.DcIdaSubscribeAlertResultOrBuilder {
-      // Construct using com.dogu.protocol.generated.inner.types.DcIda.DcIdaSubscribeAlertResult.newBuilder()
+          com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryAlertResult, Builder> implements
+        // @@protoc_insertion_point(builder_implements:inner.types.DcIdaQueryAlertResult)
+        com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryAlertResultOrBuilder {
+      // Construct using com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryAlertResult.newBuilder()
       private Builder() {
         super(DEFAULT_INSTANCE);
       }
 
 
-      // @@protoc_insertion_point(builder_scope:inner.types.DcIdaSubscribeAlertResult)
+      /**
+       * <code>bool is_show = 1;</code>
+       * @return The isShow.
+       */
+      @java.lang.Override
+      public boolean getIsShow() {
+        return instance.getIsShow();
+      }
+      /**
+       * <code>bool is_show = 1;</code>
+       * @param value The isShow to set.
+       * @return This builder for chaining.
+       */
+      public Builder setIsShow(boolean value) {
+        copyOnWrite();
+        instance.setIsShow(value);
+        return this;
+      }
+      /**
+       * <code>bool is_show = 1;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearIsShow() {
+        copyOnWrite();
+        instance.clearIsShow();
+        return this;
+      }
+
+      // @@protoc_insertion_point(builder_scope:inner.types.DcIdaQueryAlertResult)
     }
     @java.lang.Override
     @java.lang.SuppressWarnings({"unchecked", "fallthrough"})
@@ -3284,14 +3344,17 @@ public final class DcIda {
         java.lang.Object arg0, java.lang.Object arg1) {
       switch (method) {
         case NEW_MUTABLE_INSTANCE: {
-          return new com.dogu.protocol.generated.inner.types.DcIda.DcIdaSubscribeAlertResult();
+          return new com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryAlertResult();
         }
         case NEW_BUILDER: {
           return new Builder();
         }
         case BUILD_MESSAGE_INFO: {
-            java.lang.Object[] objects = null;java.lang.String info =
-                "\u0000\u0000";
+            java.lang.Object[] objects = new java.lang.Object[] {
+              "isShow_",
+            };
+            java.lang.String info =
+                "\u0000\u0001\u0000\u0000\u0001\u0001\u0001\u0000\u0000\u0000\u0001\u0007";
             return newMessageInfo(DEFAULT_INSTANCE, info, objects);
         }
         // fall through
@@ -3299,13 +3362,13 @@ public final class DcIda {
           return DEFAULT_INSTANCE;
         }
         case GET_PARSER: {
-          com.google.protobuf.Parser<com.dogu.protocol.generated.inner.types.DcIda.DcIdaSubscribeAlertResult> parser = PARSER;
+          com.google.protobuf.Parser<com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryAlertResult> parser = PARSER;
           if (parser == null) {
-            synchronized (com.dogu.protocol.generated.inner.types.DcIda.DcIdaSubscribeAlertResult.class) {
+            synchronized (com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryAlertResult.class) {
               parser = PARSER;
               if (parser == null) {
                 parser =
-                    new DefaultInstanceBasedParser<com.dogu.protocol.generated.inner.types.DcIda.DcIdaSubscribeAlertResult>(
+                    new DefaultInstanceBasedParser<com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryAlertResult>(
                         DEFAULT_INSTANCE);
                 PARSER = parser;
               }
@@ -3324,24 +3387,24 @@ public final class DcIda {
     }
 
 
-    // @@protoc_insertion_point(class_scope:inner.types.DcIdaSubscribeAlertResult)
-    private static final com.dogu.protocol.generated.inner.types.DcIda.DcIdaSubscribeAlertResult DEFAULT_INSTANCE;
+    // @@protoc_insertion_point(class_scope:inner.types.DcIdaQueryAlertResult)
+    private static final com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryAlertResult DEFAULT_INSTANCE;
     static {
-      DcIdaSubscribeAlertResult defaultInstance = new DcIdaSubscribeAlertResult();
+      DcIdaQueryAlertResult defaultInstance = new DcIdaQueryAlertResult();
       // New instances are implicitly immutable so no need to make
       // immutable.
       DEFAULT_INSTANCE = defaultInstance;
       com.google.protobuf.GeneratedMessageLite.registerDefaultInstance(
-        DcIdaSubscribeAlertResult.class, defaultInstance);
+        DcIdaQueryAlertResult.class, defaultInstance);
     }
 
-    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaSubscribeAlertResult getDefaultInstance() {
+    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryAlertResult getDefaultInstance() {
       return DEFAULT_INSTANCE;
     }
 
-    private static volatile com.google.protobuf.Parser<DcIdaSubscribeAlertResult> PARSER;
+    private static volatile com.google.protobuf.Parser<DcIdaQueryAlertResult> PARSER;
 
-    public static com.google.protobuf.Parser<DcIdaSubscribeAlertResult> parser() {
+    public static com.google.protobuf.Parser<DcIdaQueryAlertResult> parser() {
       return DEFAULT_INSTANCE.getParserForType();
     }
   }

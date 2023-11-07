@@ -77,12 +77,12 @@ public struct Inner_Params_DcIdaParam {
     set {value = .dcIdaSwitchInputBlockParam(newValue)}
   }
 
-  public var dcIdaSubscribeAlertParam: Inner_Types_DcIdaSubscribeAlertParam {
+  public var dcIdaQueryAlertParam: Inner_Types_DcIdaQueryAlertParam {
     get {
-      if case .dcIdaSubscribeAlertParam(let v)? = value {return v}
-      return Inner_Types_DcIdaSubscribeAlertParam()
+      if case .dcIdaQueryAlertParam(let v)? = value {return v}
+      return Inner_Types_DcIdaQueryAlertParam()
     }
-    set {value = .dcIdaSubscribeAlertParam(newValue)}
+    set {value = .dcIdaQueryAlertParam(newValue)}
   }
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
@@ -94,7 +94,7 @@ public struct Inner_Params_DcIdaParam {
     case dcIdaQueryProfileParam(Inner_Types_DcIdaQueryProfileParam)
     case dcGdcDaControlParam(Inner_Types_CfGdcDaControlParam)
     case dcIdaSwitchInputBlockParam(Inner_Types_DcIdaSwitchInputBlockParam)
-    case dcIdaSubscribeAlertParam(Inner_Types_DcIdaSubscribeAlertParam)
+    case dcIdaQueryAlertParam(Inner_Types_DcIdaQueryAlertParam)
 
   #if !swift(>=4.1)
     public static func ==(lhs: Inner_Params_DcIdaParam.OneOf_Value, rhs: Inner_Params_DcIdaParam.OneOf_Value) -> Bool {
@@ -126,8 +126,8 @@ public struct Inner_Params_DcIdaParam {
         guard case .dcIdaSwitchInputBlockParam(let l) = lhs, case .dcIdaSwitchInputBlockParam(let r) = rhs else { preconditionFailure() }
         return l == r
       }()
-      case (.dcIdaSubscribeAlertParam, .dcIdaSubscribeAlertParam): return {
-        guard case .dcIdaSubscribeAlertParam(let l) = lhs, case .dcIdaSubscribeAlertParam(let r) = rhs else { preconditionFailure() }
+      case (.dcIdaQueryAlertParam, .dcIdaQueryAlertParam): return {
+        guard case .dcIdaQueryAlertParam(let l) = lhs, case .dcIdaQueryAlertParam(let r) = rhs else { preconditionFailure() }
         return l == r
       }()
       default: return false
@@ -145,6 +145,15 @@ public struct Inner_Params_DcIdaResult {
   // methods supported on all messages.
 
   public var seq: UInt32 = 0
+
+  public var error: Outer_ErrorResult {
+    get {return _error ?? Outer_ErrorResult()}
+    set {_error = newValue}
+  }
+  /// Returns true if `error` has been explicitly set.
+  public var hasError: Bool {return self._error != nil}
+  /// Clears the value of `error`. Subsequent reads from it will return its default value.
+  public mutating func clearError() {self._error = nil}
 
   public var value: Inner_Params_DcIdaResult.OneOf_Value? = nil
 
@@ -196,12 +205,12 @@ public struct Inner_Params_DcIdaResult {
     set {value = .dcIdaSwitchInputBlockResult(newValue)}
   }
 
-  public var dcIdaSubscribeAlertResult: Inner_Types_DcIdaSubscribeAlertResult {
+  public var dcIdaQueryAlertResult: Inner_Types_DcIdaQueryAlertResult {
     get {
-      if case .dcIdaSubscribeAlertResult(let v)? = value {return v}
-      return Inner_Types_DcIdaSubscribeAlertResult()
+      if case .dcIdaQueryAlertResult(let v)? = value {return v}
+      return Inner_Types_DcIdaQueryAlertResult()
     }
-    set {value = .dcIdaSubscribeAlertResult(newValue)}
+    set {value = .dcIdaQueryAlertResult(newValue)}
   }
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
@@ -213,7 +222,7 @@ public struct Inner_Params_DcIdaResult {
     case dcIdaQueryProfileResult(Inner_Types_DcIdaQueryProfileResult)
     case dcGdcDaControlResult(Inner_Types_CfGdcDaControlResult)
     case dcIdaSwitchInputBlockResult(Inner_Types_DcIdaSwitchInputBlockResult)
-    case dcIdaSubscribeAlertResult(Inner_Types_DcIdaSubscribeAlertResult)
+    case dcIdaQueryAlertResult(Inner_Types_DcIdaQueryAlertResult)
 
   #if !swift(>=4.1)
     public static func ==(lhs: Inner_Params_DcIdaResult.OneOf_Value, rhs: Inner_Params_DcIdaResult.OneOf_Value) -> Bool {
@@ -245,8 +254,8 @@ public struct Inner_Params_DcIdaResult {
         guard case .dcIdaSwitchInputBlockResult(let l) = lhs, case .dcIdaSwitchInputBlockResult(let r) = rhs else { preconditionFailure() }
         return l == r
       }()
-      case (.dcIdaSubscribeAlertResult, .dcIdaSubscribeAlertResult): return {
-        guard case .dcIdaSubscribeAlertResult(let l) = lhs, case .dcIdaSubscribeAlertResult(let r) = rhs else { preconditionFailure() }
+      case (.dcIdaQueryAlertResult, .dcIdaQueryAlertResult): return {
+        guard case .dcIdaQueryAlertResult(let l) = lhs, case .dcIdaQueryAlertResult(let r) = rhs else { preconditionFailure() }
         return l == r
       }()
       default: return false
@@ -256,6 +265,8 @@ public struct Inner_Params_DcIdaResult {
   }
 
   public init() {}
+
+  fileprivate var _error: Outer_ErrorResult? = nil
 }
 
 public struct Inner_Params_DcIdaParamList {
@@ -298,14 +309,14 @@ fileprivate let _protobuf_package = "inner.params"
 extension Inner_Params_DcIdaParam: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".DcIdaParam"
   public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    10: .same(proto: "seq"),
-    1: .standard(proto: "dc_ida_runapp_param"),
-    2: .standard(proto: "dc_ida_get_system_info_param"),
-    3: .standard(proto: "dc_ida_is_port_listening_param"),
-    4: .standard(proto: "dc_ida_query_profile_param"),
-    5: .standard(proto: "dc_gdc_da_control_param"),
-    6: .standard(proto: "dc_ida_switch_input_block_param"),
-    1000: .standard(proto: "dc_ida_subscribe_alert_param"),
+    1: .same(proto: "seq"),
+    10: .standard(proto: "dc_ida_runapp_param"),
+    11: .standard(proto: "dc_ida_get_system_info_param"),
+    12: .standard(proto: "dc_ida_is_port_listening_param"),
+    13: .standard(proto: "dc_ida_query_profile_param"),
+    14: .standard(proto: "dc_gdc_da_control_param"),
+    15: .standard(proto: "dc_ida_switch_input_block_param"),
+    16: .standard(proto: "dc_ida_query_alert_param"),
   ]
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -314,7 +325,8 @@ extension Inner_Params_DcIdaParam: SwiftProtobuf.Message, SwiftProtobuf._Message
       // allocates stack space for every case branch when no optimizations are
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try {
+      case 1: try { try decoder.decodeSingularFixed32Field(value: &self.seq) }()
+      case 10: try {
         var v: Inner_Types_DcIdaRunAppParam?
         var hadOneofValue = false
         if let current = self.value {
@@ -327,7 +339,7 @@ extension Inner_Params_DcIdaParam: SwiftProtobuf.Message, SwiftProtobuf._Message
           self.value = .dcIdaRunappParam(v)
         }
       }()
-      case 2: try {
+      case 11: try {
         var v: Inner_Types_DcIdaGetSystemInfoParam?
         var hadOneofValue = false
         if let current = self.value {
@@ -340,7 +352,7 @@ extension Inner_Params_DcIdaParam: SwiftProtobuf.Message, SwiftProtobuf._Message
           self.value = .dcIdaGetSystemInfoParam(v)
         }
       }()
-      case 3: try {
+      case 12: try {
         var v: Inner_Types_DcIdaIsPortListeningParam?
         var hadOneofValue = false
         if let current = self.value {
@@ -353,7 +365,7 @@ extension Inner_Params_DcIdaParam: SwiftProtobuf.Message, SwiftProtobuf._Message
           self.value = .dcIdaIsPortListeningParam(v)
         }
       }()
-      case 4: try {
+      case 13: try {
         var v: Inner_Types_DcIdaQueryProfileParam?
         var hadOneofValue = false
         if let current = self.value {
@@ -366,7 +378,7 @@ extension Inner_Params_DcIdaParam: SwiftProtobuf.Message, SwiftProtobuf._Message
           self.value = .dcIdaQueryProfileParam(v)
         }
       }()
-      case 5: try {
+      case 14: try {
         var v: Inner_Types_CfGdcDaControlParam?
         var hadOneofValue = false
         if let current = self.value {
@@ -379,7 +391,7 @@ extension Inner_Params_DcIdaParam: SwiftProtobuf.Message, SwiftProtobuf._Message
           self.value = .dcGdcDaControlParam(v)
         }
       }()
-      case 6: try {
+      case 15: try {
         var v: Inner_Types_DcIdaSwitchInputBlockParam?
         var hadOneofValue = false
         if let current = self.value {
@@ -392,18 +404,17 @@ extension Inner_Params_DcIdaParam: SwiftProtobuf.Message, SwiftProtobuf._Message
           self.value = .dcIdaSwitchInputBlockParam(v)
         }
       }()
-      case 10: try { try decoder.decodeSingularFixed32Field(value: &self.seq) }()
-      case 1000: try {
-        var v: Inner_Types_DcIdaSubscribeAlertParam?
+      case 16: try {
+        var v: Inner_Types_DcIdaQueryAlertParam?
         var hadOneofValue = false
         if let current = self.value {
           hadOneofValue = true
-          if case .dcIdaSubscribeAlertParam(let m) = current {v = m}
+          if case .dcIdaQueryAlertParam(let m) = current {v = m}
         }
         try decoder.decodeSingularMessageField(value: &v)
         if let v = v {
           if hadOneofValue {try decoder.handleConflictingOneOf()}
-          self.value = .dcIdaSubscribeAlertParam(v)
+          self.value = .dcIdaQueryAlertParam(v)
         }
       }()
       default: break
@@ -416,39 +427,40 @@ extension Inner_Params_DcIdaParam: SwiftProtobuf.Message, SwiftProtobuf._Message
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
     // https://github.com/apple/swift-protobuf/issues/1182
+    if self.seq != 0 {
+      try visitor.visitSingularFixed32Field(value: self.seq, fieldNumber: 1)
+    }
     switch self.value {
     case .dcIdaRunappParam?: try {
       guard case .dcIdaRunappParam(let v)? = self.value else { preconditionFailure() }
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 10)
     }()
     case .dcIdaGetSystemInfoParam?: try {
       guard case .dcIdaGetSystemInfoParam(let v)? = self.value else { preconditionFailure() }
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 11)
     }()
     case .dcIdaIsPortListeningParam?: try {
       guard case .dcIdaIsPortListeningParam(let v)? = self.value else { preconditionFailure() }
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 3)
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 12)
     }()
     case .dcIdaQueryProfileParam?: try {
       guard case .dcIdaQueryProfileParam(let v)? = self.value else { preconditionFailure() }
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 4)
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 13)
     }()
     case .dcGdcDaControlParam?: try {
       guard case .dcGdcDaControlParam(let v)? = self.value else { preconditionFailure() }
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 5)
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 14)
     }()
     case .dcIdaSwitchInputBlockParam?: try {
       guard case .dcIdaSwitchInputBlockParam(let v)? = self.value else { preconditionFailure() }
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 6)
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 15)
     }()
-    default: break
+    case .dcIdaQueryAlertParam?: try {
+      guard case .dcIdaQueryAlertParam(let v)? = self.value else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 16)
+    }()
+    case nil: break
     }
-    if self.seq != 0 {
-      try visitor.visitSingularFixed32Field(value: self.seq, fieldNumber: 10)
-    }
-    try { if case .dcIdaSubscribeAlertParam(let v)? = self.value {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 1000)
-    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -463,14 +475,15 @@ extension Inner_Params_DcIdaParam: SwiftProtobuf.Message, SwiftProtobuf._Message
 extension Inner_Params_DcIdaResult: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".DcIdaResult"
   public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    10: .same(proto: "seq"),
-    1: .standard(proto: "dc_ida_runapp_result"),
-    2: .standard(proto: "dc_ida_get_system_info_result"),
-    3: .standard(proto: "dc_ida_is_port_listening_result"),
-    4: .standard(proto: "dc_ida_query_profile_result"),
-    5: .standard(proto: "dc_gdc_da_control_result"),
-    6: .standard(proto: "dc_ida_switch_input_block_result"),
-    1000: .standard(proto: "dc_ida_subscribe_alert_result"),
+    1: .same(proto: "seq"),
+    2: .same(proto: "error"),
+    10: .standard(proto: "dc_ida_runapp_result"),
+    11: .standard(proto: "dc_ida_get_system_info_result"),
+    12: .standard(proto: "dc_ida_is_port_listening_result"),
+    13: .standard(proto: "dc_ida_query_profile_result"),
+    14: .standard(proto: "dc_gdc_da_control_result"),
+    15: .standard(proto: "dc_ida_switch_input_block_result"),
+    16: .standard(proto: "dc_ida_query_alert_result"),
   ]
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -479,7 +492,9 @@ extension Inner_Params_DcIdaResult: SwiftProtobuf.Message, SwiftProtobuf._Messag
       // allocates stack space for every case branch when no optimizations are
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try {
+      case 1: try { try decoder.decodeSingularFixed32Field(value: &self.seq) }()
+      case 2: try { try decoder.decodeSingularMessageField(value: &self._error) }()
+      case 10: try {
         var v: Inner_Types_DcIdaRunAppResult?
         var hadOneofValue = false
         if let current = self.value {
@@ -492,7 +507,7 @@ extension Inner_Params_DcIdaResult: SwiftProtobuf.Message, SwiftProtobuf._Messag
           self.value = .dcIdaRunappResult(v)
         }
       }()
-      case 2: try {
+      case 11: try {
         var v: Inner_Types_DcIdaGetSystemInfoResult?
         var hadOneofValue = false
         if let current = self.value {
@@ -505,7 +520,7 @@ extension Inner_Params_DcIdaResult: SwiftProtobuf.Message, SwiftProtobuf._Messag
           self.value = .dcIdaGetSystemInfoResult(v)
         }
       }()
-      case 3: try {
+      case 12: try {
         var v: Inner_Types_DcIdaIsPortListeningResult?
         var hadOneofValue = false
         if let current = self.value {
@@ -518,7 +533,7 @@ extension Inner_Params_DcIdaResult: SwiftProtobuf.Message, SwiftProtobuf._Messag
           self.value = .dcIdaIsPortListeningResult(v)
         }
       }()
-      case 4: try {
+      case 13: try {
         var v: Inner_Types_DcIdaQueryProfileResult?
         var hadOneofValue = false
         if let current = self.value {
@@ -531,7 +546,7 @@ extension Inner_Params_DcIdaResult: SwiftProtobuf.Message, SwiftProtobuf._Messag
           self.value = .dcIdaQueryProfileResult(v)
         }
       }()
-      case 5: try {
+      case 14: try {
         var v: Inner_Types_CfGdcDaControlResult?
         var hadOneofValue = false
         if let current = self.value {
@@ -544,7 +559,7 @@ extension Inner_Params_DcIdaResult: SwiftProtobuf.Message, SwiftProtobuf._Messag
           self.value = .dcGdcDaControlResult(v)
         }
       }()
-      case 6: try {
+      case 15: try {
         var v: Inner_Types_DcIdaSwitchInputBlockResult?
         var hadOneofValue = false
         if let current = self.value {
@@ -557,18 +572,17 @@ extension Inner_Params_DcIdaResult: SwiftProtobuf.Message, SwiftProtobuf._Messag
           self.value = .dcIdaSwitchInputBlockResult(v)
         }
       }()
-      case 10: try { try decoder.decodeSingularFixed32Field(value: &self.seq) }()
-      case 1000: try {
-        var v: Inner_Types_DcIdaSubscribeAlertResult?
+      case 16: try {
+        var v: Inner_Types_DcIdaQueryAlertResult?
         var hadOneofValue = false
         if let current = self.value {
           hadOneofValue = true
-          if case .dcIdaSubscribeAlertResult(let m) = current {v = m}
+          if case .dcIdaQueryAlertResult(let m) = current {v = m}
         }
         try decoder.decodeSingularMessageField(value: &v)
         if let v = v {
           if hadOneofValue {try decoder.handleConflictingOneOf()}
-          self.value = .dcIdaSubscribeAlertResult(v)
+          self.value = .dcIdaQueryAlertResult(v)
         }
       }()
       default: break
@@ -581,44 +595,49 @@ extension Inner_Params_DcIdaResult: SwiftProtobuf.Message, SwiftProtobuf._Messag
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
     // https://github.com/apple/swift-protobuf/issues/1182
+    if self.seq != 0 {
+      try visitor.visitSingularFixed32Field(value: self.seq, fieldNumber: 1)
+    }
+    try { if let v = self._error {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
+    } }()
     switch self.value {
     case .dcIdaRunappResult?: try {
       guard case .dcIdaRunappResult(let v)? = self.value else { preconditionFailure() }
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 10)
     }()
     case .dcIdaGetSystemInfoResult?: try {
       guard case .dcIdaGetSystemInfoResult(let v)? = self.value else { preconditionFailure() }
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 11)
     }()
     case .dcIdaIsPortListeningResult?: try {
       guard case .dcIdaIsPortListeningResult(let v)? = self.value else { preconditionFailure() }
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 3)
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 12)
     }()
     case .dcIdaQueryProfileResult?: try {
       guard case .dcIdaQueryProfileResult(let v)? = self.value else { preconditionFailure() }
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 4)
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 13)
     }()
     case .dcGdcDaControlResult?: try {
       guard case .dcGdcDaControlResult(let v)? = self.value else { preconditionFailure() }
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 5)
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 14)
     }()
     case .dcIdaSwitchInputBlockResult?: try {
       guard case .dcIdaSwitchInputBlockResult(let v)? = self.value else { preconditionFailure() }
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 6)
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 15)
     }()
-    default: break
+    case .dcIdaQueryAlertResult?: try {
+      guard case .dcIdaQueryAlertResult(let v)? = self.value else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 16)
+    }()
+    case nil: break
     }
-    if self.seq != 0 {
-      try visitor.visitSingularFixed32Field(value: self.seq, fieldNumber: 10)
-    }
-    try { if case .dcIdaSubscribeAlertResult(let v)? = self.value {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 1000)
-    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
   public static func ==(lhs: Inner_Params_DcIdaResult, rhs: Inner_Params_DcIdaResult) -> Bool {
     if lhs.seq != rhs.seq {return false}
+    if lhs._error != rhs._error {return false}
     if lhs.value != rhs.value {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true

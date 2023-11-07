@@ -7,7 +7,8 @@ import XCTest
 public final class IOSDeviceAgent {
   private var config = Config()
   private let controlProcessor = MainControlProcessor()
-  var preventGabage: ControlSession?
+  var sessionForPreventGarbage: ControlSession?
+  var alertDetector: AlertDetector = AlertDetector()
   var listener: NWListener?
   var sessionIdSeed: UInt32 = 0
   private var sessions: [UInt32: ControlSession] = [:]
@@ -44,6 +45,8 @@ public final class IOSDeviceAgent {
     Task.catchable(
       {
         let webDriverClient = try WebDriverClient(url: "http://127.0.0.1:\(self.config.webDriverPort)")
+        try await self.alertDetector.open(webDriverClient: webDriverClient)
+        
         let param = ControlOpenParam(
           screenSize: screenSize, webDriverClient: webDriverClient, actionPerformer: ActionPerformer(webDriverClient: webDriverClient),
           inputBlocker: InputBlocker(config: self.config, webDriverClient: webDriverClient))
@@ -86,7 +89,7 @@ public final class IOSDeviceAgent {
           return
         }
         self.sessionIdSeed += 1
-        self.preventGabage = ControlSession(
+        self.sessionForPreventGarbage = ControlSession(
           sessionId: self.sessionIdSeed, connection: connection, listener: ControlSessionListener(controlProcessor: self.controlProcessor, iosdeviceagent: self))
       }
 
