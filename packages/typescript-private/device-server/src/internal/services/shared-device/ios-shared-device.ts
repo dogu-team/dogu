@@ -56,6 +56,9 @@ export class IosSharedDeviceService implements Zombieable {
     if (!env.DOGU_IS_DEVICE_SHARE) {
       return;
     }
+    if (config.externalIosDeviceAgent.use) {
+      return;
+    }
     const { serial, printable: logger, wda, appiumContext, iosWebDriverInfo } = this;
     const driver = this.appiumContext.driver();
     if (!driver) {
@@ -77,9 +80,7 @@ export class IosSharedDeviceService implements Zombieable {
     if (!env.DOGU_IS_DEVICE_SHARE) {
       return;
     }
-    const { serial, printable: logger } = this;
-    logger.info(`IosSharedDeviceService.revive. begin `, { serial });
-    logger.info(`IosSharedDeviceService.revive. done `, { serial });
+
     await delay(0);
   }
 

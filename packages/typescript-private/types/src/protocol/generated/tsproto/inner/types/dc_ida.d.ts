@@ -37,6 +37,7 @@ export interface DcIdaQueryAlertParam {
 }
 export interface DcIdaQueryAlertResult {
     isShow: boolean;
+    title: string;
 }
 export declare const DcIdaRunAppParam: {
     encode(message: DcIdaRunAppParam, writer?: _m0.Writer): _m0.Writer;
@@ -729,7 +730,9 @@ export declare const DcIdaQueryAlertResult: {
     toJSON(message: DcIdaQueryAlertResult): unknown;
     fromPartial<I extends {
         isShow?: boolean | undefined;
+        title?: string | undefined;
     } & {
         isShow?: boolean | undefined;
-    } & { [K in Exclude<keyof I, "isShow">]: never; }>(object: I): DcIdaQueryAlertResult;
+        title?: string | undefined;
+    } & { [K in Exclude<keyof I, keyof DcIdaQueryAlertResult>]: never; }>(object: I): DcIdaQueryAlertResult;
 };

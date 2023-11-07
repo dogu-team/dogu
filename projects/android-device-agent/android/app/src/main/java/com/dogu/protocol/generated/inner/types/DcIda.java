@@ -3175,6 +3175,18 @@ public final class DcIda {
      * @return The isShow.
      */
     boolean getIsShow();
+
+    /**
+     * <code>string title = 2;</code>
+     * @return The title.
+     */
+    java.lang.String getTitle();
+    /**
+     * <code>string title = 2;</code>
+     * @return The bytes for title.
+     */
+    com.google.protobuf.ByteString
+        getTitleBytes();
   }
   /**
    * Protobuf type {@code inner.types.DcIdaQueryAlertResult}
@@ -3185,6 +3197,7 @@ public final class DcIda {
       // @@protoc_insertion_point(message_implements:inner.types.DcIdaQueryAlertResult)
       DcIdaQueryAlertResultOrBuilder {
     private DcIdaQueryAlertResult() {
+      title_ = "";
     }
     public static final int IS_SHOW_FIELD_NUMBER = 1;
     private boolean isShow_;
@@ -3210,6 +3223,53 @@ public final class DcIda {
     private void clearIsShow() {
       
       isShow_ = false;
+    }
+
+    public static final int TITLE_FIELD_NUMBER = 2;
+    private java.lang.String title_;
+    /**
+     * <code>string title = 2;</code>
+     * @return The title.
+     */
+    @java.lang.Override
+    public java.lang.String getTitle() {
+      return title_;
+    }
+    /**
+     * <code>string title = 2;</code>
+     * @return The bytes for title.
+     */
+    @java.lang.Override
+    public com.google.protobuf.ByteString
+        getTitleBytes() {
+      return com.google.protobuf.ByteString.copyFromUtf8(title_);
+    }
+    /**
+     * <code>string title = 2;</code>
+     * @param value The title to set.
+     */
+    private void setTitle(
+        java.lang.String value) {
+      java.lang.Class<?> valueClass = value.getClass();
+  
+      title_ = value;
+    }
+    /**
+     * <code>string title = 2;</code>
+     */
+    private void clearTitle() {
+      
+      title_ = getDefaultInstance().getTitle();
+    }
+    /**
+     * <code>string title = 2;</code>
+     * @param value The bytes for title to set.
+     */
+    private void setTitleBytes(
+        com.google.protobuf.ByteString value) {
+      checkByteStringIsUtf8(value);
+      title_ = value.toStringUtf8();
+      
     }
 
     public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryAlertResult parseFrom(
@@ -3335,6 +3395,55 @@ public final class DcIda {
         return this;
       }
 
+      /**
+       * <code>string title = 2;</code>
+       * @return The title.
+       */
+      @java.lang.Override
+      public java.lang.String getTitle() {
+        return instance.getTitle();
+      }
+      /**
+       * <code>string title = 2;</code>
+       * @return The bytes for title.
+       */
+      @java.lang.Override
+      public com.google.protobuf.ByteString
+          getTitleBytes() {
+        return instance.getTitleBytes();
+      }
+      /**
+       * <code>string title = 2;</code>
+       * @param value The title to set.
+       * @return This builder for chaining.
+       */
+      public Builder setTitle(
+          java.lang.String value) {
+        copyOnWrite();
+        instance.setTitle(value);
+        return this;
+      }
+      /**
+       * <code>string title = 2;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearTitle() {
+        copyOnWrite();
+        instance.clearTitle();
+        return this;
+      }
+      /**
+       * <code>string title = 2;</code>
+       * @param value The bytes for title to set.
+       * @return This builder for chaining.
+       */
+      public Builder setTitleBytes(
+          com.google.protobuf.ByteString value) {
+        copyOnWrite();
+        instance.setTitleBytes(value);
+        return this;
+      }
+
       // @@protoc_insertion_point(builder_scope:inner.types.DcIdaQueryAlertResult)
     }
     @java.lang.Override
@@ -3352,9 +3461,11 @@ public final class DcIda {
         case BUILD_MESSAGE_INFO: {
             java.lang.Object[] objects = new java.lang.Object[] {
               "isShow_",
+              "title_",
             };
             java.lang.String info =
-                "\u0000\u0001\u0000\u0000\u0001\u0001\u0001\u0000\u0000\u0000\u0001\u0007";
+                "\u0000\u0002\u0000\u0000\u0001\u0002\u0002\u0000\u0000\u0000\u0001\u0007\u0002\u0208" +
+                "";
             return newMessageInfo(DEFAULT_INSTANCE, info, objects);
         }
         // fall through

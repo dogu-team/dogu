@@ -1,5 +1,6 @@
 import { Class, Closable, errorify, Instance, Log, stringify, transformAndValidate, WebSocketSpec } from '@dogu-tech/common';
-import { DeviceSystemInfo, FilledRuntimeInfo, GeoLocation, LocaleCode, PlatformSerial, Serial } from '@dogu-tech/types';
+import { DeviceAlert, DeviceSystemInfo, FilledRuntimeInfo, GeoLocation, LocaleCode, PlatformSerial, Serial } from '@dogu-tech/types';
+import { DeviceAlertSubscribe } from '.';
 import { DeviceClientOptions, DeviceCloser, DeviceService, DeviceWebSocket } from './bases';
 import { DeviceHttpClient } from './device-http-client';
 import { DeviceInterface } from './interface';
@@ -17,7 +18,7 @@ export class DeviceClient extends DeviceHttpClient implements DeviceInterface {
     super(deviceService, options);
   }
 
-  private execute<S extends Class<S>, R>(spec: WebSocketSpec<S, R>, sendMessage: Instance<S>): Promise<void> {
+  private async execute<S extends Class<S>, R>(spec: WebSocketSpec<S, R>, sendMessage: Instance<S>): Promise<void> {
     return new Promise((resolve, reject) => {
       const { path } = spec;
       const deviceWebSocket = this.deviceService.connectWebSocket(
@@ -78,28 +79,28 @@ export class DeviceClient extends DeviceHttpClient implements DeviceInterface {
     await this.httpRequest(Device.setGeoLocation, new Device.setGeoLocation.pathProvider(serial), undefined, location);
   }
 
-  installApp(serial: Serial, appPath: string): Promise<void> {
+  async installApp(serial: Serial, appPath: string): Promise<void> {
     return this.execute(DeviceInstallApp, {
       serial,
       appPath,
     });
   }
 
-  uninstallApp(serial: Serial, appPath: string): Promise<void> {
+  async uninstallApp(serial: Serial, appPath: string): Promise<void> {
     return this.execute(DeviceUninstallApp, {
       serial,
       appPath,
     });
   }
 
-  runApp(serial: Serial, appPath: string): Promise<void> {
+  async runApp(serial: Serial, appPath: string): Promise<void> {
     return this.execute(DeviceRunApp, {
       serial,
       appPath,
     });
   }
 
-  private subscribe<S extends Class<S>, R>(
+  private async subscribe<S extends Class<S>, R>(
     spec: WebSocketSpec<S, R>,
     query: Record<string, unknown> | undefined,
     onOpen: (deviceWebSocket: DeviceWebSocket) => void,
@@ -150,7 +151,7 @@ export class DeviceClient extends DeviceHttpClient implements DeviceInterface {
     });
   }
 
-  forward(serial: Serial, hostPort: number, devicePort: number): Promise<Closable> {
+  async forward(serial: Serial, hostPort: number, devicePort: number): Promise<Closable> {
     const { printable } = this.options;
     let returningClosable: Closable | null = null;
     let resolvedOrRejected = false;
@@ -216,7 +217,7 @@ export class DeviceClient extends DeviceHttpClient implements DeviceInterface {
     });
   }
 
-  subscribeRuntimeInfo(serial: Serial, onRuntimeInfo: (runtimeInfo: FilledRuntimeInfo) => void): Promise<Closable> {
+  async subscribeRuntimeInfo(serial: Serial, onRuntimeInfo: (runtimeInfo: FilledRuntimeInfo) => void): Promise<Closable> {
     return this.subscribe(
       DeviceRuntimeInfoSubscribe,
       undefined,
@@ -239,7 +240,7 @@ export class DeviceClient extends DeviceHttpClient implements DeviceInterface {
     );
   }
 
-  subscribeLog(serial: Serial, args: string[], onLog: (log: Log) => void): Promise<Closable> {
+  async subscribeLog(serial: Serial, args: string[], onLog: (log: Log) => void): Promise<Closable> {
     return this.subscribe(
       DeviceLogSubscribe,
       undefined,
@@ -255,6 +256,28 @@ export class DeviceClient extends DeviceHttpClient implements DeviceInterface {
         (async (): Promise<void> => {
           const receiveMessage = await transformAndValidate(DeviceLogSubscribe.receiveMessage, JSON.parse(message));
           onLog(receiveMessage);
+        })().catch((error) => {
+          printable.error?.(`Failed to parse message`, { message, error: stringify(error) });
+        });
+      },
+    );
+  }
+
+  async subscribeAlert(serial: Serial, onAlert: (alert: DeviceAlert) => void): Promise<Closable> {
+    return this.subscribe(
+      DeviceAlertSubscribe,
+      undefined,
+      (deviceServerWebSocket) => {
+        const sendMessage: Instance<typeof DeviceAlertSubscribe.sendMessage> = {
+          serial,
+        };
+        deviceServerWebSocket.send(JSON.stringify(sendMessage));
+      },
+      (message) => {
+        const { printable } = this.options;
+        (async (): Promise<void> => {
+          const receiveMessage = await transformAndValidate(DeviceAlertSubscribe.receiveMessage, JSON.parse(message));
+          onAlert(receiveMessage);
         })().catch((error) => {
           printable.error?.(`Failed to parse message`, { message, error: stringify(error) });
         });

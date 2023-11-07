@@ -4,6 +4,7 @@ import { DeviceHostModule } from '../device-host/device-host.module';
 import { ScanModule } from '../scan/scan.module';
 import { DeviceHostDownloadSharedResourceWebSocketService } from './device-host/download-shared-resource';
 import { DeviceHostUploadFileService } from './device-host/upload-file.service';
+import { DeviceAlertSubscribeService } from './device/alert-subscribe.service';
 import { DeviceConnectionSubscribeService } from './device/connection-subscribe.service';
 import { DeviceFindWindowsService } from './device/find-windows.service';
 import { DeviceForwardService } from './device/forward.service';
@@ -40,6 +41,7 @@ import { DeviceWebSocketRelayService } from './device/websocket-relay.service';
     DeviceHostUploadFileService,
     DeviceHostDownloadSharedResourceWebSocketService,
     DeviceFindWindowsService,
+    DeviceAlertSubscribeService,
   ],
 })
 export class WsModule {}

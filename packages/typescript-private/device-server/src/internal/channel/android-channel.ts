@@ -1,6 +1,7 @@
 import {
   createLocaleCode,
   DefaultScreenCaptureOption,
+  DeviceAlert,
   DeviceSystemInfo,
   DeviceWindowInfo,
   ErrorResult,
@@ -18,7 +19,7 @@ import {
   SerialPrintable,
   StreamingAnswer,
 } from '@dogu-private/types';
-import { AsyncClosable, Closable, errorify, MixedLogger, Printable, stringify } from '@dogu-tech/common';
+import { Closable, errorify, MixedLogger, Printable, stringify } from '@dogu-tech/common';
 import { AppiumCapabilities, BrowserInstallation, StreamingOfferDto } from '@dogu-tech/device-client-common';
 import { killChildProcess, killProcessOnPort } from '@dogu-tech/node';
 import { ChildProcess } from 'child_process';
@@ -37,7 +38,7 @@ import { deviceInfoLogger } from '../../logger/logger.instance';
 import { createAndroidLogger, SerialLogger } from '../../logger/serial-logger.instance';
 import { AdbSerial, AppiumAdb } from '../externals';
 import { getManifestFromApp } from '../externals/apk/apk-util';
-import { AlertHandler, DeviceChannel, DeviceChannelOpenParam, DeviceHealthStatus, DeviceServerService, LogHandler } from '../public/device-channel';
+import { DeviceChannel, DeviceChannelOpenParam, DeviceHealthStatus, DeviceServerService, LogHandler } from '../public/device-channel';
 import { AndroidDeviceAgentService } from '../services/device-agent/android-device-agent-service';
 import { AndroidAdbProfileService, AndroidDisplayProfileService } from '../services/profile/android-profiler';
 import { ProfileServices } from '../services/profile/profile-service';
@@ -319,11 +320,6 @@ export class AndroidChannel implements DeviceChannel {
     return [];
   }
 
-  async subscribeAlert(handler: AlertHandler): Promise<AsyncClosable> {
-    throw new Error('Method not implemented.');
-    await Promise.resolve();
-  }
-
   async subscribeLog(args: string[], handler: LogHandler): Promise<Closable> {
     const { logger } = this;
     const { stdout, stderr } = await this.adb.logcatClear();
@@ -444,6 +440,11 @@ export class AndroidChannel implements DeviceChannel {
   async setGeoLocation(geoLocation: GeoLocation): Promise<void> {
     const newAppiumAdb = this.appiumAdb.clone({ adbExecTimeout: 1000 * 60 * 3 });
     await newAppiumAdb.setGeoLocation(geoLocation);
+  }
+
+  async getAlert(): Promise<DeviceAlert | undefined> {
+    throw new Error('Method not implemented.');
+    await Promise.resolve();
   }
 }
 

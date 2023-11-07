@@ -480,12 +480,15 @@ exports.DcIdaQueryAlertParam = {
     },
 };
 function createBaseDcIdaQueryAlertResult() {
-    return { isShow: false };
+    return { isShow: false, title: '' };
 }
 exports.DcIdaQueryAlertResult = {
     encode(message, writer = minimal_1.default.Writer.create()) {
         if (message.isShow === true) {
             writer.uint32(8).bool(message.isShow);
+        }
+        if (message.title !== '') {
+            writer.uint32(18).string(message.title);
         }
         return writer;
     },
@@ -499,6 +502,9 @@ exports.DcIdaQueryAlertResult = {
                 case 1:
                     message.isShow = reader.bool();
                     break;
+                case 2:
+                    message.title = reader.string();
+                    break;
                 default:
                     reader.skipType(tag & 7);
                     break;
@@ -507,16 +513,21 @@ exports.DcIdaQueryAlertResult = {
         return message;
     },
     fromJSON(object) {
-        return { isShow: isSet(object.isShow) ? Boolean(object.isShow) : false };
+        return {
+            isShow: isSet(object.isShow) ? Boolean(object.isShow) : false,
+            title: isSet(object.title) ? String(object.title) : '',
+        };
     },
     toJSON(message) {
         const obj = {};
         message.isShow !== undefined && (obj.isShow = message.isShow);
+        message.title !== undefined && (obj.title = message.title);
         return obj;
     },
     fromPartial(object) {
         const message = createBaseDcIdaQueryAlertResult();
         message.isShow = object.isShow ?? false;
+        message.title = object.title ?? '';
         return message;
     },
 };

@@ -177,6 +177,8 @@ public struct Inner_Types_DcIdaQueryAlertResult {
 
   public var isShow: Bool = false
 
+  public var title: String = String()
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
@@ -544,6 +546,7 @@ extension Inner_Types_DcIdaQueryAlertResult: SwiftProtobuf.Message, SwiftProtobu
   public static let protoMessageName: String = _protobuf_package + ".DcIdaQueryAlertResult"
   public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .standard(proto: "is_show"),
+    2: .same(proto: "title"),
   ]
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -553,6 +556,7 @@ extension Inner_Types_DcIdaQueryAlertResult: SwiftProtobuf.Message, SwiftProtobu
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularBoolField(value: &self.isShow) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self.title) }()
       default: break
       }
     }
@@ -562,11 +566,15 @@ extension Inner_Types_DcIdaQueryAlertResult: SwiftProtobuf.Message, SwiftProtobu
     if self.isShow != false {
       try visitor.visitSingularBoolField(value: self.isShow, fieldNumber: 1)
     }
+    if !self.title.isEmpty {
+      try visitor.visitSingularStringField(value: self.title, fieldNumber: 2)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   public static func ==(lhs: Inner_Types_DcIdaQueryAlertResult, rhs: Inner_Types_DcIdaQueryAlertResult) -> Bool {
     if lhs.isShow != rhs.isShow {return false}
+    if lhs.title != rhs.title {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

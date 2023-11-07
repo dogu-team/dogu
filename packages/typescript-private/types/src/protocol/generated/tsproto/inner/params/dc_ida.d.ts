@@ -490,6 +490,7 @@ export declare const DcIdaResult: {
         }) | ({
             dcIdaQueryAlertResult?: {
                 isShow?: boolean | undefined;
+                title?: string | undefined;
             } | undefined;
         } & {
             $case: "dcIdaQueryAlertResult";
@@ -1263,15 +1264,18 @@ export declare const DcIdaResult: {
         } & { [K_44 in Exclude<keyof I["value"], "$case" | "dcIdaSwitchInputBlockResult">]: never; }) | ({
             dcIdaQueryAlertResult?: {
                 isShow?: boolean | undefined;
+                title?: string | undefined;
             } | undefined;
         } & {
             $case: "dcIdaQueryAlertResult";
         } & {
             dcIdaQueryAlertResult?: ({
                 isShow?: boolean | undefined;
+                title?: string | undefined;
             } & {
                 isShow?: boolean | undefined;
-            } & { [K_45 in Exclude<keyof I["value"]["dcIdaQueryAlertResult"], "isShow">]: never; }) | undefined;
+                title?: string | undefined;
+            } & { [K_45 in Exclude<keyof I["value"]["dcIdaQueryAlertResult"], keyof DcIdaQueryAlertResult>]: never; }) | undefined;
             $case: "dcIdaQueryAlertResult";
         } & { [K_46 in Exclude<keyof I["value"], "$case" | "dcIdaQueryAlertResult">]: never; }) | undefined;
     } & { [K_47 in Exclude<keyof I, keyof DcIdaResult>]: never; }>(object: I): DcIdaResult;
@@ -1919,6 +1923,7 @@ export declare const DcIdaResultList: {
             }) | ({
                 dcIdaQueryAlertResult?: {
                     isShow?: boolean | undefined;
+                    title?: string | undefined;
                 } | undefined;
             } & {
                 $case: "dcIdaQueryAlertResult";
@@ -2072,6 +2077,7 @@ export declare const DcIdaResultList: {
             }) | ({
                 dcIdaQueryAlertResult?: {
                     isShow?: boolean | undefined;
+                    title?: string | undefined;
                 } | undefined;
             } & {
                 $case: "dcIdaQueryAlertResult";
@@ -2223,6 +2229,7 @@ export declare const DcIdaResultList: {
             }) | ({
                 dcIdaQueryAlertResult?: {
                     isShow?: boolean | undefined;
+                    title?: string | undefined;
                 } | undefined;
             } & {
                 $case: "dcIdaQueryAlertResult";
@@ -2996,15 +3003,18 @@ export declare const DcIdaResultList: {
             } & { [K_44 in Exclude<keyof I["results"][number]["value"], "$case" | "dcIdaSwitchInputBlockResult">]: never; }) | ({
                 dcIdaQueryAlertResult?: {
                     isShow?: boolean | undefined;
+                    title?: string | undefined;
                 } | undefined;
             } & {
                 $case: "dcIdaQueryAlertResult";
             } & {
                 dcIdaQueryAlertResult?: ({
                     isShow?: boolean | undefined;
+                    title?: string | undefined;
                 } & {
                     isShow?: boolean | undefined;
-                } & { [K_45 in Exclude<keyof I["results"][number]["value"]["dcIdaQueryAlertResult"], "isShow">]: never; }) | undefined;
+                    title?: string | undefined;
+                } & { [K_45 in Exclude<keyof I["results"][number]["value"]["dcIdaQueryAlertResult"], keyof DcIdaQueryAlertResult>]: never; }) | undefined;
                 $case: "dcIdaQueryAlertResult";
             } & { [K_46 in Exclude<keyof I["results"][number]["value"], "$case" | "dcIdaQueryAlertResult">]: never; }) | undefined;
         } & { [K_47 in Exclude<keyof I["results"][number], keyof DcIdaResult>]: never; })[] & { [K_48 in Exclude<keyof I["results"], keyof {
@@ -3154,6 +3164,7 @@ export declare const DcIdaResultList: {
             }) | ({
                 dcIdaQueryAlertResult?: {
                     isShow?: boolean | undefined;
+                    title?: string | undefined;
                 } | undefined;
             } & {
                 $case: "dcIdaQueryAlertResult";

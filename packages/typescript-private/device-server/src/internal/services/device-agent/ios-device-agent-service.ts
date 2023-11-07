@@ -6,7 +6,6 @@ import { env } from '../../../env';
 import { DeviceAgentService } from '../../services/device-agent/device-agent-service';
 import { Zombieable, ZombieProps, ZombieQueriable } from '../zombie/zombie-component';
 import { ZombieServiceInstance } from '../zombie/zombie-service';
-import { IosDeviceAgentZombieSubscriber } from './ios-device-agent-zombie-subscriber';
 
 type DcIdaParam = PrivateProtocol.DcIdaParam;
 type DcIdaResult = PrivateProtocol.DcIdaResult;
@@ -33,15 +32,17 @@ function DefaultSendOption(): SendOption {
 
 type ResultCallback<ResultValue> = (result: ResultValue | undefined, error: Error | undefined) => void;
 
+const MaxFailCount = 10;
+
 export class IosDeviceAgentService implements DeviceAgentService, Zombieable {
   private readonly client: Socket;
   private protoAPIRetEmitter = new ProtoAPIEmitterImpl();
   private readonly recvQueue = new SizePrefixedRecvQueue();
   private seq = 0;
+  private failCount = 0;
   private zombieWaiter: ZombieQueriable;
   public name = 'iOSDeviceAgentService';
   public platform = Platform.PLATFORM_IOS;
-  private subscribers: IosDeviceAgentZombieSubscriber[] = [];
 
   constructor(
     public readonly serial: Serial,
@@ -53,29 +54,29 @@ export class IosDeviceAgentService implements DeviceAgentService, Zombieable {
     this.zombieWaiter = ZombieServiceInstance.addComponent(this);
     this.client = new Socket();
 
-    this.client.on('connect', () => {
+    this.client.addListener('connect', () => {
       logger.info('IosDeviceAgentService. client connect');
     });
 
-    this.client.on('error', (error: Error) => {
+    this.client.addListener('error', (error: Error) => {
       logger.error(`IosDeviceAgentService. client error: ${stringify(error)}`);
     });
 
-    this.client.on('timeout', () => {
+    this.client.addListener('timeout', () => {
       logger.error('IosDeviceAgentService. client timeout');
     });
 
-    this.client.on('close', (isError: boolean) => {
+    this.client.addListener('close', (isError: boolean) => {
       logger.error('IosDeviceAgentService. client close');
       ZombieServiceInstance.notifyDie(this, `IosDeviceAgentService. client close`);
     });
 
-    this.client.on('end', () => {
+    this.client.addListener('end', () => {
       logger.info('IosDeviceAgentService. client end');
       ZombieServiceInstance.notifyDie(this, `IosDeviceAgentService. client end`);
     });
 
-    this.client.on('data', (data: Buffer) => {
+    this.client.addListener('data', (data: Buffer) => {
       this.recvQueue.pushBuffer(data);
       if (!this.recvQueue.has()) {
         return;
@@ -95,9 +96,6 @@ export class IosDeviceAgentService implements DeviceAgentService, Zombieable {
   async revive(): Promise<void> {
     await this.connect();
     await this.send('dcIdaSwitchInputBlockParam', 'dcIdaSwitchInputBlockResult', { isBlock: env.DOGU_IS_DEVICE_SHARE === true });
-    for (const subscriber of this.subscribers) {
-      subscriber.subscribe();
-    }
   }
 
   onDie(reason: string): void | Promise<void> {
@@ -124,10 +122,6 @@ export class IosDeviceAgentService implements DeviceAgentService, Zombieable {
 
   get inputUrl(): string {
     return `127.0.0.1:${this.serverPort}`;
-  }
-
-  async install(): Promise<void> {
-    return Promise.resolve();
   }
 
   get isAlive(): boolean {
@@ -158,23 +152,6 @@ export class IosDeviceAgentService implements DeviceAgentService, Zombieable {
     });
   }
 
-  subscribe<
-    ParamKey extends DcIdaParamKeys & keyof DcIdaParamUnionPick<ParamKey>,
-    ResultKey extends DcIdaResultKeys & keyof DcIdaResultUnionPick<ResultKey>,
-    ParamValue extends DcIdaParamUnionPickValue<ParamKey>,
-    ResultValue extends DcIdaResultUnionPickValue<ResultKey>,
-  >(paramKey: ParamKey, resultKey: ResultKey, paramValue: ParamValue, onResult: ResultCallback<ResultValue>, option: SendOption = DefaultSendOption()): SyncClosable {
-    const subscriber = new IosDeviceAgentZombieSubscriber({
-      subscribe: () => this.sendInternal(paramKey, resultKey, paramValue, onResult, option),
-      onClose: (): void => {
-        this.subscribers = this.subscribers.filter((item) => item !== subscriber);
-      },
-    });
-    this.subscribers.push(subscriber);
-    subscriber.subscribe();
-    return subscriber;
-  }
-
   private sendInternal<
     ParamKey extends DcIdaParamKeys & keyof DcIdaParamUnionPick<ParamKey>,
     ResultKey extends DcIdaResultKeys & keyof DcIdaResultUnionPick<ResultKey>,
@@ -190,6 +167,12 @@ export class IosDeviceAgentService implements DeviceAgentService, Zombieable {
     const resolve = (result: ResultValue | undefined, error: Error | undefined): void => {
       if (isResolved) {
         return;
+      }
+      if (error) {
+        this.failCount += 1;
+        if (this.failCount >= MaxFailCount) {
+          ZombieServiceInstance.notifyDie(this, `IosDeviceAgentService.sendWithProtobuf over MaxFailCount ${this.failCount}`);
+        }
       }
       isResolved = true;
       onResult(result, error);
@@ -219,7 +202,12 @@ export class IosDeviceAgentService implements DeviceAgentService, Zombieable {
       $case: paramKey,
       [paramKey]: paramValue,
     } as unknown as DcIdaParamUnionPick<ParamKey>;
-    this.client.write(buildParam(seq, paramObj));
+    this.client.write(buildParam(seq, paramObj), (error) => {
+      if (!error) {
+        return;
+      }
+      ZombieServiceInstance.notifyDie(this, `IosDeviceAgentService. write failed ${stringify(error)}`);
+    });
     return closable;
   }
 
@@ -233,10 +221,7 @@ export class IosDeviceAgentService implements DeviceAgentService, Zombieable {
 
     for (let i = 0; i < tryCount; i++) {
       const isConnected = await new Promise<boolean>((resolve, reject) => {
-        this.client.once('close', (isError: boolean) => {
-          resolve(false);
-        });
-        this.client.once('end', (isError: boolean) => {
+        this.client.prependOnceListener('error', (isError: boolean) => {
           resolve(false);
         });
         this.client.connect({ host: '127.0.0.1', port: this.serverPort }, () => {

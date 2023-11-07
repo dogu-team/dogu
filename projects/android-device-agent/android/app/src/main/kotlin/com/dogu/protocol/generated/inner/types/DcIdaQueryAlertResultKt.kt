@@ -38,6 +38,23 @@ object DcIdaQueryAlertResultKt {
     fun clearIsShow() {
       _builder.clearIsShow()
     }
+
+    /**
+     * <code>string title = 2;</code>
+     */
+    var title: kotlin.String
+      @JvmName("getTitle")
+      get() = _builder.getTitle()
+      @JvmName("setTitle")
+      set(value) {
+        _builder.setTitle(value)
+      }
+    /**
+     * <code>string title = 2;</code>
+     */
+    fun clearTitle() {
+      _builder.clearTitle()
+    }
   }
 }
 @kotlin.jvm.JvmSynthetic

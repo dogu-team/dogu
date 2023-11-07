@@ -1,6 +1,6 @@
 import { OnWebSocketClose, OnWebSocketMessage, WebSocketGatewayBase, WebSocketRegistryValueAccessor, WebSocketService } from '@dogu-private/nestjs-common';
-import { DeviceAlert } from '@dogu-private/types';
-import { AsyncClosable, Instance } from '@dogu-tech/common';
+import { DeviceAlert, Platform } from '@dogu-private/types';
+import { DuplicatedCallGuarder, Instance, SyncClosable } from '@dogu-tech/common';
 import { DeviceAlertSubscribe } from '@dogu-tech/device-client-common';
 import { IncomingMessage } from 'http';
 import WebSocket from 'ws';
@@ -8,7 +8,7 @@ import { DoguLogger } from '../../logger/logger';
 import { ScanService } from '../../scan/scan.service';
 
 interface Value {
-  closer: AsyncClosable | null;
+  closer: SyncClosable | null;
 }
 
 @WebSocketService(DeviceAlertSubscribe)
@@ -33,9 +33,7 @@ export class DeviceAlertSubscribeService
     const value = valueAccessor.get();
     if (value.closer !== null) {
       const { closer } = value;
-      closer.close().catch((e) => {
-        this.logger.error(e);
-      });
+      closer.close();
       valueAccessor.update({
         closer: null,
       });
@@ -52,6 +50,9 @@ export class DeviceAlertSubscribeService
     if (deviceChannel === null) {
       throw new Error(`Device with serial ${serial} not found`);
     }
+    if (deviceChannel.platform !== Platform.PLATFORM_IOS) {
+      throw new Error(`DeviceAlertSubscribeService only supports iOS platform`);
+    }
 
     this.clearClosable(valueAccessor);
 
@@ -62,11 +63,34 @@ export class DeviceAlertSubscribeService
       webSocket.send(JSON.stringify(receiveMessage));
     }
 
-    const closer = await deviceChannel.subscribeAlert((alert) => {
-      send(alert);
-    });
+    let lastAlert: DeviceAlert | undefined;
+    const guard = new DuplicatedCallGuarder();
+    const interval = setInterval(() => {
+      guard
+        .guard(async (): Promise<void> => {
+          const alert = await deviceChannel.getAlert();
+          if (!alert) {
+            return;
+          }
+          if (alert.title === lastAlert?.title) {
+            return;
+          }
+          lastAlert = alert;
+          send(alert);
+        })
+        .catch((error) => {
+          this.logger.error(error);
+        });
+    }, 2000);
+    const closer: SyncClosable = {
+      close(): void {
+        clearInterval(interval);
+      },
+    };
+
     valueAccessor.update({
       closer,
     });
+    await Promise.resolve();
   }
 }
