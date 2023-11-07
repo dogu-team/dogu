@@ -140,7 +140,7 @@ OrganizationLiveTestingPage.getLayout = (page) => {
       sidebar={<OrganizationSideBar />}
       title={
         <div style={{ marginBottom: '.5rem' }}>
-          <LiveTestingFreeTierTopBanner license={page.props.license as CloudLicenseBase} />
+          <LiveTestingFreeTierTopBanner />
 
           <H4>
             <Trans i18nKey="organization:liveTestingPageTitle" />

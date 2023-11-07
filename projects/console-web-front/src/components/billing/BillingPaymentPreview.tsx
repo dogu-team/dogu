@@ -6,12 +6,13 @@ import styled from 'styled-components';
 import { shallow } from 'zustand/shallow';
 
 import useBillingPlanPurchaseStore from '../../stores/billing-plan-purchase';
+import useLicenseStore from '../../stores/license';
 import BillingMethodRegistrationForm, { BillingMethodRegistrationFormValues } from './BillingMethodRegistrationForm';
 
 interface Props {}
 
 const BillingPaymentPreview: React.FC<Props> = () => {
-  const license = useBillingPlanPurchaseStore((state) => state.license);
+  const license = useLicenseStore((state) => state.license);
   const [form] = Form.useForm<BillingMethodRegistrationFormValues>();
   const updateCardForm = useBillingPlanPurchaseStore((state) => state.updateCardForm);
   const [withNewCard, updateWithNewCard] = useBillingPlanPurchaseStore(

@@ -10,6 +10,7 @@ import { useRouter } from 'next/router';
 import styled from 'styled-components';
 
 import { planDescriptionInfoMap } from '../../resources/plan';
+import useLicenseStore from '../../stores/license';
 import { flexRowBaseStyle, listItemStyle, tableCellStyle, tableHeaderStyle } from '../../styles/box';
 import { getLocaleFormattedDate } from '../../utils/locale';
 import MenuButton from '../buttons/MenuButton';
@@ -17,10 +18,10 @@ import MenuItemButton from '../buttons/MenuItemButton';
 
 interface ItemProps {
   plan: BillingSubscriptionPlanInfoForCloudLicenseResponse;
-  license: CloudLicenseBase;
 }
 
-const PlanItem: React.FC<ItemProps> = ({ plan, license }) => {
+const PlanItem: React.FC<ItemProps> = ({ plan }) => {
+  const license = useLicenseStore((state) => state.license) as CloudLicenseBase | null;
   const { t } = useTranslation('billing');
   const router = useRouter();
 
@@ -76,12 +77,11 @@ const PlanItem: React.FC<ItemProps> = ({ plan, license }) => {
   );
 };
 
-interface Props {
-  license: CloudLicenseResponse | SelfHostedLicenseBase;
-}
+interface Props {}
 
-const BillingSubscribedPlanList: React.FC<Props> = ({ license }) => {
+const BillingSubscribedPlanList: React.FC<Props> = () => {
   const { t } = useTranslation('billing');
+  const license = useLicenseStore((state) => state.license);
 
   if (process.env.NEXT_PUBLIC_ENV === 'self-hosted') {
     const selfHostedLicense = license as SelfHostedLicenseBase;
@@ -118,7 +118,7 @@ const BillingSubscribedPlanList: React.FC<Props> = ({ license }) => {
       </Header>
       <List
         dataSource={subscribedPlans}
-        renderItem={(plan) => <PlanItem plan={plan} license={license as CloudLicenseBase} />}
+        renderItem={(plan) => <PlanItem plan={plan} />}
         rowKey={(plan) => plan.billingSubscriptionPlanInfoId}
       />
     </>

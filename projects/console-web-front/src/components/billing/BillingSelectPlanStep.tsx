@@ -6,6 +6,7 @@ import styled from 'styled-components';
 
 import { groupTypeI18nKeyMap, planDescriptionInfoMap } from '../../resources/plan';
 import useBillingPlanPurchaseStore from '../../stores/billing-plan-purchase';
+import useLicenseStore from '../../stores/license';
 import { getSubscriptionPlansFromLicense } from '../../utils/billing';
 import ErrorBox from '../common/boxes/ErrorBox';
 import BillingDurationSwitch from './BillingDurationSwitch';
@@ -15,7 +16,7 @@ interface Props {}
 
 const BillingSelectPlanStep: React.FC<Props> = ({}) => {
   const [currentGroup, setCurrentGroup] = useState(BillingSubscriptionGroupType[0]);
-  const license = useBillingPlanPurchaseStore((state) => state.license);
+  const license = useLicenseStore((state) => state.license);
   const groupType = useBillingPlanPurchaseStore((state) => state.billingGroupType);
   const { t } = useTranslation('billing');
 

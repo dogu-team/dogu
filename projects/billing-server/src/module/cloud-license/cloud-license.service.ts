@@ -1,4 +1,4 @@
-import { CreateCloudLicenseDto, FindCloudLicenseDto } from '@dogu-private/console';
+import { CloudLicenseResponse, CreateCloudLicenseDto, FindCloudLicenseDto } from '@dogu-private/console';
 import { Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
@@ -22,7 +22,7 @@ export class CloudLicenseService {
     });
   }
 
-  async findCloudLicense(dto: FindCloudLicenseDto): Promise<CloudLicense> {
+  async findCloudLicense(dto: FindCloudLicenseDto): Promise<CloudLicenseResponse> {
     return await retrySerialize(this.logger, this.dataSource, async (context) => {
       return await findCloudLicense(context, dto);
     });

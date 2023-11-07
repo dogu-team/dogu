@@ -2,6 +2,7 @@ import {
   BillingMethodNiceBase,
   BillingResultCode,
   BillingSubscriptionPlanData,
+  BillingSubscriptionPlanInfoResponse,
   BillingSubscriptionPlanPreviewDto,
   CouponPreviewResponse,
   CreatePurchaseSubscriptionResponse,
@@ -320,6 +321,7 @@ export async function processPurchaseSubscription(
     return {
       ok: false,
       resultCode: createPurchaseResult.resultCode,
+      plan: null,
     };
   }
 
@@ -376,6 +378,7 @@ export async function processPurchaseSubscription(
     return {
       ok: false,
       resultCode: createSubscriptionPlanInfoAndCouponResult.resultCode,
+      plan: null,
     };
   }
 
@@ -405,8 +408,27 @@ export async function processPurchaseSubscription(
     }
   }
 
+  const plan = createSubscriptionPlanInfoAndCouponResult.billingSubscriptionPlanInfo as BillingSubscriptionPlanInfoResponse;
+  const monthlyExpiredAt = billingOrganization.monthlyExpiredAt;
+  const yearlyExpiredAt = billingOrganization.yearlyExpiredAt;
+
+  switch (plan.period) {
+    case 'monthly': {
+      plan.monthlyExpiredAt = monthlyExpiredAt;
+      break;
+    }
+    case 'yearly': {
+      plan.yearlyExpiredAt = yearlyExpiredAt;
+      break;
+    }
+    default: {
+      assertUnreachable(plan.period);
+    }
+  }
+
   return {
     ok: true,
     resultCode: resultCode('ok'),
+    plan,
   };
 }

@@ -1,8 +1,8 @@
 import {
-  CloudLicenseBase,
+  CloudLicenseResponse,
   OrganizationBase,
   ProjectBase,
-  SelfHostedLicenseBase,
+  SelfHostedLicenseResponse,
   UserBase,
 } from '@dogu-private/console';
 import { AxiosError } from 'axios';
@@ -18,7 +18,7 @@ import { checkUserVerifiedInServerSide } from '../utils/auth';
 export interface ProjectServerSideProps {
   organization: OrganizationBase;
   project: ProjectBase;
-  license: CloudLicenseBase | SelfHostedLicenseBase;
+  license: CloudLicenseResponse | SelfHostedLicenseResponse;
   user: UserBase;
   isGitIntegrated: boolean;
 }

@@ -1,5 +1,5 @@
 import { CloseOutlined, SlackOutlined } from '@ant-design/icons';
-import { CloudLicenseBase, SelfHostedLicenseBase, UserBase } from '@dogu-private/console';
+import { CloudLicenseResponse, SelfHostedLicenseBase, UserBase } from '@dogu-private/console';
 import { Button, Tooltip } from 'antd';
 import Trans from 'next-translate/Trans';
 import Link from 'next/link';
@@ -7,10 +7,12 @@ import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import { ImPriceTag } from 'react-icons/im';
 import styled from 'styled-components';
+import { shallow } from 'zustand/shallow';
 
 import LicenseTag from '../../../enterprise/components/license/LicenseTag';
 import useAuth from '../../hooks/useAuth';
 import useEventStore from '../../stores/events';
+import useLicenseStore from '../../stores/license';
 import { flexRowBaseStyle, flexRowCenteredStyle } from '../../styles/box';
 import { hasAdminPermission } from '../../utils/auth';
 import AccountMenu from '../AccountMenu';
@@ -21,11 +23,12 @@ import Header from './Header';
 interface Props {
   children: React.ReactNode;
   user?: UserBase;
-  licenseInfo?: SelfHostedLicenseBase | CloudLicenseBase;
+  licenseInfo?: SelfHostedLicenseBase | CloudLicenseResponse;
 }
 
 const ConsoleBasicLayout = ({ children, user, licenseInfo }: Props) => {
   const { me, isLoading, error, mutate } = useAuth(user);
+  const [license, updateLicense] = useLicenseStore((state) => [state.license, state.updateLicense], shallow);
   const router = useRouter();
   const [isBannerVisible, setIsBannerVisible] = useState(() => {
     if (typeof window === 'undefined') {
@@ -34,19 +37,17 @@ const ConsoleBasicLayout = ({ children, user, licenseInfo }: Props) => {
 
     return !localStorage.getItem('hideHeaderBanner');
   });
-  const [licenseInfoState, setLicenseInfoState] = useState<SelfHostedLicenseBase | CloudLicenseBase | undefined>(
-    licenseInfo,
-  );
 
   useEffect(() => {
-    setLicenseInfoState(licenseInfo);
+    updateLicense(licenseInfo ?? null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [licenseInfo]);
 
   useEffect(() => {
     useEventStore.subscribe(({ eventName, payload }) => {
       if (eventName === 'onLicenseUpdated') {
         if (payload) {
-          setLicenseInfoState(payload as SelfHostedLicenseBase);
+          updateLicense(payload as SelfHostedLicenseBase | CloudLicenseResponse);
         }
       }
     });
@@ -95,9 +96,7 @@ const ConsoleBasicLayout = ({ children, user, licenseInfo }: Props) => {
           </AlertBanner>
         )}
         <Header
-          links={
-            licenseInfoState ? <LicenseTag licenseInfo={licenseInfoState as SelfHostedLicenseBase} me={me} /> : null
-          }
+          links={license ? <LicenseTag licenseInfo={license as SelfHostedLicenseBase} me={me} /> : null}
           right={
             <FlexRow>
               {process.env.NEXT_PUBLIC_ENV !== 'self-hosted' && (

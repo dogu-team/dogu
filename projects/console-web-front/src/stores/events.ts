@@ -85,7 +85,10 @@ export type EventName =
   | 'onCloudLiveTestingSessionClosed'
   | 'onCloudHeartbeatSocketClosed'
   | 'onCloudHeartbeatSocketMessage'
-  | 'onCloudRemainingFreeSecondMessage';
+  | 'onCloudRemainingFreeSecondMessage'
+
+  // billing
+  | 'onPurchaseCompleted';
 
 interface EventStore {
   eventName: EventName | null;

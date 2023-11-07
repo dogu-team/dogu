@@ -1,4 +1,4 @@
-import { CloudLicenseBase, OrganizationBase, SelfHostedLicenseBase, UserBase } from '@dogu-private/console';
+import { CloudLicenseResponse, OrganizationBase, SelfHostedLicenseResponse, UserBase } from '@dogu-private/console';
 import { AxiosError } from 'axios';
 import { GetServerSideProps } from 'next';
 
@@ -10,7 +10,7 @@ import { checkUserVerifiedInServerSide } from '../utils/auth';
 
 export interface OrganizationServerSideProps {
   organization: OrganizationBase;
-  license: CloudLicenseBase | SelfHostedLicenseBase;
+  license: CloudLicenseResponse | SelfHostedLicenseResponse;
   user: UserBase;
 }
 

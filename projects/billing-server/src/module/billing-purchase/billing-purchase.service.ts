@@ -65,6 +65,7 @@ export class BillingPurchaseService {
         return {
           ok: false,
           resultCode: resultCode('organization-not-found'),
+          plan: null,
         };
       }
 
@@ -76,6 +77,7 @@ export class BillingPurchaseService {
         return {
           ok: false,
           resultCode: processPurchaseSubscriptionPreviewResult.resultCode,
+          plan: null,
         };
       }
 
@@ -83,6 +85,7 @@ export class BillingPurchaseService {
         return {
           ok: true,
           resultCode: resultCode('ok'),
+          plan: null,
         };
       }
 
@@ -90,6 +93,7 @@ export class BillingPurchaseService {
         return {
           ok: false,
           resultCode: resultCode('organization-method-nice-not-found'),
+          plan: null,
         };
       }
 
@@ -117,6 +121,7 @@ export class BillingPurchaseService {
         return {
           ok: false,
           resultCode: resultCode('organization-not-found'),
+          plan: null,
         };
       }
 
@@ -128,6 +133,7 @@ export class BillingPurchaseService {
         return {
           ok: false,
           resultCode: processPurchaseSubscriptionPreviewResult.resultCode,
+          plan: null,
         };
       }
 
@@ -142,6 +148,7 @@ export class BillingPurchaseService {
         return {
           ok: true,
           resultCode: resultCode('ok'),
+          plan: null,
         };
       }
 

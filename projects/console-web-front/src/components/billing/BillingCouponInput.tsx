@@ -8,6 +8,7 @@ import { shallow } from 'zustand/shallow';
 import { validateBillingCoupon } from '../../api/billing';
 import useRequest from '../../hooks/useRequest';
 import useBillingPlanPurchaseStore from '../../stores/billing-plan-purchase';
+import useLicenseStore from '../../stores/license';
 
 interface Props {}
 
@@ -15,7 +16,7 @@ const BillingCouponInput: React.FC<Props> = () => {
   const [couponInputValue, setCouponInputValue] = useState<string | null>(null);
   const [couponError, setCouponError] = useState<string | null>(null);
   const [validateBillingCouponLoading, requestValidateBillingCoupon] = useRequest(validateBillingCoupon);
-  const license = useBillingPlanPurchaseStore((state) => state.license);
+  const license = useLicenseStore((state) => state.license);
   const isAnnual = useBillingPlanPurchaseStore((state) => state.isAnnual);
   const [billingCoupon, updateBillingCoupon] = useBillingPlanPurchaseStore(
     (state) => [state.coupon, state.updateCoupon],

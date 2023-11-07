@@ -1,4 +1,4 @@
-import { CloudLicenseBase, BillingSubscriptionGroupType, SelfHostedLicenseBase } from '@dogu-private/console';
+import { BillingSubscriptionGroupType } from '@dogu-private/console';
 import { Button, ButtonProps } from 'antd';
 
 import useModal from '../../hooks/useModal';
@@ -6,18 +6,15 @@ import useBillingPlanPurchaseStore from '../../stores/billing-plan-purchase';
 import UpgradePlanModal from './UpgradePlanModal';
 
 interface Props extends Omit<ButtonProps, 'onClick'> {
-  license: CloudLicenseBase | SelfHostedLicenseBase;
   groupType: BillingSubscriptionGroupType | null;
 }
 
-const UpgradePlanButton: React.FC<Props> = ({ groupType, license, ...props }) => {
+const UpgradePlanButton: React.FC<Props> = ({ groupType, ...props }) => {
   const [isOpen, openModal, closeModal] = useModal();
-  const updateLicense = useBillingPlanPurchaseStore((state) => state.updateLicense);
   const updateBillingGroupType = useBillingPlanPurchaseStore((state) => state.updateBillingGroupType);
 
   const handleClick = () => {
     updateBillingGroupType(groupType);
-    updateLicense(license);
     openModal();
   };
 

@@ -1,4 +1,4 @@
-import { CloudLicenseResponse, SelfHostedLicenseBase, UserBase } from '@dogu-private/console';
+import { CloudLicenseResponse, SelfHostedLicenseResponse, UserBase } from '@dogu-private/console';
 import { OrganizationId } from '@dogu-private/types';
 import { GetServerSideProps } from 'next';
 import useTranslation from 'next-translate/useTranslation';
@@ -12,18 +12,20 @@ import UpgradePlanButton from '../../src/components/billing/UpgradePlanButton';
 import LiveChat from '../../src/components/external/livechat';
 import ConsoleBasicLayout from '../../src/components/layouts/ConsoleBasicLayout';
 import Footer from '../../src/components/layouts/Footer';
+import useLicenseStore from '../../src/stores/license';
 import { checkLoginInServerSide } from '../../src/utils/auth';
 import { NextPageWithLayout } from '../_app';
 
 interface BillingPageProps {
   me: UserBase;
-  license: CloudLicenseResponse | SelfHostedLicenseBase;
+  license: CloudLicenseResponse | SelfHostedLicenseResponse;
 }
 
 const BillingPage: NextPageWithLayout<BillingPageProps> = ({ me, license }) => {
   const { t } = useTranslation('billing');
+  const storedLicense = useLicenseStore((state) => state.license);
 
-  const paymentMethod = (license as CloudLicenseResponse).billingOrganization?.billingMethodNice;
+  const paymentMethod = (storedLicense as CloudLicenseResponse | null)?.billingOrganization?.billingMethodNice;
 
   return (
     <Box>
@@ -31,12 +33,12 @@ const BillingPage: NextPageWithLayout<BillingPageProps> = ({ me, license }) => {
         <TitleWrapper>
           <ContentTitle>{t('currentPlanText')}</ContentTitle>
           <div style={{ marginBottom: '.5rem' }}>
-            <UpgradePlanButton license={license} groupType={null} type="primary">
+            <UpgradePlanButton groupType={null} type="primary">
               {t('upgradePlanButtonTitle')}
             </UpgradePlanButton>
           </div>
           <ContentInner>
-            <BillingSubscribedPlanList license={license} />
+            <BillingSubscribedPlanList />
           </ContentInner>
         </TitleWrapper>
       </Content>

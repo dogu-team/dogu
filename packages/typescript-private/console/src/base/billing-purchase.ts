@@ -1,9 +1,11 @@
 import { IsFilledString } from '@dogu-tech/common';
 import { Type } from 'class-transformer';
 import { buildMessage, IsIn, IsNumber, IsOptional, IsString, IsUUID, Length, ValidateBy, ValidateNested } from 'class-validator';
+
 import { BillingCategory, BillingCurrency, BillingPeriod, BillingSubscriptionPlanData, BillingSubscriptionPlanType } from './billing';
 import { BillingResultCode } from './billing-code';
 import { BillingCouponBase } from './billing-coupon';
+import { BillingSubscriptionPlanInfoResponse } from './billing-subscription-plan-info';
 
 export class BillingSubscriptionPlanPreviewDto {
   @IsIn(BillingCategory)
@@ -81,6 +83,7 @@ export class CreatePurchaseSubscriptionDto extends GetBillingSubscriptionPreview
 export interface CreatePurchaseSubscriptionResponse {
   ok: boolean;
   resultCode: BillingResultCode;
+  plan: BillingSubscriptionPlanInfoResponse | null;
 }
 
 export class RegisterCardDto {
@@ -125,4 +128,5 @@ export class CreatePurchaseSubscriptionWithNewCardDto extends CreatePurchaseSubs
 export interface CreatePurchaseSubscriptionWithNewCardResponse {
   ok: boolean;
   resultCode: BillingResultCode;
+  plan: BillingSubscriptionPlanInfoResponse | null;
 }

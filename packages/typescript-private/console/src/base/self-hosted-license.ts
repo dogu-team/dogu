@@ -1,6 +1,8 @@
 import { OrganizationId } from '@dogu-private/types';
 import { propertiesOf } from '@dogu-tech/common';
 
+import { BillingOrganizationBase, BillingOrganizationResponse } from './billing-organization';
+
 export interface SelfHostedLicenseBase {
   selfHostedLicenseId: string;
   licenseKey: string;
@@ -19,6 +21,11 @@ export interface SelfHostedLicenseBase {
   lastAccessAt: Date;
   expiredAt: Date;
   deletedAt: Date | null;
+  billingOrganization?: BillingOrganizationBase;
 }
 
 export const SelfHostedLicenseProp = propertiesOf<SelfHostedLicenseBase>();
+
+export interface SelfHostedLicenseResponse extends SelfHostedLicenseBase {
+  billingOrganization: BillingOrganizationResponse;
+}

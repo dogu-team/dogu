@@ -1,13 +1,14 @@
-import { CreateSelfHostedLicenseDto } from '@dogu-private/console';
-import { stringify } from '@dogu-tech/common';
+import { CreateSelfHostedLicenseDto, SelfHostedLicenseResponse } from '@dogu-private/console';
+import { assertUnreachable, stringify } from '@dogu-tech/common';
 import { ConflictException, NotFoundException } from '@nestjs/common';
 import { v4 } from 'uuid';
+
 import { SelfHostedLicense } from '../../db/entity/self-hosted-license.entity';
 import { RetrySerializeContext } from '../../db/utils';
 import { LicenseKeyService } from '../common/license-key.service';
 import { FindSelfHostedLicenseQueryDto } from './self-hosted-license.dto';
 
-export async function findSelfHostedLicense(context: RetrySerializeContext, dto: FindSelfHostedLicenseQueryDto): Promise<SelfHostedLicense> {
+export async function findSelfHostedLicense(context: RetrySerializeContext, dto: FindSelfHostedLicenseQueryDto): Promise<SelfHostedLicenseResponse> {
   const { manager } = context;
   const { organizationId, licenseKey } = dto;
   const license = await manager.getRepository(SelfHostedLicense).createQueryBuilder(SelfHostedLicense.name).where({ organizationId, licenseKey }).getOne();
@@ -16,7 +17,27 @@ export async function findSelfHostedLicense(context: RetrySerializeContext, dto:
     throw new NotFoundException(`Organization does not have a self-hosted license. organizationId: ${organizationId}`);
   }
 
-  return license;
+  const response = license as SelfHostedLicenseResponse;
+  const monthlyExpiredAt = response.billingOrganization?.monthlyExpiredAt ?? null;
+  const yearlyExpiredAt = response.billingOrganization?.yearlyExpiredAt ?? null;
+
+  response.billingOrganization?.billingSubscriptionPlanInfos?.forEach((info) => {
+    switch (info.period) {
+      case 'monthly': {
+        info.monthlyExpiredAt = monthlyExpiredAt;
+        return;
+      }
+      case 'yearly': {
+        info.yearlyExpiredAt = yearlyExpiredAt;
+        return;
+      }
+      default: {
+        assertUnreachable(info.period);
+      }
+    }
+  });
+
+  return response;
 }
 
 export async function createSelfHostedLicense(context: RetrySerializeContext, dto: CreateSelfHostedLicenseDto): Promise<SelfHostedLicense> {

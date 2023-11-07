@@ -11,6 +11,7 @@ import styled from 'styled-components';
 
 import { PlanDescriptionInfo } from '../../resources/plan';
 import useBillingPlanPurchaseStore from '../../stores/billing-plan-purchase';
+import useLicenseStore from '../../stores/license';
 import { getLocaleFormattedPrice } from '../../utils/locale';
 
 interface Props {
@@ -22,7 +23,7 @@ interface Props {
 const CONTACT_US_OPTION_KEY = 'contact-us';
 
 const PlanItem: React.FC<Props> = ({ planType, planInfo, descriptionInfo }) => {
-  const license = useBillingPlanPurchaseStore((state) => state.license);
+  const license = useLicenseStore((state) => state.license);
   const isAnnual = useBillingPlanPurchaseStore((state) => state.isAnnual);
   const updateSelectedPlan = useBillingPlanPurchaseStore((state) => state.updateSelectedPlan);
   const { t } = useTranslation('billing');

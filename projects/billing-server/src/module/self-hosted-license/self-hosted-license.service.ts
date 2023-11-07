@@ -1,4 +1,4 @@
-import { CreateSelfHostedLicenseDto } from '@dogu-private/console';
+import { CreateSelfHostedLicenseDto, SelfHostedLicenseResponse } from '@dogu-private/console';
 import { Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
@@ -23,7 +23,7 @@ export class SelfHostedLicenseService {
     });
   }
 
-  async findSelfHostedLicense(dto: FindSelfHostedLicenseQueryDto): Promise<SelfHostedLicense> {
+  async findSelfHostedLicense(dto: FindSelfHostedLicenseQueryDto): Promise<SelfHostedLicenseResponse> {
     return await retrySerialize(this.logger, this.dataSource, async (context) => {
       return await findSelfHostedLicense(context, dto);
     });

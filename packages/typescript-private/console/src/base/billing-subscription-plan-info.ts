@@ -54,7 +54,7 @@ export class UpdateBillingSubscriptionPlanInfoDto {
   changeRequestedOption?: number;
 }
 
-export interface BillingSubscriptionPlanInfoForCloudLicenseResponse extends BillingSubscriptionPlanInfoBase {
+export interface BillingSubscriptionPlanInfoResponse extends BillingSubscriptionPlanInfoBase {
   yearlyExpiredAt: Date | null;
   monthlyExpiredAt: Date | null;
 }

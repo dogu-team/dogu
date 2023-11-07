@@ -3,12 +3,13 @@ import {
   GetBillingSubscriptionPreviewDto,
   GetBillingSubscriptionPreviewResponse,
 } from '@dogu-private/console';
-import { Button, Divider, Tag } from 'antd';
+import { Divider, Tag } from 'antd';
 import useTranslation from 'next-translate/useTranslation';
 import useSWR from 'swr';
 import styled from 'styled-components';
 import { useRouter } from 'next/router';
 import { LoadingOutlined } from '@ant-design/icons';
+import { shallow } from 'zustand/shallow';
 
 import { planDescriptionInfoMap } from '../../resources/plan';
 import useBillingPlanPurchaseStore from '../../stores/billing-plan-purchase';
@@ -17,23 +18,17 @@ import ErrorBox from '../common/boxes/ErrorBox';
 import BillingCouponInput from './BillingCouponInput';
 import { swrAuthFetcher } from '../../api';
 import { buildQueryPraramsByObject } from '../../utils/query';
-import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd';
-import useRequest from '../../hooks/useRequest';
-import { purchasePlanWithExistingCard, purchasePlanWithNewCard } from '../../api/billing';
-import { parseNicePaymentMethodFormValues } from '../../utils/billing';
+import useLicenseStore from '../../stores/license';
+import BillingPurchaseButton from './BillingPurchaseButton';
 
 interface Props {}
 
 const BillingCalculatedPreview: React.FC<Props> = ({}) => {
-  const cardForm = useBillingPlanPurchaseStore((state) => state.cardForm);
   const selectedPlan = useBillingPlanPurchaseStore((state) => state.selectedPlan);
   const isAnnual = useBillingPlanPurchaseStore((state) => state.isAnnual);
   const couponCode = useBillingPlanPurchaseStore((state) => state.coupon);
-  const license = useBillingPlanPurchaseStore((state) => state.license);
-  const withNewCard = useBillingPlanPurchaseStore((state) => state.withNewCard);
+  const [license, updateLicense] = useLicenseStore((state) => [state.license, state.updateLicense], shallow);
   const router = useRouter();
-  const [purchaseWithNewCardLoading, requestPurchaseWithNewCard] = useRequest(purchasePlanWithNewCard);
-  const [purchaseWithExistingCardLoading, requestPurchaseWithExistingCard] = useRequest(purchasePlanWithExistingCard);
 
   const dto: GetBillingSubscriptionPreviewDto = {
     organizationId: license?.organizationId ?? '',
@@ -86,54 +81,6 @@ const BillingCalculatedPreview: React.FC<Props> = ({}) => {
   const originPricePerMonth = isAnnualSubscription
     ? data.body.subscriptionPlan.originPrice / 12
     : data.body.subscriptionPlan.originPrice;
-
-  const handlePurchase = async () => {
-    if (!cardForm || !license?.organizationId || !selectedPlan) {
-      return;
-    }
-
-    const values = await cardForm.validateFields();
-    try {
-      if (!withNewCard && Object.values(values).every((v) => !v)) {
-        const rv = await requestPurchaseWithExistingCard({
-          organizationId: license.organizationId,
-          category: selectedPlan?.category,
-          type: selectedPlan?.planType,
-          option: selectedPlan?.option,
-          currency: 'KRW',
-          period: isAnnualSubscription ? 'yearly' : 'monthly',
-          couponCode: couponCode ?? undefined,
-        });
-
-        if (rv.errorMessage || !rv.body?.ok) {
-          sendErrorNotification('Failed to purchase plan! Please contact us.');
-          return;
-        }
-
-        sendSuccessNotification('Successfully purchased plan!');
-      } else {
-        const rv = await requestPurchaseWithNewCard({
-          organizationId: license.organizationId,
-          category: selectedPlan?.category,
-          type: selectedPlan?.planType,
-          option: selectedPlan?.option,
-          currency: 'KRW',
-          period: isAnnualSubscription ? 'yearly' : 'monthly',
-          couponCode: couponCode ?? undefined,
-          registerCard: parseNicePaymentMethodFormValues(values),
-        });
-
-        if (rv.errorMessage || !rv.body?.ok) {
-          sendErrorNotification('Failed to purchase plan! Please contact us.');
-          return;
-        }
-
-        sendSuccessNotification('Successfully purchased plan!');
-      }
-    } catch (e) {
-      sendErrorNotification('Failed to purchase plan! Please contact us.');
-    }
-  };
 
   return (
     <Box>
@@ -287,17 +234,13 @@ const BillingCalculatedPreview: React.FC<Props> = ({}) => {
           </div>
         )}
       </Content>
+
       <Content>
         <BillingCouponInput />
       </Content>
-      <Button
-        type="primary"
-        onClick={handlePurchase}
-        style={{ width: '100%' }}
-        loading={isLoading || purchaseWithNewCardLoading || purchaseWithExistingCardLoading}
-      >
-        {t('purchaseButtonText')}
-      </Button>
+
+      <BillingPurchaseButton />
+
       <div style={{ marginTop: '.2rem' }}>
         <Agreement>
           By purchasing plan you agree to our <a target="_blank">Terms and Conditions</a> and auto renewal
