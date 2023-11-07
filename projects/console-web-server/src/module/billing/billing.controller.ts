@@ -2,7 +2,6 @@ import {
   BillingCouponBase,
   CallBillingApiResponse,
   CreatePurchaseSubscriptionWithNewCardResponse,
-  FindBillingMethodResponse,
   GetBillingSubscriptionPreviewResponse,
   UpdateBillingMethodResponse,
   ValidateBillingCouponResponse,
@@ -53,6 +52,17 @@ export class BillingController {
     });
   }
 
+  @Post('/purchase')
+  @OrganizationPermission(ORGANIZATION_ROLE.ADMIN)
+  async createPurchaseSubscription(@Query() query: object, @Body() body: object): Promise<CallBillingApiResponse<CreatePurchaseSubscriptionWithNewCardResponse>> {
+    return await this.billingCaller.callBillingApi<CreatePurchaseSubscriptionWithNewCardResponse>({
+      method: 'POST',
+      path: 'billing/purchase',
+      query,
+      body,
+    });
+  }
+
   @Post('/purchase/new-card')
   @OrganizationPermission(ORGANIZATION_ROLE.ADMIN)
   async createPurchaseSubscriptionWithNewCard(@Query() query: object, @Body() body: object): Promise<CallBillingApiResponse<CreatePurchaseSubscriptionWithNewCardResponse>> {
@@ -65,16 +75,6 @@ export class BillingController {
   }
 
   // methods
-  @Get('/methods')
-  @OrganizationPermission(ORGANIZATION_ROLE.ADMIN)
-  async findBillingMethods(@Query() query: object): Promise<CallBillingApiResponse<FindBillingMethodResponse>> {
-    return await this.billingCaller.callBillingApi<FindBillingMethodResponse>({
-      method: 'GET',
-      path: 'billing/methods',
-      query,
-    });
-  }
-
   @Put('/methods')
   @OrganizationPermission(ORGANIZATION_ROLE.ADMIN)
   async updateBillingMethod(@Query() query: object, @Body() body: object): Promise<CallBillingApiResponse<UpdateBillingMethodResponse>> {
