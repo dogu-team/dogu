@@ -25,9 +25,8 @@ export interface ProjectServerSideProps {
 
 export const getProjectPageServerSideProps: GetServerSideProps<ProjectServerSideProps> = async (context) => {
   try {
-    const [organization, license, project, checkResult, scm] = await Promise.all([
+    const [organization, project, checkResult, scm] = await Promise.all([
       getOrganizationInServerSide(context),
-      IS_CLOUD ? getCloudLicenseInServerSide(context) : getSelfHostedLicenseInServerSide(context),
       getProjectInServerSide(context),
       checkUserVerifiedInServerSide(context),
       getProjectScm(context),
@@ -42,6 +41,8 @@ export const getProjectPageServerSideProps: GetServerSideProps<ProjectServerSide
         redirect: redirectWithLocale(context, `/dashboard/${context.query.orgId}/get-started`, false),
       };
     }
+
+    const license = await (IS_CLOUD ? getCloudLicenseInServerSide(context) : getSelfHostedLicenseInServerSide(context));
 
     return {
       props: {
