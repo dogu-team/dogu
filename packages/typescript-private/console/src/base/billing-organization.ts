@@ -12,26 +12,10 @@ export interface BillingOrganizationBase {
   organizationId: string;
   category: BillingCategory;
   currency: BillingCurrency | null;
-
-  /**
-   * @description this value is used for yearly purchase days calculation.
-   */
-  yearlyStartedAt: Date | null;
-
-  /**
-   * @description this value is used for yearly purchase days calculation.
-   */
-  yearlyExpiredAt: Date | null;
-
-  /**
-   * @description this value is used for monthly purchase days calculation.
-   */
-  monthlyStartedAt: Date | null;
-
-  /**
-   * @description this value is used for monthly purchase days calculation.
-   */
-  monthlyExpiredAt: Date | null;
+  subscriptionYearlyStartedAt: Date | null;
+  subscriptionYearlyExpiredAt: Date | null;
+  subscriptionMonthlyStartedAt: Date | null;
+  subscriptionMonthlyExpiredAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date | null;

@@ -20,16 +20,16 @@ export class BillingOrganization implements BillingOrganizationBase {
   currency!: BillingCurrency | null;
 
   @DateColumn({ nullable: true })
-  yearlyStartedAt!: Date | null;
+  subscriptionYearlyStartedAt!: Date | null;
 
   @DateColumn({ nullable: true })
-  yearlyExpiredAt!: Date | null;
+  subscriptionYearlyExpiredAt!: Date | null;
 
   @DateColumn({ nullable: true })
-  monthlyStartedAt!: Date | null;
+  subscriptionMonthlyStartedAt!: Date | null;
 
   @DateColumn({ nullable: true })
-  monthlyExpiredAt!: Date | null;
+  subscriptionMonthlyExpiredAt!: Date | null;
 
   @CreatedAt()
   createdAt!: Date;

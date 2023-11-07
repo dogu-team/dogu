@@ -10,6 +10,7 @@ import {
 } from '@dogu-private/console';
 import { assertUnreachable } from '@dogu-tech/common';
 import { v4 } from 'uuid';
+import { createExpiredAt, NormalizedDateTime } from '../../date-time-utils';
 import { BillingCoupon } from '../../db/entity/billing-coupon.entity';
 import { BillingHistory } from '../../db/entity/billing-history.entity';
 import { BillingOrganization } from '../../db/entity/billing-organization.entity';
@@ -22,7 +23,7 @@ import { createPurchase } from '../billing-method/billing-method-nice.serializab
 import { createOrUpdateBillingSubscriptionPlanInfoAndCoupon } from '../billing-subscription-plan-info/billing-subscription-plan-info.serializables';
 import { parseBillingSubscriptionPlanData } from '../billing-subscription-plan-source/billing-subscription-plan-source.serializables';
 import { applyCloudLicense } from '../cloud-license/cloud-license.serializables';
-import { calculateElapsedPlan, calculateRemainingPlan, createExpiredAt, createStartedAt, NormalizedDateTime, resolveCurrency } from './billing-purchase.utils';
+import { calculateElapsedPlan, calculateRemainingPlan, resolveCurrency } from './billing-purchase.utils';
 
 export interface ProcessPurchaseSubscriptionPreviewOptions {
   billingOrganization: BillingOrganization;
@@ -43,7 +44,7 @@ export interface ProcessPurchaseSubscriptionPreviewResultSuccess {
   billingSubscriptionPlanSource: BillingSubscriptionPlanSource | null;
   totalPrice: number;
   discountedAmount: number;
-  now: NormalizedDateTime;
+  now: Date;
   needPurchase: boolean;
 }
 
@@ -102,8 +103,8 @@ export async function processPurchaseSubscriptionPreview(
   }
   const newCoupon = parseCouponResult.coupon;
 
-  const now = NormalizedDateTime.fromNow();
-  const nextPurchasedAt = createExpiredAt(createStartedAt(now), dto.period);
+  const now = new Date();
+  const nextPurchasedAt = createExpiredAt(NormalizedDateTime.fromDate(now), dto.period);
 
   const foundBillingSubscriptionPlanInfo = billingSubscriptionPlanInfos.find((plan) => plan.type === billingSubscriptionPlanData.type);
   if (foundBillingSubscriptionPlanInfo === undefined) {
@@ -186,7 +187,7 @@ export async function processPurchaseSubscriptionPreview(
       const calculateRemainingPlanResult = calculateRemainingPlan({
         billingOrganization,
         foundBillingSubscriptionPlanInfo,
-        now,
+        now: NormalizedDateTime.fromDate(now),
       });
       if (!calculateRemainingPlanResult.ok) {
         return {
@@ -201,7 +202,7 @@ export async function processPurchaseSubscriptionPreview(
         billingOrganization,
         billingSubscriptionPlanData,
         discountedAmount: currentDiscountedAmount,
-        now,
+        now: NormalizedDateTime.fromDate(now),
       });
       if (!calculateElapsedPlanResult.ok) {
         return {
@@ -240,7 +241,7 @@ export async function processPurchaseSubscriptionPreview(
         billingOrganization,
         billingSubscriptionPlanData,
         discountedAmount: currentDiscountedAmount,
-        now,
+        now: NormalizedDateTime.fromDate(now),
       });
       if (!calculateElapsedPlanResult.ok) {
         return {
@@ -288,7 +289,7 @@ export interface ProcessPurchaseSubscriptionOptions {
   totalPrice: number;
   discountedAmount: number;
   previewResponse: GetBillingSubscriptionPreviewResponse;
-  now: NormalizedDateTime;
+  now: Date;
 }
 
 export async function processPurchaseSubscription(
@@ -328,23 +329,33 @@ export async function processPurchaseSubscription(
   }
   switch (billingSubscriptionPlanData.period) {
     case 'monthly': {
-      if (billingOrganization.monthlyExpiredAt === null) {
-        billingOrganization.monthlyStartedAt = createStartedAt(now).date;
+      if (billingOrganization.subscriptionMonthlyExpiredAt === null) {
+        // new monthly subscription
+        billingOrganization.subscriptionMonthlyStartedAt = now;
       } else {
-        billingOrganization.monthlyStartedAt = billingOrganization.monthlyExpiredAt;
+        // extend monthly subscription
+        billingOrganization.subscriptionMonthlyStartedAt = billingOrganization.subscriptionMonthlyExpiredAt;
       }
 
-      billingOrganization.monthlyExpiredAt = createExpiredAt(NormalizedDateTime.fromDate(billingOrganization.monthlyStartedAt), billingSubscriptionPlanData.period).date;
+      billingOrganization.subscriptionMonthlyExpiredAt = createExpiredAt(
+        NormalizedDateTime.fromDate(billingOrganization.subscriptionMonthlyStartedAt),
+        billingSubscriptionPlanData.period,
+      ).date;
       break;
     }
     case 'yearly': {
-      if (billingOrganization.yearlyExpiredAt === null) {
-        billingOrganization.yearlyStartedAt = createStartedAt(now).date;
+      if (billingOrganization.subscriptionYearlyExpiredAt === null) {
+        // new yearly subscription
+        billingOrganization.subscriptionYearlyStartedAt = now;
       } else {
-        billingOrganization.yearlyStartedAt = billingOrganization.yearlyExpiredAt;
+        // extend yearly subscription
+        billingOrganization.subscriptionYearlyStartedAt = billingOrganization.subscriptionYearlyExpiredAt;
       }
 
-      billingOrganization.yearlyExpiredAt = createExpiredAt(NormalizedDateTime.fromDate(billingOrganization.yearlyStartedAt), billingSubscriptionPlanData.period).date;
+      billingOrganization.subscriptionYearlyExpiredAt = createExpiredAt(
+        NormalizedDateTime.fromDate(billingOrganization.subscriptionYearlyStartedAt),
+        billingSubscriptionPlanData.period,
+      ).date;
       break;
     }
     default: {
