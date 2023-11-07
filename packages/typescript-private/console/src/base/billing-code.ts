@@ -7,10 +7,12 @@ export const BillingResultCodeMap = {
   // organization
   'organization-not-found': 100,
   'organization-method-nice-not-found': 101,
-  'organization-monthly-started-at-not-found': 102,
-  'organization-monthly-expired-at-not-found': 103,
-  'organization-yearly-started-at-not-found': 104,
-  'organization-yearly-expired-at-not-found': 105,
+  'organization-subscription-monthly-started-at-not-found': 102,
+  'organization-subscription-monthly-expired-at-not-found': 103,
+  'organization-subscription-monthly-invalid-value': 104,
+  'organization-subscription-yearly-started-at-not-found': 105,
+  'organization-subscription-yearly-expired-at-not-found': 106,
+  'organization-subscription-yearly-invalid-value': 107,
 
   // coupon
   'coupon-not-found': 200,
@@ -33,26 +35,27 @@ export const BillingResultCodeMap = {
   'subscription-plan-currency-not-matched': 306,
   'subscription-plan-duplicated': 307,
 
-  // method
-  'billing-method-not-found': 404,
-
-  // method nice
-  'method-nice-bid-not-found': 400,
-
   // cloud license
-  'cloud-license-not-found': 500,
+  'cloud-license-not-found': 400,
 
   // self-hosted license
-  'self-hosted-license-not-found': 600,
+  'self-hosted-license-not-found': 500,
+
+  // method nice
+  'method-nice-bid-not-found': 600,
 };
 
 export type BillingReason = keyof typeof BillingResultCodeMap;
 
+export type BillingResultCodeDetailValue = undefined | null | boolean | number | string;
+export type BillingResultCodeDetails = Record<string, BillingResultCodeDetailValue>;
+
 export interface BillingResultCode {
   code: number;
   reason: BillingReason;
+  details?: BillingResultCodeDetails;
 }
 
-export function resultCode(reason: BillingReason): BillingResultCode {
-  return { code: BillingResultCodeMap[reason], reason };
+export function resultCode(reason: BillingReason, details?: BillingResultCodeDetails): BillingResultCode {
+  return { code: BillingResultCodeMap[reason], reason, details };
 }

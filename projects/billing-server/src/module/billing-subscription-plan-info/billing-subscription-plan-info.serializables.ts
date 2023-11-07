@@ -4,6 +4,7 @@ import { v4 } from 'uuid';
 import { BillingCoupon } from '../../db/entity/billing-coupon.entity';
 import { BillingSubscriptionPlanInfo } from '../../db/entity/billing-subscription-plan-info.entity';
 import { RetrySerializeContext } from '../../db/utils';
+import { ResolveCouponResult } from '../billing-coupon/billing-coupon.utils';
 import { registerUsedCoupon } from '../billing-organization/billing-organization.serializables';
 
 export interface ProcessNewCouponOptions {
@@ -53,8 +54,7 @@ export interface CreateOrUpdateBillingSubscriptionPlanInfoAndCouponOptions {
   billingOrganizationId: string;
   billingSubscriptionPlanData: BillingSubscriptionPlanData;
   discountedAmount: number;
-  newCoupon: BillingCoupon | null;
-  oldCoupon: BillingCoupon | null;
+  resolveCouponResult: ResolveCouponResult;
   billingSubscriptionPlanSourceId: string | null;
 }
 
@@ -77,7 +77,9 @@ export async function createOrUpdateBillingSubscriptionPlanInfoAndCoupon(
   options: CreateOrUpdateBillingSubscriptionPlanInfoAndCouponOptions,
 ): Promise<CreateOrUpdateBillingSubscriptionPlanInfoAndCouponResult> {
   const { logger, manager } = context;
-  const { billingOrganizationId, billingSubscriptionPlanData, discountedAmount, newCoupon, oldCoupon, billingSubscriptionPlanSourceId } = options;
+  const { billingOrganizationId, billingSubscriptionPlanData, discountedAmount, resolveCouponResult, billingSubscriptionPlanSourceId } = options;
+  const { newCoupon, oldCoupon } = resolveCouponResult;
+
   const found = await manager.getRepository(BillingSubscriptionPlanInfo).findOne({
     where: {
       billingOrganizationId,

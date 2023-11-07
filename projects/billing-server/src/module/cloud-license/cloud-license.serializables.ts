@@ -73,26 +73,32 @@ export type ApplyCloudLicenseResult = ApplyCloudLicenseResultFailure | ApplyClou
 export async function applyCloudLicense(context: RetrySerializeContext, options: ApplyCloudLicenseOptions): Promise<ApplyCloudLicenseResult> {
   const { manager } = context;
   const { billingSubscriptionPlanInfo } = options;
+  const { billingOrganizationId, type, option } = billingSubscriptionPlanInfo;
   const cloudLicense = await manager.getRepository(CloudLicense).findOne({
     where: {
-      billingOrganizationId: billingSubscriptionPlanInfo.billingOrganizationId,
+      billingOrganizationId,
+    },
+    lock: {
+      mode: 'pessimistic_write',
     },
   });
   if (cloudLicense === null) {
     return {
       ok: false,
-      resultCode: resultCode('cloud-license-not-found'),
+      resultCode: resultCode('cloud-license-not-found', {
+        billingOrganizationId,
+      }),
     };
   }
 
-  switch (billingSubscriptionPlanInfo.type) {
+  switch (type) {
     case 'live-testing':
       {
-        cloudLicense.liveTestingParallelCount = billingSubscriptionPlanInfo.option;
+        cloudLicense.liveTestingParallelCount = option;
       }
       break;
     default: {
-      assertUnreachable(billingSubscriptionPlanInfo.type);
+      assertUnreachable(type);
     }
   }
 
