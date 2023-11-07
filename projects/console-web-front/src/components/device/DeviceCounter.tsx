@@ -1,5 +1,9 @@
 import { ExclamationCircleOutlined } from '@ant-design/icons';
-import { SelfHostedLicenseBase, COMMUNITY_MAX_BROWSER_COUNT, COMMUNITY_MAX_MOBILE_COUNT } from '@dogu-private/console';
+import {
+  SelfHostedLicenseResponse,
+  COMMUNITY_MAX_BROWSER_COUNT,
+  COMMUNITY_MAX_MOBILE_COUNT,
+} from '@dogu-private/console';
 import styled from 'styled-components';
 
 import { useDeviceCount } from '../../../enterprise/api/device';
@@ -19,10 +23,10 @@ const DeviceCounter: React.FC = () => {
 
   const getbrowserMaxCount = () => {
     if (process.env.NEXT_PUBLIC_ENV === 'self-hosted') {
-      if (checkExpired(license as SelfHostedLicenseBase)) {
+      if (checkExpired(license as SelfHostedLicenseResponse)) {
         return COMMUNITY_MAX_BROWSER_COUNT;
       }
-      return (license as SelfHostedLicenseBase)?.maximumEnabledBrowserCount ?? COMMUNITY_MAX_BROWSER_COUNT;
+      return (license as SelfHostedLicenseResponse)?.maximumEnabledBrowserCount ?? COMMUNITY_MAX_BROWSER_COUNT;
     } else {
       return Number.POSITIVE_INFINITY;
     }
@@ -30,10 +34,10 @@ const DeviceCounter: React.FC = () => {
 
   const getMobileMaxCount = () => {
     if (process.env.NEXT_PUBLIC_ENV === 'self-hosted') {
-      if (checkExpired(license as SelfHostedLicenseBase)) {
+      if (checkExpired(license as SelfHostedLicenseResponse)) {
         return COMMUNITY_MAX_MOBILE_COUNT;
       }
-      return (license as SelfHostedLicenseBase)?.maximumEnabledBrowserCount ?? COMMUNITY_MAX_MOBILE_COUNT;
+      return (license as SelfHostedLicenseResponse)?.maximumEnabledBrowserCount ?? COMMUNITY_MAX_MOBILE_COUNT;
     } else {
       return Number.POSITIVE_INFINITY;
     }

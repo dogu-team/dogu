@@ -7,7 +7,11 @@ import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import useTranslation from 'next-translate/useTranslation';
 import Trans from 'next-translate/Trans';
-import { SelfHostedLicenseBase, COMMUNITY_MAX_BROWSER_COUNT, COMMUNITY_MAX_MOBILE_COUNT } from '@dogu-private/console';
+import {
+  COMMUNITY_MAX_BROWSER_COUNT,
+  COMMUNITY_MAX_MOBILE_COUNT,
+  SelfHostedLicenseResponse,
+} from '@dogu-private/console';
 
 import DangerZone from '../../../src/components/common/boxes/DangerZone';
 import TokenCopyInput from '../../../src/components/common/TokenCopyInput';
@@ -24,12 +28,12 @@ import useEventStore from '../../../src/stores/events';
 import DoguText from '../../../src/components/common/DoguText';
 
 interface Props {
-  license: SelfHostedLicenseBase;
+  license: SelfHostedLicenseResponse;
   organizationId: OrganizationId | null;
 }
 
 const SelfHostedLicenseContainer: React.FC<Props> = ({ license, organizationId }) => {
-  const [licenseInfo, setLicenseInfo] = useState<SelfHostedLicenseBase>(license);
+  const [licenseInfo, setLicenseInfo] = useState<SelfHostedLicenseResponse>(license);
   const [isTimeoutOpen, openTimeoutModal, closeTimeoutModal] = useModal();
   const [form] = Form.useForm<LicenseSubmitFormValues>();
   const router = useRouter();

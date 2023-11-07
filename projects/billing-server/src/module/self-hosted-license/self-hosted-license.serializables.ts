@@ -18,8 +18,8 @@ export async function findSelfHostedLicense(context: RetrySerializeContext, dto:
   }
 
   const response = license as SelfHostedLicenseResponse;
-  const monthlyExpiredAt = response.billingOrganization?.monthlyExpiredAt ?? null;
-  const yearlyExpiredAt = response.billingOrganization?.yearlyExpiredAt ?? null;
+  const monthlyExpiredAt = response.billingOrganization?.subscriptionMonthlyExpiredAt ?? null;
+  const yearlyExpiredAt = response.billingOrganization?.subscriptionYearlyExpiredAt ?? null;
 
   response.billingOrganization?.billingSubscriptionPlanInfos?.forEach((info) => {
     switch (info.period) {

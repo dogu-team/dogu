@@ -1,5 +1,5 @@
 import {
-  BillingSubscriptionPlanInfoForCloudLicenseResponse,
+  BillingSubscriptionPlanInfoResponse,
   CloudLicenseBase,
   CloudLicenseResponse,
   SelfHostedLicenseBase,
@@ -17,7 +17,7 @@ import MenuButton from '../buttons/MenuButton';
 import MenuItemButton from '../buttons/MenuItemButton';
 
 interface ItemProps {
-  plan: BillingSubscriptionPlanInfoForCloudLicenseResponse;
+  plan: BillingSubscriptionPlanInfoResponse;
 }
 
 const PlanItem: React.FC<ItemProps> = ({ plan }) => {

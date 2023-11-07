@@ -1,5 +1,5 @@
 import { CheckOutlined } from '@ant-design/icons';
-import { SelfHostedLicenseBase } from '@dogu-private/console';
+import { SelfHostedLicenseResponse } from '@dogu-private/console';
 import { Button, Divider, Modal, Tag } from 'antd';
 import useTranslation from 'next-translate/useTranslation';
 import Link from 'next/link';
@@ -63,7 +63,7 @@ interface Props {
 export const UpgradeDevicePlanBannerModal: React.FC<Props> = ({ isOpen, close, title, description }) => {
   const { license } = useOrganizationContext();
   const { t } = useTranslation('billing');
-  const licenseInfo = license as SelfHostedLicenseBase | null;
+  const licenseInfo = license as SelfHostedLicenseResponse | null;
 
   return (
     <Modal destroyOnClose open={isOpen} onCancel={close} closable title={title} footer={null} centered>
@@ -137,7 +137,7 @@ export const UpgradeDevicePlanBannerModal: React.FC<Props> = ({ isOpen, close, t
 export const UpgradeBrowserPlanModal: React.FC<Props> = ({ isOpen, close, title, description }) => {
   const { license } = useOrganizationContext();
   const { t } = useTranslation('billing');
-  const licenseInfo = license as SelfHostedLicenseBase | null;
+  const licenseInfo = license as SelfHostedLicenseResponse | null;
 
   return (
     <Modal destroyOnClose open={isOpen} onCancel={close} closable title={title} footer={null} centered>
@@ -211,7 +211,7 @@ export const UpgradeBrowserPlanModal: React.FC<Props> = ({ isOpen, close, title,
 export const UpgradeConveniencePlanModal: React.FC<Props> = ({ isOpen, close, title, description }) => {
   const { license } = useOrganizationContext();
   const { t } = useTranslation('billing');
-  const licenseInfo = license as SelfHostedLicenseBase | undefined;
+  const licenseInfo = license as SelfHostedLicenseResponse | undefined;
 
   return (
     <Modal destroyOnClose open={isOpen} onCancel={close} closable title={title} footer={null} centered>

@@ -37,11 +37,13 @@ const usePaginationSWR = <D>(
     } else {
       setSWRKey(key && `${key}${option?.skipQuestionMark ? `&${pageQuery}` : `?${pageQuery}`}`);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key]);
 
   useEffect(() => {
     // 페이지 변경시 SWR key 만들기
     setSWRKey(key && `${key}${option?.skipQuestionMark ? `&${pageQuery}` : `?${pageQuery}`}`);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page]);
 
   const updatePage = useCallback((p: number) => {

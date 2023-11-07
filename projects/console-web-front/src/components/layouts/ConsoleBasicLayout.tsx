@@ -1,5 +1,5 @@
 import { CloseOutlined, SlackOutlined } from '@ant-design/icons';
-import { CloudLicenseResponse, SelfHostedLicenseBase, UserBase } from '@dogu-private/console';
+import { CloudLicenseResponse, SelfHostedLicenseResponse, UserBase } from '@dogu-private/console';
 import { Button, Tooltip } from 'antd';
 import Trans from 'next-translate/Trans';
 import Link from 'next/link';
@@ -23,7 +23,7 @@ import Header from './Header';
 interface Props {
   children: React.ReactNode;
   user?: UserBase;
-  licenseInfo?: SelfHostedLicenseBase | CloudLicenseResponse;
+  licenseInfo?: SelfHostedLicenseResponse | CloudLicenseResponse;
 }
 
 const ConsoleBasicLayout = ({ children, user, licenseInfo }: Props) => {
@@ -47,7 +47,7 @@ const ConsoleBasicLayout = ({ children, user, licenseInfo }: Props) => {
     useEventStore.subscribe(({ eventName, payload }) => {
       if (eventName === 'onLicenseUpdated') {
         if (payload) {
-          updateLicense(payload as SelfHostedLicenseBase | CloudLicenseResponse);
+          updateLicense(payload as SelfHostedLicenseResponse | CloudLicenseResponse);
         }
       }
     });
@@ -96,7 +96,7 @@ const ConsoleBasicLayout = ({ children, user, licenseInfo }: Props) => {
           </AlertBanner>
         )}
         <Header
-          links={license ? <LicenseTag licenseInfo={license as SelfHostedLicenseBase} me={me} /> : null}
+          links={license ? <LicenseTag licenseInfo={license} me={me} /> : null}
           right={
             <FlexRow>
               {process.env.NEXT_PUBLIC_ENV !== 'self-hosted' && (

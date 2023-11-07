@@ -409,8 +409,8 @@ export async function processPurchaseSubscription(
   }
 
   const plan = createSubscriptionPlanInfoAndCouponResult.billingSubscriptionPlanInfo as BillingSubscriptionPlanInfoResponse;
-  const monthlyExpiredAt = billingOrganization.monthlyExpiredAt;
-  const yearlyExpiredAt = billingOrganization.yearlyExpiredAt;
+  const monthlyExpiredAt = billingOrganization.subscriptionMonthlyExpiredAt;
+  const yearlyExpiredAt = billingOrganization.subscriptionYearlyExpiredAt;
 
   switch (plan.period) {
     case 'monthly': {
