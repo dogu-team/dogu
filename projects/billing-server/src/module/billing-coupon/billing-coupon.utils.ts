@@ -1,4 +1,4 @@
-import { BillingPeriod } from '@dogu-private/console';
+import { BillingPeriod, BillingResultCode, resultCode } from '@dogu-private/console';
 import { assertUnreachable } from '@dogu-tech/common';
 import { BillingCoupon } from '../../db/entity/billing-coupon.entity';
 import { BillingSubscriptionPlanInfo } from '../../db/entity/billing-subscription-plan-info.entity';
@@ -88,59 +88,103 @@ export function calculateCouponFactor(options: CalculateCouponFactorOptions): Ca
 export interface ResolveCouponOptions {
   billingSubscriptionPlanInfo: BillingSubscriptionPlanInfo | undefined;
   newCoupon: BillingCoupon | null;
-  isChangePeriod: boolean;
+  period: BillingPeriod;
 }
 
-export interface ResolveCouponResult {
-  coupon: BillingCoupon | null;
-  newCoupon: BillingCoupon | null;
-  oldCoupon: BillingCoupon | null;
-  type: 'new' | 'old' | null;
+export interface ResolveCouponResultFailure {
+  ok: false;
+  resultCode: BillingResultCode;
 }
+
+export interface ResolveCouponResultSuccessNew {
+  ok: true;
+  type: 'new';
+  coupon: BillingCoupon;
+}
+
+export interface ResolveCouponResultSuccessOld {
+  ok: true;
+  type: 'old';
+  coupon: BillingCoupon;
+}
+
+export interface ResolveCouponResultSuccessNone {
+  ok: true;
+  type: 'none';
+  coupon: null;
+}
+
+export type ResolveCouponResultSuccess = ResolveCouponResultSuccessNew | ResolveCouponResultSuccessOld | ResolveCouponResultSuccessNone;
+
+export type ResolveCouponResult = ResolveCouponResultFailure | ResolveCouponResultSuccess;
 
 export function resolveCoupon(options: ResolveCouponOptions): ResolveCouponResult {
-  const { billingSubscriptionPlanInfo, newCoupon, isChangePeriod } = options;
-  const isNewSubscription = billingSubscriptionPlanInfo === null;
-  const oldCoupon = billingSubscriptionPlanInfo?.billingCoupon ?? null;
-  if (isNewSubscription) {
-    if (newCoupon === null) {
+  const { billingSubscriptionPlanInfo, newCoupon, period } = options;
+  if (newCoupon !== null) {
+    return {
+      ok: true,
+      coupon: newCoupon,
+      type: 'new',
+    };
+  }
+
+  if (billingSubscriptionPlanInfo === undefined) {
+    return {
+      ok: true,
+      coupon: null,
+      type: 'none',
+    };
+  } else {
+    const oldCoupon = billingSubscriptionPlanInfo.billingCoupon ?? null;
+    if (oldCoupon === null) {
       return {
+        ok: true,
         coupon: null,
-        newCoupon: null,
-        oldCoupon: null,
-        type: null,
-      };
-    } else {
-      return {
-        coupon: newCoupon,
-        newCoupon,
-        oldCoupon: null,
-        type: 'new',
+        type: 'none',
       };
     }
-  } else {
-    if (isChangePeriod) {
-      if (newCoupon === null) {
+
+    if (billingSubscriptionPlanInfo.period === 'monthly' && period === 'yearly') {
+      if (oldCoupon.yearlyDiscountPercent !== null) {
         return {
+          ok: true,
           coupon: oldCoupon,
-          newCoupon: null,
-          oldCoupon,
           type: 'old',
         };
       } else {
         return {
-          coupon: newCoupon,
-          newCoupon,
-          oldCoupon,
-          type: 'new',
+          ok: true,
+          coupon: null,
+          type: 'none',
         };
       }
+    } else if (billingSubscriptionPlanInfo.period === 'yearly' && period === 'monthly') {
+      if (oldCoupon.monthlyDiscountPercent !== null) {
+        return {
+          ok: true,
+          coupon: oldCoupon,
+          type: 'old',
+        };
+      } else {
+        return {
+          ok: true,
+          coupon: null,
+          type: 'none',
+        };
+      }
+    } else if (billingSubscriptionPlanInfo.period === period) {
+      return {
+        ok: true,
+        coupon: oldCoupon,
+        type: 'old',
+      };
     } else {
       return {
-        coupon: oldCoupon,
-        newCoupon: null,
-        oldCoupon,
-        type: 'old',
+        ok: false,
+        resultCode: resultCode('unexpected-error', {
+          infoPeriod: billingSubscriptionPlanInfo.period,
+          period,
+        }),
       };
     }
   }

@@ -24,6 +24,18 @@ export interface BillingMethodNiceBase {
 
 export const BillingMethodNiceProp = propertiesOf<BillingMethodNiceBase>();
 
+export type BillingMethodNicePublic = Pick<BillingMethodNiceBase, 'cardCode' | 'cardName' | 'cardNumberLast4Digits' | 'expirationMonth' | 'expirationYear'>;
+
+export function getBillingMethodNicePublic(billingMethodNice: BillingMethodNiceBase): BillingMethodNicePublic {
+  return {
+    cardCode: billingMethodNice.cardCode,
+    cardName: billingMethodNice.cardName,
+    cardNumberLast4Digits: billingMethodNice.cardNumberLast4Digits,
+    expirationMonth: billingMethodNice.expirationMonth,
+    expirationYear: billingMethodNice.expirationYear,
+  };
+}
+
 export class NiceSubscribeRegistDto {
   @ValidateNested()
   @Type(() => RegisterCardDto)

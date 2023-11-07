@@ -194,7 +194,7 @@ export function calculateYearlyPurchaseSubscriptionDateTimes(options: CalculateY
     const startedAt = NormalizedDateTime.fromDate(notNormalizedStartedAt);
     const calculatedExpiredAt = createExpiredAt(startedAt, 'yearly');
     const expiredAt = NormalizedDateTime.fromDate(billingOrganization.subscriptionYearlyExpiredAt);
-    if (expiredAt.date !== calculatedExpiredAt.date) {
+    if (expiredAt.date.getTime() !== calculatedExpiredAt.date.getTime()) {
       return {
         ok: false,
         resultCode: resultCode('organization-subscription-yearly-invalid-value', {
@@ -204,7 +204,7 @@ export function calculateYearlyPurchaseSubscriptionDateTimes(options: CalculateY
       };
     }
 
-    if (startedAt.date > expiredAt.date) {
+    if (startedAt.date.getTime() > expiredAt.date.getTime()) {
       return {
         ok: false,
         resultCode: resultCode('organization-subscription-yearly-invalid-value', {
@@ -328,7 +328,7 @@ export function calculateMonthlyPurchaseSubscriptionDateTimes(options: Calculate
     const startedAt = NormalizedDateTime.fromDate(notNormalizedStartedAt);
     const expiredAtCalculated = createExpiredAt(startedAt, 'monthly');
     const expiredAt = NormalizedDateTime.fromDate(billingOrganization.subscriptionMonthlyExpiredAt);
-    if (expiredAt.date !== expiredAtCalculated.date) {
+    if (expiredAt.date.getTime() !== expiredAtCalculated.date.getTime()) {
       return {
         ok: false,
         resultCode: resultCode('organization-subscription-monthly-invalid-value', {
@@ -338,7 +338,7 @@ export function calculateMonthlyPurchaseSubscriptionDateTimes(options: Calculate
       };
     }
 
-    if (startedAt.date > expiredAt.date) {
+    if (startedAt.date.getTime() > expiredAt.date.getTime()) {
       return {
         ok: false,
         resultCode: resultCode('organization-subscription-monthly-invalid-value', {

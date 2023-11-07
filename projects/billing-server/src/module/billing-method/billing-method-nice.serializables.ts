@@ -124,16 +124,6 @@ export async function createPurchase(
     // TODO: cancel payment
   });
   logger.info('BillingMethodNiceService.subscribePayments', { response });
-
-  const billingOrganization = billingMethodNice.billingOrganization;
-  if (!billingOrganization) {
-    throw new Error(`billingOrganization not found: ${billingMethodNiceId}`);
-  }
-
-  const saved = await manager.getRepository(BillingOrganization).save({
-    ...billingOrganization,
-  });
-
   return {
     ok: true,
     response,
@@ -157,7 +147,9 @@ export async function updateBillingMethod(
   if (!billingOrganization) {
     return {
       ok: false,
-      resultCode: resultCode('organization-not-found'),
+      resultCode: resultCode('organization-not-found', {
+        organizationId: dto.organizationId,
+      }),
     };
   }
 

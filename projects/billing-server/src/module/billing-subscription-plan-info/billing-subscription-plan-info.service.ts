@@ -90,8 +90,8 @@ export class BillingSubscriptionPlanInfoService {
         throw new NotFoundException(`BillingSubscriptionPlanInfo not found by id ${billingSubscriptionPlanInfoId}`);
       }
 
-      if (found.state !== 'change-option-requested' && found.state !== 'change-period-requested' && found.state !== 'change-option-and-period-requested') {
-        throw new BadRequestException(`state is not change-option-requested or change-period-requested or change-option-and-period-requested`);
+      if (found.state !== 'change-option-or-period-requested') {
+        throw new BadRequestException(`state is not change-option-or-period-requested`);
       }
 
       found.state = 'subscribed';

@@ -66,14 +66,14 @@ export async function createBillingOrganization(context: RetrySerializeContext, 
   return saved;
 }
 
-export interface RegisterUsedCouponDto {
+export interface RegisterUsedCouponOptions {
   billingOrganizationId: string;
   billingCouponId: string;
 }
 
-export async function registerUsedCoupon(context: RetrySerializeContext, dto: RegisterUsedCouponDto): Promise<void> {
+export async function registerUsedCoupon(context: RetrySerializeContext, options: RegisterUsedCouponOptions): Promise<void> {
   const { manager } = context;
-  const { billingOrganizationId, billingCouponId } = dto;
+  const { billingOrganizationId, billingCouponId } = options;
   const created = manager.getRepository(BillingOrganizationUsedBillingCoupon).create({
     billingOrganizationId,
     billingCouponId,

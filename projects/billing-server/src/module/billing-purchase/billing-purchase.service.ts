@@ -3,6 +3,7 @@ import {
   CreatePurchaseSubscriptionResponse,
   CreatePurchaseSubscriptionWithNewCardDto,
   CreatePurchaseSubscriptionWithNewCardResponse,
+  getBillingMethodNicePublic,
   GetBillingSubscriptionPreviewDto,
   GetBillingSubscriptionPreviewResponse,
   resultCode,
@@ -11,14 +12,11 @@ import { Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { retrySerialize } from '../../db/utils';
-import { BillingHistoryService } from '../billing-history/billing-history.service';
 import { BillingMethodNiceCaller } from '../billing-method/billing-method-nice.caller';
 import { createOrUpdateMethodNice } from '../billing-method/billing-method-nice.serializables';
-import { BillingMethodNiceService } from '../billing-method/billing-method-nice.service';
 import { findBillingOrganizationWithMethodAndSubscriptionPlans, findBillingOrganizationWithSubscriptionPlans } from '../billing-organization/billing-organization.serializables';
-import { BillingOrganizationService } from '../billing-organization/billing-organization.service';
 import { DoguLogger } from '../logger/logger';
-import { processPurchaseSubscription, processPurchaseSubscriptionPreview } from './billing-purchase.serializables';
+import { processNextPurchaseSubscription, processNowPurchaseSubscription, processPurchaseSubscriptionPreview } from './billing-purchase.serializables';
 
 @Injectable()
 export class BillingPurchaseService {
@@ -26,9 +24,6 @@ export class BillingPurchaseService {
     private readonly logger: DoguLogger,
     @InjectDataSource()
     private readonly dataSource: DataSource,
-    private readonly billingMethodNiceService: BillingMethodNiceService,
-    private readonly billingOrganizationService: BillingOrganizationService,
-    private readonly billingHistoryService: BillingHistoryService,
     private readonly billingMethodNiceCaller: BillingMethodNiceCaller,
   ) {}
 
@@ -53,7 +48,8 @@ export class BillingPurchaseService {
         };
       }
 
-      return processPurchaseSubscriptionPreviewResult.previewResponse;
+      const { previewResponse } = processPurchaseSubscriptionPreviewResult;
+      return previewResponse;
     });
   }
 
@@ -64,7 +60,21 @@ export class BillingPurchaseService {
       if (!billingOrganization) {
         return {
           ok: false,
-          resultCode: resultCode('organization-not-found'),
+          resultCode: resultCode('organization-not-found', {
+            organizationId: dto.organizationId,
+          }),
+          plan: null,
+          license: null,
+        };
+      }
+
+      const { billingMethodNice } = billingOrganization;
+      if (!billingMethodNice) {
+        return {
+          ok: false,
+          resultCode: resultCode('organization-method-nice-not-found', {
+            billingOrganization: billingOrganization.billingOrganizationId,
+          }),
           plan: null,
           license: null,
         };
@@ -83,7 +93,21 @@ export class BillingPurchaseService {
         };
       }
 
-      if (!processPurchaseSubscriptionPreviewResult.needPurchase) {
+      const { needPurchase } = processPurchaseSubscriptionPreviewResult;
+      if (!needPurchase) {
+        const processNextPurchaseSubscriptionResult = await processNextPurchaseSubscription(context, {
+          billingOrganization,
+          ...processPurchaseSubscriptionPreviewResult,
+        });
+        if (!processNextPurchaseSubscriptionResult.ok) {
+          return {
+            ok: false,
+            resultCode: processNextPurchaseSubscriptionResult.resultCode,
+            plan: null,
+            license: null,
+          };
+        }
+
         return {
           ok: true,
           resultCode: resultCode('ok'),
@@ -92,25 +116,10 @@ export class BillingPurchaseService {
         };
       }
 
-      if (!billingOrganization.billingMethodNice) {
-        return {
-          ok: false,
-          resultCode: resultCode('organization-method-nice-not-found'),
-          plan: null,
-          license: null,
-        };
-      }
-
-      return await processPurchaseSubscription(context, this.billingMethodNiceCaller, {
-        billingMethodNice: billingOrganization.billingMethodNice,
+      return await processNowPurchaseSubscription(context, this.billingMethodNiceCaller, {
+        billingMethodNice,
         billingOrganization,
-        billingSubscriptionPlanData: processPurchaseSubscriptionPreviewResult.billingSubscriptionPlanData,
-        billingSubscriptionPlanSource: processPurchaseSubscriptionPreviewResult.billingSubscriptionPlanSource,
-        resolveCouponResult: processPurchaseSubscriptionPreviewResult.resolveCouponResult,
-        totalPrice: processPurchaseSubscriptionPreviewResult.totalPrice,
-        discountedAmount: processPurchaseSubscriptionPreviewResult.discountedAmount,
-        previewResponse: processPurchaseSubscriptionPreviewResult.previewResponse,
-        now: processPurchaseSubscriptionPreviewResult.now,
+        ...processPurchaseSubscriptionPreviewResult,
       });
     });
   }
@@ -129,6 +138,7 @@ export class BillingPurchaseService {
           license: null,
         };
       }
+      const { billingOrganizationId } = billingOrganization;
 
       const processPurchaseSubscriptionPreviewResult = await processPurchaseSubscriptionPreview(context, {
         billingOrganization,
@@ -143,52 +153,50 @@ export class BillingPurchaseService {
           license: null,
         };
       }
+      const { needPurchase } = processPurchaseSubscriptionPreviewResult;
 
       const billingMethodNice = await createOrUpdateMethodNice(context, this.billingMethodNiceCaller, {
-        billingOrganizationId: billingOrganization.billingOrganizationId,
+        billingOrganizationId,
         subscribeRegist: {
           registerCard,
         },
       });
 
-      if (!processPurchaseSubscriptionPreviewResult.needPurchase) {
+      const method = getBillingMethodNicePublic(billingMethodNice);
+      if (!needPurchase) {
+        const processNextPurchaseSubscriptionResult = await processNextPurchaseSubscription(context, {
+          billingOrganization,
+          ...processPurchaseSubscriptionPreviewResult,
+        });
+        if (!processNextPurchaseSubscriptionResult.ok) {
+          return {
+            ok: false,
+            resultCode: processNextPurchaseSubscriptionResult.resultCode,
+            plan: null,
+            license: null,
+            method,
+          };
+        }
+
         return {
           ok: true,
           resultCode: resultCode('ok'),
           plan: null,
-          method: {
-            cardCode: billingMethodNice.cardCode,
-            cardName: billingMethodNice.cardName,
-            cardNumberLast4Digits: billingMethodNice.cardNumberLast4Digits,
-            expirationMonth: billingMethodNice.expirationMonth,
-            expirationYear: billingMethodNice.expirationYear,
-          },
           license: null,
+          method,
         };
       }
 
       billingOrganization.billingMethodNice = billingMethodNice;
-      const rv = await processPurchaseSubscription(context, this.billingMethodNiceCaller, {
+      const rv = await processNowPurchaseSubscription(context, this.billingMethodNiceCaller, {
         billingMethodNice,
         billingOrganization,
-        billingSubscriptionPlanData: processPurchaseSubscriptionPreviewResult.billingSubscriptionPlanData,
-        billingSubscriptionPlanSource: processPurchaseSubscriptionPreviewResult.billingSubscriptionPlanSource,
-        resolveCouponResult: processPurchaseSubscriptionPreviewResult.resolveCouponResult,
-        totalPrice: processPurchaseSubscriptionPreviewResult.totalPrice,
-        discountedAmount: processPurchaseSubscriptionPreviewResult.discountedAmount,
-        previewResponse: processPurchaseSubscriptionPreviewResult.previewResponse,
-        now: processPurchaseSubscriptionPreviewResult.now,
+        ...processPurchaseSubscriptionPreviewResult,
       });
 
       return {
         ...rv,
-        method: {
-          cardCode: billingMethodNice.cardCode,
-          cardName: billingMethodNice.cardName,
-          cardNumberLast4Digits: billingMethodNice.cardNumberLast4Digits,
-          expirationMonth: billingMethodNice.expirationMonth,
-          expirationYear: billingMethodNice.expirationYear,
-        },
+        method,
       };
     });
   }

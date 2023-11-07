@@ -2,6 +2,7 @@ import { BillingCategory, BillingCurrency, BillingOrganizationBase } from '@dogu
 import { Column, Entity, OneToMany, OneToOne, PrimaryColumn } from 'typeorm';
 import { CreatedAt, DateColumn, DeletedAt, UpdatedAt } from '../decorators';
 import { BillingMethodNice } from './billing-method-nice.entity';
+import { BillingSubscriptionPlanHistory } from './billing-subscription-plan-history.entity';
 import { BillingSubscriptionPlanInfo } from './billing-subscription-plan-info.entity';
 import { BillingSubscriptionPlanSource } from './billing-subscription-plan-source.entity';
 
@@ -45,6 +46,9 @@ export class BillingOrganization implements BillingOrganizationBase {
 
   @OneToMany(() => BillingSubscriptionPlanSource, (billingSubscriptionPlanSource) => billingSubscriptionPlanSource.billingOrganization)
   billingSubscriptionPlanSources?: BillingSubscriptionPlanSource[];
+
+  @OneToMany(() => BillingSubscriptionPlanHistory, (billingSubscriptionPlanHistory) => billingSubscriptionPlanHistory.billingOrganization)
+  billingSubscriptionPlanHistories?: BillingSubscriptionPlanHistory[];
 
   @OneToOne(() => BillingMethodNice, (billingMethodNice) => billingMethodNice.billingOrganization)
   billingMethodNice?: BillingMethodNice;

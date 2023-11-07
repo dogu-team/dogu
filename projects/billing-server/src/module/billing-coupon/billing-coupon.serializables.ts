@@ -9,12 +9,15 @@ import {
   resultCode,
   ValidateBillingCouponDto,
 } from '@dogu-private/console';
+import { assertUnreachable } from '@dogu-tech/common';
 import { FindOptionsWhere, IsNull, Not } from 'typeorm';
 import { v4 } from 'uuid';
 import { BillingCoupon } from '../../db/entity/billing-coupon.entity';
 import { BillingOrganizationUsedBillingCoupon } from '../../db/entity/billing-organization-used-billing-coupon.entity';
 import { BillingOrganization } from '../../db/entity/billing-organization.entity';
 import { RetrySerializeContext } from '../../db/utils';
+import { registerUsedCoupon } from '../billing-organization/billing-organization.serializables';
+import { ResolveCouponResultSuccess } from './billing-coupon.utils';
 
 export interface ValidateBillingCouponResponseFailure {
   ok: false;
@@ -205,4 +208,60 @@ export async function parseCoupon(options: ParseCouponOptions): Promise<ParseCou
     ok: true,
     coupon: validateResult.coupon,
   };
+}
+
+export interface UseCouponOptions {
+  couponResult: ResolveCouponResultSuccess;
+  billingOrganizationId: string;
+  period: BillingPeriod;
+}
+
+export interface UseCouponResult {
+  billingCouponId: string | null;
+  billingCouponRemainingApplyCount: number | null;
+}
+
+export async function useCoupon(context: RetrySerializeContext, options: UseCouponOptions): Promise<UseCouponResult> {
+  const { manager } = context;
+  const { couponResult, billingOrganizationId, period } = options;
+  const { coupon, type } = couponResult;
+  switch (type) {
+    case 'new': {
+      if (coupon.remainingAvailableCount && coupon.remainingAvailableCount > 0) {
+        coupon.remainingAvailableCount -= 1;
+      }
+
+      await manager.getRepository(BillingCoupon).save(coupon);
+
+      await registerUsedCoupon(context, {
+        billingOrganizationId,
+        billingCouponId: coupon.billingCouponId,
+      });
+      break;
+    }
+    case 'old':
+    case 'none':
+      break;
+    default: {
+      assertUnreachable(type);
+    }
+  }
+
+  switch (period) {
+    case 'monthly': {
+      return {
+        billingCouponId: coupon?.billingCouponId ?? null,
+        billingCouponRemainingApplyCount: coupon?.monthlyApplyCount ?? null,
+      };
+    }
+    case 'yearly': {
+      return {
+        billingCouponId: coupon?.billingCouponId ?? null,
+        billingCouponRemainingApplyCount: coupon?.yearlyApplyCount ?? null,
+      };
+    }
+    default: {
+      assertUnreachable(period);
+    }
+  }
 }

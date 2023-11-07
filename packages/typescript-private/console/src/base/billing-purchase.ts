@@ -5,7 +5,7 @@ import { buildMessage, IsIn, IsNumber, IsOptional, IsString, IsUUID, Length, Val
 import { BillingCategory, BillingCurrency, BillingPeriod, BillingSubscriptionPlanData, BillingSubscriptionPlanType } from './billing';
 import { BillingResultCode } from './billing-code';
 import { BillingCouponBase } from './billing-coupon';
-import { BillingMethodNiceBase } from './billing-method-nice';
+import { BillingMethodNicePublic } from './billing-method-nice';
 import { BillingSubscriptionPlanInfoResponse } from './billing-subscription-plan-info';
 import { CloudLicenseBase } from './cloud-license';
 import { SelfHostedLicenseBase } from './self-hosted-license';
@@ -133,6 +133,6 @@ export interface CreatePurchaseSubscriptionWithNewCardResponse {
   ok: boolean;
   resultCode: BillingResultCode;
   plan: BillingSubscriptionPlanInfoResponse | null;
-  method: Pick<BillingMethodNiceBase, 'cardCode' | 'cardName' | 'cardNumberLast4Digits' | 'expirationMonth' | 'expirationYear'> | null;
+  method: BillingMethodNicePublic | null;
   license: CloudLicenseBase | SelfHostedLicenseBase | null;
 }

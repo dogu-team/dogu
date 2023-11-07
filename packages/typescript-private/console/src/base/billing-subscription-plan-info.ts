@@ -6,14 +6,7 @@ import { BillingCouponBase } from './billing-coupon';
 import { BillingOrganizationBase } from './billing-organization';
 import { BillingSubscriptionPlanSourceBase } from './billing-subscription-plan-source';
 
-export const BillingSubscriptionPlanState = [
-  'subscribed',
-  'unsubscribed',
-  'unsubscribe-requested',
-  'change-option-requested',
-  'change-period-requested',
-  'change-option-and-period-requested',
-] as const;
+export const BillingSubscriptionPlanState = ['subscribed', 'unsubscribed', 'unsubscribe-requested', 'change-option-or-period-requested'] as const;
 export type BillingSubscriptionPlanState = (typeof BillingSubscriptionPlanState)[number];
 
 export interface BillingSubscriptionPlanInfoBase extends BillingSubscriptionPlanData {

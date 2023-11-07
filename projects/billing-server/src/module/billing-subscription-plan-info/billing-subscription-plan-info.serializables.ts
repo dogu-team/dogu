@@ -1,148 +1,83 @@
-import { BillingPeriod, BillingResultCode, BillingSubscriptionPlanData, resultCode } from '@dogu-private/console';
-import { assertUnreachable } from '@dogu-tech/common';
+import { BillingResultCode, BillingSubscriptionPlanData } from '@dogu-private/console';
 import { v4 } from 'uuid';
-import { BillingCoupon } from '../../db/entity/billing-coupon.entity';
 import { BillingSubscriptionPlanInfo } from '../../db/entity/billing-subscription-plan-info.entity';
 import { RetrySerializeContext } from '../../db/utils';
-import { ResolveCouponResult } from '../billing-coupon/billing-coupon.utils';
-import { registerUsedCoupon } from '../billing-organization/billing-organization.serializables';
+import { UseCouponResult } from '../billing-coupon/billing-coupon.serializables';
 
-export interface ProcessNewCouponOptions {
-  newCoupon: BillingCoupon;
+export interface CreateOrUpdateBillingSubscriptionPlanInfoOptions {
   billingOrganizationId: string;
-  period: BillingPeriod;
-}
-
-export interface ProcessNewCouponResult {
-  billingCouponId: string;
-  billingCouponRemainingApplyCount: number | null;
-}
-
-export async function processNewCoupon(context: RetrySerializeContext, options: ProcessNewCouponOptions): Promise<ProcessNewCouponResult> {
-  const { manager } = context;
-  const { newCoupon, billingOrganizationId, period } = options;
-  if (newCoupon.remainingAvailableCount && newCoupon.remainingAvailableCount > 0) {
-    newCoupon.remainingAvailableCount -= 1;
-  }
-  await manager.getRepository(BillingCoupon).save(newCoupon);
-
-  await registerUsedCoupon(context, {
-    billingOrganizationId,
-    billingCouponId: newCoupon.billingCouponId,
-  });
-
-  switch (period) {
-    case 'monthly': {
-      return {
-        billingCouponId: newCoupon.billingCouponId,
-        billingCouponRemainingApplyCount: newCoupon.monthlyApplyCount,
-      };
-    }
-    case 'yearly': {
-      return {
-        billingCouponId: newCoupon.billingCouponId,
-        billingCouponRemainingApplyCount: newCoupon.yearlyApplyCount,
-      };
-    }
-    default: {
-      assertUnreachable(period);
-    }
-  }
-}
-
-export interface CreateOrUpdateBillingSubscriptionPlanInfoAndCouponOptions {
-  billingOrganizationId: string;
-  billingSubscriptionPlanData: BillingSubscriptionPlanData;
+  data: BillingSubscriptionPlanData;
   discountedAmount: number;
-  resolveCouponResult: ResolveCouponResult;
+  useCouponResult: UseCouponResult;
   billingSubscriptionPlanSourceId: string | null;
 }
 
-export interface CreateOrUpdateBillingSubscriptionPlanInfoAndCouponResultFailure {
+export interface CreateOrUpdateBillingSubscriptionPlanInfoResultFailure {
   ok: false;
   resultCode: BillingResultCode;
 }
 
-export interface CreateOrUpdateBillingSubscriptionPlanInfoAndCouponResultSuccess {
+export interface CreateOrUpdateBillingSubscriptionPlanInfoResultSuccess {
   ok: true;
   billingSubscriptionPlanInfo: BillingSubscriptionPlanInfo;
 }
 
-export type CreateOrUpdateBillingSubscriptionPlanInfoAndCouponResult =
-  | CreateOrUpdateBillingSubscriptionPlanInfoAndCouponResultFailure
-  | CreateOrUpdateBillingSubscriptionPlanInfoAndCouponResultSuccess;
+export type CreateOrUpdateBillingSubscriptionPlanInfoResult = CreateOrUpdateBillingSubscriptionPlanInfoResultFailure | CreateOrUpdateBillingSubscriptionPlanInfoResultSuccess;
 
-export async function createOrUpdateBillingSubscriptionPlanInfoAndCoupon(
+export async function createOrUpdateBillingSubscriptionPlanInfo(
   context: RetrySerializeContext,
-  options: CreateOrUpdateBillingSubscriptionPlanInfoAndCouponOptions,
-): Promise<CreateOrUpdateBillingSubscriptionPlanInfoAndCouponResult> {
+  options: CreateOrUpdateBillingSubscriptionPlanInfoOptions,
+): Promise<CreateOrUpdateBillingSubscriptionPlanInfoResult> {
   const { logger, manager } = context;
-  const { billingOrganizationId, billingSubscriptionPlanData, discountedAmount, resolveCouponResult, billingSubscriptionPlanSourceId } = options;
-  const { newCoupon, oldCoupon } = resolveCouponResult;
+  const { billingOrganizationId, data, discountedAmount, billingSubscriptionPlanSourceId, useCouponResult } = options;
+  const { currency, period, type, category, option, originPrice } = data;
+  const { billingCouponId, billingCouponRemainingApplyCount } = useCouponResult;
 
   const found = await manager.getRepository(BillingSubscriptionPlanInfo).findOne({
     where: {
       billingOrganizationId,
-      type: billingSubscriptionPlanData.type,
+      type,
     },
   });
 
   if (found) {
-    let billingCouponId: string | null = null;
-    let billingCouponRemainingApplyCount: number | null = null;
-    if (newCoupon && oldCoupon) {
-      return {
-        ok: false,
-        resultCode: resultCode('coupon-multiple-proceeds-not-allowed'),
-      };
-    } else if (newCoupon) {
-      const processNewCouponResult = await processNewCoupon(context, { newCoupon, billingOrganizationId, period: billingSubscriptionPlanData.period });
-      billingCouponId = processNewCouponResult.billingCouponId;
-      billingCouponRemainingApplyCount = processNewCouponResult.billingCouponRemainingApplyCount;
-    } else if (oldCoupon) {
-      billingCouponId = oldCoupon.billingCouponId;
-      billingCouponRemainingApplyCount = found.billingCouponRemainingApplyCount;
-    } else {
-      billingCouponId = null;
-      billingCouponRemainingApplyCount = null;
-    }
-
-    found.category = billingSubscriptionPlanData.category;
-    found.option = billingSubscriptionPlanData.option;
-    found.currency = billingSubscriptionPlanData.currency;
-    found.period = billingSubscriptionPlanData.period;
-    found.originPrice = billingSubscriptionPlanData.originPrice;
+    found.category = category;
+    found.option = option;
+    found.currency = currency;
+    found.period = period;
+    found.originPrice = originPrice;
     found.discountedAmount = discountedAmount;
     found.billingCouponId = billingCouponId;
     found.billingCouponRemainingApplyCount = billingCouponRemainingApplyCount;
     found.billingSubscriptionPlanSourceId = billingSubscriptionPlanSourceId;
     found.state = 'subscribed';
-    await manager.getRepository(BillingSubscriptionPlanInfo).save(found);
+    const saved = await manager.getRepository(BillingSubscriptionPlanInfo).save(found);
+    logger.info('updateSubscriptionPlanInfo', { billingSubscriptionPlanInfo: saved });
     return {
       ok: true,
-      billingSubscriptionPlanInfo: found,
+      billingSubscriptionPlanInfo: saved,
     };
   }
 
   const billingSubscriptionPlanInfo = manager.getRepository(BillingSubscriptionPlanInfo).create({
     billingSubscriptionPlanInfoId: v4(),
     billingOrganizationId,
-    category: billingSubscriptionPlanData.category,
-    type: billingSubscriptionPlanData.type,
-    option: billingSubscriptionPlanData.option,
-    currency: billingSubscriptionPlanData.currency,
-    period: billingSubscriptionPlanData.period,
-    originPrice: billingSubscriptionPlanData.originPrice,
+    category,
+    type,
+    option,
+    currency,
+    period,
+    originPrice,
     discountedAmount,
-    billingCouponId: newCoupon ? newCoupon.billingCouponId : null,
-    billingCouponRemainingApplyCount: newCoupon ? newCoupon.monthlyApplyCount : null,
+    billingCouponId,
+    billingCouponRemainingApplyCount,
     billingSubscriptionPlanSourceId,
     state: 'subscribed',
   });
-  await manager.getRepository(BillingSubscriptionPlanInfo).save(billingSubscriptionPlanInfo);
-  logger.info('createSubscriptionPlanInfo', { billingSubscriptionPlanInfo });
+  const saved = await manager.getRepository(BillingSubscriptionPlanInfo).save(billingSubscriptionPlanInfo);
+  logger.info('createSubscriptionPlanInfo', { billingSubscriptionPlanInfo: saved });
   return {
     ok: true,
-    billingSubscriptionPlanInfo: billingSubscriptionPlanInfo,
+    billingSubscriptionPlanInfo: saved,
   };
 }
