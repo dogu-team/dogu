@@ -4134,6 +4134,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@dogu-private/console@workspace:mirror/packages/@dogu-private-console"
   dependencies:
+    "@dogu-private/device-data": "workspace:^"
     "@dogu-private/types": "workspace:^"
     "@dogu-tech/common": "workspace:^"
     "@dogu-tech/console-gamium": "workspace:^"
@@ -4154,7 +4155,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@dogu-private/device-data@workspace:mirror/packages/@dogu-private-device-data":
+"@dogu-private/device-data@workspace:^, @dogu-private/device-data@workspace:mirror/packages/@dogu-private-device-data":
   version: 0.0.0-use.local
   resolution: "@dogu-private/device-data@workspace:mirror/packages/@dogu-private-device-data"
   dependencies:

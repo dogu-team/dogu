@@ -57,12 +57,8 @@ class InputBlocker {
     if !isSpringboard {
       return false
     }
-
-    try await self.webDriverClient.setSessionIfNotSet()
-    guard let session = FBSession.active() else {
-      throw Error.sessionNotFound
-    }
-    let addWidget: XCUIElement = session.activeApplication.buttons["Add Widget"]
+    let app = try await webDriverClient.getApplication()
+    let addWidget: XCUIElement = app.buttons["Add Widget"]
     if !addWidget.exists {
       return false
     }
@@ -88,10 +84,7 @@ class InputBlocker {
         return try await blockOnSpringboard()
       }
       if Constants.BlockAppBundleIds.contains(where: { $0 == bundleId }) {
-        try await self.webDriverClient.setSessionIfNotSet()
-        guard let session = FBSession.active() else {
-          throw Error.sessionNotFound
-        }
+        let session = try await webDriverClient.getSession()
         session.terminateApplication(withBundleId: bundleId)
         return true
       }
@@ -102,11 +95,8 @@ class InputBlocker {
 
   @MainActor
   private func blockOnSpringboard() async throws -> Bool {
-    try await self.webDriverClient.setSessionIfNotSet()
-    guard let session = FBSession.active() else {
-      throw Error.sessionNotFound
-    }
-    let match =  session.activeApplication.fb_descendants(matching: NSPredicate( format:"name == 'ControlCenterView' or label == 'Delete App' or name == 'Screen Broadcasting'"), shouldReturnAfterFirstMatch:true).first
+    let app = try await webDriverClient.getApplication()
+    let match =  app.fb_descendants(matching: NSPredicate( format:"name == 'ControlCenterView' or label == 'Delete App' or name == 'Screen Broadcasting'"), shouldReturnAfterFirstMatch:true).first
 
     if nil != match && match!.exists {
       let cancelButton = match!.buttons["Cancel"]

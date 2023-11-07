@@ -21,12 +21,8 @@ actor AlertDetector {
     guard let webDriverClient = await self.webDriverClient else {
       throw Error.webDriverClientNotFound
     }
-    
-    try await webDriverClient.setSessionIfNotSet()
-    guard let session = FBSession.active() else {
-      throw Error.sessionNotFound
-    }
-    let alert = session.activeApplication.alerts.firstMatch
+    let app = try await webDriverClient.getApplication()
+    let alert = app.alerts.firstMatch
     if !alert.exists {
       return Inner_Types_DcIdaQueryAlertResult.with {
         $0.isShow = false
