@@ -42,8 +42,8 @@ export async function findCloudLicense(context: RetrySerializeContext, dto: Find
   }
 
   const response = license as CloudLicenseResponse;
-  const monthlyExpiredAt = response.billingOrganization?.monthlyExpiredAt ?? null;
-  const yearlyExpiredAt = response.billingOrganization?.yearlyExpiredAt ?? null;
+  const monthlyExpiredAt = response.billingOrganization?.subscriptionMonthlyExpiredAt ?? null;
+  const yearlyExpiredAt = response.billingOrganization?.subscriptionYearlyExpiredAt ?? null;
 
   response.billingOrganization?.billingSubscriptionPlanInfos?.forEach((info) => {
     switch (info.period) {

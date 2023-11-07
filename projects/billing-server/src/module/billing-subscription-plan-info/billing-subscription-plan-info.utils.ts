@@ -78,3 +78,10 @@ export function calculateNextPurchaseAmount(billingSubscriptionPlanInfo: Billing
       assertUnreachable(state);
   }
 }
+
+export function clearChangeRequested(billingSubscriptionPlanInfo: BillingSubscriptionPlanInfo): void {
+  billingSubscriptionPlanInfo.changeRequestedOption = null;
+  billingSubscriptionPlanInfo.changeRequestedPeriod = null;
+  billingSubscriptionPlanInfo.changeRequestedOriginPrice = null;
+  billingSubscriptionPlanInfo.changeRequestedDiscountedAmount = null;
+}

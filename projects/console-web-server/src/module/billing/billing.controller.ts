@@ -7,7 +7,7 @@ import {
   UpdateBillingMethodResponse,
   ValidateBillingCouponResponse,
 } from '@dogu-private/console';
-import { Body, Controller, Get, Post, Put, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, Query } from '@nestjs/common';
 
 import { ORGANIZATION_ROLE } from '../auth/auth.types';
 import { OrganizationPermission } from '../auth/decorators';
@@ -96,6 +96,43 @@ export class BillingController {
       method: 'GET',
       path: 'billing/histories',
       query,
+    });
+  }
+
+  // subscription plan info
+  @Get('/subscription-plan-infos/:billingSubscriptionPlanInfoId')
+  @OrganizationPermission(ORGANIZATION_ROLE.ADMIN)
+  async getBillingSubscriptionPlanInfo(@Param('billingSubscriptionPlanInfoId') billingSubscriptionPlanInfoId: string): Promise<CallBillingApiResponse<BillingHistoryBase>> {
+    return await this.billingCaller.callBillingApi<BillingHistoryBase>({
+      method: 'GET',
+      path: `billing/subscription-plan-infos/${billingSubscriptionPlanInfoId}`,
+    });
+  }
+
+  @Get('/subscription-plan-infos/:billingSubscriptionPlanInfoId/cancel-unsubscribe')
+  @OrganizationPermission(ORGANIZATION_ROLE.ADMIN)
+  async findSubscriptionPlans(@Param('billingSubscriptionPlanInfoId') billingSubscriptionPlanInfoId: string): Promise<CallBillingApiResponse<Page<BillingHistoryBase>>> {
+    return await this.billingCaller.callBillingApi<Page<BillingHistoryBase>>({
+      method: 'GET',
+      path: `billing/subscription-plan-infos/${billingSubscriptionPlanInfoId}/cancel-unsubscribe`,
+    });
+  }
+
+  @Get('/subscription-plan-infos/:billingSubscriptionPlanInfoId/cancel-change-option-or-period')
+  @OrganizationPermission(ORGANIZATION_ROLE.ADMIN)
+  async cancelChangeOptionOrPeriod(@Param('billingSubscriptionPlanInfoId') billingSubscriptionPlanInfoId: string): Promise<CallBillingApiResponse<Page<BillingHistoryBase>>> {
+    return await this.billingCaller.callBillingApi<Page<BillingHistoryBase>>({
+      method: 'GET',
+      path: `billing/subscription-plan-infos/${billingSubscriptionPlanInfoId}/cancel-change-option-or-period`,
+    });
+  }
+
+  @Get('/subscription-plan-infos/:billingSubscriptionPlanInfoId/unsubscribe')
+  @OrganizationPermission(ORGANIZATION_ROLE.ADMIN)
+  async unsubscribe(@Param('billingSubscriptionPlanInfoId') billingSubscriptionPlanInfoId: string): Promise<CallBillingApiResponse<Page<BillingHistoryBase>>> {
+    return await this.billingCaller.callBillingApi<Page<BillingHistoryBase>>({
+      method: 'GET',
+      path: `billing/subscription-plan-infos/${billingSubscriptionPlanInfoId}/unsubscribe`,
     });
   }
 }

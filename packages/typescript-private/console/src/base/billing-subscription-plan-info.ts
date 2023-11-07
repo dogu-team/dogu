@@ -6,15 +6,14 @@ import { BillingCouponBase } from './billing-coupon';
 import { BillingOrganizationBase } from './billing-organization';
 import { BillingSubscriptionPlanSourceBase } from './billing-subscription-plan-source';
 
-export const RequestableBillingSubscriptionPlanState = [
+export const BillingSubscriptionPlanState = [
+  'subscribed',
+  'unsubscribed',
   'unsubscribe-requested',
   'change-option-requested',
   'change-period-requested',
   'change-option-and-period-requested',
 ] as const;
-export type RequestableBillingSubscriptionPlanState = (typeof RequestableBillingSubscriptionPlanState)[number];
-
-export const BillingSubscriptionPlanState = ['subscribed', 'unsubscribed', ...RequestableBillingSubscriptionPlanState] as const;
 export type BillingSubscriptionPlanState = (typeof BillingSubscriptionPlanState)[number];
 
 export interface BillingSubscriptionPlanInfoBase extends BillingSubscriptionPlanData {
@@ -45,9 +44,6 @@ export interface BillingSubscriptionPlanInfoBase extends BillingSubscriptionPlan
 export const BillingSubscriptionPlanProp = propertiesOf<BillingSubscriptionPlanInfoBase>();
 
 export class UpdateBillingSubscriptionPlanInfoDto {
-  @IsIn(RequestableBillingSubscriptionPlanState)
-  state!: RequestableBillingSubscriptionPlanState;
-
   @IsIn(BillingPeriod)
   @IsOptional()
   changeRequestedPeriod?: BillingPeriod;
