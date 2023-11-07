@@ -1,5 +1,7 @@
 import { propertiesOf } from '@dogu-tech/common';
-import { IsUUID } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsNotEmpty, IsNumber, IsUUID } from 'class-validator';
+import { PageDtoBase } from '../dto/pagination/page.dto';
 import { BillingMethod } from './billing';
 import { BillingOrganizationBase } from './billing-organization';
 
@@ -18,7 +20,17 @@ export interface BillingHistoryBase {
 
 export const BillingHistoryProp = propertiesOf<BillingHistoryBase>();
 
-export class GetBillingHistoriesDto {
+export class GetBillingHistoriesDto implements PageDtoBase {
   @IsUUID()
   organizationId!: string;
+
+  @IsNotEmpty()
+  @IsNumber()
+  @Type(() => Number)
+  page = 1;
+
+  @IsNotEmpty()
+  @IsNumber()
+  @Type(() => Number)
+  offset = 10;
 }

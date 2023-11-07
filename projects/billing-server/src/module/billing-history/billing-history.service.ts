@@ -1,4 +1,4 @@
-import { GetBillingHistoriesDto } from '@dogu-private/console';
+import { GetBillingHistoriesDto, PageBase } from '@dogu-private/console';
 import { Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
@@ -14,7 +14,7 @@ export class BillingHistoryService {
     @InjectDataSource() private readonly dataSource: DataSource,
   ) {}
 
-  async getHistories(dto: GetBillingHistoriesDto): Promise<BillingHistory[]> {
+  async getHistories(dto: GetBillingHistoriesDto): Promise<PageBase<BillingHistory>> {
     return await retrySerialize(this.logger, this.dataSource, async (context) => {
       return await getHistories(context, dto);
     });

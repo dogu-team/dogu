@@ -1,4 +1,4 @@
-import { BillingOrganizationProp, BillingResultCode, CloudLicenseProp, CreateCloudLicenseDto, FindCloudLicenseDto, resultCode } from '@dogu-private/console';
+import { BillingOrganizationProp, BillingResultCode, CloudLicenseProp, CloudLicenseResponse, CreateCloudLicenseDto, FindCloudLicenseDto, resultCode } from '@dogu-private/console';
 import { assertUnreachable } from '@dogu-tech/common';
 import { ConflictException, NotFoundException } from '@nestjs/common';
 import { v4 } from 'uuid';
@@ -25,7 +25,7 @@ export async function createCloudLicense(context: RetrySerializeContext, dto: Cr
   return saved;
 }
 
-export async function findCloudLicense(context: RetrySerializeContext, dto: FindCloudLicenseDto): Promise<CloudLicense> {
+export async function findCloudLicense(context: RetrySerializeContext, dto: FindCloudLicenseDto): Promise<CloudLicenseResponse> {
   const { manager } = context;
   const { organizationId } = dto;
   const license = await manager.getRepository(CloudLicense).findOne({
@@ -41,7 +41,27 @@ export async function findCloudLicense(context: RetrySerializeContext, dto: Find
     throw new NotFoundException(`Organization does not have a cloud license. organizationId: ${organizationId}`);
   }
 
-  return license;
+  const response = license as CloudLicenseResponse;
+  const monthlyExpiredAt = response.billingOrganization?.monthlyExpiredAt ?? null;
+  const yearlyExpiredAt = response.billingOrganization?.yearlyExpiredAt ?? null;
+
+  response.billingOrganization?.billingSubscriptionPlanInfos?.forEach((info) => {
+    switch (info.period) {
+      case 'monthly': {
+        info.monthlyExpiredAt = monthlyExpiredAt;
+        return;
+      }
+      case 'yearly': {
+        info.yearlyExpiredAt = yearlyExpiredAt;
+        return;
+      }
+      default: {
+        assertUnreachable(info.period);
+      }
+    }
+  });
+
+  return response;
 }
 
 export interface ApplyCloudLicenseOptions {

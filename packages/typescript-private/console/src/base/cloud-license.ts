@@ -1,7 +1,7 @@
 import { OrganizationId } from '@dogu-private/types';
 import { propertiesOf } from '@dogu-tech/common';
 import { IsBoolean, IsNumber, IsUUID } from 'class-validator';
-import { BillingOrganizationBase } from './billing-organization';
+import { BillingOrganizationBase, BillingOrganizationForCloudLicenseResponse } from './billing-organization';
 
 export interface CloudLicenseBase {
   cloudLicenseId: string;
@@ -41,4 +41,8 @@ export namespace CloudLicenseMessage {
     @IsNumber()
     remainingFreeSeconds!: number;
   }
+}
+
+export interface CloudLicenseResponse extends CloudLicenseBase {
+  billingOrganization: BillingOrganizationForCloudLicenseResponse;
 }

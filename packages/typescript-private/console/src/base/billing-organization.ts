@@ -4,7 +4,7 @@ import { IsIn, IsUUID, ValidateNested } from 'class-validator';
 import { BillingCategory, BillingCurrency } from './billing';
 import { BillingMethodNiceBase } from './billing-method-nice';
 import { RegisterCardDto } from './billing-purchase';
-import { BillingSubscriptionPlanInfoBase } from './billing-subscription-plan-info';
+import { BillingSubscriptionPlanInfoBase, BillingSubscriptionPlanInfoForCloudLicenseResponse } from './billing-subscription-plan-info';
 import { BillingSubscriptionPlanSourceBase } from './billing-subscription-plan-source';
 
 export interface BillingOrganizationBase {
@@ -65,4 +65,8 @@ export class CreateOrUpdateBillingOrganizationWithNiceDto {
   @ValidateNested()
   @Type(() => RegisterCardDto)
   registerCard!: RegisterCardDto;
+}
+
+export interface BillingOrganizationForCloudLicenseResponse extends BillingOrganizationBase {
+  billingSubscriptionPlanInfos: BillingSubscriptionPlanInfoForCloudLicenseResponse[];
 }

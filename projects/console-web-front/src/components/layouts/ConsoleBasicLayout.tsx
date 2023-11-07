@@ -100,17 +100,19 @@ const ConsoleBasicLayout = ({ children, user, licenseInfo }: Props) => {
           }
           right={
             <FlexRow>
-              <Link href="/billing">
-                {hasAdminPermission(me) && (
-                  <Button
-                    type="text"
-                    style={{ display: 'flex', alignItems: 'center' }}
-                    icon={<ImPriceTag style={{ marginRight: '.4rem' }} />}
-                  >
-                    <Trans i18nKey="billing:plansAndBillingButtonTitle" />
-                  </Button>
-                )}
-              </Link>
+              {process.env.NEXT_PUBLIC_ENV !== 'self-hosted' && (
+                <Link href="/billing">
+                  {hasAdminPermission(me) && (
+                    <Button
+                      type="text"
+                      style={{ display: 'flex', alignItems: 'center' }}
+                      icon={<ImPriceTag style={{ marginRight: '.4rem' }} />}
+                    >
+                      <Trans i18nKey="billing:plansAndBillingButtonTitle" />
+                    </Button>
+                  )}
+                </Link>
+              )}
               <Tooltip
                 title="Community"
                 arrow={false}

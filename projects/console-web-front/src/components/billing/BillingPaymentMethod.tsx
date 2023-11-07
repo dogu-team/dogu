@@ -1,5 +1,5 @@
 import { EditOutlined } from '@ant-design/icons';
-import { FindBillingMethodResultSuccess } from '@dogu-private/console';
+import { BillingMethodNiceBase } from '@dogu-private/console';
 import { OrganizationId } from '@dogu-private/types';
 import { Form, Modal } from 'antd';
 import styled from 'styled-components';
@@ -11,16 +11,14 @@ import { parseNicePaymentMethodFormValues } from '../../utils/billing';
 import BillingMethodRegistrationForm, { BillingMethodRegistrationFormValues } from './BillingMethodRegistrationForm';
 
 interface Props {
-  methods: FindBillingMethodResultSuccess['methods'];
+  method: BillingMethodNiceBase;
   organizationId: OrganizationId;
 }
 
-const BillingPaymentMethod: React.FC<Props> = ({ methods, organizationId }) => {
+const BillingPaymentMethod: React.FC<Props> = ({ method, organizationId }) => {
   const [isOpen, openModal, closeModal] = useModal();
   const [form] = Form.useForm<BillingMethodRegistrationFormValues>();
   const [updateLoading, requestUpdate] = useRequest(updatePaymentMethod);
-
-  const currentMethod = methods[0];
 
   const handleCloseModal = () => {
     closeModal();
@@ -41,10 +39,10 @@ const BillingPaymentMethod: React.FC<Props> = ({ methods, organizationId }) => {
   return (
     <Box>
       <CardDetail>
-        Card number: **** **** **** {currentMethod.cardNumberLast4Digits} {`(${currentMethod.cardName})`}
+        Card number: **** **** **** {method.cardNumberLast4Digits} {`(${method.cardName})`}
       </CardDetail>
       <CardDetail>
-        Expiration date: {currentMethod.expirationMonth} / {currentMethod.expirationYear}
+        Expiration date: {method.expirationMonth} / {method.expirationYear}
       </CardDetail>
 
       <div>

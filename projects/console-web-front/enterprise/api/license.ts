@@ -1,4 +1,4 @@
-import { CloudLicenseBase, RegisterSelfHostedLicenseDto, SelfHostedLicenseBase } from '@dogu-private/console';
+import { CloudLicenseResponse, RegisterSelfHostedLicenseDto, SelfHostedLicenseBase } from '@dogu-private/console';
 import { GetServerSidePropsContext } from 'next';
 
 import api from '../../src/api';
@@ -30,7 +30,7 @@ export const getCloudLicenseInServerSide = async (context: GetServerSidePropsCon
   const { authToken } = getServersideCookies(context.req.cookies);
 
   if (authToken) {
-    const response = await api.get<CloudLicenseBase>(`/cloud-licenses`, {
+    const response = await api.get<CloudLicenseResponse>(`/cloud-licenses`, {
       headers: { Authorization: `Bearer ${authToken}` },
     });
 

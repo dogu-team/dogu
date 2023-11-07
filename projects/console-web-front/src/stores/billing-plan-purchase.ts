@@ -24,12 +24,14 @@ interface BillingPlanPurchaseStore {
   isAnnual: boolean;
   coupon: string | null;
   cardForm: FormInstance<BillingMethodRegistrationFormValues> | null;
+  withNewCard: boolean;
   updateLicense: (license: CloudLicenseBase | SelfHostedLicenseBase | null) => void;
   updateBillingGroupType: (billingGroupType: BillingSubscriptionGroupType | null) => void;
   updateSelectedPlan: (selectedPlan: SelectedPlan | null) => void;
   updateIsAnnual: (isAnnual: boolean) => void;
   updateCoupon: (coupon: string | null) => void;
   updateCardForm: (cardForm: FormInstance | null) => void;
+  updateWithNewCard: (withNewCard: boolean) => void;
   reset: () => void;
 }
 
@@ -41,14 +43,24 @@ const useBillingPlanPurchaseStore = create<BillingPlanPurchaseStore>()(
     isAnnual: false,
     coupon: null,
     cardForm: null,
+    withNewCard: false,
     updateLicense: (license) => set({ license }),
     updateBillingGroupType: (billingGroupType) => set({ billingGroupType }),
     updateSelectedPlan: (selectedPlan) => set({ selectedPlan }),
     updateIsAnnual: (isAnnual) => set({ isAnnual, coupon: null }),
     updateCoupon: (coupon) => set({ coupon }),
     updateCardForm: (cardForm) => set({ cardForm }),
+    updateWithNewCard: (withNewCard) => set({ withNewCard }),
     reset: () =>
-      set({ license: null, billingGroupType: null, selectedPlan: null, isAnnual: false, coupon: null, cardForm: null }),
+      set({
+        license: null,
+        billingGroupType: null,
+        selectedPlan: null,
+        isAnnual: false,
+        coupon: null,
+        cardForm: null,
+        withNewCard: false,
+      }),
   })),
 );
 

@@ -19,7 +19,7 @@ import { swrAuthFetcher } from '../../api';
 import { buildQueryPraramsByObject } from '../../utils/query';
 import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd';
 import useRequest from '../../hooks/useRequest';
-import { purchasePlanWithNewCard } from '../../api/billing';
+import { purchasePlanWithExistingCard, purchasePlanWithNewCard } from '../../api/billing';
 import { parseNicePaymentMethodFormValues } from '../../utils/billing';
 
 interface Props {}
@@ -30,8 +30,10 @@ const BillingCalculatedPreview: React.FC<Props> = ({}) => {
   const isAnnual = useBillingPlanPurchaseStore((state) => state.isAnnual);
   const couponCode = useBillingPlanPurchaseStore((state) => state.coupon);
   const license = useBillingPlanPurchaseStore((state) => state.license);
+  const withNewCard = useBillingPlanPurchaseStore((state) => state.withNewCard);
   const router = useRouter();
   const [purchaseWithNewCardLoading, requestPurchaseWithNewCard] = useRequest(purchasePlanWithNewCard);
+  const [purchaseWithExistingCardLoading, requestPurchaseWithExistingCard] = useRequest(purchasePlanWithExistingCard);
 
   const dto: GetBillingSubscriptionPreviewDto = {
     organizationId: license?.organizationId ?? '',
@@ -54,19 +56,29 @@ const BillingCalculatedPreview: React.FC<Props> = ({}) => {
   const { t } = useTranslation('billing');
 
   if (!selectedPlan) {
-    return <ErrorBox title="Oops" desc="Plan not selected" />;
+    return (
+      <Box>
+        <ErrorBox title="Oops" desc="Plan not selected" />
+      </Box>
+    );
   }
 
   if (isLoading) {
-    <Box>
-      <LoadingWrapper style={{ height: '500px' }}>
-        <LoadingOutlined />
-      </LoadingWrapper>
-    </Box>;
+    return (
+      <Box>
+        <LoadingWrapper style={{ height: '500px' }}>
+          <LoadingOutlined />
+        </LoadingWrapper>
+      </Box>
+    );
   }
 
   if (!data?.body?.ok || data?.errorMessage) {
-    return <ErrorBox title="Oops" desc={data?.errorMessage ?? 'Failed to get preview'} />;
+    return (
+      <Box>
+        <ErrorBox title="Oops" desc={data?.errorMessage ?? 'Failed to get preview'} />
+      </Box>
+    );
   }
 
   const planDescription = planDescriptionInfoMap[selectedPlan?.planType];
@@ -82,23 +94,42 @@ const BillingCalculatedPreview: React.FC<Props> = ({}) => {
 
     const values = await cardForm.validateFields();
     try {
-      const rv = await requestPurchaseWithNewCard({
-        organizationId: license.organizationId,
-        category: selectedPlan?.category,
-        type: selectedPlan?.planType,
-        option: selectedPlan?.option,
-        currency: 'KRW',
-        period: isAnnualSubscription ? 'yearly' : 'monthly',
-        couponCode: couponCode ?? undefined,
-        registerCard: parseNicePaymentMethodFormValues(values),
-      });
+      if (!withNewCard && Object.values(values).every((v) => !v)) {
+        const rv = await requestPurchaseWithExistingCard({
+          organizationId: license.organizationId,
+          category: selectedPlan?.category,
+          type: selectedPlan?.planType,
+          option: selectedPlan?.option,
+          currency: 'KRW',
+          period: isAnnualSubscription ? 'yearly' : 'monthly',
+          couponCode: couponCode ?? undefined,
+        });
 
-      if (rv.errorMessage || !rv.body?.ok) {
-        sendErrorNotification('Failed to purchase plan! Please contact us.');
-        return;
+        if (rv.errorMessage || !rv.body?.ok) {
+          sendErrorNotification('Failed to purchase plan! Please contact us.');
+          return;
+        }
+
+        sendSuccessNotification('Successfully purchased plan!');
+      } else {
+        const rv = await requestPurchaseWithNewCard({
+          organizationId: license.organizationId,
+          category: selectedPlan?.category,
+          type: selectedPlan?.planType,
+          option: selectedPlan?.option,
+          currency: 'KRW',
+          period: isAnnualSubscription ? 'yearly' : 'monthly',
+          couponCode: couponCode ?? undefined,
+          registerCard: parseNicePaymentMethodFormValues(values),
+        });
+
+        if (rv.errorMessage || !rv.body?.ok) {
+          sendErrorNotification('Failed to purchase plan! Please contact us.');
+          return;
+        }
+
+        sendSuccessNotification('Successfully purchased plan!');
       }
-
-      sendSuccessNotification('Successfully purchased plan!');
     } catch (e) {
       sendErrorNotification('Failed to purchase plan! Please contact us.');
     }
@@ -263,7 +294,7 @@ const BillingCalculatedPreview: React.FC<Props> = ({}) => {
         type="primary"
         onClick={handlePurchase}
         style={{ width: '100%' }}
-        loading={isLoading || purchaseWithNewCardLoading}
+        loading={isLoading || purchaseWithNewCardLoading || purchaseWithExistingCardLoading}
       >
         {t('purchaseButtonText')}
       </Button>

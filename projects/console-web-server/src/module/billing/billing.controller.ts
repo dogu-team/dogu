@@ -1,5 +1,6 @@
 import {
   BillingCouponBase,
+  BillingHistoryBase,
   CallBillingApiResponse,
   CreatePurchaseSubscriptionWithNewCardResponse,
   GetBillingSubscriptionPreviewResponse,
@@ -10,6 +11,7 @@ import { Body, Controller, Get, Post, Put, Query } from '@nestjs/common';
 
 import { ORGANIZATION_ROLE } from '../auth/auth.types';
 import { OrganizationPermission } from '../auth/decorators';
+import { Page } from '../common/dto/pagination/page';
 import { BillingCaller } from './billing.caller';
 import { BillingService } from './billing.service';
 
@@ -83,6 +85,17 @@ export class BillingController {
       path: 'billing/methods',
       query,
       body,
+    });
+  }
+
+  // history
+  @Get('/histories')
+  @OrganizationPermission(ORGANIZATION_ROLE.ADMIN)
+  async findBillingHistories(@Query() query: object): Promise<CallBillingApiResponse<Page<BillingHistoryBase>>> {
+    return await this.billingCaller.callBillingApi<Page<BillingHistoryBase>>({
+      method: 'GET',
+      path: 'billing/histories',
+      query,
     });
   }
 }

@@ -23,8 +23,8 @@ const BillingSelectPlanStep: React.FC<Props> = ({}) => {
     return <ErrorBox title="Something went wrong" desc="No license information" />;
   }
 
-  const plans = groupType ? BillingPlanGroupMap[groupType] : BillingPlanGroupMap[currentGroup];
-  const usingPlans = getSubscriptionPlansFromLicense(license, plans);
+  const planTypes = groupType ? BillingPlanGroupMap[groupType] : BillingPlanGroupMap[currentGroup];
+  const usingPlans = getSubscriptionPlansFromLicense(license, planTypes);
 
   const handleClickGroupButton = (group: BillingSubscriptionGroupType) => {
     setCurrentGroup(group);
@@ -36,13 +36,25 @@ const BillingSelectPlanStep: React.FC<Props> = ({}) => {
         {/* TODO: from user's current plan */}
         <CurrentPlanText>
           {t('currentPlanText')}:{' '}
-          <b>
-            {usingPlans.length > 0
-              ? usingPlans.map((plan) => (
-                  <span key={plan.billingSubscriptionPlanInfoId}>{plan.billingSubscriptionPlanInfoId}</span>
-                ))
-              : 'Free'}
-          </b>
+          <span>
+            {planTypes.map((planType, i) => {
+              const planInfo = BillingSubscriptionPlanMap[planType];
+              const descriptionInfo = planDescriptionInfoMap[planType];
+              const usingPlan = usingPlans.find((plan) => plan.type === planType);
+
+              return (
+                <>
+                  <span key={planType}>
+                    <b>{t(descriptionInfo.titleI18nKey)}</b>{' '}
+                    {!!usingPlan
+                      ? `(${t(descriptionInfo.getOptionLabelI18nKey(usingPlan.option), { option: usingPlan.option })})`
+                      : 'Free'}
+                  </span>
+                  {i !== planTypes.length - 1 && <span>, </span>}
+                </>
+              );
+            })}
+          </span>
         </CurrentPlanText>
       </CurrentPlanWrapper>
 
@@ -66,7 +78,7 @@ const BillingSelectPlanStep: React.FC<Props> = ({}) => {
         )}
 
         <PlanWrapper style={{ justifyContent: groupType ? 'center' : 'flex-start' }}>
-          {plans.map((planType) => {
+          {planTypes.map((planType) => {
             const planInfo = BillingSubscriptionPlanMap[planType];
             const descriptionInfo = planDescriptionInfoMap[planType];
             return (

@@ -1,5 +1,9 @@
 import { CheckOutlined } from '@ant-design/icons';
-import { BillingSubscriptionPlanOptionInfo, BillingSubscriptionPlanType } from '@dogu-private/console';
+import {
+  BillingSubscriptionPlanOptionInfo,
+  BillingSubscriptionPlanType,
+  CloudLicenseBase,
+} from '@dogu-private/console';
 import { Button, Divider, Select, SelectProps } from 'antd';
 import useTranslation from 'next-translate/useTranslation';
 import { useState } from 'react';
@@ -18,10 +22,12 @@ interface Props {
 const CONTACT_US_OPTION_KEY = 'contact-us';
 
 const PlanItem: React.FC<Props> = ({ planType, planInfo, descriptionInfo }) => {
+  const license = useBillingPlanPurchaseStore((state) => state.license);
   const isAnnual = useBillingPlanPurchaseStore((state) => state.isAnnual);
   const updateSelectedPlan = useBillingPlanPurchaseStore((state) => state.updateSelectedPlan);
   const { t } = useTranslation('billing');
 
+  const usingPlans = (license as CloudLicenseBase).billingOrganization?.billingSubscriptionPlanInfos;
   const baseOptions: SelectProps<string | number>['options'] = Object.keys(planInfo.optionMap).map((optionKey) => {
     return {
       value: optionKey,
@@ -45,21 +51,39 @@ const PlanItem: React.FC<Props> = ({ planType, planInfo, descriptionInfo }) => {
   };
 
   const handleClickButton = () => {
-    if (selectedValue === CONTACT_US_OPTION_KEY) {
-      alert('Not implemented');
-    } else {
-      updateSelectedPlan({
-        planType,
-        option: Number(selectedValue) ?? 0,
-        category: planInfo.category,
-      });
-    }
+    updateSelectedPlan({
+      planType,
+      option: Number(selectedValue) ?? 0,
+      category: planInfo.category,
+    });
   };
 
   const getButtonText = () => {
-    // options: 'change', 'upgrade', 'go annual'
-    return 'Upgrade';
+    const samePlan = usingPlans?.find((plan) => plan.type === planType);
+
+    if (!samePlan || (samePlan && samePlan.option < Number(selectedValue))) {
+      return 'Upgrade';
+    }
+
+    if (samePlan && samePlan.option === Number(selectedValue) && isAnnual && samePlan.period === 'yearly') {
+      return 'Current plan';
+    }
+
+    if (samePlan && samePlan.option === Number(selectedValue) && !isAnnual && samePlan.period === 'monthly') {
+      return 'Current plan';
+    }
+
+    if (samePlan && samePlan.option === Number(selectedValue) && samePlan.period === 'monthly') return 'Go annual';
+
+    return 'Change';
   };
+
+  const buttonDisabled = !!usingPlans?.find(
+    (plan) =>
+      plan.type === planType &&
+      plan.option === Number(selectedValue) &&
+      (isAnnual ? plan.period === 'yearly' : plan.period === 'monthly'),
+  );
 
   return (
     <Box>
@@ -103,7 +127,7 @@ const PlanItem: React.FC<Props> = ({ planType, planInfo, descriptionInfo }) => {
               </Button>
             </a>
           ) : (
-            <Button type="primary" style={{ width: '100%' }} onClick={handleClickButton}>
+            <Button type="primary" style={{ width: '100%' }} onClick={handleClickButton} disabled={buttonDisabled}>
               {getButtonText()}
             </Button>
           )}

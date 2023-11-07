@@ -1,19 +1,11 @@
-import {
-  CallBillingApiResponse,
-  CloudLicenseBase,
-  FindBillingMethodResponse,
-  FindBillingMethodResultSuccess,
-  SelfHostedLicenseBase,
-  UserBase,
-} from '@dogu-private/console';
+import { CloudLicenseResponse, SelfHostedLicenseBase, UserBase } from '@dogu-private/console';
 import { OrganizationId } from '@dogu-private/types';
 import { GetServerSideProps } from 'next';
 import useTranslation from 'next-translate/useTranslation';
 import styled from 'styled-components';
 
 import { getCloudLicenseInServerSide, getSelfHostedLicenseInServerSide } from '../../enterprise/api/license';
-import { getPaymentMethodsInServerSide } from '../../src/api/billing';
-import BillingInvoiceList from '../../src/components/billing/BillingInvoiceList';
+import BillingHistoryList from '../../src/components/billing/BillingHistoryList';
 import BillingPaymentMethod from '../../src/components/billing/BillingPaymentMethod';
 import BillingSubscribedPlanList from '../../src/components/billing/BillingSubscribedPlanList';
 import UpgradePlanButton from '../../src/components/billing/UpgradePlanButton';
@@ -25,42 +17,36 @@ import { NextPageWithLayout } from '../_app';
 
 interface BillingPageProps {
   me: UserBase;
-  license: CloudLicenseBase | SelfHostedLicenseBase;
-  paymentMethodsResponse: CallBillingApiResponse<FindBillingMethodResponse>;
+  license: CloudLicenseResponse | SelfHostedLicenseBase;
 }
 
-const BillingPage: NextPageWithLayout<BillingPageProps> = ({ me, license, paymentMethodsResponse }) => {
+const BillingPage: NextPageWithLayout<BillingPageProps> = ({ me, license }) => {
   const { t } = useTranslation('billing');
 
-  const hasRegisteredPaymentMethod = paymentMethodsResponse.body?.ok && paymentMethodsResponse.body.methods.length > 0;
+  const paymentMethod = (license as CloudLicenseResponse).billingOrganization?.billingMethodNice;
 
   return (
     <Box>
       <Content>
         <TitleWrapper>
           <ContentTitle>{t('currentPlanText')}</ContentTitle>
+          <div style={{ marginBottom: '.5rem' }}>
+            <UpgradePlanButton license={license} groupType={null} type="primary">
+              {t('upgradePlanButtonTitle')}
+            </UpgradePlanButton>
+          </div>
           <ContentInner>
             <BillingSubscribedPlanList license={license} />
           </ContentInner>
         </TitleWrapper>
-        <div>
-          <UpgradePlanButton license={license} groupType={null} type="primary">
-            {t('upgradePlanButtonTitle')}
-          </UpgradePlanButton>
-        </div>
       </Content>
-      {hasRegisteredPaymentMethod && (
+      {!!paymentMethod && (
         <Content>
           <TitleWrapper>
             <ContentTitle>{t('billingPaymentMethodTitle')}</ContentTitle>
           </TitleWrapper>
           <ContentInner>
-            <BillingPaymentMethod
-              methods={
-                (paymentMethodsResponse as CallBillingApiResponse<FindBillingMethodResultSuccess>).body?.methods ?? []
-              }
-              organizationId={license.organizationId as OrganizationId}
-            />
+            <BillingPaymentMethod method={paymentMethod} organizationId={license.organizationId as OrganizationId} />
           </ContentInner>
         </Content>
       )}
@@ -69,7 +55,7 @@ const BillingPage: NextPageWithLayout<BillingPageProps> = ({ me, license, paymen
           <ContentTitle>{t('billingInvoiceTitle')}</ContentTitle>
         </TitleWrapper>
         <ContentInner>
-          <BillingInvoiceList />
+          <BillingHistoryList organizationId={license.organizationId as OrganizationId} />
         </ContentInner>
       </Content>
     </Box>
@@ -94,9 +80,6 @@ export const getServerSideProps: GetServerSideProps<BillingPageProps> = async (c
         ? getSelfHostedLicenseInServerSide(context)
         : getCloudLicenseInServerSide(context),
     ]);
-    const paymentMethods = await getPaymentMethodsInServerSide(context, {
-      organizationId: license.organizationId as OrganizationId,
-    });
 
     if (!me) {
       return {
@@ -108,7 +91,6 @@ export const getServerSideProps: GetServerSideProps<BillingPageProps> = async (c
       props: {
         me,
         license,
-        paymentMethodsResponse: paymentMethods,
       },
     };
   } catch (e) {}

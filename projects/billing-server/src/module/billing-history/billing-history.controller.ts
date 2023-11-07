@@ -1,4 +1,4 @@
-import { GetBillingHistoriesDto } from '@dogu-private/console';
+import { GetBillingHistoriesDto, PageBase } from '@dogu-private/console';
 import { Controller, Get, Query } from '@nestjs/common';
 import { BillingHistory } from '../../db/entity/billing-history.entity';
 import { BillingTokenPermission } from '../auth/guard/billing-token.guard';
@@ -10,7 +10,7 @@ export class BillingHistoryController {
 
   @Get()
   @BillingTokenPermission()
-  async getHistories(@Query() dto: GetBillingHistoriesDto): Promise<BillingHistory[]> {
+  async getHistories(@Query() dto: GetBillingHistoriesDto): Promise<PageBase<BillingHistory>> {
     return await this.billingHistoryService.getHistories(dto);
   }
 }
