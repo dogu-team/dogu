@@ -1,4 +1,9 @@
-import { BillingSubscriptionPlanInfoResponse } from '@dogu-private/console';
+import {
+  BillingMethodNiceBase,
+  BillingSubscriptionPlanInfoResponse,
+  CloudLicenseBase,
+  SelfHostedLicenseBase,
+} from '@dogu-private/console';
 import { Button } from 'antd';
 import useTranslation from 'next-translate/useTranslation';
 import { shallow } from 'zustand/shallow';
@@ -23,19 +28,24 @@ const BillingPurchaseButton: React.FC = () => {
   const fireEvent = useEventStore((state) => state.fireEvent);
   const { t } = useTranslation('billing');
 
-  const handleSuccess = (plan: BillingSubscriptionPlanInfoResponse | null) => {
+  const handleSuccess = (
+    newLicense: CloudLicenseBase | SelfHostedLicenseBase | null,
+    plan: BillingSubscriptionPlanInfoResponse | null,
+    method: Partial<BillingMethodNiceBase> | null,
+  ) => {
     sendSuccessNotification('Successfully purchased plan!');
     fireEvent('onPurchaseCompleted');
 
-    if (plan && license) {
+    if (license) {
       updateLicense({
         ...license,
+        ...newLicense,
         billingOrganization: {
           ...license.billingOrganization,
-          billingSubscriptionPlanInfos: [
-            ...license.billingOrganization.billingSubscriptionPlanInfos.filter((p) => p.type !== plan.type),
-            plan,
-          ],
+          billingSubscriptionPlanInfos: plan
+            ? [...license.billingOrganization.billingSubscriptionPlanInfos.filter((p) => p.type !== plan.type), plan]
+            : license.billingOrganization.billingSubscriptionPlanInfos,
+          billingMethodNice: Object.assign({}, license.billingOrganization.billingMethodNice, method ?? {}),
         },
       });
     }
@@ -64,7 +74,7 @@ const BillingPurchaseButton: React.FC = () => {
           return;
         }
 
-        handleSuccess(rv.body.plan);
+        handleSuccess(rv.body.license, rv.body.plan, null);
       } else {
         const rv = await requestPurchaseWithNewCard({
           organizationId: license.organizationId,
@@ -82,7 +92,7 @@ const BillingPurchaseButton: React.FC = () => {
           return;
         }
 
-        handleSuccess(rv.body.plan);
+        handleSuccess(rv.body.license, rv.body.plan, rv.body.method);
       }
     } catch (e) {
       sendErrorNotification('Failed to purchase plan! Please contact us.');

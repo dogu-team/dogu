@@ -7,6 +7,7 @@ import styled from 'styled-components';
 import useSWR from 'swr';
 
 import { swrAuthFetcher } from '../../api';
+import useRefresh from '../../hooks/useRefresh';
 import { flexRowBaseStyle, listItemStyle, tableCellStyle, tableHeaderStyle } from '../../styles/box';
 import { getLocaleFormattedDate } from '../../utils/locale';
 import { buildQueryPraramsByObject } from '../../utils/query';
@@ -49,7 +50,7 @@ const BillingHistoryList: React.FC<Props> = ({ organizationId }) => {
     page,
     offset: 10,
   };
-  const { data, isLoading } = useSWR<CallBillingApiResponse<PageBase<BillingHistoryBase>>>(
+  const { data, isLoading, mutate } = useSWR<CallBillingApiResponse<PageBase<BillingHistoryBase>>>(
     `/billing/histories?${buildQueryPraramsByObject(queryDto)}`,
     swrAuthFetcher,
     {
@@ -57,6 +58,8 @@ const BillingHistoryList: React.FC<Props> = ({ organizationId }) => {
       keepPreviousData: true,
     },
   );
+
+  useRefresh(['onPurchaseCompleted'], () => mutate());
 
   return (
     <>

@@ -66,6 +66,7 @@ export class BillingPurchaseService {
           ok: false,
           resultCode: resultCode('organization-not-found'),
           plan: null,
+          license: null,
         };
       }
 
@@ -78,6 +79,7 @@ export class BillingPurchaseService {
           ok: false,
           resultCode: processPurchaseSubscriptionPreviewResult.resultCode,
           plan: null,
+          license: null,
         };
       }
 
@@ -86,6 +88,7 @@ export class BillingPurchaseService {
           ok: true,
           resultCode: resultCode('ok'),
           plan: null,
+          license: null,
         };
       }
 
@@ -94,6 +97,7 @@ export class BillingPurchaseService {
           ok: false,
           resultCode: resultCode('organization-method-nice-not-found'),
           plan: null,
+          license: null,
         };
       }
 
@@ -122,6 +126,8 @@ export class BillingPurchaseService {
           ok: false,
           resultCode: resultCode('organization-not-found'),
           plan: null,
+          method: null,
+          license: null,
         };
       }
 
@@ -134,6 +140,8 @@ export class BillingPurchaseService {
           ok: false,
           resultCode: processPurchaseSubscriptionPreviewResult.resultCode,
           plan: null,
+          method: null,
+          license: null,
         };
       }
 
@@ -149,11 +157,19 @@ export class BillingPurchaseService {
           ok: true,
           resultCode: resultCode('ok'),
           plan: null,
+          method: {
+            cardCode: billingMethodNice.cardCode,
+            cardName: billingMethodNice.cardName,
+            cardNumberLast4Digits: billingMethodNice.cardNumberLast4Digits,
+            expirationMonth: billingMethodNice.expirationMonth,
+            expirationYear: billingMethodNice.expirationYear,
+          },
+          license: null,
         };
       }
 
       billingOrganization.billingMethodNice = billingMethodNice;
-      return await processPurchaseSubscription(context, this.billingMethodNiceCaller, {
+      const rv = await processPurchaseSubscription(context, this.billingMethodNiceCaller, {
         billingMethodNice,
         billingOrganization,
         billingSubscriptionPlanData: processPurchaseSubscriptionPreviewResult.billingSubscriptionPlanData,
@@ -165,6 +181,17 @@ export class BillingPurchaseService {
         previewResponse: processPurchaseSubscriptionPreviewResult.previewResponse,
         now: processPurchaseSubscriptionPreviewResult.now,
       });
+
+      return {
+        ...rv,
+        method: {
+          cardCode: billingMethodNice.cardCode,
+          cardName: billingMethodNice.cardName,
+          cardNumberLast4Digits: billingMethodNice.cardNumberLast4Digits,
+          expirationMonth: billingMethodNice.expirationMonth,
+          expirationYear: billingMethodNice.expirationYear,
+        },
+      };
     });
   }
 }

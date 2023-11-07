@@ -146,10 +146,7 @@ OrganizationLiveTestingPage.getLayout = (page) => {
             <Trans i18nKey="organization:liveTestingPageTitle" />
           </H4>
           <div style={{ marginTop: '.25rem' }}>
-            <LiveTestingSessionCounter
-              license={page.props.license as CloudLicenseBase}
-              organizationId={page.props.organization.organizationId}
-            />
+            <LiveTestingSessionCounter />
           </div>
         </div>
       }

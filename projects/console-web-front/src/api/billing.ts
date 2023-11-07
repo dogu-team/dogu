@@ -1,10 +1,12 @@
 import {
+  BillingSubscriptionPlanInfoResponse,
   CallBillingApiResponse,
   CreatePurchaseSubscriptionDto,
   CreatePurchaseSubscriptionResponse,
   CreatePurchaseSubscriptionWithNewCardDto,
   CreatePurchaseSubscriptionWithNewCardResponse,
   UpdateBillingMethodResponse,
+  UpdateBillingSubscriptionPlanInfoStateDto,
   UpdateMethodNiceDto,
   ValidateBillingCouponDto,
   ValidateBillingCouponResponse,
@@ -44,5 +46,38 @@ export const updatePaymentMethod = async (
   dto: UpdateMethodNiceDto,
 ): Promise<CallBillingApiResponse<UpdateBillingMethodResponse>> => {
   const { data } = await api.put<CallBillingApiResponse<UpdateBillingMethodResponse>>('/billing/methods', dto);
+  return data;
+};
+
+export const unsubscribePlan = async (
+  planInfoId: string,
+  dto: UpdateBillingSubscriptionPlanInfoStateDto,
+): Promise<CallBillingApiResponse<BillingSubscriptionPlanInfoResponse>> => {
+  const { data } = await api.patch<CallBillingApiResponse<BillingSubscriptionPlanInfoResponse>>(
+    `/billing/subscription-plan-infos/${planInfoId}/unsubscribe`,
+    dto,
+  );
+  return data;
+};
+
+export const cancelUnsubscribePlan = async (
+  planInfoId: string,
+  dto: UpdateBillingSubscriptionPlanInfoStateDto,
+): Promise<CallBillingApiResponse<BillingSubscriptionPlanInfoResponse>> => {
+  const { data } = await api.patch<CallBillingApiResponse<BillingSubscriptionPlanInfoResponse>>(
+    `/billing/subscription-plan-infos/${planInfoId}/cancel-unsubscribe`,
+    dto,
+  );
+  return data;
+};
+
+export const cancelChangePlanOptionOrPeriod = async (
+  planInfoId: string,
+  dto: UpdateBillingSubscriptionPlanInfoStateDto,
+): Promise<CallBillingApiResponse<BillingSubscriptionPlanInfoResponse>> => {
+  const { data } = await api.patch<CallBillingApiResponse<BillingSubscriptionPlanInfoResponse>>(
+    `/billing/subscription-plan-infos/${planInfoId}/cancel-change-option-or-period`,
+    dto,
+  );
   return data;
 };

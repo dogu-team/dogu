@@ -1,6 +1,6 @@
 import { propertiesOf } from '@dogu-tech/common';
 import { Type } from 'class-transformer';
-import { IsIn, IsNumber, IsOptional } from 'class-validator';
+import { IsIn, IsNumber, IsOptional, IsUUID } from 'class-validator';
 import { BillingPeriod, BillingSubscriptionPlanData } from './billing';
 import { BillingCouponBase } from './billing-coupon';
 import { BillingOrganizationBase } from './billing-organization';
@@ -57,4 +57,9 @@ export class UpdateBillingSubscriptionPlanInfoDto {
 export interface BillingSubscriptionPlanInfoResponse extends BillingSubscriptionPlanInfoBase {
   yearlyExpiredAt: Date | null;
   monthlyExpiredAt: Date | null;
+}
+
+export class UpdateBillingSubscriptionPlanInfoStateDto {
+  @IsUUID()
+  organizationId!: string;
 }

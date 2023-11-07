@@ -7,6 +7,7 @@ import { BillingSubscriptionPlanInfo } from '../../db/entity/billing-subscriptio
 import { CloudLicense } from '../../db/entity/cloud-license.entity';
 import { RetrySerializeContext } from '../../db/utils';
 import { createBillingOrganization } from '../billing-organization/billing-organization.serializables';
+import { BillingSubscriptionPlanInfoCommonModule } from '../common/plan-info-common.module';
 
 export async function createCloudLicense(context: RetrySerializeContext, dto: CreateCloudLicenseDto): Promise<CloudLicense> {
   const { manager } = context;
@@ -43,23 +44,11 @@ export async function findCloudLicense(context: RetrySerializeContext, dto: Find
   }
 
   const response = license as CloudLicenseResponse;
-  const monthlyExpiredAt = response.billingOrganization?.subscriptionMonthlyExpiredAt ?? null;
-  const yearlyExpiredAt = response.billingOrganization?.subscriptionYearlyExpiredAt ?? null;
 
   response.billingOrganization?.billingSubscriptionPlanInfos?.forEach((info) => {
-    switch (info.period) {
-      case 'monthly': {
-        info.monthlyExpiredAt = monthlyExpiredAt;
-        return;
-      }
-      case 'yearly': {
-        info.yearlyExpiredAt = yearlyExpiredAt;
-        return;
-      }
-      default: {
-        assertUnreachable(info.period);
-      }
-    }
+    const { monthlyExpiredAt, yearlyExpiredAt } = BillingSubscriptionPlanInfoCommonModule.createPlanInfoResponse(response.billingOrganization, info);
+    info.monthlyExpiredAt = monthlyExpiredAt;
+    info.yearlyExpiredAt = yearlyExpiredAt;
   });
 
   return response;
@@ -76,6 +65,7 @@ export interface ApplyCloudLicenseResultFailure {
 
 export interface ApplyCloudLicenseResultSuccess {
   ok: true;
+  license: CloudLicense;
 }
 
 export type ApplyCloudLicenseResult = ApplyCloudLicenseResultFailure | ApplyCloudLicenseResultSuccess;
@@ -106,8 +96,9 @@ export async function applyCloudLicense(context: RetrySerializeContext, options:
     }
   }
 
-  await manager.getRepository(CloudLicense).save(cloudLicense);
+  const license = await manager.getRepository(CloudLicense).save(cloudLicense);
   return {
     ok: true,
+    license,
   };
 }

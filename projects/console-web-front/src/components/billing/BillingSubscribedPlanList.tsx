@@ -8,10 +8,13 @@ import { Alert, List, MenuProps } from 'antd';
 import useTranslation from 'next-translate/useTranslation';
 import { useRouter } from 'next/router';
 import styled from 'styled-components';
+import { shallow } from 'zustand/shallow';
+import { unsubscribePlan } from '../../api/billing';
 
 import { planDescriptionInfoMap } from '../../resources/plan';
 import useLicenseStore from '../../stores/license';
 import { flexRowBaseStyle, listItemStyle, tableCellStyle, tableHeaderStyle } from '../../styles/box';
+import { sendErrorNotification } from '../../utils/antd';
 import { getLocaleFormattedDate } from '../../utils/locale';
 import MenuButton from '../buttons/MenuButton';
 import MenuItemButton from '../buttons/MenuItemButton';
@@ -21,13 +24,43 @@ interface ItemProps {
 }
 
 const PlanItem: React.FC<ItemProps> = ({ plan }) => {
-  const license = useLicenseStore((state) => state.license) as CloudLicenseBase | null;
+  const [license, updateLicense] = useLicenseStore((state) => [state.license, state.updateLicense], shallow);
   const { t } = useTranslation('billing');
   const router = useRouter();
 
   const description = planDescriptionInfoMap[plan.type];
 
-  const handleUnsubscribe = async () => {};
+  const handleUnsubscribe = async () => {
+    if (!license) {
+      return;
+    }
+
+    try {
+      const rv = await unsubscribePlan(plan.billingSubscriptionPlanInfoId, {
+        organizationId: license.organizationId as string,
+      });
+
+      if (rv.errorMessage) {
+        sendErrorNotification('Failed to unsubscribe plan. Please try again later.');
+        return;
+      }
+
+      updateLicense({
+        ...license,
+        billingOrganization: {
+          ...license.billingOrganization,
+          billingSubscriptionPlanInfos: [
+            ...license.billingOrganization.billingSubscriptionPlanInfos.filter(
+              (p) => p.billingSubscriptionPlanInfoId !== plan.billingSubscriptionPlanInfoId,
+            ),
+            rv.body!,
+          ],
+        },
+      });
+    } catch (e) {
+      sendErrorNotification('Failed to unsubscribe plan. Please try again later.');
+    }
+  };
 
   const items: MenuProps['items'] = [
     {
@@ -63,11 +96,17 @@ const PlanItem: React.FC<ItemProps> = ({ plan }) => {
         <Cell flex={1}>{t(description.getOptionLabelI18nKey(plan.option), { option: plan.option })}</Cell>
         <Cell flex={1}>{plan.state}</Cell>
         <Cell flex={1}>
-          {getLocaleFormattedDate(router.locale ?? 'en', new Date((plan.monthlyExpiredAt ?? plan.yearlyExpiredAt)!), {
-            year: 'numeric',
-            month: 'numeric',
-            day: 'numeric',
-          })}
+          {!!(plan.monthlyExpiredAt || plan.yearlyExpiredAt)
+            ? getLocaleFormattedDate(
+                router.locale ?? 'en',
+                new Date((plan.monthlyExpiredAt || plan.yearlyExpiredAt)!),
+                {
+                  year: 'numeric',
+                  month: 'numeric',
+                  day: 'numeric',
+                },
+              )
+            : 'N/A'}
         </Cell>
         <ButtonWrapper>
           <MenuButton menu={{ items }} />

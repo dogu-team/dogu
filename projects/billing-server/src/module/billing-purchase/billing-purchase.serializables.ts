@@ -16,6 +16,8 @@ import { BillingCoupon } from '../../db/entity/billing-coupon.entity';
 import { BillingHistory } from '../../db/entity/billing-history.entity';
 import { BillingOrganization } from '../../db/entity/billing-organization.entity';
 import { BillingSubscriptionPlanSource } from '../../db/entity/billing-subscription-plan-source.entity';
+import { CloudLicense } from '../../db/entity/cloud-license.entity';
+import { SelfHostedLicense } from '../../db/entity/self-hosted-license.entity';
 import { RetrySerializeContext } from '../../db/utils';
 import { parseCoupon } from '../billing-coupon/billing-coupon.serializables';
 import { calculateCouponFactor } from '../billing-coupon/billing-coupon.utils';
@@ -322,6 +324,7 @@ export async function processPurchaseSubscription(
       ok: false,
       resultCode: createPurchaseResult.resultCode,
       plan: null,
+      license: null,
     };
   }
 
@@ -379,6 +382,7 @@ export async function processPurchaseSubscription(
       ok: false,
       resultCode: createSubscriptionPlanInfoAndCouponResult.resultCode,
       plan: null,
+      license: null,
     };
   }
 
@@ -392,10 +396,14 @@ export async function processPurchaseSubscription(
   });
   await manager.getRepository(BillingHistory).save(billingHistory);
 
+  let license: CloudLicense | SelfHostedLicense | null = null;
   switch (billingOrganization.category) {
     case 'cloud':
       {
-        await applyCloudLicense(context, { billingSubscriptionPlanInfo: createSubscriptionPlanInfoAndCouponResult.billingSubscriptionPlanInfo });
+        const rv = await applyCloudLicense(context, { billingSubscriptionPlanInfo: createSubscriptionPlanInfoAndCouponResult.billingSubscriptionPlanInfo });
+        if (rv.ok) {
+          license = rv.license;
+        }
       }
       break;
     case 'self-hosted':
@@ -430,5 +438,6 @@ export async function processPurchaseSubscription(
     ok: true,
     resultCode: resultCode('ok'),
     plan,
+    license,
   };
 }
