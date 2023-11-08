@@ -5,6 +5,7 @@ import { v4 } from 'uuid';
 
 import { SelfHostedLicense } from '../../db/entity/self-hosted-license.entity';
 import { RetrySerializeContext } from '../../db/utils';
+import { createBillingOrganization } from '../billing-organization/billing-organization.serializables';
 import { LicenseKeyService } from '../common/license-key.service';
 import { FindSelfHostedLicenseQueryDto } from './self-hosted-license.dto';
 
@@ -42,20 +43,22 @@ export async function findSelfHostedLicense(context: RetrySerializeContext, dto:
 
 export async function createSelfHostedLicense(context: RetrySerializeContext, dto: CreateSelfHostedLicenseDto): Promise<SelfHostedLicense> {
   const { manager } = context;
-  const { organizationId, companyName, expiredAt } = dto;
-  const existingLicense = await manager.getRepository(SelfHostedLicense).findOne({ where: { organizationId, companyName } });
+  const { organizationId, expiredAt } = dto;
+  const existingLicense = await manager.getRepository(SelfHostedLicense).findOne({ where: { organizationId } });
 
   if (existingLicense) {
     throw new ConflictException(`Organization already has a self-hosted license. organizationId: ${stringify(organizationId)}`);
   }
 
+  const billingOrganization = await createBillingOrganization(context, { organizationId, category: 'self-hosted' });
   const licenseKey = LicenseKeyService.createLicensKey();
   const license = manager.getRepository(SelfHostedLicense).create({
     selfHostedLicenseId: v4(),
     organizationId,
-    companyName,
+    billingOrganization,
     expiredAt,
     licenseKey,
+    category: 'self-hosted',
   });
   const rv = await manager.getRepository(SelfHostedLicense).save(license);
   return rv;

@@ -492,6 +492,7 @@ export async function processNowPurchaseSubscription(
     method: 'nice',
     goodsName,
     totalPrice,
+    currency,
   });
   await manager.getRepository(BillingHistory).save(billingHistory);
 

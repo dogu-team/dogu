@@ -1,4 +1,4 @@
-import { BillingHistoryBase, BillingHistoryProp, BillingMethod } from '@dogu-private/console';
+import { BillingCurrency, BillingHistoryBase, BillingHistoryProp, BillingMethod } from '@dogu-private/console';
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryColumn } from 'typeorm';
 import { CreatedAt, DateColumn, DeletedAt, UpdatedAt } from '../decorators';
 import { BillingOrganization } from './billing-organization.entity';
@@ -26,6 +26,9 @@ export class BillingHistory implements BillingHistoryBase {
 
   @Column({ type: 'double precision' })
   totalPrice!: number;
+
+  @Column({ type: 'enum', enum: BillingCurrency })
+  currency!: BillingCurrency;
 
   @Column({ type: 'character varying' })
   goodsName!: string;

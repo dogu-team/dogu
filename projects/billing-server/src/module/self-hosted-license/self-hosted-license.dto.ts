@@ -1,13 +1,12 @@
 import { OrganizationId } from '@dogu-private/types';
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsFilledString } from '@dogu-tech/common';
+import { IsUUID } from 'class-validator';
 import { SelfHostedLicenseUser } from '../auth/guard/self-hosted-license.guard';
 
 export class FindSelfHostedLicenseQueryDto implements Omit<SelfHostedLicenseUser, 'type'> {
-  @IsString()
-  @IsOptional()
-  organizationId!: OrganizationId | null;
+  @IsUUID()
+  organizationId!: OrganizationId;
 
-  @IsNotEmpty()
-  @IsString()
+  @IsFilledString()
   licenseKey!: string;
 }

@@ -1,6 +1,7 @@
-import { SelfHostedLicenseBase } from '@dogu-private/console';
-import { Column, Entity, PrimaryColumn } from 'typeorm';
+import { BillingCategory, SelfHostedLicenseBase, SelfHostedLicenseProp } from '@dogu-private/console';
+import { Column, Entity, JoinColumn, OneToOne, PrimaryColumn } from 'typeorm';
 import { CreatedAt, DateColumn, DeletedAt, UpdatedAt } from '../decorators';
+import { BillingOrganization } from './billing-organization.entity';
 
 @Entity()
 export class SelfHostedLicense implements SelfHostedLicenseBase {
@@ -10,14 +11,14 @@ export class SelfHostedLicense implements SelfHostedLicenseBase {
   @Column({ type: 'character varying' })
   licenseKey!: string;
 
-  /**
-   * @deprecated use organizationId instead
-   */
-  @Column({ type: 'character varying', nullable: true })
-  companyName!: string | null;
+  @Column({ type: 'uuid', unique: true })
+  organizationId!: string;
 
-  @Column({ type: 'character varying', nullable: true, unique: true })
-  organizationId!: string | null;
+  @Column({ type: 'uuid', unique: true })
+  billingOrganizationId!: string;
+
+  @Column({ type: 'enum', enum: BillingCategory })
+  category!: BillingCategory;
 
   @Column({ type: 'integer', default: 2 })
   maximumEnabledMobileCount!: number;
@@ -45,4 +46,8 @@ export class SelfHostedLicense implements SelfHostedLicenseBase {
 
   @DeletedAt()
   deletedAt!: Date | null;
+
+  @OneToOne(() => BillingOrganization)
+  @JoinColumn({ name: SelfHostedLicenseProp.billingOrganizationId })
+  billingOrganization?: BillingOrganization;
 }

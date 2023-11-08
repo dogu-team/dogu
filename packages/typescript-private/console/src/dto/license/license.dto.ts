@@ -1,6 +1,6 @@
 import { OrganizationId } from '@dogu-private/types';
 import { Type } from 'class-transformer';
-import { IsDate, IsNotEmpty, IsOptional, IsString, IsUUID } from 'class-validator';
+import { IsDate, IsNotEmpty, IsString, IsUUID } from 'class-validator';
 
 export class CreateCloudLicenseDto {
   @IsUUID()
@@ -8,13 +8,8 @@ export class CreateCloudLicenseDto {
 }
 
 export class CreateSelfHostedLicenseDto {
-  @IsOptional()
   @IsUUID()
-  organizationId?: OrganizationId;
-
-  @IsOptional()
-  @IsString()
-  companyName?: string;
+  organizationId!: OrganizationId;
 
   @IsNotEmpty()
   @IsDate()

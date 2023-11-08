@@ -1,4 +1,4 @@
-import { CloudLicenseBase, CloudLicenseProp } from '@dogu-private/console';
+import { BillingCategory, CloudLicenseBase, CloudLicenseProp } from '@dogu-private/console';
 import { OrganizationId } from '@dogu-private/types';
 import { Column, Entity, JoinColumn, OneToOne, PrimaryColumn } from 'typeorm';
 import { CreatedAt, DeletedAt, UpdatedAt } from '../decorators';
@@ -14,6 +14,9 @@ export class CloudLicense implements CloudLicenseBase {
 
   @Column({ type: 'uuid', unique: true })
   organizationId!: OrganizationId;
+
+  @Column({ type: 'enum', enum: BillingCategory })
+  category!: BillingCategory;
 
   @Column({ type: 'integer', default: 180 * 60 })
   liveTestingRemainingFreeSeconds!: number;

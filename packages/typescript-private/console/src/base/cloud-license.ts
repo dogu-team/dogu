@@ -1,6 +1,7 @@
 import { OrganizationId } from '@dogu-private/types';
 import { propertiesOf } from '@dogu-tech/common';
 import { IsBoolean, IsNumber, IsUUID } from 'class-validator';
+import { BillingCategory } from '..';
 import { BillingOrganizationBase, BillingOrganizationResponse } from './billing-organization';
 
 export interface CloudLicenseBase {
@@ -9,6 +10,7 @@ export interface CloudLicenseBase {
   organizationId: OrganizationId;
   liveTestingRemainingFreeSeconds: number;
   liveTestingParallelCount: number;
+  category: BillingCategory;
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date | null;

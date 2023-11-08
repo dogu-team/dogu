@@ -21,6 +21,7 @@ export async function createCloudLicense(context: RetrySerializeContext, dto: Cr
   const created = manager.getRepository(CloudLicense).create({
     cloudLicenseId: v4(),
     organizationId,
+    category: 'cloud',
     billingOrganization,
   });
   const saved = await manager.getRepository(CloudLicense).save(created);

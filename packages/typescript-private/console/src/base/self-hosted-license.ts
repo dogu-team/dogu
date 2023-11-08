@@ -1,21 +1,19 @@
 import { OrganizationId } from '@dogu-private/types';
 import { propertiesOf } from '@dogu-tech/common';
+import { BillingCategory } from '..';
 
 import { BillingOrganizationBase, BillingOrganizationResponse } from './billing-organization';
 
 export interface SelfHostedLicenseBase {
   selfHostedLicenseId: string;
   licenseKey: string;
-
-  /**
-   * @deprecated use organizationId instead
-   */
-  companyName: string | null;
-  organizationId: OrganizationId | null;
+  organizationId: OrganizationId;
+  billingOrganizationId: string;
   maximumEnabledMobileCount: number;
   maximumEnabledBrowserCount: number;
   openApiEnabled: boolean;
   doguAgentAutoUpdateEnabled: boolean;
+  category: BillingCategory;
   createdAt: Date;
   updatedAt: Date;
   lastAccessAt: Date;
