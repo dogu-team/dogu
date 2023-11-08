@@ -31,7 +31,17 @@ export function calculateRemainingPlan(options: CalculateRemainingPlanOptions): 
   const { foundInfo, dateTimes } = options;
   const { period, originPrice, discountedAmount, category, type, option, currency } = foundInfo;
   const { totalDays, remainingDays } = dateTimes;
-  const remainingDiscountedAmount = (originPrice * remainingDays) / totalDays - discountedAmount;
+  const purchasedAmount = originPrice - discountedAmount;
+  if (purchasedAmount < 0) {
+    return {
+      ok: false,
+      resultCode: resultCode('unexpected-error', {
+        purchasedAmount,
+      }),
+    };
+  }
+
+  const remainingDiscountedAmount = (purchasedAmount * remainingDays) / totalDays;
   if (remainingDiscountedAmount < 0) {
     return {
       ok: false,
@@ -77,17 +87,17 @@ export function calculateElapsedPlan(options: CalculateElapsedPlanOptions): Calc
   const { data, discountedAmount, dateTimes } = options;
   const { originPrice, period, category, type, option, currency } = data;
   const { totalDays, elapsedDays } = dateTimes;
-  const totalAmount = originPrice - discountedAmount;
-  if (totalAmount < 0) {
+  const purchasedAmount = originPrice - discountedAmount;
+  if (purchasedAmount < 0) {
     return {
       ok: false,
       resultCode: resultCode('unexpected-error', {
-        totalAmount,
+        purchasedAmount,
       }),
     };
   }
 
-  const elapsedDiscountedAmount = (totalAmount * elapsedDays) / totalDays;
+  const elapsedDiscountedAmount = (purchasedAmount * elapsedDays) / totalDays;
   return {
     ok: true,
     elapsedPlan: {
