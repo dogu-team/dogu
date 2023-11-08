@@ -34,7 +34,7 @@ const AdminPage: NextPageWithLayout<AdminProps> = ({ license }) => {
 
 AdminPage.getLayout = (page) => {
   return (
-    <ConsoleBasicLayout user={page.props.user} licenseInfo={page.props.license}>
+    <ConsoleBasicLayout user={page.props.user} license={page.props.license}>
       {page}
     </ConsoleBasicLayout>
   );

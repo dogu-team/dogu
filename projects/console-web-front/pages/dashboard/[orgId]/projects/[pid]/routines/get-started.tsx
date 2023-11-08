@@ -1,5 +1,5 @@
 import { ArrowLeftOutlined } from '@ant-design/icons';
-import { OrganizationBase, ProjectBase, UserBase } from '@dogu-private/console';
+import { ProjectBase } from '@dogu-private/console';
 import { Button, Divider } from 'antd';
 import { GetServerSideProps } from 'next';
 import Head from 'next/head';
@@ -10,28 +10,20 @@ import useSWR from 'swr';
 import Trans from 'next-translate/Trans';
 import useTranslation from 'next-translate/useTranslation';
 
-import { getOrganizationInServerSide } from 'src/api/organization';
-import { getProjectInServerSide } from 'src/api/project';
 import ConsoleBasicLayout from 'src/components/layouts/ConsoleBasicLayout';
 import SdkIcon from 'src/components/tutorial/SdkIcon';
 import { TutorialContext } from 'src/hooks/context/useTutorialContext';
 import { TutorialSupportSdk, tutorialSupportSdkText } from 'src/resources/tutorials';
 import { flexRowBaseStyle } from 'src/styles/box';
-import { checkUserVerifiedInServerSide } from 'src/utils/auth';
 import { NextPageWithLayout } from '../../../../../_app';
 import RoutineTutorial from '../../../../../../src/components/tutorial/routine/RoutineTutorial';
 import { routineTutorialData } from '../../../../../../src/resources/tutorials/routine';
 import { swrAuthFetcher } from '../../../../../../src/api';
 import useRefresh from '../../../../../../src/hooks/useRefresh';
 import RoutineFrameworkSelectContainer from '../../../../../../src/components/tutorial/routine/RoutineFrameworkSelectContainer';
+import { getProjectPageServerSideProps, ProjectServerSideProps } from '../../../../../../src/ssr/project';
 
-interface ServerSideProps {
-  organization: OrganizationBase;
-  me: UserBase;
-  project: ProjectBase;
-}
-
-const ProjectRoutineGetStartedPage: NextPageWithLayout<ServerSideProps> = ({ project, organization, me }) => {
+const ProjectRoutineGetStartedPage: NextPageWithLayout<ProjectServerSideProps> = ({ project, organization, user }) => {
   const router = useRouter();
   const { data, mutate } = useSWR<ProjectBase>(
     `/organizations/${organization.organizationId}/projects/${project.projectId}`,
@@ -49,7 +41,7 @@ const ProjectRoutineGetStartedPage: NextPageWithLayout<ServerSideProps> = ({ pro
   useRefresh(['onProjectScmUpdated'], () => mutate());
 
   return (
-    <TutorialContext.Provider value={{ me, organization, project: data ?? project, updateProject: () => {} }}>
+    <TutorialContext.Provider value={{ me: user, organization, project: data ?? project, updateProject: () => {} }}>
       <Head>
         <title>Routine tutorial - {project.name} | Dogu</title>
       </Head>
@@ -111,28 +103,10 @@ const ProjectRoutineGetStartedPage: NextPageWithLayout<ServerSideProps> = ({ pro
 };
 
 ProjectRoutineGetStartedPage.getLayout = (page) => {
-  return <ConsoleBasicLayout>{page}</ConsoleBasicLayout>;
+  return <ConsoleBasicLayout {...page.props}>{page}</ConsoleBasicLayout>;
 };
 
-export const getServerSideProps: GetServerSideProps<ServerSideProps> = async (context) => {
-  const [organization, checkResult, project] = await Promise.all([
-    getOrganizationInServerSide(context),
-    checkUserVerifiedInServerSide(context),
-    getProjectInServerSide(context),
-  ]);
-
-  if (checkResult.redirect) {
-    return checkResult;
-  }
-
-  return {
-    props: {
-      organization,
-      me: checkResult.props.fallback['/registery/check'],
-      project,
-    },
-  };
-};
+export const getServerSideProps: GetServerSideProps<ProjectServerSideProps> = getProjectPageServerSideProps;
 
 export default ProjectRoutineGetStartedPage;
 

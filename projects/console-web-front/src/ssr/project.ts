@@ -10,8 +10,7 @@ import { GetServerSideProps } from 'next';
 
 import { getOrganizationInServerSide } from 'src/api/organization';
 import { getProjectInServerSide, getProjectScm } from 'src/api/project';
-import { getCloudLicenseInServerSide, getSelfHostedLicenseInServerSide } from '../../enterprise/api/license';
-import { IS_CLOUD } from '../../pages/_app';
+import { getLicenseInServerSide } from '../../enterprise/api/license';
 import { redirectWithLocale } from '../ssr/locale';
 import { checkUserVerifiedInServerSide } from '../utils/auth';
 
@@ -38,7 +37,7 @@ export const getProjectPageServerSideProps: GetServerSideProps<ProjectServerSide
     }
 
     const [license, organization, project, scm] = await Promise.all([
-      IS_CLOUD ? getCloudLicenseInServerSide(context) : getSelfHostedLicenseInServerSide(context),
+      getLicenseInServerSide(context),
       getOrganizationInServerSide(context),
       getProjectInServerSide(context),
       getProjectScm(context),

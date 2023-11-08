@@ -264,7 +264,7 @@ const AccountPage: NextPageWithLayout<Props> = ({ user }) => {
 
 AccountPage.getLayout = (page) => {
   return (
-    <ConsoleBasicLayout user={page.props.user}>
+    <ConsoleBasicLayout user={page.props.user} license={null}>
       {page}
       <Footer />
     </ConsoleBasicLayout>

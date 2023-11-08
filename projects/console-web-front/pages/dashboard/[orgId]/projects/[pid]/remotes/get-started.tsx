@@ -1,5 +1,4 @@
 import { ArrowLeftOutlined } from '@ant-design/icons';
-import { OrganizationBase, ProjectBase, UserBase } from '@dogu-private/console';
 import { Button, Divider } from 'antd';
 import { GetServerSideProps } from 'next';
 import Head from 'next/head';
@@ -7,9 +6,8 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import styled from 'styled-components';
 import useTranslation from 'next-translate/useTranslation';
+import Trans from 'next-translate/Trans';
 
-import { getOrganizationInServerSide } from 'src/api/organization';
-import { getProjectInServerSide } from 'src/api/project';
 import ConsoleBasicLayout from 'src/components/layouts/ConsoleBasicLayout';
 import RemoteFrameworkSelectContainer from 'src/components/tutorial/remote/RemoteFrameworkSelectContainer';
 import RemoteTestTutorial from 'src/components/tutorial/remote/RemoteTestTutorial';
@@ -17,18 +15,11 @@ import SdkIcon from 'src/components/tutorial/SdkIcon';
 import { TutorialContext } from 'src/hooks/context/useTutorialContext';
 import { TutorialSupportSdk, tutorialSupportSdkText } from 'src/resources/tutorials';
 import { flexRowBaseStyle } from 'src/styles/box';
-import { checkUserVerifiedInServerSide } from 'src/utils/auth';
 import { NextPageWithLayout } from '../../../../../_app';
 import { remoteTutorialData } from '../../../../../../src/resources/tutorials/remote';
-import Trans from 'next-translate/Trans';
+import { getProjectPageServerSideProps, ProjectServerSideProps } from '../../../../../../src/ssr/project';
 
-interface ServerSideProps {
-  organization: OrganizationBase;
-  me: UserBase;
-  project: ProjectBase;
-}
-
-const ProjectRemoteGetStartedPage: NextPageWithLayout<ServerSideProps> = ({ project, organization, me }) => {
+const ProjectRemoteGetStartedPage: NextPageWithLayout<ProjectServerSideProps> = ({ project, organization, user }) => {
   const router = useRouter();
   const sdk = router.query.sdk as TutorialSupportSdk | undefined;
   const isFrameworkSelected =
@@ -36,7 +27,7 @@ const ProjectRemoteGetStartedPage: NextPageWithLayout<ServerSideProps> = ({ proj
   const { t } = useTranslation('tutorial');
 
   return (
-    <TutorialContext.Provider value={{ me, organization, project, updateProject: () => {} }}>
+    <TutorialContext.Provider value={{ me: user, organization, project, updateProject: () => {} }}>
       <Head>
         <title>Remote tutorial - {project.name} | Dogu</title>
       </Head>
@@ -98,28 +89,10 @@ const ProjectRemoteGetStartedPage: NextPageWithLayout<ServerSideProps> = ({ proj
 };
 
 ProjectRemoteGetStartedPage.getLayout = (page) => {
-  return <ConsoleBasicLayout>{page}</ConsoleBasicLayout>;
+  return <ConsoleBasicLayout {...page.props}>{page}</ConsoleBasicLayout>;
 };
 
-export const getServerSideProps: GetServerSideProps<ServerSideProps> = async (context) => {
-  const [organization, checkResult, project] = await Promise.all([
-    getOrganizationInServerSide(context),
-    checkUserVerifiedInServerSide(context),
-    getProjectInServerSide(context),
-  ]);
-
-  if (checkResult.redirect) {
-    return checkResult;
-  }
-
-  return {
-    props: {
-      organization,
-      me: checkResult.props.fallback['/registery/check'],
-      project,
-    },
-  };
-};
+export const getServerSideProps: GetServerSideProps<ProjectServerSideProps> = getProjectPageServerSideProps;
 
 export default ProjectRemoteGetStartedPage;
 

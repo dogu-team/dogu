@@ -4,7 +4,11 @@ import { GetServerSideProps } from 'next';
 import useTranslation from 'next-translate/useTranslation';
 import styled from 'styled-components';
 
-import { getCloudLicenseInServerSide, getSelfHostedLicenseInServerSide } from '../../enterprise/api/license';
+import {
+  getCloudLicenseInServerSide,
+  getLicenseInServerSide,
+  getSelfHostedLicenseInServerSide,
+} from '../../enterprise/api/license';
 import BillingHistoryList from '../../src/components/billing/BillingHistoryList';
 import BillingPaymentMethod from '../../src/components/billing/BillingPaymentMethod';
 import BillingSubscribedPlanList from '../../src/components/billing/BillingSubscribedPlanList';
@@ -13,7 +17,7 @@ import LiveChat from '../../src/components/external/livechat';
 import ConsoleBasicLayout from '../../src/components/layouts/ConsoleBasicLayout';
 import Footer from '../../src/components/layouts/Footer';
 import useLicenseStore from '../../src/stores/license';
-import { checkLoginInServerSide } from '../../src/utils/auth';
+import { checkLoginInServerSide, checkUserVerifiedInServerSide } from '../../src/utils/auth';
 import { NextPageWithLayout } from '../_app';
 
 interface BillingPageProps {
@@ -66,7 +70,7 @@ const BillingPage: NextPageWithLayout<BillingPageProps> = ({ me, license }) => {
 
 BillingPage.getLayout = (page) => {
   return (
-    <ConsoleBasicLayout user={page.props.me} licenseInfo={page.props.license}>
+    <ConsoleBasicLayout user={page.props.me} license={page.props.license}>
       {page}
       <Footer />
       <LiveChat />
@@ -76,22 +80,17 @@ BillingPage.getLayout = (page) => {
 
 export const getServerSideProps: GetServerSideProps<BillingPageProps> = async (context) => {
   try {
-    const [me, license] = await Promise.all([
-      checkLoginInServerSide(context),
-      process.env.DOGU_RUN_TYPE === 'self-hosted'
-        ? getSelfHostedLicenseInServerSide(context)
-        : getCloudLicenseInServerSide(context),
-    ]);
+    const result = await checkUserVerifiedInServerSide(context);
 
-    if (!me) {
-      return {
-        notFound: true,
-      };
+    if (result.redirect) {
+      return result;
     }
+
+    const license = await getLicenseInServerSide(context);
 
     return {
       props: {
-        me,
+        me: result.props.fallback['/registery/check'],
         license,
       },
     };

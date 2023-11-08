@@ -288,6 +288,8 @@ const BillingSubscribedPlanList: React.FC<Props> = () => {
   const { t } = useTranslation('billing');
   const license = useLicenseStore((state) => state.license);
 
+  console.log(license);
+
   if (process.env.NEXT_PUBLIC_ENV === 'self-hosted') {
     const selfHostedLicense = license as SelfHostedLicenseBase;
 

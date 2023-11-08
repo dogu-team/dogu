@@ -23,10 +23,10 @@ import Header from './Header';
 interface Props {
   children: React.ReactNode;
   user?: UserBase;
-  licenseInfo?: SelfHostedLicenseResponse | CloudLicenseResponse;
+  license: SelfHostedLicenseResponse | CloudLicenseResponse | null;
 }
 
-const ConsoleBasicLayout = ({ children, user, licenseInfo }: Props) => {
+const ConsoleBasicLayout = ({ children, user, license: licenseInfo }: Props) => {
   const { me, isLoading, error, mutate } = useAuth(user);
   const [license, updateLicense] = useLicenseStore((state) => [state.license, state.updateLicense], shallow);
   const router = useRouter();
@@ -39,7 +39,7 @@ const ConsoleBasicLayout = ({ children, user, licenseInfo }: Props) => {
   });
 
   useEffect(() => {
-    updateLicense(licenseInfo ?? null);
+    updateLicense(licenseInfo);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [licenseInfo]);
 

@@ -56,7 +56,7 @@ const ConsoleLayout = ({
 
   return (
     <OrganizationContext.Provider value={{ organization: data ?? organization, mutate, license }}>
-      <ConsoleBasicLayout licenseInfo={license} user={user}>
+      <ConsoleBasicLayout license={license} user={user}>
         <StyledLayout>
           {sidebar}
           <StyledLayoutContent>
