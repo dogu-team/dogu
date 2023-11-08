@@ -17,6 +17,8 @@ export interface ActiveAppInfo {
   bundleId: string;
 }
 
+export type IosButtonNames = 'volumeup' | 'volumedown' | 'home';
+
 export class WebdriverAgentProcess {
   private readonly xctest: ZombieWdaXCTest;
   private readonly wdaTunnel: ZombieTunnel;
@@ -124,6 +126,15 @@ export class WebdriverAgentProcess {
       return;
     }
     await client.post(`/session/${sessionId}/wda/pressButton`, { name: 'home', duration: 100 });
+  }
+
+  async pressButton(buttonName: IosButtonNames, durationMs: number): Promise<void> {
+    const { sessionId, client } = this.xctest;
+    if (!sessionId) {
+      this.logger.warn('sessionId is undefined. so skip goToHome');
+      return;
+    }
+    await client.post(`/session/${sessionId}/wda/pressButton`, { name: buttonName, duration: durationMs });
   }
 
   async screenshot(quality: 'high' | 'default' | 'low' = 'low'): Promise<string> {

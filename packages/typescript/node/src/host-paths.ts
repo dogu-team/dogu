@@ -91,6 +91,12 @@ export const HostPaths = {
       gboard: {
         apk: (): string => path.resolve(HostPaths.external.externalsPath(), 'preinstall/Gboard.apk'),
       },
+      chrome: {
+        ipa: (): string => path.resolve(HostPaths.external.externalsPath(), 'preinstall/Chrome.ipa'),
+      },
+      testflight: {
+        ipa: (): string => path.resolve(HostPaths.external.externalsPath(), 'preinstall/TestFlight.ipa'),
+      },
     },
 
     /**
