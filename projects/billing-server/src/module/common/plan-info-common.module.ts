@@ -6,8 +6,8 @@ import { BillingSubscriptionPlanInfo } from '../../db/entity/billing-subscriptio
 export module BillingSubscriptionPlanInfoCommonModule {
   export function createPlanInfoResponse(billingOrganization: BillingOrganization, planInfo: BillingSubscriptionPlanInfo): BillingSubscriptionPlanInfoResponse {
     const response = planInfo as BillingSubscriptionPlanInfoResponse;
-    const monthlyExpiredAt = response.billingOrganization?.subscriptionMonthlyExpiredAt ?? null;
-    const yearlyExpiredAt = response.billingOrganization?.subscriptionYearlyExpiredAt ?? null;
+    const monthlyExpiredAt = billingOrganization.subscriptionMonthlyExpiredAt ?? null;
+    const yearlyExpiredAt = billingOrganization.subscriptionYearlyExpiredAt ?? null;
 
     if (planInfo.state === 'unsubscribe-requested' || planInfo.state === 'unsubscribed') {
       response.monthlyExpiredAt = null;
