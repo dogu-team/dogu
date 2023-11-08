@@ -13,11 +13,8 @@ export async function findBillingOrganizationWithSubscriptionPlans(context: Retr
   return await manager
     .getRepository(BillingOrganization)
     .createQueryBuilder(BillingOrganization.name)
-    .leftJoinAndSelect(
-      `${BillingOrganization.name}.${BillingOrganizationProp.billingSubscriptionPlanInfos}`,
-      BillingSubscriptionPlanInfo.name,
-      `${BillingSubscriptionPlanInfo.name}.${BillingSubscriptionPlanProp.unsubscribedAt} IS NULL`,
-    )
+    .leftJoinAndSelect(`${BillingOrganization.name}.${BillingOrganizationProp.billingSubscriptionPlanInfos}`, BillingSubscriptionPlanInfo.name)
+    .leftJoinAndSelect(`${BillingSubscriptionPlanInfo.name}.${BillingSubscriptionPlanProp.billingCoupon}`, BillingOrganizationUsedBillingCoupon.name)
     .where({ organizationId })
     .getOne();
 }
@@ -40,11 +37,8 @@ export async function findBillingOrganizationWithMethodAndSubscriptionPlans(cont
     .getRepository(BillingOrganization)
     .createQueryBuilder(BillingOrganization.name)
     .leftJoinAndSelect(`${BillingOrganization.name}.${BillingOrganizationProp.billingMethodNice}`, BillingMethodNice.name)
-    .leftJoinAndSelect(
-      `${BillingOrganization.name}.${BillingOrganizationProp.billingSubscriptionPlanInfos}`,
-      BillingSubscriptionPlanInfo.name,
-      `${BillingSubscriptionPlanInfo.name}.${BillingSubscriptionPlanProp.unsubscribedAt} IS NULL`,
-    )
+    .leftJoinAndSelect(`${BillingOrganization.name}.${BillingOrganizationProp.billingSubscriptionPlanInfos}`, BillingSubscriptionPlanInfo.name)
+    .leftJoinAndSelect(`${BillingSubscriptionPlanInfo.name}.${BillingSubscriptionPlanProp.billingCoupon}`, BillingOrganizationUsedBillingCoupon.name)
     .where({ organizationId })
     .getOne();
 }
