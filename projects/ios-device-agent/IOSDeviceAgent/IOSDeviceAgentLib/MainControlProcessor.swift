@@ -14,9 +14,9 @@ actor MainControlProcessor {
     try await keyControlProcessor.open(with: param)
     processors[.iosInjectKeycode] = keyControlProcessor
     
-//    let scrollControlProcessor = ControlProcessor<ScrollControlFactory, ScrollControlBroker, ScrollControlPlayer>()
-//    try await scrollControlProcessor.open(with: param)
-//    processors[.iosInjectScrollEvent] = scrollControlProcessor
+    let scrollControlProcessor = ControlProcessor<ScrollControlFactory, ScrollControlBroker, ScrollControlPlayer>()
+    try await scrollControlProcessor.open(with: param)
+    processors[.iosInjectScrollEvent] = scrollControlProcessor
 
   }
 

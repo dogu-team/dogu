@@ -73,6 +73,10 @@ public actor WebDriverClient {
   public let url: String
   public private(set) var sessionID: String = ""
 
+  enum Error: Swift.Error {
+    case sessionNotFound
+  }
+
   public init(url: String) throws {
     _ = try url.url()
     self.url = url
@@ -86,6 +90,21 @@ public actor WebDriverClient {
     if sessionID.isEmpty {
       sessionID = try await newSession()
     }
+  }
+  
+  @MainActor
+  public func getSession() async throws -> FBSession {
+    try await setSessionIfNotSet()
+    guard let session = FBSession.active() else {
+      throw Error.sessionNotFound
+    }
+    return session
+  }
+
+  @MainActor
+  public func getApplication() async throws -> FBApplication {
+    let session = try await getSession()
+    return session.activeApplication
   }
 
   private func newSession() async throws -> String {
