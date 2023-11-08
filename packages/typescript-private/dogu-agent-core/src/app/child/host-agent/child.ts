@@ -45,7 +45,7 @@ export class HostAgentChild implements Child {
       this.logger.error('killProcessOnPort', { error: errorify(err) });
     });
 
-    const hostAgentLogsPath = path.resolve(this.logsPath, 'child', 'host-agent');
+    const hostAgentLogsPath = path.resolve(this.logsPath, 'host-agent');
     this.logger.info(`HostAgentChild DOGU_LOG_LEVEL: ${DOGU_LOG_LEVEL}`);
     const options = await fillChildOptions({
       forkOptions: {

@@ -1,5 +1,6 @@
 import {
   CodeUtil,
+  DeviceAlert,
   DeviceSystemInfo,
   DeviceWindowInfo,
   ErrorResult,
@@ -16,7 +17,7 @@ import {
   SerialPrintable,
   StreamingAnswer,
 } from '@dogu-private/types';
-import { Closable, errorify, loopTime, Milisecond, MixedLogger, Printable, PromiseOrValue, stringify } from '@dogu-tech/common';
+import { Closable, delay, errorify, MixedLogger, Printable, PromiseOrValue, stringify, TimedCacheAsync } from '@dogu-tech/common';
 import { AppiumCapabilities, BrowserInstallation, StreamingOfferDto } from '@dogu-tech/device-client-common';
 import { ChildProcessError, killChildProcess } from '@dogu-tech/node';
 import { ChildProcess } from 'child_process';
@@ -26,26 +27,32 @@ import path from 'path';
 import { Observable } from 'rxjs';
 import semver from 'semver';
 import { createAppiumCapabilities } from '../../appium/appium.capabilites';
-import { AppiumContext, AppiumContextKey, AppiumContextProxy } from '../../appium/appium.context';
+import { AppiumContext } from '../../appium/appium.context';
+import { AppiumContextProxy, AppiumRemoteContextRental } from '../../appium/appium.context.proxy';
 import { AppiumDeviceWebDriverHandler } from '../../device-webdriver/appium.device-webdriver.handler';
 import { DeviceWebDriverHandler } from '../../device-webdriver/device-webdriver.common';
 import { env } from '../../env';
 import { GamiumContext } from '../../gamium/gamium.context';
 import { deviceInfoLogger } from '../../logger/logger.instance';
 import { createIosLogger } from '../../logger/serial-logger.instance';
+import { config } from '../config';
 import { IdeviceDiagnostics, IdeviceSyslog, MobileDevice, Xctrace } from '../externals';
 import { IdeviceInstaller } from '../externals/cli/ideviceinstaller';
 import { IosDeviceAgentProcess } from '../externals/cli/ios-device-agent';
 import { ZombieTunnel } from '../externals/cli/mobiledevice-tunnel';
 import { WebdriverAgentProcess } from '../externals/cli/webdriver-agent-process';
+import { IosWebDriverInfo } from '../externals/webdriver/ios-webdriver';
 import { DeviceChannel, DeviceChannelOpenParam, DeviceHealthStatus, DeviceServerService, LogHandler } from '../public/device-channel';
 import { IosDeviceAgentService } from '../services/device-agent/ios-device-agent-service';
 import { IosDisplayProfileService, IosProfileService } from '../services/profile/ios-profiler';
 import { ProfileServices } from '../services/profile/profile-service';
+import { IosResetService } from '../services/reset/ios-reset';
+import { IosSharedDeviceService } from '../services/shared-device/ios-shared-device';
 import { StreamingService } from '../services/streaming/streaming-service';
 import { IosSystemInfoService } from '../services/system-info/ios-system-info-service';
 import { Zombieable } from '../services/zombie/zombie-component';
 import { ZombieServiceInstance } from '../services/zombie/zombie-service';
+import { checkTime } from '../util/check-time';
 
 type DeviceControl = PrivateProtocol.DeviceControl;
 
@@ -65,6 +72,7 @@ export class IosLogClosable implements Closable {
 export class IosChannel implements DeviceChannel {
   private tunnels: ZombieTunnel[] = [];
   private _gamiumContext: GamiumContext | null = null;
+  private _alertCache: TimedCacheAsync<DeviceAlert | undefined>;
 
   constructor(
     private readonly _serial: Serial,
@@ -76,10 +84,13 @@ export class IosChannel implements DeviceChannel {
     private readonly deviceAgent: IosDeviceAgentService,
     private _appiumContext: AppiumContextProxy,
     private readonly _appiumDeviceWebDriverHandler: AppiumDeviceWebDriverHandler,
+    private readonly _sharedDevice: IosSharedDeviceService,
+    private readonly _reset: IosResetService,
     private readonly logger: SerialPrintable,
     readonly browserInstallations: BrowserInstallation[],
   ) {
     this.logger.info(`IosChannel created: ${this.serial}`);
+    this._alertCache = new TimedCacheAsync<DeviceAlert | undefined>({ milliseconds: 900 });
   }
 
   get serial(): Serial {
@@ -113,11 +124,8 @@ export class IosChannel implements DeviceChannel {
     const logger = createIosLogger(param.serial);
 
     const productVersion = await IosSystemInfoService.getVersion(serial, logger);
-    if (productVersion) {
-      const version = semver.coerce(productVersion);
-      if (version && semver.lt(version, '14.0.0')) {
-        throw new Error(`iOS version must be 14 or higher. current version: ${productVersion}`);
-      }
+    if (semver.lt(productVersion, '14.0.0')) {
+      throw new Error(`iOS version must be 14 or higher. current version: ${productVersion.inspect()}`);
     }
 
     const isWdaReady = await WebdriverAgentProcess.isReady(serial);
@@ -157,8 +165,17 @@ export class IosChannel implements DeviceChannel {
       await deviceServerService.devicePortService.createOrGetHostPort(serial, 'iOSAppiumServer'),
       wdaForwardPort,
     );
-    ZombieServiceInstance.addComponent(appiumContextProxy);
+    const appiumWaiter = ZombieServiceInstance.addComponent(appiumContextProxy);
+    await appiumWaiter.waitUntilAlive({ maxReviveCount: 100 });
     logger.verbose('appium context started');
+
+    const isIpad = await MobileDevice.getProductType(serial, logger).then((type) => type?.startsWith('iPad'));
+    const iosWdInfo = new IosWebDriverInfo(isIpad, productVersion);
+    const reset = new IosResetService(serial, iosWdInfo, logger);
+    const appiumContextImpl = await appiumContextProxy.waitUntilBuiltin();
+    const shared = new IosSharedDeviceService(serial, wda, reset, appiumContextImpl, iosWdInfo, logger);
+    await shared.setup();
+    await shared.wait();
 
     logger.verbose('ios device agent process starting');
     const screenForwardPort = await deviceServerService.devicePortService.createOrGetHostPort(serial, 'iOSScreenForward');
@@ -170,10 +187,11 @@ export class IosChannel implements DeviceChannel {
       deviceServerService.devicePortService.getIosDeviceAgentScreenServerPort(),
       grpcForwardPort,
       deviceServerService.devicePortService.getIosDeviceAgentGrpcServerPort(),
-      wdaForwardPort,
-      deviceServerService.devicePortService.getIosWebDriverAgentServerPort(),
+      wda,
+      deviceServerService.devicePortService.getIosDeviceAgentWebDriverAgentServerPort(),
       deviceAgent,
       streaming,
+      reset,
       logger,
     ).catch((error) => {
       logger.error('IosDeviceAgentProcess start failed.', { error: errorify(error) });
@@ -219,6 +237,8 @@ export class IosChannel implements DeviceChannel {
       deviceAgent,
       appiumContextProxy,
       appiumDeviceWebDriverHandler,
+      shared,
+      reset,
       logger,
       findAllBrowserInstallationsResult.browserInstallations,
     );
@@ -249,16 +269,18 @@ export class IosChannel implements DeviceChannel {
 
   static async restartIfAvailiable(serial: Serial, logger: Printable): Promise<void> {
     logger.info('IosChannel restartIfAvailiable', { on: env.DOGU_DEVICE_IOS_RESTART_ON_INIT });
+    if (config.externalIosDeviceAgent.use) {
+      return;
+    }
+    if (!(await IosResetService.isDirty(serial))) {
+      return;
+    }
     if (env.DOGU_DEVICE_IOS_RESTART_ON_INIT) {
       await IdeviceDiagnostics.restart(serial, logger);
-      for await (const _ of loopTime(Milisecond.t3Seconds, Milisecond.t5Minutes)) {
-        const deviceInfosFromXctrace = await Xctrace.listDevices(logger, { timeout: Milisecond.t2Minutes }).catch((e) => []);
-        if (deviceInfosFromXctrace.find((deviceInfo) => deviceInfo.serial === serial)) {
-          break;
-        }
-      }
-      const deviceInfosFromXctrace = await Xctrace.listDevices(logger, { timeout: Milisecond.t2Minutes }).catch((e) => []);
-      if (!deviceInfosFromXctrace.find((deviceInfo) => deviceInfo.serial === serial)) {
+      try {
+        await delay(1000);
+        await Xctrace.waitUntilConnected(serial, logger);
+      } catch {
         throw new Error(`Device ${serial} is not found after restart. Please check the usb connection.`);
       }
     }
@@ -279,6 +301,7 @@ export class IosChannel implements DeviceChannel {
     this.webdriverAgentProcess.delete();
     this.iosDeviceAgentProcess.delete();
     this.deviceAgent.delete();
+    this._sharedDevice.delete();
     ZombieServiceInstance.deleteAllComponentsIfExist((zombieable: Zombieable): boolean => {
       return zombieable.serial === this.serial && zombieable.platform === Platform.PLATFORM_IOS;
     }, 'kill serial bound zombies');
@@ -374,9 +397,9 @@ export class IosChannel implements DeviceChannel {
       this.unforward(tunnel.hostPort);
     }
 
-    const newTunnel = new ZombieTunnel(serial, hostPort, devicePort, logger);
+    const newTunnel = new ZombieTunnel(serial, 'forward', hostPort, devicePort, logger);
     this.tunnels.push(newTunnel);
-    await newTunnel.zombieWaiter.waitUntilAlive();
+    await newTunnel.zombieWaiter.waitUntilAlive({ maxReviveCount: 10 });
   }
 
   unforward(hostPort: number): void {
@@ -388,7 +411,7 @@ export class IosChannel implements DeviceChannel {
   }
 
   async isPortListening(port: number): Promise<boolean> {
-    const res = await this.deviceAgent.sendWithProtobuf('dcIdaIsPortListeningParam', 'dcIdaIsPortListeningResult', { port });
+    const res = await this.deviceAgent.send('dcIdaIsPortListeningParam', 'dcIdaIsPortListeningResult', { port });
     return res?.isListening ?? false;
   }
 
@@ -420,17 +443,18 @@ export class IosChannel implements DeviceChannel {
   }
 
   async uninstallApp(appPath: string, handler: LogHandler): Promise<void> {
-    const { serial } = this;
     const logger = new MixedLogger([this.logger, handler]);
+    const installer = new IdeviceInstaller(this.serial, logger);
     const dotAppPath = await this.findDotAppPath(appPath);
     const appName = await MobileDevice.getBundleId(dotAppPath, logger);
-    await IdeviceInstaller.uninstallApp(serial, appName, logger);
+    await installer.uninstallApp(appName);
   }
 
   async installApp(appPath: string, handler: LogHandler): Promise<void> {
-    const { serial } = this;
     const logger = new MixedLogger([this.logger, handler]);
-    const result = await IdeviceInstaller.installApp(serial, appPath, logger).catch((error) => {
+    const installer = new IdeviceInstaller(this.serial, logger);
+
+    const result = await installer.installApp(appPath).catch((error) => {
       if (!(error instanceof ChildProcessError)) {
         throw error;
       }
@@ -442,7 +466,7 @@ export class IosChannel implements DeviceChannel {
     });
     if ('errorType' in result && result.errorType === 'MismatchedApplicationIdentifierEntitlement') {
       await this.uninstallApp(appPath, handler);
-      await IdeviceInstaller.installApp(serial, appPath, logger);
+      await installer.installApp(appPath);
     }
   }
 
@@ -452,7 +476,7 @@ export class IosChannel implements DeviceChannel {
     const installedAppNames = await MobileDevice.listApps(serial, logger);
     const dotAppPath = await this.findDotAppPath(appPath);
     const bundleId = await MobileDevice.getBundleId(dotAppPath, logger);
-    const result = await this.deviceAgent.sendWithProtobuf('dcIdaRunappParam', 'dcIdaRunappResult', {
+    const result = await this.deviceAgent.send('dcIdaRunappParam', 'dcIdaRunappResult', {
       appPath,
       installedAppNames,
       bundleId,
@@ -471,8 +495,11 @@ export class IosChannel implements DeviceChannel {
     return new IosLogClosable(child, logger);
   }
 
-  reset(): PromiseOrValue<void> {
-    throw new Error('Method not implemented.');
+  async reset(): Promise<void> {
+    const { logger, webdriverAgentProcess } = this;
+    await this.deviceAgent.send('dcIdaSwitchInputBlockParam', 'dcIdaSwitchInputBlockResult', { isBlock: false });
+    const appiumContextImpl = await checkTime(`IosChannel.reset.waitUntilBuiltin`, this._appiumContext.waitUntilBuiltin(), logger);
+    await checkTime(`IosChannel.reset.reset`, this._reset.reset(appiumContextImpl, webdriverAgentProcess), logger);
   }
 
   joinWifi(ssid: string, password: string): PromiseOrValue<void> {
@@ -483,9 +510,8 @@ export class IosChannel implements DeviceChannel {
     return this._appiumContext;
   }
 
-  async switchAppiumContext(key: AppiumContextKey, reason: string): Promise<AppiumContext> {
-    await this._appiumContext.switchAppiumContext(key, reason);
-    return this._appiumContext;
+  async rentAppiumRemoteContext(reason: string): Promise<AppiumRemoteContextRental> {
+    return this._appiumContext.rentRemote(reason);
   }
 
   async getAppiumCapabilities(): Promise<AppiumCapabilities> {
@@ -521,5 +547,24 @@ export class IosChannel implements DeviceChannel {
 
   async setGeoLocation(geoLocation: GeoLocation): Promise<void> {
     throw new Error('Method not implemented.');
+  }
+
+  async getAlert(): Promise<DeviceAlert | undefined> {
+    return await this._alertCache.update(async () => {
+      const result = await this.deviceAgent.send('dcIdaQueryAlertParam', 'dcIdaQueryAlertResult', {});
+      if (!result) {
+        return undefined;
+      }
+      if (!result.isShow) {
+        return undefined;
+      }
+      return {
+        title: result.title,
+      };
+    });
+  }
+
+  async getScreenshot(): Promise<string> {
+    return await this.webdriverAgentProcess.screenshot();
   }
 }

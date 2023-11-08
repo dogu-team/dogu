@@ -139,6 +139,7 @@ expose('windowClient', {
   close: () => ipcRenderer.invoke(windowClientKey.close),
   onMaximize: (callback: () => void) => ipcRenderer.on(windowClientKey.onMaximize, callback),
   onUnmaximize: (callback: () => void) => ipcRenderer.on(windowClientKey.onUnmaximize, callback),
+  openDevTools: () => ipcRenderer.invoke(windowClientKey.openDevTools),
 });
 
 expose('featureConfigClient', {

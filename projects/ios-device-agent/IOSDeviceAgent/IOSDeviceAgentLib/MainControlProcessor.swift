@@ -13,6 +13,11 @@ actor MainControlProcessor {
     let keyControlProcessor = ControlProcessor<KeyControlFactory, KeyControlBroker, KeyControlPlayer>()
     try await keyControlProcessor.open(with: param)
     processors[.iosInjectKeycode] = keyControlProcessor
+    
+    let scrollControlProcessor = ControlProcessor<ScrollControlFactory, ScrollControlBroker, ScrollControlPlayer>()
+    try await scrollControlProcessor.open(with: param)
+    processors[.iosInjectScrollEvent] = scrollControlProcessor
+
   }
 
   func close() async throws {}

@@ -108,6 +108,7 @@ export declare enum DeviceControlAction {
     DEVICE_CONTROL_ACTION_IOS_ACTION_DOWN_UNSPECIFIED = 0,
     DEVICE_CONTROL_ACTION_IOS_ACTION_UP = 1,
     DEVICE_CONTROL_ACTION_IOS_ACTION_MOVE = 2,
+    DEVICE_CONTROL_ACTION_IOS_ACTION_SCROLL = 8,
     UNRECOGNIZED = -1
 }
 export declare function deviceControlActionFromJSON(object: any): DeviceControlAction;

@@ -73,7 +73,7 @@ class AdditionalTransportPropertyAccessor {
 
 const additionalTransportPropertyAccessor = new AdditionalTransportPropertyAccessor();
 
-export const maxLogPeriod = '7d';
+export const maxLogPeriod = '3d';
 
 export class LogTransportFactory {
   static createConsole(): Transport {
@@ -180,7 +180,10 @@ export class LoggerOptionsFactory {
 }
 
 export class Logger implements FilledPrintable {
-  constructor(private readonly logger: winston.Logger, readonly category: string) {}
+  constructor(
+    private readonly logger: winston.Logger,
+    readonly category: string,
+  ) {}
 
   error(message: unknown, details?: Record<string, unknown>): void {
     this.logger.error(stringify(message), details);

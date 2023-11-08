@@ -1,14 +1,8 @@
-import {
-  CheckCircleOutlined,
-  CloseOutlined,
-  ExclamationCircleOutlined,
-  InboxOutlined,
-  LoadingOutlined,
-} from '@ant-design/icons';
-import { Platform } from '@dogu-private/types';
-import { Button, Divider, Progress, Steps, Switch, Tooltip, Upload } from 'antd';
+import { CheckCircleOutlined, ExclamationCircleOutlined, InboxOutlined, LoadingOutlined } from '@ant-design/icons';
+import { OrganizationId, Platform } from '@dogu-private/types';
+import { Progress, Steps, Upload } from 'antd';
 import useTranslation from 'next-translate/useTranslation';
-import { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
 import styled from 'styled-components';
 
 import useDeviceAppInstall from '../../hooks/streaming/useDeviceAppInstall';
@@ -17,50 +11,28 @@ import { flexRowCenteredStyle, flexRowSpaceBetweenStyle } from '../../styles/box
 import { getAvailableApplicationExtension } from '../../utils/streaming/streaming';
 import { convertByteWithMaxUnit } from '../../utils/unit';
 
-interface Props {
-  // device: DeviceBase;
-  // deviceClient: DeviceClient;
-  // deviceHostClient: DeviceHostClient;
-}
+interface Props {}
 
 const ApplicationUploader = ({}: Props) => {
+  const router = useRouter();
   const { device, deviceService, loading, isCloudDevice } = useDeviceStreamingContext();
-  const { uploadApp, cancelUpload, runApp, isInstalling, progress, app, result } = useDeviceAppInstall(
+  const { uploadAndInstallApp, isInstalling, progress, app, result } = useDeviceAppInstall(
     device?.serial,
     deviceService?.deviceHostClientRef,
     deviceService?.deviceClientRef,
     { isCloudDevice: isCloudDevice ?? false },
   );
-  const [shouldRun, setShouldRun] = useState(false);
   const { t } = useTranslation();
 
   const availableExtension = getAvailableApplicationExtension(device?.platform ?? Platform.UNRECOGNIZED);
 
-  useEffect(() => {
-    (async () => {
-      if (result?.isSuccess && shouldRun) {
-        try {
-          await runApp();
-        } catch (e) {}
-      }
-    })();
-  }, [result?.isSuccess, shouldRun, runApp]);
-
   return (
     <Box>
-      <div>
-        <Title style={{ marginBottom: '.5rem' }}>{t('device-streaming:uploadApplicationOptionTitle')}</Title>
-        <FlexRow>
-          <p>{t('device-streaming:uploadApplicationRunOptionText')}</p>
-          <Switch onChange={setShouldRun} checked={shouldRun} disabled={loading} />
-        </FlexRow>
-      </div>
-      <Divider style={{ margin: '.5rem 0' }} />
       <StyledUpload
         name="app"
         accept={availableExtension}
         customRequest={async (option) => {
-          await uploadApp(option.file as File);
+          await uploadAndInstallApp(router.query.orgId as OrganizationId, option.file as File);
         }}
         progress={{
           format: () => null,
@@ -82,11 +54,6 @@ const ApplicationUploader = ({}: Props) => {
         <ApplicationInfoBox>
           <FlexRow>
             <Title>{t('device-streaming:uploadApplicationAppInfo')}</Title>
-            <div>
-              <Tooltip title="Cancel">
-                <Button danger icon={<CloseOutlined />} onClick={cancelUpload} />
-              </Tooltip>
-            </div>
           </FlexRow>
           <InfoContent>
             <InfoTitle>{t('device-streaming:uploadApplicationName')}</InfoTitle>

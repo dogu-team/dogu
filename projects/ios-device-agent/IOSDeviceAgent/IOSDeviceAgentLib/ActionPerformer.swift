@@ -13,10 +13,7 @@ actor ActionPerformer {
 
   @MainActor
   func performW3CActions(_ actions: [Any]) async throws {
-    try await webDriverClient.setSessionIfNotSet()
-    guard let session = FBSession.active() else {
-      throw Error.sessionNotFound
-    }
+    let session = try await webDriverClient.getSession()
     try session.activeApplication.fb_performActions(withSynthesizerType: FBW3CActionsSynthesizer.self, actions: actions, elementCache: session.elementCache)
   }
 }

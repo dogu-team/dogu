@@ -759,4 +759,9 @@ export class OrganizationService {
 
     return session;
   }
+
+  async uploadDeviceApp(organizationId: OrganizationId, file: Express.Multer.File): Promise<string> {
+    const rv = await this.organizationFileService.uploadDeviceApp(file, organizationId);
+    return rv;
+  }
 }

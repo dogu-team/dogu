@@ -21,9 +21,16 @@ class ScreenServer {
 
   func start() throws {
     do {
-      let parameters = NWParameters.tcp
-      parameters.allowLocalEndpointReuse = true
-      listener = try NWListener(using: parameters, on: port)
+      let options = NWProtocolTCP.Options()
+      options.persistTimeout = 0 // this one reduces waiting time significantly when there is no open connections
+      options.enableKeepalive = true // this one reduces the number of open connections by reusing existing ones
+      options.connectionDropTime = 5
+      options.connectionTimeout = 5
+      options.noDelay = true
+      let params = NWParameters(tls:nil, tcp: options)
+      params.allowLocalEndpointReuse = true
+      
+      listener = try NWListener(using: params, on: port)
       listener?.stateUpdateHandler = { [weak self] state in
         switch state {
         case .ready:

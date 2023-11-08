@@ -808,6 +808,10 @@ public final class DeviceControlOuterClass {
      */
     public static final DeviceControlAction DEVICE_CONTROL_ACTION_IOS_ACTION_MOVE = DEVICE_CONTROL_ACTION_AOS_KEYEVENT_ACTION_MULTIPLE;
     /**
+     * <code>DEVICE_CONTROL_ACTION_IOS_ACTION_SCROLL = 8;</code>
+     */
+    public static final DeviceControlAction DEVICE_CONTROL_ACTION_IOS_ACTION_SCROLL = DEVICE_CONTROL_ACTION_AOS_MOTIONEVENT_ACTION_SCROLL;
+    /**
      * <code>DEVICE_CONTROL_ACTION_UNSPECIFIED = 0;</code>
      */
     public static final int DEVICE_CONTROL_ACTION_UNSPECIFIED_VALUE = 0;
@@ -917,6 +921,10 @@ public final class DeviceControlOuterClass {
      * <code>DEVICE_CONTROL_ACTION_IOS_ACTION_MOVE = 2;</code>
      */
     public static final int DEVICE_CONTROL_ACTION_IOS_ACTION_MOVE_VALUE = 2;
+    /**
+     * <code>DEVICE_CONTROL_ACTION_IOS_ACTION_SCROLL = 8;</code>
+     */
+    public static final int DEVICE_CONTROL_ACTION_IOS_ACTION_SCROLL_VALUE = 8;
 
 
     @java.lang.Override

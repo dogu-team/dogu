@@ -53,7 +53,7 @@ export class DeviceServerChild implements Child {
     if (!androidHomePath) {
       throw new Error('ANDROID_HOME not exist');
     }
-    const deviceServerLogsPath = path.join(this.logsPath, 'child', 'device-server');
+    const deviceServerLogsPath = path.join(this.logsPath, 'device-server');
     const androidPlatformToolsPath = HostPaths.android.platformToolsPath(androidHomePath);
     const PATH = `${androidPlatformToolsPath}${path.delimiter}${process.env.PATH || ''}`;
     const options = await fillChildOptions({

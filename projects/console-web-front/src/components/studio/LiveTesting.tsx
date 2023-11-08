@@ -103,7 +103,7 @@ const LiveTestingMenu = () => {
         <TabContent isSelected={tab === StreamingTabMenuKey.INFO}>
           <DeviceStreaming.BasicMenu hideDeviceName={isCloudDevice} />
         </TabContent>
-        {tabMenus.includes(StreamingTabMenuKey.INSPECTOR) && (
+        {tabMenus.includes(StreamingTabMenuKey.INSPECTOR) && tab === StreamingTabMenuKey.INSPECTOR && (
           <TabContent isSelected={tab === StreamingTabMenuKey.INSPECTOR}>
             {device && inspector ? <DeviceStreaming.Inspector inspector={inspector} /> : null}
           </TabContent>

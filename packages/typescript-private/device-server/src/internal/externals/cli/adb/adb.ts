@@ -250,7 +250,10 @@ export module Adb {
 }
 
 export class AdbSerial {
-  constructor(public serial: Serial, public printable: FilledPrintable) {}
+  constructor(
+    public serial: Serial,
+    public printable: FilledPrintable,
+  ) {}
 
   async shell(command: string): ReturnType<typeof ChildProcess.exec> {
     const { serial } = this;
@@ -808,14 +811,14 @@ export class AdbSerial {
         }
         return !!match;
       })
-      .map(({ line, match }) => ({ line, match } as { line: string; match: RegExpExecArray }))
+      .map(({ line, match }) => ({ line, match }) as { line: string; match: RegExpExecArray })
       .filter(({ line, match }) => {
         if (!match.groups) {
           adbLogger.warn(`Failed to match groups in package line: ${line}`);
         }
         return !!match.groups;
       })
-      .map(({ line, match }) => ({ line, groups: match.groups } as { line: string; groups: Record<string, string> }))
+      .map(({ line, match }) => ({ line, groups: match.groups }) as { line: string; groups: Record<string, string> })
       .filter(({ line, groups }) => {
         if (!groups.packageName) {
           adbLogger.warn(`Failed to find package name in package line: ${line}`);
@@ -827,7 +830,7 @@ export class AdbSerial {
           ({
             packagePath: groups.packagePath,
             packageName: groups.packageName,
-          } as InstalledPackage),
+          }) as InstalledPackage,
       );
     return installedPackages;
   }
@@ -1113,7 +1116,7 @@ export class AdbSerial {
    *
    */
 
-  ResetDangerousPackagePrefixes = ['com.sec.', 'com.samsung.', 'com.android.', 'com.google.'];
+  ResetDangerousPackagePrefixes = ['com.sec.', 'com.samsung.', 'com.skt.', 'com.knox.', 'com.android.', 'com.google.'];
   NotDangerousPackagePrefixes = ['com.android.chrome', 'com.google.android.youtube', 'com.google.android.apps.maps', 'com.google.android.webview'];
 
   /**

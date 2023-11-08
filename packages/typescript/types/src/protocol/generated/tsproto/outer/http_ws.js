@@ -251,7 +251,7 @@ exports.HttpRequest = {
     },
 };
 function createBaseHttpResponse() {
-    return { statusCode: 0, headers: undefined, body: undefined, request: undefined };
+    return { statusCode: 0, headers: undefined, body: undefined };
 }
 exports.HttpResponse = {
     encode(message, writer = minimal_1.default.Writer.create()) {
@@ -263,9 +263,6 @@ exports.HttpResponse = {
         }
         if (message.body !== undefined) {
             exports.Body.encode(message.body, writer.uint32(26).fork()).ldelim();
-        }
-        if (message.request !== undefined) {
-            exports.HttpRequest.encode(message.request, writer.uint32(34).fork()).ldelim();
         }
         return writer;
     },
@@ -285,9 +282,6 @@ exports.HttpResponse = {
                 case 3:
                     message.body = exports.Body.decode(reader, reader.uint32());
                     break;
-                case 4:
-                    message.request = exports.HttpRequest.decode(reader, reader.uint32());
-                    break;
                 default:
                     reader.skipType(tag & 7);
                     break;
@@ -300,7 +294,6 @@ exports.HttpResponse = {
             statusCode: isSet(object.statusCode) ? Number(object.statusCode) : 0,
             headers: isSet(object.headers) ? exports.Headers.fromJSON(object.headers) : undefined,
             body: isSet(object.body) ? exports.Body.fromJSON(object.body) : undefined,
-            request: isSet(object.request) ? exports.HttpRequest.fromJSON(object.request) : undefined,
         };
     },
     toJSON(message) {
@@ -308,7 +301,6 @@ exports.HttpResponse = {
         message.statusCode !== undefined && (obj.statusCode = Math.round(message.statusCode));
         message.headers !== undefined && (obj.headers = message.headers ? exports.Headers.toJSON(message.headers) : undefined);
         message.body !== undefined && (obj.body = message.body ? exports.Body.toJSON(message.body) : undefined);
-        message.request !== undefined && (obj.request = message.request ? exports.HttpRequest.toJSON(message.request) : undefined);
         return obj;
     },
     fromPartial(object) {
@@ -316,7 +308,6 @@ exports.HttpResponse = {
         message.statusCode = object.statusCode ?? 0;
         message.headers = object.headers !== undefined && object.headers !== null ? exports.Headers.fromPartial(object.headers) : undefined;
         message.body = object.body !== undefined && object.body !== null ? exports.Body.fromPartial(object.body) : undefined;
-        message.request = object.request !== undefined && object.request !== null ? exports.HttpRequest.fromPartial(object.request) : undefined;
         return message;
     },
 };

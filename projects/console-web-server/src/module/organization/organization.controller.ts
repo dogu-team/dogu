@@ -226,4 +226,16 @@ export class OrganizationController {
     const rv = await this.organizationService.findLiveSessionById(organizationId, liveSessionId);
     return rv;
   }
+
+  @Post(':organizationId/apps')
+  @OrganizationPermission(ORGANIZATION_ROLE.MEMBER)
+  @UseInterceptors(FileInterceptor('app'))
+  async uploadDeviceApp(
+    @User() userPayload: UserPayload, //
+    @Param(OrganizationPropCamel.organizationId) organizationId: OrganizationId,
+    @UploadedFile() app: Express.Multer.File,
+  ): Promise<string> {
+    const rv = await this.organizationService.uploadDeviceApp(organizationId, app);
+    return rv;
+  }
 }

@@ -136,11 +136,6 @@ const OrganizationSettingPage: NextPageWithLayout<OrganizationServerSideProps> =
       <Box>
         <SettingTitleDivider title="General" />
         <Content>
-          <Label>{t('organization:sidebarSubTitle')} ID</Label>
-          <TokenCopyInput value={organization.organizationId} />
-        </Content>
-        <Divider />
-        <Content>
           <ImageCropUploader
             profileImage={
               <ProfileImage
@@ -177,7 +172,12 @@ const OrganizationSettingPage: NextPageWithLayout<OrganizationServerSideProps> =
           {t('common:save')}
         </Button>
 
-        <SettingTitleDivider title="Token" />
+        <SettingTitleDivider title="Security" />
+
+        <Content>
+          <Label>{t('organization:sidebarSubTitle')} ID</Label>
+          <TokenCopyInput value={organization.organizationId} />
+        </Content>
 
         <Content>
           <div style={{ marginBottom: '1rem' }}></div>

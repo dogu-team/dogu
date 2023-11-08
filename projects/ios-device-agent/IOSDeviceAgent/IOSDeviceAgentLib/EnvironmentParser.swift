@@ -9,6 +9,7 @@ final class EnvironmentParser {
   enum Error: Swift.Error {
     case invalidWebDriverPort(String?)
     case invalidGrpcPort(String?)
+    case invalidIsDeviceShare(String?)
   }
 
   func parse() throws -> Config {

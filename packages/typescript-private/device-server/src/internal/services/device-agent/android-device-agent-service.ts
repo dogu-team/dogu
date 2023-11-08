@@ -197,14 +197,14 @@ export class AndroidDeviceAgentService implements DeviceAgentService, Zombieable
     const proc = await this.adb.runAppProcess(pathMap().common.androidDeviceAgent, '/data/local/tmp/dogu-deviceagent', 'com.dogu.deviceagent.Entry');
     proc.on('exit', (code: number, signal: string) => {
       this.printable.error(`AndroidDeviceAgentService.revive exit. code: ${code}, signal: ${signal}`);
-      ZombieServiceInstance.notifyDie(this);
+      ZombieServiceInstance.notifyDie(this, `AndroidDeviceAgentService.revive exit. code: ${code}, signal: ${signal}`);
     });
     await this.adb.waitPortOpenInternal(this.devicePort);
     await this.connect();
     this.healthFailCount = 0;
   }
 
-  onDie(): void {
+  onDie(reason: string): void {
     if (this.proc) {
       killChildProcess(this.proc).catch((error) => {
         this.logger.error('AndroidDeviceAgentService killChildProcess', { error });
@@ -218,7 +218,7 @@ export class AndroidDeviceAgentService implements DeviceAgentService, Zombieable
     if (!(await this.isHealth())) {
       this.healthFailCount++;
       if (this.healthFailCount > 3) {
-        ZombieServiceInstance.notifyDie(this);
+        ZombieServiceInstance.notifyDie(this, `AndroidDeviceAgentService.update healthFail`);
       }
       return;
     } else {

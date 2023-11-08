@@ -1,11 +1,3 @@
-//
-//  ControlSessionHandler.swift
-//  IOSDeviceAgentLib
-//
-//  Created by jenkins on 2023/09/07.
-//  Copyright © 2023 Dogu. All rights reserved.
-//
-
 import Foundation
 
 actor ControlSessionListener: IControlSessionListener {
@@ -30,35 +22,35 @@ actor ControlSessionListener: IControlSessionListener {
     switch abstractParam.value {
     case .dcIdaRunappParam(let param):
       let result = try await self.onRunApp(param: param)
-      let resultToSend = Inner_Params_DcIdaResult.with {
-        $0.seq = abstractParam.seq
-        $0.dcIdaRunappResult = result
-      }
-      try await session.send(result: resultToSend)
+      try await session.send(
+        result: Inner_Params_DcIdaResult.with {
+          $0.seq = abstractParam.seq
+          $0.dcIdaRunappResult = result
+        })
       break
     case .dcIdaGetSystemInfoParam(let param):
       let result = try await self.onGetSystemInfo(param: param)
-      let resultToSend = Inner_Params_DcIdaResult.with {
-        $0.seq = abstractParam.seq
-        $0.dcIdaGetSystemInfoResult = result
-      }
-      try await session.send(result: resultToSend)
+      try await session.send(
+        result: Inner_Params_DcIdaResult.with {
+          $0.seq = abstractParam.seq
+          $0.dcIdaGetSystemInfoResult = result
+        })
       break
     case .dcIdaIsPortListeningParam(let param):
       let result = try await self.isPortListening(param: param)
-      let resultToSend = Inner_Params_DcIdaResult.with {
-        $0.seq = abstractParam.seq
-        $0.dcIdaIsPortListeningResult = result
-      }
-      try await session.send(result: resultToSend)
+      try await session.send(
+        result: Inner_Params_DcIdaResult.with {
+          $0.seq = abstractParam.seq
+          $0.dcIdaIsPortListeningResult = result
+        })
       break
     case .dcIdaQueryProfileParam(let param):
       let result = try await queryProfile(param: param)
-      let resultToSend = Inner_Params_DcIdaResult.with {
-        $0.seq = abstractParam.seq
-        $0.dcIdaQueryProfileResult = result
-      }
-      try await session.send(result: resultToSend)
+      try await session.send(
+        result: Inner_Params_DcIdaResult.with {
+          $0.seq = abstractParam.seq
+          $0.dcIdaQueryProfileResult = result
+        })
       break
     case .dcGdcDaControlParam(let param):
       let controlResult = ControlResult(seq: abstractParam.seq, session: session)
@@ -69,6 +61,22 @@ actor ControlSessionListener: IControlSessionListener {
         },
         catch: {
           Log.shared.debug("ControlSessionListener.onParam failed to push control: \(param.control), \($0.localizedDescription)")
+          var errorControlResult = Inner_Types_CfGdcDaControlResult()
+          errorControlResult.error = Outer_ErrorResult()
+          errorControlResult.error.code = Outer_Code.inputUnknown
+          errorControlResult.error.message = $0.localizedDescription
+          controlResult.set(result: errorControlResult)
+        })
+      break
+    case .dcIdaSwitchInputBlockParam(let param):
+      GlobalVariable.IsInputBlockAvailable = param.isBlock
+      break
+    case .dcIdaQueryAlertParam(let _):
+      let result = try await iosdeviceagent.alertDetector.query()
+      try await session.send(
+        result: Inner_Params_DcIdaResult.with {
+          $0.seq = abstractParam.seq
+          $0.dcIdaQueryAlertResult = result
         })
       break
     default:

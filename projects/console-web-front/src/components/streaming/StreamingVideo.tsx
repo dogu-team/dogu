@@ -1,5 +1,6 @@
 import { LoadingOutlined } from '@ant-design/icons';
 import Trans from 'next-translate/Trans';
+import Image from 'next/image';
 import Link from 'next/link';
 import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
@@ -48,7 +49,7 @@ const StreamingVideo = ({
   onBlur,
   readonly,
 }: Props) => {
-  const { videoRef, loading } = useDeviceStreamingContext();
+  const { videoRef, loading, deviceScreenshotBase64 } = useDeviceStreamingContext();
   const [videoSize, setVideoSize] = useState<VideoSize>({ width: 0, height: 0 });
   const boxRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -145,6 +146,15 @@ const StreamingVideo = ({
           muted
           boxHeight={boxRef.current?.clientHeight ?? 0}
         />
+        {!!deviceScreenshotBase64 && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <Image
+            src={`data:image/;base64,${deviceScreenshotBase64}`}
+            alt="device screenshot"
+            fill
+            style={{ cursor: 'none' }}
+          />
+        )}
         {!readonly && (
           <StyledInput
             ref={inputRef}

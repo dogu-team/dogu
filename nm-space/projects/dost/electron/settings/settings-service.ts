@@ -67,8 +67,8 @@ export class SettingsService {
   }
 
   async restart(): Promise<void> {
-    app.relaunch();
     await ChildService.close();
+    app.relaunch();
     app.exit();
   }
 

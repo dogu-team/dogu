@@ -7,7 +7,10 @@ import { WebSocket } from 'ws';
 export class NodeDeviceWebSocket implements DeviceWebSocket {
   private readonly logger: FilledPrintable;
 
-  constructor(private readonly webSocket: WebSocket, printable: Printable) {
+  constructor(
+    private readonly webSocket: WebSocket,
+    printable: Printable,
+  ) {
     this.logger = new PrefixLogger(printable, '[NodeDeviceWebSocket]');
   }
 
@@ -101,7 +104,6 @@ export class NodeDeviceService implements DeviceService {
           stringValue: JSON.stringify(response.data),
         },
       },
-      request,
     };
     logger.verbose(`httpRequest response`, { returningResponse });
     return returningResponse;

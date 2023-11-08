@@ -1,21 +1,19 @@
 import { Platform, Serial } from '@dogu-private/types';
-import { callAsyncWithTimeout, Class, delay, errorify, Instance, NullLogger, Printable, Retry, stringify, usingAsnyc } from '@dogu-tech/common';
+import { callAsyncWithTimeout, delay, errorify, NullLogger, Retry, stringify } from '@dogu-tech/common';
 import { Android, AppiumContextInfo, ContextPageSource, Rect, ScreenSize, SystemBar } from '@dogu-tech/device-client-common';
 import { killChildProcess, killProcessOnPort, Logger } from '@dogu-tech/node';
-import AsyncLock from 'async-lock';
 import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
 import _ from 'lodash';
 import WebDriverIO, { remote } from 'webdriverio';
 import { DevicePortService } from '../device-port/device-port.service';
 import { AdbSerial } from '../internal/externals/index';
-import { Zombieable, ZombieProps, ZombieQueriable } from '../internal/services/zombie/zombie-component';
+import { Zombieable, ZombieProps } from '../internal/services/zombie/zombie-component';
 import { ZombieServiceInstance } from '../internal/services/zombie/zombie-service';
-import { createAppiumLogger, logger } from '../logger/logger.instance';
+import { logger } from '../logger/logger.instance';
 import { createAppiumCapabilities } from './appium.capabilites';
-import { AppiumRemoteContext } from './appium.remote.context';
 import { AppiumService } from './appium.service';
 
-type Browser = WebDriverIO.Browser<'async'>;
+export type WDIOBrowser = WebDriverIO.Browser<'async'>;
 export type WDIOElement = WebDriverIO.Element<'async'>;
 
 const AppiumClientCallAsyncTimeout = 10 * 1000; // unit: milliseconds
@@ -82,10 +80,10 @@ export interface AppiumContext extends Zombieable {
   switchContextAndGetPageSource(contextId: string): Promise<string>;
   getContextPageSources(): Promise<ContextPageSource[]>;
   select(selector: string): Promise<WDIOElement | undefined>;
-  driver(): Browser | undefined;
+  driver(): WDIOBrowser | undefined;
 }
 
-class NullAppiumContext implements AppiumContext {
+export class NullAppiumContext implements AppiumContext {
   public readonly props: ZombieProps = {};
   constructor(
     public readonly options: AppiumContextOptions,
@@ -111,7 +109,7 @@ class NullAppiumContext implements AppiumContext {
   async revive(): Promise<void> {
     return Promise.resolve();
   }
-  onDie(): void | Promise<void> {
+  onDie(reason: string): void | Promise<void> {
     return Promise.resolve();
   }
 
@@ -188,7 +186,7 @@ export interface AppiumData {
   server: AppiumServerData;
   client: {
     remoteOptions: Record<string, unknown>;
-    driver: Browser;
+    driver: WDIOBrowser;
   };
 }
 
@@ -265,7 +263,7 @@ export class AppiumContextImpl implements AppiumContext {
     }
   }
 
-  async onDie(): Promise<void> {
+  async onDie(reason: string): Promise<void> {
     if (!this._data) {
       return;
     }
@@ -465,7 +463,7 @@ export class AppiumContextImpl implements AppiumContext {
    * https://w3c.github.io/webdriver/#delete-session
    * https://webdriver.io/docs/api/webdriver/#deletesession
    */
-  private async stopClient(driver: Browser): Promise<void> {
+  private async stopClient(driver: WDIOBrowser): Promise<void> {
     try {
       await driver.deleteSession();
     } catch (error) {
@@ -553,171 +551,7 @@ export class AppiumContextImpl implements AppiumContext {
     }
   }
 
-  driver(): Browser | undefined {
+  driver(): WDIOBrowser | undefined {
     return this.data.client.driver;
-  }
-}
-
-const constructorMap = {
-  builtin: AppiumContextImpl,
-  remote: AppiumRemoteContext,
-  null: NullAppiumContext,
-};
-
-export class AppiumContextProxy implements AppiumContext, Zombieable {
-  private readonly logger: Logger;
-  private impl: AppiumContext;
-  private nullContext: NullAppiumContext;
-  private contextLock = new AsyncLock();
-  private zombieImpl: ZombieQueriable;
-
-  constructor(public readonly options: AppiumContextOptions) {
-    this.logger = createAppiumLogger(options.serial);
-    this.nullContext = new NullAppiumContext(options, this.logger);
-
-    this.impl = AppiumContextProxy.createAppiumContext(options, this.logger);
-    this.zombieImpl = ZombieServiceInstance.addComponent(this.impl);
-  }
-
-  get name(): string {
-    return 'AppiumContextProxy';
-  }
-  get platform(): Platform {
-    return this.options.platform;
-  }
-  get serial(): string {
-    return this.options.serial;
-  }
-  get printable(): Printable {
-    return this.logger;
-  }
-
-  get props(): ZombieProps {
-    return {};
-  }
-
-  private get implOrNull(): AppiumContext {
-    if (this.zombieImpl.isAlive()) {
-      return this.impl;
-    }
-    return this.nullContext;
-  }
-
-  async revive(): Promise<void> {
-    await this.zombieImpl.waitUntilAlive();
-  }
-
-  onDie(): void {
-    // noop
-  }
-
-  onComponentDeleted(): void {
-    ZombieServiceInstance.deleteComponent(this.impl);
-  }
-
-  get key(): AppiumContextKey {
-    return this.implOrNull.key;
-  }
-
-  get openingState(): AppiumOpeningState {
-    return this.implOrNull.openingState;
-  }
-
-  getInfo(): AppiumContextInfo {
-    return this.implOrNull.getInfo();
-  }
-
-  async getAndroid(): Promise<Android | undefined> {
-    return this.implOrNull.getAndroid();
-  }
-
-  async getScreenSize(): Promise<ScreenSize> {
-    return this.implOrNull.getScreenSize();
-  }
-
-  async switchContext(contextId: string): Promise<void> {
-    return this.implOrNull.switchContext(contextId);
-  }
-
-  async getContext(): Promise<string> {
-    return this.implOrNull.getContext();
-  }
-
-  async getContexts(): Promise<string[]> {
-    return this.implOrNull.getContexts();
-  }
-
-  async getPageSource(): Promise<string> {
-    return this.implOrNull.getPageSource();
-  }
-
-  async switchContextAndGetPageSource(contextId: string): Promise<string> {
-    return this.implOrNull.switchContextAndGetPageSource(contextId);
-  }
-
-  async getContextPageSources(): Promise<ContextPageSource[]> {
-    return this.implOrNull.getContextPageSources();
-  }
-
-  async switchAppiumContext(key: AppiumContextKey, reason: string): Promise<void> {
-    await this.contextLock.acquire('switchAppiumContext', async () => {
-      if (key === this.impl.key) {
-        return;
-      }
-      const random = Math.random();
-      const befImplKey = this.impl.key;
-
-      await usingAsnyc(
-        {
-          create: async () => {
-            this.logger.info(`switching appium context start`, { bef: befImplKey, after: key, reason, random });
-            await Promise.resolve();
-          },
-          dispose: async () => {
-            this.logger.info(`switching appium context  done`, { bef: befImplKey, after: key, reason, random });
-            await Promise.resolve();
-          },
-        },
-        async () => {
-          ZombieServiceInstance.deleteAllComponentsIfExist((zombieable) => {
-            if (zombieable.serial !== this.options.serial) {
-              return false;
-            }
-            if (zombieable instanceof AppiumContextImpl || zombieable instanceof AppiumRemoteContext) {
-              return true;
-            }
-            return false;
-          }, 'switching appium context');
-
-          const appiumContext = AppiumContextProxy.createAppiumContext({ ...this.options, key: key }, this.logger);
-          const awaiter = ZombieServiceInstance.addComponent(appiumContext);
-          await awaiter.waitUntilAlive();
-          this.impl = appiumContext;
-          this.zombieImpl = awaiter;
-        },
-      );
-    });
-  }
-
-  async select(selector: string): Promise<WDIOElement | undefined> {
-    return this.implOrNull.select(selector);
-  }
-  driver(): Browser | undefined {
-    return this.implOrNull.driver();
-  }
-
-  getImpl<T extends Class<T>>(constructor: T): Instance<T> {
-    if (!(this.impl instanceof constructor)) {
-      throw new Error(`AppiumContextImpl is not instance of ${constructor.name}`);
-    }
-    return this.impl as Instance<T>;
-  }
-
-  private static createAppiumContext(options: AppiumContextOptions, logger: Logger): AppiumContext {
-    if (options.key === 'null') {
-      throw new Error('AppiumContextProxy.createAppiumContext failed. options.key is null');
-    }
-    const constructor = constructorMap[options.key];
-    return new constructor(options, logger);
   }
 }

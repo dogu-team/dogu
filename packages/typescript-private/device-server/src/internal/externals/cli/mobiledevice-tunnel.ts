@@ -10,7 +10,12 @@ import { MobileDevice } from './mobiledevice';
 export class TunnelContext {
   public isAlive = true;
   private logs = '';
-  constructor(public readonly proc: child_process.ChildProcess, private readonly serial: string, private readonly hostPort: number, private readonly devicePort: number) {
+  constructor(
+    public readonly proc: child_process.ChildProcess,
+    private readonly serial: string,
+    private readonly hostPort: number,
+    private readonly devicePort: number,
+  ) {
     proc.stdout?.on('data', (data) => {
       const str = String(data);
       logger.debug('TunnelContext stdout', { hostPort: this.hostPort, devicePort: this.devicePort, data: str });
@@ -64,12 +69,18 @@ export class TunnelContext {
 export class ZombieTunnel implements Zombieable {
   private tunnelContext: TunnelContext | null = null;
   public readonly zombieWaiter: ZombieQueriable;
-  constructor(public readonly serial: Serial, readonly hostPort: number, readonly devicePort: number, private readonly logger: Printable) {
+  constructor(
+    public readonly serial: Serial,
+    private readonly label: string,
+    readonly hostPort: number,
+    readonly devicePort: number,
+    private readonly logger: Printable,
+  ) {
     this.zombieWaiter = ZombieServiceInstance.addComponent(this);
   }
 
   get name(): string {
-    return `Tunnel`;
+    return `Tunnel-${this.label}`;
   }
   get platform(): Platform {
     return Platform.PLATFORM_IOS;
@@ -91,7 +102,7 @@ export class ZombieTunnel implements Zombieable {
       throw new Error('tunnelContext is null');
     }
     this.tunnelContext.proc.on('exit', () => {
-      ZombieServiceInstance.notifyDie(this);
+      ZombieServiceInstance.notifyDie(this, `TunnelContext exit`);
     });
     await waitPortOpen(this.hostPort, 10000);
     return Promise.resolve();
@@ -99,17 +110,17 @@ export class ZombieTunnel implements Zombieable {
 
   async update(): Promise<void> {
     if (!this.tunnelContext) {
-      ZombieServiceInstance.notifyDie(this);
+      ZombieServiceInstance.notifyDie(this, `TunnelContext is null`);
       return;
     }
     if (this.tunnelContext && !this.tunnelContext.isAlive) {
-      ZombieServiceInstance.notifyDie(this);
+      ZombieServiceInstance.notifyDie(this, `TunnelContext is not alive`);
     }
     await delay(3000);
     return Promise.resolve();
   }
 
-  onDie(): void {
+  onDie(reason: string): void {
     this.tunnelContext?.kill();
   }
 }

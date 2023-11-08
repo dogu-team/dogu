@@ -30,12 +30,16 @@ actor KeyControlPlayer: IControlPlayer {
   }
 
   private func startTimer() {
+    let callGuard = DuplicatedCallGuarder()
+
     timer = Timer.publish(every: period, on: .main, in: .default)
       .autoconnect()
       .sink { currentTime in
         Task.catchable(
           {
-            try await self.play(currentTime: currentTime)
+            try await callGuard.guardCall {
+              try await self.play(currentTime: currentTime)
+            }
           },
           catch: {
             Log.shared.error("handling failed. \($0)")

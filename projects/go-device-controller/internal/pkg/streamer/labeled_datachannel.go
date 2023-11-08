@@ -7,6 +7,7 @@ import (
 	"net"
 	"net/http"
 	"net/url"
+	"sync"
 
 	"go-device-controller/types/protocol/generated/proto/inner/types"
 	"go-device-controller/types/protocol/generated/proto/outer"
@@ -23,6 +24,9 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
+/*
+* Caution. Use lock to prevent packet interleaving.
+ */
 func send(d *webrtc.DataChannel, bytes []byte) error {
 	bufs := utils.SpliteBytes(utils.PrefixBytesWithSize(bytes), 65535)
 	for _, buf := range bufs {
@@ -432,6 +436,7 @@ func (ldc *DeviceServerHttpLabeledDatachannel) onMessage(msg webrtc.DataChannelM
 }
 
 func newDeviceServerHttpLabeledDatachannel(label *types.DataChannelLabel, d *webrtc.DataChannel, deviceServerPort int32) *DeviceServerHttpLabeledDatachannel {
+	sendMutex := sync.Mutex{}
 	sendResult := func(sequenceId int32, result *outer.HttpRequestResult) error {
 		httpWebSocketResult := &outer.HttpRequestWebSocketResult{
 			SequenceId: sequenceId,
@@ -444,6 +449,8 @@ func newDeviceServerHttpLabeledDatachannel(label *types.DataChannelLabel, d *web
 			log.Inst.Error("DeviceServerHttpLabeledDatachannel Marshal error", zap.Error(err))
 			return err
 		}
+		sendMutex.Lock()
+		defer sendMutex.Unlock()
 		if err := send(d, buf); err != nil {
 			log.Inst.Error("DeviceServerHttpLabeledDatachannel send error", zap.Error(err))
 			return err

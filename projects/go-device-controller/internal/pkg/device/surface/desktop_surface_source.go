@@ -106,6 +106,9 @@ func (s *desktopLibwebrtcSurfaceSource) Receive() ([]byte, error) {
 }
 
 func (s *desktopLibwebrtcSurfaceSource) receive() ([]byte, error) {
+	if s.recvQueue.Has() {
+		return s.recvQueue.Pop()
+	}
 	for {
 		err := s.conn.SetReadDeadline(time.Now().Add(time.Minute))
 		if err != nil {

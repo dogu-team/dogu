@@ -1,0 +1,33 @@
+FROM --platform=linux/amd64 node:18 AS test-executor
+
+RUN apt-get update
+
+RUN apt-get install -y locales
+RUN localedef -i ko_KR -f UTF-8 ko_KR.UTF-8
+
+RUN apt-get install -y libnss3 libnspr4 libatk1.0-0 libatk-bridge2.0-0 libcups2 libdrm2 libxkbcommon0 libxcomposite1 libxdamage1 libxfixes3 libxrandr2 libgbm1 libasound2
+
+ENV LC_ALL ko_KR.UTF-8
+ENV NODE_OPTIONS --max-old-space-size=4196
+
+ENV MAX_PARALLEL = ''
+ENV GOOGLE_CLOUD_RUN = ''
+ENV EXECUTOR_NAME = ''
+
+WORKDIR /test-executor
+COPY .dogu-workspace ./.dogu-workspace
+COPY .yarnrc.yml package.json tsconfig.json tsconfig.eslint.json .pnp.cjs .pnp.loader.mjs yarn.lock ./
+COPY .yarn ./.yarn
+COPY .husky ./.husky
+COPY turbo.json ./turbo.json
+COPY packages/typescript ./packages/typescript
+COPY packages/typescript-private ./packages/typescript-private
+COPY packages/typescript-dev-private ./packages/typescript-dev-private
+COPY projects/test-executor ./projects/test-executor
+
+RUN yarn run newbie:cicd
+RUN yarn run build
+
+ENTRYPOINT ["yarn", "workspace", "test-executor", "run", "start"]
+CMD ["defaultArg"]
+

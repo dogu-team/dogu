@@ -29,7 +29,10 @@ class ChannelInfo {
   lastSendTimeMs = 0;
   flushTimer: ReturnType<typeof setTimeout> | null = null;
 
-  constructor(readonly channel: RTCDataChannel, readonly sendThrottleMs: number) {}
+  constructor(
+    readonly channel: RTCDataChannel,
+    readonly sendThrottleMs: number,
+  ) {}
 
   requestFlushSendBuffer(): void {
     if (Date.now() - this.lastSendTimeMs < this.sendThrottleMs) {
@@ -227,7 +230,13 @@ export class BrowserDeviceService implements DeviceService {
           return;
         }
         const { response } = httpRequestResultValue;
-        console.debug(`DeviceServerBrowserService. request: ${sequenceId} done << `);
+        console.debug(
+          `DeviceServerBrowserService. request: ${sequenceId} responsed ${
+            response.body?.value?.$case === 'stringValue'
+              ? response.body?.value?.stringValue.length
+              : response?.body?.value?.bytesValue.length
+          }<< `,
+        );
         clearTimeout(timeout);
         resolve(response);
       });

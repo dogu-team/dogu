@@ -1,10 +1,3 @@
-//
-//  SampleHandler.swift
-//  DoguScreen
-//
-//  Copyright © 2023 Dogu. All rights reserved.
-//
-
 import AVFoundation
 import Accelerate
 import ReplayKit
@@ -78,7 +71,7 @@ class SampleHandler: RPBroadcastSampleHandler {
     let rotatedPixelBuffer = rotate(sampleBuffer, orientation: orientation) ?? pixelBuffer
     if queryRet.state == ScreenServer.SessionState.new
       || orientation != session.orientation
-        || !session.encodeError.isEmpty
+      || !session.encodeError.isEmpty
     {
       SampleHandler.sessionId = session.sessionId
       session.orientation = orientation

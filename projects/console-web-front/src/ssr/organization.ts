@@ -16,11 +16,7 @@ export interface OrganizationServerSideProps {
 
 export const getOrganizationPageServerSideProps: GetServerSideProps<OrganizationServerSideProps> = async (context) => {
   try {
-    const [organization, license, checkResult] = await Promise.all([
-      getOrganizationInServerSide(context),
-      IS_CLOUD ? getCloudLicenseInServerSide(context) : getSelfHostedLicenseInServerSide(context),
-      checkUserVerifiedInServerSide(context),
-    ]);
+    const checkResult = await checkUserVerifiedInServerSide(context);
 
     if (checkResult.redirect) {
       return checkResult;
@@ -31,6 +27,11 @@ export const getOrganizationPageServerSideProps: GetServerSideProps<Organization
         redirect: redirectWithLocale(context, `/dashboard/${context.query.orgId}/get-started`, false),
       };
     }
+
+    const [organization, license] = await Promise.all([
+      getOrganizationInServerSide(context),
+      IS_CLOUD ? getCloudLicenseInServerSide(context) : getSelfHostedLicenseInServerSide(context),
+    ]);
 
     return {
       props: {

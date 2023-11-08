@@ -7,7 +7,7 @@ export class IosProfileService implements ProfileService {
   constructor(private readonly deviceAgentService: IosDeviceAgentService) {}
 
   async profile(methods: ProfileMethod[]): Promise<Partial<RuntimeInfo>> {
-    const res = await this.deviceAgentService.sendWithProtobuf('dcIdaQueryProfileParam', 'dcIdaQueryProfileResult', { profileMethods: methods });
+    const res = await this.deviceAgentService.send('dcIdaQueryProfileParam', 'dcIdaQueryProfileResult', { profileMethods: methods });
     return res?.info ?? {};
   }
 }

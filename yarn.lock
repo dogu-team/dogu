@@ -3053,6 +3053,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@dogu-private/console@workspace:packages/typescript-private/console"
   dependencies:
+    "@dogu-private/device-data": "workspace:^"
     "@dogu-private/types": "workspace:^"
     "@dogu-tech/common": "workspace:^"
     "@dogu-tech/console-gamium": "workspace:^"
@@ -3071,6 +3072,24 @@ __metadata:
     ts-node: 10.9.1
     typescript: 4.7.4
     xmldom: 0.6.0
+  languageName: unknown
+  linkType: soft
+
+"@dogu-private/device-data@workspace:^, @dogu-private/device-data@workspace:packages/typescript-private/device-data":
+  version: 0.0.0-use.local
+  resolution: "@dogu-private/device-data@workspace:packages/typescript-private/device-data"
+  dependencies:
+    "@dogu-private/types": "workspace:^"
+    "@dogu-tech/common": "workspace:^"
+    "@dogu-tech/node": "workspace:^"
+    "@types/node": 18.15.11
+    class-transformer: 0.5.1
+    class-validator: 0.14.0
+    nodemon: 2.0.22
+    reflect-metadata: 0.1.13
+    shx: 0.3.4
+    ts-node: 10.9.1
+    typescript: 4.7.4
   languageName: unknown
   linkType: soft
 
@@ -3101,6 +3120,7 @@ __metadata:
     "@types/async-lock": 1
     "@types/cron": 2.0.0
     "@types/express": 4.17.13
+    "@types/intersects": 2.7.3
     "@types/lodash": 4.14.186
     "@types/node": 18.15.11
     "@types/plist": 3
@@ -3122,6 +3142,7 @@ __metadata:
     find-free-ports: 3.0.0
     gamium: 2.0.2
     glob: 10.0.0
+    intersects: 2.7.2
     jest: 29.6.1
     lodash: 4.17.21
     nest-winston: 1.8.0
@@ -3275,6 +3296,27 @@ __metadata:
     ts-node: 10.9.1
     typescript: 4.7.4
     ws: 8.13.0
+  languageName: unknown
+  linkType: soft
+
+"@dogu-private/sdk@workspace:^, @dogu-private/sdk@workspace:packages/typescript-private/sdk":
+  version: 0.0.0-use.local
+  resolution: "@dogu-private/sdk@workspace:packages/typescript-private/sdk"
+  dependencies:
+    "@dogu-private/types": "workspace:^"
+    "@dogu-tech/common": "workspace:^"
+    "@dogu-tech/node": "workspace:^"
+    "@google-cloud/storage": ^7.5.0
+    "@types/node": 18.15.11
+    axios: ^1.6.0
+    class-transformer: 0.5.1
+    class-validator: 0.14.0
+    google-auth-library: ^9.2.0
+    nodemon: 2.0.22
+    reflect-metadata: 0.1.13
+    shx: 0.3.4
+    ts-node: 10.9.1
+    typescript: 4.7.4
   languageName: unknown
   linkType: soft
 
@@ -3897,12 +3939,61 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@google-cloud/run@npm:1.0.1":
-  version: 1.0.1
-  resolution: "@google-cloud/run@npm:1.0.1"
+"@google-cloud/paginator@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "@google-cloud/paginator@npm:5.0.0"
+  dependencies:
+    arrify: ^2.0.0
+    extend: ^3.0.2
+  checksum: 7b8236ce610bef5c5de62a0ec267b0e4368480397621a692d213c56ffe66b20a8e6d4de0fe0606fd165672c873467ea313493f035a582e674df72c29dd20b7ef
+  languageName: node
+  linkType: hard
+
+"@google-cloud/projectify@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "@google-cloud/projectify@npm:4.0.0"
+  checksum: 973d28414ae200433333a3c315aebb881ced42ea4afe6f3f8520d2fecded75e76c913f5189fea8fb29ce6ca36117c4f44001b3c503eecdd3ac7f02597a98354a
+  languageName: node
+  linkType: hard
+
+"@google-cloud/promisify@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "@google-cloud/promisify@npm:4.0.0"
+  checksum: edd189398c5ed5b7b64a373177d77c87d076a248c31b8ae878bb91e2411d89860108bcb948c349f32628973a823bd131beb53ec008fd613a8cb466ef1d89de49
+  languageName: node
+  linkType: hard
+
+"@google-cloud/run@npm:^1.0.2":
+  version: 1.0.2
+  resolution: "@google-cloud/run@npm:1.0.2"
   dependencies:
     google-gax: ^4.0.3
-  checksum: 18ebd9c8e9bd97df70b87edf7d72743efd753737676ad23bb3d8afff8985960a910f56af1ff6c60da10a16d6647665609d15e65cddb44a29a8325dd3269497df
+  checksum: 76a37b507ea61da3771ec35af8839e904b14a4d327facc349d835cf46bb0df715f218cfed79cf0ec51eeef887645fa3b28dc1fea48e2b50ddbc7c729da3a2fc6
+  languageName: node
+  linkType: hard
+
+"@google-cloud/storage@npm:^7.4.0, @google-cloud/storage@npm:^7.5.0":
+  version: 7.5.0
+  resolution: "@google-cloud/storage@npm:7.5.0"
+  dependencies:
+    "@google-cloud/paginator": ^5.0.0
+    "@google-cloud/projectify": ^4.0.0
+    "@google-cloud/promisify": ^4.0.0
+    abort-controller: ^3.0.0
+    async-retry: ^1.3.3
+    compressible: ^2.0.12
+    duplexify: ^4.0.0
+    ent: ^2.2.0
+    fast-xml-parser: ^4.3.0
+    gaxios: ^6.0.2
+    google-auth-library: ^9.0.0
+    mime: ^3.0.0
+    mime-types: ^2.0.8
+    p-limit: ^3.0.1
+    retry-request: ^7.0.0
+    teeny-request: ^9.0.0
+    uuid: ^8.0.0
+  checksum: 35f022ae6bc07b05a4034e011be2843d190bf4aa1c0a8a49590432616a374634177d6404e3fdaeae1dae5e828785cd4208613b2b8f4f1b2fcc0b361da2732e99
   languageName: node
   linkType: hard
 
@@ -7724,6 +7815,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/caseless@npm:*":
+  version: 0.12.4
+  resolution: "@types/caseless@npm:0.12.4"
+  checksum: 5b2141d99d31ef7c377880fb374ebe5ab05525d89712d3bf87405f98ec9de3ee268c58316f2fdf7ee67515f8d5c0dbb02f8e47daaef45751d3aeb775142b399b
+  languageName: node
+  linkType: hard
+
 "@types/cli-table@npm:0":
   version: 0.3.1
   resolution: "@types/cli-table@npm:0.3.1"
@@ -8261,6 +8359,13 @@ __metadata:
   version: 4.0.1
   resolution: "@types/http-cache-semantics@npm:4.0.1"
   checksum: 1048aacf627829f0d5f00184e16548205cd9f964bf0841c29b36bc504509230c40bc57c39778703a1c965a6f5b416ae2cbf4c1d4589c889d2838dd9dbfccf6e9
+  languageName: node
+  linkType: hard
+
+"@types/intersects@npm:2.7.3":
+  version: 2.7.3
+  resolution: "@types/intersects@npm:2.7.3"
+  checksum: 3d8e01eb896c154f5ddb4d85213a1569802252f8fd8d5f14e2dc6b4d004e7bb1ab0392033d62fd420eb071eea2a7950c3fa94bd6ff93e6546a5cb0868c33cef7
   languageName: node
   linkType: hard
 
@@ -8850,6 +8955,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/request@npm:^2.48.8":
+  version: 2.48.11
+  resolution: "@types/request@npm:2.48.11"
+  dependencies:
+    "@types/caseless": "*"
+    "@types/node": "*"
+    "@types/tough-cookie": "*"
+    form-data: ^2.5.0
+  checksum: fa3682c6420d2da8223f12d8270ab51db6f1559f075379e8c87990785a5009ac38966f3ac0a7c61e31e2dd46117a6a0fee8c652d988772625a84c73348f027af
+  languageName: node
+  linkType: hard
+
 "@types/responselike@npm:^1.0.0":
   version: 1.0.0
   resolution: "@types/responselike@npm:1.0.0"
@@ -9043,6 +9160,13 @@ __metadata:
   dependencies:
     "@types/node": "*"
   checksum: 8c4a58e17816dc5013559517c48a697c1cb48a76d26716210dcf4d57272eba0d9d8888a1d88f7b9cee47b4acfcc9cf29aee27ec53cc43d57b5391d20881037fd
+  languageName: node
+  linkType: hard
+
+"@types/tough-cookie@npm:*":
+  version: 4.0.4
+  resolution: "@types/tough-cookie@npm:4.0.4"
+  checksum: 6be275b09f5fbf33f359fd6d5372c69357cf96dea5d7ba7a6563c76c6cce8b0c7f81caa4805810b0e67427cad381aeef00d8c060d614fee79ca245c2b9887c3a
   languageName: node
   linkType: hard
 
@@ -11114,6 +11238,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"async-retry@npm:^1.3.3":
+  version: 1.3.3
+  resolution: "async-retry@npm:1.3.3"
+  dependencies:
+    retry: 0.13.1
+  checksum: 38a7152ff7265a9321ea214b9c69e8224ab1febbdec98efbbde6e562f17ff68405569b796b1c5271f354aef8783665d29953f051f68c1fc45306e61aec82fdc4
+  languageName: node
+  linkType: hard
+
 "async-validator@npm:^4.1.0":
   version: 4.2.5
   resolution: "async-validator@npm:4.2.5"
@@ -11268,6 +11401,17 @@ __metadata:
     follow-redirects: ^1.14.9
     form-data: ^4.0.0
   checksum: 38cb7540465fe8c4102850c4368053c21683af85c5fdf0ea619f9628abbcb59415d1e22ebc8a6390d2bbc9b58a9806c874f139767389c862ec9b772235f06854
+  languageName: node
+  linkType: hard
+
+"axios@npm:^1.6.0":
+  version: 1.6.0
+  resolution: "axios@npm:1.6.0"
+  dependencies:
+    follow-redirects: ^1.15.0
+    form-data: ^4.0.0
+    proxy-from-env: ^1.1.0
+  checksum: c7c9f2ae9e0b9bad7d6f9a4dff030930b12ee667dedf54c3c776714f91681feb743c509ac0796ae5c01e12c4ab4a2bee74905068dd200fbc1ab86f9814578fb0
   languageName: node
   linkType: hard
 
@@ -13131,7 +13275,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"compressible@npm:~2.0.16":
+"compressible@npm:^2.0.12, compressible@npm:~2.0.16":
   version: 2.0.18
   resolution: "compressible@npm:2.0.18"
   dependencies:
@@ -13298,6 +13442,8 @@ __metadata:
     "@ant-design/cssinjs": 1.9.1
     "@ant-design/icons": 5.0.1
     "@dogu-private/console": "workspace:^"
+    "@dogu-private/device-data": "workspace:^"
+    "@dogu-private/sdk": "workspace:^"
     "@dogu-private/types": "workspace:^"
     "@dogu-private/webrtc": "workspace:^"
     "@dogu-tech/action-common": "workspace:^"
@@ -13392,6 +13538,8 @@ __metadata:
     "@dogu-private/console": "workspace:^"
     "@dogu-private/console-host-agent": "workspace:^"
     "@dogu-private/console-open-api": "workspace:^"
+    "@dogu-private/device-data": "workspace:^"
+    "@dogu-private/sdk": "workspace:^"
     "@dogu-private/types": "workspace:^"
     "@dogu-tech/common": "workspace:^"
     "@dogu-tech/console-action": "workspace:^"
@@ -13402,7 +13550,8 @@ __metadata:
     "@dogu-tech/env-tools": "workspace:^"
     "@dogu-tech/node": "workspace:^"
     "@gitbeaker/node": 35.8.1
-    "@google-cloud/run": 1.0.1
+    "@google-cloud/run": ^1.0.2
+    "@google-cloud/storage": ^7.5.0
     "@influxdata/influxdb-client": 1.33.2
     "@nestjs-modules/mailer": 1.9.1
     "@nestjs/common": 10.2.7
@@ -15191,6 +15340,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"ent@npm:^2.2.0":
+  version: 2.2.0
+  resolution: "ent@npm:2.2.0"
+  checksum: f588b5707d6fef36011ea10d530645912a69530a1eb0831f8708c498ac028363a7009f45cfadd28ceb4dafd9ac17ec15213f88d09ce239cd033cfe1328dd7d7d
+  languageName: node
+  linkType: hard
+
 "entities@npm:^2.0.0, entities@npm:^2.2.0":
   version: 2.2.0
   resolution: "entities@npm:2.2.0"
@@ -16508,6 +16664,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"fast-xml-parser@npm:^4.3.0":
+  version: 4.3.2
+  resolution: "fast-xml-parser@npm:4.3.2"
+  dependencies:
+    strnum: ^1.0.5
+  bin:
+    fxparser: src/cli/cli.js
+  checksum: d507ce2efa5fd13d0a5ba28bd76dd68f2fc30ad8748357c37b70f360d19417866d79e35a688af067d5bceaaa796033fa985206aef9692f7a421e1326b6e73309
+  languageName: node
+  linkType: hard
+
 "fastq@npm:^1.6.0":
   version: 1.15.0
   resolution: "fastq@npm:1.15.0"
@@ -17243,7 +17410,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"gaxios@npm:^6.0.0":
+"gaxios@npm:^6.0.0, gaxios@npm:^6.0.2":
   version: 6.1.1
   resolution: "gaxios@npm:6.1.1"
   dependencies:
@@ -17689,6 +17856,20 @@ __metadata:
     jws: ^4.0.0
     lru-cache: ^6.0.0
   checksum: a798e738aac59bb5dde354fb32d1cab509c8b95095f3e15ae5868607af0f9aae619fdaa5665447d98e97cf8e90fa0645a05f23cfdaee4734c6807960df1e303b
+  languageName: node
+  linkType: hard
+
+"google-auth-library@npm:^9.2.0":
+  version: 9.2.0
+  resolution: "google-auth-library@npm:9.2.0"
+  dependencies:
+    base64-js: ^1.3.0
+    ecdsa-sig-formatter: ^1.0.11
+    gaxios: ^6.0.0
+    gcp-metadata: ^6.0.0
+    gtoken: ^7.0.0
+    jws: ^4.0.0
+  checksum: 0da686964a769c79b5a1f7e518cb885f7c433edd50c8adf5cc310bfce607235184ebe6f9bc5290618d760c25e4ce1e273d444c9914c815353faa9d9dea37d1b3
   languageName: node
   linkType: hard
 
@@ -18630,6 +18811,13 @@ __metadata:
   version: 1.4.0
   resolution: "interpret@npm:1.4.0"
   checksum: 2e5f51268b5941e4a17e4ef0575bc91ed0ab5f8515e3cf77486f7c14d13f3010df9c0959f37063dcc96e78d12dc6b0bb1b9e111cdfe69771f4656d2993d36155
+  languageName: node
+  linkType: hard
+
+"intersects@npm:2.7.2":
+  version: 2.7.2
+  resolution: "intersects@npm:2.7.2"
+  checksum: b1e7afce2c87e71ec702a47c42a2ace1134186fc2df45fb8cecc548e450adfb9023bd55fcfe7c34ef6d0bc1bf882a443cbf264a7d77083c872c47aaf408f0b4b
   languageName: node
   linkType: hard
 
@@ -23265,7 +23453,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mime-types@npm:^2.1.12, mime-types@npm:^2.1.27, mime-types@npm:~2.1.24, mime-types@npm:~2.1.34":
+"mime-types@npm:^2.0.8, mime-types@npm:^2.1.12, mime-types@npm:^2.1.27, mime-types@npm:~2.1.24, mime-types@npm:~2.1.34":
   version: 2.1.35
   resolution: "mime-types@npm:2.1.35"
   dependencies:
@@ -25489,7 +25677,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"p-limit@npm:^3.0.2, p-limit@npm:^3.1.0":
+"p-limit@npm:^3.0.1, p-limit@npm:^3.0.2, p-limit@npm:^3.1.0":
   version: 3.1.0
   resolution: "p-limit@npm:3.1.0"
   dependencies:
@@ -28909,17 +29097,29 @@ __metadata:
   languageName: node
   linkType: hard
 
+"retry-request@npm:^7.0.0":
+  version: 7.0.1
+  resolution: "retry-request@npm:7.0.1"
+  dependencies:
+    "@types/request": ^2.48.8
+    debug: ^4.1.1
+    extend: ^3.0.2
+    teeny-request: ^9.0.0
+  checksum: 75a359afc8a748ae2ee2b5991cf3c7a198a61492e73b0fcdc6f03d35767c99a3eb0dc93194f1acf1575665475e4edfcf5cf74097376390e05fc6c004133bd79d
+  languageName: node
+  linkType: hard
+
+"retry@npm:0.13.1, retry@npm:^0.13.1":
+  version: 0.13.1
+  resolution: "retry@npm:0.13.1"
+  checksum: 47c4d5be674f7c13eee4cfe927345023972197dbbdfba5d3af7e461d13b44de1bfd663bfc80d2f601f8ef3fc8164c16dd99655a221921954a65d044a2fc1233b
+  languageName: node
+  linkType: hard
+
 "retry@npm:^0.12.0":
   version: 0.12.0
   resolution: "retry@npm:0.12.0"
   checksum: 623bd7d2e5119467ba66202d733ec3c2e2e26568074923bc0585b6b99db14f357e79bdedb63cab56cec47491c4a0da7e6021a7465ca6dc4f481d3898fdd3158c
-  languageName: node
-  linkType: hard
-
-"retry@npm:^0.13.1":
-  version: 0.13.1
-  resolution: "retry@npm:0.13.1"
-  checksum: 47c4d5be674f7c13eee4cfe927345023972197dbbdfba5d3af7e461d13b44de1bfd663bfc80d2f601f8ef3fc8164c16dd99655a221921954a65d044a2fc1233b
   languageName: node
   linkType: hard
 
@@ -29290,17 +29490,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"selenium-webdriver@npm:4.11.1":
-  version: 4.11.1
-  resolution: "selenium-webdriver@npm:4.11.1"
-  dependencies:
-    jszip: ^3.10.1
-    tmp: ^0.2.1
-    ws: ">=8.13.0"
-  checksum: 316bf848093bf61f1a10b2460eca51be6057478f061d16cadf10d052fc88d13fff4ddfe8dbda00d546a49660d130f51976f075a0c1550385bc8be671e3a30c99
-  languageName: node
-  linkType: hard
-
 "selenium-webdriver@npm:4.3.0":
   version: 4.3.0
   resolution: "selenium-webdriver@npm:4.3.0"
@@ -29309,6 +29498,17 @@ __metadata:
     tmp: ^0.2.1
     ws: ">=8.7.0"
   checksum: 886a1369a473b62798ffc94ee552ae8c17c56ad3f4afacc6d4e05a397fceb12bc2a74e6348f34f64d20eb4097678e5905bf5dc8768be7c65a725d2bb4502ccd2
+  languageName: node
+  linkType: hard
+
+"selenium-webdriver@npm:^4.14.0":
+  version: 4.14.0
+  resolution: "selenium-webdriver@npm:4.14.0"
+  dependencies:
+    jszip: ^3.10.1
+    tmp: ^0.2.1
+    ws: ">=8.14.2"
+  checksum: 9ffc4c9e0f04814d348cce8b2a864ac64993837e3d25ac64c715b7856776aecbb55618d344e35e190c52e2613d5c56b23da51ebcad1a0727534d1c2d0c84977f
   languageName: node
   linkType: hard
 
@@ -30287,6 +30487,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"stream-events@npm:^1.0.5":
+  version: 1.0.5
+  resolution: "stream-events@npm:1.0.5"
+  dependencies:
+    stubs: ^3.0.0
+  checksum: 969ce82e34bfbef5734629cc06f9d7f3705a9ceb8fcd6a526332f9159f1f8bbfdb1a453f3ced0b728083454f7706adbbe8428bceb788a0287ca48ba2642dc3fc
+  languageName: node
+  linkType: hard
+
 "stream-meter@npm:^1.0.4":
   version: 1.0.4
   resolution: "stream-meter@npm:1.0.4"
@@ -30609,6 +30818,13 @@ __metadata:
   version: 1.0.5
   resolution: "strnum@npm:1.0.5"
   checksum: 651b2031db5da1bf4a77fdd2f116a8ac8055157c5420f5569f64879133825915ad461513e7202a16d7fec63c54fd822410d0962f8ca12385c4334891b9ae6dd2
+  languageName: node
+  linkType: hard
+
+"stubs@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "stubs@npm:3.0.0"
+  checksum: dec7b82186e3743317616235c59bfb53284acc312cb9f4c3e97e2205c67a5c158b0ca89db5927e52351582e90a2672822eeaec9db396e23e56893d2a8676e024
   languageName: node
   linkType: hard
 
@@ -30969,6 +31185,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"teeny-request@npm:^9.0.0":
+  version: 9.0.0
+  resolution: "teeny-request@npm:9.0.0"
+  dependencies:
+    http-proxy-agent: ^5.0.0
+    https-proxy-agent: ^5.0.0
+    node-fetch: ^2.6.9
+    stream-events: ^1.0.5
+    uuid: ^9.0.0
+  checksum: 9cb0ad83f9ca6ce6515b3109cbb30ceb2533cdeab8e41c3a0de89f509bd92c5a9aabd27b3adf7f3e49516e106a358859b19fa4928a1937a4ab95809ccb7d52eb
+  languageName: node
+  linkType: hard
+
 "temp@npm:0.8.3":
   version: 0.8.3
   resolution: "temp@npm:0.8.3"
@@ -31060,25 +31289,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"test-codeless@workspace:projects/test-codeless":
-  version: 0.0.0-use.local
-  resolution: "test-codeless@workspace:projects/test-codeless"
-  dependencies:
-    "@types/lodash": 4.14.195
-    "@types/node": 18.15.11
-    "@types/selenium-webdriver": 4.1.15
-    "@yarnpkg/pnpify": ^4.0.0
-    cheerio: ^1.0.0-rc.12
-    lodash: 4.17.21
-    openai: 3.3.0
-    playwright: 1.37.1
-    selenium-webdriver: 4.11.1
-    sharp: 0.32.4
-    ts-node: 10.9.1
-    typescript: 4.7.4
-  languageName: unknown
-  linkType: soft
-
 "test-exclude@npm:^6.0.0":
   version: 6.0.0
   resolution: "test-exclude@npm:6.0.0"
@@ -31089,6 +31299,29 @@ __metadata:
   checksum: 3b34a3d77165a2cb82b34014b3aba93b1c4637a5011807557dc2f3da826c59975a5ccad765721c4648b39817e3472789f9b0fa98fc854c5c1c7a1e632aacdc28
   languageName: node
   linkType: hard
+
+"test-executor@workspace:projects/test-executor":
+  version: 0.0.0-use.local
+  resolution: "test-executor@workspace:projects/test-executor"
+  dependencies:
+    "@dogu-private/device-data": "workspace:^"
+    "@dogu-private/sdk": "workspace:^"
+    "@google-cloud/run": ^1.0.2
+    "@google-cloud/storage": ^7.4.0
+    "@types/lodash": 4.14.195
+    "@types/node": 18.15.11
+    "@types/selenium-webdriver": 4.1.15
+    "@yarnpkg/pnpify": ^4.0.0
+    cheerio: ^1.0.0-rc.12
+    lodash: 4.17.21
+    openai: 3.3.0
+    playwright: 1.37.1
+    selenium-webdriver: ^4.14.0
+    sharp: 0.32.4
+    ts-node: 10.9.1
+    typescript: 4.7.4
+  languageName: unknown
+  linkType: soft
 
 "text-hex@npm:1.0.x":
   version: 1.0.0
@@ -32522,7 +32755,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"uuid@npm:8.3.2":
+"uuid@npm:8.3.2, uuid@npm:^8.0.0":
   version: 8.3.2
   resolution: "uuid@npm:8.3.2"
   bin:
@@ -33288,7 +33521,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ws@npm:8.14.2, ws@npm:>=8.13.0":
+"ws@npm:8.14.2, ws@npm:>=8.14.2":
   version: 8.14.2
   resolution: "ws@npm:8.14.2"
   peerDependencies:

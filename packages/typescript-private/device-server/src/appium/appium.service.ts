@@ -11,7 +11,8 @@ import { env } from '../env';
 import { DoguLogger } from '../logger/logger';
 import { pathMap } from '../path-map';
 import { PlatformAbilityService } from '../platform-ability/platform-ability.module';
-import { AndroidAppiumContextOptions, AppiumContextKey, AppiumContextProxy, DefaultAppiumContextOptions, IosAppiumContextOptions } from './appium.context';
+import { AndroidAppiumContextOptions, AppiumContextKey, DefaultAppiumContextOptions, IosAppiumContextOptions } from './appium.context';
+import { AppiumContextProxy } from './appium.context.proxy';
 
 const execAsync = util.promisify(exec);
 
@@ -33,7 +34,11 @@ export class AppiumService implements OnModuleInit {
 
   private logger: PrefixLogger;
 
-  constructor(private readonly devicePortService: DevicePortService, logger: DoguLogger, private readonly platformAbilityService: PlatformAbilityService) {
+  constructor(
+    private readonly devicePortService: DevicePortService,
+    logger: DoguLogger,
+    private readonly platformAbilityService: PlatformAbilityService,
+  ) {
     this.logger = new PrefixLogger(logger, '[AppiumService]');
   }
 

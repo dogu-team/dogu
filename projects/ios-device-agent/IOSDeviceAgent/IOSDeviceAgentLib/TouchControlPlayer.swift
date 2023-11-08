@@ -18,12 +18,14 @@ actor TouchControlPlayer: IControlPlayer {
   private var broker: Broker? = nil
   private var webDriverClient: WebDriverClient? = nil
   private var actionPerformer: ActionPerformer? = nil
+  private var inputBlocker: InputBlocker? = nil
   private var lastPlayTime: UInt64 = 0  // client's event.timeStamp. unit: milliseconds
 
   func open(with param: ControlOpenParam, broker: Broker) throws {
     self.screenSize = param.screenSize
     self.webDriverClient = param.webDriverClient
     self.actionPerformer = param.actionPerformer
+    self.inputBlocker = param.inputBlocker
     self.broker = broker
     startTimer()
   }
@@ -33,12 +35,16 @@ actor TouchControlPlayer: IControlPlayer {
   }
 
   private func startTimer() {
+    let callGuard = DuplicatedCallGuarder()
+
     timer = Timer.publish(every: period, on: .main, in: .default)
       .autoconnect()
       .sink { currentTime in
         Task.catchable(
           {
-            try await self.play(currentTime: currentTime)
+            try await callGuard.guardCall {
+              try await self.play(currentTime: currentTime)
+            }
           },
           catch: {
             Log.shared.debug("handling failed. \($0)")
@@ -50,16 +56,25 @@ actor TouchControlPlayer: IControlPlayer {
     guard let downUp = try await broker!.popByPattern(after: lastPlayTime) else {
       return
     }
+    if inputBlocker!.isAppBlocked {
+      self.notifyBlock(downUp: downUp)
+      return
+    }
+
     let down = downUp.down
     let up = downUp.up
 
-    let beginPosition = try controlSpaceToScreenSpace(controlSpacePosition: down.control.position)
-    let endPosition = try controlSpaceToScreenSpace(controlSpacePosition: up.control.position)
+    let beginPosition = try Transform.controlSpaceToScreenSpace(controlSpacePosition: down.control.position, screenSize: screenSize)
+    if try await inputBlocker!.blockTap(position: beginPosition) {
+      self.notifyBlock(downUp: downUp)
+      return
+    }
+
+    let endPosition = try Transform.controlSpaceToScreenSpace(controlSpacePosition: up.control.position, screenSize: screenSize)
     var duration = up.control.timeStamp - down.control.timeStamp
     if duration < 100 {
       duration = 0
     }
-    let beginTime = Date().unixTimeMilliseconds
     try await actionPerformer!.performW3CActions([
       [
         "type": "pointer",
@@ -91,8 +106,7 @@ actor TouchControlPlayer: IControlPlayer {
         ],
       ]
     ])
-    let elapsedTime = Date().unixTimeMilliseconds - beginTime
-    lastPlayTime = up.control.timeStamp + elapsedTime
+    lastPlayTime = up.control.timeStamp
 
     var result = Inner_Types_CfGdcDaControlResult()
     result.error = Outer_ErrorResult()
@@ -100,30 +114,12 @@ actor TouchControlPlayer: IControlPlayer {
     up.result.set(result: result)
   }
 
-  private func controlSpaceToScreenSpace(controlSpacePosition: Inner_Types_DevicePosition) throws -> CGPoint {
-    guard controlSpacePosition.screenWidth != 0, controlSpacePosition.screenHeight != 0 else {
-      throw Error.invalidControlSpaceSize(width: controlSpacePosition.screenWidth, height: controlSpacePosition.screenHeight)
+  private func notifyBlock(downUp: DownUp) {
+    var result = Inner_Types_CfGdcDaControlResult()
+    result.error = Outer_ErrorResult.with {
+      $0.message = "The input is blocked by the system."
     }
-    let controlSpaceSize = CGSize(
-      width: Double(controlSpacePosition.screenWidth),
-      height: Double(controlSpacePosition.screenHeight))
-    let controlSpacePoint = CGPoint(
-      x: Double(controlSpacePosition.x),
-      y: Double(controlSpacePosition.y))
-
-    var screenWidth = screenSize.width
-    var screenHeight = screenSize.height
-    if controlSpacePosition.screenHeight < controlSpacePosition.screenWidth {
-      screenWidth = max(screenSize.width, screenSize.height)
-      screenHeight = min(screenSize.width, screenSize.height)
-    }
-    if controlSpacePosition.screenWidth < controlSpacePosition.screenHeight {
-      screenWidth = min(screenSize.width, screenSize.height)
-      screenHeight = max(screenSize.width, screenSize.height)
-    }
-
-    return CGPoint(
-      x: (controlSpacePoint.x * screenWidth) / controlSpaceSize.width,
-      y: (controlSpacePoint.y * screenHeight) / controlSpaceSize.height)
+    downUp.down.result.set(result: result)
+    downUp.up.result.set(result: result)
   }
 }

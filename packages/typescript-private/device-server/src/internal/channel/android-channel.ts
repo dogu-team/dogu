@@ -1,6 +1,7 @@
 import {
   createLocaleCode,
   DefaultScreenCaptureOption,
+  DeviceAlert,
   DeviceSystemInfo,
   DeviceWindowInfo,
   ErrorResult,
@@ -28,7 +29,8 @@ import { Observable } from 'rxjs';
 import semver from 'semver';
 import systeminformation from 'systeminformation';
 import { createAppiumCapabilities } from '../../appium/appium.capabilites';
-import { AppiumContext, AppiumContextImpl, AppiumContextKey, AppiumContextProxy } from '../../appium/appium.context';
+import { AppiumContext } from '../../appium/appium.context';
+import { AppiumContextProxy, AppiumRemoteContextRental } from '../../appium/appium.context.proxy';
 import { AppiumDeviceWebDriverHandler } from '../../device-webdriver/appium.device-webdriver.handler';
 import { DeviceWebDriverHandler } from '../../device-webdriver/device-webdriver.common';
 import { GamiumContext } from '../../gamium/gamium.context';
@@ -157,7 +159,7 @@ export class AndroidChannel implements DeviceChannel {
       deviceSerial: serial,
       browserPlatform: 'android',
     });
-    const appiumContextImpl = appiumContextProxy.getImpl(AppiumContextImpl);
+    const appiumContextImpl = await appiumContextProxy.waitUntilBuiltin();
     const reset = new AndroidResetService(serial, logger);
     const sharedDevice = new AndroidSharedDeviceService(serial, appiumAdb, await adb.getProps(), systemInfo, appiumContextImpl, reset, deviceAgent, logger);
     await sharedDevice.setup();
@@ -289,8 +291,7 @@ export class AndroidChannel implements DeviceChannel {
 
   async reset(): Promise<void> {
     const { logger } = this;
-    await checkTime(`AndroidChannel.reset.switchAppiumContext`, this.switchAppiumContext('builtin', 'reset'), logger);
-    const appiumContextImpl = this._appiumContext.getImpl(AppiumContextImpl);
+    const appiumContextImpl = await checkTime(`AndroidChannel.reset.waitUntilBuiltin`, this._appiumContext.waitUntilBuiltin(), logger);
     await checkTime(`AndroidChannel.reset.reset`, this._reset.reset(this.info, this.appiumAdb, appiumContextImpl), logger);
   }
 
@@ -391,9 +392,8 @@ export class AndroidChannel implements DeviceChannel {
     return this._appiumContext;
   }
 
-  async switchAppiumContext(key: AppiumContextKey, reason: string): Promise<AppiumContext> {
-    await this._appiumContext.switchAppiumContext(key, reason);
-    return this._appiumContext;
+  async rentAppiumRemoteContext(reason: string): Promise<AppiumRemoteContextRental> {
+    return this._appiumContext.rentRemote(reason);
   }
 
   async getAppiumCapabilities(): Promise<AppiumCapabilities> {
@@ -440,6 +440,16 @@ export class AndroidChannel implements DeviceChannel {
   async setGeoLocation(geoLocation: GeoLocation): Promise<void> {
     const newAppiumAdb = this.appiumAdb.clone({ adbExecTimeout: 1000 * 60 * 3 });
     await newAppiumAdb.setGeoLocation(geoLocation);
+  }
+
+  async getAlert(): Promise<DeviceAlert | undefined> {
+    throw new Error('Method not implemented.');
+    await Promise.resolve();
+  }
+
+  async getScreenshot(): Promise<string> {
+    throw new Error('Method not implemented.');
+    await Promise.resolve();
   }
 }
 

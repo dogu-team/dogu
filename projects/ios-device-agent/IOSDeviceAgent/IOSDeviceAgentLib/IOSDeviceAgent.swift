@@ -1,12 +1,14 @@
 import Foundation
 import Network
+import XCTest
 
 //import UIKit
 
 public final class IOSDeviceAgent {
   private var config = Config()
   private let controlProcessor = MainControlProcessor()
-  var preventGabage: ControlSession?
+  var sessionForPreventGarbage: ControlSession?
+  var alertDetector: AlertDetector = AlertDetector()
   var listener: NWListener?
   var sessionIdSeed: UInt32 = 0
   private var sessions: [UInt32: ControlSession] = [:]
@@ -37,12 +39,17 @@ public final class IOSDeviceAgent {
   }
 
   private func openInternal() throws {
-    config = try EnvironmentParser().parse()
+    self.config = try EnvironmentParser().parse()
+    
     let screenSize = WebDriverAgentLibUtils.screenSize()
     Task.catchable(
       {
         let webDriverClient = try WebDriverClient(url: "http://127.0.0.1:\(self.config.webDriverPort)")
-        let param = ControlOpenParam(screenSize: screenSize, webDriverClient: webDriverClient, actionPerformer: ActionPerformer(webDriverClient: webDriverClient))
+        try await self.alertDetector.open(webDriverClient: webDriverClient)
+        
+        let param = ControlOpenParam(
+          screenSize: screenSize, webDriverClient: webDriverClient, actionPerformer: ActionPerformer(webDriverClient: webDriverClient),
+          inputBlocker: InputBlocker(config: self.config, webDriverClient: webDriverClient))
         try await self.controlProcessor.open(param: param)
       },
       catch: {
@@ -55,9 +62,15 @@ public final class IOSDeviceAgent {
     let nwport: NWEndpoint.Port = NWEndpoint.Port(rawValue: UInt16(self.config.grpcPort)) ?? 35002
     yellAlivePeriodically()
     do {
-      let parameters = NWParameters.tcp
-      parameters.allowLocalEndpointReuse = true
-      listener = try NWListener(using: parameters, on: nwport)
+      let options = NWProtocolTCP.Options()
+      options.persistTimeout = 0  // this one reduces waiting time significantly when there is no open connections
+      options.enableKeepalive = true  // this one reduces the number of open connections by reusing existing ones
+      options.connectionDropTime = 5
+      options.connectionTimeout = 5
+      options.noDelay = true
+      let params = NWParameters(tls: nil, tcp: options)
+      params.allowLocalEndpointReuse = true
+      listener = try NWListener(using: params, on: nwport)
       listener?.stateUpdateHandler = { [weak self] state in
         switch state {
         case .ready:
@@ -76,7 +89,7 @@ public final class IOSDeviceAgent {
           return
         }
         self.sessionIdSeed += 1
-        self.preventGabage = ControlSession(
+        self.sessionForPreventGarbage = ControlSession(
           sessionId: self.sessionIdSeed, connection: connection, listener: ControlSessionListener(controlProcessor: self.controlProcessor, iosdeviceagent: self))
       }
 

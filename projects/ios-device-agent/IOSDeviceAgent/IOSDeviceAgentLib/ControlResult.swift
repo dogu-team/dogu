@@ -1,11 +1,3 @@
-//
-//  ControlResult.swift
-//  IOSDeviceAgentLib
-//
-//  Created by jenkins on 2023/02/15.
-//  Copyright © 2023 Dogu. All rights reserved.
-//
-
 import Foundation
 
 class ControlResult {
@@ -31,7 +23,7 @@ class ControlResult {
           $0.dcGdcDaControlResult = result
         }
 
-        Log.shared.debug("ControlResult.set eq: \(self.seq), control: \(resultToSend.dcGdcDaControlResult)")
+        Log.shared.debug("ControlResult.set seq: \(self.seq), control: \(resultToSend.dcGdcDaControlResult)")
         try await self.session.send(result: resultToSend)
       },
       catch: {

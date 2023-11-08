@@ -19,14 +19,17 @@ export interface Zombieable {
   // handle update logic to do something periodically
   update?(): Promise<void>;
   // handle when zombie die. this is called when ZombieServiceInstance.notifyDie, and ZombieServiceInstance.deleteComponent called
-  onDie(): Promise<void> | void;
+  onDie(reason: string): Promise<void> | void;
   onComponentDeleted?(): Promise<void> | void;
 }
 
 export class ZombieComponent {
   private _reviveCount = 0;
   private _lastError?: Error;
-  constructor(public readonly impl: Zombieable, private isAliveSelf = false) {}
+  constructor(
+    public readonly impl: Zombieable,
+    private isAliveSelf = false,
+  ) {}
 
   get reviveCount(): number {
     return this._reviveCount;
@@ -50,7 +53,7 @@ export class ZombieComponent {
   }
 
   async onDie(dieReason = 'unknown'): Promise<void> {
-    await this.impl.onDie();
+    await this.impl.onDie(dieReason);
     this.isAliveSelf = false;
     this._lastError = new Error(dieReason);
   }
@@ -68,15 +71,15 @@ const MaxWaitReviveCount = 5;
 export class ZombieQueriable {
   constructor(private readonly zombieComponent: ZombieComponent) {}
 
-  async waitUntilAlive(maxReviveCount = MaxWaitReviveCount): Promise<void> {
+  async waitUntilAlive(option: { maxReviveCount: number } = { maxReviveCount: MaxWaitReviveCount }): Promise<void> {
     const befReviveCount = this.zombieComponent.reviveCount;
     for await (const _ of loop(1000)) {
       if (this.zombieComponent.isAlive()) {
         return;
       }
       const diffReviveCount = this.zombieComponent.reviveCount - befReviveCount;
-      if (diffReviveCount > maxReviveCount) {
-        logger.error(`ZombieComponent ${this.zombieComponent.impl.name} waitUntilAlive failed`, { maxReviveCount, error: this.zombieComponent.lastError });
+      if (diffReviveCount > option.maxReviveCount) {
+        logger.error(`ZombieComponent ${this.zombieComponent.impl.name} waitUntilAlive failed`, { maxCount: option.maxReviveCount, error: this.zombieComponent.lastError });
         throw this.zombieComponent.lastError ?? new Error('unknown');
       }
     }

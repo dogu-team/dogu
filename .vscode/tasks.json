@@ -217,6 +217,18 @@
       }
     },
     {
+      "label": "Dev: billing-server",
+      "type": "npm",
+      "script": "dev",
+      "path": "projects/billing-server",
+      "problemMatcher": [],
+      "presentation": {
+        "group": "devWatchers",
+        "close": false,
+        "panel": "shared"
+      }
+    },
+    {
       "label": "Dev: Build: Dost",
       "type": "shell",
       "problemMatcher": [],
@@ -228,14 +240,14 @@
       "type": "shell",
       "problemMatcher": [],
       "dependsOrder": "parallel",
-      "dependsOn": ["Dev: CF console-web-front", "Dev: CB console-web-server", "Dev: Dost"]
+      "dependsOn": ["Dev: CF console-web-front", "Dev: CB console-web-server", "Dev: billing-server"]
     },
     {
       "label": "Dev: Local DB All",
       "type": "shell",
       "problemMatcher": [],
       "dependsOrder": "parallel",
-      "dependsOn": ["Dev: pgsql", "Dev: redis"]
+      "dependsOn": ["Dev: pgsql", "Dev: redis", "Dev: billing-pgsql"]
     },
     {
       "label": "Dev: Local All",
@@ -264,6 +276,18 @@
       "script": "start:redis",
       "label": "Dev: redis",
       "path": "projects/console-web-server",
+      "problemMatcher": [],
+      "presentation": {
+        "group": "devWatchers",
+        "close": false,
+        "panel": "shared"
+      }
+    },
+    {
+      "type": "npm",
+      "script": "start:pgsql",
+      "label": "Dev: billing-pgsql",
+      "path": "projects/billing-server",
       "problemMatcher": [],
       "presentation": {
         "group": "devWatchers",

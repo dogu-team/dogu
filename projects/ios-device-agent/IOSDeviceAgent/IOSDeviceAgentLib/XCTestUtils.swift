@@ -1,10 +1,3 @@
-//
-//  XCTestUtils.swift
-//  IOSDeviceAgentLib
-//
-//  Copyright © 2023 Dogu. All rights reserved.
-//
-
 import XCTest
 
 public final class XCTestUtils {

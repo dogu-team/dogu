@@ -36,8 +36,7 @@ message HttpRequest {
 message HttpResponse {
   sfixed32 status_code = 1;
   Headers headers = 2;
-  optional Body body = 3;
-  HttpRequest request = 4;
+  Body body = 3;
 }
 
 message HttpRequestParam {

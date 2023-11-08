@@ -16,10 +16,18 @@ export class AndroidResetService {
   private static map: Map<Serial, AndroidResetInfo> = new Map(); // Hold for process lifetime
   private timer: CheckTimer;
   private adb: AdbSerial;
+  private _state: string | null = null;
 
-  constructor(private serial: Serial, private logger: SerialPrintable) {
+  constructor(
+    private serial: Serial,
+    private logger: SerialPrintable,
+  ) {
     this.timer = new CheckTimer(this.logger);
     this.adb = new AdbSerial(serial, logger);
+  }
+
+  get state(): string | null {
+    return this._state;
   }
 
   async makeDirty(): Promise<void> {
@@ -51,20 +59,22 @@ export class AndroidResetService {
     const { serial, logger } = this;
     logger.info(`AndroidResetService.resetDevice begin`, { serial, info });
     try {
+      this._state = 'resetting';
       if (!this.isHarnessAvailable(info)) {
         throw new Error(`AndroidResetService.resetDevice Android version must be 10 or higher. to use testharness, serial:${serial}. version:${info.version}`);
       }
-
-      await this.timer.check(`AndroidResetService.reset.enableTestharness`, this.adb.enableTestharness());
+      await this.check(`AndroidResetService.reset.enableTestharness`, this.adb.enableTestharness());
     } catch (e) {
-      await this.timer.check(`AndroidResetService.reset.resetAccounts`, this.resetAccounts(appiumAdb, appiumContext));
-      await this.timer.check(`AndroidResetService.reset.runAppSettingsActivity`, this.adb.runActivity('android.settings.MANAGE_APPLICATIONS_SETTINGS'));
-      await this.timer.check(`AndroidResetService.reset.resetSdcard`, this.adb.resetSdcard());
-      await this.timer.check(`AndroidResetService.reset.resetIMEList`, this.resetIMEList());
-      await this.timer.check(`AndroidResetService.reset.logcatClear`, this.adb.logcatClear());
-      await this.timer.check(`AndroidResetService.reset.resetPackages`, this.adb.resetPackages());
-      await this.timer.check(`AndroidResetService.reset.resetDirty`, this.resetDirty());
-      await this.timer.check(`AndroidResetService.reset.reboot`, this.adb.reboot());
+      await this.check(`AndroidResetService.reset.resetAccounts`, this.resetAccounts(appiumAdb, appiumContext));
+      await this.check(`AndroidResetService.reset.runAppSettingsActivity`, this.adb.runActivity('android.settings.MANAGE_APPLICATIONS_SETTINGS'));
+      await this.check(`AndroidResetService.reset.resetSdcard`, this.adb.resetSdcard());
+      await this.check(`AndroidResetService.reset.resetIMEList`, this.resetIMEList());
+      await this.check(`AndroidResetService.reset.logcatClear`, this.adb.logcatClear());
+      await this.check(`AndroidResetService.reset.resetPackages`, this.adb.resetPackages());
+      await this.check(`AndroidResetService.reset.resetDirty`, this.resetDirty());
+      await this.check(`AndroidResetService.reset.reboot`, this.adb.reboot());
+    } finally {
+      this._state = null;
     }
     AndroidResetService.map.set(serial, { lastResetTime: Date.now() });
     this.logger.info(`AndroidResetService.resetDevice end`, { serial, info });
@@ -175,5 +185,10 @@ export class AndroidResetService {
     }
 
     logger.info(`AndroidResetService.resetAccounts end`, { serial });
+  }
+
+  async check<T>(name: string, promise: Promise<T>): Promise<T> {
+    this._state = name;
+    return this.timer.check(name, promise);
   }
 }

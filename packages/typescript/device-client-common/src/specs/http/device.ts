@@ -10,6 +10,7 @@ import {
   GetDeviceGeoLocationResponse,
   GetDeviceLocaleResponse,
   GetDevicePlatformSerialsResponse,
+  GetDeviceScreenshotResponse,
   GetDeviceSerialsResponse,
   GetDeviceSystemInfoResponse,
   GetLocalDeviceDetectResponse,
@@ -178,6 +179,18 @@ export const Device = {
     requestBody: GeoLocationDto,
     responseBody: DeviceServerResponseDto,
     responseBodyData: GetDeviceGeoLocationResponse,
+    responseBodyError: DeviceNotFoundErrorDetails,
+  }),
+
+  getScreenshot: new DeviceServerControllerMethodSpec({
+    controllerSpec: DeviceController,
+    method: 'GET',
+    path: '/:serial/screenshot',
+    pathProvider: class {
+      constructor(readonly serial: Serial) {}
+    },
+    responseBody: DeviceServerResponseDto,
+    responseBodyData: GetDeviceScreenshotResponse,
     responseBodyError: DeviceNotFoundErrorDetails,
   }),
 };

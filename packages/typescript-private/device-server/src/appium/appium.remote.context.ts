@@ -19,7 +19,10 @@ export class AppiumRemoteContext implements AppiumContext {
 
   openingState: 'opening' | 'openingSucceeded' | 'openingFailed' = 'opening';
 
-  constructor(public readonly options: AppiumContextOptions, public readonly printable: Logger) {}
+  constructor(
+    public readonly options: AppiumContextOptions,
+    public readonly printable: Logger,
+  ) {}
 
   get name(): string {
     return 'AppiumRemoteContext';
@@ -71,7 +74,7 @@ export class AppiumRemoteContext implements AppiumContext {
     }
   }
 
-  async onDie(): Promise<void> {
+  async onDie(reason: string): Promise<void> {
     if (!this._data) {
       return;
     }
@@ -106,7 +109,7 @@ export class AppiumRemoteContext implements AppiumContext {
         });
         child.on('close', (code, signal) => {
           this.printable.info('server closed', { code, signal });
-          ZombieServiceInstance.notifyDie(this);
+          ZombieServiceInstance.notifyDie(this, `server closed ${code} ${signal}`);
         });
         child.stdout.setEncoding('utf8');
         child.stdout.on('data', (data) => {

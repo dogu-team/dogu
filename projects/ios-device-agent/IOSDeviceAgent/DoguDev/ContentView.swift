@@ -1,11 +1,3 @@
-//
-//  ContentView.swift
-//  IOSDeviceAgentApp
-//
-//  Created by hunhoe kim on 2022/12/07.
-//  Copyright © 2022 Dogu. All rights reserved.
-//
-
 import ReplayKit
 import SwiftUI
 

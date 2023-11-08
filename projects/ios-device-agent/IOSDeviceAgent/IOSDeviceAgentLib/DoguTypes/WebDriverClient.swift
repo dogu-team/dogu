@@ -1,5 +1,5 @@
 import Combine
-import Foundation
+import WebDriverAgentLib
 
 enum WebDriverConstants {
   static let defaultTimeout: TimeInterval = 3  // seconds
@@ -73,6 +73,10 @@ public actor WebDriverClient {
   public let url: String
   public private(set) var sessionID: String = ""
 
+  enum Error: Swift.Error {
+    case sessionNotFound
+  }
+
   public init(url: String) throws {
     _ = try url.url()
     self.url = url
@@ -86,6 +90,21 @@ public actor WebDriverClient {
     if sessionID.isEmpty {
       sessionID = try await newSession()
     }
+  }
+  
+  @MainActor
+  public func getSession() async throws -> FBSession {
+    try await setSessionIfNotSet()
+    guard let session = FBSession.active() else {
+      throw Error.sessionNotFound
+    }
+    return session
+  }
+
+  @MainActor
+  public func getApplication() async throws -> FBApplication {
+    let session = try await getSession()
+    return session.activeApplication
   }
 
   private func newSession() async throws -> String {
@@ -120,12 +139,14 @@ public actor WebDriverClient {
     )
   }
 
+  @MainActor
   public func homescreen() async throws {
-    _ = try await request(method: .post, pathQuery: "/wda/homescreen", body: .empty)
+    try XCUIDevice.shared.fb_pressButton("home", forDuration: 100)
   }
 
+  @MainActor
   public func pressButton(_ button: String) async throws {
-    _ = try await request(method: .post, pathQuery: "/session/\(sessionID)/wda/pressButton", body: .dict(["name": button, "duration": 0]))
+    try XCUIDevice.shared.fb_pressButton(button, forDuration: 10)
   }
 
   private func request(method: HttpMethod, pathQuery: String, body: HttpRequestBody, timeout: TimeInterval = WebDriverConstants.defaultTimeout) async throws -> Data {

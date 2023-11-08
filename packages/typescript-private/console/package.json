@@ -14,6 +14,7 @@
   },
   "types": "build/src/index.d.ts",
   "dependencies": {
+    "@dogu-private/device-data": "workspace:^",
     "@dogu-private/types": "workspace:^",
     "@dogu-tech/common": "workspace:^",
     "@dogu-tech/console-gamium": "workspace:^",

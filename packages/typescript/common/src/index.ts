@@ -1,6 +1,7 @@
 import 'reflect-metadata';
 export * from './axios-utils';
 export * as Uint8ArrayUtil from './buffer/uint8-array';
+export * from './cache/timed-cache';
 export * from './date';
 export * from './disposable';
 export * from './events';
@@ -14,6 +15,7 @@ export * from './processes';
 export * from './property-proxies';
 export * from './queue/size-prefixed-recv-queue';
 export * from './registry';
+export * from './repeat';
 export * from './retry';
 export * from './strings/functions';
 export * from './strings/stringifier';

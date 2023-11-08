@@ -64,7 +64,7 @@ object HttpResponseKt {
     }
 
     /**
-     * <code>optional .outer.Body body = 3;</code>
+     * <code>.outer.Body body = 3;</code>
      */
     var body: com.dogu.protocol.generated.outer.HttpWs.Body
       @JvmName("getBody")
@@ -74,43 +74,17 @@ object HttpResponseKt {
         _builder.setBody(value)
       }
     /**
-     * <code>optional .outer.Body body = 3;</code>
+     * <code>.outer.Body body = 3;</code>
      */
     fun clearBody() {
       _builder.clearBody()
     }
     /**
-     * <code>optional .outer.Body body = 3;</code>
+     * <code>.outer.Body body = 3;</code>
      * @return Whether the body field is set.
      */
     fun hasBody(): kotlin.Boolean {
       return _builder.hasBody()
-    }
-    val HttpResponseKt.Dsl.bodyOrNull: com.dogu.protocol.generated.outer.HttpWs.Body?
-      get() = _builder.bodyOrNull
-
-    /**
-     * <code>.outer.HttpRequest request = 4;</code>
-     */
-    var request: com.dogu.protocol.generated.outer.HttpWs.HttpRequest
-      @JvmName("getRequest")
-      get() = _builder.getRequest()
-      @JvmName("setRequest")
-      set(value) {
-        _builder.setRequest(value)
-      }
-    /**
-     * <code>.outer.HttpRequest request = 4;</code>
-     */
-    fun clearRequest() {
-      _builder.clearRequest()
-    }
-    /**
-     * <code>.outer.HttpRequest request = 4;</code>
-     * @return Whether the request field is set.
-     */
-    fun hasRequest(): kotlin.Boolean {
-      return _builder.hasRequest()
     }
   }
 }
@@ -123,7 +97,4 @@ val com.dogu.protocol.generated.outer.HttpWs.HttpResponseOrBuilder.headersOrNull
 
 val com.dogu.protocol.generated.outer.HttpWs.HttpResponseOrBuilder.bodyOrNull: com.dogu.protocol.generated.outer.HttpWs.Body?
   get() = if (hasBody()) getBody() else null
-
-val com.dogu.protocol.generated.outer.HttpWs.HttpResponseOrBuilder.requestOrNull: com.dogu.protocol.generated.outer.HttpWs.HttpRequest?
-  get() = if (hasRequest()) getRequest() else null
 

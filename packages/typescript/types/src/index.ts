@@ -4,6 +4,7 @@ export * from './device-browser-installation/types';
 export * from './device-model/model-list';
 export * from './device-model/model-utils';
 export * from './device-runner/types';
+export * from './device/alert';
 export * as ProfileMethods from './device/profile-methods';
 export * from './device/runtime-infos';
 export * from './device/system-infos';

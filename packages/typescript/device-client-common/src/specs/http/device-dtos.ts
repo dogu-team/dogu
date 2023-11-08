@@ -280,3 +280,8 @@ export class GetDeviceGeoLocationResponse {
   @Type(() => GeoLocationDto)
   location!: GeoLocationDto;
 }
+
+export class GetDeviceScreenshotResponse {
+  @IsFilledString()
+  base64!: string;
+}

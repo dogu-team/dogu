@@ -1,7 +1,8 @@
-import { Serial } from '@dogu-private/types';
-import { errorify } from '@dogu-tech/common';
-import { DeviceClient, DeviceHostClient, HostFileUploader } from '@dogu-tech/device-client-common';
-import { RefObject, useCallback, useEffect, useState } from 'react';
+import { OrganizationId, Serial } from '@dogu-private/types';
+import { DeviceClient, DeviceHostClient } from '@dogu-tech/device-client-common';
+import { RefObject, useCallback, useState } from 'react';
+import { v4 } from 'uuid';
+import { uploadDeviceApp } from '../../api/organization';
 
 const useDeviceAppInstall = (
   serial: Serial | undefined,
@@ -11,148 +12,82 @@ const useDeviceAppInstall = (
 ) => {
   const [app, setApp] = useState<File>();
   const [progress, setProgress] = useState<number>();
-  const [uploadedFilePath, setUploadedFilePath] = useState('');
   const [isInstalling, setIsInstalling] = useState(false);
   const [result, setResult] = useState<{
     isSuccess: boolean;
     failType?: 'upload' | 'resign' | 'install';
     error?: Error;
   }>();
-  const [hostFileUploader, setHostFileUploader] = useState<HostFileUploader | null>(null);
 
   const reset = useCallback(() => {
     setProgress(undefined);
-    setIsInstalling(false);
     setResult(undefined);
     setApp(undefined);
-    setUploadedFilePath('');
   }, []);
 
-  const uploadApp = useCallback(async (file: File) => {
-    if (file.size === 0) {
-      alert('File size is 0. Choose another file.');
-      return;
-    }
-
-    if (!deviceHostClientRef?.current) {
-      return;
-    }
-
-    setApp(file);
-
-    const totalSize = file.size;
-    const chunkSize = 65535 * 16 - 16; // around 1 MB ( datachannel max byte(65535)  * 16(magic number) - packetheader sizes(16) ). for best throughput
-    const fr = new FileReader();
-    let writeOffset = 0;
-
-    const readSlice = (o: number) => {
-      const slice = file.slice(writeOffset, o + chunkSize);
-      fr.readAsArrayBuffer(slice);
-    };
-
-    fr.addEventListener('error', (error) => console.error('Error reading file:', error));
-    fr.addEventListener('abort', (event) => {});
-    fr.addEventListener('load', (e) => {
-      const result = e.target?.result as ArrayBuffer;
-      hostFileUploader.write(result);
-      writeOffset += result.byteLength;
-
-      if (writeOffset < file.size) {
-        readSlice(writeOffset);
-      } else {
-        hostFileUploader.end();
-      }
-    });
-
-    const hostFileUploader = await deviceHostClientRef.current.uploadFile(
-      file.name,
-      file.size,
-      (recvOffest: number) => {
-        setProgress((recvOffest / totalSize) * 100);
-      },
-      (filePath: string, error?: Error) => {
-        if (error) {
-          console.debug('File upload error:', error);
-          setResult({
-            isSuccess: false,
-            failType: 'upload',
-            error: error,
-          });
-          return;
-        }
-        // receive complete message
-        console.debug('File uploaded:', filePath);
-        setProgress(100);
-        setUploadedFilePath(filePath);
-      },
-    );
-    setHostFileUploader(hostFileUploader);
-    setProgress(0);
-    readSlice(0);
-  }, []);
-
-  const installApp = useCallback(
-    async (uploadedFilePath: string) => {
-      if (!serial || !deviceClientRef?.current || !deviceHostClientRef?.current) {
+  const uploadAndInstallApp = useCallback(
+    async (organizationId: OrganizationId, file: File) => {
+      if (file.size === 0) {
+        alert('File size is 0. Choose another file.');
+        return;
+      } else if (file.size > 1024 * 1024 * 1024) {
+        alert('File size is over 1GB. Choose another file.');
         return;
       }
 
-      setIsInstalling(true);
-      if (option.isCloudDevice) {
-        try {
-          await deviceHostClientRef.current.resignApp({ filePath: uploadedFilePath });
-        } catch (e) {
-          const error = errorify(e);
-          console.debug('resignApp error:', error);
-          setResult({
-            isSuccess: false,
-            failType: 'resign',
-            error,
-          });
-          return;
-        }
+      if (!deviceHostClientRef?.current || !serial) {
+        return;
       }
 
+      setApp(file);
+
       try {
-        await deviceClientRef.current.installApp(serial, uploadedFilePath);
+        const path = await uploadDeviceApp(organizationId, file, (e) => {
+          if (e.total) {
+            setProgress((e.loaded / e.total) * 100);
+          }
+        });
+        setProgress(undefined);
+
+        const uuid = v4();
+        const basePath = await deviceHostClientRef.current.getTempPath();
+        const hostFilePath = `${basePath}/${uuid}/${file.name}`;
+
+        setIsInstalling(true);
+        await deviceHostClientRef.current.downloadSharedResource(hostFilePath, path, file.size);
+        // resign app for ios
+        if (option.isCloudDevice && file.name.endsWith('.ipa')) {
+          await deviceHostClientRef.current.resignApp({ filePath: hostFilePath });
+        }
+        await deviceClientRef?.current?.installApp(serial, hostFilePath);
+        await deviceClientRef?.current?.runApp(serial, hostFilePath);
+
+        setIsInstalling(false);
         setResult({
           isSuccess: true,
         });
         setTimeout(() => reset(), 2000);
+
+        deviceHostClientRef.current
+          .removeTemp({
+            pathUnderTemp: `${uuid}/${file.name}`,
+          })
+          .catch((e) => {
+            console.error(`Temp application removal failed`, e);
+          });
       } catch (e) {
-        const error = errorify(e);
-        console.debug('installApp error:', error);
         setResult({
           isSuccess: false,
-          failType: 'install',
-          error,
+          failType: 'upload',
+          error: new Error('Upload failed'),
         });
+        setTimeout(() => reset(), 2000);
       }
     },
-    [reset, serial],
+    [serial, reset],
   );
 
-  useEffect(() => {
-    if (uploadedFilePath.length > 0) {
-      installApp(uploadedFilePath);
-    }
-  }, [installApp, uploadedFilePath]);
-
-  const cancelUpload = useCallback(() => {
-    hostFileUploader?.end();
-    hostFileUploader?.close(1001, 'Canceled');
-    reset();
-  }, [hostFileUploader, reset]);
-
-  const runApp = useCallback(async () => {
-    if (!serial || !deviceClientRef?.current || !uploadedFilePath) {
-      return;
-    }
-
-    await deviceClientRef.current.runApp(serial, uploadedFilePath);
-  }, [serial, uploadedFilePath]);
-
-  return { isInstalling, progress, app, result, uploadApp, cancelUpload, runApp };
+  return { isInstalling, progress, app, result, uploadAndInstallApp };
 };
 
 export default useDeviceAppInstall;

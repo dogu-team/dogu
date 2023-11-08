@@ -3,7 +3,11 @@ import styled from 'styled-components';
 import Cookies from 'universal-cookie';
 
 import { NextPageWithLayout } from './_app';
-import { checkLoginInServerSide, redirectToLastAccessOrganization } from 'src/utils/auth';
+import {
+  checkLoginInServerSide,
+  checkUserVerifiedInServerSide,
+  redirectToLastAccessOrganization,
+} from 'src/utils/auth';
 import { redirectWithLocale } from '../src/ssr/locale';
 import { hasRootUser } from '../src/api/feature';
 
@@ -47,7 +51,13 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
 
-  const user = await checkLoginInServerSide(context);
+  const checkResult = await checkUserVerifiedInServerSide(context);
+
+  if (checkResult.redirect) {
+    return checkResult;
+  }
+
+  const user = checkResult.props.fallback['/registery/check'];
 
   if (user) {
     const lastOrgRedirect = redirectToLastAccessOrganization(user, context);

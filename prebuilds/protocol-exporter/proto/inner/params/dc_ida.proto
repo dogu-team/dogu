@@ -4,29 +4,35 @@ package inner.params;
 
 import "inner/types/cf_gdc_da.proto";
 import "inner/types/dc_ida.proto";
+import "outer/errors.proto";
 
 option go_package = "go-device-controller/types/protocol/generated/proto/inner/params";
 option java_package = "com.dogu.protocol.generated.inner.params";
 
 message DcIdaParam {
-  fixed32 seq = 10;
+  fixed32 seq = 1;
   oneof value {
-    types.DcIdaRunAppParam dc_ida_runapp_param = 1;
-    types.DcIdaGetSystemInfoParam dc_ida_get_system_info_param = 2;
-    types.DcIdaIsPortListeningParam dc_ida_is_port_listening_param = 3;
-    types.DcIdaQueryProfileParam dc_ida_query_profile_param = 4;
-    types.CfGdcDaControlParam dc_gdc_da_control_param = 5;
+    types.DcIdaRunAppParam dc_ida_runapp_param = 10;
+    types.DcIdaGetSystemInfoParam dc_ida_get_system_info_param = 11;
+    types.DcIdaIsPortListeningParam dc_ida_is_port_listening_param = 12;
+    types.DcIdaQueryProfileParam dc_ida_query_profile_param = 13;
+    types.CfGdcDaControlParam dc_gdc_da_control_param = 14;
+    types.DcIdaSwitchInputBlockParam dc_ida_switch_input_block_param = 15;
+    types.DcIdaQueryAlertParam dc_ida_query_alert_param = 16;
   }
 }
 
 message DcIdaResult {
-  fixed32 seq = 10;
+  fixed32 seq = 1;
+  optional outer.ErrorResult error = 2;
   oneof value {
-    types.DcIdaRunAppResult dc_ida_runapp_result = 1;
-    types.DcIdaGetSystemInfoResult dc_ida_get_system_info_result = 2;
-    types.DcIdaIsPortListeningResult dc_ida_is_port_listening_result = 3;
-    types.DcIdaQueryProfileResult dc_ida_query_profile_result = 4;
-    types.CfGdcDaControlResult dc_gdc_da_control_result = 5;
+    types.DcIdaRunAppResult dc_ida_runapp_result = 10;
+    types.DcIdaGetSystemInfoResult dc_ida_get_system_info_result = 11;
+    types.DcIdaIsPortListeningResult dc_ida_is_port_listening_result = 12;
+    types.DcIdaQueryProfileResult dc_ida_query_profile_result = 13;
+    types.CfGdcDaControlResult dc_gdc_da_control_result = 14;
+    types.DcIdaSwitchInputBlockResult dc_ida_switch_input_block_result = 15;
+    types.DcIdaQueryAlertResult dc_ida_query_alert_result = 16;
   }
 }
 

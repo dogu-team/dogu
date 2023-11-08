@@ -1,6 +1,7 @@
 import _m0 from 'protobufjs/minimal';
+import { ErrorResult } from '../../outer/errors';
 import { CfGdcDaControlParam, CfGdcDaControlResult } from '../types/cf_gdc_da';
-import { DcIdaGetSystemInfoParam, DcIdaGetSystemInfoResult, DcIdaIsPortListeningParam, DcIdaIsPortListeningResult, DcIdaQueryProfileParam, DcIdaQueryProfileResult, DcIdaRunAppParam, DcIdaRunAppResult } from '../types/dc_ida';
+import { DcIdaGetSystemInfoParam, DcIdaGetSystemInfoResult, DcIdaIsPortListeningParam, DcIdaIsPortListeningResult, DcIdaQueryAlertParam, DcIdaQueryAlertResult, DcIdaQueryProfileParam, DcIdaQueryProfileResult, DcIdaRunAppParam, DcIdaRunAppResult, DcIdaSwitchInputBlockParam, DcIdaSwitchInputBlockResult } from '../types/dc_ida';
 export interface DcIdaParam {
     seq: number;
     value?: {
@@ -18,10 +19,17 @@ export interface DcIdaParam {
     } | {
         $case: 'dcGdcDaControlParam';
         dcGdcDaControlParam: CfGdcDaControlParam;
+    } | {
+        $case: 'dcIdaSwitchInputBlockParam';
+        dcIdaSwitchInputBlockParam: DcIdaSwitchInputBlockParam;
+    } | {
+        $case: 'dcIdaQueryAlertParam';
+        dcIdaQueryAlertParam: DcIdaQueryAlertParam;
     };
 }
 export interface DcIdaResult {
     seq: number;
+    error?: ErrorResult | undefined;
     value?: {
         $case: 'dcIdaRunappResult';
         dcIdaRunappResult: DcIdaRunAppResult;
@@ -37,6 +45,12 @@ export interface DcIdaResult {
     } | {
         $case: 'dcGdcDaControlResult';
         dcGdcDaControlResult: CfGdcDaControlResult;
+    } | {
+        $case: 'dcIdaSwitchInputBlockResult';
+        dcIdaSwitchInputBlockResult: DcIdaSwitchInputBlockResult;
+    } | {
+        $case: 'dcIdaQueryAlertResult';
+        dcIdaQueryAlertResult: DcIdaQueryAlertResult;
     };
 }
 export interface DcIdaParamList {
@@ -108,6 +122,16 @@ export declare const DcIdaParam: {
             } | undefined;
         } & {
             $case: "dcGdcDaControlParam";
+        }) | ({
+            dcIdaSwitchInputBlockParam?: {
+                isBlock?: boolean | undefined;
+            } | undefined;
+        } & {
+            $case: "dcIdaSwitchInputBlockParam";
+        }) | ({
+            dcIdaQueryAlertParam?: {} | undefined;
+        } & {
+            $case: "dcIdaQueryAlertParam";
         }) | undefined;
     } & {
         seq?: number | undefined;
@@ -291,8 +315,28 @@ export declare const DcIdaParam: {
                 } & { [K_12 in Exclude<keyof I["value"]["dcGdcDaControlParam"]["control"], keyof import("../index").DeviceControl>]: never; }) | undefined;
             } & { [K_13 in Exclude<keyof I["value"]["dcGdcDaControlParam"], "control">]: never; }) | undefined;
             $case: "dcGdcDaControlParam";
-        } & { [K_14 in Exclude<keyof I["value"], "$case" | "dcGdcDaControlParam">]: never; }) | undefined;
-    } & { [K_15 in Exclude<keyof I, keyof DcIdaParam>]: never; }>(object: I): DcIdaParam;
+        } & { [K_14 in Exclude<keyof I["value"], "$case" | "dcGdcDaControlParam">]: never; }) | ({
+            dcIdaSwitchInputBlockParam?: {
+                isBlock?: boolean | undefined;
+            } | undefined;
+        } & {
+            $case: "dcIdaSwitchInputBlockParam";
+        } & {
+            dcIdaSwitchInputBlockParam?: ({
+                isBlock?: boolean | undefined;
+            } & {
+                isBlock?: boolean | undefined;
+            } & { [K_15 in Exclude<keyof I["value"]["dcIdaSwitchInputBlockParam"], "isBlock">]: never; }) | undefined;
+            $case: "dcIdaSwitchInputBlockParam";
+        } & { [K_16 in Exclude<keyof I["value"], "$case" | "dcIdaSwitchInputBlockParam">]: never; }) | ({
+            dcIdaQueryAlertParam?: {} | undefined;
+        } & {
+            $case: "dcIdaQueryAlertParam";
+        } & {
+            dcIdaQueryAlertParam?: ({} & {} & { [K_17 in Exclude<keyof I["value"]["dcIdaQueryAlertParam"], never>]: never; }) | undefined;
+            $case: "dcIdaQueryAlertParam";
+        } & { [K_18 in Exclude<keyof I["value"], "$case" | "dcIdaQueryAlertParam">]: never; }) | undefined;
+    } & { [K_19 in Exclude<keyof I, keyof DcIdaParam>]: never; }>(object: I): DcIdaParam;
 };
 export declare const DcIdaResult: {
     encode(message: DcIdaResult, writer?: _m0.Writer): _m0.Writer;
@@ -301,10 +345,17 @@ export declare const DcIdaResult: {
     toJSON(message: DcIdaResult): unknown;
     fromPartial<I extends {
         seq?: number | undefined;
+        error?: {
+            code?: import("../../outer/errors").Code | undefined;
+            message?: string | undefined;
+            details?: {
+                [x: string]: any;
+            } | undefined;
+        } | undefined;
         value?: ({
             dcIdaRunappResult?: {
                 error?: {
-                    code?: import("../../index").Code | undefined;
+                    code?: import("../../outer/errors").Code | undefined;
                     message?: string | undefined;
                     details?: {
                         [x: string]: any;
@@ -423,7 +474,7 @@ export declare const DcIdaResult: {
         }) | ({
             dcGdcDaControlResult?: {
                 error?: {
-                    code?: import("../../index").Code | undefined;
+                    code?: import("../../outer/errors").Code | undefined;
                     message?: string | undefined;
                     details?: {
                         [x: string]: any;
@@ -432,13 +483,39 @@ export declare const DcIdaResult: {
             } | undefined;
         } & {
             $case: "dcGdcDaControlResult";
+        }) | ({
+            dcIdaSwitchInputBlockResult?: {} | undefined;
+        } & {
+            $case: "dcIdaSwitchInputBlockResult";
+        }) | ({
+            dcIdaQueryAlertResult?: {
+                isShow?: boolean | undefined;
+                title?: string | undefined;
+            } | undefined;
+        } & {
+            $case: "dcIdaQueryAlertResult";
         }) | undefined;
     } & {
         seq?: number | undefined;
+        error?: ({
+            code?: import("../../outer/errors").Code | undefined;
+            message?: string | undefined;
+            details?: {
+                [x: string]: any;
+            } | undefined;
+        } & {
+            code?: import("../../outer/errors").Code | undefined;
+            message?: string | undefined;
+            details?: ({
+                [x: string]: any;
+            } & {
+                [x: string]: any;
+            } & { [K in Exclude<keyof I["error"]["details"], string | number>]: never; }) | undefined;
+        } & { [K_1 in Exclude<keyof I["error"], keyof ErrorResult>]: never; }) | undefined;
         value?: ({
             dcIdaRunappResult?: {
                 error?: {
-                    code?: import("../../index").Code | undefined;
+                    code?: import("../../outer/errors").Code | undefined;
                     message?: string | undefined;
                     details?: {
                         [x: string]: any;
@@ -450,7 +527,7 @@ export declare const DcIdaResult: {
         } & {
             dcIdaRunappResult?: ({
                 error?: {
-                    code?: import("../../index").Code | undefined;
+                    code?: import("../../outer/errors").Code | undefined;
                     message?: string | undefined;
                     details?: {
                         [x: string]: any;
@@ -458,23 +535,23 @@ export declare const DcIdaResult: {
                 } | undefined;
             } & {
                 error?: ({
-                    code?: import("../../index").Code | undefined;
+                    code?: import("../../outer/errors").Code | undefined;
                     message?: string | undefined;
                     details?: {
                         [x: string]: any;
                     } | undefined;
                 } & {
-                    code?: import("../../index").Code | undefined;
+                    code?: import("../../outer/errors").Code | undefined;
                     message?: string | undefined;
                     details?: ({
                         [x: string]: any;
                     } & {
                         [x: string]: any;
-                    } & { [K in Exclude<keyof I["value"]["dcIdaRunappResult"]["error"]["details"], string | number>]: never; }) | undefined;
-                } & { [K_1 in Exclude<keyof I["value"]["dcIdaRunappResult"]["error"], keyof import("../../index").ErrorResult>]: never; }) | undefined;
-            } & { [K_2 in Exclude<keyof I["value"]["dcIdaRunappResult"], "error">]: never; }) | undefined;
+                    } & { [K_2 in Exclude<keyof I["value"]["dcIdaRunappResult"]["error"]["details"], string | number>]: never; }) | undefined;
+                } & { [K_3 in Exclude<keyof I["value"]["dcIdaRunappResult"]["error"], keyof ErrorResult>]: never; }) | undefined;
+            } & { [K_4 in Exclude<keyof I["value"]["dcIdaRunappResult"], "error">]: never; }) | undefined;
             $case: "dcIdaRunappResult";
-        } & { [K_3 in Exclude<keyof I["value"], "$case" | "dcIdaRunappResult">]: never; }) | ({
+        } & { [K_5 in Exclude<keyof I["value"], "$case" | "dcIdaRunappResult">]: never; }) | ({
             dcIdaGetSystemInfoResult?: {
                 screenWidth?: number | undefined;
                 screenHeight?: number | undefined;
@@ -488,9 +565,9 @@ export declare const DcIdaResult: {
             } & {
                 screenWidth?: number | undefined;
                 screenHeight?: number | undefined;
-            } & { [K_4 in Exclude<keyof I["value"]["dcIdaGetSystemInfoResult"], keyof DcIdaGetSystemInfoResult>]: never; }) | undefined;
+            } & { [K_6 in Exclude<keyof I["value"]["dcIdaGetSystemInfoResult"], keyof DcIdaGetSystemInfoResult>]: never; }) | undefined;
             $case: "dcIdaGetSystemInfoResult";
-        } & { [K_5 in Exclude<keyof I["value"], "$case" | "dcIdaGetSystemInfoResult">]: never; }) | ({
+        } & { [K_7 in Exclude<keyof I["value"], "$case" | "dcIdaGetSystemInfoResult">]: never; }) | ({
             dcIdaIsPortListeningResult?: {
                 isListening?: boolean | undefined;
             } | undefined;
@@ -501,9 +578,9 @@ export declare const DcIdaResult: {
                 isListening?: boolean | undefined;
             } & {
                 isListening?: boolean | undefined;
-            } & { [K_6 in Exclude<keyof I["value"]["dcIdaIsPortListeningResult"], "isListening">]: never; }) | undefined;
+            } & { [K_8 in Exclude<keyof I["value"]["dcIdaIsPortListeningResult"], "isListening">]: never; }) | undefined;
             $case: "dcIdaIsPortListeningResult";
-        } & { [K_7 in Exclude<keyof I["value"], "$case" | "dcIdaIsPortListeningResult">]: never; }) | ({
+        } & { [K_9 in Exclude<keyof I["value"], "$case" | "dcIdaIsPortListeningResult">]: never; }) | ({
             dcIdaQueryProfileResult?: {
                 info?: {
                     platform?: import("../../index").Platform | undefined;
@@ -807,7 +884,7 @@ export declare const DcIdaResult: {
                         currentLoadIdle?: number | undefined;
                         currentLoadIrq?: number | undefined;
                         currentLoadCpu?: number | undefined;
-                    } & { [K_8 in Exclude<keyof I["value"]["dcIdaQueryProfileResult"]["info"]["cpues"][number], keyof import("../../index").RuntimeInfoCpu>]: never; })[] & { [K_9 in Exclude<keyof I["value"]["dcIdaQueryProfileResult"]["info"]["cpues"], keyof {
+                    } & { [K_10 in Exclude<keyof I["value"]["dcIdaQueryProfileResult"]["info"]["cpues"][number], keyof import("../../index").RuntimeInfoCpu>]: never; })[] & { [K_11 in Exclude<keyof I["value"]["dcIdaQueryProfileResult"]["info"]["cpues"], keyof {
                         name?: string | undefined;
                         currentLoad?: number | undefined;
                         currentLoadUser?: number | undefined;
@@ -832,7 +909,7 @@ export declare const DcIdaResult: {
                         min?: number | undefined;
                         cur?: number | undefined;
                         max?: number | undefined;
-                    } & { [K_10 in Exclude<keyof I["value"]["dcIdaQueryProfileResult"]["info"]["cpufreqs"][number], keyof import("../../index").RuntimeInfoCpuFreq>]: never; })[] & { [K_11 in Exclude<keyof I["value"]["dcIdaQueryProfileResult"]["info"]["cpufreqs"], keyof {
+                    } & { [K_12 in Exclude<keyof I["value"]["dcIdaQueryProfileResult"]["info"]["cpufreqs"][number], keyof import("../../index").RuntimeInfoCpuFreq>]: never; })[] & { [K_13 in Exclude<keyof I["value"]["dcIdaQueryProfileResult"]["info"]["cpufreqs"], keyof {
                         idx?: number | undefined;
                         min?: number | undefined;
                         cur?: number | undefined;
@@ -844,7 +921,7 @@ export declare const DcIdaResult: {
                         desc?: string | undefined;
                     } & {
                         desc?: string | undefined;
-                    } & { [K_12 in Exclude<keyof I["value"]["dcIdaQueryProfileResult"]["info"]["gpues"][number], "desc">]: never; })[] & { [K_13 in Exclude<keyof I["value"]["dcIdaQueryProfileResult"]["info"]["gpues"], keyof {
+                    } & { [K_14 in Exclude<keyof I["value"]["dcIdaQueryProfileResult"]["info"]["gpues"][number], "desc">]: never; })[] & { [K_15 in Exclude<keyof I["value"]["dcIdaQueryProfileResult"]["info"]["gpues"], keyof {
                         desc?: string | undefined;
                     }[]>]: never; }) | undefined;
                     mems?: ({
@@ -880,7 +957,7 @@ export declare const DcIdaResult: {
                         swapused?: number | undefined;
                         swapfree?: number | undefined;
                         isLow?: boolean | undefined;
-                    } & { [K_14 in Exclude<keyof I["value"]["dcIdaQueryProfileResult"]["info"]["mems"][number], keyof import("../../index").RuntimeInfoMem>]: never; })[] & { [K_15 in Exclude<keyof I["value"]["dcIdaQueryProfileResult"]["info"]["mems"], keyof {
+                    } & { [K_16 in Exclude<keyof I["value"]["dcIdaQueryProfileResult"]["info"]["mems"][number], keyof import("../../index").RuntimeInfoMem>]: never; })[] & { [K_17 in Exclude<keyof I["value"]["dcIdaQueryProfileResult"]["info"]["mems"], keyof {
                         name?: string | undefined;
                         total?: number | undefined;
                         free?: number | undefined;
@@ -928,7 +1005,7 @@ export declare const DcIdaResult: {
                         timeSpentReadMs?: number | undefined;
                         writesCompleted?: number | undefined;
                         timeSpentWriteMs?: number | undefined;
-                    } & { [K_16 in Exclude<keyof I["value"]["dcIdaQueryProfileResult"]["info"]["fses"][number], keyof import("../../index").RuntimeInfoFs>]: never; })[] & { [K_17 in Exclude<keyof I["value"]["dcIdaQueryProfileResult"]["info"]["fses"], keyof {
+                    } & { [K_18 in Exclude<keyof I["value"]["dcIdaQueryProfileResult"]["info"]["fses"][number], keyof import("../../index").RuntimeInfoFs>]: never; })[] & { [K_19 in Exclude<keyof I["value"]["dcIdaQueryProfileResult"]["info"]["fses"], keyof {
                         name?: string | undefined;
                         type?: string | undefined;
                         mount?: string | undefined;
@@ -965,7 +1042,7 @@ export declare const DcIdaResult: {
                         wifiTxbytes?: number | undefined;
                         totalRxbytes?: number | undefined;
                         totalTxbytes?: number | undefined;
-                    } & { [K_18 in Exclude<keyof I["value"]["dcIdaQueryProfileResult"]["info"]["nets"][number], keyof import("../../index").RuntimeInfoNet>]: never; })[] & { [K_19 in Exclude<keyof I["value"]["dcIdaQueryProfileResult"]["info"]["nets"], keyof {
+                    } & { [K_20 in Exclude<keyof I["value"]["dcIdaQueryProfileResult"]["info"]["nets"][number], keyof import("../../index").RuntimeInfoNet>]: never; })[] & { [K_21 in Exclude<keyof I["value"]["dcIdaQueryProfileResult"]["info"]["nets"], keyof {
                         name?: string | undefined;
                         mobileRxbytes?: number | undefined;
                         mobileTxbytes?: number | undefined;
@@ -986,7 +1063,7 @@ export declare const DcIdaResult: {
                         name?: string | undefined;
                         isScreenOn?: boolean | undefined;
                         error?: string | undefined;
-                    } & { [K_20 in Exclude<keyof I["value"]["dcIdaQueryProfileResult"]["info"]["displays"][number], keyof import("../../index").RuntimeInfoDisplay>]: never; })[] & { [K_21 in Exclude<keyof I["value"]["dcIdaQueryProfileResult"]["info"]["displays"], keyof {
+                    } & { [K_22 in Exclude<keyof I["value"]["dcIdaQueryProfileResult"]["info"]["displays"][number], keyof import("../../index").RuntimeInfoDisplay>]: never; })[] & { [K_23 in Exclude<keyof I["value"]["dcIdaQueryProfileResult"]["info"]["displays"], keyof {
                         name?: string | undefined;
                         isScreenOn?: boolean | undefined;
                         error?: string | undefined;
@@ -1000,7 +1077,7 @@ export declare const DcIdaResult: {
                     } & {
                         name?: string | undefined;
                         percent?: number | undefined;
-                    } & { [K_22 in Exclude<keyof I["value"]["dcIdaQueryProfileResult"]["info"]["batteries"][number], keyof import("../../index").RuntimeInfoBattery>]: never; })[] & { [K_23 in Exclude<keyof I["value"]["dcIdaQueryProfileResult"]["info"]["batteries"], keyof {
+                    } & { [K_24 in Exclude<keyof I["value"]["dcIdaQueryProfileResult"]["info"]["batteries"][number], keyof import("../../index").RuntimeInfoBattery>]: never; })[] & { [K_25 in Exclude<keyof I["value"]["dcIdaQueryProfileResult"]["info"]["batteries"], keyof {
                         name?: string | undefined;
                         percent?: number | undefined;
                     }[]>]: never; }) | undefined;
@@ -1061,7 +1138,7 @@ export declare const DcIdaResult: {
                         } & {
                             name?: string | undefined;
                             percent?: number | undefined;
-                        } & { [K_24 in Exclude<keyof I["value"]["dcIdaQueryProfileResult"]["info"]["processes"][number]["cpues"][number], keyof import("../../index").RuntimeProcessInfoCpu>]: never; })[] & { [K_25 in Exclude<keyof I["value"]["dcIdaQueryProfileResult"]["info"]["processes"][number]["cpues"], keyof {
+                        } & { [K_26 in Exclude<keyof I["value"]["dcIdaQueryProfileResult"]["info"]["processes"][number]["cpues"][number], keyof import("../../index").RuntimeProcessInfoCpu>]: never; })[] & { [K_27 in Exclude<keyof I["value"]["dcIdaQueryProfileResult"]["info"]["processes"][number]["cpues"], keyof {
                             name?: string | undefined;
                             percent?: number | undefined;
                         }[]>]: never; }) | undefined;
@@ -1074,7 +1151,7 @@ export declare const DcIdaResult: {
                         } & {
                             name?: string | undefined;
                             percent?: number | undefined;
-                        } & { [K_26 in Exclude<keyof I["value"]["dcIdaQueryProfileResult"]["info"]["processes"][number]["mems"][number], keyof import("../../index").RuntimeProcessInfoMem>]: never; })[] & { [K_27 in Exclude<keyof I["value"]["dcIdaQueryProfileResult"]["info"]["processes"][number]["mems"], keyof {
+                        } & { [K_28 in Exclude<keyof I["value"]["dcIdaQueryProfileResult"]["info"]["processes"][number]["mems"][number], keyof import("../../index").RuntimeProcessInfoMem>]: never; })[] & { [K_29 in Exclude<keyof I["value"]["dcIdaQueryProfileResult"]["info"]["processes"][number]["mems"], keyof {
                             name?: string | undefined;
                             percent?: number | undefined;
                         }[]>]: never; }) | undefined;
@@ -1090,7 +1167,7 @@ export declare const DcIdaResult: {
                             name?: string | undefined;
                             writeBytes?: number | undefined;
                             readBytes?: number | undefined;
-                        } & { [K_28 in Exclude<keyof I["value"]["dcIdaQueryProfileResult"]["info"]["processes"][number]["fses"][number], keyof import("../../index").RuntimeProcessInfoFs>]: never; })[] & { [K_29 in Exclude<keyof I["value"]["dcIdaQueryProfileResult"]["info"]["processes"][number]["fses"], keyof {
+                        } & { [K_30 in Exclude<keyof I["value"]["dcIdaQueryProfileResult"]["info"]["processes"][number]["fses"][number], keyof import("../../index").RuntimeProcessInfoFs>]: never; })[] & { [K_31 in Exclude<keyof I["value"]["dcIdaQueryProfileResult"]["info"]["processes"][number]["fses"], keyof {
                             name?: string | undefined;
                             writeBytes?: number | undefined;
                             readBytes?: number | undefined;
@@ -1107,12 +1184,12 @@ export declare const DcIdaResult: {
                             name?: string | undefined;
                             sendBytes?: number | undefined;
                             readBytes?: number | undefined;
-                        } & { [K_30 in Exclude<keyof I["value"]["dcIdaQueryProfileResult"]["info"]["processes"][number]["nets"][number], keyof import("../../index").RuntimeProcessInfoNet>]: never; })[] & { [K_31 in Exclude<keyof I["value"]["dcIdaQueryProfileResult"]["info"]["processes"][number]["nets"], keyof {
+                        } & { [K_32 in Exclude<keyof I["value"]["dcIdaQueryProfileResult"]["info"]["processes"][number]["nets"][number], keyof import("../../index").RuntimeProcessInfoNet>]: never; })[] & { [K_33 in Exclude<keyof I["value"]["dcIdaQueryProfileResult"]["info"]["processes"][number]["nets"], keyof {
                             name?: string | undefined;
                             sendBytes?: number | undefined;
                             readBytes?: number | undefined;
                         }[]>]: never; }) | undefined;
-                    } & { [K_32 in Exclude<keyof I["value"]["dcIdaQueryProfileResult"]["info"]["processes"][number], keyof import("../../index").RuntimeProcessInfo>]: never; })[] & { [K_33 in Exclude<keyof I["value"]["dcIdaQueryProfileResult"]["info"]["processes"], keyof {
+                    } & { [K_34 in Exclude<keyof I["value"]["dcIdaQueryProfileResult"]["info"]["processes"][number], keyof import("../../index").RuntimeProcessInfo>]: never; })[] & { [K_35 in Exclude<keyof I["value"]["dcIdaQueryProfileResult"]["info"]["processes"], keyof {
                         name?: string | undefined;
                         pid?: number | undefined;
                         isForeground?: boolean | undefined;
@@ -1135,13 +1212,13 @@ export declare const DcIdaResult: {
                             readBytes?: number | undefined;
                         }[] | undefined;
                     }[]>]: never; }) | undefined;
-                } & { [K_34 in Exclude<keyof I["value"]["dcIdaQueryProfileResult"]["info"], keyof import("../../index").RuntimeInfo>]: never; }) | undefined;
-            } & { [K_35 in Exclude<keyof I["value"]["dcIdaQueryProfileResult"], "info">]: never; }) | undefined;
+                } & { [K_36 in Exclude<keyof I["value"]["dcIdaQueryProfileResult"]["info"], keyof import("../../index").RuntimeInfo>]: never; }) | undefined;
+            } & { [K_37 in Exclude<keyof I["value"]["dcIdaQueryProfileResult"], "info">]: never; }) | undefined;
             $case: "dcIdaQueryProfileResult";
-        } & { [K_36 in Exclude<keyof I["value"], "$case" | "dcIdaQueryProfileResult">]: never; }) | ({
+        } & { [K_38 in Exclude<keyof I["value"], "$case" | "dcIdaQueryProfileResult">]: never; }) | ({
             dcGdcDaControlResult?: {
                 error?: {
-                    code?: import("../../index").Code | undefined;
+                    code?: import("../../outer/errors").Code | undefined;
                     message?: string | undefined;
                     details?: {
                         [x: string]: any;
@@ -1153,7 +1230,7 @@ export declare const DcIdaResult: {
         } & {
             dcGdcDaControlResult?: ({
                 error?: {
-                    code?: import("../../index").Code | undefined;
+                    code?: import("../../outer/errors").Code | undefined;
                     message?: string | undefined;
                     details?: {
                         [x: string]: any;
@@ -1161,24 +1238,47 @@ export declare const DcIdaResult: {
                 } | undefined;
             } & {
                 error?: ({
-                    code?: import("../../index").Code | undefined;
+                    code?: import("../../outer/errors").Code | undefined;
                     message?: string | undefined;
                     details?: {
                         [x: string]: any;
                     } | undefined;
                 } & {
-                    code?: import("../../index").Code | undefined;
+                    code?: import("../../outer/errors").Code | undefined;
                     message?: string | undefined;
                     details?: ({
                         [x: string]: any;
                     } & {
                         [x: string]: any;
-                    } & { [K_37 in Exclude<keyof I["value"]["dcGdcDaControlResult"]["error"]["details"], string | number>]: never; }) | undefined;
-                } & { [K_38 in Exclude<keyof I["value"]["dcGdcDaControlResult"]["error"], keyof import("../../index").ErrorResult>]: never; }) | undefined;
-            } & { [K_39 in Exclude<keyof I["value"]["dcGdcDaControlResult"], "error">]: never; }) | undefined;
+                    } & { [K_39 in Exclude<keyof I["value"]["dcGdcDaControlResult"]["error"]["details"], string | number>]: never; }) | undefined;
+                } & { [K_40 in Exclude<keyof I["value"]["dcGdcDaControlResult"]["error"], keyof ErrorResult>]: never; }) | undefined;
+            } & { [K_41 in Exclude<keyof I["value"]["dcGdcDaControlResult"], "error">]: never; }) | undefined;
             $case: "dcGdcDaControlResult";
-        } & { [K_40 in Exclude<keyof I["value"], "$case" | "dcGdcDaControlResult">]: never; }) | undefined;
-    } & { [K_41 in Exclude<keyof I, keyof DcIdaResult>]: never; }>(object: I): DcIdaResult;
+        } & { [K_42 in Exclude<keyof I["value"], "$case" | "dcGdcDaControlResult">]: never; }) | ({
+            dcIdaSwitchInputBlockResult?: {} | undefined;
+        } & {
+            $case: "dcIdaSwitchInputBlockResult";
+        } & {
+            dcIdaSwitchInputBlockResult?: ({} & {} & { [K_43 in Exclude<keyof I["value"]["dcIdaSwitchInputBlockResult"], never>]: never; }) | undefined;
+            $case: "dcIdaSwitchInputBlockResult";
+        } & { [K_44 in Exclude<keyof I["value"], "$case" | "dcIdaSwitchInputBlockResult">]: never; }) | ({
+            dcIdaQueryAlertResult?: {
+                isShow?: boolean | undefined;
+                title?: string | undefined;
+            } | undefined;
+        } & {
+            $case: "dcIdaQueryAlertResult";
+        } & {
+            dcIdaQueryAlertResult?: ({
+                isShow?: boolean | undefined;
+                title?: string | undefined;
+            } & {
+                isShow?: boolean | undefined;
+                title?: string | undefined;
+            } & { [K_45 in Exclude<keyof I["value"]["dcIdaQueryAlertResult"], keyof DcIdaQueryAlertResult>]: never; }) | undefined;
+            $case: "dcIdaQueryAlertResult";
+        } & { [K_46 in Exclude<keyof I["value"], "$case" | "dcIdaQueryAlertResult">]: never; }) | undefined;
+    } & { [K_47 in Exclude<keyof I, keyof DcIdaResult>]: never; }>(object: I): DcIdaResult;
 };
 export declare const DcIdaParamList: {
     encode(message: DcIdaParamList, writer?: _m0.Writer): _m0.Writer;
@@ -1244,6 +1344,16 @@ export declare const DcIdaParamList: {
                 } | undefined;
             } & {
                 $case: "dcGdcDaControlParam";
+            }) | ({
+                dcIdaSwitchInputBlockParam?: {
+                    isBlock?: boolean | undefined;
+                } | undefined;
+            } & {
+                $case: "dcIdaSwitchInputBlockParam";
+            }) | ({
+                dcIdaQueryAlertParam?: {} | undefined;
+            } & {
+                $case: "dcIdaQueryAlertParam";
             }) | undefined;
         }[] | undefined;
     } & {
@@ -1305,6 +1415,16 @@ export declare const DcIdaParamList: {
                 } | undefined;
             } & {
                 $case: "dcGdcDaControlParam";
+            }) | ({
+                dcIdaSwitchInputBlockParam?: {
+                    isBlock?: boolean | undefined;
+                } | undefined;
+            } & {
+                $case: "dcIdaSwitchInputBlockParam";
+            }) | ({
+                dcIdaQueryAlertParam?: {} | undefined;
+            } & {
+                $case: "dcIdaQueryAlertParam";
             }) | undefined;
         }[] & ({
             seq?: number | undefined;
@@ -1364,6 +1484,16 @@ export declare const DcIdaParamList: {
                 } | undefined;
             } & {
                 $case: "dcGdcDaControlParam";
+            }) | ({
+                dcIdaSwitchInputBlockParam?: {
+                    isBlock?: boolean | undefined;
+                } | undefined;
+            } & {
+                $case: "dcIdaSwitchInputBlockParam";
+            }) | ({
+                dcIdaQueryAlertParam?: {} | undefined;
+            } & {
+                $case: "dcIdaQueryAlertParam";
             }) | undefined;
         } & {
             seq?: number | undefined;
@@ -1547,8 +1677,28 @@ export declare const DcIdaParamList: {
                     } & { [K_12 in Exclude<keyof I["params"][number]["value"]["dcGdcDaControlParam"]["control"], keyof import("../index").DeviceControl>]: never; }) | undefined;
                 } & { [K_13 in Exclude<keyof I["params"][number]["value"]["dcGdcDaControlParam"], "control">]: never; }) | undefined;
                 $case: "dcGdcDaControlParam";
-            } & { [K_14 in Exclude<keyof I["params"][number]["value"], "$case" | "dcGdcDaControlParam">]: never; }) | undefined;
-        } & { [K_15 in Exclude<keyof I["params"][number], keyof DcIdaParam>]: never; })[] & { [K_16 in Exclude<keyof I["params"], keyof {
+            } & { [K_14 in Exclude<keyof I["params"][number]["value"], "$case" | "dcGdcDaControlParam">]: never; }) | ({
+                dcIdaSwitchInputBlockParam?: {
+                    isBlock?: boolean | undefined;
+                } | undefined;
+            } & {
+                $case: "dcIdaSwitchInputBlockParam";
+            } & {
+                dcIdaSwitchInputBlockParam?: ({
+                    isBlock?: boolean | undefined;
+                } & {
+                    isBlock?: boolean | undefined;
+                } & { [K_15 in Exclude<keyof I["params"][number]["value"]["dcIdaSwitchInputBlockParam"], "isBlock">]: never; }) | undefined;
+                $case: "dcIdaSwitchInputBlockParam";
+            } & { [K_16 in Exclude<keyof I["params"][number]["value"], "$case" | "dcIdaSwitchInputBlockParam">]: never; }) | ({
+                dcIdaQueryAlertParam?: {} | undefined;
+            } & {
+                $case: "dcIdaQueryAlertParam";
+            } & {
+                dcIdaQueryAlertParam?: ({} & {} & { [K_17 in Exclude<keyof I["params"][number]["value"]["dcIdaQueryAlertParam"], never>]: never; }) | undefined;
+                $case: "dcIdaQueryAlertParam";
+            } & { [K_18 in Exclude<keyof I["params"][number]["value"], "$case" | "dcIdaQueryAlertParam">]: never; }) | undefined;
+        } & { [K_19 in Exclude<keyof I["params"][number], keyof DcIdaParam>]: never; })[] & { [K_20 in Exclude<keyof I["params"], keyof {
             seq?: number | undefined;
             value?: ({
                 dcIdaRunappParam?: {
@@ -1606,9 +1756,19 @@ export declare const DcIdaParamList: {
                 } | undefined;
             } & {
                 $case: "dcGdcDaControlParam";
+            }) | ({
+                dcIdaSwitchInputBlockParam?: {
+                    isBlock?: boolean | undefined;
+                } | undefined;
+            } & {
+                $case: "dcIdaSwitchInputBlockParam";
+            }) | ({
+                dcIdaQueryAlertParam?: {} | undefined;
+            } & {
+                $case: "dcIdaQueryAlertParam";
             }) | undefined;
         }[]>]: never; }) | undefined;
-    } & { [K_17 in Exclude<keyof I, "params">]: never; }>(object: I): DcIdaParamList;
+    } & { [K_21 in Exclude<keyof I, "params">]: never; }>(object: I): DcIdaParamList;
 };
 export declare const DcIdaResultList: {
     encode(message: DcIdaResultList, writer?: _m0.Writer): _m0.Writer;
@@ -1618,10 +1778,17 @@ export declare const DcIdaResultList: {
     fromPartial<I extends {
         results?: {
             seq?: number | undefined;
+            error?: {
+                code?: import("../../outer/errors").Code | undefined;
+                message?: string | undefined;
+                details?: {
+                    [x: string]: any;
+                } | undefined;
+            } | undefined;
             value?: ({
                 dcIdaRunappResult?: {
                     error?: {
-                        code?: import("../../index").Code | undefined;
+                        code?: import("../../outer/errors").Code | undefined;
                         message?: string | undefined;
                         details?: {
                             [x: string]: any;
@@ -1740,7 +1907,7 @@ export declare const DcIdaResultList: {
             }) | ({
                 dcGdcDaControlResult?: {
                     error?: {
-                        code?: import("../../index").Code | undefined;
+                        code?: import("../../outer/errors").Code | undefined;
                         message?: string | undefined;
                         details?: {
                             [x: string]: any;
@@ -1749,15 +1916,33 @@ export declare const DcIdaResultList: {
                 } | undefined;
             } & {
                 $case: "dcGdcDaControlResult";
+            }) | ({
+                dcIdaSwitchInputBlockResult?: {} | undefined;
+            } & {
+                $case: "dcIdaSwitchInputBlockResult";
+            }) | ({
+                dcIdaQueryAlertResult?: {
+                    isShow?: boolean | undefined;
+                    title?: string | undefined;
+                } | undefined;
+            } & {
+                $case: "dcIdaQueryAlertResult";
             }) | undefined;
         }[] | undefined;
     } & {
         results?: ({
             seq?: number | undefined;
+            error?: {
+                code?: import("../../outer/errors").Code | undefined;
+                message?: string | undefined;
+                details?: {
+                    [x: string]: any;
+                } | undefined;
+            } | undefined;
             value?: ({
                 dcIdaRunappResult?: {
                     error?: {
-                        code?: import("../../index").Code | undefined;
+                        code?: import("../../outer/errors").Code | undefined;
                         message?: string | undefined;
                         details?: {
                             [x: string]: any;
@@ -1876,7 +2061,7 @@ export declare const DcIdaResultList: {
             }) | ({
                 dcGdcDaControlResult?: {
                     error?: {
-                        code?: import("../../index").Code | undefined;
+                        code?: import("../../outer/errors").Code | undefined;
                         message?: string | undefined;
                         details?: {
                             [x: string]: any;
@@ -1885,13 +2070,31 @@ export declare const DcIdaResultList: {
                 } | undefined;
             } & {
                 $case: "dcGdcDaControlResult";
+            }) | ({
+                dcIdaSwitchInputBlockResult?: {} | undefined;
+            } & {
+                $case: "dcIdaSwitchInputBlockResult";
+            }) | ({
+                dcIdaQueryAlertResult?: {
+                    isShow?: boolean | undefined;
+                    title?: string | undefined;
+                } | undefined;
+            } & {
+                $case: "dcIdaQueryAlertResult";
             }) | undefined;
         }[] & ({
             seq?: number | undefined;
+            error?: {
+                code?: import("../../outer/errors").Code | undefined;
+                message?: string | undefined;
+                details?: {
+                    [x: string]: any;
+                } | undefined;
+            } | undefined;
             value?: ({
                 dcIdaRunappResult?: {
                     error?: {
-                        code?: import("../../index").Code | undefined;
+                        code?: import("../../outer/errors").Code | undefined;
                         message?: string | undefined;
                         details?: {
                             [x: string]: any;
@@ -2010,7 +2213,7 @@ export declare const DcIdaResultList: {
             }) | ({
                 dcGdcDaControlResult?: {
                     error?: {
-                        code?: import("../../index").Code | undefined;
+                        code?: import("../../outer/errors").Code | undefined;
                         message?: string | undefined;
                         details?: {
                             [x: string]: any;
@@ -2019,13 +2222,39 @@ export declare const DcIdaResultList: {
                 } | undefined;
             } & {
                 $case: "dcGdcDaControlResult";
+            }) | ({
+                dcIdaSwitchInputBlockResult?: {} | undefined;
+            } & {
+                $case: "dcIdaSwitchInputBlockResult";
+            }) | ({
+                dcIdaQueryAlertResult?: {
+                    isShow?: boolean | undefined;
+                    title?: string | undefined;
+                } | undefined;
+            } & {
+                $case: "dcIdaQueryAlertResult";
             }) | undefined;
         } & {
             seq?: number | undefined;
+            error?: ({
+                code?: import("../../outer/errors").Code | undefined;
+                message?: string | undefined;
+                details?: {
+                    [x: string]: any;
+                } | undefined;
+            } & {
+                code?: import("../../outer/errors").Code | undefined;
+                message?: string | undefined;
+                details?: ({
+                    [x: string]: any;
+                } & {
+                    [x: string]: any;
+                } & { [K in Exclude<keyof I["results"][number]["error"]["details"], string | number>]: never; }) | undefined;
+            } & { [K_1 in Exclude<keyof I["results"][number]["error"], keyof ErrorResult>]: never; }) | undefined;
             value?: ({
                 dcIdaRunappResult?: {
                     error?: {
-                        code?: import("../../index").Code | undefined;
+                        code?: import("../../outer/errors").Code | undefined;
                         message?: string | undefined;
                         details?: {
                             [x: string]: any;
@@ -2037,7 +2266,7 @@ export declare const DcIdaResultList: {
             } & {
                 dcIdaRunappResult?: ({
                     error?: {
-                        code?: import("../../index").Code | undefined;
+                        code?: import("../../outer/errors").Code | undefined;
                         message?: string | undefined;
                         details?: {
                             [x: string]: any;
@@ -2045,23 +2274,23 @@ export declare const DcIdaResultList: {
                     } | undefined;
                 } & {
                     error?: ({
-                        code?: import("../../index").Code | undefined;
+                        code?: import("../../outer/errors").Code | undefined;
                         message?: string | undefined;
                         details?: {
                             [x: string]: any;
                         } | undefined;
                     } & {
-                        code?: import("../../index").Code | undefined;
+                        code?: import("../../outer/errors").Code | undefined;
                         message?: string | undefined;
                         details?: ({
                             [x: string]: any;
                         } & {
                             [x: string]: any;
-                        } & { [K in Exclude<keyof I["results"][number]["value"]["dcIdaRunappResult"]["error"]["details"], string | number>]: never; }) | undefined;
-                    } & { [K_1 in Exclude<keyof I["results"][number]["value"]["dcIdaRunappResult"]["error"], keyof import("../../index").ErrorResult>]: never; }) | undefined;
-                } & { [K_2 in Exclude<keyof I["results"][number]["value"]["dcIdaRunappResult"], "error">]: never; }) | undefined;
+                        } & { [K_2 in Exclude<keyof I["results"][number]["value"]["dcIdaRunappResult"]["error"]["details"], string | number>]: never; }) | undefined;
+                    } & { [K_3 in Exclude<keyof I["results"][number]["value"]["dcIdaRunappResult"]["error"], keyof ErrorResult>]: never; }) | undefined;
+                } & { [K_4 in Exclude<keyof I["results"][number]["value"]["dcIdaRunappResult"], "error">]: never; }) | undefined;
                 $case: "dcIdaRunappResult";
-            } & { [K_3 in Exclude<keyof I["results"][number]["value"], "$case" | "dcIdaRunappResult">]: never; }) | ({
+            } & { [K_5 in Exclude<keyof I["results"][number]["value"], "$case" | "dcIdaRunappResult">]: never; }) | ({
                 dcIdaGetSystemInfoResult?: {
                     screenWidth?: number | undefined;
                     screenHeight?: number | undefined;
@@ -2075,9 +2304,9 @@ export declare const DcIdaResultList: {
                 } & {
                     screenWidth?: number | undefined;
                     screenHeight?: number | undefined;
-                } & { [K_4 in Exclude<keyof I["results"][number]["value"]["dcIdaGetSystemInfoResult"], keyof DcIdaGetSystemInfoResult>]: never; }) | undefined;
+                } & { [K_6 in Exclude<keyof I["results"][number]["value"]["dcIdaGetSystemInfoResult"], keyof DcIdaGetSystemInfoResult>]: never; }) | undefined;
                 $case: "dcIdaGetSystemInfoResult";
-            } & { [K_5 in Exclude<keyof I["results"][number]["value"], "$case" | "dcIdaGetSystemInfoResult">]: never; }) | ({
+            } & { [K_7 in Exclude<keyof I["results"][number]["value"], "$case" | "dcIdaGetSystemInfoResult">]: never; }) | ({
                 dcIdaIsPortListeningResult?: {
                     isListening?: boolean | undefined;
                 } | undefined;
@@ -2088,9 +2317,9 @@ export declare const DcIdaResultList: {
                     isListening?: boolean | undefined;
                 } & {
                     isListening?: boolean | undefined;
-                } & { [K_6 in Exclude<keyof I["results"][number]["value"]["dcIdaIsPortListeningResult"], "isListening">]: never; }) | undefined;
+                } & { [K_8 in Exclude<keyof I["results"][number]["value"]["dcIdaIsPortListeningResult"], "isListening">]: never; }) | undefined;
                 $case: "dcIdaIsPortListeningResult";
-            } & { [K_7 in Exclude<keyof I["results"][number]["value"], "$case" | "dcIdaIsPortListeningResult">]: never; }) | ({
+            } & { [K_9 in Exclude<keyof I["results"][number]["value"], "$case" | "dcIdaIsPortListeningResult">]: never; }) | ({
                 dcIdaQueryProfileResult?: {
                     info?: {
                         platform?: import("../../index").Platform | undefined;
@@ -2394,7 +2623,7 @@ export declare const DcIdaResultList: {
                             currentLoadIdle?: number | undefined;
                             currentLoadIrq?: number | undefined;
                             currentLoadCpu?: number | undefined;
-                        } & { [K_8 in Exclude<keyof I["results"][number]["value"]["dcIdaQueryProfileResult"]["info"]["cpues"][number], keyof import("../../index").RuntimeInfoCpu>]: never; })[] & { [K_9 in Exclude<keyof I["results"][number]["value"]["dcIdaQueryProfileResult"]["info"]["cpues"], keyof {
+                        } & { [K_10 in Exclude<keyof I["results"][number]["value"]["dcIdaQueryProfileResult"]["info"]["cpues"][number], keyof import("../../index").RuntimeInfoCpu>]: never; })[] & { [K_11 in Exclude<keyof I["results"][number]["value"]["dcIdaQueryProfileResult"]["info"]["cpues"], keyof {
                             name?: string | undefined;
                             currentLoad?: number | undefined;
                             currentLoadUser?: number | undefined;
@@ -2419,7 +2648,7 @@ export declare const DcIdaResultList: {
                             min?: number | undefined;
                             cur?: number | undefined;
                             max?: number | undefined;
-                        } & { [K_10 in Exclude<keyof I["results"][number]["value"]["dcIdaQueryProfileResult"]["info"]["cpufreqs"][number], keyof import("../../index").RuntimeInfoCpuFreq>]: never; })[] & { [K_11 in Exclude<keyof I["results"][number]["value"]["dcIdaQueryProfileResult"]["info"]["cpufreqs"], keyof {
+                        } & { [K_12 in Exclude<keyof I["results"][number]["value"]["dcIdaQueryProfileResult"]["info"]["cpufreqs"][number], keyof import("../../index").RuntimeInfoCpuFreq>]: never; })[] & { [K_13 in Exclude<keyof I["results"][number]["value"]["dcIdaQueryProfileResult"]["info"]["cpufreqs"], keyof {
                             idx?: number | undefined;
                             min?: number | undefined;
                             cur?: number | undefined;
@@ -2431,7 +2660,7 @@ export declare const DcIdaResultList: {
                             desc?: string | undefined;
                         } & {
                             desc?: string | undefined;
-                        } & { [K_12 in Exclude<keyof I["results"][number]["value"]["dcIdaQueryProfileResult"]["info"]["gpues"][number], "desc">]: never; })[] & { [K_13 in Exclude<keyof I["results"][number]["value"]["dcIdaQueryProfileResult"]["info"]["gpues"], keyof {
+                        } & { [K_14 in Exclude<keyof I["results"][number]["value"]["dcIdaQueryProfileResult"]["info"]["gpues"][number], "desc">]: never; })[] & { [K_15 in Exclude<keyof I["results"][number]["value"]["dcIdaQueryProfileResult"]["info"]["gpues"], keyof {
                             desc?: string | undefined;
                         }[]>]: never; }) | undefined;
                         mems?: ({
@@ -2467,7 +2696,7 @@ export declare const DcIdaResultList: {
                             swapused?: number | undefined;
                             swapfree?: number | undefined;
                             isLow?: boolean | undefined;
-                        } & { [K_14 in Exclude<keyof I["results"][number]["value"]["dcIdaQueryProfileResult"]["info"]["mems"][number], keyof import("../../index").RuntimeInfoMem>]: never; })[] & { [K_15 in Exclude<keyof I["results"][number]["value"]["dcIdaQueryProfileResult"]["info"]["mems"], keyof {
+                        } & { [K_16 in Exclude<keyof I["results"][number]["value"]["dcIdaQueryProfileResult"]["info"]["mems"][number], keyof import("../../index").RuntimeInfoMem>]: never; })[] & { [K_17 in Exclude<keyof I["results"][number]["value"]["dcIdaQueryProfileResult"]["info"]["mems"], keyof {
                             name?: string | undefined;
                             total?: number | undefined;
                             free?: number | undefined;
@@ -2515,7 +2744,7 @@ export declare const DcIdaResultList: {
                             timeSpentReadMs?: number | undefined;
                             writesCompleted?: number | undefined;
                             timeSpentWriteMs?: number | undefined;
-                        } & { [K_16 in Exclude<keyof I["results"][number]["value"]["dcIdaQueryProfileResult"]["info"]["fses"][number], keyof import("../../index").RuntimeInfoFs>]: never; })[] & { [K_17 in Exclude<keyof I["results"][number]["value"]["dcIdaQueryProfileResult"]["info"]["fses"], keyof {
+                        } & { [K_18 in Exclude<keyof I["results"][number]["value"]["dcIdaQueryProfileResult"]["info"]["fses"][number], keyof import("../../index").RuntimeInfoFs>]: never; })[] & { [K_19 in Exclude<keyof I["results"][number]["value"]["dcIdaQueryProfileResult"]["info"]["fses"], keyof {
                             name?: string | undefined;
                             type?: string | undefined;
                             mount?: string | undefined;
@@ -2552,7 +2781,7 @@ export declare const DcIdaResultList: {
                             wifiTxbytes?: number | undefined;
                             totalRxbytes?: number | undefined;
                             totalTxbytes?: number | undefined;
-                        } & { [K_18 in Exclude<keyof I["results"][number]["value"]["dcIdaQueryProfileResult"]["info"]["nets"][number], keyof import("../../index").RuntimeInfoNet>]: never; })[] & { [K_19 in Exclude<keyof I["results"][number]["value"]["dcIdaQueryProfileResult"]["info"]["nets"], keyof {
+                        } & { [K_20 in Exclude<keyof I["results"][number]["value"]["dcIdaQueryProfileResult"]["info"]["nets"][number], keyof import("../../index").RuntimeInfoNet>]: never; })[] & { [K_21 in Exclude<keyof I["results"][number]["value"]["dcIdaQueryProfileResult"]["info"]["nets"], keyof {
                             name?: string | undefined;
                             mobileRxbytes?: number | undefined;
                             mobileTxbytes?: number | undefined;
@@ -2573,7 +2802,7 @@ export declare const DcIdaResultList: {
                             name?: string | undefined;
                             isScreenOn?: boolean | undefined;
                             error?: string | undefined;
-                        } & { [K_20 in Exclude<keyof I["results"][number]["value"]["dcIdaQueryProfileResult"]["info"]["displays"][number], keyof import("../../index").RuntimeInfoDisplay>]: never; })[] & { [K_21 in Exclude<keyof I["results"][number]["value"]["dcIdaQueryProfileResult"]["info"]["displays"], keyof {
+                        } & { [K_22 in Exclude<keyof I["results"][number]["value"]["dcIdaQueryProfileResult"]["info"]["displays"][number], keyof import("../../index").RuntimeInfoDisplay>]: never; })[] & { [K_23 in Exclude<keyof I["results"][number]["value"]["dcIdaQueryProfileResult"]["info"]["displays"], keyof {
                             name?: string | undefined;
                             isScreenOn?: boolean | undefined;
                             error?: string | undefined;
@@ -2587,7 +2816,7 @@ export declare const DcIdaResultList: {
                         } & {
                             name?: string | undefined;
                             percent?: number | undefined;
-                        } & { [K_22 in Exclude<keyof I["results"][number]["value"]["dcIdaQueryProfileResult"]["info"]["batteries"][number], keyof import("../../index").RuntimeInfoBattery>]: never; })[] & { [K_23 in Exclude<keyof I["results"][number]["value"]["dcIdaQueryProfileResult"]["info"]["batteries"], keyof {
+                        } & { [K_24 in Exclude<keyof I["results"][number]["value"]["dcIdaQueryProfileResult"]["info"]["batteries"][number], keyof import("../../index").RuntimeInfoBattery>]: never; })[] & { [K_25 in Exclude<keyof I["results"][number]["value"]["dcIdaQueryProfileResult"]["info"]["batteries"], keyof {
                             name?: string | undefined;
                             percent?: number | undefined;
                         }[]>]: never; }) | undefined;
@@ -2648,7 +2877,7 @@ export declare const DcIdaResultList: {
                             } & {
                                 name?: string | undefined;
                                 percent?: number | undefined;
-                            } & { [K_24 in Exclude<keyof I["results"][number]["value"]["dcIdaQueryProfileResult"]["info"]["processes"][number]["cpues"][number], keyof import("../../index").RuntimeProcessInfoCpu>]: never; })[] & { [K_25 in Exclude<keyof I["results"][number]["value"]["dcIdaQueryProfileResult"]["info"]["processes"][number]["cpues"], keyof {
+                            } & { [K_26 in Exclude<keyof I["results"][number]["value"]["dcIdaQueryProfileResult"]["info"]["processes"][number]["cpues"][number], keyof import("../../index").RuntimeProcessInfoCpu>]: never; })[] & { [K_27 in Exclude<keyof I["results"][number]["value"]["dcIdaQueryProfileResult"]["info"]["processes"][number]["cpues"], keyof {
                                 name?: string | undefined;
                                 percent?: number | undefined;
                             }[]>]: never; }) | undefined;
@@ -2661,7 +2890,7 @@ export declare const DcIdaResultList: {
                             } & {
                                 name?: string | undefined;
                                 percent?: number | undefined;
-                            } & { [K_26 in Exclude<keyof I["results"][number]["value"]["dcIdaQueryProfileResult"]["info"]["processes"][number]["mems"][number], keyof import("../../index").RuntimeProcessInfoMem>]: never; })[] & { [K_27 in Exclude<keyof I["results"][number]["value"]["dcIdaQueryProfileResult"]["info"]["processes"][number]["mems"], keyof {
+                            } & { [K_28 in Exclude<keyof I["results"][number]["value"]["dcIdaQueryProfileResult"]["info"]["processes"][number]["mems"][number], keyof import("../../index").RuntimeProcessInfoMem>]: never; })[] & { [K_29 in Exclude<keyof I["results"][number]["value"]["dcIdaQueryProfileResult"]["info"]["processes"][number]["mems"], keyof {
                                 name?: string | undefined;
                                 percent?: number | undefined;
                             }[]>]: never; }) | undefined;
@@ -2677,7 +2906,7 @@ export declare const DcIdaResultList: {
                                 name?: string | undefined;
                                 writeBytes?: number | undefined;
                                 readBytes?: number | undefined;
-                            } & { [K_28 in Exclude<keyof I["results"][number]["value"]["dcIdaQueryProfileResult"]["info"]["processes"][number]["fses"][number], keyof import("../../index").RuntimeProcessInfoFs>]: never; })[] & { [K_29 in Exclude<keyof I["results"][number]["value"]["dcIdaQueryProfileResult"]["info"]["processes"][number]["fses"], keyof {
+                            } & { [K_30 in Exclude<keyof I["results"][number]["value"]["dcIdaQueryProfileResult"]["info"]["processes"][number]["fses"][number], keyof import("../../index").RuntimeProcessInfoFs>]: never; })[] & { [K_31 in Exclude<keyof I["results"][number]["value"]["dcIdaQueryProfileResult"]["info"]["processes"][number]["fses"], keyof {
                                 name?: string | undefined;
                                 writeBytes?: number | undefined;
                                 readBytes?: number | undefined;
@@ -2694,12 +2923,12 @@ export declare const DcIdaResultList: {
                                 name?: string | undefined;
                                 sendBytes?: number | undefined;
                                 readBytes?: number | undefined;
-                            } & { [K_30 in Exclude<keyof I["results"][number]["value"]["dcIdaQueryProfileResult"]["info"]["processes"][number]["nets"][number], keyof import("../../index").RuntimeProcessInfoNet>]: never; })[] & { [K_31 in Exclude<keyof I["results"][number]["value"]["dcIdaQueryProfileResult"]["info"]["processes"][number]["nets"], keyof {
+                            } & { [K_32 in Exclude<keyof I["results"][number]["value"]["dcIdaQueryProfileResult"]["info"]["processes"][number]["nets"][number], keyof import("../../index").RuntimeProcessInfoNet>]: never; })[] & { [K_33 in Exclude<keyof I["results"][number]["value"]["dcIdaQueryProfileResult"]["info"]["processes"][number]["nets"], keyof {
                                 name?: string | undefined;
                                 sendBytes?: number | undefined;
                                 readBytes?: number | undefined;
                             }[]>]: never; }) | undefined;
-                        } & { [K_32 in Exclude<keyof I["results"][number]["value"]["dcIdaQueryProfileResult"]["info"]["processes"][number], keyof import("../../index").RuntimeProcessInfo>]: never; })[] & { [K_33 in Exclude<keyof I["results"][number]["value"]["dcIdaQueryProfileResult"]["info"]["processes"], keyof {
+                        } & { [K_34 in Exclude<keyof I["results"][number]["value"]["dcIdaQueryProfileResult"]["info"]["processes"][number], keyof import("../../index").RuntimeProcessInfo>]: never; })[] & { [K_35 in Exclude<keyof I["results"][number]["value"]["dcIdaQueryProfileResult"]["info"]["processes"], keyof {
                             name?: string | undefined;
                             pid?: number | undefined;
                             isForeground?: boolean | undefined;
@@ -2722,13 +2951,13 @@ export declare const DcIdaResultList: {
                                 readBytes?: number | undefined;
                             }[] | undefined;
                         }[]>]: never; }) | undefined;
-                    } & { [K_34 in Exclude<keyof I["results"][number]["value"]["dcIdaQueryProfileResult"]["info"], keyof import("../../index").RuntimeInfo>]: never; }) | undefined;
-                } & { [K_35 in Exclude<keyof I["results"][number]["value"]["dcIdaQueryProfileResult"], "info">]: never; }) | undefined;
+                    } & { [K_36 in Exclude<keyof I["results"][number]["value"]["dcIdaQueryProfileResult"]["info"], keyof import("../../index").RuntimeInfo>]: never; }) | undefined;
+                } & { [K_37 in Exclude<keyof I["results"][number]["value"]["dcIdaQueryProfileResult"], "info">]: never; }) | undefined;
                 $case: "dcIdaQueryProfileResult";
-            } & { [K_36 in Exclude<keyof I["results"][number]["value"], "$case" | "dcIdaQueryProfileResult">]: never; }) | ({
+            } & { [K_38 in Exclude<keyof I["results"][number]["value"], "$case" | "dcIdaQueryProfileResult">]: never; }) | ({
                 dcGdcDaControlResult?: {
                     error?: {
-                        code?: import("../../index").Code | undefined;
+                        code?: import("../../outer/errors").Code | undefined;
                         message?: string | undefined;
                         details?: {
                             [x: string]: any;
@@ -2740,7 +2969,7 @@ export declare const DcIdaResultList: {
             } & {
                 dcGdcDaControlResult?: ({
                     error?: {
-                        code?: import("../../index").Code | undefined;
+                        code?: import("../../outer/errors").Code | undefined;
                         message?: string | undefined;
                         details?: {
                             [x: string]: any;
@@ -2748,29 +2977,59 @@ export declare const DcIdaResultList: {
                     } | undefined;
                 } & {
                     error?: ({
-                        code?: import("../../index").Code | undefined;
+                        code?: import("../../outer/errors").Code | undefined;
                         message?: string | undefined;
                         details?: {
                             [x: string]: any;
                         } | undefined;
                     } & {
-                        code?: import("../../index").Code | undefined;
+                        code?: import("../../outer/errors").Code | undefined;
                         message?: string | undefined;
                         details?: ({
                             [x: string]: any;
                         } & {
                             [x: string]: any;
-                        } & { [K_37 in Exclude<keyof I["results"][number]["value"]["dcGdcDaControlResult"]["error"]["details"], string | number>]: never; }) | undefined;
-                    } & { [K_38 in Exclude<keyof I["results"][number]["value"]["dcGdcDaControlResult"]["error"], keyof import("../../index").ErrorResult>]: never; }) | undefined;
-                } & { [K_39 in Exclude<keyof I["results"][number]["value"]["dcGdcDaControlResult"], "error">]: never; }) | undefined;
+                        } & { [K_39 in Exclude<keyof I["results"][number]["value"]["dcGdcDaControlResult"]["error"]["details"], string | number>]: never; }) | undefined;
+                    } & { [K_40 in Exclude<keyof I["results"][number]["value"]["dcGdcDaControlResult"]["error"], keyof ErrorResult>]: never; }) | undefined;
+                } & { [K_41 in Exclude<keyof I["results"][number]["value"]["dcGdcDaControlResult"], "error">]: never; }) | undefined;
                 $case: "dcGdcDaControlResult";
-            } & { [K_40 in Exclude<keyof I["results"][number]["value"], "$case" | "dcGdcDaControlResult">]: never; }) | undefined;
-        } & { [K_41 in Exclude<keyof I["results"][number], keyof DcIdaResult>]: never; })[] & { [K_42 in Exclude<keyof I["results"], keyof {
+            } & { [K_42 in Exclude<keyof I["results"][number]["value"], "$case" | "dcGdcDaControlResult">]: never; }) | ({
+                dcIdaSwitchInputBlockResult?: {} | undefined;
+            } & {
+                $case: "dcIdaSwitchInputBlockResult";
+            } & {
+                dcIdaSwitchInputBlockResult?: ({} & {} & { [K_43 in Exclude<keyof I["results"][number]["value"]["dcIdaSwitchInputBlockResult"], never>]: never; }) | undefined;
+                $case: "dcIdaSwitchInputBlockResult";
+            } & { [K_44 in Exclude<keyof I["results"][number]["value"], "$case" | "dcIdaSwitchInputBlockResult">]: never; }) | ({
+                dcIdaQueryAlertResult?: {
+                    isShow?: boolean | undefined;
+                    title?: string | undefined;
+                } | undefined;
+            } & {
+                $case: "dcIdaQueryAlertResult";
+            } & {
+                dcIdaQueryAlertResult?: ({
+                    isShow?: boolean | undefined;
+                    title?: string | undefined;
+                } & {
+                    isShow?: boolean | undefined;
+                    title?: string | undefined;
+                } & { [K_45 in Exclude<keyof I["results"][number]["value"]["dcIdaQueryAlertResult"], keyof DcIdaQueryAlertResult>]: never; }) | undefined;
+                $case: "dcIdaQueryAlertResult";
+            } & { [K_46 in Exclude<keyof I["results"][number]["value"], "$case" | "dcIdaQueryAlertResult">]: never; }) | undefined;
+        } & { [K_47 in Exclude<keyof I["results"][number], keyof DcIdaResult>]: never; })[] & { [K_48 in Exclude<keyof I["results"], keyof {
             seq?: number | undefined;
+            error?: {
+                code?: import("../../outer/errors").Code | undefined;
+                message?: string | undefined;
+                details?: {
+                    [x: string]: any;
+                } | undefined;
+            } | undefined;
             value?: ({
                 dcIdaRunappResult?: {
                     error?: {
-                        code?: import("../../index").Code | undefined;
+                        code?: import("../../outer/errors").Code | undefined;
                         message?: string | undefined;
                         details?: {
                             [x: string]: any;
@@ -2889,7 +3148,7 @@ export declare const DcIdaResultList: {
             }) | ({
                 dcGdcDaControlResult?: {
                     error?: {
-                        code?: import("../../index").Code | undefined;
+                        code?: import("../../outer/errors").Code | undefined;
                         message?: string | undefined;
                         details?: {
                             [x: string]: any;
@@ -2898,7 +3157,18 @@ export declare const DcIdaResultList: {
                 } | undefined;
             } & {
                 $case: "dcGdcDaControlResult";
+            }) | ({
+                dcIdaSwitchInputBlockResult?: {} | undefined;
+            } & {
+                $case: "dcIdaSwitchInputBlockResult";
+            }) | ({
+                dcIdaQueryAlertResult?: {
+                    isShow?: boolean | undefined;
+                    title?: string | undefined;
+                } | undefined;
+            } & {
+                $case: "dcIdaQueryAlertResult";
             }) | undefined;
         }[]>]: never; }) | undefined;
-    } & { [K_43 in Exclude<keyof I, "results">]: never; }>(object: I): DcIdaResultList;
+    } & { [K_49 in Exclude<keyof I, "results">]: never; }>(object: I): DcIdaResultList;
 };

@@ -15,6 +15,7 @@ import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { RiExternalLinkLine } from 'react-icons/ri';
 import { IoIosTimer } from 'react-icons/io';
+import { HiOutlineDevicePhoneMobile } from 'react-icons/hi2';
 
 import { scrollbarStyle } from '../../styles/common';
 import useCollapsibleSidebar from '../../stores/collapsible-sidebar';
@@ -25,6 +26,7 @@ import { flexRowCenteredStyle } from '../../styles/box';
 import CollpaseSidebarMenu from './CollapseSidebarMenu';
 import useRefresh from '../../hooks/useRefresh';
 import useOrganizationContext from '../../hooks/context/useOrganizationContext';
+import { MdOutlineWeb } from 'react-icons/md';
 // import { IS_CLOUD } from '../../../pages/_app';
 
 type MenuItem = Required<MenuProps>['items'];
@@ -61,7 +63,7 @@ const OrganizationSideBar = () => {
     process.env.NEXT_PUBLIC_ENV !== 'self-hosted'
       ? {
           type: 'group',
-          label: collapsed ? null : 'Cloud Farm',
+          label: collapsed ? null : 'Mobile',
           children: [
             {
               key: 'live-testing',
@@ -70,14 +72,14 @@ const OrganizationSideBar = () => {
                   selected={router.asPath === `/dashboard/${orgId}/live-testing`}
                   href={`/dashboard/${orgId}/live-testing`}
                 >
-                  <IoIosTimer />
+                  <HiOutlineDevicePhoneMobile />
                 </StyledIconLink>
               ) : undefined,
               label: collapsed ? (
                 t('organization:liveTestingPageTitle')
               ) : (
                 <SideBarMenu
-                  icon={<IoIosTimer style={{ fontSize: '1.2rem' }} />}
+                  icon={<HiOutlineDevicePhoneMobile style={{ fontSize: '1.2rem' }} />}
                   path={`/dashboard/${orgId}/live-testing`}
                   text={t('organization:liveTestingPageTitle')}
                   accessId={process.env.NEXT_PUBLIC_ENV !== 'production' ? 'side-bar-live-testing' : undefined}
@@ -88,9 +90,39 @@ const OrganizationSideBar = () => {
           ],
         }
       : null,
+    // process.env.NEXT_PUBLIC_ENV !== 'self-hosted'
+    //   ? {
+    //       type: 'group',
+    //       label: collapsed ? null : 'Web',
+    //       children: [
+    //         {
+    //           key: 'web-responsive',
+    //           icon: collapsed ? (
+    //             <StyledIconLink
+    //               selected={router.asPath === `/dashboard/${orgId}/web-responsive`}
+    //               href={`/dashboard/${orgId}/web-responsive`}
+    //             >
+    //               <MdOutlineWeb />
+    //             </StyledIconLink>
+    //           ) : undefined,
+    //           label: collapsed ? (
+    //             t('organization:responsiveWebPageTitle')
+    //           ) : (
+    //             <SideBarMenu
+    //               icon={<MdOutlineWeb style={{ fontSize: '1.2rem' }} />}
+    //               path={`/dashboard/${orgId}/web-responsive`}
+    //               text={t('organization:responsiveWebPageTitle')}
+    //               accessId={process.env.NEXT_PUBLIC_ENV !== 'production' ? 'side-bar-web-responsive' : undefined}
+    //             />
+    //           ),
+    //           style: { borderRadius: '6px' },
+    //         },
+    //       ],
+    //     }
+    //   : null,
     {
       type: 'group',
-      label: collapsed ? null : 'Self Device',
+      label: collapsed ? null : 'Test Automation',
       children: [
         {
           key: 'project',

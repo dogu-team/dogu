@@ -23,7 +23,7 @@ object DcIdaParamKt {
     internal fun _build(): com.dogu.protocol.generated.inner.params.DcIda.DcIdaParam = _builder.build()
 
     /**
-     * <code>fixed32 seq = 10;</code>
+     * <code>fixed32 seq = 1;</code>
      */
     var seq: kotlin.Int
       @JvmName("getSeq")
@@ -33,14 +33,14 @@ object DcIdaParamKt {
         _builder.setSeq(value)
       }
     /**
-     * <code>fixed32 seq = 10;</code>
+     * <code>fixed32 seq = 1;</code>
      */
     fun clearSeq() {
       _builder.clearSeq()
     }
 
     /**
-     * <code>.inner.types.DcIdaRunAppParam dc_ida_runapp_param = 1;</code>
+     * <code>.inner.types.DcIdaRunAppParam dc_ida_runapp_param = 10;</code>
      */
     var dcIdaRunappParam: com.dogu.protocol.generated.inner.types.DcIda.DcIdaRunAppParam
       @JvmName("getDcIdaRunappParam")
@@ -50,13 +50,13 @@ object DcIdaParamKt {
         _builder.setDcIdaRunappParam(value)
       }
     /**
-     * <code>.inner.types.DcIdaRunAppParam dc_ida_runapp_param = 1;</code>
+     * <code>.inner.types.DcIdaRunAppParam dc_ida_runapp_param = 10;</code>
      */
     fun clearDcIdaRunappParam() {
       _builder.clearDcIdaRunappParam()
     }
     /**
-     * <code>.inner.types.DcIdaRunAppParam dc_ida_runapp_param = 1;</code>
+     * <code>.inner.types.DcIdaRunAppParam dc_ida_runapp_param = 10;</code>
      * @return Whether the dcIdaRunappParam field is set.
      */
     fun hasDcIdaRunappParam(): kotlin.Boolean {
@@ -64,7 +64,7 @@ object DcIdaParamKt {
     }
 
     /**
-     * <code>.inner.types.DcIdaGetSystemInfoParam dc_ida_get_system_info_param = 2;</code>
+     * <code>.inner.types.DcIdaGetSystemInfoParam dc_ida_get_system_info_param = 11;</code>
      */
     var dcIdaGetSystemInfoParam: com.dogu.protocol.generated.inner.types.DcIda.DcIdaGetSystemInfoParam
       @JvmName("getDcIdaGetSystemInfoParam")
@@ -74,13 +74,13 @@ object DcIdaParamKt {
         _builder.setDcIdaGetSystemInfoParam(value)
       }
     /**
-     * <code>.inner.types.DcIdaGetSystemInfoParam dc_ida_get_system_info_param = 2;</code>
+     * <code>.inner.types.DcIdaGetSystemInfoParam dc_ida_get_system_info_param = 11;</code>
      */
     fun clearDcIdaGetSystemInfoParam() {
       _builder.clearDcIdaGetSystemInfoParam()
     }
     /**
-     * <code>.inner.types.DcIdaGetSystemInfoParam dc_ida_get_system_info_param = 2;</code>
+     * <code>.inner.types.DcIdaGetSystemInfoParam dc_ida_get_system_info_param = 11;</code>
      * @return Whether the dcIdaGetSystemInfoParam field is set.
      */
     fun hasDcIdaGetSystemInfoParam(): kotlin.Boolean {
@@ -88,7 +88,7 @@ object DcIdaParamKt {
     }
 
     /**
-     * <code>.inner.types.DcIdaIsPortListeningParam dc_ida_is_port_listening_param = 3;</code>
+     * <code>.inner.types.DcIdaIsPortListeningParam dc_ida_is_port_listening_param = 12;</code>
      */
     var dcIdaIsPortListeningParam: com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningParam
       @JvmName("getDcIdaIsPortListeningParam")
@@ -98,13 +98,13 @@ object DcIdaParamKt {
         _builder.setDcIdaIsPortListeningParam(value)
       }
     /**
-     * <code>.inner.types.DcIdaIsPortListeningParam dc_ida_is_port_listening_param = 3;</code>
+     * <code>.inner.types.DcIdaIsPortListeningParam dc_ida_is_port_listening_param = 12;</code>
      */
     fun clearDcIdaIsPortListeningParam() {
       _builder.clearDcIdaIsPortListeningParam()
     }
     /**
-     * <code>.inner.types.DcIdaIsPortListeningParam dc_ida_is_port_listening_param = 3;</code>
+     * <code>.inner.types.DcIdaIsPortListeningParam dc_ida_is_port_listening_param = 12;</code>
      * @return Whether the dcIdaIsPortListeningParam field is set.
      */
     fun hasDcIdaIsPortListeningParam(): kotlin.Boolean {
@@ -112,7 +112,7 @@ object DcIdaParamKt {
     }
 
     /**
-     * <code>.inner.types.DcIdaQueryProfileParam dc_ida_query_profile_param = 4;</code>
+     * <code>.inner.types.DcIdaQueryProfileParam dc_ida_query_profile_param = 13;</code>
      */
     var dcIdaQueryProfileParam: com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryProfileParam
       @JvmName("getDcIdaQueryProfileParam")
@@ -122,13 +122,13 @@ object DcIdaParamKt {
         _builder.setDcIdaQueryProfileParam(value)
       }
     /**
-     * <code>.inner.types.DcIdaQueryProfileParam dc_ida_query_profile_param = 4;</code>
+     * <code>.inner.types.DcIdaQueryProfileParam dc_ida_query_profile_param = 13;</code>
      */
     fun clearDcIdaQueryProfileParam() {
       _builder.clearDcIdaQueryProfileParam()
     }
     /**
-     * <code>.inner.types.DcIdaQueryProfileParam dc_ida_query_profile_param = 4;</code>
+     * <code>.inner.types.DcIdaQueryProfileParam dc_ida_query_profile_param = 13;</code>
      * @return Whether the dcIdaQueryProfileParam field is set.
      */
     fun hasDcIdaQueryProfileParam(): kotlin.Boolean {
@@ -136,7 +136,7 @@ object DcIdaParamKt {
     }
 
     /**
-     * <code>.inner.types.CfGdcDaControlParam dc_gdc_da_control_param = 5;</code>
+     * <code>.inner.types.CfGdcDaControlParam dc_gdc_da_control_param = 14;</code>
      */
     var dcGdcDaControlParam: com.dogu.protocol.generated.inner.types.CfGdcDa.CfGdcDaControlParam
       @JvmName("getDcGdcDaControlParam")
@@ -146,17 +146,65 @@ object DcIdaParamKt {
         _builder.setDcGdcDaControlParam(value)
       }
     /**
-     * <code>.inner.types.CfGdcDaControlParam dc_gdc_da_control_param = 5;</code>
+     * <code>.inner.types.CfGdcDaControlParam dc_gdc_da_control_param = 14;</code>
      */
     fun clearDcGdcDaControlParam() {
       _builder.clearDcGdcDaControlParam()
     }
     /**
-     * <code>.inner.types.CfGdcDaControlParam dc_gdc_da_control_param = 5;</code>
+     * <code>.inner.types.CfGdcDaControlParam dc_gdc_da_control_param = 14;</code>
      * @return Whether the dcGdcDaControlParam field is set.
      */
     fun hasDcGdcDaControlParam(): kotlin.Boolean {
       return _builder.hasDcGdcDaControlParam()
+    }
+
+    /**
+     * <code>.inner.types.DcIdaSwitchInputBlockParam dc_ida_switch_input_block_param = 15;</code>
+     */
+    var dcIdaSwitchInputBlockParam: com.dogu.protocol.generated.inner.types.DcIda.DcIdaSwitchInputBlockParam
+      @JvmName("getDcIdaSwitchInputBlockParam")
+      get() = _builder.getDcIdaSwitchInputBlockParam()
+      @JvmName("setDcIdaSwitchInputBlockParam")
+      set(value) {
+        _builder.setDcIdaSwitchInputBlockParam(value)
+      }
+    /**
+     * <code>.inner.types.DcIdaSwitchInputBlockParam dc_ida_switch_input_block_param = 15;</code>
+     */
+    fun clearDcIdaSwitchInputBlockParam() {
+      _builder.clearDcIdaSwitchInputBlockParam()
+    }
+    /**
+     * <code>.inner.types.DcIdaSwitchInputBlockParam dc_ida_switch_input_block_param = 15;</code>
+     * @return Whether the dcIdaSwitchInputBlockParam field is set.
+     */
+    fun hasDcIdaSwitchInputBlockParam(): kotlin.Boolean {
+      return _builder.hasDcIdaSwitchInputBlockParam()
+    }
+
+    /**
+     * <code>.inner.types.DcIdaQueryAlertParam dc_ida_query_alert_param = 16;</code>
+     */
+    var dcIdaQueryAlertParam: com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryAlertParam
+      @JvmName("getDcIdaQueryAlertParam")
+      get() = _builder.getDcIdaQueryAlertParam()
+      @JvmName("setDcIdaQueryAlertParam")
+      set(value) {
+        _builder.setDcIdaQueryAlertParam(value)
+      }
+    /**
+     * <code>.inner.types.DcIdaQueryAlertParam dc_ida_query_alert_param = 16;</code>
+     */
+    fun clearDcIdaQueryAlertParam() {
+      _builder.clearDcIdaQueryAlertParam()
+    }
+    /**
+     * <code>.inner.types.DcIdaQueryAlertParam dc_ida_query_alert_param = 16;</code>
+     * @return Whether the dcIdaQueryAlertParam field is set.
+     */
+    fun hasDcIdaQueryAlertParam(): kotlin.Boolean {
+      return _builder.hasDcIdaQueryAlertParam()
     }
     val valueCase: com.dogu.protocol.generated.inner.params.DcIda.DcIdaParam.ValueCase
       @JvmName("getValueCase")
@@ -185,4 +233,10 @@ val com.dogu.protocol.generated.inner.params.DcIda.DcIdaParamOrBuilder.dcIdaQuer
 
 val com.dogu.protocol.generated.inner.params.DcIda.DcIdaParamOrBuilder.dcGdcDaControlParamOrNull: com.dogu.protocol.generated.inner.types.CfGdcDa.CfGdcDaControlParam?
   get() = if (hasDcGdcDaControlParam()) getDcGdcDaControlParam() else null
+
+val com.dogu.protocol.generated.inner.params.DcIda.DcIdaParamOrBuilder.dcIdaSwitchInputBlockParamOrNull: com.dogu.protocol.generated.inner.types.DcIda.DcIdaSwitchInputBlockParam?
+  get() = if (hasDcIdaSwitchInputBlockParam()) getDcIdaSwitchInputBlockParam() else null
+
+val com.dogu.protocol.generated.inner.params.DcIda.DcIdaParamOrBuilder.dcIdaQueryAlertParamOrNull: com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryAlertParam?
+  get() = if (hasDcIdaQueryAlertParam()) getDcIdaQueryAlertParam() else null
 
