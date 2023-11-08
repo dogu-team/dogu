@@ -428,10 +428,11 @@ export async function processNowPurchaseSubscription(
   const { period, currency } = data;
   const { billingOrganizationId } = billingOrganization;
 
+  const goodsName = 'Dogu Platform Subscription';
   const createPurchaseResult = await createPurchase(context, billingMethodNiceCaller, {
     billingMethodNiceId: billingMethodNice.billingMethodNiceId,
     // TODO: change goodsName
-    goodsName: 'Dogu Technologies',
+    goodsName,
     amount: totalPrice,
   });
   if (!createPurchaseResult.ok) {
@@ -489,6 +490,8 @@ export async function processNowPurchaseSubscription(
     niceSubscribePaymentsResponse: createPurchaseResult.response as unknown as Record<string, unknown>,
     previewResponse: previewResponse as unknown as Record<string, unknown>,
     method: 'nice',
+    goodsName,
+    totalPrice,
   });
   await manager.getRepository(BillingHistory).save(billingHistory);
 

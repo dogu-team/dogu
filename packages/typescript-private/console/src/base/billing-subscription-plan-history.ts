@@ -1,6 +1,7 @@
 import { propertiesOf } from '@dogu-tech/common';
 import { BillingPeriod, BillingSubscriptionPlanData } from './billing';
 import { BillingCouponBase } from './billing-coupon';
+import { BillingHistoryBase } from './billing-history';
 import { BillingOrganizationBase } from './billing-organization';
 import { BillingSubscriptionPlanSourceBase } from './billing-subscription-plan-source';
 
@@ -29,6 +30,7 @@ export interface BillingSubscriptionPlanHistoryBase extends BillingSubscriptionP
   billingOrganization?: BillingOrganizationBase;
   billingCoupon?: BillingCouponBase;
   billingSubscriptionPlanSource?: BillingSubscriptionPlanSourceBase;
+  billingHistory?: BillingHistoryBase;
 }
 
 export const BillingSubscriptionPlanHistoryProp = propertiesOf<BillingSubscriptionPlanHistoryBase>();

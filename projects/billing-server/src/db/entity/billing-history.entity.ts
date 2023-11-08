@@ -1,7 +1,8 @@
 import { BillingHistoryBase, BillingHistoryProp, BillingMethod } from '@dogu-private/console';
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryColumn } from 'typeorm';
 import { CreatedAt, DateColumn, DeletedAt, UpdatedAt } from '../decorators';
 import { BillingOrganization } from './billing-organization.entity';
+import { BillingSubscriptionPlanHistory } from './billing-subscription-plan-history.entity';
 
 @Entity()
 export class BillingHistory implements BillingHistoryBase {
@@ -23,6 +24,12 @@ export class BillingHistory implements BillingHistoryBase {
   @Column({ type: 'jsonb' })
   previewResponse!: Record<string, unknown>;
 
+  @Column({ type: 'double precision' })
+  totalPrice!: number;
+
+  @Column({ type: 'character varying' })
+  goodsName!: string;
+
   @CreatedAt()
   createdAt!: Date;
 
@@ -35,4 +42,7 @@ export class BillingHistory implements BillingHistoryBase {
   @ManyToOne(() => BillingOrganization)
   @JoinColumn({ name: BillingHistoryProp.billingOrganizationId })
   billingOrganization?: BillingOrganization;
+
+  @OneToMany(() => BillingSubscriptionPlanHistory, (billingSubscriptionPlanHistory) => billingSubscriptionPlanHistory.billingHistory)
+  billingSubscriptionPlanHistories?: BillingSubscriptionPlanHistory[];
 }

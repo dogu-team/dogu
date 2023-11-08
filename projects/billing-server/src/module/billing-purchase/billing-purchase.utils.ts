@@ -197,7 +197,7 @@ export function calculateYearlyPurchaseSubscriptionDateTimes(options: CalculateY
     if (expiredAt.date.getTime() !== calculatedExpiredAt.date.getTime()) {
       return {
         ok: false,
-        resultCode: resultCode('organization-subscription-yearly-invalid-value', {
+        resultCode: resultCode('unexpected-error', {
           expiredAt: expiredAt.date.toISOString(),
           calculatedExpiredAt: calculatedExpiredAt.date.toISOString(),
         }),
@@ -207,7 +207,7 @@ export function calculateYearlyPurchaseSubscriptionDateTimes(options: CalculateY
     if (startedAt.date.getTime() > expiredAt.date.getTime()) {
       return {
         ok: false,
-        resultCode: resultCode('organization-subscription-yearly-invalid-value', {
+        resultCode: resultCode('unexpected-error', {
           startedAt: startedAt.date.toISOString(),
           expiredAt: expiredAt.date.toISOString(),
         }),
@@ -331,7 +331,7 @@ export function calculateMonthlyPurchaseSubscriptionDateTimes(options: Calculate
     if (expiredAt.date.getTime() !== expiredAtCalculated.date.getTime()) {
       return {
         ok: false,
-        resultCode: resultCode('organization-subscription-monthly-invalid-value', {
+        resultCode: resultCode('unexpected-error', {
           expiredAt: expiredAt.date.toISOString(),
           calculatedExpiredAt: expiredAtCalculated.date.toISOString(),
         }),
@@ -341,7 +341,7 @@ export function calculateMonthlyPurchaseSubscriptionDateTimes(options: Calculate
     if (startedAt.date.getTime() > expiredAt.date.getTime()) {
       return {
         ok: false,
-        resultCode: resultCode('organization-subscription-monthly-invalid-value', {
+        resultCode: resultCode('unexpected-error', {
           startedAt: startedAt.date.toISOString(),
           expiredAt: expiredAt.date.toISOString(),
         }),

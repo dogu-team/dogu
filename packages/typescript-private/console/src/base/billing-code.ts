@@ -9,10 +9,8 @@ export const BillingResultCodeMap = {
   'organization-method-nice-not-found': 101,
   'organization-subscription-monthly-started-at-not-found': 102,
   'organization-subscription-monthly-expired-at-not-found': 103,
-  'organization-subscription-monthly-invalid-value': 104,
   'organization-subscription-yearly-started-at-not-found': 105,
   'organization-subscription-yearly-expired-at-not-found': 106,
-  'organization-subscription-yearly-invalid-value': 107,
 
   // coupon
   'coupon-not-found': 200,

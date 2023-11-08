@@ -9,6 +9,7 @@ import {
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 import { CreatedAt, DateColumn, DeletedAt, UpdatedAt } from '../decorators';
 import { BillingCoupon } from './billing-coupon.entity';
+import { BillingHistory } from './billing-history.entity';
 import { BillingOrganization } from './billing-organization.entity';
 import { BillingSubscriptionPlanSource } from './billing-subscription-plan-source.entity';
 
@@ -97,4 +98,8 @@ export class BillingSubscriptionPlanHistory implements BillingSubscriptionPlanHi
   @ManyToOne(() => BillingSubscriptionPlanSource)
   @JoinColumn({ name: BillingSubscriptionPlanHistoryProp.billingSubscriptionPlanSourceId })
   billingSubscriptionPlanSource?: BillingSubscriptionPlanSource;
+
+  @ManyToOne(() => BillingHistory, (billingHistory) => billingHistory.billingSubscriptionPlanHistories)
+  @JoinColumn({ name: BillingSubscriptionPlanHistoryProp.billingHistoryId })
+  billingHistory?: BillingHistory;
 }
