@@ -268,7 +268,7 @@ export class DeviceClient extends DeviceHttpClient implements DeviceInterface {
     );
   }
 
-  async subscribeAlert(serial: Serial, onAlert: (alert: DeviceAlert) => void): Promise<Closable> {
+  async subscribeAlert(serial: Serial, callback: { onAlert: (alert: DeviceAlert) => void; onClose: (alert: DeviceAlert) => void }): Promise<Closable> {
     return this.subscribe(
       DeviceAlertSubscribe,
       undefined,
@@ -282,7 +282,15 @@ export class DeviceClient extends DeviceHttpClient implements DeviceInterface {
         const { printable } = this.options;
         (async (): Promise<void> => {
           const receiveMessage = await transformAndValidate(DeviceAlertSubscribe.receiveMessage, JSON.parse(message));
-          onAlert(receiveMessage);
+          if (receiveMessage.value.kind === 'DeviceAlertSubscribeReceiveMessageOnShowValue') {
+            callback.onAlert(receiveMessage.value);
+            return;
+          } else if (receiveMessage.value.kind === 'DeviceAlertSubscribeReceiveMessageOnCloseValue') {
+            callback.onClose(receiveMessage.value);
+            return;
+          } else {
+            throw new Error(`Unexpected kind: ${stringify(receiveMessage)}`);
+          }
         })().catch((error) => {
           printable.error?.(`Failed to parse message`, { message, error: stringify(error) });
         });

@@ -90,7 +90,7 @@ export class IosChannel implements DeviceChannel {
     readonly browserInstallations: BrowserInstallation[],
   ) {
     this.logger.info(`IosChannel created: ${this.serial}`);
-    this._alertCache = new TimedCacheAsync<DeviceAlert | undefined>({ seconds: 1 });
+    this._alertCache = new TimedCacheAsync<DeviceAlert | undefined>({ milliseconds: 900 });
   }
 
   get serial(): Serial {

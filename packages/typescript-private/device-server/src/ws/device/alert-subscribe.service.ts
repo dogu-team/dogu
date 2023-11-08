@@ -1,7 +1,7 @@
 import { OnWebSocketClose, OnWebSocketMessage, WebSocketGatewayBase, WebSocketRegistryValueAccessor, WebSocketService } from '@dogu-private/nestjs-common';
 import { DeviceAlert, Platform } from '@dogu-private/types';
-import { DuplicatedCallGuarder, Instance, SyncClosable } from '@dogu-tech/common';
-import { DeviceAlertSubscribe } from '@dogu-tech/device-client-common';
+import { DuplicatedCallGuarder, Instance, stringify, SyncClosable } from '@dogu-tech/common';
+import { DeviceAlertSubscribe, DeviceAlertSubscribeReceiveMessageValue } from '@dogu-tech/device-client-common';
 import { IncomingMessage } from 'http';
 import WebSocket from 'ws';
 import { DoguLogger } from '../../logger/logger';
@@ -56,9 +56,9 @@ export class DeviceAlertSubscribeService
 
     this.clearClosable(valueAccessor);
 
-    function send(alert: DeviceAlert): void {
+    function send(value: DeviceAlertSubscribeReceiveMessageValue): void {
       const receiveMessage: Instance<typeof DeviceAlertSubscribe.receiveMessage> = {
-        title: alert.title,
+        value,
       };
       webSocket.send(JSON.stringify(receiveMessage));
     }
@@ -69,19 +69,26 @@ export class DeviceAlertSubscribeService
       guard
         .guard(async (): Promise<void> => {
           const alert = await deviceChannel.getAlert();
-          if (!alert) {
+          if (stringify(alert) === stringify(lastAlert)) {
             return;
           }
-          if (alert.title === lastAlert?.title) {
-            return;
+          if (!alert) {
+            send({
+              kind: 'DeviceAlertSubscribeReceiveMessageOnCloseValue',
+              title: lastAlert?.title ?? 'unknown',
+            });
+          } else {
+            send({
+              kind: 'DeviceAlertSubscribeReceiveMessageOnShowValue',
+              title: alert.title,
+            });
           }
           lastAlert = alert;
-          send(alert);
         })
         .catch((error) => {
           this.logger.error(error);
         });
-    }, 2000);
+    }, 1000);
     const closer: SyncClosable = {
       close(): void {
         clearInterval(interval);
