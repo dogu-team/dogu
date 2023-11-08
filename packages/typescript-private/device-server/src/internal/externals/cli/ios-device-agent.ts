@@ -65,8 +65,8 @@ export class IosDeviceAgentProcess {
       reset,
       this.logger,
     );
-    this.screenTunnel = new ZombieTunnel(this.serial, screenForwardPort, screenDevicePort, this.logger);
-    this.grpcTunnel = new ZombieTunnel(this.serial, grpcForwardPort, grpcDevicePort, this.logger);
+    this.screenTunnel = new ZombieTunnel(this.serial, 'screen', screenForwardPort, screenDevicePort, this.logger);
+    this.grpcTunnel = new ZombieTunnel(this.serial, 'control', grpcForwardPort, grpcDevicePort, this.logger);
   }
 
   static async isReady(serial: Serial): Promise<'build not found' | 'device not registered' | 'ok'> {
@@ -248,7 +248,7 @@ class ZombieIdaXCTest implements Zombieable {
     }
     if (!(await this.isHealth())) {
       this.healthFailCount++;
-      if (this.healthFailCount > 3) {
+      if (this.healthFailCount > 5) {
         ZombieServiceInstance.notifyDie(this, `health check failed ${this.healthFailCount}`);
       }
       return;

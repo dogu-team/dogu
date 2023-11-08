@@ -40,7 +40,7 @@ export class WebdriverAgentProcess {
       return false;
     }, 'kill previous tunnel');
     this.xctest = new ZombieWdaXCTest(this.serial, wdaHostPort, this.logger);
-    this.wdaTunnel = new ZombieTunnel(this.serial, wdaHostPort, 8100, this.logger);
+    this.wdaTunnel = new ZombieTunnel(this.serial, 'wda', wdaHostPort, 8100, this.logger);
   }
 
   static async start(serial: Serial, wdaHostPort: number, logger: FilledPrintable): Promise<WebdriverAgentProcess> {

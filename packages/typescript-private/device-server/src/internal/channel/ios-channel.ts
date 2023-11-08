@@ -397,7 +397,7 @@ export class IosChannel implements DeviceChannel {
       this.unforward(tunnel.hostPort);
     }
 
-    const newTunnel = new ZombieTunnel(serial, hostPort, devicePort, logger);
+    const newTunnel = new ZombieTunnel(serial, 'forward', hostPort, devicePort, logger);
     this.tunnels.push(newTunnel);
     await newTunnel.zombieWaiter.waitUntilAlive({ maxReviveCount: 10 });
   }

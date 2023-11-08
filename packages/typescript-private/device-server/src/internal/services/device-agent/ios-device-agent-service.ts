@@ -39,7 +39,7 @@ export class IosDeviceAgentService implements DeviceAgentService, Zombieable {
   private protoAPIRetEmitter = new ProtoAPIEmitterImpl();
   private readonly recvQueue = new SizePrefixedRecvQueue();
   private seq = 0;
-  private failCount = 0;
+  private sendFailCount = 0;
   private zombieWaiter: ZombieQueriable;
   public name = 'iOSDeviceAgentService';
   public platform = Platform.PLATFORM_IOS;
@@ -94,6 +94,7 @@ export class IosDeviceAgentService implements DeviceAgentService, Zombieable {
   }
 
   async revive(): Promise<void> {
+    this.sendFailCount = 0;
     await this.connect();
     await this.send('dcIdaSwitchInputBlockParam', 'dcIdaSwitchInputBlockResult', { isBlock: env.DOGU_IS_DEVICE_SHARE === true });
   }
@@ -113,7 +114,7 @@ export class IosDeviceAgentService implements DeviceAgentService, Zombieable {
   }
 
   get props(): ZombieProps {
-    return { serverPort: this.serverPort };
+    return { serverPort: this.serverPort, sendFail: this.sendFailCount };
   }
 
   get screenUrl(): string {
@@ -169,10 +170,12 @@ export class IosDeviceAgentService implements DeviceAgentService, Zombieable {
         return;
       }
       if (error) {
-        this.failCount += 1;
-        if (this.failCount >= MaxFailCount) {
-          ZombieServiceInstance.notifyDie(this, `IosDeviceAgentService.sendWithProtobuf over MaxFailCount ${this.failCount}`);
+        this.sendFailCount += 1;
+        if (this.sendFailCount >= MaxFailCount) {
+          ZombieServiceInstance.notifyDie(this, `IosDeviceAgentService.sendWithProtobuf over MaxFailCount ${this.sendFailCount}`);
         }
+      } else {
+        this.sendFailCount = 0;
       }
       isResolved = true;
       onResult(result, error);

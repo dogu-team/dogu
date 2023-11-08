@@ -71,6 +71,7 @@ export class ZombieTunnel implements Zombieable {
   public readonly zombieWaiter: ZombieQueriable;
   constructor(
     public readonly serial: Serial,
+    private readonly label: string,
     readonly hostPort: number,
     readonly devicePort: number,
     private readonly logger: Printable,
@@ -79,7 +80,7 @@ export class ZombieTunnel implements Zombieable {
   }
 
   get name(): string {
-    return `Tunnel`;
+    return `Tunnel-${this.label}`;
   }
   get platform(): Platform {
     return Platform.PLATFORM_IOS;
