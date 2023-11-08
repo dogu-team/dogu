@@ -4,7 +4,7 @@ import { BillingCoupon } from '../../db/entity/billing-coupon.entity';
 import { BillingSubscriptionPlanInfo } from '../../db/entity/billing-subscription-plan-info.entity';
 
 export interface CalculateCouponFactorOptions {
-  coupon: BillingCoupon | null;
+  couponResult: ResolveCouponResultSuccess;
   period: BillingPeriod;
 }
 
@@ -14,7 +14,15 @@ export interface CalculateCouponFactorResult {
 }
 
 export function calculateCouponFactor(options: CalculateCouponFactorOptions): CalculateCouponFactorResult {
-  const { coupon, period } = options;
+  const { couponResult, period } = options;
+  if (couponResult.type === 'none') {
+    return {
+      firstCouponFactor: 1,
+      secondCouponFactor: 1,
+    };
+  }
+
+  const { coupon } = couponResult;
   if (coupon === null) {
     return {
       firstCouponFactor: 1,
@@ -22,9 +30,17 @@ export function calculateCouponFactor(options: CalculateCouponFactorOptions): Ca
     };
   }
 
+  if (couponResult.couponRemainingApplyCount !== null && couponResult.couponRemainingApplyCount <= 0) {
+    return {
+      firstCouponFactor: 1,
+      secondCouponFactor: 1,
+    };
+  }
+  const { couponRemainingApplyCount } = couponResult;
+
   switch (period) {
     case 'monthly': {
-      const { monthlyDiscountPercent, monthlyApplyCount } = coupon;
+      const { monthlyDiscountPercent } = coupon;
       if (monthlyDiscountPercent === null) {
         return {
           firstCouponFactor: 1,
@@ -32,14 +48,14 @@ export function calculateCouponFactor(options: CalculateCouponFactorOptions): Ca
         };
       }
 
-      if (monthlyApplyCount === null) {
+      if (couponRemainingApplyCount === null) {
         return {
           firstCouponFactor: 1 - monthlyDiscountPercent / 100,
           secondCouponFactor: 1 - monthlyDiscountPercent / 100,
         };
       }
 
-      if (monthlyApplyCount <= 1) {
+      if (couponRemainingApplyCount <= 1) {
         return {
           firstCouponFactor: 1 - monthlyDiscountPercent / 100,
           secondCouponFactor: 1,
@@ -52,7 +68,7 @@ export function calculateCouponFactor(options: CalculateCouponFactorOptions): Ca
       };
     }
     case 'yearly': {
-      const { yearlyDiscountPercent, yearlyApplyCount } = coupon;
+      const { yearlyDiscountPercent } = coupon;
       if (yearlyDiscountPercent === null) {
         return {
           firstCouponFactor: 1,
@@ -60,14 +76,14 @@ export function calculateCouponFactor(options: CalculateCouponFactorOptions): Ca
         };
       }
 
-      if (yearlyApplyCount === null) {
+      if (couponRemainingApplyCount === null) {
         return {
           firstCouponFactor: 1 - yearlyDiscountPercent / 100,
           secondCouponFactor: 1 - yearlyDiscountPercent / 100,
         };
       }
 
-      if (yearlyApplyCount <= 1) {
+      if (couponRemainingApplyCount <= 1) {
         return {
           firstCouponFactor: 1 - yearlyDiscountPercent / 100,
           secondCouponFactor: 1,
@@ -100,12 +116,15 @@ export interface ResolveCouponResultSuccessNew {
   ok: true;
   type: 'new';
   coupon: BillingCoupon;
+  couponRemainingApplyCount: number | null;
 }
 
 export interface ResolveCouponResultSuccessOld {
   ok: true;
   type: 'old';
   coupon: BillingCoupon;
+  couponRemainingApplyCount: number | null;
+  isReapply: boolean;
 }
 
 export interface ResolveCouponResultSuccessNone {
@@ -121,11 +140,27 @@ export type ResolveCouponResult = ResolveCouponResultFailure | ResolveCouponResu
 export function resolveCoupon(options: ResolveCouponOptions): ResolveCouponResult {
   const { billingSubscriptionPlanInfo, newCoupon, period } = options;
   if (newCoupon !== null) {
-    return {
-      ok: true,
-      coupon: newCoupon,
-      type: 'new',
-    };
+    switch (period) {
+      case 'monthly': {
+        return {
+          ok: true,
+          coupon: newCoupon,
+          type: 'new',
+          couponRemainingApplyCount: newCoupon.monthlyApplyCount,
+        };
+      }
+      case 'yearly': {
+        return {
+          ok: true,
+          coupon: newCoupon,
+          type: 'new',
+          couponRemainingApplyCount: newCoupon.yearlyApplyCount,
+        };
+      }
+      default: {
+        assertUnreachable(period);
+      }
+    }
   }
 
   if (billingSubscriptionPlanInfo === undefined) {
@@ -150,6 +185,8 @@ export function resolveCoupon(options: ResolveCouponOptions): ResolveCouponResul
           ok: true,
           coupon: oldCoupon,
           type: 'old',
+          couponRemainingApplyCount: oldCoupon.yearlyApplyCount,
+          isReapply: true,
         };
       } else {
         return {
@@ -164,6 +201,8 @@ export function resolveCoupon(options: ResolveCouponOptions): ResolveCouponResul
           ok: true,
           coupon: oldCoupon,
           type: 'old',
+          couponRemainingApplyCount: oldCoupon.monthlyApplyCount,
+          isReapply: true,
         };
       } else {
         return {
@@ -177,6 +216,8 @@ export function resolveCoupon(options: ResolveCouponOptions): ResolveCouponResul
         ok: true,
         coupon: oldCoupon,
         type: 'old',
+        couponRemainingApplyCount: billingSubscriptionPlanInfo.couponRemainingApplyCount,
+        isReapply: false,
       };
     } else {
       return {

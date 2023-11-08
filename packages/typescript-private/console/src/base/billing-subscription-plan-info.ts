@@ -17,7 +17,7 @@ export interface BillingSubscriptionPlanInfoBase extends BillingSubscriptionPlan
   /**
    * @description null means unlimited
    */
-  billingCouponRemainingApplyCount: number | null;
+  couponRemainingApplyCount: number | null;
   billingSubscriptionPlanSourceId: string | null;
   discountedAmount: number;
   changeRequestedPeriod: BillingPeriod | null;

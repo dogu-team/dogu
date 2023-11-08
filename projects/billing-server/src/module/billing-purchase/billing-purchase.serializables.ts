@@ -150,7 +150,7 @@ export async function processPurchaseSubscriptionPreview(
   const { coupon } = couponResult;
 
   const { firstCouponFactor, secondCouponFactor } = calculateCouponFactor({
-    coupon,
+    couponResult,
     period: data.period,
   });
 
@@ -466,7 +466,7 @@ export async function processNowPurchaseSubscription(
   }
   await manager.getRepository(BillingOrganization).save(billingOrganization);
 
-  const useCouponResult = await useCoupon(context, { couponResult, billingOrganizationId, period: data.period });
+  const useCouponResult = await useCoupon(context, { couponResult, billingOrganizationId });
   const createSubscriptionPlanInfoAndCouponResult = await createOrUpdateBillingSubscriptionPlanInfo(context, {
     billingOrganizationId: billingOrganization.billingOrganizationId,
     data,

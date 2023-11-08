@@ -213,17 +213,16 @@ export async function parseCoupon(options: ParseCouponOptions): Promise<ParseCou
 export interface UseCouponOptions {
   couponResult: ResolveCouponResultSuccess;
   billingOrganizationId: string;
-  period: BillingPeriod;
 }
 
 export interface UseCouponResult {
   billingCouponId: string | null;
-  billingCouponRemainingApplyCount: number | null;
+  couponRemainingApplyCount: number | null;
 }
 
 export async function useCoupon(context: RetrySerializeContext, options: UseCouponOptions): Promise<UseCouponResult> {
   const { manager } = context;
-  const { couponResult, billingOrganizationId, period } = options;
+  const { couponResult, billingOrganizationId } = options;
   const { coupon, type } = couponResult;
   switch (type) {
     case 'new': {
@@ -237,31 +236,37 @@ export async function useCoupon(context: RetrySerializeContext, options: UseCoup
         billingOrganizationId,
         billingCouponId: coupon.billingCouponId,
       });
-      break;
+
+      let couponRemainingApplyCount: number | null = null;
+      if (couponResult.couponRemainingApplyCount !== null) {
+        const count = couponResult.couponRemainingApplyCount - 1;
+        couponRemainingApplyCount = count > 0 ? count : 0;
+      }
+
+      return {
+        billingCouponId: coupon.billingCouponId,
+        couponRemainingApplyCount,
+      };
     }
-    case 'old':
+    case 'old': {
+      let couponRemainingApplyCount = couponResult.couponRemainingApplyCount;
+      if (couponResult.isReapply && couponResult.couponRemainingApplyCount !== null) {
+        const count = couponResult.couponRemainingApplyCount - 1;
+        couponRemainingApplyCount = count > 0 ? count : 0;
+      }
+      return {
+        billingCouponId: coupon.billingCouponId,
+        couponRemainingApplyCount,
+      };
+    }
     case 'none':
+      return {
+        billingCouponId: null,
+        couponRemainingApplyCount: null,
+      };
       break;
     default: {
       assertUnreachable(type);
-    }
-  }
-
-  switch (period) {
-    case 'monthly': {
-      return {
-        billingCouponId: coupon?.billingCouponId ?? null,
-        billingCouponRemainingApplyCount: coupon?.monthlyApplyCount ?? null,
-      };
-    }
-    case 'yearly': {
-      return {
-        billingCouponId: coupon?.billingCouponId ?? null,
-        billingCouponRemainingApplyCount: coupon?.yearlyApplyCount ?? null,
-      };
-    }
-    default: {
-      assertUnreachable(period);
     }
   }
 }

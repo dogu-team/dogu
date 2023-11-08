@@ -31,7 +31,7 @@ export async function createOrUpdateBillingSubscriptionPlanInfo(
   const { logger, manager } = context;
   const { billingOrganizationId, data, discountedAmount, billingSubscriptionPlanSourceId, useCouponResult } = options;
   const { currency, period, type, category, option, originPrice } = data;
-  const { billingCouponId, billingCouponRemainingApplyCount } = useCouponResult;
+  const { billingCouponId, couponRemainingApplyCount } = useCouponResult;
 
   const found = await manager.getRepository(BillingSubscriptionPlanInfo).findOne({
     where: {
@@ -48,7 +48,7 @@ export async function createOrUpdateBillingSubscriptionPlanInfo(
     found.originPrice = originPrice;
     found.discountedAmount = discountedAmount;
     found.billingCouponId = billingCouponId;
-    found.billingCouponRemainingApplyCount = billingCouponRemainingApplyCount;
+    found.couponRemainingApplyCount = couponRemainingApplyCount;
     found.billingSubscriptionPlanSourceId = billingSubscriptionPlanSourceId;
     found.state = 'subscribed';
     const saved = await manager.getRepository(BillingSubscriptionPlanInfo).save(found);
@@ -70,7 +70,7 @@ export async function createOrUpdateBillingSubscriptionPlanInfo(
     originPrice,
     discountedAmount,
     billingCouponId,
-    billingCouponRemainingApplyCount,
+    couponRemainingApplyCount,
     billingSubscriptionPlanSourceId,
     state: 'subscribed',
   });

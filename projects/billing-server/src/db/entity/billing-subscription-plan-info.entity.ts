@@ -46,7 +46,7 @@ export class BillingSubscriptionPlanInfo implements BillingSubscriptionPlanInfoB
   billingCouponId!: string | null;
 
   @Column({ type: 'integer', nullable: true })
-  billingCouponRemainingApplyCount!: number | null;
+  couponRemainingApplyCount!: number | null;
 
   @Column({ type: 'double precision' })
   discountedAmount!: number;
