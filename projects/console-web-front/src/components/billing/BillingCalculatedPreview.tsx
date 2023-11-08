@@ -20,6 +20,7 @@ import { swrAuthFetcher } from '../../api';
 import { buildQueryPraramsByObject } from '../../utils/query';
 import useLicenseStore from '../../stores/license';
 import BillingPurchaseButton from './BillingPurchaseButton';
+import Trans from 'next-translate/Trans';
 
 interface Props {}
 
@@ -61,7 +62,7 @@ const BillingCalculatedPreview: React.FC<Props> = ({}) => {
   if (isLoading) {
     return (
       <Box>
-        <LoadingWrapper style={{ height: '500px' }}>
+        <LoadingWrapper>
           <LoadingOutlined />
         </LoadingWrapper>
       </Box>
@@ -271,7 +272,12 @@ const BillingCalculatedPreview: React.FC<Props> = ({}) => {
 
       <div style={{ marginTop: '.2rem' }}>
         <Agreement>
-          By purchasing plan you agree to our <a target="_blank">Terms and Conditions</a> and auto renewal
+          <Trans
+            i18nKey="billing:purchaseAgreementText"
+            components={{
+              link: <a target="_blank" />,
+            }}
+          />
         </Agreement>
       </div>
     </Box>

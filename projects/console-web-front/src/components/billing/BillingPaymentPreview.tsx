@@ -1,6 +1,6 @@
-import { CreditCardOutlined, PlusOutlined } from '@ant-design/icons';
-import { CloudLicenseBase } from '@dogu-private/console';
+import { CreditCardOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons';
 import { Form, Radio, RadioChangeEvent, Space } from 'antd';
+import useTranslation from 'next-translate/useTranslation';
 import { useEffect } from 'react';
 import styled from 'styled-components';
 import { shallow } from 'zustand/shallow';
@@ -19,6 +19,7 @@ const BillingPaymentPreview: React.FC<Props> = () => {
     (state) => [state.withNewCard, state.updateWithNewCard],
     shallow,
   );
+  const { t } = useTranslation('billing');
 
   useEffect(() => {
     updateCardForm(form);
@@ -34,7 +35,7 @@ const BillingPaymentPreview: React.FC<Props> = () => {
     updateWithNewCard(e.target.value);
   };
 
-  const currentPayment = (license as CloudLicenseBase).billingOrganization?.billingMethodNice;
+  const currentPayment = license?.billingOrganization?.billingMethodNice;
 
   return (
     <PaymentContent>
@@ -43,21 +44,22 @@ const BillingPaymentPreview: React.FC<Props> = () => {
           <Radio.Group style={{ width: '100%' }} value={withNewCard} onChange={handleChangeRadio}>
             <Space direction="vertical" style={{ width: '100%' }}>
               <StyledRadio style={{ width: '100%' }} value={false}>
-                <RadioContent>
+                <RadioContent isSelected={withNewCard === false}>
                   <p>
                     <CreditCardOutlined style={{ marginRight: '.4rem' }} />
-                    {(license as CloudLicenseBase).billingOrganization?.billingMethodNice?.cardNumberLast4Digits}{' '}
-                    {`(${(license as CloudLicenseBase).billingOrganization?.billingMethodNice?.cardName})`}
+                    <label style={{ verticalAlign: 'sub' }}>**** **** ****</label>{' '}
+                    {license.billingOrganization.billingMethodNice?.cardNumberLast4Digits}{' '}
+                    {`(${license.billingOrganization.billingMethodNice?.cardName})`}
                   </p>
 
-                  <span>{`(Default)`}</span>
+                  <span>{`(${t('paymentPreviewDefaultCardLabelText')})`}</span>
                 </RadioContent>
               </StyledRadio>
               <StyledRadio style={{ width: '100%' }} value={true}>
-                <RadioContent>
+                <RadioContent isSelected={withNewCard}>
                   <p>
-                    <PlusOutlined style={{ marginRight: '.4rem' }} />
-                    Change payment
+                    <EditOutlined style={{ marginRight: '.4rem' }} />
+                    {t('paymentPreviewChangeCardButtonText')}
                   </p>
                 </RadioContent>
               </StyledRadio>
@@ -90,12 +92,12 @@ const StyledRadio = styled(Radio)`
   }
 `;
 
-const RadioContent = styled.div`
+const RadioContent = styled.div<{ isSelected: boolean }>`
   width: 100%;
   display: flex;
   padding: 0.5rem 1rem;
   border-radius: 0.5rem;
-  border: 1px solid #d9d9d9;
+  border: 1px solid ${(props) => (props.isSelected ? props.theme.colorPrimary : '#d9d9d9')};
   font-size: 0.85rem;
   align-items: center;
   justify-content: space-between;

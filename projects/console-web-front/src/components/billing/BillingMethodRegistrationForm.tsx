@@ -75,7 +75,7 @@ const BillingMethodRegistrationForm: React.FC<Props> = ({ form }) => {
         name="card"
         label={t('paymentFormCardNumberLabel')}
         validateTrigger="onBlur"
-        rules={[{ required: true, message: 'Enter your card number', len: 19 }]}
+        rules={[{ required: true, message: '', len: 19 }]}
       >
         <Input
           required
@@ -96,7 +96,7 @@ const BillingMethodRegistrationForm: React.FC<Props> = ({ form }) => {
           name="expiry"
           label={t('paymentFormExpiryLabel')}
           validateTrigger="onBlur"
-          rules={[{ required: true, message: 'Enter card expiry', len: 7 }]}
+          rules={[{ required: true, message: '', len: 7 }]}
         >
           <Input
             style={{ width: '100px' }}
@@ -117,7 +117,7 @@ const BillingMethodRegistrationForm: React.FC<Props> = ({ form }) => {
             name="password"
             label={t('paymentFormPasswordLabel')}
             validateTrigger="onBlur"
-            rules={[{ required: true, message: 'Enter password', len: 2 }]}
+            rules={[{ required: true, message: '', len: 2 }]}
           >
             <Input
               type="password"
@@ -140,7 +140,7 @@ const BillingMethodRegistrationForm: React.FC<Props> = ({ form }) => {
         name="legalNumber"
         label={t('paymentFormBirthdayLabel')}
         validateTrigger="onBlur"
-        rules={[{ required: true, message: 'Fill the blank', min: 6, max: 10 }]}
+        rules={[{ required: true, message: '', min: 6, max: 10 }]}
       >
         <Input
           ref={legalNumberRef}

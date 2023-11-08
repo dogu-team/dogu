@@ -84,10 +84,14 @@
   "totalLabelText": "총 금액",
   "purchaseButtonText": "결제하기",
   "nextPurchaseDescriptionText": "{{date}}부터 {{price}}/{{period}}가 청구됩니다.",
+  "purchaseAgreementText": "결제를 진행하시면 <link>이용약관</link>과 정기결제에 동의하는 것으로 간주됩니다.",
 
   "upgradeButtonTitle": "업그레이드",
   "changeButtonTitle": "변경하기",
   "goAnnualButtonTitle": "연간으로 변경하기",
+
+  "paymentPreviewDefaultCardLabelText": "기본",
+  "paymentPreviewChangeCardButtonText": "결제 수단 변경하기",
 
   "haveCouponCodeText": "쿠폰이 있으신가요?",
   "applyCouponButtonText": "적용하기",

@@ -75,7 +75,8 @@ const BillingPaymentMethod: React.FC<Props> = ({ method, organizationId }) => {
       <CardDetail>
         <span>{t('billing:cardNumberLabel')}</span>
         <p>
-          **** **** **** {method.cardNumberLast4Digits} {`(${method.cardName})`}
+          <label style={{ verticalAlign: 'sub' }}>**** **** ****</label> {method.cardNumberLast4Digits}{' '}
+          {`(${method.cardName})`}
         </p>
       </CardDetail>
       <CardDetail>

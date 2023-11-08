@@ -84,10 +84,14 @@
   "totalLabelText": "Total",
   "purchaseButtonText": "Purchase",
   "nextPurchaseDescriptionText": "From {{date}} you will be charged {{price}}/{{period}}",
+  "purchaseAgreementText": "By purchasing plan you agree to our <link>Terms of Use</link> and auto renewal",
 
   "upgradeButtonTitle": "Upgrade",
   "changeButtonTitle": "Change",
   "goAnnualButtonTitle": "Go annual",
+
+  "paymentPreviewDefaultCardLabelText": "Default",
+  "paymentPreviewChangeCardButtonText": "Change payment",
 
   "haveCouponCodeText": "Have a coupon?",
   "applyCouponButtonText": "Apply",

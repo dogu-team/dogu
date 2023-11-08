@@ -42,13 +42,18 @@ const BillingSelectPlanStep: React.FC<Props> = ({}) => {
               const planInfo = BillingSubscriptionPlanMap[planType];
               const descriptionInfo = planDescriptionInfoMap[planType];
               const usingPlan = usingPlans.find((plan) => plan.type === planType);
+              const isAnnual = usingPlan?.period === 'yearly';
 
               return (
                 <Fragment key={planType}>
                   <span>
                     <b>{t(descriptionInfo.titleI18nKey)}</b>{' '}
                     {!!usingPlan
-                      ? `(${t(descriptionInfo.getOptionLabelI18nKey(usingPlan.option), { option: usingPlan.option })})`
+                      ? `(${t(descriptionInfo.getOptionLabelI18nKey(usingPlan.option), {
+                          option: usingPlan.option,
+                        })}) / ${t(isAnnual ? 'monthCountPlural' : 'monthCountSingular', {
+                          month: isAnnual ? 12 : 1,
+                        })}`
                       : 'Free'}
                   </span>
                   {i !== planTypes.length - 1 && <span>, </span>}
