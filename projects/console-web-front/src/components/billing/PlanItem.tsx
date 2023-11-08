@@ -8,6 +8,7 @@ import { Button, Divider, Select, SelectProps } from 'antd';
 import useTranslation from 'next-translate/useTranslation';
 import { useState } from 'react';
 import styled from 'styled-components';
+import { shallow } from 'zustand/shallow';
 
 import { PlanDescriptionInfo } from '../../resources/plan';
 import useBillingPlanPurchaseStore from '../../stores/billing-plan-purchase';
@@ -24,7 +25,10 @@ const CONTACT_US_OPTION_KEY = 'contact-us';
 
 const PlanItem: React.FC<Props> = ({ planType, planInfo, descriptionInfo }) => {
   const license = useLicenseStore((state) => state.license);
-  const isAnnual = useBillingPlanPurchaseStore((state) => state.isAnnual);
+  const [isAnnual, updateIsAnnaul] = useBillingPlanPurchaseStore(
+    (state) => [state.isAnnual, state.updateIsAnnual],
+    shallow,
+  );
   const updateSelectedPlan = useBillingPlanPurchaseStore((state) => state.updateSelectedPlan);
   const { t } = useTranslation('billing');
 
@@ -51,40 +55,40 @@ const PlanItem: React.FC<Props> = ({ planType, planInfo, descriptionInfo }) => {
     setSelectedValue(value);
   };
 
+  const getButtonState = (): {
+    text: string;
+    disabled: boolean;
+    shouldGoAnnual: boolean;
+  } => {
+    const samePlan = usingPlans?.find((plan) => plan.type === planType);
+
+    if (!samePlan || (samePlan && samePlan.option < Number(selectedValue))) {
+      return { text: t('upgradeButtonTitle'), disabled: false, shouldGoAnnual: false };
+    }
+
+    if (samePlan && samePlan.option === Number(selectedValue) && isAnnual && samePlan.period === 'yearly') {
+      return { text: 'Current plan', disabled: true, shouldGoAnnual: false };
+    }
+
+    if (samePlan && samePlan.option === Number(selectedValue) && samePlan.period === 'monthly') {
+      return { text: t('goAnnualButtonTitle'), disabled: false, shouldGoAnnual: true };
+    }
+
+    return { text: t('changeButtonTitle'), disabled: false, shouldGoAnnual: false };
+  };
+
+  const { text: buttonText, disabled: buttonDisabled, shouldGoAnnual } = getButtonState();
+
   const handleClickButton = () => {
     updateSelectedPlan({
       planType,
       option: Number(selectedValue) ?? 0,
       category: planInfo.category,
     });
+    if (shouldGoAnnual) {
+      updateIsAnnaul(true);
+    }
   };
-
-  const getButtonText = () => {
-    const samePlan = usingPlans?.find((plan) => plan.type === planType);
-
-    if (!samePlan || (samePlan && samePlan.option < Number(selectedValue))) {
-      return 'Upgrade';
-    }
-
-    if (samePlan && samePlan.option === Number(selectedValue) && isAnnual && samePlan.period === 'yearly') {
-      return 'Current plan';
-    }
-
-    if (samePlan && samePlan.option === Number(selectedValue) && !isAnnual && samePlan.period === 'monthly') {
-      return 'Current plan';
-    }
-
-    if (samePlan && samePlan.option === Number(selectedValue) && samePlan.period === 'monthly') return 'Go annual';
-
-    return 'Change';
-  };
-
-  const buttonDisabled = !!usingPlans?.find(
-    (plan) =>
-      plan.type === planType &&
-      plan.option === Number(selectedValue) &&
-      (isAnnual ? plan.period === 'yearly' : plan.period === 'monthly'),
-  );
 
   return (
     <Box>
@@ -99,6 +103,7 @@ const PlanItem: React.FC<Props> = ({ planType, planInfo, descriptionInfo }) => {
             <PricingPrice>
               {getLocaleFormattedPrice(
                 'ko',
+                'KRW',
                 isAnnual
                   ? planInfo.optionMap[Number(selectedValue)].KRW.yearly / 12
                   : planInfo.optionMap[Number(selectedValue)].KRW.monthly,
@@ -129,7 +134,7 @@ const PlanItem: React.FC<Props> = ({ planType, planInfo, descriptionInfo }) => {
             </a>
           ) : (
             <Button type="primary" style={{ width: '100%' }} onClick={handleClickButton} disabled={buttonDisabled}>
-              {getButtonText()}
+              {buttonText}
             </Button>
           )}
         </div>

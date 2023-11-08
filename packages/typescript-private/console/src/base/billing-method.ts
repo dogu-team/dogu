@@ -9,7 +9,7 @@ export interface UpdateBillingMethodResposneFailure {
 export interface UpdateBillingMethodResponseSuccess {
   ok: true;
   resultCode: BillingResultCode;
-  methods: BillingMethodNiceBase[];
+  method: BillingMethodNiceBase;
 }
 
 export type UpdateBillingMethodResponse = UpdateBillingMethodResposneFailure | UpdateBillingMethodResponseSuccess;

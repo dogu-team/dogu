@@ -69,6 +69,13 @@ const BillingCalculatedPreview: React.FC<Props> = ({}) => {
   }
 
   if (!data?.body?.ok || data?.errorMessage) {
+    if (data?.body?.resultCode.reason === 'subscription-plan-duplicated') {
+      return (
+        <Box>
+          <ErrorBox title="Oops" desc="Cannot select currently using plan!" />
+        </Box>
+      );
+    }
     return (
       <Box>
         <ErrorBox title="Oops" desc={data?.errorMessage ?? 'Failed to get preview'} />
@@ -89,7 +96,9 @@ const BillingCalculatedPreview: React.FC<Props> = ({}) => {
           <Tag color="success">New</Tag>
           <PlanTitle>{t(planDescription.titleI18nKey)}</PlanTitle>
           <div>
-            <MonthlyPrice>{getLocaleFormattedPrice('ko', originPricePerMonth)}</MonthlyPrice>
+            <MonthlyPrice>
+              {getLocaleFormattedPrice('ko', data.body.subscriptionPlan.currency, originPricePerMonth)}
+            </MonthlyPrice>
             <PerMonthText> / {t('perMonthText')}</PerMonthText>
           </div>
           <OptionDescription>
@@ -102,10 +111,16 @@ const BillingCalculatedPreview: React.FC<Props> = ({}) => {
           <div style={{ marginTop: '.25rem' }}>
             <CalculatedPriceContent>
               <span>
-                {getLocaleFormattedPrice('ko', originPricePerMonth)} *{' '}
+                {getLocaleFormattedPrice('ko', data.body.subscriptionPlan.currency, originPricePerMonth)} *{' '}
                 {isAnnualSubscription ? t('monthCountPlural', { month: 12 }) : t('monthCountSingular', { month: 1 })}
               </span>
-              <b>{getLocaleFormattedPrice('ko', originPricePerMonth * (isAnnualSubscription ? 12 : 1))}</b>
+              <b>
+                {getLocaleFormattedPrice(
+                  'ko',
+                  data.body.subscriptionPlan.currency,
+                  originPricePerMonth * (isAnnualSubscription ? 12 : 1),
+                )}
+              </b>
             </CalculatedPriceContent>
           </div>
         </div>
@@ -117,6 +132,7 @@ const BillingCalculatedPreview: React.FC<Props> = ({}) => {
               <b className="minus">
                 {getLocaleFormattedPrice(
                   'ko',
+                  data.body.subscriptionPlan.currency,
                   -(
                     data.body.elapsedPlans.reduce((amount, plan) => amount + plan.elapsedDiscountedAmount, 0) +
                     data.body.remainingPlans.reduce((amount, plan) => amount + plan.remainingDiscountedAmount, 0)
@@ -135,7 +151,9 @@ const BillingCalculatedPreview: React.FC<Props> = ({}) => {
                     <div key={plan.type} style={{ fontSize: '.8rem', marginBottom: '.25rem' }}>
                       <CalculatedPriceContent style={{ fontSize: '.85rem' }}>
                         <p style={{ fontWeight: '500' }}>{t(planDescriptionInfoMap[plan.type].titleI18nKey)}</p>
-                        <b className="minus">{getLocaleFormattedPrice('ko', -plan.elapsedDiscountedAmount)}</b>
+                        <b className="minus">
+                          {getLocaleFormattedPrice('ko', plan.currency, -plan.elapsedDiscountedAmount)}
+                        </b>
                       </CalculatedPriceContent>
                       <OptionDescription style={{ fontSize: '.75rem' }}>
                         {plan.period === 'yearly' ? `${t('billedAnnuallyText')} | ` : ''}
@@ -159,7 +177,9 @@ const BillingCalculatedPreview: React.FC<Props> = ({}) => {
                     <div key={plan.type} style={{ fontSize: '.8rem', marginBottom: '.25rem' }}>
                       <CalculatedPriceContent style={{ fontSize: '.85rem' }}>
                         <p style={{ fontWeight: '500' }}>{t(planDescriptionInfoMap[plan.type].titleI18nKey)}</p>
-                        <b className="minus">{getLocaleFormattedPrice('ko', -plan.remainingDiscountedAmount)}</b>
+                        <b className="minus">
+                          {getLocaleFormattedPrice('ko', plan.currency, -plan.remainingDiscountedAmount)}
+                        </b>
                       </CalculatedPriceContent>
                       <OptionDescription style={{ fontSize: '.75rem' }}>
                         {plan.period === 'yearly' ? `${t('billedAnnuallyText')} | ` : ''}
@@ -179,7 +199,9 @@ const BillingCalculatedPreview: React.FC<Props> = ({}) => {
           <div style={{ marginTop: '.5rem' }}>
             <CalculatedPriceContent>
               <span>{t('couponLabelText')}</span>
-              <b className="minus">{getLocaleFormattedPrice('ko', -data.body.coupon.discountedAmount)}</b>
+              <b className="minus">
+                {getLocaleFormattedPrice('ko', data.body.subscriptionPlan.currency, -data.body.coupon.discountedAmount)}
+              </b>
             </CalculatedPriceContent>
             <OptionDescription style={{ fontSize: '.75rem' }}>
               {isAnnualSubscription
@@ -214,7 +236,9 @@ const BillingCalculatedPreview: React.FC<Props> = ({}) => {
         <div>
           <CalculatedPriceContent>
             <TotalText>{t('totalLabelText')}</TotalText>
-            <TotalText>{getLocaleFormattedPrice('ko', data.body.totalPrice)}</TotalText>
+            <TotalText>
+              {getLocaleFormattedPrice('ko', data.body.subscriptionPlan.currency, data.body.totalPrice)}
+            </TotalText>
           </CalculatedPriceContent>
         </div>
 
@@ -227,7 +251,11 @@ const BillingCalculatedPreview: React.FC<Props> = ({}) => {
                   month: 'short',
                   day: 'numeric',
                 }),
-                price: getLocaleFormattedPrice('ko', data.body.nextPurchaseTotalPrice),
+                price: getLocaleFormattedPrice(
+                  'ko',
+                  data.body.subscriptionPlan.currency,
+                  data.body.nextPurchaseTotalPrice,
+                ),
                 period: isAnnual ? 'year' : 'month',
               })}
             </NextBillingText>

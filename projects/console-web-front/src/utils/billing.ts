@@ -2,6 +2,7 @@ import {
   BillingSubscriptionPlanInfoBase,
   BillingSubscriptionPlanType,
   CloudLicenseBase,
+  CloudLicenseResponse,
   RegisterCardDto,
   SelfHostedLicenseBase,
 } from '@dogu-private/console';
@@ -34,4 +35,19 @@ export const parseNicePaymentMethodFormValues = (values: BillingMethodRegistrati
     idNumber: values.legalNumber,
     cardPasswordFirst2Digits: values.password,
   };
+};
+
+export const isLiveTestingFreePlan = (license: CloudLicenseResponse): boolean => {
+  const usingPlans = license.billingOrganization?.billingSubscriptionPlanInfos;
+  if (!usingPlans) {
+    return true;
+  }
+
+  const liveTestingPlan = usingPlans.find((plan) => plan.type === 'live-testing');
+
+  if (!liveTestingPlan) {
+    return true;
+  }
+
+  return liveTestingPlan.state === 'unsubscribed';
 };

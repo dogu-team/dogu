@@ -69,8 +69,8 @@
   "periodAnnuallyLabel": "Annually",
   "periodAnnuallySaveText": "Save upto {{save}}%",
   "perMonthText": "month",
-  "monthCountSingular": "{{month}}month",
-  "monthCountPlural": "{{month}}months",
+  "monthCountSingular": "{{month}} month",
+  "monthCountPlural": "{{month}} months",
   "billedAnnuallyText": "Billed annually",
   "subscriptionAdjustmentTitle": "Subscription adjustment",
   "refundElapsedTitle": "Refunds for elapsed days",
@@ -85,6 +85,10 @@
   "purchaseButtonText": "Purchase",
   "nextPurchaseDescriptionText": "From {{date}} you will be charged {{price}}/{{period}}",
 
+  "upgradeButtonTitle": "Upgrade",
+  "changeButtonTitle": "Change",
+  "goAnnualButtonTitle": "Go annual",
+
   "haveCouponCodeText": "Have a coupon?",
   "applyCouponButtonText": "Apply",
   "couponAppliedText": "Applied!",
@@ -96,7 +100,7 @@
   "paymentFormCardNumberLabel": "Card number",
   "paymentFormExpiryLabel": "Expiry",
   "paymentFormPasswordLabel": "Password (first 2 digits)",
-  "paymentFormBirthdayLabel": "Birthdate (6 digits) or Business registration number (10 digits)",
+  "paymentFormBirthdayLabel": "Birthdate (6 digits) or BRN (10 digits)",
 
   "billingPaymentMethodTitle": "Payment method",
   "billingInvoiceTitle": "Invoices",
@@ -107,5 +111,29 @@
   "liveTestingOptionSingular": "{{option}} parallel session",
   "liveTestingOptionPlural": "{{option}} parallel sessions",
   "liveTestingMoreThanOption": "More than {{option}} parallel sessions",
-  "liveTestingFeature1": "Unlimited testing time"
+  "liveTestingFeature1": "Unlimited testing time",
+
+  "cardNumberLabel": "Card number",
+  "cardExpiryLabel": "Expiry (MM / YY)",
+
+  "historyDateColumnText": "Date",
+  "historyItemColumnText": "Items",
+  "historyAmountColumnText": "Amount",
+
+  "planNameColumnText": "Plan",
+  "planOptionColumnText": "Options",
+  "planStatusColumnText": "Status",
+  "planNextChargeDateColumnText": "Next charge",
+
+  "planStatusSubscribedText": "Subscribed",
+  "planStatusUnsubscribedText": "Unsubscribed",
+  "planCancelUnsubscribeButtonText": "Subscribe again",
+  "planNextChargeUnsubscribeRequestedText": "Available until {{date}}",
+
+  "cancelPlanButtonText": "Unsubscribe",
+  "cancelPlanModalTitle": "Unsubscribe plan",
+  "cancelPlanModalDescription": "Are you sure to Unsubscribe plan?",
+  "cancelPlanModalConfirmButtonText": "Unsubscribe plan",
+
+  "updatePaymentMethodModalTitle": "Update payment details"
 }

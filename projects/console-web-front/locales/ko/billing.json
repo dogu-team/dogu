@@ -85,6 +85,10 @@
   "purchaseButtonText": "결제하기",
   "nextPurchaseDescriptionText": "{{date}}부터 {{price}}/{{period}}가 청구됩니다.",
 
+  "upgradeButtonTitle": "업그레이드",
+  "changeButtonTitle": "변경하기",
+  "goAnnualButtonTitle": "연간으로 변경하기",
+
   "haveCouponCodeText": "쿠폰이 있으신가요?",
   "applyCouponButtonText": "적용하기",
   "couponAppliedText": "쿠폰이 적용되었습니다.",
@@ -107,5 +111,29 @@
   "liveTestingOptionSingular": "{{option}} parallel session",
   "liveTestingOptionPlural": "{{option}} parallel sessions",
   "liveTestingMoreThanOption": "More than {{option}} parallel sessions",
-  "liveTestingFeature1": "시간제한 없는 라이브 테스팅"
+  "liveTestingFeature1": "시간제한 없는 라이브 테스팅",
+
+  "cardNumberLabel": "카드 번호",
+  "cardExpiryLabel": "유효기간 (MM / YY)",
+
+  "historyDateColumnText": "결제일",
+  "historyItemColumnText": "항목",
+  "historyAmountColumnText": "총 결제액",
+
+  "planNameColumnText": "플랜",
+  "planOptionColumnText": "옵션",
+  "planStatusColumnText": "상태",
+  "planNextChargeDateColumnText": "다음 결제일",
+
+  "planStatusSubscribedText": "구독중",
+  "planStatusUnsubscribedText": "구독 취소됨",
+  "planCancelUnsubscribeButtonText": "다시 구독하기",
+  "planNextChargeUnsubscribeRequestedText": "{{date}}까지 이용 가능",
+
+  "cancelPlanButtonText": "구독 취소하기",
+  "cancelPlanModalTitle": "구독 취소하기",
+  "cancelPlanModalDescription": "구독을 취소하시겠습니까?",
+  "cancelPlanModalConfirmButtonText": "구독 취소하기",
+
+  "updatePaymentMethodModalTitle": "결제 정보 변경하기"
 }

@@ -9,7 +9,7 @@ export module BillingSubscriptionPlanInfoCommonModule {
     const monthlyExpiredAt = billingOrganization.subscriptionMonthlyExpiredAt ?? null;
     const yearlyExpiredAt = billingOrganization.subscriptionYearlyExpiredAt ?? null;
 
-    if (planInfo.state === 'unsubscribe-requested' || planInfo.state === 'unsubscribed') {
+    if (planInfo.state === 'unsubscribed') {
       response.monthlyExpiredAt = null;
       response.yearlyExpiredAt = null;
     } else {

@@ -1,12 +1,17 @@
-import { EditOutlined } from '@ant-design/icons';
+import { EditFilled, EditOutlined } from '@ant-design/icons';
 import { BillingMethodNiceBase } from '@dogu-private/console';
 import { OrganizationId } from '@dogu-private/types';
 import { Form, Modal } from 'antd';
+import useTranslation from 'next-translate/useTranslation';
 import styled from 'styled-components';
+import { shallow } from 'zustand/shallow';
 
 import { updatePaymentMethod } from '../../api/billing';
 import useModal from '../../hooks/useModal';
 import useRequest from '../../hooks/useRequest';
+import useLicenseStore from '../../stores/license';
+import { flexRowSpaceBetweenStyle } from '../../styles/box';
+import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd';
 import { parseNicePaymentMethodFormValues } from '../../utils/billing';
 import BillingMethodRegistrationForm, { BillingMethodRegistrationFormValues } from './BillingMethodRegistrationForm';
 
@@ -19,6 +24,8 @@ const BillingPaymentMethod: React.FC<Props> = ({ method, organizationId }) => {
   const [isOpen, openModal, closeModal] = useModal();
   const [form] = Form.useForm<BillingMethodRegistrationFormValues>();
   const [updateLoading, requestUpdate] = useRequest(updatePaymentMethod);
+  const [license, updateLicense] = useLicenseStore((state) => [state.license, state.updateLicense], shallow);
+  const { t } = useTranslation();
 
   const handleCloseModal = () => {
     closeModal();
@@ -29,44 +36,67 @@ const BillingPaymentMethod: React.FC<Props> = ({ method, organizationId }) => {
     const values = await form.validateFields();
 
     try {
-      await requestUpdate({
+      const rv = await requestUpdate({
         organizationId,
         registerCard: parseNicePaymentMethodFormValues(values),
       });
+
+      if (rv.errorMessage || !rv.body?.ok) {
+        sendErrorNotification('Failed to update payment method');
+        return;
+      }
+
+      sendSuccessNotification('Updated!');
+      if (license) {
+        updateLicense({
+          ...license,
+          billingOrganization: {
+            ...license.billingOrganization,
+            billingMethodNice: rv.body.method,
+          },
+        });
+      }
+      handleCloseModal();
     } catch (e) {}
   };
 
   return (
     <Box>
-      <CardDetail>
-        Card number: **** **** **** {method.cardNumberLast4Digits} {`(${method.cardName})`}
-      </CardDetail>
-      <CardDetail>
-        Expiration date: {method.expirationMonth} / {method.expirationYear}
-      </CardDetail>
+      <EditCardButton
+        onClick={() => {
+          openModal();
+        }}
+      >
+        <EditFilled />
+      </EditCardButton>
 
-      <div>
-        <EditCardButton
-          onClick={() => {
-            openModal();
-          }}
-        >
-          <EditOutlined /> Edit
-        </EditCardButton>
-      </div>
+      <CardDetail>
+        <span>{t('billing:cardNumberLabel')}</span>
+        <p>
+          **** **** **** {method.cardNumberLast4Digits} {`(${method.cardName})`}
+        </p>
+      </CardDetail>
+      <CardDetail>
+        <span>{t('billing:cardExpiryLabel')}</span>
+        <p>
+          {method.expirationMonth} / {method.expirationYear}
+        </p>
+      </CardDetail>
 
       <Modal
         open={isOpen}
         closable
         centered
         destroyOnClose
-        title="Update your payment method"
+        title={t('billing:updatePaymentMethodModalTitle')}
         onCancel={handleCloseModal}
         onOk={handleFinish}
         okButtonProps={{
           htmlType: 'submit',
           form: 'billing-method-form',
         }}
+        cancelText={t('common:cancel')}
+        okText={t('common:save')}
       >
         <BillingMethodRegistrationForm form={form} />
       </Modal>
@@ -76,14 +106,42 @@ const BillingPaymentMethod: React.FC<Props> = ({ method, organizationId }) => {
 
 export default BillingPaymentMethod;
 
-const Box = styled.div``;
+const Box = styled.div`
+  position: relative;
+  width: 18rem;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  border: 1px solid ${(props) => props.theme.main.colors.gray5};
+`;
+
+const FlexRow = styled.div`
+  ${flexRowSpaceBetweenStyle}
+`;
 
 const CardDetail = styled.div`
   margin-bottom: 0.25rem;
+
+  span {
+    font-size: 0.85rem;
+    color: ${(props) => props.theme.main.colors.gray3};
+  }
+
+  p {
+    margin-top: 0.25rem;
+    font-weight: 500;
+  }
 `;
 
 const EditCardButton = styled.button`
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
   padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
   background-color: #fff;
-  color: ${(props) => props.theme.colorPrimary};
+  color: #000;
+
+  &:hover {
+    background-color: #f5f5f5;
+  }
 `;

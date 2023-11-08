@@ -24,6 +24,7 @@ export class BillingHistoryService {
         .innerJoinAndSelect(`${BillingHistory.name}.${BillingHistoryProp.billingOrganization}`, BillingOrganization.name)
         .leftJoinAndSelect(`${BillingHistory.name}.${BillingHistoryProp.billingSubscriptionPlanHistories}`, BillingSubscriptionPlanHistory.name)
         .where(`${BillingOrganization.name}.${BillingOrganizationProp.organizationId} = :organizationId`, { organizationId })
+        .orderBy(`${BillingHistory.name}.${BillingHistoryProp.createdAt}`, 'DESC')
         .skip((page - 1) * offset)
         .take(offset)
         .getManyAndCount();

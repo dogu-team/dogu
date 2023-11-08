@@ -25,6 +25,10 @@ const BillingCouponInput: React.FC<Props> = () => {
   const { t } = useTranslation('billing');
 
   useEffect(() => {
+    setCouponInputValue(billingCoupon);
+  }, [billingCoupon]);
+
+  useEffect(() => {
     useBillingPlanPurchaseStore.subscribe(
       (state) => state.isAnnual,
       () => {
@@ -74,12 +78,23 @@ const BillingCouponInput: React.FC<Props> = () => {
       />
       {couponError && (
         <CouponInfoText style={{ color: '#ff0000' }}>
-          <CloseCircleOutlined /> {couponError}
+          <span>
+            <CloseCircleOutlined /> {couponError}
+          </span>
         </CouponInfoText>
       )}
       {!!billingCoupon && (
         <CouponInfoText style={{ color: 'green' }}>
-          <CheckCircleOutlined /> {t('couponAppliedText')}
+          <span>
+            <CheckCircleOutlined /> {t('couponAppliedText')}
+          </span>
+          <CancelApplyCouponButton
+            onClick={() => {
+              updateBillingCoupon(null);
+            }}
+          >
+            Cancel
+          </CancelApplyCouponButton>
         </CouponInfoText>
       )}
     </div>
@@ -97,5 +112,15 @@ const CouponTextButton = styled.button`
 `;
 
 const CouponInfoText = styled.p`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   font-size: 0.7rem;
+`;
+
+const CancelApplyCouponButton = styled.button`
+  background-color: transparent;
+  border: none;
+  color: #666;
+  text-decoration: underline;
 `;

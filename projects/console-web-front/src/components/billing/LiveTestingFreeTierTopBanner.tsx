@@ -1,5 +1,5 @@
 import { ClockCircleOutlined } from '@ant-design/icons';
-import { CloudLicenseBase } from '@dogu-private/console';
+import { CloudLicenseResponse } from '@dogu-private/console';
 import { Alert } from 'antd';
 import Trans from 'next-translate/Trans';
 import useTranslation from 'next-translate/useTranslation';
@@ -7,13 +7,14 @@ import useTranslation from 'next-translate/useTranslation';
 import useAuthStore from '../../stores/auth';
 import useLicenseStore from '../../stores/license';
 import { hasAdminPermission } from '../../utils/auth';
+import { isLiveTestingFreePlan } from '../../utils/billing';
 import { stringifyDurationAsTimer } from '../../utils/date';
 import UpgradePlanButton from './UpgradePlanButton';
 
 interface Props {}
 
 const LiveTestingFreeTierTopBanner: React.FC<Props> = () => {
-  const license = useLicenseStore((state) => state.license) as CloudLicenseBase | null;
+  const license = useLicenseStore((state) => state.license) as CloudLicenseResponse | null;
   const me = useAuthStore((state) => state.me);
   const { t } = useTranslation('billing');
 
@@ -21,7 +22,9 @@ const LiveTestingFreeTierTopBanner: React.FC<Props> = () => {
     return null;
   }
 
-  if (!license.billingOrganization?.billingSubscriptionPlanInfos?.length) {
+  const isFreePlan = isLiveTestingFreePlan(license);
+
+  if (isFreePlan) {
     return (
       <Alert
         type="info"

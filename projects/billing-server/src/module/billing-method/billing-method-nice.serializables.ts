@@ -163,6 +163,6 @@ export async function updateBillingMethod(
   return {
     ok: true,
     resultCode: resultCode('ok'),
-    methods: [rv],
+    method: rv,
   };
 }
