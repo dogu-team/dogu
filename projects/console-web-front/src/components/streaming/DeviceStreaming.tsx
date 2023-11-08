@@ -3,6 +3,7 @@ import useTranslation from 'next-translate/useTranslation';
 import React, { useState } from 'react';
 import styled from 'styled-components';
 
+import useDeviceAlert from '../../hooks/streaming/useDeviceAlert';
 import useDeviceClient from '../../hooks/streaming/useDeviceClient';
 import { DeviceStreamingContext } from '../../hooks/streaming/useDeviceStreamingContext';
 import useGamiumClient from '../../hooks/streaming/useGamiumClient';
@@ -43,6 +44,7 @@ const DeviceStreaming = ({ device, children, pid, isCloudDevice }: Props) => {
     THROTTLE_MS,
   );
   const inspector = useInspector(deviceService.deviceInspectorRef, device ?? null, videoRef);
+  const { imageBase64 } = useDeviceAlert(deviceService.deviceClientRef, device ?? null);
   const { t } = useTranslation();
 
   if (error) {
@@ -106,6 +108,7 @@ const DeviceStreaming = ({ device, children, pid, isCloudDevice }: Props) => {
         inspector,
         updateMode: setMode,
         isCloudDevice,
+        deviceScreenshotBase64: imageBase64,
       }}
     >
       <Box visible={!!device}>{children}</Box>
