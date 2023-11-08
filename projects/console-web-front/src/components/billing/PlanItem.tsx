@@ -1,5 +1,6 @@
 import { CheckOutlined } from '@ant-design/icons';
 import {
+  BillingPeriod,
   BillingSubscriptionPlanOptionInfo,
   BillingSubscriptionPlanType,
   CloudLicenseBase,
@@ -61,10 +62,7 @@ const PlanItem: React.FC<Props> = ({ planType, planInfo, descriptionInfo }) => {
     shouldGoAnnual: boolean;
   } => {
     const samePlan = usingPlans?.find((plan) => plan.type === planType);
-
-    if (!samePlan || (samePlan && samePlan.option < Number(selectedValue))) {
-      return { text: t('upgradeButtonTitle'), disabled: false, shouldGoAnnual: false };
-    }
+    const period: BillingPeriod = isAnnual ? 'yearly' : 'monthly';
 
     if (samePlan && samePlan.option === Number(selectedValue) && isAnnual && samePlan.period === 'yearly') {
       return { text: 'Current plan', disabled: true, shouldGoAnnual: false };
@@ -72,6 +70,10 @@ const PlanItem: React.FC<Props> = ({ planType, planInfo, descriptionInfo }) => {
 
     if (samePlan && samePlan.option === Number(selectedValue) && samePlan.period === 'monthly') {
       return { text: t('goAnnualButtonTitle'), disabled: false, shouldGoAnnual: true };
+    }
+
+    if (!samePlan || (samePlan && samePlan.period === period && samePlan.option < Number(selectedValue))) {
+      return { text: t('upgradeButtonTitle'), disabled: false, shouldGoAnnual: false };
     }
 
     return { text: t('changeButtonTitle'), disabled: false, shouldGoAnnual: false };

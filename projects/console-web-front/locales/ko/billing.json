@@ -115,6 +115,8 @@
 
   "cardNumberLabel": "카드 번호",
   "cardExpiryLabel": "유효기간 (MM / YY)",
+  "updatePaymentMethodSuccessMessage": "결제 정보가 변경되었습니다.",
+  "updatePaymentMethodErrorMessage": "결제 정보 변경에 실패했습니다. 다시 시도해주세요.",
 
   "historyDateColumnText": "결제일",
   "historyItemColumnText": "항목",
@@ -125,6 +127,12 @@
   "planStatusColumnText": "상태",
   "planNextChargeDateColumnText": "다음 결제일",
 
+  "planChangeOptionRequestedText": "다음 결제일부터 <option></option>으로 변경됩니다.",
+  "changeOptionButtonText": "옵션 변경하기",
+  "cancelChangeOptionButtonText": "취소하기",
+  "cancelChangeOptionSuccessMessage": "옵션 변경이 취소되었습니다.",
+  "cancelChangeOptionErrorMessage": "취소에 실패했습니다. 다시 시도해주세요.",
+
   "planStatusSubscribedText": "구독중",
   "planStatusUnsubscribedText": "구독 취소됨",
   "planCancelUnsubscribeButtonText": "다시 구독하기",
@@ -134,6 +142,11 @@
   "cancelPlanModalTitle": "구독 취소하기",
   "cancelPlanModalDescription": "구독을 취소하시겠습니까?",
   "cancelPlanModalConfirmButtonText": "구독 취소하기",
+  "cancelPlanSuccessMessage": "구독이 취소되었습니다.",
+  "cancelPlanErrorMessage": "구독 취소에 실패했습니다. 다시 시도해주세요.",
+
+  "cancelUnsubscribeSuccessMessage": "구독을 완료했습니다.",
+  "cancelUnsubscribeErrorMessage": "구독에 실패했습니다. 다시 시도해주세요.",
 
   "updatePaymentMethodModalTitle": "결제 정보 변경하기"
 }

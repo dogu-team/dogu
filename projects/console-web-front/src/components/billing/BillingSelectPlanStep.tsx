@@ -1,6 +1,6 @@
 import { BillingPlanGroupMap, BillingSubscriptionGroupType, BillingSubscriptionPlanMap } from '@dogu-private/console';
 import useTranslation from 'next-translate/useTranslation';
-import { useState } from 'react';
+import { Fragment, useState } from 'react';
 import { RiExternalLinkLine } from 'react-icons/ri';
 import styled from 'styled-components';
 
@@ -44,15 +44,15 @@ const BillingSelectPlanStep: React.FC<Props> = ({}) => {
               const usingPlan = usingPlans.find((plan) => plan.type === planType);
 
               return (
-                <>
-                  <span key={planType}>
+                <Fragment key={planType}>
+                  <span>
                     <b>{t(descriptionInfo.titleI18nKey)}</b>{' '}
                     {!!usingPlan
                       ? `(${t(descriptionInfo.getOptionLabelI18nKey(usingPlan.option), { option: usingPlan.option })})`
                       : 'Free'}
                   </span>
                   {i !== planTypes.length - 1 && <span>, </span>}
-                </>
+                </Fragment>
               );
             })}
           </span>

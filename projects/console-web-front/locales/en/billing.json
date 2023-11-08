@@ -115,6 +115,8 @@
 
   "cardNumberLabel": "Card number",
   "cardExpiryLabel": "Expiry (MM / YY)",
+  "updatePaymentMethodSuccessMessage": "Payment details updated successfully.",
+  "updatePaymentMethodErrorMessage": "Failed to update payment details. Please try again.",
 
   "historyDateColumnText": "Date",
   "historyItemColumnText": "Items",
@@ -125,6 +127,12 @@
   "planStatusColumnText": "Status",
   "planNextChargeDateColumnText": "Next charge",
 
+  "planChangeOptionRequestedText": "Changing to <option></option> on the next charge",
+  "changeOptionButtonText": "Change option",
+  "cancelChangeOptionButtonText": "Cancel",
+  "cancelChangeOptionSuccessMessage": "Canceled changing option successfully",
+  "cancelChangeOptionErrorMessage": "Failed to cancel changing option. Please try again.",
+
   "planStatusSubscribedText": "Subscribed",
   "planStatusUnsubscribedText": "Unsubscribed",
   "planCancelUnsubscribeButtonText": "Subscribe again",
@@ -134,6 +142,11 @@
   "cancelPlanModalTitle": "Unsubscribe plan",
   "cancelPlanModalDescription": "Are you sure to Unsubscribe plan?",
   "cancelPlanModalConfirmButtonText": "Unsubscribe plan",
+  "cancelPlanSuccessMessage": "Unsubscribed plan successfully",
+  "cancelPlanErrorMessage": "Failed to unsubscribe plan. Please try again.",
+
+  "cancelUnsubscribeSuccessMessage": "Subscribed plan successfully",
+  "cancelUnsubscribeErrorMessage": "Failed to subscribe plan. Please try again.",
 
   "updatePaymentMethodModalTitle": "Update payment details"
 }

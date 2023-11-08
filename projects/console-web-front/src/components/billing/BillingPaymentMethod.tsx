@@ -42,11 +42,11 @@ const BillingPaymentMethod: React.FC<Props> = ({ method, organizationId }) => {
       });
 
       if (rv.errorMessage || !rv.body?.ok) {
-        sendErrorNotification('Failed to update payment method');
+        sendErrorNotification(t('billing:updatePaymentMethodErrorMessage'));
         return;
       }
 
-      sendSuccessNotification('Updated!');
+      sendSuccessNotification(t('billing:updatePaymentMethodSuccessMessage'));
       if (license) {
         updateLicense({
           ...license,
@@ -57,7 +57,9 @@ const BillingPaymentMethod: React.FC<Props> = ({ method, organizationId }) => {
         });
       }
       handleCloseModal();
-    } catch (e) {}
+    } catch (e) {
+      sendErrorNotification(t('billing:updatePaymentMethodErrorMessage'));
+    }
   };
 
   return (

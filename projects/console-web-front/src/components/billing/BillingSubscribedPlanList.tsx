@@ -6,12 +6,13 @@ import {
   SelfHostedLicenseBase,
 } from '@dogu-private/console';
 import { Alert, List, MenuProps, Tag } from 'antd';
+import Trans from 'next-translate/Trans';
 import useTranslation from 'next-translate/useTranslation';
 import { useRouter } from 'next/router';
 import styled from 'styled-components';
 import { shallow } from 'zustand/shallow';
 
-import { cancelUnsubscribePlan, unsubscribePlan } from '../../api/billing';
+import { cancelChangePlanOptionOrPeriod, cancelUnsubscribePlan, unsubscribePlan } from '../../api/billing';
 import useModal from '../../hooks/useModal';
 import useRequest from '../../hooks/useRequest';
 import { planDescriptionInfoMap } from '../../resources/plan';
@@ -32,7 +33,10 @@ const PlanOption: React.FC<OptionProps> = ({ plan }) => {
   const { t } = useTranslation('billing');
   const router = useRouter();
   const [isOpen, openModal, closeModal] = useModal();
+  const [loading, requestCancelChangePlan] = useRequest(cancelChangePlanOptionOrPeriod);
   const updateGroupType = useBillingPlanPurchaseStore((state) => state.updateBillingGroupType);
+  const updateIsAnnual = useBillingPlanPurchaseStore((state) => state.updateIsAnnual);
+  const [license, updateLicense] = useLicenseStore((state) => [state.license, state.updateLicense], shallow);
 
   const description = planDescriptionInfoMap[plan.type];
   const isAnnual = plan.period === 'yearly';
@@ -40,7 +44,41 @@ const PlanOption: React.FC<OptionProps> = ({ plan }) => {
   const clickChangeOption = () => {
     const groupType = BillingSubscriptionGroupType.find((group) => BillingPlanGroupMap[group].includes(plan.type));
     updateGroupType(groupType ?? null);
+    updateIsAnnual(isAnnual);
     openModal();
+  };
+
+  const clickCancelChangeOption = async () => {
+    if (!license) {
+      return;
+    }
+
+    try {
+      const rv = await requestCancelChangePlan(plan.billingSubscriptionPlanInfoId, {
+        organizationId: license.organizationId,
+      });
+
+      if (rv.errorMessage || !rv.body) {
+        sendErrorNotification(t('cancelChangeOptionErrorMessage'));
+        return;
+      }
+
+      sendSuccessNotification(t('cancelChangeOptionSuccessMessage'));
+      updateLicense({
+        ...license,
+        billingOrganization: {
+          ...license.billingOrganization,
+          billingSubscriptionPlanInfos: [
+            ...license.billingOrganization.billingSubscriptionPlanInfos.filter(
+              (p) => p.billingSubscriptionPlanInfoId !== plan.billingSubscriptionPlanInfoId,
+            ),
+            rv.body,
+          ],
+        },
+      });
+    } catch (e) {
+      sendErrorNotification('cancelChangeOptionErrorMessage');
+    }
   };
 
   return (
@@ -52,13 +90,31 @@ const PlanOption: React.FC<OptionProps> = ({ plan }) => {
       {plan.state === 'change-option-or-period-requested' && plan.changeRequestedOption && (
         <div style={{ marginTop: '.25rem' }}>
           <ChangeRequestedOptionText>
-            From next charge, changed to{' '}
-            {t(description.getOptionLabelI18nKey(plan.changeRequestedOption), { option: plan.changeRequestedOption })} /{' '}
-            {t(plan.changeRequestedPeriod === 'yearly' ? 'monthCountPlural' : 'monthCountSingular', {
-              month: plan.changeRequestedPeriod === 'yearly' ? 12 : 1,
-            })}
+            <Trans
+              i18nKey="billing:planChangeOptionRequestedText"
+              components={{
+                option: (
+                  <b>
+                    {t(description.getOptionLabelI18nKey(plan.changeRequestedOption), {
+                      option: plan.changeRequestedOption,
+                    })}{' '}
+                    /{' '}
+                    {t(plan.changeRequestedPeriod === 'yearly' ? 'monthCountPlural' : 'monthCountSingular', {
+                      month: plan.changeRequestedPeriod === 'yearly' ? 12 : 1,
+                    })}
+                  </b>
+                ),
+              }}
+            />
           </ChangeRequestedOptionText>
-          <ChangeOptionButton onClick={clickChangeOption}>Change option</ChangeOptionButton>
+          <div>
+            <CancelChangeOptionButton onClick={clickChangeOption} disabled={loading}>
+              {t('changeOptionButtonText')}
+            </CancelChangeOptionButton>
+            <CancelChangeOptionButton style={{ color: '#e35f5f' }} onClick={clickCancelChangeOption} disabled={loading}>
+              {t('cancelChangeOptionButtonText')}
+            </CancelChangeOptionButton>
+          </div>
 
           <UpgradePlanModal isOpen={isOpen} close={closeModal} />
         </div>
@@ -132,7 +188,7 @@ const StateBadge: React.FC<StateProps> = ({ plan }) => {
       });
 
       if (rv.errorMessage || !rv.body) {
-        sendErrorNotification('Failed to cancel unsubscribe plan. Please try again later.');
+        sendErrorNotification(t('cancelUnsubscribeErrorMessage'));
         return;
       }
 
@@ -148,8 +204,10 @@ const StateBadge: React.FC<StateProps> = ({ plan }) => {
           ],
         },
       });
-      sendSuccessNotification('Successfully cancel unsubscribed plan.');
-    } catch (e) {}
+      sendSuccessNotification(t('cancelUnsubscribeSuccessMessage'));
+    } catch (e) {
+      sendErrorNotification(t('cancelUnsubscribeErrorMessage'));
+    }
   };
 
   switch (plan.state) {
@@ -198,7 +256,7 @@ const PlanItem: React.FC<ItemProps> = ({ plan }) => {
       });
 
       if (rv.errorMessage) {
-        sendErrorNotification('Failed to unsubscribe plan. Please try again later.');
+        sendErrorNotification(t('cancelPlanErrorMessage'));
         return;
       }
 
@@ -214,9 +272,9 @@ const PlanItem: React.FC<ItemProps> = ({ plan }) => {
           ],
         },
       });
-      sendSuccessNotification('Successfully unsubscribed plan.');
+      sendSuccessNotification(t('cancelPlanSuccessMessage'));
     } catch (e) {
-      sendErrorNotification('Failed to unsubscribe plan. Please try again later.');
+      sendErrorNotification(t('cancelPlanErrorMessage'));
     }
   };
 
@@ -287,8 +345,6 @@ interface Props {}
 const BillingSubscribedPlanList: React.FC<Props> = () => {
   const { t } = useTranslation('billing');
   const license = useLicenseStore((state) => state.license);
-
-  console.log(license);
 
   if (process.env.NEXT_PUBLIC_ENV === 'self-hosted') {
     const selfHostedLicense = license as SelfHostedLicenseBase;
@@ -368,11 +424,14 @@ const StyledCancelUnsubscribeButton = styled.button`
 const ChangeRequestedOptionText = styled.span`
   font-size: 0.8rem;
   color: ${(props) => props.theme.main.colors.gray3};
+
+  b {
+    font-weight: 600;
+  }
 `;
 
-const ChangeOptionButton = styled.button`
-  margin: 0 0.25rem;
-  padding: 0.25rem;
+const CancelChangeOptionButton = styled.button`
+  margin-right: 0.4rem;
   background-color: transparent;
   font-size: 0.8rem;
   text-decoration: underline;
