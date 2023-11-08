@@ -178,22 +178,12 @@ public struct Outer_HttpResponse {
   /// Clears the value of `body`. Subsequent reads from it will return its default value.
   public mutating func clearBody() {self._body = nil}
 
-  public var request: Outer_HttpRequest {
-    get {return _request ?? Outer_HttpRequest()}
-    set {_request = newValue}
-  }
-  /// Returns true if `request` has been explicitly set.
-  public var hasRequest: Bool {return self._request != nil}
-  /// Clears the value of `request`. Subsequent reads from it will return its default value.
-  public mutating func clearRequest() {self._request = nil}
-
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
 
   fileprivate var _headers: Outer_Headers? = nil
   fileprivate var _body: Outer_Body? = nil
-  fileprivate var _request: Outer_HttpRequest? = nil
 }
 
 public struct Outer_HttpRequestParam {
@@ -901,7 +891,6 @@ extension Outer_HttpResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImple
     1: .standard(proto: "status_code"),
     2: .same(proto: "headers"),
     3: .same(proto: "body"),
-    4: .same(proto: "request"),
   ]
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -913,7 +902,6 @@ extension Outer_HttpResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImple
       case 1: try { try decoder.decodeSingularSFixed32Field(value: &self.statusCode) }()
       case 2: try { try decoder.decodeSingularMessageField(value: &self._headers) }()
       case 3: try { try decoder.decodeSingularMessageField(value: &self._body) }()
-      case 4: try { try decoder.decodeSingularMessageField(value: &self._request) }()
       default: break
       }
     }
@@ -933,9 +921,6 @@ extension Outer_HttpResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImple
     try { if let v = self._body {
       try visitor.visitSingularMessageField(value: v, fieldNumber: 3)
     } }()
-    try { if let v = self._request {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 4)
-    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -943,7 +928,6 @@ extension Outer_HttpResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImple
     if lhs.statusCode != rhs.statusCode {return false}
     if lhs._headers != rhs._headers {return false}
     if lhs._body != rhs._body {return false}
-    if lhs._request != rhs._request {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

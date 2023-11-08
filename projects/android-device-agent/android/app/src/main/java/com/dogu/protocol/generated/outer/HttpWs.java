@@ -2145,26 +2145,15 @@ public final class HttpWs {
     com.dogu.protocol.generated.outer.HttpWs.Headers getHeaders();
 
     /**
-     * <code>optional .outer.Body body = 3;</code>
+     * <code>.outer.Body body = 3;</code>
      * @return Whether the body field is set.
      */
     boolean hasBody();
     /**
-     * <code>optional .outer.Body body = 3;</code>
+     * <code>.outer.Body body = 3;</code>
      * @return The body.
      */
     com.dogu.protocol.generated.outer.HttpWs.Body getBody();
-
-    /**
-     * <code>.outer.HttpRequest request = 4;</code>
-     * @return Whether the request field is set.
-     */
-    boolean hasRequest();
-    /**
-     * <code>.outer.HttpRequest request = 4;</code>
-     * @return The request.
-     */
-    com.dogu.protocol.generated.outer.HttpWs.HttpRequest getRequest();
   }
   /**
    * Protobuf type {@code outer.HttpResponse}
@@ -2176,7 +2165,6 @@ public final class HttpWs {
       HttpResponseOrBuilder {
     private HttpResponse() {
     }
-    private int bitField0_;
     public static final int STATUS_CODE_FIELD_NUMBER = 1;
     private int statusCode_;
     /**
@@ -2252,29 +2240,29 @@ public final class HttpWs {
     public static final int BODY_FIELD_NUMBER = 3;
     private com.dogu.protocol.generated.outer.HttpWs.Body body_;
     /**
-     * <code>optional .outer.Body body = 3;</code>
+     * <code>.outer.Body body = 3;</code>
      */
     @java.lang.Override
     public boolean hasBody() {
-      return ((bitField0_ & 0x00000001) != 0);
+      return body_ != null;
     }
     /**
-     * <code>optional .outer.Body body = 3;</code>
+     * <code>.outer.Body body = 3;</code>
      */
     @java.lang.Override
     public com.dogu.protocol.generated.outer.HttpWs.Body getBody() {
       return body_ == null ? com.dogu.protocol.generated.outer.HttpWs.Body.getDefaultInstance() : body_;
     }
     /**
-     * <code>optional .outer.Body body = 3;</code>
+     * <code>.outer.Body body = 3;</code>
      */
     private void setBody(com.dogu.protocol.generated.outer.HttpWs.Body value) {
       value.getClass();
   body_ = value;
-      bitField0_ |= 0x00000001;
+      
       }
     /**
-     * <code>optional .outer.Body body = 3;</code>
+     * <code>.outer.Body body = 3;</code>
      */
     @java.lang.SuppressWarnings({"ReferenceEquality"})
     private void mergeBody(com.dogu.protocol.generated.outer.HttpWs.Body value) {
@@ -2286,58 +2274,12 @@ public final class HttpWs {
       } else {
         body_ = value;
       }
-      bitField0_ |= 0x00000001;
+      
     }
     /**
-     * <code>optional .outer.Body body = 3;</code>
+     * <code>.outer.Body body = 3;</code>
      */
     private void clearBody() {  body_ = null;
-      bitField0_ = (bitField0_ & ~0x00000001);
-    }
-
-    public static final int REQUEST_FIELD_NUMBER = 4;
-    private com.dogu.protocol.generated.outer.HttpWs.HttpRequest request_;
-    /**
-     * <code>.outer.HttpRequest request = 4;</code>
-     */
-    @java.lang.Override
-    public boolean hasRequest() {
-      return request_ != null;
-    }
-    /**
-     * <code>.outer.HttpRequest request = 4;</code>
-     */
-    @java.lang.Override
-    public com.dogu.protocol.generated.outer.HttpWs.HttpRequest getRequest() {
-      return request_ == null ? com.dogu.protocol.generated.outer.HttpWs.HttpRequest.getDefaultInstance() : request_;
-    }
-    /**
-     * <code>.outer.HttpRequest request = 4;</code>
-     */
-    private void setRequest(com.dogu.protocol.generated.outer.HttpWs.HttpRequest value) {
-      value.getClass();
-  request_ = value;
-      
-      }
-    /**
-     * <code>.outer.HttpRequest request = 4;</code>
-     */
-    @java.lang.SuppressWarnings({"ReferenceEquality"})
-    private void mergeRequest(com.dogu.protocol.generated.outer.HttpWs.HttpRequest value) {
-      value.getClass();
-  if (request_ != null &&
-          request_ != com.dogu.protocol.generated.outer.HttpWs.HttpRequest.getDefaultInstance()) {
-        request_ =
-          com.dogu.protocol.generated.outer.HttpWs.HttpRequest.newBuilder(request_).mergeFrom(value).buildPartial();
-      } else {
-        request_ = value;
-      }
-      
-    }
-    /**
-     * <code>.outer.HttpRequest request = 4;</code>
-     */
-    private void clearRequest() {  request_ = null;
       
     }
 
@@ -2512,21 +2454,21 @@ public final class HttpWs {
       }
 
       /**
-       * <code>optional .outer.Body body = 3;</code>
+       * <code>.outer.Body body = 3;</code>
        */
       @java.lang.Override
       public boolean hasBody() {
         return instance.hasBody();
       }
       /**
-       * <code>optional .outer.Body body = 3;</code>
+       * <code>.outer.Body body = 3;</code>
        */
       @java.lang.Override
       public com.dogu.protocol.generated.outer.HttpWs.Body getBody() {
         return instance.getBody();
       }
       /**
-       * <code>optional .outer.Body body = 3;</code>
+       * <code>.outer.Body body = 3;</code>
        */
       public Builder setBody(com.dogu.protocol.generated.outer.HttpWs.Body value) {
         copyOnWrite();
@@ -2534,7 +2476,7 @@ public final class HttpWs {
         return this;
         }
       /**
-       * <code>optional .outer.Body body = 3;</code>
+       * <code>.outer.Body body = 3;</code>
        */
       public Builder setBody(
           com.dogu.protocol.generated.outer.HttpWs.Body.Builder builderForValue) {
@@ -2543,7 +2485,7 @@ public final class HttpWs {
         return this;
       }
       /**
-       * <code>optional .outer.Body body = 3;</code>
+       * <code>.outer.Body body = 3;</code>
        */
       public Builder mergeBody(com.dogu.protocol.generated.outer.HttpWs.Body value) {
         copyOnWrite();
@@ -2551,57 +2493,10 @@ public final class HttpWs {
         return this;
       }
       /**
-       * <code>optional .outer.Body body = 3;</code>
+       * <code>.outer.Body body = 3;</code>
        */
       public Builder clearBody() {  copyOnWrite();
         instance.clearBody();
-        return this;
-      }
-
-      /**
-       * <code>.outer.HttpRequest request = 4;</code>
-       */
-      @java.lang.Override
-      public boolean hasRequest() {
-        return instance.hasRequest();
-      }
-      /**
-       * <code>.outer.HttpRequest request = 4;</code>
-       */
-      @java.lang.Override
-      public com.dogu.protocol.generated.outer.HttpWs.HttpRequest getRequest() {
-        return instance.getRequest();
-      }
-      /**
-       * <code>.outer.HttpRequest request = 4;</code>
-       */
-      public Builder setRequest(com.dogu.protocol.generated.outer.HttpWs.HttpRequest value) {
-        copyOnWrite();
-        instance.setRequest(value);
-        return this;
-        }
-      /**
-       * <code>.outer.HttpRequest request = 4;</code>
-       */
-      public Builder setRequest(
-          com.dogu.protocol.generated.outer.HttpWs.HttpRequest.Builder builderForValue) {
-        copyOnWrite();
-        instance.setRequest(builderForValue.build());
-        return this;
-      }
-      /**
-       * <code>.outer.HttpRequest request = 4;</code>
-       */
-      public Builder mergeRequest(com.dogu.protocol.generated.outer.HttpWs.HttpRequest value) {
-        copyOnWrite();
-        instance.mergeRequest(value);
-        return this;
-      }
-      /**
-       * <code>.outer.HttpRequest request = 4;</code>
-       */
-      public Builder clearRequest() {  copyOnWrite();
-        instance.clearRequest();
         return this;
       }
 
@@ -2621,15 +2516,13 @@ public final class HttpWs {
         }
         case BUILD_MESSAGE_INFO: {
             java.lang.Object[] objects = new java.lang.Object[] {
-              "bitField0_",
               "statusCode_",
               "headers_",
               "body_",
-              "request_",
             };
             java.lang.String info =
-                "\u0000\u0004\u0000\u0001\u0001\u0004\u0004\u0000\u0000\u0000\u0001\r\u0002\t\u0003" +
-                "\u1009\u0000\u0004\t";
+                "\u0000\u0003\u0000\u0000\u0001\u0003\u0003\u0000\u0000\u0000\u0001\r\u0002\t\u0003" +
+                "\t";
             return newMessageInfo(DEFAULT_INSTANCE, info, objects);
         }
         // fall through

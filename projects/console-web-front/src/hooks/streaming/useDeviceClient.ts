@@ -26,7 +26,7 @@ const useDeviceClient = (peerConnectionRef: RefObject<RTCPeerConnection | undefi
       };
 
       const deviceHttpDc = createDataChannel(peerConnectionRef.current, deviceHttpDcLabel, {
-        ordered: false,
+        ordered: true, // This is important, If false, message interleave with each 64KB chunk.
         maxRetransmits: 5,
       });
       deviceHttpDc.bufferedAmountLowThreshold = 65535;

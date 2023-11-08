@@ -29,8 +29,7 @@ export interface HttpRequest {
 export interface HttpResponse {
     statusCode: number;
     headers: Headers | undefined;
-    body?: Body | undefined;
-    request: HttpRequest | undefined;
+    body: Body | undefined;
 }
 export interface HttpRequestParam {
     sequenceId: number;
@@ -306,31 +305,6 @@ export declare const HttpResponse: {
                 $case: "bytesValue";
             }) | undefined;
         } | undefined;
-        request?: {
-            protocolDomain?: string | undefined;
-            method?: string | undefined;
-            path?: string | undefined;
-            headers?: {
-                values?: {
-                    key?: string | undefined;
-                    value?: string | undefined;
-                }[] | undefined;
-            } | undefined;
-            query?: {
-                [x: string]: any;
-            } | undefined;
-            body?: {
-                value?: ({
-                    stringValue?: string | undefined;
-                } & {
-                    $case: "stringValue";
-                }) | ({
-                    bytesValue?: Uint8Array | undefined;
-                } & {
-                    $case: "bytesValue";
-                }) | undefined;
-            } | undefined;
-        } | undefined;
     } & {
         statusCode?: number | undefined;
         headers?: ({
@@ -380,88 +354,7 @@ export declare const HttpResponse: {
                 $case: "bytesValue";
             } & { [K_4 in Exclude<keyof I["body"]["value"], "$case" | "bytesValue">]: never; }) | undefined;
         } & { [K_5 in Exclude<keyof I["body"], "value">]: never; }) | undefined;
-        request?: ({
-            protocolDomain?: string | undefined;
-            method?: string | undefined;
-            path?: string | undefined;
-            headers?: {
-                values?: {
-                    key?: string | undefined;
-                    value?: string | undefined;
-                }[] | undefined;
-            } | undefined;
-            query?: {
-                [x: string]: any;
-            } | undefined;
-            body?: {
-                value?: ({
-                    stringValue?: string | undefined;
-                } & {
-                    $case: "stringValue";
-                }) | ({
-                    bytesValue?: Uint8Array | undefined;
-                } & {
-                    $case: "bytesValue";
-                }) | undefined;
-            } | undefined;
-        } & {
-            protocolDomain?: string | undefined;
-            method?: string | undefined;
-            path?: string | undefined;
-            headers?: ({
-                values?: {
-                    key?: string | undefined;
-                    value?: string | undefined;
-                }[] | undefined;
-            } & {
-                values?: ({
-                    key?: string | undefined;
-                    value?: string | undefined;
-                }[] & ({
-                    key?: string | undefined;
-                    value?: string | undefined;
-                } & {
-                    key?: string | undefined;
-                    value?: string | undefined;
-                } & { [K_6 in Exclude<keyof I["request"]["headers"]["values"][number], keyof HeaderValue>]: never; })[] & { [K_7 in Exclude<keyof I["request"]["headers"]["values"], keyof {
-                    key?: string | undefined;
-                    value?: string | undefined;
-                }[]>]: never; }) | undefined;
-            } & { [K_8 in Exclude<keyof I["request"]["headers"], "values">]: never; }) | undefined;
-            query?: ({
-                [x: string]: any;
-            } & {
-                [x: string]: any;
-            } & { [K_9 in Exclude<keyof I["request"]["query"], string | number>]: never; }) | undefined;
-            body?: ({
-                value?: ({
-                    stringValue?: string | undefined;
-                } & {
-                    $case: "stringValue";
-                }) | ({
-                    bytesValue?: Uint8Array | undefined;
-                } & {
-                    $case: "bytesValue";
-                }) | undefined;
-            } & {
-                value?: ({
-                    stringValue?: string | undefined;
-                } & {
-                    $case: "stringValue";
-                } & {
-                    stringValue?: string | undefined;
-                    $case: "stringValue";
-                } & { [K_10 in Exclude<keyof I["request"]["body"]["value"], "stringValue" | "$case">]: never; }) | ({
-                    bytesValue?: Uint8Array | undefined;
-                } & {
-                    $case: "bytesValue";
-                } & {
-                    bytesValue?: Uint8Array | undefined;
-                    $case: "bytesValue";
-                } & { [K_11 in Exclude<keyof I["request"]["body"]["value"], "$case" | "bytesValue">]: never; }) | undefined;
-            } & { [K_12 in Exclude<keyof I["request"]["body"], "value">]: never; }) | undefined;
-        } & { [K_13 in Exclude<keyof I["request"], keyof HttpRequest>]: never; }) | undefined;
-    } & { [K_14 in Exclude<keyof I, keyof HttpResponse>]: never; }>(object: I): HttpResponse;
+    } & { [K_6 in Exclude<keyof I, keyof HttpResponse>]: never; }>(object: I): HttpResponse;
 };
 export declare const HttpRequestParam: {
     encode(message: HttpRequestParam, writer?: _m0.Writer): _m0.Writer;
@@ -606,31 +499,6 @@ export declare const HttpRequestResult: {
                         $case: "bytesValue";
                     }) | undefined;
                 } | undefined;
-                request?: {
-                    protocolDomain?: string | undefined;
-                    method?: string | undefined;
-                    path?: string | undefined;
-                    headers?: {
-                        values?: {
-                            key?: string | undefined;
-                            value?: string | undefined;
-                        }[] | undefined;
-                    } | undefined;
-                    query?: {
-                        [x: string]: any;
-                    } | undefined;
-                    body?: {
-                        value?: ({
-                            stringValue?: string | undefined;
-                        } & {
-                            $case: "stringValue";
-                        }) | ({
-                            bytesValue?: Uint8Array | undefined;
-                        } & {
-                            $case: "bytesValue";
-                        }) | undefined;
-                    } | undefined;
-                } | undefined;
             } | undefined;
         } & {
             $case: "response";
@@ -666,31 +534,6 @@ export declare const HttpRequestResult: {
                         $case: "bytesValue";
                     }) | undefined;
                 } | undefined;
-                request?: {
-                    protocolDomain?: string | undefined;
-                    method?: string | undefined;
-                    path?: string | undefined;
-                    headers?: {
-                        values?: {
-                            key?: string | undefined;
-                            value?: string | undefined;
-                        }[] | undefined;
-                    } | undefined;
-                    query?: {
-                        [x: string]: any;
-                    } | undefined;
-                    body?: {
-                        value?: ({
-                            stringValue?: string | undefined;
-                        } & {
-                            $case: "stringValue";
-                        }) | ({
-                            bytesValue?: Uint8Array | undefined;
-                        } & {
-                            $case: "bytesValue";
-                        }) | undefined;
-                    } | undefined;
-                } | undefined;
             } | undefined;
         } & {
             $case: "response";
@@ -713,31 +556,6 @@ export declare const HttpRequestResult: {
                     } & {
                         $case: "bytesValue";
                     }) | undefined;
-                } | undefined;
-                request?: {
-                    protocolDomain?: string | undefined;
-                    method?: string | undefined;
-                    path?: string | undefined;
-                    headers?: {
-                        values?: {
-                            key?: string | undefined;
-                            value?: string | undefined;
-                        }[] | undefined;
-                    } | undefined;
-                    query?: {
-                        [x: string]: any;
-                    } | undefined;
-                    body?: {
-                        value?: ({
-                            stringValue?: string | undefined;
-                        } & {
-                            $case: "stringValue";
-                        }) | ({
-                            bytesValue?: Uint8Array | undefined;
-                        } & {
-                            $case: "bytesValue";
-                        }) | undefined;
-                    } | undefined;
                 } | undefined;
             } & {
                 statusCode?: number | undefined;
@@ -788,90 +606,9 @@ export declare const HttpRequestResult: {
                         $case: "bytesValue";
                     } & { [K_4 in Exclude<keyof I["value"]["response"]["body"]["value"], "$case" | "bytesValue">]: never; }) | undefined;
                 } & { [K_5 in Exclude<keyof I["value"]["response"]["body"], "value">]: never; }) | undefined;
-                request?: ({
-                    protocolDomain?: string | undefined;
-                    method?: string | undefined;
-                    path?: string | undefined;
-                    headers?: {
-                        values?: {
-                            key?: string | undefined;
-                            value?: string | undefined;
-                        }[] | undefined;
-                    } | undefined;
-                    query?: {
-                        [x: string]: any;
-                    } | undefined;
-                    body?: {
-                        value?: ({
-                            stringValue?: string | undefined;
-                        } & {
-                            $case: "stringValue";
-                        }) | ({
-                            bytesValue?: Uint8Array | undefined;
-                        } & {
-                            $case: "bytesValue";
-                        }) | undefined;
-                    } | undefined;
-                } & {
-                    protocolDomain?: string | undefined;
-                    method?: string | undefined;
-                    path?: string | undefined;
-                    headers?: ({
-                        values?: {
-                            key?: string | undefined;
-                            value?: string | undefined;
-                        }[] | undefined;
-                    } & {
-                        values?: ({
-                            key?: string | undefined;
-                            value?: string | undefined;
-                        }[] & ({
-                            key?: string | undefined;
-                            value?: string | undefined;
-                        } & {
-                            key?: string | undefined;
-                            value?: string | undefined;
-                        } & { [K_6 in Exclude<keyof I["value"]["response"]["request"]["headers"]["values"][number], keyof HeaderValue>]: never; })[] & { [K_7 in Exclude<keyof I["value"]["response"]["request"]["headers"]["values"], keyof {
-                            key?: string | undefined;
-                            value?: string | undefined;
-                        }[]>]: never; }) | undefined;
-                    } & { [K_8 in Exclude<keyof I["value"]["response"]["request"]["headers"], "values">]: never; }) | undefined;
-                    query?: ({
-                        [x: string]: any;
-                    } & {
-                        [x: string]: any;
-                    } & { [K_9 in Exclude<keyof I["value"]["response"]["request"]["query"], string | number>]: never; }) | undefined;
-                    body?: ({
-                        value?: ({
-                            stringValue?: string | undefined;
-                        } & {
-                            $case: "stringValue";
-                        }) | ({
-                            bytesValue?: Uint8Array | undefined;
-                        } & {
-                            $case: "bytesValue";
-                        }) | undefined;
-                    } & {
-                        value?: ({
-                            stringValue?: string | undefined;
-                        } & {
-                            $case: "stringValue";
-                        } & {
-                            stringValue?: string | undefined;
-                            $case: "stringValue";
-                        } & { [K_10 in Exclude<keyof I["value"]["response"]["request"]["body"]["value"], "stringValue" | "$case">]: never; }) | ({
-                            bytesValue?: Uint8Array | undefined;
-                        } & {
-                            $case: "bytesValue";
-                        } & {
-                            bytesValue?: Uint8Array | undefined;
-                            $case: "bytesValue";
-                        } & { [K_11 in Exclude<keyof I["value"]["response"]["request"]["body"]["value"], "$case" | "bytesValue">]: never; }) | undefined;
-                    } & { [K_12 in Exclude<keyof I["value"]["response"]["request"]["body"], "value">]: never; }) | undefined;
-                } & { [K_13 in Exclude<keyof I["value"]["response"]["request"], keyof HttpRequest>]: never; }) | undefined;
-            } & { [K_14 in Exclude<keyof I["value"]["response"], keyof HttpResponse>]: never; }) | undefined;
+            } & { [K_6 in Exclude<keyof I["value"]["response"], keyof HttpResponse>]: never; }) | undefined;
             $case: "response";
-        } & { [K_15 in Exclude<keyof I["value"], "$case" | "response">]: never; }) | ({
+        } & { [K_7 in Exclude<keyof I["value"], "$case" | "response">]: never; }) | ({
             error?: {
                 code?: import("./errors").Code | undefined;
                 message?: string | undefined;
@@ -895,11 +632,11 @@ export declare const HttpRequestResult: {
                     [x: string]: any;
                 } & {
                     [x: string]: any;
-                } & { [K_16 in Exclude<keyof I["value"]["error"]["details"], string | number>]: never; }) | undefined;
-            } & { [K_17 in Exclude<keyof I["value"]["error"], keyof ErrorResult>]: never; }) | undefined;
+                } & { [K_8 in Exclude<keyof I["value"]["error"]["details"], string | number>]: never; }) | undefined;
+            } & { [K_9 in Exclude<keyof I["value"]["error"], keyof ErrorResult>]: never; }) | undefined;
             $case: "error";
-        } & { [K_18 in Exclude<keyof I["value"], "$case" | "error">]: never; }) | undefined;
-    } & { [K_19 in Exclude<keyof I, "value">]: never; }>(object: I): HttpRequestResult;
+        } & { [K_10 in Exclude<keyof I["value"], "$case" | "error">]: never; }) | undefined;
+    } & { [K_11 in Exclude<keyof I, "value">]: never; }>(object: I): HttpRequestResult;
 };
 export declare const WebSocketConnection: {
     encode(message: WebSocketConnection, writer?: _m0.Writer): _m0.Writer;
@@ -1347,31 +1084,6 @@ export declare const HttpRequestWebSocketResult: {
                                 $case: "bytesValue";
                             }) | undefined;
                         } | undefined;
-                        request?: {
-                            protocolDomain?: string | undefined;
-                            method?: string | undefined;
-                            path?: string | undefined;
-                            headers?: {
-                                values?: {
-                                    key?: string | undefined;
-                                    value?: string | undefined;
-                                }[] | undefined;
-                            } | undefined;
-                            query?: {
-                                [x: string]: any;
-                            } | undefined;
-                            body?: {
-                                value?: ({
-                                    stringValue?: string | undefined;
-                                } & {
-                                    $case: "stringValue";
-                                }) | ({
-                                    bytesValue?: Uint8Array | undefined;
-                                } & {
-                                    $case: "bytesValue";
-                                }) | undefined;
-                            } | undefined;
-                        } | undefined;
                     } | undefined;
                 } & {
                     $case: "response";
@@ -1461,31 +1173,6 @@ export declare const HttpRequestWebSocketResult: {
                                 $case: "bytesValue";
                             }) | undefined;
                         } | undefined;
-                        request?: {
-                            protocolDomain?: string | undefined;
-                            method?: string | undefined;
-                            path?: string | undefined;
-                            headers?: {
-                                values?: {
-                                    key?: string | undefined;
-                                    value?: string | undefined;
-                                }[] | undefined;
-                            } | undefined;
-                            query?: {
-                                [x: string]: any;
-                            } | undefined;
-                            body?: {
-                                value?: ({
-                                    stringValue?: string | undefined;
-                                } & {
-                                    $case: "stringValue";
-                                }) | ({
-                                    bytesValue?: Uint8Array | undefined;
-                                } & {
-                                    $case: "bytesValue";
-                                }) | undefined;
-                            } | undefined;
-                        } | undefined;
                     } | undefined;
                 } & {
                     $case: "response";
@@ -1525,31 +1212,6 @@ export declare const HttpRequestWebSocketResult: {
                                 $case: "bytesValue";
                             }) | undefined;
                         } | undefined;
-                        request?: {
-                            protocolDomain?: string | undefined;
-                            method?: string | undefined;
-                            path?: string | undefined;
-                            headers?: {
-                                values?: {
-                                    key?: string | undefined;
-                                    value?: string | undefined;
-                                }[] | undefined;
-                            } | undefined;
-                            query?: {
-                                [x: string]: any;
-                            } | undefined;
-                            body?: {
-                                value?: ({
-                                    stringValue?: string | undefined;
-                                } & {
-                                    $case: "stringValue";
-                                }) | ({
-                                    bytesValue?: Uint8Array | undefined;
-                                } & {
-                                    $case: "bytesValue";
-                                }) | undefined;
-                            } | undefined;
-                        } | undefined;
                     } | undefined;
                 } & {
                     $case: "response";
@@ -1585,31 +1247,6 @@ export declare const HttpRequestWebSocketResult: {
                                 $case: "bytesValue";
                             }) | undefined;
                         } | undefined;
-                        request?: {
-                            protocolDomain?: string | undefined;
-                            method?: string | undefined;
-                            path?: string | undefined;
-                            headers?: {
-                                values?: {
-                                    key?: string | undefined;
-                                    value?: string | undefined;
-                                }[] | undefined;
-                            } | undefined;
-                            query?: {
-                                [x: string]: any;
-                            } | undefined;
-                            body?: {
-                                value?: ({
-                                    stringValue?: string | undefined;
-                                } & {
-                                    $case: "stringValue";
-                                }) | ({
-                                    bytesValue?: Uint8Array | undefined;
-                                } & {
-                                    $case: "bytesValue";
-                                }) | undefined;
-                            } | undefined;
-                        } | undefined;
                     } | undefined;
                 } & {
                     $case: "response";
@@ -1632,31 +1269,6 @@ export declare const HttpRequestWebSocketResult: {
                             } & {
                                 $case: "bytesValue";
                             }) | undefined;
-                        } | undefined;
-                        request?: {
-                            protocolDomain?: string | undefined;
-                            method?: string | undefined;
-                            path?: string | undefined;
-                            headers?: {
-                                values?: {
-                                    key?: string | undefined;
-                                    value?: string | undefined;
-                                }[] | undefined;
-                            } | undefined;
-                            query?: {
-                                [x: string]: any;
-                            } | undefined;
-                            body?: {
-                                value?: ({
-                                    stringValue?: string | undefined;
-                                } & {
-                                    $case: "stringValue";
-                                }) | ({
-                                    bytesValue?: Uint8Array | undefined;
-                                } & {
-                                    $case: "bytesValue";
-                                }) | undefined;
-                            } | undefined;
                         } | undefined;
                     } & {
                         statusCode?: number | undefined;
@@ -1707,90 +1319,9 @@ export declare const HttpRequestWebSocketResult: {
                                 $case: "bytesValue";
                             } & { [K_4 in Exclude<keyof I["value"]["httpRequestResult"]["value"]["response"]["body"]["value"], "$case" | "bytesValue">]: never; }) | undefined;
                         } & { [K_5 in Exclude<keyof I["value"]["httpRequestResult"]["value"]["response"]["body"], "value">]: never; }) | undefined;
-                        request?: ({
-                            protocolDomain?: string | undefined;
-                            method?: string | undefined;
-                            path?: string | undefined;
-                            headers?: {
-                                values?: {
-                                    key?: string | undefined;
-                                    value?: string | undefined;
-                                }[] | undefined;
-                            } | undefined;
-                            query?: {
-                                [x: string]: any;
-                            } | undefined;
-                            body?: {
-                                value?: ({
-                                    stringValue?: string | undefined;
-                                } & {
-                                    $case: "stringValue";
-                                }) | ({
-                                    bytesValue?: Uint8Array | undefined;
-                                } & {
-                                    $case: "bytesValue";
-                                }) | undefined;
-                            } | undefined;
-                        } & {
-                            protocolDomain?: string | undefined;
-                            method?: string | undefined;
-                            path?: string | undefined;
-                            headers?: ({
-                                values?: {
-                                    key?: string | undefined;
-                                    value?: string | undefined;
-                                }[] | undefined;
-                            } & {
-                                values?: ({
-                                    key?: string | undefined;
-                                    value?: string | undefined;
-                                }[] & ({
-                                    key?: string | undefined;
-                                    value?: string | undefined;
-                                } & {
-                                    key?: string | undefined;
-                                    value?: string | undefined;
-                                } & { [K_6 in Exclude<keyof I["value"]["httpRequestResult"]["value"]["response"]["request"]["headers"]["values"][number], keyof HeaderValue>]: never; })[] & { [K_7 in Exclude<keyof I["value"]["httpRequestResult"]["value"]["response"]["request"]["headers"]["values"], keyof {
-                                    key?: string | undefined;
-                                    value?: string | undefined;
-                                }[]>]: never; }) | undefined;
-                            } & { [K_8 in Exclude<keyof I["value"]["httpRequestResult"]["value"]["response"]["request"]["headers"], "values">]: never; }) | undefined;
-                            query?: ({
-                                [x: string]: any;
-                            } & {
-                                [x: string]: any;
-                            } & { [K_9 in Exclude<keyof I["value"]["httpRequestResult"]["value"]["response"]["request"]["query"], string | number>]: never; }) | undefined;
-                            body?: ({
-                                value?: ({
-                                    stringValue?: string | undefined;
-                                } & {
-                                    $case: "stringValue";
-                                }) | ({
-                                    bytesValue?: Uint8Array | undefined;
-                                } & {
-                                    $case: "bytesValue";
-                                }) | undefined;
-                            } & {
-                                value?: ({
-                                    stringValue?: string | undefined;
-                                } & {
-                                    $case: "stringValue";
-                                } & {
-                                    stringValue?: string | undefined;
-                                    $case: "stringValue";
-                                } & { [K_10 in Exclude<keyof I["value"]["httpRequestResult"]["value"]["response"]["request"]["body"]["value"], "stringValue" | "$case">]: never; }) | ({
-                                    bytesValue?: Uint8Array | undefined;
-                                } & {
-                                    $case: "bytesValue";
-                                } & {
-                                    bytesValue?: Uint8Array | undefined;
-                                    $case: "bytesValue";
-                                } & { [K_11 in Exclude<keyof I["value"]["httpRequestResult"]["value"]["response"]["request"]["body"]["value"], "$case" | "bytesValue">]: never; }) | undefined;
-                            } & { [K_12 in Exclude<keyof I["value"]["httpRequestResult"]["value"]["response"]["request"]["body"], "value">]: never; }) | undefined;
-                        } & { [K_13 in Exclude<keyof I["value"]["httpRequestResult"]["value"]["response"]["request"], keyof HttpRequest>]: never; }) | undefined;
-                    } & { [K_14 in Exclude<keyof I["value"]["httpRequestResult"]["value"]["response"], keyof HttpResponse>]: never; }) | undefined;
+                    } & { [K_6 in Exclude<keyof I["value"]["httpRequestResult"]["value"]["response"], keyof HttpResponse>]: never; }) | undefined;
                     $case: "response";
-                } & { [K_15 in Exclude<keyof I["value"]["httpRequestResult"]["value"], "$case" | "response">]: never; }) | ({
+                } & { [K_7 in Exclude<keyof I["value"]["httpRequestResult"]["value"], "$case" | "response">]: never; }) | ({
                     error?: {
                         code?: import("./errors").Code | undefined;
                         message?: string | undefined;
@@ -1814,13 +1345,13 @@ export declare const HttpRequestWebSocketResult: {
                             [x: string]: any;
                         } & {
                             [x: string]: any;
-                        } & { [K_16 in Exclude<keyof I["value"]["httpRequestResult"]["value"]["error"]["details"], string | number>]: never; }) | undefined;
-                    } & { [K_17 in Exclude<keyof I["value"]["httpRequestResult"]["value"]["error"], keyof ErrorResult>]: never; }) | undefined;
+                        } & { [K_8 in Exclude<keyof I["value"]["httpRequestResult"]["value"]["error"]["details"], string | number>]: never; }) | undefined;
+                    } & { [K_9 in Exclude<keyof I["value"]["httpRequestResult"]["value"]["error"], keyof ErrorResult>]: never; }) | undefined;
                     $case: "error";
-                } & { [K_18 in Exclude<keyof I["value"]["httpRequestResult"]["value"], "$case" | "error">]: never; }) | undefined;
-            } & { [K_19 in Exclude<keyof I["value"]["httpRequestResult"], "value">]: never; }) | undefined;
+                } & { [K_10 in Exclude<keyof I["value"]["httpRequestResult"]["value"], "$case" | "error">]: never; }) | undefined;
+            } & { [K_11 in Exclude<keyof I["value"]["httpRequestResult"], "value">]: never; }) | undefined;
             $case: "httpRequestResult";
-        } & { [K_20 in Exclude<keyof I["value"], "$case" | "httpRequestResult">]: never; }) | ({
+        } & { [K_12 in Exclude<keyof I["value"], "$case" | "httpRequestResult">]: never; }) | ({
             webSocketResult?: {
                 value?: ({
                     openEvent?: {} | undefined;
@@ -1917,9 +1448,9 @@ export declare const HttpRequestWebSocketResult: {
                 } & {
                     $case: "openEvent";
                 } & {
-                    openEvent?: ({} & {} & { [K_21 in Exclude<keyof I["value"]["webSocketResult"]["value"]["openEvent"], never>]: never; }) | undefined;
+                    openEvent?: ({} & {} & { [K_13 in Exclude<keyof I["value"]["webSocketResult"]["value"]["openEvent"], never>]: never; }) | undefined;
                     $case: "openEvent";
-                } & { [K_22 in Exclude<keyof I["value"]["webSocketResult"]["value"], "$case" | "openEvent">]: never; }) | ({
+                } & { [K_14 in Exclude<keyof I["value"]["webSocketResult"]["value"], "$case" | "openEvent">]: never; }) | ({
                     errorEvent?: {
                         reason?: string | undefined;
                     } | undefined;
@@ -1930,9 +1461,9 @@ export declare const HttpRequestWebSocketResult: {
                         reason?: string | undefined;
                     } & {
                         reason?: string | undefined;
-                    } & { [K_23 in Exclude<keyof I["value"]["webSocketResult"]["value"]["errorEvent"], "reason">]: never; }) | undefined;
+                    } & { [K_15 in Exclude<keyof I["value"]["webSocketResult"]["value"]["errorEvent"], "reason">]: never; }) | undefined;
                     $case: "errorEvent";
-                } & { [K_24 in Exclude<keyof I["value"]["webSocketResult"]["value"], "$case" | "errorEvent">]: never; }) | ({
+                } & { [K_16 in Exclude<keyof I["value"]["webSocketResult"]["value"], "$case" | "errorEvent">]: never; }) | ({
                     closeEvent?: {
                         code?: number | undefined;
                         reason?: string | undefined;
@@ -1946,9 +1477,9 @@ export declare const HttpRequestWebSocketResult: {
                     } & {
                         code?: number | undefined;
                         reason?: string | undefined;
-                    } & { [K_25 in Exclude<keyof I["value"]["webSocketResult"]["value"]["closeEvent"], keyof WebSocketCloseEvent>]: never; }) | undefined;
+                    } & { [K_17 in Exclude<keyof I["value"]["webSocketResult"]["value"]["closeEvent"], keyof WebSocketCloseEvent>]: never; }) | undefined;
                     $case: "closeEvent";
-                } & { [K_26 in Exclude<keyof I["value"]["webSocketResult"]["value"], "$case" | "closeEvent">]: never; }) | ({
+                } & { [K_18 in Exclude<keyof I["value"]["webSocketResult"]["value"], "$case" | "closeEvent">]: never; }) | ({
                     messageEvent?: {
                         value?: ({
                             stringValue?: string | undefined;
@@ -1981,17 +1512,17 @@ export declare const HttpRequestWebSocketResult: {
                         } & {
                             stringValue?: string | undefined;
                             $case: "stringValue";
-                        } & { [K_27 in Exclude<keyof I["value"]["webSocketResult"]["value"]["messageEvent"]["value"], "stringValue" | "$case">]: never; }) | ({
+                        } & { [K_19 in Exclude<keyof I["value"]["webSocketResult"]["value"]["messageEvent"]["value"], "stringValue" | "$case">]: never; }) | ({
                             bytesValue?: Uint8Array | undefined;
                         } & {
                             $case: "bytesValue";
                         } & {
                             bytesValue?: Uint8Array | undefined;
                             $case: "bytesValue";
-                        } & { [K_28 in Exclude<keyof I["value"]["webSocketResult"]["value"]["messageEvent"]["value"], "$case" | "bytesValue">]: never; }) | undefined;
-                    } & { [K_29 in Exclude<keyof I["value"]["webSocketResult"]["value"]["messageEvent"], "value">]: never; }) | undefined;
+                        } & { [K_20 in Exclude<keyof I["value"]["webSocketResult"]["value"]["messageEvent"]["value"], "$case" | "bytesValue">]: never; }) | undefined;
+                    } & { [K_21 in Exclude<keyof I["value"]["webSocketResult"]["value"]["messageEvent"], "value">]: never; }) | undefined;
                     $case: "messageEvent";
-                } & { [K_30 in Exclude<keyof I["value"]["webSocketResult"]["value"], "$case" | "messageEvent">]: never; }) | ({
+                } & { [K_22 in Exclude<keyof I["value"]["webSocketResult"]["value"], "$case" | "messageEvent">]: never; }) | ({
                     error?: {
                         code?: import("./errors").Code | undefined;
                         message?: string | undefined;
@@ -2015,12 +1546,12 @@ export declare const HttpRequestWebSocketResult: {
                             [x: string]: any;
                         } & {
                             [x: string]: any;
-                        } & { [K_31 in Exclude<keyof I["value"]["webSocketResult"]["value"]["error"]["details"], string | number>]: never; }) | undefined;
-                    } & { [K_32 in Exclude<keyof I["value"]["webSocketResult"]["value"]["error"], keyof ErrorResult>]: never; }) | undefined;
+                        } & { [K_23 in Exclude<keyof I["value"]["webSocketResult"]["value"]["error"]["details"], string | number>]: never; }) | undefined;
+                    } & { [K_24 in Exclude<keyof I["value"]["webSocketResult"]["value"]["error"], keyof ErrorResult>]: never; }) | undefined;
                     $case: "error";
-                } & { [K_33 in Exclude<keyof I["value"]["webSocketResult"]["value"], "$case" | "error">]: never; }) | undefined;
-            } & { [K_34 in Exclude<keyof I["value"]["webSocketResult"], "value">]: never; }) | undefined;
+                } & { [K_25 in Exclude<keyof I["value"]["webSocketResult"]["value"], "$case" | "error">]: never; }) | undefined;
+            } & { [K_26 in Exclude<keyof I["value"]["webSocketResult"], "value">]: never; }) | undefined;
             $case: "webSocketResult";
-        } & { [K_35 in Exclude<keyof I["value"], "$case" | "webSocketResult">]: never; }) | undefined;
-    } & { [K_36 in Exclude<keyof I, keyof HttpRequestWebSocketResult>]: never; }>(object: I): HttpRequestWebSocketResult;
+        } & { [K_27 in Exclude<keyof I["value"], "$case" | "webSocketResult">]: never; }) | undefined;
+    } & { [K_28 in Exclude<keyof I, keyof HttpRequestWebSocketResult>]: never; }>(object: I): HttpRequestWebSocketResult;
 };
