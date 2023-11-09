@@ -269,7 +269,7 @@ const BillingCalculatedPreview: React.FC<Props> = ({}) => {
           <div>
             <p>
               <Trans
-                i18nKey="billing:changeOptionDescriptionText"
+                i18nKey="billing:nextPurchaseDescriptionText"
                 components={{
                   date: (
                     <b style={{ fontWeight: '600' }}>
@@ -299,19 +299,30 @@ const BillingCalculatedPreview: React.FC<Props> = ({}) => {
         {shouldPurchase && data.body.nextPurchaseTotalPrice !== data.body.totalPrice && (
           <div style={{ marginTop: '.5rem' }}>
             <NextBillingText>
-              {t('nextPurchaseDescriptionText', {
-                date: getLocaleFormattedDate(router.locale, new Date(data.body.nextPurchasedAt), {
-                  year: 'numeric',
-                  month: 'short',
-                  day: 'numeric',
-                }),
-                price: getLocaleFormattedPrice(
-                  'ko',
-                  data.body.subscriptionPlan.currency,
-                  data.body.nextPurchaseTotalPrice,
-                ),
-                period: isAnnual ? 'year' : 'month',
-              })}
+              <Trans
+                i18nKey="billing:nextPurchaseDescriptionText"
+                components={{
+                  date: (
+                    <span>
+                      {getLocaleFormattedDate(router.locale, new Date(data.body.nextPurchasedAt), {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric',
+                      })}
+                    </span>
+                  ),
+                  option: (
+                    <span>
+                      {getLocaleFormattedPrice(
+                        'ko',
+                        data.body.subscriptionPlan.currency,
+                        data.body.nextPurchaseTotalPrice,
+                      )}
+                      /{isAnnual ? 'year' : 'month'}
+                    </span>
+                  ),
+                }}
+              />
             </NextBillingText>
           </div>
         )}
