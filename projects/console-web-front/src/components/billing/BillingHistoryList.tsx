@@ -1,6 +1,6 @@
 import { BillingHistoryBase, CallBillingApiResponse, GetBillingHistoriesDto, PageBase } from '@dogu-private/console';
 import { OrganizationId } from '@dogu-private/types';
-import { Button, List } from 'antd';
+import { Button, List, Modal } from 'antd';
 import useTranslation from 'next-translate/useTranslation';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
@@ -8,11 +8,13 @@ import styled from 'styled-components';
 import useSWR from 'swr';
 
 import { swrAuthFetcher } from '../../api';
+import useModal from '../../hooks/useModal';
 import useRefresh from '../../hooks/useRefresh';
 import { planDescriptionInfoMap } from '../../resources/plan';
 import { flexRowBaseStyle, listItemStyle, tableCellStyle, tableHeaderStyle } from '../../styles/box';
 import { getLocaleFormattedDate, getLocaleFormattedPrice } from '../../utils/locale';
 import { buildQueryPraramsByObject } from '../../utils/query';
+import BillingHistoryDetail from './BillingHistoryDetail';
 
 interface ItemProps {
   history: BillingHistoryBase;
@@ -20,6 +22,7 @@ interface ItemProps {
 
 const HistoryItem: React.FC<ItemProps> = ({ history }) => {
   const router = useRouter();
+  const [isOpen, openModal, closeModal] = useModal();
   const { t } = useTranslation('billing');
 
   return (
@@ -52,9 +55,15 @@ const HistoryItem: React.FC<ItemProps> = ({ history }) => {
         </Cell>
         <Cell flex={1}>{getLocaleFormattedPrice('ko', 'KRW', history.totalPrice)}</Cell>
         <ButtonWrapper>
-          <Button type="link">See more</Button>
+          <Button type="link" onClick={() => openModal()}>
+            See more
+          </Button>
         </ButtonWrapper>
       </ItemInner>
+
+      <Modal title="Billing details" open={isOpen} destroyOnClose centered footer={null} closable onCancel={closeModal}>
+        <BillingHistoryDetail history={history} />
+      </Modal>
     </Item>
   );
 };

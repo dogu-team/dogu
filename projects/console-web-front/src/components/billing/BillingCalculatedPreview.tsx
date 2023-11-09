@@ -21,6 +21,7 @@ import { buildQueryPraramsByObject } from '../../utils/query';
 import useLicenseStore from '../../stores/license';
 import BillingPurchaseButton from './BillingPurchaseButton';
 import Trans from 'next-translate/Trans';
+import { checkShouldPurchase, getSubscriptionPlansFromLicense } from '../../utils/billing';
 
 interface Props {}
 
@@ -35,7 +36,7 @@ const BillingCalculatedPreview: React.FC<Props> = ({}) => {
     organizationId: license?.organizationId ?? '',
     category: 'cloud',
     period: isAnnual ? 'yearly' : 'monthly',
-    type: selectedPlan?.planType ?? 'live-testing',
+    type: selectedPlan?.type ?? 'live-testing',
     option: selectedPlan?.option ?? 1,
     currency: 'KRW',
     couponCode: couponCode ?? undefined,
@@ -50,6 +51,14 @@ const BillingCalculatedPreview: React.FC<Props> = ({}) => {
   );
 
   const { t } = useTranslation('billing');
+
+  if (!license) {
+    return (
+      <Box>
+        <ErrorBox title="Oops" desc="License not found" />
+      </Box>
+    );
+  }
 
   if (!selectedPlan) {
     return (
@@ -84,17 +93,30 @@ const BillingCalculatedPreview: React.FC<Props> = ({}) => {
     );
   }
 
-  const planDescription = planDescriptionInfoMap[selectedPlan?.planType];
+  const shouldPurchase = checkShouldPurchase(license, { ...selectedPlan, period: data.body.subscriptionPlan.period });
+  const planDescription = planDescriptionInfoMap[selectedPlan.type];
   const isAnnualSubscription = data.body.subscriptionPlan.period === 'yearly';
   const originPricePerMonth = isAnnualSubscription
     ? data.body.subscriptionPlan.originPrice / 12
     : data.body.subscriptionPlan.originPrice;
 
+  const ProductBadge = () => {
+    if (getSubscriptionPlansFromLicense(license, [selectedPlan.type]).length === 0) {
+      return <Tag color="green-inverse">New</Tag>;
+    }
+
+    if (shouldPurchase) {
+      return <Tag color="blue-inverse">Upgrade</Tag>;
+    }
+
+    return <Tag color="orange-inverse">Change</Tag>;
+  };
+
   return (
     <Box>
       <Content>
         <div>
-          <Tag color="success">New</Tag>
+          <ProductBadge />
           <PlanTitle>{t(planDescription.titleI18nKey)}</PlanTitle>
           <div>
             <MonthlyPrice>
@@ -234,16 +256,47 @@ const BillingCalculatedPreview: React.FC<Props> = ({}) => {
 
         <Divider style={{ margin: '.5rem 0', borderTopWidth: '2px' }} />
 
-        <div>
-          <CalculatedPriceContent>
-            <TotalText>{t('totalLabelText')}</TotalText>
-            <TotalText>
-              {getLocaleFormattedPrice('ko', data.body.subscriptionPlan.currency, data.body.totalPrice)}
-            </TotalText>
-          </CalculatedPriceContent>
-        </div>
+        {shouldPurchase ? (
+          <div>
+            <CalculatedPriceContent>
+              <TotalText>{t('totalLabelText')}</TotalText>
+              <TotalText>
+                {getLocaleFormattedPrice('ko', data.body.subscriptionPlan.currency, data.body.totalPrice)}
+              </TotalText>
+            </CalculatedPriceContent>
+          </div>
+        ) : (
+          <div>
+            <p>
+              <Trans
+                i18nKey="billing:changeOptionDescriptionText"
+                components={{
+                  date: (
+                    <b style={{ fontWeight: '600' }}>
+                      {getLocaleFormattedDate(router.locale, new Date(data.body.nextPurchasedAt), {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric',
+                      })}
+                    </b>
+                  ),
+                  option: (
+                    <b style={{ fontWeight: '600' }}>
+                      {getLocaleFormattedPrice(
+                        'ko',
+                        data.body.subscriptionPlan.currency,
+                        data.body.nextPurchaseTotalPrice,
+                      )}
+                      /{isAnnual ? 'year' : 'month'}
+                    </b>
+                  ),
+                }}
+              />
+            </p>
+          </div>
+        )}
 
-        {data.body.nextPurchaseTotalPrice !== data.body.totalPrice && (
+        {shouldPurchase && data.body.nextPurchaseTotalPrice !== data.body.totalPrice && (
           <div style={{ marginTop: '.5rem' }}>
             <NextBillingText>
               {t('nextPurchaseDescriptionText', {

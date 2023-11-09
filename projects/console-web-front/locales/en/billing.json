@@ -84,6 +84,7 @@
   "totalLabelText": "Total",
   "purchaseButtonText": "Purchase",
   "nextPurchaseDescriptionText": "From {{date}} you will be charged {{price}}/{{period}}",
+  "changeOptionDescriptionText": "From <date></date> you will be charged <option></option>",
   "purchaseAgreementText": "By purchasing plan you agree to our <link>Terms of Use</link> and auto renewal",
 
   "upgradeButtonTitle": "Upgrade",

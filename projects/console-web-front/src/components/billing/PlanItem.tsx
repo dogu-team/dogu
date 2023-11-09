@@ -83,7 +83,7 @@ const PlanItem: React.FC<Props> = ({ planType, planInfo, descriptionInfo }) => {
 
   const handleClickButton = () => {
     updateSelectedPlan({
-      planType,
+      type: planType,
       option: Number(selectedValue) ?? 0,
       category: planInfo.category,
     });

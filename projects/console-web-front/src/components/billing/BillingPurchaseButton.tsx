@@ -14,7 +14,8 @@ import useBillingPlanPurchaseStore from '../../stores/billing-plan-purchase';
 import useEventStore from '../../stores/events';
 import useLicenseStore from '../../stores/license';
 import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd';
-import { parseNicePaymentMethodFormValues } from '../../utils/billing';
+import { checkShouldPurchase, parseNicePaymentMethodFormValues } from '../../utils/billing';
+import ErrorBox from '../common/boxes/ErrorBox';
 
 const BillingPurchaseButton: React.FC = () => {
   const selectedPlan = useBillingPlanPurchaseStore((state) => state.selectedPlan);
@@ -28,12 +29,22 @@ const BillingPurchaseButton: React.FC = () => {
   const fireEvent = useEventStore((state) => state.fireEvent);
   const { t } = useTranslation('billing');
 
+  if (!license) {
+    return <ErrorBox title="Something went wrong" desc="No license found" />;
+  }
+
+  if (!selectedPlan) {
+    return <ErrorBox title="Something went wrong" desc="No plan selected" />;
+  }
+
+  const shouldPurchase = checkShouldPurchase(license, { ...selectedPlan, period: isAnnual ? 'yearly' : 'monthly' });
+
   const handleSuccess = (
     newLicense: CloudLicenseBase | SelfHostedLicenseBase | null,
     plan: BillingSubscriptionPlanInfoResponse | null,
     method: Partial<BillingMethodNiceBase> | null,
   ) => {
-    sendSuccessNotification('Successfully purchased plan!');
+    sendSuccessNotification(shouldPurchase ? 'Successfully purchased plan!' : 'Successfully changed plan!');
     fireEvent('onPurchaseCompleted');
 
     if (license) {
@@ -61,9 +72,9 @@ const BillingPurchaseButton: React.FC = () => {
       if (!withNewCard && Object.values(values).every((v) => !v)) {
         const rv = await requestPurchaseWithExistingCard({
           organizationId: license.organizationId,
-          category: selectedPlan?.category,
-          type: selectedPlan?.planType,
-          option: selectedPlan?.option,
+          category: selectedPlan.category,
+          type: selectedPlan.type,
+          option: selectedPlan.option,
           currency: 'KRW',
           period: isAnnual ? 'yearly' : 'monthly',
           couponCode: couponCode ?? undefined,
@@ -78,9 +89,9 @@ const BillingPurchaseButton: React.FC = () => {
       } else {
         const rv = await requestPurchaseWithNewCard({
           organizationId: license.organizationId,
-          category: selectedPlan?.category,
-          type: selectedPlan?.planType,
-          option: selectedPlan?.option,
+          category: selectedPlan.category,
+          type: selectedPlan.type,
+          option: selectedPlan.option,
           currency: 'KRW',
           period: isAnnual ? 'yearly' : 'monthly',
           couponCode: couponCode ?? undefined,
@@ -106,7 +117,7 @@ const BillingPurchaseButton: React.FC = () => {
       style={{ width: '100%' }}
       loading={purchaseWithNewCardLoading || purchaseWithExistingCardLoading}
     >
-      {t('purchaseButtonText')}
+      {t(shouldPurchase ? 'purchaseButtonText' : 'changeButtonTitle')}
     </Button>
   );
 };

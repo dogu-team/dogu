@@ -27,6 +27,7 @@ import { createPurchase } from '../billing-method/billing-method-nice.serializab
 import { createOrUpdateBillingSubscriptionPlanInfo } from '../billing-subscription-plan-info/billing-subscription-plan-info.serializables';
 import { parseBillingSubscriptionPlanData } from '../billing-subscription-plan-source/billing-subscription-plan-source.serializables';
 import { applyCloudLicense } from '../cloud-license/cloud-license.serializables';
+import { BillingSubscriptionPlanInfoCommonModule } from '../common/plan-info-common.module';
 import {
   calculateElapsedPlan,
   calculatePurchaseSubscriptionDateTimes,
@@ -569,6 +570,7 @@ export interface ProcessNextPurchaseSubscriptionResultFailure {
 
 export interface ProcessNextPurchaseSubscriptionResultSuccess {
   ok: true;
+  plan: BillingSubscriptionPlanInfoResponse;
 }
 
 export type ProcessNextPurchaseSubscriptionResult = ProcessNextPurchaseSubscriptionResultFailure | ProcessNextPurchaseSubscriptionResultSuccess;
@@ -605,9 +607,10 @@ export async function processNextPurchaseSubscription(
   found.changeRequestedOriginPrice = data.originPrice;
   found.changeRequestedDiscountedAmount = discountedAmount;
   found.state = 'change-option-or-period-requested';
-  await manager.getRepository(BillingSubscriptionPlanInfo).save(found);
+  const rv = await manager.getRepository(BillingSubscriptionPlanInfo).save(found);
 
   return {
     ok: true,
+    plan: BillingSubscriptionPlanInfoCommonModule.createPlanInfoResponse(billingOrganization, rv),
   };
 }

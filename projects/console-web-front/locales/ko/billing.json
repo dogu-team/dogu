@@ -84,6 +84,7 @@
   "totalLabelText": "총 금액",
   "purchaseButtonText": "결제하기",
   "nextPurchaseDescriptionText": "{{date}}부터 {{price}}/{{period}}가 청구됩니다.",
+  "changeOptionDescriptionText": "<date></date>부터 <option></option>가 청구됩니다.",
   "purchaseAgreementText": "결제를 진행하시면 <link>이용약관</link>과 정기결제에 동의하는 것으로 간주됩니다.",
 
   "upgradeButtonTitle": "업그레이드",

@@ -39,7 +39,6 @@ const BillingSelectPlanStep: React.FC<Props> = ({}) => {
           {t('currentPlanText')}:{' '}
           <span>
             {planTypes.map((planType, i) => {
-              const planInfo = BillingSubscriptionPlanMap[planType];
               const descriptionInfo = planDescriptionInfoMap[planType];
               const usingPlan = usingPlans.find((plan) => plan.type === planType);
               const isAnnual = usingPlan?.period === 'yearly';

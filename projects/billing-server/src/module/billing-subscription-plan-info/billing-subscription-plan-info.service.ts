@@ -2,8 +2,8 @@ import { BillingSubscriptionPlanInfoResponse, UpdateBillingSubscriptionPlanInfoS
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
-import { BillingOrganization } from '../../db/entity/billing-organization.entity';
 
+import { BillingOrganization } from '../../db/entity/billing-organization.entity';
 import { BillingSubscriptionPlanInfo } from '../../db/entity/billing-subscription-plan-info.entity';
 import { retrySerialize } from '../../db/utils';
 import { BillingSubscriptionPlanInfoCommonModule } from '../common/plan-info-common.module';
