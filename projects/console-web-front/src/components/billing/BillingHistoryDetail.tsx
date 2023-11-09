@@ -3,9 +3,9 @@ import { Divider } from 'antd';
 import useTranslation from 'next-translate/useTranslation';
 import { useRouter } from 'next/router';
 import styled from 'styled-components';
-import { planDescriptionInfoMap } from '../../resources/plan';
-import { flexRowBaseStyle, flexRowSpaceBetweenStyle } from '../../styles/box';
 
+import { planDescriptionInfoMap } from '../../resources/plan';
+import { flexRowSpaceBetweenStyle } from '../../styles/box';
 import { getHistoryAmount } from '../../utils/billing';
 import { getLocaleFormattedDate, getLocaleFormattedPrice } from '../../utils/locale';
 import ErrorBox from '../common/boxes/ErrorBox';
