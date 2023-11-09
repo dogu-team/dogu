@@ -5,6 +5,7 @@ import compressing from 'compressing';
 import fs from 'fs';
 import path from 'path';
 import shelljs from 'shelljs';
+import { changeLocationInterval } from './change-location-interval';
 
 const Version = '5.2.0';
 const Url = `https://github.com/appium/io.appium.settings/archive/refs/tags/v${Version}.zip`;
@@ -33,6 +34,7 @@ const logger = new ConsoleLogger();
 
   await timer.check('rm', fs.promises.rm(ZipOutputDir, { recursive: true, force: true }));
   await timer.check('uncompress', compressing.zip.uncompress(ZipPath, path.dirname(ZipOutputDir)));
+  await timer.check('change-location-service', changeLocationInterval(ZipOutputDir));
 
   const build = async () => {
     if (!android.checkBuildEnv()) {
