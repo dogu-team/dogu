@@ -14,6 +14,7 @@ interface Props {}
 const BillingPaymentPreview: React.FC<Props> = () => {
   const license = useLicenseStore((state) => state.license);
   const [form] = Form.useForm<BillingMethodRegistrationFormValues>();
+  const purchaseErrorText = useBillingPlanPurchaseStore((state) => state.purchaseErrorText);
   const updateCardForm = useBillingPlanPurchaseStore((state) => state.updateCardForm);
   const [withNewCard, updateWithNewCard] = useBillingPlanPurchaseStore(
     (state) => [state.withNewCard, state.updateWithNewCard],
@@ -49,7 +50,7 @@ const BillingPaymentPreview: React.FC<Props> = () => {
                     <CreditCardOutlined style={{ marginRight: '.4rem' }} />
                     <label style={{ verticalAlign: 'sub' }}>**** **** ****</label>{' '}
                     {license.billingOrganization.billingMethodNice?.cardNumberLast4Digits}{' '}
-                    {`(${license.billingOrganization.billingMethodNice?.cardName})`}
+                    {`(${license.billingOrganization.billingMethodNice?.cardName?.replace(/\[|\]/g, '')})`}
                   </p>
 
                   <span>{`(${t('paymentPreviewDefaultCardLabelText')})`}</span>
@@ -74,6 +75,10 @@ const BillingPaymentPreview: React.FC<Props> = () => {
         </div>
       ) : (
         <BillingMethodRegistrationForm form={form} />
+      )}
+
+      {purchaseErrorText && (
+        <div style={{ color: 'red', marginTop: '.5rem', fontSize: '.8rem' }}>{purchaseErrorText}</div>
       )}
     </PaymentContent>
   );

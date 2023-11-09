@@ -29,3 +29,13 @@ export const planDescriptionInfoMap: PlanDescriptionInfoMap = {
 export const groupTypeI18nKeyMap: { [key in BillingSubscriptionGroupType]: string } = {
   'live-testing-group': 'liveTestingPlanGroupTitle',
 };
+
+export const niceErrorCodeMessageI18nKeyMap: { [key: string]: string } = {
+  '3011': 'invalidCardNumberErrorMessage',
+  '3021': 'invalidCardExpiryErrorMessage',
+  '3051': 'unavailableCardErrorMessage',
+  '3053': 'unavailableCardErrorMessage',
+  F112: 'invalidCardNumberErrorMessage',
+  F113: 'invalidUserInfoErrorMessage',
+  F118: 'unavailableCardErrorMessage',
+};

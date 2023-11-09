@@ -3,15 +3,17 @@ import { BillingMethodNiceBase } from '@dogu-private/console';
 import { OrganizationId } from '@dogu-private/types';
 import { Form, Modal } from 'antd';
 import useTranslation from 'next-translate/useTranslation';
+import { useState } from 'react';
 import styled from 'styled-components';
 import { shallow } from 'zustand/shallow';
 
 import { updatePaymentMethod } from '../../api/billing';
 import useModal from '../../hooks/useModal';
 import useRequest from '../../hooks/useRequest';
+import { niceErrorCodeMessageI18nKeyMap } from '../../resources/plan';
 import useLicenseStore from '../../stores/license';
 import { flexRowSpaceBetweenStyle } from '../../styles/box';
-import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd';
+import { sendSuccessNotification } from '../../utils/antd';
 import { parseNicePaymentMethodFormValues } from '../../utils/billing';
 import BillingMethodRegistrationForm, { BillingMethodRegistrationFormValues } from './BillingMethodRegistrationForm';
 
@@ -25,15 +27,18 @@ const BillingPaymentMethod: React.FC<Props> = ({ method, organizationId }) => {
   const [form] = Form.useForm<BillingMethodRegistrationFormValues>();
   const [updateLoading, requestUpdate] = useRequest(updatePaymentMethod);
   const [license, updateLicense] = useLicenseStore((state) => [state.license, state.updateLicense], shallow);
+  const [errorText, setErrorText] = useState<string | null>(null);
   const { t } = useTranslation();
 
   const handleCloseModal = () => {
     closeModal();
+    setErrorText(null);
     form.resetFields();
   };
 
   const handleFinish = async () => {
     const values = await form.validateFields();
+    setErrorText(null);
 
     try {
       const rv = await requestUpdate({
@@ -42,7 +47,16 @@ const BillingPaymentMethod: React.FC<Props> = ({ method, organizationId }) => {
       });
 
       if (rv.errorMessage || !rv.body?.ok) {
-        sendErrorNotification(t('billing:updatePaymentMethodErrorMessage'));
+        if (!rv.body?.ok) {
+          const niceCode = rv.body?.niceResultCode;
+          const errorMessage =
+            niceCode && niceErrorCodeMessageI18nKeyMap[niceCode]
+              ? t(`billing:${niceErrorCodeMessageI18nKeyMap[niceCode]}`)
+              : t('billing:updatePaymentMethodErrorMessage', { code: niceCode });
+          setErrorText(errorMessage);
+          return;
+        }
+        setErrorText(t('billing:updatePaymentMethodErrorMessage', { code: rv.errorMessage }));
         return;
       }
 
@@ -58,7 +72,7 @@ const BillingPaymentMethod: React.FC<Props> = ({ method, organizationId }) => {
       }
       handleCloseModal();
     } catch (e) {
-      sendErrorNotification(t('billing:updatePaymentMethodErrorMessage'));
+      setErrorText(t('billing:updatePaymentMethodErrorMessage', { code: 'Unknown' }));
     }
   };
 
@@ -76,7 +90,7 @@ const BillingPaymentMethod: React.FC<Props> = ({ method, organizationId }) => {
         <span>{t('billing:cardNumberLabel')}</span>
         <p>
           <label style={{ verticalAlign: 'sub' }}>**** **** ****</label> {method.cardNumberLast4Digits}{' '}
-          {`(${method.cardName})`}
+          {`(${method.cardName?.replace(/\[|\]/g, '')})`}
         </p>
       </CardDetail>
       <CardDetail>
@@ -103,6 +117,7 @@ const BillingPaymentMethod: React.FC<Props> = ({ method, organizationId }) => {
         confirmLoading={updateLoading}
       >
         <BillingMethodRegistrationForm form={form} />
+        {errorText && <p style={{ color: 'red', fontSize: '.8rem', marginTop: '.5rem' }}>{errorText}</p>}
       </Modal>
     </Box>
   );

@@ -10,6 +10,7 @@ import { shallow } from 'zustand/shallow';
 
 import { purchasePlanWithExistingCard, purchasePlanWithNewCard } from '../../api/billing';
 import useRequest from '../../hooks/useRequest';
+import { niceErrorCodeMessageI18nKeyMap } from '../../resources/plan';
 import useBillingPlanPurchaseStore from '../../stores/billing-plan-purchase';
 import useEventStore from '../../stores/events';
 import useLicenseStore from '../../stores/license';
@@ -25,6 +26,7 @@ const BillingPurchaseButton: React.FC = () => {
   const [purchaseWithExistingCardLoading, requestPurchaseWithExistingCard] = useRequest(purchasePlanWithExistingCard);
   const isAnnual = useBillingPlanPurchaseStore((state) => state.isAnnual);
   const couponCode = useBillingPlanPurchaseStore((state) => state.coupon);
+  const updatePurchaseErrorText = useBillingPlanPurchaseStore((state) => state.updatePurchaseErrorText);
   const [license, updateLicense] = useLicenseStore((state) => [state.license, state.updateLicense], shallow);
   const fireEvent = useEventStore((state) => state.fireEvent);
   const { t } = useTranslation('billing');
@@ -68,6 +70,7 @@ const BillingPurchaseButton: React.FC = () => {
     }
 
     const values = await cardForm.validateFields();
+    updatePurchaseErrorText(null);
     try {
       if (!withNewCard && Object.values(values).every((v) => !v)) {
         const rv = await requestPurchaseWithExistingCard({
@@ -81,7 +84,18 @@ const BillingPurchaseButton: React.FC = () => {
         });
 
         if (rv.errorMessage || !rv.body?.ok) {
-          sendErrorNotification(shouldPurchase ? t('purchaseErrorMessage') : t('changePlanErrorMessage'));
+          if (!rv.body?.ok) {
+            const niceCode = rv.body?.niceResultCode;
+            updatePurchaseErrorText(
+              niceCode && niceErrorCodeMessageI18nKeyMap[niceCode]
+                ? t(`${niceErrorCodeMessageI18nKeyMap[niceCode]}`)
+                : t('purchaseErrorMessage', { code: niceCode }),
+            );
+            return;
+          }
+          updatePurchaseErrorText(
+            shouldPurchase ? t('purchaseErrorMessage', { code: rv.errorMessage }) : t('changePlanErrorMessage'),
+          );
           return;
         }
 
@@ -99,14 +113,27 @@ const BillingPurchaseButton: React.FC = () => {
         });
 
         if (rv.errorMessage || !rv.body?.ok) {
-          sendErrorNotification(shouldPurchase ? t('purchaseErrorMessage') : t('changePlanErrorMessage'));
+          if (!rv.body?.ok) {
+            const niceCode = rv.body?.niceResultCode;
+            updatePurchaseErrorText(
+              niceCode && niceErrorCodeMessageI18nKeyMap[niceCode]
+                ? t(`${niceErrorCodeMessageI18nKeyMap[niceCode]}`)
+                : t('purchaseErrorMessage', { code: niceCode }),
+            );
+            return;
+          }
+          updatePurchaseErrorText(
+            shouldPurchase ? t('purchaseErrorMessage', { code: rv.errorMessage }) : t('changePlanErrorMessage'),
+          );
           return;
         }
 
         handleSuccess(rv.body.license, rv.body.plan, rv.body.method);
       }
     } catch (e) {
-      sendErrorNotification(shouldPurchase ? t('purchaseErrorMessage') : t('changePlanErrorMessage'));
+      updatePurchaseErrorText(
+        shouldPurchase ? t('purchaseErrorMessage', { code: 'Unknown' }) : t('changePlanErrorMessage'),
+      );
     }
   };
 

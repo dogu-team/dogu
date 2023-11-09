@@ -89,7 +89,7 @@
   "purchaseAgreementText": "By purchasing plan you agree to our <link>Terms of Use</link> and auto renewal",
 
   "purchaseSuccessMessage": "Purchase completed successfully!",
-  "purchaseErrorMessage": "Failed to purchase. Please try again or contact us.",
+  "purchaseErrorMessage": "Failed to purchase. Please try again or contact us. [{{code}}]",
   "changePlanSuccessMessage": "Plan changed successfully.",
   "changePlanErrorMessage": "Failed to change plan. Please try again or contact us.",
 
@@ -128,7 +128,7 @@
   "cardNumberLabel": "Card number",
   "cardExpiryLabel": "Expiry (MM / YY)",
   "updatePaymentMethodSuccessMessage": "Payment details updated successfully.",
-  "updatePaymentMethodErrorMessage": "Failed to update payment details. Please try again.",
+  "updatePaymentMethodErrorMessage": "Failed to update payment details. Please try again. [{{code}}]",
 
   "historyDateColumnText": "Date",
   "historyItemColumnText": "Items",
@@ -172,5 +172,10 @@
   "licenseNotFoundErrorMessage": "Cannot find license information.",
   "planNotSelectedErrorMessage": "Please select a plan.",
   "samePlanSelectedErrorMessage": "Cannot select the same plan.",
-  "previewFailedErrorMessage": "Cannot preview the plan."
+  "previewFailedErrorMessage": "Cannot preview the plan.",
+
+  "invalidCardNumberErrorMessage": "Invalid card number",
+  "invalidCardExpiryErrorMessage": "Invalid expiry date",
+  "unavailableCardErrorMessage": "We doesn't support this card",
+  "invalidUserInfoErrorMessage": "Invalid card information or too many errors"
 }
