@@ -25,3 +25,4 @@ export * from './protocol/generated';
 export * from './remote/types';
 export * from './slack/type';
 export * from './step/types';
+export * from './type-system/brand';
