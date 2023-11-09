@@ -24,7 +24,7 @@ import { env } from '../../env';
 import { FeatureConfig } from '../../feature.config';
 import { DoguLogger } from '../logger/logger';
 
-const NiceBaseUrl = FeatureConfig.get('niceSandbox') ? 'https://sandbox-api.nicepay.co.kr/v1' : 'https://api.nicepay.co.kr/v1';
+const NiceBaseUrl = FeatureConfig.get('sandbox') ? 'https://sandbox-api.nicepay.co.kr/v1' : 'https://api.nicepay.co.kr/v1';
 const NiceBasicAuth = Buffer.from(`${env.DOGU_BILLING_NICE_CLIENT_KEY}:${env.DOGU_BILLING_NICE_SECRET_KEY}`).toString('base64');
 const NiceAes256Key = Buffer.from(env.DOGU_BILLING_NICE_SECRET_KEY.substring(0, 32));
 const NiceAes256Iv = env.DOGU_BILLING_NICE_SECRET_KEY.substring(0, 16);
@@ -42,6 +42,17 @@ export class BillingMethodNiceCaller {
   private readonly client: AxiosInstance;
   constructor(private readonly logger: DoguLogger) {
     const baseUrl = NiceBaseUrl;
+
+    if (!FeatureConfig.get('sandbox')) {
+      this.logger.warn('BillingMethodNiceCaller is NOT running in sandbox mode!!!', {
+        url: baseUrl,
+      });
+    } else {
+      this.logger.warn('BillingMethodNiceCaller is running in sandbox mode.', {
+        url: baseUrl,
+      });
+    }
+
     this.client = axios.create({
       baseURL: baseUrl,
       headers: {
@@ -50,7 +61,7 @@ export class BillingMethodNiceCaller {
       },
     });
     setAxiosErrorFilterToIntercepter(this.client);
-    this.logger.info(`BillingMethodNiceService initialized with ${baseUrl}`);
+    this.logger.info(`BillingMethodNiceCaller initialized with ${baseUrl}`);
   }
 
   /**
