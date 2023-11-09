@@ -21,7 +21,7 @@ import {
 } from '@dogu-private/types';
 import { Closable, errorify, MixedLogger, Printable, stringify } from '@dogu-tech/common';
 import { AppiumCapabilities, BrowserInstallation, StreamingOfferDto } from '@dogu-tech/device-client-common';
-import { killChildProcess, killProcessOnPort } from '@dogu-tech/node';
+import { checkTime, killChildProcess, killProcessOnPort } from '@dogu-tech/node';
 import { ChildProcess } from 'child_process';
 import fs from 'fs';
 import lodash from 'lodash';
@@ -48,7 +48,6 @@ import { StreamingService } from '../services/streaming/streaming-service';
 import { AndroidSystemInfoService } from '../services/system-info/android-system-info-service';
 import { Zombieable } from '../services/zombie/zombie-component';
 import { ZombieServiceInstance } from '../services/zombie/zombie-service';
-import { checkTime } from '../util/check-time';
 
 type DeviceControl = PrivateProtocol.DeviceControl;
 

@@ -1,6 +1,6 @@
 import { Platform, PrivateProtocol, Serial } from '@dogu-private/types';
 import { delay, FilledPrintable, usingAsnyc } from '@dogu-tech/common';
-import { HostPaths } from '@dogu-tech/node';
+import { CheckTimer, HostPaths } from '@dogu-tech/node';
 import fs from 'fs';
 import { AppiumContextImpl } from '../../../appium/appium.context';
 import { env } from '../../../env';
@@ -8,7 +8,6 @@ import { config } from '../../config';
 import { IdeviceInstaller } from '../../externals/cli/ideviceinstaller';
 import { WebdriverAgentProcess } from '../../externals/cli/webdriver-agent-process';
 import { IosAccessibilitiySelector, IosWebDriver, IosWebDriverInfo } from '../../externals/webdriver/ios-webdriver';
-import { CheckTimer } from '../../util/check-time';
 import { IosResetService } from '../reset/ios-reset';
 import { Zombieable, ZombieProps, ZombieQueriable } from '../zombie/zombie-component';
 import { ZombieServiceInstance } from '../zombie/zombie-service';

@@ -1,5 +1,6 @@
 import 'reflect-metadata';
 
+export * from './check-time';
 export * as ChildProcess from './child-process';
 export * from './clean-env';
 export * from './data-structure/task-queue';

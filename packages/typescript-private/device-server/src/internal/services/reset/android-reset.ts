@@ -1,10 +1,9 @@
 import { DeviceSystemInfo, Serial, SerialPrintable } from '@dogu-private/types';
 import { delay, filterAsync, loop, stringify } from '@dogu-tech/common';
+import { CheckTimer } from '@dogu-tech/node';
 import semver from 'semver';
 import { AppiumContextImpl } from '../../../appium/appium.context';
 import { AdbSerial, AppiumAdb } from '../../externals/index';
-import { CheckTimer } from '../../util/check-time';
-
 export interface AndroidResetInfo {
   lastResetTime: number;
 }

@@ -17,7 +17,7 @@ import {
 } from '@dogu-private/types';
 import { Closable, PromiseOrValue, stringify } from '@dogu-tech/common';
 import { BrowserInstallation, StreamingOfferDto } from '@dogu-tech/device-client-common';
-import { ChildProcess, isFreePort } from '@dogu-tech/node';
+import { checkTime, ChildProcess, isFreePort } from '@dogu-tech/node';
 import { Observable } from 'rxjs';
 import systeminformation from 'systeminformation';
 import { AppiumRemoteContextRental } from '../../appium/appium.context.proxy';
@@ -32,7 +32,6 @@ import { NullDeviceAgentService } from '../services/device-agent/null-device-age
 import { DesktopProfileService } from '../services/profile/desktop-profiler';
 import { ProfileService } from '../services/profile/profile-service';
 import { StreamingService } from '../services/streaming/streaming-service';
-import { checkTime } from '../util/check-time';
 
 type DeviceControl = PrivateProtocol.DeviceControl;
 
@@ -71,15 +70,15 @@ export class MacosChannel implements DeviceChannel {
     const platform = Platform.PLATFORM_MACOS;
     const deviceAgent = new NullDeviceAgentService();
 
-    const osInfo = await checkTime('os', systeminformation.osInfo());
+    const osInfo = await checkTime('os', systeminformation.osInfo(), logger);
     const info: DeviceSystemInfo = {
       ...DefaultDeviceSystemInfo(),
       nickname: osInfo.hostname,
       version: osInfo.release,
-      system: await checkTime('system', systeminformation.system()),
+      system: await checkTime('system', systeminformation.system(), logger),
       os: { ...osInfo, platform },
-      uuid: await checkTime('uuid', systeminformation.uuid()),
-      cpu: await checkTime('cpu', systeminformation.cpu()),
+      uuid: await checkTime('uuid', systeminformation.uuid(), logger),
+      cpu: await checkTime('cpu', systeminformation.cpu(), logger),
     };
     deviceInfoLogger.info('macOSChannel.create', { info });
     await streaming.deviceConnected(param.serial, {

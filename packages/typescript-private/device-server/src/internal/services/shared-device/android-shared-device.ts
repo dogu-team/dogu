@@ -1,12 +1,11 @@
 import { DeviceSystemInfo, Platform, PrivateProtocol, Serial, SerialPrintable } from '@dogu-private/types';
 import { delay, errorify, FilledPrintable, loop, stringify } from '@dogu-tech/common';
-import { HostPaths, killChildProcess } from '@dogu-tech/node';
+import { CheckTimer, HostPaths, killChildProcess } from '@dogu-tech/node';
 import child_process from 'child_process';
 import fs from 'fs';
 import { AppiumContextImpl } from '../../../appium/appium.context';
 import { env } from '../../../env';
 import { AdbSerial, AndroidPropInfo, AppiumAdb, isHarnessEnabled } from '../../externals/index';
-import { CheckTimer } from '../../util/check-time';
 import { AndroidDeviceAgentService } from '../device-agent/android-device-agent-service';
 import { AndroidResetService } from '../reset/android-reset';
 import { Zombieable, ZombieProps, ZombieQueriable } from '../zombie/zombie-component';

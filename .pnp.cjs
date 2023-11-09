@@ -176,6 +176,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:projects/android-device-agent"\
       },\
       {\
+        "name": "android-io.appium.settings-builder",\
+        "reference": "workspace:projects/android-io.appium.settings-builder"\
+      },\
+      {\
         "name": "billing-server",\
         "reference": "workspace:projects/billing-server"\
       },\
@@ -257,6 +261,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@dogu-tech/toolkit", ["workspace:packages/typescript/toolkit"]],\
       ["@dogu-tech/types", ["workspace:packages/typescript/types"]],\
       ["android-device-agent", ["workspace:projects/android-device-agent"]],\
+      ["android-io.appium.settings-builder", ["workspace:projects/android-io.appium.settings-builder"]],\
       ["billing-server", ["workspace:projects/billing-server"]],\
       ["console-web-front", ["workspace:projects/console-web-front"]],\
       ["console-web-server", ["workspace:projects/console-web-server"]],\
@@ -17288,6 +17293,25 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["shx", "npm:0.3.4"],\
             ["ts-jest", "virtual:e34a268bcbd4a2bddf494853f7e4aca7c022c2f08b51353263b6a9d124fa8b7128f381ad13c53ce09be15afeb55cff443c2738e4fb9839c266e3873b4e08244a#npm:29.0.3"],\
             ["ts-node", "virtual:f2635a2fcff48218c189c72f8ec68a58c0c9a493231eeb25fc0d4d97932a237dd3a38bfaa7c8a6d4be36984c08b243589188d7525f771fc6d7018c6cf79aeba1#npm:10.9.1"],\
+            ["typescript", "patch:typescript@npm%3A4.7.4#~builtin<compat/typescript>::version=4.7.4&hash=65a307"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
+      ["android-io.appium.settings-builder", [\
+        ["workspace:projects/android-io.appium.settings-builder", {\
+          "packageLocation": "./projects/android-io.appium.settings-builder/",\
+          "packageDependencies": [\
+            ["android-io.appium.settings-builder", "workspace:projects/android-io.appium.settings-builder"],\
+            ["@dogu-dev-private/build-tools", "workspace:packages/typescript-dev-private/build-tools"],\
+            ["@dogu-tech/common", "workspace:packages/typescript/common"],\
+            ["@dogu-tech/node", "workspace:packages/typescript/node"],\
+            ["@types/shelljs", "npm:0.8.11"],\
+            ["compressing", "npm:1.9.0"],\
+            ["nodemon", "npm:2.0.22"],\
+            ["shelljs", "npm:0.8.5"],\
+            ["shx", "npm:0.3.4"],\
+            ["ts-node", "virtual:702f44d6ea13d942ae221f31372bc0fbea03ae969cb058c5f4f6bfd51adfbdf70750983dcca9aa57651b88a98f3c5762eb1a91e1271bd7415c7dc4bde5d303b1#npm:10.9.1"],\
             ["typescript", "patch:typescript@npm%3A4.7.4#~builtin<compat/typescript>::version=4.7.4&hash=65a307"]\
           ],\
           "linkType": "SOFT"\
@@ -42089,6 +42113,42 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["ts-node", "npm:10.9.1"]\
           ],\
           "linkType": "SOFT"\
+        }],\
+        ["virtual:702f44d6ea13d942ae221f31372bc0fbea03ae969cb058c5f4f6bfd51adfbdf70750983dcca9aa57651b88a98f3c5762eb1a91e1271bd7415c7dc4bde5d303b1#npm:10.9.1", {\
+          "packageLocation": "./.yarn/__virtual__/ts-node-virtual-1412794fdc/0/cache/ts-node-npm-10.9.1-6c268be7f4-090adff130.zip/node_modules/ts-node/",\
+          "packageDependencies": [\
+            ["ts-node", "virtual:702f44d6ea13d942ae221f31372bc0fbea03ae969cb058c5f4f6bfd51adfbdf70750983dcca9aa57651b88a98f3c5762eb1a91e1271bd7415c7dc4bde5d303b1#npm:10.9.1"],\
+            ["@cspotcode/source-map-support", "npm:0.8.1"],\
+            ["@swc/core", null],\
+            ["@swc/wasm", null],\
+            ["@tsconfig/node10", "npm:1.0.9"],\
+            ["@tsconfig/node12", "npm:1.0.11"],\
+            ["@tsconfig/node14", "npm:1.0.3"],\
+            ["@tsconfig/node16", "npm:1.0.3"],\
+            ["@types/node", null],\
+            ["@types/swc__core", null],\
+            ["@types/swc__wasm", null],\
+            ["@types/typescript", null],\
+            ["acorn", "npm:8.8.2"],\
+            ["acorn-walk", "npm:8.2.0"],\
+            ["arg", "npm:4.1.3"],\
+            ["create-require", "npm:1.1.1"],\
+            ["diff", "npm:4.0.2"],\
+            ["make-error", "npm:1.3.6"],\
+            ["typescript", "patch:typescript@npm%3A4.7.4#~builtin<compat/typescript>::version=4.7.4&hash=65a307"],\
+            ["v8-compile-cache-lib", "npm:3.0.1"],\
+            ["yn", "npm:3.1.1"]\
+          ],\
+          "packagePeers": [\
+            "@swc/core",\
+            "@swc/wasm",\
+            "@types/node",\
+            "@types/swc__core",\
+            "@types/swc__wasm",\
+            "@types/typescript",\
+            "typescript"\
+          ],\
+          "linkType": "HARD"\
         }],\
         ["virtual:f2635a2fcff48218c189c72f8ec68a58c0c9a493231eeb25fc0d4d97932a237dd3a38bfaa7c8a6d4be36984c08b243589188d7525f771fc6d7018c6cf79aeba1#npm:10.9.1", {\
           "packageLocation": "./.yarn/__virtual__/ts-node-virtual-bd004917c5/0/cache/ts-node-npm-10.9.1-6c268be7f4-090adff130.zip/node_modules/ts-node/",\

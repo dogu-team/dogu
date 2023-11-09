@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import shelljs from 'shelljs';
 
-function checkAndroidEnv(): boolean {
+export function checkAndroidEnv(): boolean {
   console.info(`> Checking Android environment...`);
   if (process.env.ANDROID_HOME) {
     console.info(`- ANDROID_HOME checked. : ${process.env.ANDROID_HOME}}`);
@@ -30,7 +30,7 @@ function checkAndroidEnv(): boolean {
   return true;
 }
 
-function checkJdk(): boolean {
+export function checkJdk(): boolean {
   console.info(`> Checking JDK...`);
   const out = shelljs.exec(`java -version`, { silent: true });
   const allout = out.stdout + out.stderr;

@@ -19,7 +19,7 @@ import {
 } from '@dogu-private/types';
 import { Closable, delay, errorify, MixedLogger, Printable, PromiseOrValue, stringify, TimedCacheAsync } from '@dogu-tech/common';
 import { AppiumCapabilities, BrowserInstallation, StreamingOfferDto } from '@dogu-tech/device-client-common';
-import { ChildProcessError, killChildProcess } from '@dogu-tech/node';
+import { checkTime, ChildProcessError, killChildProcess } from '@dogu-tech/node';
 import { ChildProcess } from 'child_process';
 import compressing from 'compressing';
 import fs from 'fs';
@@ -52,7 +52,6 @@ import { StreamingService } from '../services/streaming/streaming-service';
 import { IosSystemInfoService } from '../services/system-info/ios-system-info-service';
 import { Zombieable } from '../services/zombie/zombie-component';
 import { ZombieServiceInstance } from '../services/zombie/zombie-service';
-import { checkTime } from '../util/check-time';
 
 type DeviceControl = PrivateProtocol.DeviceControl;
 

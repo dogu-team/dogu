@@ -1,7 +1,6 @@
 import { Printable } from '@dogu-tech/common';
-import { logger } from '../../logger/logger.instance';
 
-export async function checkTime<T>(name: string, promise: Promise<T>, printable: Printable = logger): Promise<T> {
+export async function checkTime<T>(name: string, promise: Promise<T>, printable: Printable): Promise<T> {
   const startTime = performance.now();
   const ret: T = await promise;
   const endTime = performance.now();

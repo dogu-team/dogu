@@ -10640,6 +10640,23 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"android-io.appium.settings-builder@workspace:projects/android-io.appium.settings-builder":
+  version: 0.0.0-use.local
+  resolution: "android-io.appium.settings-builder@workspace:projects/android-io.appium.settings-builder"
+  dependencies:
+    "@dogu-dev-private/build-tools": "workspace:^"
+    "@dogu-tech/common": "workspace:^"
+    "@dogu-tech/node": "workspace:^"
+    "@types/shelljs": 0.8.11
+    compressing: 1.9.0
+    nodemon: 2.0.22
+    shelljs: 0.8.5
+    shx: 0.3.4
+    ts-node: 10.9.1
+    typescript: 4.7.4
+  languageName: unknown
+  linkType: soft
+
 "anser@npm:^1.4.9":
   version: 1.4.10
   resolution: "anser@npm:1.4.10"

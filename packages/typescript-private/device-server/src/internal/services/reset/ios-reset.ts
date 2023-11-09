@@ -1,5 +1,6 @@
 import { Serial, SerialPrintable } from '@dogu-private/types';
 import { delay, filterAsync, loop, loopTime, PrefixLogger, Repeat, retry, TimeOptions, usingAsnyc } from '@dogu-tech/common';
+import { CheckTimer } from '@dogu-tech/node';
 import { boxBox } from 'intersects';
 import { AppiumContextImpl, WDIOElement } from '../../../appium/appium.context';
 import { IdeviceInstaller } from '../../externals/cli/ideviceinstaller';
@@ -13,7 +14,6 @@ import {
   IosWebDriver,
   IosWebDriverInfo,
 } from '../../externals/webdriver/ios-webdriver';
-import { CheckTimer } from '../../util/check-time';
 
 interface BlockAppInfo {
   bundleId: string;
