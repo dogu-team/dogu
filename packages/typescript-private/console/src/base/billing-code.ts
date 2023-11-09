@@ -72,18 +72,34 @@ export function resultCode(reason: BillingReason, details?: BillingResultCodeDet
   return { code, reason, details };
 }
 
-export interface BillingResultFailure<Extras extends object = object> {
+export interface BillingResultFailure {
   ok: false;
   resultCode: BillingResultCode;
-  extras?: Extras;
 }
 
-export interface BillingResultSuccess<Value, Extras extends object = object> {
+export interface BillingResultFailureWithExtras<Extras extends object> {
+  ok: false;
+  resultCode: BillingResultCode;
+  extras: Extras;
+}
+
+export interface BillingResultSuccess<Value> {
   ok: true;
   value: Value;
-  extras?: Extras;
+}
+
+export interface BillingResultSuccessWithExtras<Value, Extras extends object> {
+  ok: true;
+  value: Value;
+  extras: Extras;
 }
 
 export type BillingResult<Value, FailureExtras extends object = object, SuccessExtras extends object = object> =
-  | BillingResultFailure<FailureExtras> //
-  | BillingResultSuccess<Value, SuccessExtras>;
+  | BillingResultFailure
+  | BillingResultFailureWithExtras<FailureExtras>
+  | BillingResultSuccess<Value>
+  | BillingResultSuccessWithExtras<Value, SuccessExtras>;
+
+export type BillingResultWithExtras<Value, FailureExtras extends object = object, SuccessExtras extends object = object> =
+  | BillingResultFailureWithExtras<FailureExtras> //
+  | BillingResultSuccessWithExtras<Value, SuccessExtras>;

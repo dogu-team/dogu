@@ -11,8 +11,10 @@ import {
   NiceSubscribeExpireResponse,
   NiceSubscribePaymentsOptions,
   NiceSubscribePaymentsResponse,
+  NiceSubscribePaymentsResult,
   NiceSubscribeRegistDto,
   NiceSubscribeRegistResponse,
+  NiceSubscribeRegistResult,
   resultCode,
 } from '@dogu-private/console';
 import { errorify, isFilteredAxiosError, setAxiosErrorFilterToIntercepter } from '@dogu-tech/common';
@@ -67,7 +69,7 @@ export class BillingMethodNiceCaller {
   /**
    * @see https://github.com/nicepayments/nicepay-manual/blob/main/api/payment-subscribe.md#%EB%B9%8C%ED%82%A4%EB%B0%9C%EA%B8%89
    */
-  async subscribeRegist(dto: NiceSubscribeRegistDto): Promise<BillingResult<NiceSubscribeRegistResponse>> {
+  async subscribeRegist(dto: NiceSubscribeRegistDto): Promise<NiceSubscribeRegistResult> {
     const { cardNumber, expirationYear, expirationMonth, idNumber, cardPasswordFirst2Digits } = dto.registerCard;
     const path = '/subscribe/regist';
     const rawString = `cardNo=${cardNumber}&expYear=${expirationYear}&expMonth=${expirationMonth}&idNo=${idNumber}&cardPw=${cardPasswordFirst2Digits}`;
@@ -107,6 +109,9 @@ export class BillingMethodNiceCaller {
       return {
         ok: false,
         resultCode: result.resultCode,
+        extras: {
+          niceResultCode: null,
+        },
       };
     }
 
@@ -120,6 +125,9 @@ export class BillingMethodNiceCaller {
           orderId,
           responseOrderId: response.orderId,
         }),
+        extras: {
+          niceResultCode: response.resultCode,
+        },
       };
     }
 
@@ -130,6 +138,9 @@ export class BillingMethodNiceCaller {
           resultCode: response.resultCode,
           resultMsg: response.resultMsg,
         }),
+        extras: {
+          niceResultCode: response.resultCode,
+        },
       };
     }
 
@@ -137,12 +148,16 @@ export class BillingMethodNiceCaller {
       return {
         ok: false,
         resultCode: resultCode('method-nice-bid-not-found'),
+        extras: {
+          niceResultCode: response.resultCode,
+        },
       };
     }
 
     return {
       ok: true,
       value: response,
+      extras: {},
     };
   }
 
@@ -219,7 +234,7 @@ export class BillingMethodNiceCaller {
   /**
    * @see https://github.com/nicepayments/nicepay-manual/blob/main/api/payment-subscribe.md#%EB%B9%8C%ED%82%A4%EC%8A%B9%EC%9D%B8
    */
-  async subscribePayments(dto: NiceSubscribePaymentsOptions): Promise<BillingResult<NiceSubscribePaymentsResponse>> {
+  async subscribePayments(dto: NiceSubscribePaymentsOptions): Promise<NiceSubscribePaymentsResult> {
     const { bid, amount, goodsName } = dto;
     const path = `/subscribe/${bid}/payments`;
     const orderId = v4();
@@ -281,6 +296,9 @@ export class BillingMethodNiceCaller {
       return {
         ok: false,
         resultCode: result.resultCode,
+        extras: {
+          niceResultCode: null,
+        },
       };
     }
 
@@ -294,6 +312,9 @@ export class BillingMethodNiceCaller {
           orderId,
           responseOrderId: response.orderId,
         }),
+        extras: {
+          niceResultCode: response.resultCode,
+        },
       };
     }
 
@@ -304,6 +325,9 @@ export class BillingMethodNiceCaller {
           resultCode: response.resultCode,
           resultMsg: response.resultMsg,
         }),
+        extras: {
+          niceResultCode: response.resultCode,
+        },
       };
     }
 
@@ -313,12 +337,16 @@ export class BillingMethodNiceCaller {
         resultCode: resultCode('method-nice-status-not-paid', {
           status: response.status,
         }),
+        extras: {
+          niceResultCode: response.resultCode,
+        },
       };
     }
 
     return {
       ok: true,
       value: response,
+      extras: {},
     };
   }
 

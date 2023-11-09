@@ -133,6 +133,7 @@ export async function processNowPurchaseSubscription(
       resultCode: createPurchaseResult.resultCode,
       plan: null,
       license: null,
+      niceResultCode: createPurchaseResult.extras.niceResultCode,
     };
   }
   const { tid, orderId } = createPurchaseResult.value;
@@ -173,6 +174,7 @@ export async function processNowPurchaseSubscription(
       resultCode: createSubscriptionPlanInfoAndCouponResult.resultCode,
       plan: null,
       license: null,
+      niceResultCode: null,
     };
   }
 
@@ -258,6 +260,7 @@ export async function processNowPurchaseSubscription(
     resultCode: resultCode('ok'),
     plan,
     license,
+    niceResultCode: null,
   };
 }
 

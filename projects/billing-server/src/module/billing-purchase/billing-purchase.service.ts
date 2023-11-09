@@ -66,7 +66,7 @@ export class BillingPurchaseService {
 
   async createPurchaseSubscription(dto: CreatePurchaseSubscriptionDto): Promise<CreatePurchaseSubscriptionResponse> {
     return await retrySerialize(this.logger, this.dataSource, async (context) => {
-      const { rollback } = context;
+      const { setTriggerRollbackBeforeReturn } = context;
       const billingOrganization = await findBillingOrganizationWithMethodAndSubscriptionPlans(context, dto);
       if (!billingOrganization) {
         return {
@@ -76,6 +76,7 @@ export class BillingPurchaseService {
           }),
           plan: null,
           license: null,
+          niceResultCode: null,
         };
       }
 
@@ -88,6 +89,7 @@ export class BillingPurchaseService {
           }),
           plan: null,
           license: null,
+          niceResultCode: null,
         };
       }
 
@@ -101,6 +103,7 @@ export class BillingPurchaseService {
           resultCode: processPreviewResult.resultCode,
           plan: null,
           license: null,
+          niceResultCode: null,
         };
       }
 
@@ -116,6 +119,7 @@ export class BillingPurchaseService {
             resultCode: processNextResult.resultCode,
             plan: null,
             license: null,
+            niceResultCode: null,
           };
         }
 
@@ -124,6 +128,7 @@ export class BillingPurchaseService {
           resultCode: resultCode('ok'),
           plan: processNextResult.value,
           license: null,
+          niceResultCode: null,
         };
       }
 
@@ -132,8 +137,10 @@ export class BillingPurchaseService {
         billingOrganization,
         ...processPreviewResult.value,
       });
+
       if (!processNowResult.ok) {
-        rollback(processNowResult.resultCode);
+        setTriggerRollbackBeforeReturn();
+        return processNowResult;
       }
 
       return processNowResult;
@@ -142,7 +149,7 @@ export class BillingPurchaseService {
 
   async createPurchaseSubscriptionWithNewCard(dto: CreatePurchaseSubscriptionWithNewCardDto): Promise<CreatePurchaseSubscriptionWithNewCardResponse> {
     return await retrySerialize(this.logger, this.dataSource, async (context) => {
-      const { rollback } = context;
+      const { setTriggerRollbackBeforeReturn } = context;
       const { registerCard } = dto;
       const billingOrganization = await findBillingOrganizationWithMethodAndSubscriptionPlans(context, dto);
       if (!billingOrganization) {
@@ -152,6 +159,7 @@ export class BillingPurchaseService {
           plan: null,
           method: null,
           license: null,
+          niceResultCode: null,
         };
       }
       const { billingOrganizationId } = billingOrganization;
@@ -167,6 +175,7 @@ export class BillingPurchaseService {
           plan: null,
           method: null,
           license: null,
+          niceResultCode: null,
         };
       }
       const { needPurchase } = processPreviewResult.value;
@@ -178,15 +187,17 @@ export class BillingPurchaseService {
         },
       });
       if (!niceResult.ok) {
-        rollback(niceResult.resultCode);
+        setTriggerRollbackBeforeReturn();
         return {
           ok: false,
           resultCode: niceResult.resultCode,
           plan: null,
           method: null,
           license: null,
+          niceResultCode: niceResult.extras.niceResultCode,
         };
       }
+
       const { value: billingMethodNice } = niceResult;
 
       const method = getBillingMethodNicePublic(billingMethodNice);
@@ -195,6 +206,7 @@ export class BillingPurchaseService {
           billingOrganization,
           ...processPreviewResult.value,
         });
+
         if (!processNextResult.ok) {
           return {
             ok: false,
@@ -202,6 +214,7 @@ export class BillingPurchaseService {
             plan: null,
             license: null,
             method,
+            niceResultCode: null,
           };
         }
 
@@ -211,6 +224,7 @@ export class BillingPurchaseService {
           plan: processNextResult.value,
           license: null,
           method,
+          niceResultCode: null,
         };
       }
 
@@ -220,8 +234,13 @@ export class BillingPurchaseService {
         billingOrganization,
         ...processPreviewResult.value,
       });
+
       if (!processNowResult.ok) {
-        rollback(processNowResult.resultCode);
+        setTriggerRollbackBeforeReturn();
+        return {
+          ...processNowResult,
+          method,
+        };
       }
 
       return {

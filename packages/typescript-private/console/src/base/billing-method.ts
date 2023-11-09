@@ -4,6 +4,7 @@ import { BillingMethodNiceBase } from './billing-method-nice';
 export interface UpdateBillingMethodResposneFailure {
   ok: false;
   resultCode: BillingResultCode;
+  niceResultCode: string | null;
 }
 
 export interface UpdateBillingMethodResponseSuccess {

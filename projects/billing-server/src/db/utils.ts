@@ -1,5 +1,4 @@
-import { BillingResultCode } from '@dogu-private/console';
-import { errorify, stringify } from '@dogu-tech/common';
+import { errorify } from '@dogu-tech/common';
 import _ from 'lodash';
 import { DataSource, EntityManager } from 'typeorm';
 import { DoguLogger } from '../module/logger/logger';
@@ -36,10 +35,16 @@ export interface RetrySerializeContext {
   logger: DoguLogger;
   manager: EntityManager;
   registerOnAfterRollback: (onAfterRollback: OnAfterRollback) => void;
-  rollback: (resultCode: BillingResultCode) => void;
+  setTriggerRollbackBeforeReturn: () => void;
 }
 
 export type RetrySerializeFunction<T> = (context: RetrySerializeContext) => Promise<T>;
+
+class RollbackWithReturnError<T> extends Error {
+  constructor(readonly returnValue: T) {
+    super('RollbackWithReturnError');
+  }
+}
 
 export async function retrySerialize<T>(
   logger: DoguLogger, //
@@ -56,16 +61,23 @@ export async function retrySerialize<T>(
       const onAfterRollbacks = new Set<OnAfterRollback>();
       try {
         await queryRunner.startTransaction('SERIALIZABLE');
+
+        let triggerRollbackBeforeReturn: boolean = false;
         const result = await fn({
           logger,
           manager: queryRunner.manager,
           registerOnAfterRollback: (onAfterRollback) => {
             onAfterRollbacks.add(onAfterRollback);
           },
-          rollback: (resultCode) => {
-            throw new Error(`triggerRollback: ${resultCode.code} ${resultCode.reason} ${stringify(resultCode.details)}`);
+          setTriggerRollbackBeforeReturn: () => {
+            triggerRollbackBeforeReturn = true;
           },
         });
+
+        if (triggerRollbackBeforeReturn) {
+          throw new RollbackWithReturnError(result);
+        }
+
         await queryRunner.commitTransaction();
         return result;
       } catch (e) {
@@ -79,6 +91,10 @@ export async function retrySerialize<T>(
           } catch (e) {
             logger.error('retrySerialize.catch onAfterRollback failed', { error: errorify(e) });
           }
+        }
+
+        if (error instanceof RollbackWithReturnError<T>) {
+          return error.returnValue as T;
         }
 
         if (tryCount === retryCount) {

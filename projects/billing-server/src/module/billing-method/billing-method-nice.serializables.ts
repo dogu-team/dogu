@@ -1,6 +1,6 @@
 import {
   BillingMethodNiceProp,
-  BillingResult,
+  BillingResultWithExtras,
   CreateOrUpdateMethodNiceDto,
   NiceSubscribePaymentsResponse,
   resultCode,
@@ -14,11 +14,13 @@ import { BillingOrganization } from '../../db/entity/billing-organization.entity
 import { RetrySerializeContext } from '../../db/utils';
 import { BillingMethodNiceCaller } from './billing-method-nice.caller';
 
+export type CreateOrUpdateMethodNiceResult = BillingResultWithExtras<BillingMethodNice, { niceResultCode: string | null }>;
+
 export async function createOrUpdateMethodNice(
   context: RetrySerializeContext, //
   billingMethodNiceCaller: BillingMethodNiceCaller,
   dto: CreateOrUpdateMethodNiceDto,
-): Promise<BillingResult<BillingMethodNice>> {
+): Promise<CreateOrUpdateMethodNiceResult> {
   const { logger, manager, registerOnAfterRollback } = context;
   const { billingOrganizationId, subscribeRegist } = dto;
   const { registerCard } = subscribeRegist;
@@ -48,6 +50,9 @@ export async function createOrUpdateMethodNice(
     return {
       ok: false,
       resultCode: subscribeRegistResult.resultCode,
+      extras: {
+        niceResultCode: subscribeRegistResult.extras.niceResultCode,
+      },
     };
   }
 
@@ -83,6 +88,7 @@ export async function createOrUpdateMethodNice(
   return {
     ok: true,
     value: saved,
+    extras: {},
   };
 }
 
@@ -92,11 +98,13 @@ export interface CreateNicePurchaseOptions {
   goodsName: string;
 }
 
+export type CreateNicePurchaseResult = BillingResultWithExtras<NiceSubscribePaymentsResponse, { niceResultCode: string | null }>;
+
 export async function createPurchase(
   context: RetrySerializeContext,
   billingMethodNiceCaller: BillingMethodNiceCaller,
   options: CreateNicePurchaseOptions,
-): Promise<BillingResult<NiceSubscribePaymentsResponse>> {
+): Promise<CreateNicePurchaseResult> {
   const { manager, registerOnAfterRollback } = context;
   const { billingMethodNiceId, amount, goodsName } = options;
   const billingMethodNice = await manager.getRepository(BillingMethodNice).findOne({
@@ -111,6 +119,9 @@ export async function createPurchase(
       resultCode: resultCode('method-nice-not-found', {
         billingMethodNiceId,
       }),
+      extras: {
+        niceResultCode: null,
+      },
     };
   }
 
@@ -121,6 +132,9 @@ export async function createPurchase(
       resultCode: resultCode('method-nice-bid-not-found', {
         billingMethodNiceId,
       }),
+      extras: {
+        niceResultCode: null,
+      },
     };
   }
 
@@ -138,6 +152,9 @@ export async function createPurchase(
         amount,
         goodsName,
       }),
+      extras: {
+        niceResultCode: subscribePaymentsResult.extras.niceResultCode,
+      },
     };
   }
   const { value } = subscribePaymentsResult;
@@ -152,6 +169,7 @@ export async function createPurchase(
   return {
     ok: true,
     value,
+    extras: {},
   };
 }
 
@@ -175,6 +193,7 @@ export async function updateBillingMethod(
       resultCode: resultCode('organization-not-found', {
         organizationId: dto.organizationId,
       }),
+      niceResultCode: null,
     };
   }
 
@@ -188,6 +207,7 @@ export async function updateBillingMethod(
     return {
       ok: false,
       resultCode: createOrUpdateMethodNiceResult.resultCode,
+      niceResultCode: createOrUpdateMethodNiceResult.extras.niceResultCode,
     };
   }
 

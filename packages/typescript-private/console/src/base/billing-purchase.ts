@@ -88,6 +88,7 @@ export interface CreatePurchaseSubscriptionResponse {
   resultCode: BillingResultCode;
   plan: BillingSubscriptionPlanInfoResponse | null;
   license: CloudLicenseBase | SelfHostedLicenseBase | null;
+  niceResultCode: string | null;
 }
 
 export class RegisterCardDto {
@@ -135,6 +136,7 @@ export interface CreatePurchaseSubscriptionWithNewCardResponse {
   plan: BillingSubscriptionPlanInfoResponse | null;
   method: BillingMethodNicePublic | null;
   license: CloudLicenseBase | SelfHostedLicenseBase | null;
+  niceResultCode: string | null;
 }
 
 export class RefundSubscriptionPlanDto {
