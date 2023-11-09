@@ -1,7 +1,8 @@
 import { OrganizationId } from '@dogu-private/types';
-import { IsFilledString, propertiesOf } from '@dogu-tech/common';
+import { FilteredAxiosError, propertiesOf } from '@dogu-tech/common';
 import { Type } from 'class-transformer';
-import { IsNumber, IsUUID, ValidateNested } from 'class-validator';
+import { IsUUID, ValidateNested } from 'class-validator';
+import { BillingResultCode } from '..';
 import { BillingOrganizationBase } from './billing-organization';
 import { RegisterCardDto } from './billing-purchase';
 
@@ -92,9 +93,8 @@ export interface NiceSubscribeRegistResponse {
   messageSource?: string;
 }
 
-export class NiceSubscribeExpireDto {
-  @IsFilledString()
-  bid!: string;
+export interface NiceSubscribeExpireOptions {
+  bid: string;
 }
 
 /**
@@ -125,15 +125,10 @@ export interface NiceSubscribeExpireResponse {
   authDate: string | null;
 }
 
-export class NiceSubscribePaymentsDto {
-  @IsFilledString()
-  bid!: string;
-
-  @IsNumber()
-  amount!: number;
-
-  @IsFilledString()
-  goodsName!: string;
+export interface NiceSubscribePaymentsOptions {
+  bid: string;
+  amount: number;
+  goodsName: string;
 }
 
 export const NiceStatus = ['', 'paid', 'ready', 'failed', 'cancelled', 'partialCancelled', 'expired'] as const;
@@ -282,3 +277,313 @@ export interface NiceSubscribePaymentsResponse {
   bid: string;
   messageSource: string | null;
 }
+
+export interface NicePaymentsCancelOptions {
+  tid: string;
+  reason: string;
+  cancelAmt?: number;
+}
+
+/**
+ * @example
+ * {
+  "resultCode": "0000",
+  "resultMsg": "정상 처리되었습니다.",
+  "tid": "UT0009202m01162311081800551655",
+  "cancelledTid": "UT0009202m01102311081808157853",
+  "orderId": "ed279b2f-3b04-4b6a-b69a-4472f6212d22",
+  "ediDate": "2023-11-08T18:08:15.126+0900",
+  "signature": "90b37b7d45b3fd9800f1f7cbdd616181b5e15b36fc710869b33915991bd9aaae",
+  "status": "partialCancelled",
+  "paidAt": "2023-11-08T18:00:55.000+0900",
+  "failedAt": "0",
+  "cancelledAt": "2023-11-08T18:08:14.000+0900",
+  "payMethod": "card",
+  "amount": 390,
+  "balanceAmt": 290,
+  "goodsName": "Dogu Platform Subscription",
+  "mallReserved": null,
+  "useEscrow": false,
+  "currency": "KRW",
+  "channel": null,
+  "approveNo": "43445090",
+  "buyerName": null,
+  "buyerTel": null,
+  "buyerEmail": null,
+  "receiptUrl": "https://npg.nicepay.co.kr/issue/IssueLoader.do?type=0&innerWin=Y&TID=UT0009202m01162311081800551655",
+  "mallUserId": null,
+  "issuedCashReceipt": false,
+  "coupon": {
+    "couponAmt": 0
+  },
+  "card": {
+    "cardCode": "01",
+    "cardName": "비씨",
+    "cardNum": "944192******0764",
+    "cardQuota": 0,
+    "isInterestFree": false,
+    "cardType": "check",
+    "canPartCancel": true,
+    "acquCardCode": "01",
+    "acquCardName": "비씨"
+  },
+  "vbank": null,
+  "bank": null,
+  "cellphone": null,
+  "cancels": [
+    {
+      "tid": "UT0009202m01102311081808157853",
+      "amount": 100,
+      "cancelledAt": "2023-11-08T18:08:14.000+0900",
+      "reason": "test",
+      "receiptUrl": "https://npg.nicepay.co.kr/issue/IssueLoader.do?type=0&innerWin=Y&TID=UT0009202m01102311081808157853",
+      "couponAmt": 0
+    }
+  ],
+  "cashReceipts": null,
+  "messageSource": "nicepay"
+}
+ */
+
+export interface NicePaymentsCancelResponse {
+  resultCode: string;
+  resultMsg: string;
+  tid?: string | null;
+  cancelledTid?: string | null;
+  orderId?: string | null;
+  ediDate?: string | null;
+  signature?: string | null;
+  status?: NiceStatus | null;
+  paidAt?: string | null;
+  failedAt?: string | null;
+  cancelledAt?: string | null;
+  payMethod?: string | null;
+  amount?: number | null;
+  balanceAmt?: number | null;
+  goodsName?: string | null;
+  mallReserved?: string | null;
+  useEscrow?: boolean | null;
+  currency?: NiceCurrency | null;
+  channel?: NiceChannel | null;
+  approveNo?: string | null;
+  buyerName?: string | null;
+  buyerTel?: string | null;
+  buyerEmail?: string | null;
+  receiptUrl?: string | null;
+  mallUserId?: string | null;
+  issuedCashReceipt?: boolean | null;
+  coupon?: {
+    couponAmt?: number | null;
+  } | null;
+  card?: {
+    cardCode?: string | null;
+    cardName?: string | null;
+    cardNum?: string | null;
+    cardQuota?: number | null;
+    isInterestFree?: boolean | null;
+    cardType?: string | null;
+    canPartCancel?: boolean | null;
+    acquCardCode?: string | null;
+    acquCardName?: string | null;
+  } | null;
+  vbank?: null;
+  bank?: null;
+  cellphone?: null;
+  cancels?:
+    | [
+        {
+          tid?: string | null;
+          amount?: number | null;
+          cancelledAt?: string | null;
+          reason?: string | null;
+          receiptUrl?: string | null;
+          couponAmt?: number | null;
+        },
+      ]
+    | null;
+  cashReceipts?: null;
+  messageSource?: string | null;
+}
+
+export interface NicePaymentsOptions {
+  tid: string;
+}
+
+/**
+ * @example
+ * {
+  "resultCode": "0000",
+  "resultMsg": "정상 처리되었습니다.",
+  "tid": "UT0009202m01162311081800551655",
+  "cancelledTid": null,
+  "orderId": "ed279b2f-3b04-4b6a-b69a-4472f6212d22",
+  "ediDate": "2023-11-08T18:56:00.194+0900",
+  "signature": "3e1a5021fc3988e96c416f5db29ab6fef1c9720e63e63ef757b7887272c69750",
+  "status": "partialCancelled",
+  "paidAt": "2023-11-08T18:00:55.000+0900",
+  "failedAt": "0",
+  "cancelledAt": "2023-11-08T18:08:14.000+0900",
+  "payMethod": "card",
+  "amount": 390,
+  "balanceAmt": 290,
+  "goodsName": "Dogu Platform Subscription",
+  "mallReserved": null,
+  "useEscrow": false,
+  "currency": "KRW",
+  "channel": null,
+  "approveNo": "43445090",
+  "buyerName": null,
+  "buyerTel": null,
+  "buyerEmail": null,
+  "receiptUrl": "https://npg.nicepay.co.kr/issue/IssueLoader.do?type=0&innerWin=Y&TID=UT0009202m01162311081800551655",
+  "mallUserId": null,
+  "issuedCashReceipt": false,
+  "coupon": {
+    "couponAmt": 0
+  },
+  "card": {
+    "cardCode": "01",
+    "cardName": "비씨",
+    "cardNum": "944192******0764",
+    "cardQuota": 0,
+    "isInterestFree": false,
+    "cardType": "check",
+    "canPartCancel": true,
+    "acquCardCode": "01",
+    "acquCardName": "비씨"
+  },
+  "vbank": null,
+  "bank": null,
+  "cellphone": null,
+  "cancels": [
+    {
+      "tid": "UT0009202m01102311081808157853",
+      "amount": 100,
+      "cancelledAt": "2023-11-08T18:08:14.000+0900",
+      "reason": "test",
+      "receiptUrl": "https://npg.nicepay.co.kr/issue/IssueLoader.do?type=0&innerWin=Y&TID=UT0009202m01102311081808157853",
+      "couponAmt": 0
+    }
+  ],
+  "cashReceipts": null,
+  "messageSource": "nicepay"
+}
+ */
+
+export interface NicePaymentsResponse {
+  resultCode: string;
+  resultMsg: string;
+  tid?: string | null;
+  cancelledTid?: string | null;
+  orderId?: string | null;
+  ediDate?: string | null;
+  signature?: string | null;
+  status?: NiceStatus | null;
+  paidAt?: string | null;
+  failedAt?: string | null;
+  cancelledAt?: string | null;
+  payMethod?: string | null;
+  amount?: number | null;
+  balanceAmt?: number | null;
+  goodsName?: string | null;
+  mallReserved?: string | null;
+  useEscrow?: boolean | null;
+  currency?: NiceCurrency | null;
+  channel?: NiceChannel | null;
+  approveNo?: string | null;
+  buyerName?: string | null;
+  buyerTel?: string | null;
+  buyerEmail?: string | null;
+  receiptUrl?: string | null;
+  mallUserId?: string | null;
+  issuedCashReceipt?: boolean | null;
+  coupon?: {
+    couponAmt?: number | null;
+  } | null;
+  card?: {
+    cardCode?: string | null;
+    cardName?: string | null;
+    cardNum?: string | null;
+    cardQuota?: number | null;
+    isInterestFree?: boolean | null;
+    cardType?: string | null;
+    canPartCancel?: boolean | null;
+    acquCardCode?: string | null;
+    acquCardName?: string | null;
+  } | null;
+  vbank?: null;
+  bank?: null;
+  cellphone?: null;
+  cancels?:
+    | [
+        {
+          tid?: string | null;
+          amount?: number | null;
+          cancelledAt?: string | null;
+          reason?: string | null;
+          receiptUrl?: string | null;
+          couponAmt?: number | null;
+        },
+      ]
+    | null;
+  cashReceipts?: null;
+  messageSource?: string | null;
+}
+
+export interface NicePaymentsNetCancelOptions {
+  orderId: string;
+}
+
+export interface NicePaymentsNetCancelResponse {
+  resultCode: string;
+  resultMsg: string;
+  tid?: string | null;
+  cancelledTid?: string | null;
+  orderId?: string | null;
+  ediDate?: string | null;
+  signature?: string | null;
+  status?: NiceStatus | null;
+  paidAt?: string | null;
+  failedAt?: string | null;
+  cancelledAt?: string | null;
+  payMethod?: string | null;
+  amount?: number | null;
+  balanceAmt?: number | null;
+  goodsName?: string | null;
+  mallReserved?: string | null;
+  useEscrow?: boolean | null;
+  currency?: NiceCurrency | null;
+  channel?: NiceChannel | null;
+  approveNo?: string | null;
+  buyerName?: string | null;
+  buyerTel?: string | null;
+  buyerEmail?: string | null;
+  issuedCashReceipt?: boolean | null;
+  receiptUrl?: string | null;
+  mallUserId?: string | null;
+}
+
+export interface NiceCallResultUnexpectedError {
+  ok: false;
+  resultCode: BillingResultCode<'unexpected-error'>;
+  error: Error;
+}
+
+export interface NiceCallResultNetworkError {
+  ok: false;
+  resultCode: BillingResultCode<'method-nice-network-error'>;
+  error: FilteredAxiosError;
+}
+
+export interface NiceCallResultFailure {
+  ok: false;
+  resultCode: BillingResultCode;
+  error: FilteredAxiosError;
+}
+
+export interface NiceCallResultSuccess<T> {
+  ok: true;
+  response: T;
+}
+
+export type NiceCallResult<T> = NiceCallResultUnexpectedError | NiceCallResultNetworkError | NiceCallResultFailure | NiceCallResultSuccess<T>;

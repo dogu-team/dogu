@@ -1,6 +1,6 @@
 import {
   BillingMethodNiceProp,
-  BillingResultCode,
+  BillingResult,
   CreateOrUpdateMethodNiceDto,
   NiceSubscribePaymentsResponse,
   resultCode,
@@ -18,7 +18,7 @@ export async function createOrUpdateMethodNice(
   context: RetrySerializeContext, //
   billingMethodNiceCaller: BillingMethodNiceCaller,
   dto: CreateOrUpdateMethodNiceDto,
-): Promise<BillingMethodNice> {
+): Promise<BillingResult<BillingMethodNice>> {
   const { logger, manager, registerOnAfterRollback } = context;
   const { billingOrganizationId, subscribeRegist } = dto;
   const { registerCard } = subscribeRegist;
@@ -43,16 +43,24 @@ export async function createOrUpdateMethodNice(
   bid = billingMethodNice?.bid ?? null;
   await subscribeExpire();
 
-  const subscribeRegistResponse = await billingMethodNiceCaller.subscribeRegist(subscribeRegist);
-  const { cardCode, cardName } = subscribeRegistResponse;
-  bid = subscribeRegistResponse.bid;
+  const subscribeRegistResult = await billingMethodNiceCaller.subscribeRegist(subscribeRegist);
+  if (!subscribeRegistResult.ok) {
+    return {
+      ok: false,
+      resultCode: subscribeRegistResult.resultCode,
+    };
+  }
+
+  const { value } = subscribeRegistResult;
+  const { cardCode, cardName } = value;
+  bid = value.bid;
 
   if (billingMethodNice) {
     billingMethodNice.bid = bid;
     billingMethodNice.cardCode = cardCode;
     billingMethodNice.cardName = cardName;
     billingMethodNice.cardNumberLast4Digits = cardNumberLast4Digits;
-    billingMethodNice.subscribeRegistResponse = subscribeRegistResponse as unknown as Record<string, unknown>;
+    billingMethodNice.subscribeRegistResponse = value as unknown as Record<string, unknown>;
     billingMethodNice.subscribeRegistAt = new Date();
     billingMethodNice.expirationYear = expirationYear;
     billingMethodNice.expirationMonth = expirationMonth;
@@ -64,7 +72,7 @@ export async function createOrUpdateMethodNice(
       cardCode,
       cardName,
       cardNumberLast4Digits,
-      subscribeRegistResponse: subscribeRegistResponse as unknown as Record<string, unknown>,
+      subscribeRegistResponse: value as unknown as Record<string, unknown>,
       subscribeRegistAt: new Date(),
       expirationYear,
       expirationMonth,
@@ -72,7 +80,10 @@ export async function createOrUpdateMethodNice(
   }
 
   const saved = await manager.getRepository(BillingMethodNice).save(billingMethodNice);
-  return saved;
+  return {
+    ok: true,
+    value: saved,
+  };
 }
 
 export interface CreateNicePurchaseOptions {
@@ -81,24 +92,12 @@ export interface CreateNicePurchaseOptions {
   goodsName: string;
 }
 
-export interface CreateNicePurchaseResultFailure {
-  ok: false;
-  resultCode: BillingResultCode;
-}
-
-export interface CreateNicePurchaseResultSuccess {
-  ok: true;
-  response: NiceSubscribePaymentsResponse;
-}
-
-export type CreateNicePurchaseResult = CreateNicePurchaseResultFailure | CreateNicePurchaseResultSuccess;
-
 export async function createPurchase(
   context: RetrySerializeContext,
   billingMethodNiceCaller: BillingMethodNiceCaller,
   options: CreateNicePurchaseOptions,
-): Promise<CreateNicePurchaseResult> {
-  const { logger, manager, registerOnAfterRollback } = context;
+): Promise<BillingResult<NiceSubscribePaymentsResponse>> {
+  const { manager, registerOnAfterRollback } = context;
   const { billingMethodNiceId, amount, goodsName } = options;
   const billingMethodNice = await manager.getRepository(BillingMethodNice).findOne({
     where: {
@@ -107,26 +106,52 @@ export async function createPurchase(
     relations: [BillingMethodNiceProp.billingOrganization],
   });
   if (!billingMethodNice) {
-    throw new Error(`billingMethodNice not found: ${billingMethodNiceId}`);
+    return {
+      ok: false,
+      resultCode: resultCode('method-nice-not-found', {
+        billingMethodNiceId,
+      }),
+    };
   }
 
   const { bid } = billingMethodNice;
   if (!bid) {
-    throw new Error(`bid not found: ${billingMethodNiceId}`);
+    return {
+      ok: false,
+      resultCode: resultCode('method-nice-bid-not-found', {
+        billingMethodNiceId,
+      }),
+    };
   }
 
-  const response = await billingMethodNiceCaller.subscribePayments({
+  const subscribePaymentsResult = await billingMethodNiceCaller.subscribePayments({
     bid,
     amount,
     goodsName,
   });
+  if (!subscribePaymentsResult.ok) {
+    return {
+      ok: false,
+      resultCode: resultCode('method-nice-subscribe-payments-failed', {
+        billingMethodNiceId,
+        bid,
+        amount,
+        goodsName,
+      }),
+    };
+  }
+  const { value } = subscribePaymentsResult;
+
   registerOnAfterRollback(async () => {
-    // TODO: cancel payment
+    await billingMethodNiceCaller.paymentsCancel({
+      tid: value.tid,
+      reason: `rollback tid: ${value.tid}`,
+    });
   });
-  logger.info('BillingMethodNiceService.subscribePayments', { response });
+
   return {
     ok: true,
-    response,
+    value,
   };
 }
 
@@ -153,16 +178,22 @@ export async function updateBillingMethod(
     };
   }
 
-  const rv = await createOrUpdateMethodNice(context, billingMethodNiceCaller, {
+  const createOrUpdateMethodNiceResult = await createOrUpdateMethodNice(context, billingMethodNiceCaller, {
     billingOrganizationId: billingOrganization.billingOrganizationId,
     subscribeRegist: {
       registerCard,
     },
   });
+  if (!createOrUpdateMethodNiceResult.ok) {
+    return {
+      ok: false,
+      resultCode: createOrUpdateMethodNiceResult.resultCode,
+    };
+  }
 
   return {
     ok: true,
     resultCode: resultCode('ok'),
-    method: rv,
+    method: createOrUpdateMethodNiceResult.value,
   };
 }

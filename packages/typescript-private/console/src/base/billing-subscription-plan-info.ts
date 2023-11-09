@@ -26,6 +26,7 @@ export interface BillingSubscriptionPlanInfoBase extends BillingSubscriptionPlan
   changeRequestedDiscountedAmount: number | null;
   unsubscribedAt: Date | null;
   state: BillingSubscriptionPlanState;
+  billingSubscriptionPlanHistoryId: string | null;
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date | null;

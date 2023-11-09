@@ -7,9 +7,9 @@ import { BillingHistoryModule } from '../billing-history/billing-history.module'
 import { BillingMethodModule } from '../billing-method/billing-method.module';
 import { BillingOrganizationModule } from '../billing-organization/billing-organization.module';
 import { BillingPurchaseModule } from '../billing-purchase/billing-purchase.module';
-import { BillingSchedulerModule } from '../billing-scheduler/billing-scheduler.module';
 import { BillingSubscriptionPlanInfoModule } from '../billing-subscription-plan-info/billing-subscription-plan-info.module';
 import { BillingTokenModule } from '../billing-token/billing-token.module';
+import { BillingUpdaterModule } from '../billing-updater/billing-updater.module';
 import { CloudLicenseModule } from '../cloud-license/cloud-license.module';
 import { LoggerModule } from '../logger/logger.module';
 import { SelfHostedLicenseModule } from '../self-hosted-license/self-hosted-license.module';
@@ -29,8 +29,8 @@ import { AppService } from './app.service';
     BillingHistoryModule,
     BillingCouponModule,
     BillingPurchaseModule,
-    BillingSchedulerModule,
     BillingSubscriptionPlanInfoModule,
+    BillingUpdaterModule,
   ],
   controllers: [AppController],
   providers: [AppService],

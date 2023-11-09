@@ -5,6 +5,8 @@ import {
   CreatePurchaseSubscriptionWithNewCardResponse,
   GetBillingSubscriptionPreviewDto,
   GetBillingSubscriptionPreviewResponse,
+  RefundFullDto,
+  RefundSubscriptionPlanDto,
 } from '@dogu-private/console';
 import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { BillingTokenPermission } from '../auth/guard/billing-token.guard';
@@ -30,5 +32,17 @@ export class BillingPurchaseController {
   @BillingTokenPermission()
   async createPurchaseSubscriptionWithNewCard(@Body() dto: CreatePurchaseSubscriptionWithNewCardDto): Promise<CreatePurchaseSubscriptionWithNewCardResponse> {
     return await this.billingPurchaseService.createPurchaseSubscriptionWithNewCard(dto);
+  }
+
+  @Post('/refund/subscription-plan')
+  @BillingTokenPermission()
+  async refundPurchaseSubscription(@Body() dto: RefundSubscriptionPlanDto): Promise<void> {
+    return await this.billingPurchaseService.refundSubscriptionPlan(dto);
+  }
+
+  @Post('/refund/full')
+  @BillingTokenPermission()
+  async refundFull(@Body() dto: RefundFullDto): Promise<void> {
+    return await this.billingPurchaseService.refundFull(dto);
   }
 }

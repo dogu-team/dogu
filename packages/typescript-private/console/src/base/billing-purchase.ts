@@ -136,3 +136,13 @@ export interface CreatePurchaseSubscriptionWithNewCardResponse {
   method: BillingMethodNicePublic | null;
   license: CloudLicenseBase | SelfHostedLicenseBase | null;
 }
+
+export class RefundSubscriptionPlanDto {
+  @IsUUID()
+  billingSubscriptionPlanHistoryId!: string;
+}
+
+export class RefundFullDto {
+  @IsUUID()
+  billingHistoryId!: string;
+}

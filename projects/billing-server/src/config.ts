@@ -26,7 +26,9 @@ export const config = {
     schema: env.DOGU_BILLING_RDS_SCHEMA,
     ssl: env.DOGU_BILLING_RDS_SSL_CONNECTION ? { rejectUnauthorized: false } : false,
   },
-  updatePurchasePeriodMilliseconds: 60 * 60 * 1000,
+  messageQueue: {
+    popInterval: 5 * 1000,
+  },
 };
 
 export const dataSourceConfig: DataSourceOptions = {

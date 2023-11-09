@@ -1,17 +1,17 @@
 import { propertiesOf } from '@dogu-tech/common';
 import { BillingPeriod, BillingSubscriptionPlanData } from './billing';
 import { BillingCouponBase } from './billing-coupon';
-import { BillingHistoryBase } from './billing-history';
+import { BillingHistoryBase, BillingHistoryType } from './billing-history';
 import { BillingOrganizationBase } from './billing-organization';
 import { BillingSubscriptionPlanSourceBase } from './billing-subscription-plan-source';
 
 export interface BillingSubscriptionPlanHistoryData extends BillingSubscriptionPlanData {
   billingCouponId: string | null;
   billingSubscriptionPlanSourceId: string | null;
-  discountedAmount: number;
-  purchasedAmount: number;
-  startedAt: Date;
-  expiredAt: Date;
+  discountedAmount: number | null;
+  purchasedAmount: number | null;
+  startedAt: Date | null;
+  expiredAt: Date | null;
   elapsedDays: number | null;
   elapsedDiscountedAmount: number | null;
   previousRemainingDays: number | null;
@@ -24,6 +24,9 @@ export interface BillingSubscriptionPlanHistoryBase extends BillingSubscriptionP
   billingSubscriptionPlanHistoryId: string;
   billingOrganizationId: string;
   billingHistoryId: string;
+  historyType: BillingHistoryType;
+  purchasedBillingSubscriptionPlanHistoryId: string | null;
+  refundedAmount: number | null;
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date | null;

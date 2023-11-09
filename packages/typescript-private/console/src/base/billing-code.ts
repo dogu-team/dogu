@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 export const BillingResultCodeMap = {
   // common
   ok: 0,
@@ -42,6 +44,17 @@ export const BillingResultCodeMap = {
 
   // method nice
   'method-nice-bid-not-found': 600,
+  'method-nice-subscribe-regist-failed': 601,
+  'method-nice-subscribe-expire-failed': 602,
+  'method-nice-subscribe-payments-failed': 603,
+  'method-nice-network-error': 604,
+  'method-nice-payments-cancel-failed': 605,
+  'method-nice-payments-failed': 606,
+  'method-nice-payments-netcancel-failed': 607,
+  'method-nice-order-id-mismatch': 608,
+  'method-nice-status-not-paid': 609,
+  'method-nice-status-not-canceled-or-partial-cancelled': 610,
+  'method-nice-not-found': 611,
 };
 
 export type BillingReason = keyof typeof BillingResultCodeMap;
@@ -49,12 +62,29 @@ export type BillingReason = keyof typeof BillingResultCodeMap;
 export type BillingResultCodeDetailValue = undefined | null | boolean | number | string;
 export type BillingResultCodeDetails = Record<string, BillingResultCodeDetailValue>;
 
-export interface BillingResultCode {
+export interface BillingResultCode<T = BillingReason> {
   code: number;
-  reason: BillingReason;
+  reason: T;
   details?: BillingResultCodeDetails;
 }
 
-export function resultCode(reason: BillingReason, details?: BillingResultCodeDetails): BillingResultCode {
-  return { code: BillingResultCodeMap[reason], reason, details };
+export function resultCode<T extends string = BillingReason>(reason: T, details?: BillingResultCodeDetails): BillingResultCode<T> {
+  const code = _.get(BillingResultCodeMap, reason, 'unexpected-error') as number;
+  return { code, reason, details };
 }
+
+export interface BillingResultFailure<Reason = BillingReason, Extras extends object = object> {
+  ok: false;
+  resultCode: BillingResultCode<Reason>;
+  extras?: Extras;
+}
+
+export interface BillingResultSuccess<Value, Extras extends object = object> {
+  ok: true;
+  value: Value;
+  extras?: Extras;
+}
+
+export type BillingResult<Value, Reason = BillingReason, Extras extends object = object> =
+  | BillingResultFailure<Reason, Extras> //
+  | BillingResultSuccess<Value, Extras>;

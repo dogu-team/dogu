@@ -6,16 +6,36 @@ import { BillingCurrency, BillingMethod } from './billing';
 import { BillingOrganizationBase } from './billing-organization';
 import { BillingSubscriptionPlanHistoryBase } from './billing-subscription-plan-history';
 
+export const BillingHistoryTypeRefund = ['full-refund', 'partial-refund'] as const;
+export type BillingHistoryTypeRefund = (typeof BillingHistoryTypeRefund)[number];
+
+export const BillingHistoryTypePurchase = ['immediate-purchase', 'periodic-purchase'] as const;
+export type BillingHistoryTypePurchase = (typeof BillingHistoryTypePurchase)[number];
+
+export const BillingHistoryType = [...BillingHistoryTypePurchase, ...BillingHistoryTypeRefund] as const;
+export type BillingHistoryType = (typeof BillingHistoryType)[number];
+
 export interface BillingHistoryBase {
   billingHistoryId: string;
   billingOrganizationId: string;
-  purchasedAt: Date;
+  historyType: BillingHistoryType;
+  currency: BillingCurrency;
+  previewResponse: Record<string, unknown> | null;
+  purchasedAmount: number | null;
+  goodsName: string;
   method: BillingMethod;
   niceSubscribePaymentsResponse: Record<string, unknown> | null;
-  previewResponse: Record<string, unknown>;
-  totalPrice: number;
-  currency: BillingCurrency;
-  goodsName: string;
+  niceTid: string | null;
+  niceOrderId: string | null;
+  cardCode: string | null;
+  cardName: string | null;
+  cardNumberLast4Digits: string | null;
+  cardExpirationYear: string | null;
+  cardExpirationMonth: string | null;
+  cancelReason: string | null;
+  nicePaymentsCancelResponse: Record<string, unknown> | null;
+  purchasedBillingHistoryId: string | null;
+  refundedAmount: number | null;
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date | null;

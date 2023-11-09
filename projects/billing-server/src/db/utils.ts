@@ -1,4 +1,5 @@
-import { errorify } from '@dogu-tech/common';
+import { BillingResultCode } from '@dogu-private/console';
+import { errorify, stringify } from '@dogu-tech/common';
 import _ from 'lodash';
 import { DataSource, EntityManager } from 'typeorm';
 import { DoguLogger } from '../module/logger/logger';
@@ -35,6 +36,7 @@ export interface RetrySerializeContext {
   logger: DoguLogger;
   manager: EntityManager;
   registerOnAfterRollback: (onAfterRollback: OnAfterRollback) => void;
+  rollback: (resultCode: BillingResultCode) => void;
 }
 
 export type RetrySerializeFunction<T> = (context: RetrySerializeContext) => Promise<T>;
@@ -59,6 +61,9 @@ export async function retrySerialize<T>(
           manager: queryRunner.manager,
           registerOnAfterRollback: (onAfterRollback) => {
             onAfterRollbacks.add(onAfterRollback);
+          },
+          rollback: (resultCode) => {
+            throw new Error(`triggerRollback: ${resultCode.code} ${resultCode.reason} ${stringify(resultCode.details)}`);
           },
         });
         await queryRunner.commitTransaction();

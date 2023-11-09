@@ -1,5 +1,6 @@
 import {
   BillingMethodNiceBase,
+  BillingResult,
   BillingResultCode,
   BillingSubscriptionPlanData,
   BillingSubscriptionPlanHistoryData,
@@ -42,13 +43,7 @@ export interface ProcessPurchaseSubscriptionPreviewOptions {
   dto: BillingSubscriptionPlanPreviewDto;
 }
 
-export interface ProcessPurchaseSubscriptionPreviewResultFailure {
-  ok: false;
-  resultCode: BillingResultCode;
-}
-
-export interface ProcessPurchaseSubscriptionPreviewResultSuccess {
-  ok: true;
+export interface ProcessPurchaseSubscriptionPreviewResultValue {
   previewResponse: GetBillingSubscriptionPreviewResponse;
   couponResult: ResolveCouponResultSuccess;
   data: BillingSubscriptionPlanData;
@@ -61,12 +56,10 @@ export interface ProcessPurchaseSubscriptionPreviewResultSuccess {
   planHistory: BillingSubscriptionPlanHistoryData | null;
 }
 
-export type ProcessPurchaseSubscriptionPreviewResult = ProcessPurchaseSubscriptionPreviewResultFailure | ProcessPurchaseSubscriptionPreviewResultSuccess;
-
 export async function processPurchaseSubscriptionPreview(
   context: RetrySerializeContext,
   options: ProcessPurchaseSubscriptionPreviewOptions,
-): Promise<ProcessPurchaseSubscriptionPreviewResult> {
+): Promise<BillingResult<ProcessPurchaseSubscriptionPreviewResultValue>> {
   const { billingOrganization, dto } = options;
   if (billingOrganization.category !== dto.category) {
     return {
@@ -181,49 +174,51 @@ export async function processPurchaseSubscriptionPreview(
 
     return {
       ok: true,
-      previewResponse: {
-        ok: true,
-        resultCode: resultCode('ok'),
-        totalPrice,
-        tax: 0,
-        nextPurchaseTotalPrice,
-        nextPurchasedAt: dateTimes.expiredAt.date,
-        subscriptionPlan: data,
-        elapsedPlans: elapsedPlan.elapsedDays > 0 ? [elapsedPlan] : [],
-        remainingPlans: [],
-        coupon: couponPreviewResponse,
-      },
-      data,
-      source,
-      couponResult,
-      discountedAmount,
-      totalPrice,
-      now,
-      needPurchase: true,
-      dateTimes: calculatePurchaseSubscriptionDateTimesResult,
-      planHistory: {
-        billingCouponId: coupon?.billingCouponId ?? null,
-        billingSubscriptionPlanSourceId: source?.billingSubscriptionPlanSourceId ?? null,
+      value: {
+        previewResponse: {
+          ok: true,
+          resultCode: resultCode('ok'),
+          totalPrice,
+          tax: 0,
+          nextPurchaseTotalPrice,
+          nextPurchasedAt: dateTimes.expiredAt.date,
+          subscriptionPlan: data,
+          elapsedPlans: elapsedPlan.elapsedDays > 0 ? [elapsedPlan] : [],
+          remainingPlans: [],
+          coupon: couponPreviewResponse,
+        },
+        data,
+        source,
+        couponResult,
         discountedAmount,
-        purchasedAmount: totalPrice,
-        startedAt: dateTimes.startedAt.date,
-        expiredAt: dateTimes.expiredAt.date,
-        elapsedDays: elapsedPlan.elapsedDays,
-        elapsedDiscountedAmount: elapsedPlan.elapsedDiscountedAmount,
-        previousRemainingDays: null,
-        previousRemainingDiscountedAmount: null,
-        previousOption: null,
-        previousPeriod: null,
-        category: data.category,
-        type: data.type,
-        option: data.option,
-        currency: data.currency,
-        period: data.period,
-        originPrice: data.originPrice,
+        totalPrice,
+        now,
+        needPurchase: true,
+        dateTimes: calculatePurchaseSubscriptionDateTimesResult,
+        planHistory: {
+          billingCouponId: coupon?.billingCouponId ?? null,
+          billingSubscriptionPlanSourceId: source?.billingSubscriptionPlanSourceId ?? null,
+          discountedAmount,
+          purchasedAmount: totalPrice,
+          startedAt: dateTimes.startedAt.date,
+          expiredAt: dateTimes.expiredAt.date,
+          elapsedDays: elapsedPlan.elapsedDays,
+          elapsedDiscountedAmount: elapsedPlan.elapsedDiscountedAmount,
+          previousRemainingDays: null,
+          previousRemainingDiscountedAmount: null,
+          previousOption: null,
+          previousPeriod: null,
+          category: data.category,
+          type: data.type,
+          option: data.option,
+          currency: data.currency,
+          period: data.period,
+          originPrice: data.originPrice,
+        },
       },
     };
   } else {
-    const processNowPurchaseReturn = (): ProcessPurchaseSubscriptionPreviewResult => {
+    const processNowPurchaseReturn = (): BillingResult<ProcessPurchaseSubscriptionPreviewResultValue> => {
       const currentPurchaseAmount = data.originPrice * firstCouponFactor;
       const discountedAmount = data.originPrice - currentPurchaseAmount;
       const couponPreviewResponse: CouponPreviewResponse | null = coupon
@@ -263,50 +258,52 @@ export async function processPurchaseSubscriptionPreview(
       const nextPurchasedAt = dateTimes.expiredAt.date;
       return {
         ok: true,
-        previewResponse: {
-          ok: true,
-          resultCode: resultCode('ok'),
-          totalPrice,
-          tax: 0,
-          nextPurchaseTotalPrice: nextPurchaseAmount,
-          nextPurchasedAt,
-          subscriptionPlan: data,
-          coupon: couponPreviewResponse,
-          elapsedPlans: elapsedPlan.elapsedDays > 0 ? [elapsedPlan] : [],
-          remainingPlans: [remainingPlan],
-        },
-        data,
-        source,
-        couponResult,
-        discountedAmount,
-        totalPrice,
-        now,
-        needPurchase: true,
-        dateTimes: calculatePurchaseSubscriptionDateTimesResult,
-        planHistory: {
-          billingCouponId: coupon?.billingCouponId ?? null,
-          billingSubscriptionPlanSourceId: source?.billingSubscriptionPlanSourceId ?? null,
+        value: {
+          previewResponse: {
+            ok: true,
+            resultCode: resultCode('ok'),
+            totalPrice,
+            tax: 0,
+            nextPurchaseTotalPrice: nextPurchaseAmount,
+            nextPurchasedAt,
+            subscriptionPlan: data,
+            coupon: couponPreviewResponse,
+            elapsedPlans: elapsedPlan.elapsedDays > 0 ? [elapsedPlan] : [],
+            remainingPlans: [remainingPlan],
+          },
+          data,
+          source,
+          couponResult,
           discountedAmount,
-          purchasedAmount: totalPrice,
-          startedAt: dateTimes.startedAt.date,
-          expiredAt: dateTimes.expiredAt.date,
-          elapsedDays: elapsedPlan.elapsedDays,
-          elapsedDiscountedAmount: elapsedPlan.elapsedDiscountedAmount,
-          previousRemainingDays: remainingPlan.remainingDays,
-          previousRemainingDiscountedAmount: remainingPlan.remainingDiscountedAmount,
-          previousOption: remainingPlan.option,
-          previousPeriod: remainingPlan.period,
-          category: data.category,
-          type: data.type,
-          option: data.option,
-          currency: data.currency,
-          period: data.period,
-          originPrice: data.originPrice,
+          totalPrice,
+          now,
+          needPurchase: true,
+          dateTimes: calculatePurchaseSubscriptionDateTimesResult,
+          planHistory: {
+            billingCouponId: coupon?.billingCouponId ?? null,
+            billingSubscriptionPlanSourceId: source?.billingSubscriptionPlanSourceId ?? null,
+            discountedAmount,
+            purchasedAmount: totalPrice,
+            startedAt: dateTimes.startedAt.date,
+            expiredAt: dateTimes.expiredAt.date,
+            elapsedDays: elapsedPlan.elapsedDays,
+            elapsedDiscountedAmount: elapsedPlan.elapsedDiscountedAmount,
+            previousRemainingDays: remainingPlan.remainingDays,
+            previousRemainingDiscountedAmount: remainingPlan.remainingDiscountedAmount,
+            previousOption: remainingPlan.option,
+            previousPeriod: remainingPlan.period,
+            category: data.category,
+            type: data.type,
+            option: data.option,
+            currency: data.currency,
+            period: data.period,
+            originPrice: data.originPrice,
+          },
         },
       };
     };
 
-    const processNextPurchaseReturn = (): ProcessPurchaseSubscriptionPreviewResult => {
+    const processNextPurchaseReturn = (): BillingResult<ProcessPurchaseSubscriptionPreviewResultValue> => {
       const nextPurchaseAmount = Math.floor(data.originPrice * firstCouponFactor);
       const discountedAmount = data.originPrice - nextPurchaseAmount;
       const couponPreviewResponse: CouponPreviewResponse | null = coupon
@@ -316,30 +313,32 @@ export async function processPurchaseSubscriptionPreview(
           }
         : null;
 
-      const nextPurchasedAt = dateTimes.expiredAt.date;
+      const nextPurchasedAt = getPurchaseSubscriptionDateTimes(calculatePurchaseSubscriptionDateTimesResult, foundInfo.period).expiredAt.date;
       return {
         ok: true,
-        previewResponse: {
-          ok: true,
-          resultCode: resultCode('ok'),
+        value: {
+          previewResponse: {
+            ok: true,
+            resultCode: resultCode('ok'),
+            totalPrice: 0,
+            tax: 0,
+            nextPurchaseTotalPrice: nextPurchaseAmount,
+            nextPurchasedAt,
+            subscriptionPlan: data,
+            coupon: couponPreviewResponse,
+            elapsedPlans: [],
+            remainingPlans: [],
+          },
+          data,
+          source,
+          couponResult,
+          discountedAmount: 0,
           totalPrice: 0,
-          tax: 0,
-          nextPurchaseTotalPrice: nextPurchaseAmount,
-          nextPurchasedAt,
-          subscriptionPlan: data,
-          coupon: couponPreviewResponse,
-          elapsedPlans: [],
-          remainingPlans: [],
+          now,
+          needPurchase: false,
+          dateTimes: calculatePurchaseSubscriptionDateTimesResult,
+          planHistory: null,
         },
-        data,
-        source,
-        couponResult,
-        discountedAmount: 0,
-        totalPrice: 0,
-        now,
-        needPurchase: false,
-        dateTimes: calculatePurchaseSubscriptionDateTimesResult,
-        planHistory: null,
       };
     };
 
@@ -444,6 +443,7 @@ export async function processNowPurchaseSubscription(
       license: null,
     };
   }
+  const { tid, orderId } = createPurchaseResult.value;
 
   const dateTimes = getPurchaseSubscriptionDateTimes(options.dateTimes, period);
 
@@ -487,13 +487,20 @@ export async function processNowPurchaseSubscription(
   const billingHistory = manager.getRepository(BillingHistory).create({
     billingHistoryId: v4(),
     billingOrganizationId: billingOrganization.billingOrganizationId,
-    purchasedAt: new Date(),
-    niceSubscribePaymentsResponse: createPurchaseResult.response as unknown as Record<string, unknown>,
+    niceSubscribePaymentsResponse: createPurchaseResult.value as unknown as Record<string, unknown>,
     previewResponse: previewResponse as unknown as Record<string, unknown>,
     method: 'nice',
     goodsName,
-    totalPrice,
+    purchasedAmount: totalPrice,
     currency,
+    historyType: 'immediate-purchase',
+    niceTid: tid,
+    niceOrderId: orderId,
+    cardCode: billingMethodNice.cardCode,
+    cardName: billingMethodNice.cardName,
+    cardNumberLast4Digits: billingMethodNice.cardNumberLast4Digits,
+    cardExpirationYear: billingMethodNice.expirationYear,
+    cardExpirationMonth: billingMethodNice.expirationMonth,
   });
   await manager.getRepository(BillingHistory).save(billingHistory);
 
@@ -503,9 +510,17 @@ export async function processNowPurchaseSubscription(
       billingSubscriptionPlanHistoryId: v4(),
       billingHistoryId: billingHistory.billingHistoryId,
       billingOrganizationId: billingOrganization.billingOrganizationId,
+      historyType: 'immediate-purchase',
       ...planHistory,
     });
     await manager.getRepository(BillingSubscriptionPlanHistory).save(billingSubscriptionPlanHistory);
+
+    // link plan info to plan history
+    const info = billingOrganization.billingSubscriptionPlanInfos?.find((plan) => plan.type === data.type);
+    if (info) {
+      info.billingSubscriptionPlanHistoryId = billingSubscriptionPlanHistory.billingSubscriptionPlanHistoryId;
+      await manager.getRepository(BillingSubscriptionPlanInfo).save(info);
+    }
   }
 
   let license: CloudLicense | SelfHostedLicense | null = null;
@@ -563,22 +578,10 @@ export interface ProcessNextPurchaseSubscriptionOptions {
   dateTimes: CalculatePurchaseSubscriptionDateTimesResultSuccess;
 }
 
-export interface ProcessNextPurchaseSubscriptionResultFailure {
-  ok: false;
-  resultCode: BillingResultCode;
-}
-
-export interface ProcessNextPurchaseSubscriptionResultSuccess {
-  ok: true;
-  plan: BillingSubscriptionPlanInfoResponse;
-}
-
-export type ProcessNextPurchaseSubscriptionResult = ProcessNextPurchaseSubscriptionResultFailure | ProcessNextPurchaseSubscriptionResultSuccess;
-
 export async function processNextPurchaseSubscription(
   context: RetrySerializeContext,
   options: ProcessNextPurchaseSubscriptionOptions,
-): Promise<ProcessNextPurchaseSubscriptionResult> {
+): Promise<BillingResult<BillingSubscriptionPlanInfo>> {
   const { manager } = context;
   const { billingOrganization, data, totalPrice, discountedAmount, previewResponse, dateTimes } = options;
   const found = billingOrganization.billingSubscriptionPlanInfos?.find((plan) => plan.type === data.type);
@@ -607,10 +610,10 @@ export async function processNextPurchaseSubscription(
   found.changeRequestedOriginPrice = data.originPrice;
   found.changeRequestedDiscountedAmount = discountedAmount;
   found.state = 'change-option-or-period-requested';
-  const rv = await manager.getRepository(BillingSubscriptionPlanInfo).save(found);
+  const info = await manager.getRepository(BillingSubscriptionPlanInfo).save(found);
 
   return {
     ok: true,
-    plan: BillingSubscriptionPlanInfoCommonModule.createPlanInfoResponse(billingOrganization, rv),
+    value: info,
   };
 }

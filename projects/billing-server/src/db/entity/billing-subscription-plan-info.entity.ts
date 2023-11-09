@@ -69,6 +69,9 @@ export class BillingSubscriptionPlanInfo implements BillingSubscriptionPlanInfoB
   @DateColumn({ nullable: true })
   unsubscribedAt!: Date | null;
 
+  @Column({ type: 'uuid', nullable: true })
+  billingSubscriptionPlanHistoryId!: string | null;
+
   @CreatedAt()
   createdAt!: Date;
 

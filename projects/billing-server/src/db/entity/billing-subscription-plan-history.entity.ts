@@ -1,6 +1,7 @@
 import {
   BillingCategory,
   BillingCurrency,
+  BillingHistoryType,
   BillingPeriod,
   BillingSubscriptionPlanHistoryBase,
   BillingSubscriptionPlanHistoryProp,
@@ -30,17 +31,17 @@ export class BillingSubscriptionPlanHistory implements BillingSubscriptionPlanHi
   @Column({ type: 'uuid', nullable: true })
   billingSubscriptionPlanSourceId!: string | null;
 
-  @Column({ type: 'double precision' })
-  discountedAmount!: number;
+  @Column({ type: 'double precision', nullable: true })
+  discountedAmount!: number | null;
 
-  @Column({ type: 'double precision' })
-  purchasedAmount!: number;
+  @Column({ type: 'double precision', nullable: true })
+  purchasedAmount!: number | null;
 
-  @DateColumn()
-  startedAt!: Date;
+  @DateColumn({ nullable: true })
+  startedAt!: Date | null;
 
-  @DateColumn()
-  expiredAt!: Date;
+  @DateColumn({ nullable: true })
+  expiredAt!: Date | null;
 
   @Column({ type: 'integer', nullable: true })
   elapsedDays!: number | null;
@@ -77,6 +78,15 @@ export class BillingSubscriptionPlanHistory implements BillingSubscriptionPlanHi
 
   @Column({ type: 'double precision' })
   originPrice!: number;
+
+  @Column({ type: 'enum', enum: BillingHistoryType })
+  historyType!: BillingHistoryType;
+
+  @Column({ type: 'uuid', nullable: true })
+  purchasedBillingSubscriptionPlanHistoryId!: string | null;
+
+  @Column({ type: 'double precision', nullable: true })
+  refundedAmount!: number | null;
 
   @CreatedAt()
   createdAt!: Date;
