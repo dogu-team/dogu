@@ -71,6 +71,8 @@
   "perMonthText": "month",
   "monthCountSingular": "{{month}} month",
   "monthCountPlural": "{{month}} months",
+  "dayTextSingular": "{{day}} day",
+  "dayTextPlural": "{{day}} days",
   "billedAnnuallyText": "Billed annually",
   "subscriptionAdjustmentTitle": "Subscription adjustment",
   "refundElapsedTitle": "Refunds for elapsed days",

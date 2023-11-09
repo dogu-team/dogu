@@ -71,6 +71,8 @@
   "perMonthText": "월",
   "monthCountSingular": "{{month}}개월",
   "monthCountPlural": "{{month}}개월",
+  "dayTextSingular": "{{day}}일",
+  "dayTextPlural": "{{day}}일",
   "billedAnnuallyText": "매년 청구됨",
   "subscriptionAdjustmentTitle": "결제 금액 조정",
   "refundElapsedTitle": "지나간 기간에 대한 환불",

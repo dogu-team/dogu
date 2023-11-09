@@ -178,12 +178,17 @@ const BillingCalculatedPreview: React.FC<Props> = ({}) => {
                           {getLocaleFormattedPrice('ko', plan.currency, -plan.elapsedDiscountedAmount)}
                         </b>
                       </CalculatedPriceContent>
-                      <OptionDescription style={{ fontSize: '.75rem' }}>
-                        {plan.period === 'yearly' ? `${t('billedAnnuallyText')} | ` : ''}
-                        {t(planDescriptionInfoMap[plan.type].getOptionLabelI18nKey(plan.option), {
-                          option: plan.option,
-                        })}
-                      </OptionDescription>
+                      <CalculatedPriceContent>
+                        <OptionDescription style={{ fontSize: '.75rem' }}>
+                          {plan.period === 'yearly' ? `${t('billedAnnuallyText')} | ` : ''}
+                          {t(planDescriptionInfoMap[plan.type].getOptionLabelI18nKey(plan.option), {
+                            option: plan.option,
+                          })}
+                        </OptionDescription>
+                        <OptionDescription style={{ fontSize: '.75rem' }}>
+                          {t(plan.elapsedDays > 1 ? 'dayTextPlural' : 'dayTextSingular', { day: plan.elapsedDays })}
+                        </OptionDescription>
+                      </CalculatedPriceContent>
                     </div>
                   );
                 })}
@@ -204,12 +209,17 @@ const BillingCalculatedPreview: React.FC<Props> = ({}) => {
                           {getLocaleFormattedPrice('ko', plan.currency, -plan.remainingDiscountedAmount)}
                         </b>
                       </CalculatedPriceContent>
-                      <OptionDescription style={{ fontSize: '.75rem' }}>
-                        {plan.period === 'yearly' ? `${t('billedAnnuallyText')} | ` : ''}
-                        {t(planDescriptionInfoMap[plan.type].getOptionLabelI18nKey(plan.option), {
-                          option: plan.option,
-                        })}
-                      </OptionDescription>
+                      <CalculatedPriceContent>
+                        <OptionDescription style={{ fontSize: '.75rem' }}>
+                          {plan.period === 'yearly' ? `${t('billedAnnuallyText')} | ` : ''}
+                          {t(planDescriptionInfoMap[plan.type].getOptionLabelI18nKey(plan.option), {
+                            option: plan.option,
+                          })}
+                        </OptionDescription>
+                        <OptionDescription style={{ fontSize: '.75rem' }}>
+                          {t(plan.remainingDays > 1 ? 'dayTextPlural' : 'dayTextSingular', { day: plan.remainingDays })}
+                        </OptionDescription>
+                      </CalculatedPriceContent>
                     </div>
                   );
                 })}
