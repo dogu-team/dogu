@@ -167,12 +167,13 @@ export async function processNowPurchaseSubscription(
 
   const useCouponResult = await useCoupon(context, { couponResult, billingOrganizationId });
   const createSubscriptionPlanInfoAndCouponResult = await createOrUpdateBillingSubscriptionPlanInfo(context, {
-    billingOrganizationId: billingOrganization.billingOrganizationId,
+    billingOrganization,
     data,
     discountedAmount,
     useCouponResult,
     billingSubscriptionPlanSourceId: source?.billingSubscriptionPlanSourceId ?? null,
   });
+
   if (!createSubscriptionPlanInfoAndCouponResult.ok) {
     return {
       ok: false,

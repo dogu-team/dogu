@@ -1,11 +1,12 @@
 import { BillingResultCode, BillingSubscriptionPlanData } from '@dogu-private/console';
 import { v4 } from 'uuid';
+import { BillingOrganization } from '../../db/entity/billing-organization.entity';
 import { BillingSubscriptionPlanInfo } from '../../db/entity/billing-subscription-plan-info.entity';
 import { RetrySerializeContext } from '../../db/utils';
 import { UseCouponResult } from '../billing-coupon/billing-coupon.serializables';
 
 export interface CreateOrUpdateBillingSubscriptionPlanInfoOptions {
-  billingOrganizationId: string;
+  billingOrganization: BillingOrganization;
   data: BillingSubscriptionPlanData;
   discountedAmount: number;
   useCouponResult: UseCouponResult;
@@ -29,17 +30,11 @@ export async function createOrUpdateBillingSubscriptionPlanInfo(
   options: CreateOrUpdateBillingSubscriptionPlanInfoOptions,
 ): Promise<CreateOrUpdateBillingSubscriptionPlanInfoResult> {
   const { logger, manager } = context;
-  const { billingOrganizationId, data, discountedAmount, billingSubscriptionPlanSourceId, useCouponResult } = options;
+  const { billingOrganization, data, discountedAmount, billingSubscriptionPlanSourceId, useCouponResult } = options;
   const { currency, period, type, category, option, originPrice } = data;
   const { billingCouponId, couponRemainingApplyCount } = useCouponResult;
 
-  const found = await manager.getRepository(BillingSubscriptionPlanInfo).findOne({
-    where: {
-      billingOrganizationId,
-      type,
-    },
-  });
-
+  const found = billingOrganization.billingSubscriptionPlanInfos?.find((info) => info.type === type);
   if (found) {
     found.category = category;
     found.option = option;
@@ -61,7 +56,7 @@ export async function createOrUpdateBillingSubscriptionPlanInfo(
 
   const billingSubscriptionPlanInfo = manager.getRepository(BillingSubscriptionPlanInfo).create({
     billingSubscriptionPlanInfoId: v4(),
-    billingOrganizationId,
+    billingOrganizationId: billingOrganization.billingOrganizationId,
     category,
     type,
     option,

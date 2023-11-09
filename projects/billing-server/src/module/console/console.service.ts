@@ -7,6 +7,7 @@ import { Client } from 'pg';
 import { BillingCurrency } from '@dogu-private/console';
 import { BillingHistory } from '../../db/entity/billing-history.entity';
 import { BillingSubscriptionPlanInfo } from '../../db/entity/billing-subscription-plan-info.entity';
+import { env } from '../../env';
 import { BillingSubscriptionPlanInfoCommonModule } from '../common/plan-info-common.module';
 import { DoguLogger } from '../logger/logger';
 import { getPurcaseSuccessEmailTemplate } from './emails/purchase-success.tmpl';
@@ -79,8 +80,8 @@ AND ouor.organization_role_id = 1`);
         port: 465,
         secure: true,
         auth: {
-          user: process.env.DOGU_EMAIL_ID,
-          pass: process.env.DOGU_EMAIL_PW,
+          user: env.DOGU_EMAIL_ID,
+          pass: env.DOGU_EMAIL_PW,
         },
       });
 

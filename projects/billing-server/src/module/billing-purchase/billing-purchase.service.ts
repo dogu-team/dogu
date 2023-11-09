@@ -209,6 +209,7 @@ export class BillingPurchaseService {
           registerCard,
         },
       });
+
       if (!niceResult.ok) {
         setTriggerRollbackBeforeReturn();
         return {

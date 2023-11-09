@@ -40,6 +40,12 @@ export class Env {
 
   @IsFilledString()
   DOGU_BILLING_NICE_SECRET_KEY!: string;
+
+  @IsFilledString()
+  DOGU_EMAIL_ID!: string;
+
+  @IsFilledString()
+  DOGU_EMAIL_PW!: string;
 }
 
 export const env = loadEnvLazySync(Env, { printable: logger });
