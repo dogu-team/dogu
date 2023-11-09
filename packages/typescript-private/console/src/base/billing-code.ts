@@ -21,7 +21,7 @@ export const BillingResultCodeMap = {
   'coupon-invalid-monthly-discount-percent': 205,
   'coupon-invalid-yearly-apply-count': 206,
   'coupon-invalid-yearly-discount-percent': 207,
-  'coupon-invalid-process': 208,
+  'coupon-subscription-plan-type-not-matched': 208,
 
   // subscription plan
   'subscription-plan-not-found': 300,

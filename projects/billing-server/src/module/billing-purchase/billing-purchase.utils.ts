@@ -608,8 +608,23 @@ export function processPurchaseSubscriptionPreviewInternal(
     const infoDateTimes = getPurchaseSubscriptionDateTimes(calculatePurchaseSubscriptionDateTimesResult, foundInfo.period);
 
     const processNowPurchaseReturn = (): BillingResult<ProcessPurchaseSubscriptionPreviewResultValue> => {
-      const currentPurchaseAmount = data.originPrice * firstCouponFactor;
-      const discountedAmount = data.originPrice - currentPurchaseAmount;
+      const calculateRemainingPlanResult = calculateRemainingPlan({
+        foundInfo,
+        dateTimes: infoDateTimes,
+      });
+
+      if (!calculateRemainingPlanResult.ok) {
+        return {
+          ok: false,
+          resultCode: calculateRemainingPlanResult.resultCode,
+        };
+      }
+      const { remainingPlan } = calculateRemainingPlanResult;
+      const { remainingDiscountedAmount } = remainingPlan;
+
+      const remainingPurchaseAmount = data.originPrice - remainingDiscountedAmount;
+      const currentPurchaseAmount = remainingPurchaseAmount * firstCouponFactor;
+      const discountedAmount = remainingPurchaseAmount - currentPurchaseAmount;
       const couponPreviewResponse: CouponPreviewResponse | null = coupon
         ? {
             ...coupon,
@@ -631,20 +646,7 @@ export function processPurchaseSubscriptionPreviewInternal(
       }
       const { elapsedPlan } = calculateElapsedPlanResult;
 
-      const calculateRemainingPlanResult = calculateRemainingPlan({
-        foundInfo,
-        dateTimes: infoDateTimes,
-      });
-
-      if (!calculateRemainingPlanResult.ok) {
-        return {
-          ok: false,
-          resultCode: calculateRemainingPlanResult.resultCode,
-        };
-      }
-      const { remainingPlan } = calculateRemainingPlanResult;
-
-      const totalPrice = Math.floor(currentPurchaseAmount - remainingPlan.remainingDiscountedAmount - elapsedPlan.elapsedDiscountedAmount);
+      const totalPrice = Math.floor(currentPurchaseAmount - elapsedPlan.elapsedDiscountedAmount);
       const nextPurchaseAmount = Math.floor(data.originPrice * secondCouponFactor);
       const nextPurchasedAt = dataDateTimes.expiredAt.date;
       return {

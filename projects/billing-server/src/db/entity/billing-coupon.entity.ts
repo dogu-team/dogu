@@ -1,4 +1,4 @@
-import { BillingCouponBase, BillingCouponType } from '@dogu-private/console';
+import { BillingCouponBase, BillingCouponType, BillingSubscriptionPlanType } from '@dogu-private/console';
 import { Column, Entity, PrimaryColumn } from 'typeorm';
 import { CreatedAt, DateColumn, DeletedAt, UpdatedAt } from '../decorators';
 
@@ -12,6 +12,9 @@ export class BillingCoupon implements BillingCouponBase {
 
   @Column({ type: 'enum', enum: BillingCouponType, default: 'basic' })
   type!: BillingCouponType;
+
+  @Column({ type: 'enum', enum: BillingSubscriptionPlanType, nullable: true })
+  subscriptionPlanType!: BillingSubscriptionPlanType | null;
 
   @Column({ type: 'integer', nullable: true })
   monthlyDiscountPercent!: number | null;

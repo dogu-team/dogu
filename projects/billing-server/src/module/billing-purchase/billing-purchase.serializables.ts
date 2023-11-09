@@ -80,6 +80,7 @@ export async function processPurchaseSubscriptionPreview(
     organizationId,
     couponCode: dto.couponCode,
     period: dto.period,
+    subscriptionPlanType: parseSubscriptionPlanDataResult.billingSubscriptionPlanData.type,
   });
   if (!parseCouponResult.ok) {
     return {

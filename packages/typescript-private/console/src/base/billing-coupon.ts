@@ -1,7 +1,7 @@
 import { IsFilledString, propertiesOf } from '@dogu-tech/common';
 import { IsIn, IsNotEmpty, IsNumber, IsOptional, IsUUID } from 'class-validator';
 
-import { BillingPeriod } from './billing';
+import { BillingPeriod, BillingSubscriptionPlanType } from './billing';
 import { BillingResultCode } from './billing-code';
 
 export const BillingCouponType = ['basic', 'promotion'] as const;
@@ -11,6 +11,11 @@ export interface BillingCouponBase {
   billingCouponId: string;
   code: string;
   type: BillingCouponType;
+
+  /**
+   * @description Available only for certain subscription plan type. If null, it is available for all subscription plan types.
+   */
+  subscriptionPlanType: BillingSubscriptionPlanType | null;
 
   /**
    * @example 10 10% discount
@@ -53,6 +58,10 @@ export class ValidateBillingCouponDto {
 
   @IsIn(BillingPeriod)
   period!: BillingPeriod;
+
+  @IsIn(BillingSubscriptionPlanType)
+  @IsOptional()
+  subscriptionPlanType?: BillingSubscriptionPlanType;
 }
 
 export interface ValidateBillingCouponResponse {

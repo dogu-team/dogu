@@ -99,16 +99,6 @@ export class BillingTokenService implements OnModuleInit {
     return DateTime.now().plus(duration).toJSDate();
   }
 
-  static isExpired(expiredAt: Date | null | string): boolean {
-    if (!expiredAt) return false;
-
-    if (typeof expiredAt === 'string') expiredAt = new Date(expiredAt);
-    if (expiredAt && expiredAt.getTime() < new Date().getTime()) {
-      return true;
-    }
-    return false;
-  }
-
   static createBillingToken(): string {
     const token = this.createToken();
     return `${billingTokenPrefix}${token}`;

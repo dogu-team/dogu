@@ -4,6 +4,7 @@ import {
   BillingOrganizationUsedBillingCouponProp,
   BillingPeriod,
   BillingResultCode,
+  BillingSubscriptionPlanType,
   CreateBillingCouponDto,
   GetAvailableBillingCouponsDto,
   resultCode,
@@ -53,6 +54,13 @@ export async function validateCoupon(context: RetrySerializeContext, dto: Valida
     return {
       ok: false,
       resultCode: resultCode('coupon-not-found'),
+    };
+  }
+
+  if (billingCoupon.subscriptionPlanType !== null && billingCoupon.subscriptionPlanType !== dto.subscriptionPlanType) {
+    return {
+      ok: false,
+      resultCode: resultCode('coupon-subscription-plan-type-not-matched'),
     };
   }
 
@@ -173,6 +181,7 @@ export interface ParseCouponOptions {
   organizationId: string;
   couponCode: string | undefined;
   period: BillingPeriod;
+  subscriptionPlanType: BillingSubscriptionPlanType;
 }
 
 export interface ParseCouponResultFailure {
@@ -188,7 +197,7 @@ export interface ParseCouponResultSuccess {
 export type ParseCouponResult = ParseCouponResultFailure | ParseCouponResultSuccess;
 
 export async function parseCoupon(options: ParseCouponOptions): Promise<ParseCouponResult> {
-  const { context, organizationId, couponCode, period } = options;
+  const { context, organizationId, couponCode, period, subscriptionPlanType } = options;
   if (couponCode === undefined) {
     return {
       ok: true,
@@ -196,7 +205,7 @@ export async function parseCoupon(options: ParseCouponOptions): Promise<ParseCou
     };
   }
 
-  const validateResult = await validateCoupon(context, { organizationId, code: couponCode, period });
+  const validateResult = await validateCoupon(context, { organizationId, code: couponCode, period, subscriptionPlanType });
   if (!validateResult.ok) {
     return {
       ok: false,
