@@ -14,7 +14,16 @@ class SizePrefixedRecvQueue {
     self.buffer = newBuffer
   }
 
-  func has() -> Bool {
+  func popLoop(callback funcCallback: (Data) -> Void) {
+    for _ in 0..<10000 {
+      if !has() {
+        break
+      }
+      funcCallback(pop())
+    }
+  }
+
+  private func has() -> Bool {
     if buffer.count < 4 {
       return false
     }
@@ -25,7 +34,7 @@ class SizePrefixedRecvQueue {
     return true
   }
 
-  func pop() -> Data {
+  private func pop() -> Data {
     assert(has(), "PacketQueue no package to pop")
 
     let packetSize = readUInt32(data: buffer, offset: 0)

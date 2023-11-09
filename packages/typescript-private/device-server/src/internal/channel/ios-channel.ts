@@ -90,7 +90,7 @@ export class IosChannel implements DeviceChannel {
     readonly browserInstallations: BrowserInstallation[],
   ) {
     this.logger.info(`IosChannel created: ${this.serial}`);
-    this._alertCache = new TimedCacheAsync<DeviceAlert | undefined>({ milliseconds: 900 });
+    this._alertCache = new TimedCacheAsync<DeviceAlert | undefined>({ milliseconds: 300 });
   }
 
   get serial(): Serial {
@@ -550,17 +550,20 @@ export class IosChannel implements DeviceChannel {
   }
 
   async getAlert(): Promise<DeviceAlert | undefined> {
-    return await this._alertCache.update(async () => {
-      const result = await this.deviceAgent.send('dcIdaQueryAlertParam', 'dcIdaQueryAlertResult', {});
-      if (!result) {
-        return undefined;
-      }
-      if (!result.isShow) {
-        return undefined;
-      }
-      return {
-        title: result.title,
-      };
+    return await this._alertCache.update({
+      call: async () => {
+        const result = await this.deviceAgent.send('dcIdaQueryAlertParam', 'dcIdaQueryAlertResult', {});
+        if (!result) {
+          return undefined;
+        }
+        if (!result.isShow) {
+          return undefined;
+        }
+        return {
+          title: result.title,
+        };
+      },
+      onCached: () => {},
     });
   }
 

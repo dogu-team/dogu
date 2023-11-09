@@ -56,7 +56,6 @@ actor ControlSessionListener: IControlSessionListener {
       let controlResult = ControlResult(seq: abstractParam.seq, session: session)
       Task.catchable(
         {
-          Log.shared.debug("ControlSessionListener.onParam pushed seq: \(abstractParam.seq), control: \(param.control)")
           try await self.controlProcessor.push(control: param.control, result: controlResult)
         },
         catch: {

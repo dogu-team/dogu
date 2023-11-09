@@ -4,6 +4,6 @@ enum Log {
       .add(from: {
         LogClass.OSLogStringHandler(subsystem: $0.subsystem, category: $0.category)
       })
-      .add(handler: LogClass.PrintStringHandler())
+//      .add(handler: LogClass.PrintStringHandler()) // remove because of log duplication in stdout
   })
 }

@@ -29,7 +29,10 @@ export class DeviceRTCCaller {
   private readonly recvQueue = new SizePrefixedRecvQueue();
   public isOpened = false;
 
-  constructor(private readonly serial: Serial, readonly channel: RTCDataChannel) {
+  constructor(
+    private readonly serial: Serial,
+    readonly channel: RTCDataChannel,
+  ) {
     channel.addEventListener('open', (event) => {
       this.onOpen();
     });
@@ -116,15 +119,13 @@ export class DeviceRTCCaller {
 
   private onMessage(e: MessageEvent): void {
     this.recvQueue.pushBuffer(new Uint8Array(e.data as ArrayBuffer));
-    if (!this.recvQueue.has()) {
-      return;
-    }
-    const buf = this.recvQueue.pop();
-    const decodeRet = CfGdcDaResultList.decode(buf);
+    this.recvQueue.popLoop((buf: Uint8Array) => {
+      const decodeRet = CfGdcDaResultList.decode(buf);
 
-    for (const result of decodeRet.results) {
-      this.protoAPIRetEmitter.emit(result.seq.toString(), result);
-    }
+      for (const result of decodeRet.results) {
+        this.protoAPIRetEmitter.emit(result.seq.toString(), result);
+      }
+    });
   }
 
   private requestFlushSendBuffer(): void {

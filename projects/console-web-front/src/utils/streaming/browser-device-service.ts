@@ -143,12 +143,10 @@ export class BrowserDeviceService implements DeviceService {
     const { recvQueue, resultEmitter } = channelInfo;
     channel.addEventListener('message', (event) => {
       recvQueue.pushBuffer(new Uint8Array(event.data as ArrayBuffer));
-      if (!recvQueue.has()) {
-        return;
-      }
-      const array = recvQueue.pop();
-      const result = HttpRequestWebSocketResult.decode(array);
-      resultEmitter.emit(result.sequenceId.toString(), result);
+      recvQueue.popLoop((array: Uint8Array) => {
+        const result = HttpRequestWebSocketResult.decode(array);
+        resultEmitter.emit(result.sequenceId.toString(), result);
+      });
     });
   }
 

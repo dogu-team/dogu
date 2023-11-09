@@ -47,12 +47,7 @@ class UnknownSession {
           }
 
           this.recvQueue.pushBuffer(buffer: data)
-          for _ in 0..<10000 {
-            if !this.recvQueue.has() {
-              NSLog("UnknownSession.receiveData data not yet")
-              break
-            }
-            let packet = this.recvQueue.pop()
+          this.recvQueue.popLoop { packet in
             let packetString = String(data: packet, encoding: .utf8)
             NSLog("UnknownSession.receiveData packetString \(String(describing: packetString))")
             // decode packet as json

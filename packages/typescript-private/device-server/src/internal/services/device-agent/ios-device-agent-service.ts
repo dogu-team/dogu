@@ -78,14 +78,12 @@ export class IosDeviceAgentService implements DeviceAgentService, Zombieable {
 
     this.client.addListener('data', (data: Buffer) => {
       this.recvQueue.pushBuffer(data);
-      if (!this.recvQueue.has()) {
-        return;
-      }
-      const array = this.recvQueue.pop();
-      const decodeRet = DcIdaResultList.decode(array);
-      for (const result of decodeRet.results) {
-        this.protoAPIRetEmitter.emit(result.seq.toString(), result);
-      }
+      this.recvQueue.popLoop((array: Uint8Array) => {
+        const decodeRet = DcIdaResultList.decode(array);
+        for (const result of decodeRet.results) {
+          this.protoAPIRetEmitter.emit(result.seq.toString(), result);
+        }
+      });
     });
   }
 
@@ -159,7 +157,6 @@ export class IosDeviceAgentService implements DeviceAgentService, Zombieable {
     ParamValue extends DcIdaParamUnionPickValue<ParamKey>,
     ResultValue extends DcIdaResultUnionPickValue<ResultKey>,
   >(paramKey: ParamKey, resultKey: ResultKey, paramValue: ParamValue, onResult: ResultCallback<ResultValue>, option: SendOption = DefaultSendOption()): SyncClosable {
-    const { printable: logger } = this;
     let isResolved = false;
 
     const seq = this.getSeq();

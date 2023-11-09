@@ -1,6 +1,6 @@
 import { OnWebSocketClose, OnWebSocketMessage, WebSocketGatewayBase, WebSocketRegistryValueAccessor, WebSocketService } from '@dogu-private/nestjs-common';
 import { DeviceAlert, Platform } from '@dogu-private/types';
-import { DuplicatedCallGuarder, Instance, stringify, SyncClosable } from '@dogu-tech/common';
+import { delay, DuplicatedCallGuarder, Instance, stringify, SyncClosable } from '@dogu-tech/common';
 import { DeviceAlertSubscribe, DeviceAlertSubscribeReceiveMessageValue } from '@dogu-tech/device-client-common';
 import { IncomingMessage } from 'http';
 import WebSocket from 'ws';
@@ -68,6 +68,11 @@ export class DeviceAlertSubscribeService
     const interval = setInterval(() => {
       guard
         .guard(async (): Promise<void> => {
+          if (lastAlert) {
+            await delay(100); // poll close fast
+          } else {
+            await delay(500); // poll open slowly
+          }
           const alert = await deviceChannel.getAlert();
           if (stringify(alert) === stringify(lastAlert)) {
             return;
@@ -88,7 +93,7 @@ export class DeviceAlertSubscribeService
         .catch((error) => {
           this.logger.error(error);
         });
-    }, 1000);
+    }, 100);
     const closer: SyncClosable = {
       close(): void {
         clearInterval(interval);
