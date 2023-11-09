@@ -88,6 +88,7 @@ const BillingMethodRegistrationForm: React.FC<Props> = ({ form }) => {
           autoComplete="off"
           autoCapitalize="off"
           autoCorrect="off"
+          autoFocus
           spellCheck="false"
         />
       </Form.Item>

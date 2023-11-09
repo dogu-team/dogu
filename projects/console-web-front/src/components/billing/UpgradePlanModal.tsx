@@ -22,6 +22,8 @@ const UpgradePlanModal: React.FC<Props> = ({ isOpen, close }) => {
     shallow,
   );
   const reset = useBillingPlanPurchaseStore((state) => state.reset);
+  const updateWithNewCard = useBillingPlanPurchaseStore((state) => state.updateWithNewCard);
+  const updatePurchaseErrorText = useBillingPlanPurchaseStore((state) => state.updatePurchaseErrorText);
   const updateCoupon = useBillingPlanPurchaseStore((state) => state.updateCoupon);
   const { t } = useTranslation('billing');
 
@@ -42,8 +44,10 @@ const UpgradePlanModal: React.FC<Props> = ({ isOpen, close }) => {
   }, [handleClose]);
 
   const handleBack = () => {
-    updateCoupon(null);
     updateSelectedPlan(null);
+    updateCoupon(null);
+    updateWithNewCard(false);
+    updatePurchaseErrorText(null);
   };
 
   return (

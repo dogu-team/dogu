@@ -1,4 +1,4 @@
-import { EditFilled, EditOutlined } from '@ant-design/icons';
+import { EditFilled } from '@ant-design/icons';
 import { BillingMethodNiceBase } from '@dogu-private/console';
 import { OrganizationId } from '@dogu-private/types';
 import { Form, Modal } from 'antd';

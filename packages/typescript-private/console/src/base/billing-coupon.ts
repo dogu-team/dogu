@@ -1,5 +1,5 @@
 import { IsFilledString, propertiesOf } from '@dogu-tech/common';
-import { IsIn, IsNotEmpty, IsNumber, IsOptional, IsUUID } from 'class-validator';
+import { IsIn, IsNumber, IsOptional, IsUUID } from 'class-validator';
 
 import { BillingPeriod, BillingSubscriptionPlanType } from './billing';
 import { BillingResultCode } from './billing-code';
@@ -101,7 +101,7 @@ export class CreateBillingCouponDto {
   @IsNumber()
   yearlyApplyCount?: number;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsNumber()
   remainingAvailableCount!: number;
 }

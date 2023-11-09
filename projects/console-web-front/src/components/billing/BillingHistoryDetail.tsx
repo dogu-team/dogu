@@ -41,7 +41,7 @@ const BillingHistoryDetail: React.FC<Props> = ({ history }) => {
       <DetailInfo>
         <span>{t('historyDetailPaymentText')}</span>
         <label style={{ verticalAlign: 'sub' }}>**** **** **** </label>
-        {history.cardNumberLast4Digits} {`(${history.cardName})`}
+        {history.cardNumberLast4Digits} {`(${history.cardName?.replace(/\[|\]/g, '')})`}
       </DetailInfo>
 
       <Divider style={{ margin: '.5rem 0' }} />

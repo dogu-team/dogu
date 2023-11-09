@@ -11,6 +11,7 @@ import {
   ValidateBillingCouponDto,
 } from '@dogu-private/console';
 import { assertUnreachable } from '@dogu-tech/common';
+import { ConflictException } from '@nestjs/common';
 import { FindOptionsWhere, IsNull, Not } from 'typeorm';
 import { v4 } from 'uuid';
 import { BillingCoupon } from '../../db/entity/billing-coupon.entity';
@@ -162,6 +163,13 @@ export async function getAvailableCoupons(context: RetrySerializeContext, dto: G
 export async function createBillingCoupon(context: RetrySerializeContext, dto: CreateBillingCouponDto): Promise<BillingCoupon> {
   const { manager } = context;
   const { code, type, monthlyApplyCount, monthlyDiscountPercent, yearlyApplyCount, yearlyDiscountPercent, remainingAvailableCount } = dto;
+
+  const exsitCoupon = await manager.getRepository(BillingCoupon).findOne({ where: { code } });
+
+  if (exsitCoupon) {
+    throw new ConflictException('Coupon already exist');
+  }
+
   const coupon = manager.getRepository(BillingCoupon).create({
     billingCouponId: v4(),
     code,
@@ -170,7 +178,7 @@ export async function createBillingCoupon(context: RetrySerializeContext, dto: C
     monthlyApplyCount: monthlyApplyCount ?? null,
     yearlyDiscountPercent: yearlyDiscountPercent ?? null,
     yearlyApplyCount: yearlyApplyCount ?? null,
-    remainingAvailableCount,
+    remainingAvailableCount: remainingAvailableCount ?? null,
     expiredAt: null,
   });
   return await manager.getRepository(BillingCoupon).save(coupon);
