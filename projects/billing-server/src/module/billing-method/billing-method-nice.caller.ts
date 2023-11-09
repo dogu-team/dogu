@@ -74,27 +74,21 @@ export class BillingMethodNiceCaller {
       .then((response) => {
         const result: NiceCallResult<NiceSubscribeRegistResponse> = {
           ok: true,
-          response: response.data,
+          value: response.data,
         };
         return result;
       })
-      .catch((error) => {
-        this.logger.error('nice.subscribe/regist failed', { orderId, error: errorify(error) });
-        if (isFilteredAxiosError(error)) {
-          const result: NiceCallResult<NiceSubscribeRegistResponse> = {
-            ok: false,
-            resultCode: resultCode('method-nice-subscribe-regist-failed'),
-            error,
-          };
-          return result;
-        } else {
-          const result: NiceCallResult<NiceSubscribeRegistResponse> = {
-            ok: false,
-            resultCode: resultCode('unexpected-error'),
+      .catch((e) => {
+        const error = errorify(e);
+        this.logger.error('nice.subscribe/regist failed', { orderId, error });
+        const result: NiceCallResult<NiceSubscribeRegistResponse> = {
+          ok: false,
+          resultCode: resultCode('method-nice-subscribe-regist-failed'),
+          extras: {
             error: errorify(error),
-          };
-          return result;
-        }
+          },
+        };
+        return result;
       });
 
     if (!result.ok) {
@@ -105,7 +99,7 @@ export class BillingMethodNiceCaller {
       };
     }
 
-    const { response } = result;
+    const response = result.value;
     this.logger.info('nice.subscribe/regist response', { orderId, response });
 
     if (orderId !== response.orderId) {
@@ -158,27 +152,20 @@ export class BillingMethodNiceCaller {
       .then((response) => {
         const result: NiceCallResult<NiceSubscribeExpireResponse> = {
           ok: true,
-          response: response.data,
+          value: response.data,
         };
         return result;
       })
       .catch((error) => {
         this.logger.error('nice.subscribe/expire failed', { orderId, error: errorify(error) });
-        if (isFilteredAxiosError(error)) {
-          const result: NiceCallResult<NiceSubscribeExpireResponse> = {
-            ok: false,
-            resultCode: resultCode('method-nice-subscribe-expire-failed'),
-            error,
-          };
-          return result;
-        } else {
-          const result: NiceCallResult<NiceSubscribeExpireResponse> = {
-            ok: false,
-            resultCode: resultCode('unexpected-error'),
+        const result: NiceCallResult<NiceSubscribeExpireResponse> = {
+          ok: false,
+          resultCode: resultCode('method-nice-subscribe-expire-failed'),
+          extras: {
             error: errorify(error),
-          };
-          return result;
-        }
+          },
+        };
+        return result;
       });
 
     if (!result.ok) {
@@ -189,7 +176,7 @@ export class BillingMethodNiceCaller {
       };
     }
 
-    const { response } = result;
+    const response = result.value;
     this.logger.info('nice.subscribe/expire response', { orderId, response });
 
     if (orderId !== response.orderId) {
@@ -239,36 +226,34 @@ export class BillingMethodNiceCaller {
       .then((response) => {
         const result: NiceCallResult<NiceSubscribePaymentsResponse> = {
           ok: true,
-          response: response.data,
+          value: response.data,
         };
         return result;
       })
-      .catch((error) => {
-        this.logger.error('nice.subscribe/payments failed', { orderId, error: errorify(error) });
+      .catch((e) => {
+        const error = errorify(e);
+        this.logger.error('nice.subscribe/payments failed', { orderId, error });
         if (isFilteredAxiosError(error)) {
           if (error.responseStatus === undefined) {
             const result: NiceCallResult<NiceSubscribePaymentsResponse> = {
               ok: false,
               resultCode: resultCode('method-nice-network-error'),
-              error,
-            };
-            return result;
-          } else {
-            const result: NiceCallResult<NiceSubscribePaymentsResponse> = {
-              ok: false,
-              resultCode: resultCode('method-nice-subscribe-payments-failed'),
-              error,
+              extras: {
+                error,
+              },
             };
             return result;
           }
-        } else {
-          const result: NiceCallResult<NiceSubscribePaymentsResponse> = {
-            ok: false,
-            resultCode: resultCode('unexpected-error'),
-            error: errorify(error),
-          };
-          return result;
         }
+
+        const result: NiceCallResult<NiceSubscribePaymentsResponse> = {
+          ok: false,
+          resultCode: resultCode('method-nice-subscribe-payments-failed'),
+          extras: {
+            error,
+          },
+        };
+        return result;
       });
 
     if (!result.ok) {
@@ -288,7 +273,7 @@ export class BillingMethodNiceCaller {
       };
     }
 
-    const { response } = result;
+    const response = result.value;
     this.logger.info('nice.subscribe/payments response', { orderId, response });
 
     if (orderId !== response.orderId) {
@@ -345,27 +330,21 @@ export class BillingMethodNiceCaller {
       .then((response) => {
         const result: NiceCallResult<NicePaymentsCancelResponse> = {
           ok: true,
-          response: response.data,
+          value: response.data,
         };
         return result;
       })
-      .catch((error) => {
-        this.logger.error('nice.payments/cancel failed', { orderId, error: errorify(error) });
-        if (isFilteredAxiosError(error)) {
-          const result: NiceCallResult<NiceSubscribePaymentsResponse> = {
-            ok: false,
-            resultCode: resultCode('method-nice-payments-cancel-failed'),
+      .catch((e) => {
+        const error = errorify(e);
+        this.logger.error('nice.payments/cancel failed', { orderId, error });
+        const result: NiceCallResult<NiceSubscribePaymentsResponse> = {
+          ok: false,
+          resultCode: resultCode('method-nice-payments-cancel-failed'),
+          extras: {
             error,
-          };
-          return result;
-        } else {
-          const result: NiceCallResult<NicePaymentsCancelResponse> = {
-            ok: false,
-            resultCode: resultCode('unexpected-error'),
-            error: errorify(error),
-          };
-          return result;
-        }
+          },
+        };
+        return result;
       });
 
     if (!result.ok) {
@@ -376,7 +355,7 @@ export class BillingMethodNiceCaller {
       };
     }
 
-    const { response } = result;
+    const response = result.value;
     this.logger.info('nice.payments/cancel response', { orderId, response });
 
     if (response.resultCode !== '0000') {
@@ -417,27 +396,21 @@ export class BillingMethodNiceCaller {
       .then((response) => {
         const result: NiceCallResult<NicePaymentsCancelResponse> = {
           ok: true,
-          response: response.data,
+          value: response.data,
         };
         return result;
       })
-      .catch((error) => {
-        this.logger.error('nice.payments failed', { error: errorify(error) });
-        if (isFilteredAxiosError(error)) {
-          const result: NiceCallResult<NiceSubscribePaymentsResponse> = {
-            ok: false,
-            resultCode: resultCode('method-nice-payments-failed'),
+      .catch((e) => {
+        const error = errorify(e);
+        this.logger.error('nice.payments failed', { error });
+        const result: NiceCallResult<NiceSubscribePaymentsResponse> = {
+          ok: false,
+          resultCode: resultCode('method-nice-payments-failed'),
+          extras: {
             error,
-          };
-          return result;
-        } else {
-          const result: NiceCallResult<NicePaymentsCancelResponse> = {
-            ok: false,
-            resultCode: resultCode('unexpected-error'),
-            error: errorify(error),
-          };
-          return result;
-        }
+          },
+        };
+        return result;
       });
 
     if (!result.ok) {
@@ -448,7 +421,7 @@ export class BillingMethodNiceCaller {
       };
     }
 
-    const { response } = result;
+    const response = result.value;
     this.logger.info('nice.payments response', { response });
 
     if (response.resultCode !== '0000') {
@@ -483,27 +456,21 @@ export class BillingMethodNiceCaller {
       .then((response) => {
         const result: NiceCallResult<NicePaymentsNetCancelResponse> = {
           ok: true,
-          response: response.data,
+          value: response.data,
         };
         return result;
       })
-      .catch((error) => {
-        this.logger.error('nice.payments/netcancel failed', { error: errorify(error) });
-        if (isFilteredAxiosError(error)) {
-          const result: NiceCallResult<NicePaymentsNetCancelResponse> = {
-            ok: false,
-            resultCode: resultCode('method-nice-payments-netcancel-failed'),
+      .catch((e) => {
+        const error = errorify(e);
+        this.logger.error('nice.payments/netcancel failed', { error });
+        const result: NiceCallResult<NicePaymentsNetCancelResponse> = {
+          ok: false,
+          resultCode: resultCode('method-nice-payments-netcancel-failed'),
+          extras: {
             error,
-          };
-          return result;
-        } else {
-          const result: NiceCallResult<NicePaymentsNetCancelResponse> = {
-            ok: false,
-            resultCode: resultCode('unexpected-error'),
-            error: errorify(error),
-          };
-          return result;
-        }
+          },
+        };
+        return result;
       });
 
     if (!result.ok) {
@@ -514,7 +481,7 @@ export class BillingMethodNiceCaller {
       };
     }
 
-    const { response } = result;
+    const response = result.value;
     this.logger.info('nice.payments/netcancel response', { orderId, response });
 
     if (response.resultCode !== '0000') {

@@ -122,7 +122,7 @@ export class BillingPurchaseService {
         return {
           ok: true,
           resultCode: resultCode('ok'),
-          plan: processNextPurchaseSubscriptionResult.plan,
+          plan: processNextResult.value,
           license: null,
         };
       }
@@ -208,7 +208,7 @@ export class BillingPurchaseService {
         return {
           ok: true,
           resultCode: resultCode('ok'),
-          plan: processNextPurchaseSubscriptionResult.plan,
+          plan: processNextResult.value,
           license: null,
           method,
         };

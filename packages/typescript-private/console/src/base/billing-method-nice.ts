@@ -1,8 +1,8 @@
 import { OrganizationId } from '@dogu-private/types';
-import { FilteredAxiosError, propertiesOf } from '@dogu-tech/common';
+import { propertiesOf } from '@dogu-tech/common';
 import { Type } from 'class-transformer';
 import { IsUUID, ValidateNested } from 'class-validator';
-import { BillingResultCode } from '..';
+import { BillingResult } from '..';
 import { BillingOrganizationBase } from './billing-organization';
 import { RegisterCardDto } from './billing-purchase';
 
@@ -563,27 +563,4 @@ export interface NicePaymentsNetCancelResponse {
   mallUserId?: string | null;
 }
 
-export interface NiceCallResultUnexpectedError {
-  ok: false;
-  resultCode: BillingResultCode<'unexpected-error'>;
-  error: Error;
-}
-
-export interface NiceCallResultNetworkError {
-  ok: false;
-  resultCode: BillingResultCode<'method-nice-network-error'>;
-  error: FilteredAxiosError;
-}
-
-export interface NiceCallResultFailure {
-  ok: false;
-  resultCode: BillingResultCode;
-  error: FilteredAxiosError;
-}
-
-export interface NiceCallResultSuccess<T> {
-  ok: true;
-  response: T;
-}
-
-export type NiceCallResult<T> = NiceCallResultUnexpectedError | NiceCallResultNetworkError | NiceCallResultFailure | NiceCallResultSuccess<T>;
+export type NiceCallResult<T> = BillingResult<T, { error: Error }>;

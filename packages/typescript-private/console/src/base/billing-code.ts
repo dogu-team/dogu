@@ -1,5 +1,3 @@
-import _ from 'lodash';
-
 export const BillingResultCodeMap = {
   // common
   ok: 0,
@@ -58,24 +56,25 @@ export const BillingResultCodeMap = {
 };
 
 export type BillingReason = keyof typeof BillingResultCodeMap;
+export type BillingCode = (typeof BillingResultCodeMap)[BillingReason];
 
-export type BillingResultCodeDetailValue = undefined | null | boolean | number | string;
-export type BillingResultCodeDetails = Record<string, BillingResultCodeDetailValue>;
+export type BillingResultCodeDetailsValue = undefined | null | boolean | number | string;
+export type BillingResultCodeDetails = Record<string, BillingResultCodeDetailsValue>;
 
-export interface BillingResultCode<T = BillingReason> {
-  code: number;
-  reason: T;
+export interface BillingResultCode {
+  code: BillingCode;
+  reason: BillingReason;
   details?: BillingResultCodeDetails;
 }
 
-export function resultCode<T extends string = BillingReason>(reason: T, details?: BillingResultCodeDetails): BillingResultCode<T> {
-  const code = _.get(BillingResultCodeMap, reason, 'unexpected-error') as number;
+export function resultCode(reason: BillingReason, details?: BillingResultCodeDetails): BillingResultCode {
+  const code = BillingResultCodeMap[reason];
   return { code, reason, details };
 }
 
-export interface BillingResultFailure<Reason = BillingReason, Extras extends object = object> {
+export interface BillingResultFailure<Extras extends object = object> {
   ok: false;
-  resultCode: BillingResultCode<Reason>;
+  resultCode: BillingResultCode;
   extras?: Extras;
 }
 
@@ -85,6 +84,6 @@ export interface BillingResultSuccess<Value, Extras extends object = object> {
   extras?: Extras;
 }
 
-export type BillingResult<Value, Reason = BillingReason, Extras extends object = object> =
-  | BillingResultFailure<Reason, Extras> //
-  | BillingResultSuccess<Value, Extras>;
+export type BillingResult<Value, FailureExtras extends object = object, SuccessExtras extends object = object> =
+  | BillingResultFailure<FailureExtras> //
+  | BillingResultSuccess<Value, SuccessExtras>;
