@@ -11,6 +11,7 @@ import { BillingSubscriptionPlanInfoModule } from '../billing-subscription-plan-
 import { BillingTokenModule } from '../billing-token/billing-token.module';
 import { BillingUpdaterModule } from '../billing-updater/billing-updater.module';
 import { CloudLicenseModule } from '../cloud-license/cloud-license.module';
+import { ConsoleModule } from '../console/console.module';
 import { LoggerModule } from '../logger/logger.module';
 import { SelfHostedLicenseModule } from '../self-hosted-license/self-hosted-license.module';
 import { AppController } from './app.controller';
@@ -31,6 +32,7 @@ import { AppService } from './app.service';
     BillingPurchaseModule,
     BillingSubscriptionPlanInfoModule,
     BillingUpdaterModule,
+    ConsoleModule,
   ],
   controllers: [AppController],
   providers: [AppService],

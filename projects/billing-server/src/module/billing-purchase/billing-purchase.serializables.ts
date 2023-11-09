@@ -110,11 +110,15 @@ export interface ProcessNowPurchaseSubscriptionOptions {
   planHistory: BillingSubscriptionPlanHistoryData | null;
 }
 
+export interface ProcessNowPurchaseSubscriptionResponse extends CreatePurchaseSubscriptionResponse {
+  planHistory: BillingHistory | null;
+}
+
 export async function processNowPurchaseSubscription(
   context: RetrySerializeContext,
   billingMethodNiceCaller: BillingMethodNiceCaller,
   options: ProcessNowPurchaseSubscriptionOptions,
-): Promise<CreatePurchaseSubscriptionResponse> {
+): Promise<ProcessNowPurchaseSubscriptionResponse> {
   const { manager } = context;
   const { billingOrganization, billingMethodNice, totalPrice, couponResult, discountedAmount, data, source, previewResponse } = options;
   const { period, currency } = data;
@@ -134,6 +138,7 @@ export async function processNowPurchaseSubscription(
       plan: null,
       license: null,
       niceResultCode: createPurchaseResult.extras.niceResultCode,
+      planHistory: null,
     };
   }
   const { tid, orderId } = createPurchaseResult.value;
@@ -175,6 +180,7 @@ export async function processNowPurchaseSubscription(
       plan: null,
       license: null,
       niceResultCode: null,
+      planHistory: null,
     };
   }
 
@@ -196,7 +202,7 @@ export async function processNowPurchaseSubscription(
     cardExpirationYear: billingMethodNice.expirationYear,
     cardExpirationMonth: billingMethodNice.expirationMonth,
   });
-  await manager.getRepository(BillingHistory).save(billingHistory);
+  const savedBillingHistory = await manager.getRepository(BillingHistory).save(billingHistory);
 
   const planHistory = options.planHistory;
   if (planHistory) {
@@ -261,6 +267,7 @@ export async function processNowPurchaseSubscription(
     plan,
     license,
     niceResultCode: null,
+    planHistory: savedBillingHistory,
   };
 }
 

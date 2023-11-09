@@ -1,4 +1,4 @@
-import { BillingSubscriptionPlanInfoResponse } from '@dogu-private/console';
+import { BillingSubscriptionPlanInfoResponse, BillingSubscriptionPlanType } from '@dogu-private/console';
 import { assertUnreachable } from '@dogu-tech/common';
 import { BillingOrganization } from '../../db/entity/billing-organization.entity';
 import { BillingSubscriptionPlanInfo } from '../../db/entity/billing-subscription-plan-info.entity';
@@ -30,4 +30,21 @@ export module BillingSubscriptionPlanInfoCommonModule {
 
     return response;
   }
+
+  export const planTypeDescriptionMap: Record<BillingSubscriptionPlanType, string> = {
+    'live-testing': 'Live Testing',
+  };
+
+  export const planOptionDescriptionMap: Record<
+    BillingSubscriptionPlanType,
+    {
+      singular: string;
+      plural: string;
+    }
+  > = {
+    'live-testing': {
+      singular: 'parallel session',
+      plural: 'parallel sessions',
+    },
+  };
 }

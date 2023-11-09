@@ -26,6 +26,7 @@ import { BillingMethodNiceCaller } from '../billing-method/billing-method-nice.c
 import { createOrUpdateMethodNice } from '../billing-method/billing-method-nice.serializables';
 import { findBillingOrganizationWithMethodAndSubscriptionPlans, findBillingOrganizationWithSubscriptionPlans } from '../billing-organization/billing-organization.serializables';
 import { unlinkBillingSubscriptionPlanInfo } from '../billing-subscription-plan-info/billing-subscription-plan-info.utils';
+import { ConsoleService } from '../console/console.service';
 import { DoguLogger } from '../logger/logger';
 import { processNextPurchaseSubscription, processNowPurchaseSubscription, processPurchaseSubscriptionPreview } from './billing-purchase.serializables';
 
@@ -36,6 +37,7 @@ export class BillingPurchaseService {
     @InjectDataSource()
     private readonly dataSource: DataSource,
     private readonly billingMethodNiceCaller: BillingMethodNiceCaller,
+    private readonly consoleService: ConsoleService,
   ) {}
 
   async getSubscriptionPreview(dto: GetBillingSubscriptionPreviewDto): Promise<GetBillingSubscriptionPreviewResponse> {
@@ -140,10 +142,31 @@ export class BillingPurchaseService {
 
       if (!processNowResult.ok) {
         setTriggerRollbackBeforeReturn();
-        return processNowResult;
+        return {
+          ok: false,
+          resultCode: processNowResult.resultCode,
+          plan: null,
+          license: null,
+          niceResultCode: processNowResult.niceResultCode,
+        };
       }
 
-      return processNowResult;
+      if (processNowResult.planHistory && processNowResult.plan) {
+        this.consoleService
+          .sendSubscriptionSuccessEmailToOwner(dto.organizationId, {
+            planHistory: processNowResult.planHistory,
+            plan: processNowResult.plan,
+          })
+          .catch((err) => this.logger.error(`Failed to send email to organization owner: organizationId: ${dto.organizationId}`));
+      }
+
+      return {
+        ok: processNowResult.ok,
+        resultCode: processNowResult.resultCode,
+        plan: processNowResult.plan,
+        license: processNowResult.license,
+        niceResultCode: null,
+      };
     });
   }
 
@@ -238,14 +261,31 @@ export class BillingPurchaseService {
       if (!processNowResult.ok) {
         setTriggerRollbackBeforeReturn();
         return {
-          ...processNowResult,
-          method,
+          ok: false,
+          resultCode: processNowResult.resultCode,
+          plan: null,
+          license: null,
+          method: null,
+          niceResultCode: processNowResult.niceResultCode,
         };
       }
 
+      if (processNowResult.planHistory && processNowResult.plan) {
+        this.consoleService
+          .sendSubscriptionSuccessEmailToOwner(dto.organizationId, {
+            planHistory: processNowResult.planHistory,
+            plan: processNowResult.plan,
+          })
+          .catch((err) => this.logger.error(`Failed to send email to organization owner: organizationId: ${dto.organizationId}`));
+      }
+
       return {
-        ...processNowResult,
+        ok: processNowResult.ok,
+        resultCode: processNowResult.resultCode,
+        plan: processNowResult.plan,
+        license: processNowResult.license,
         method,
+        niceResultCode: null,
       };
     });
   }

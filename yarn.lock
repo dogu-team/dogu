@@ -11844,6 +11844,7 @@ __metadata:
     "@types/lodash": 4.14.200
     "@types/luxon": 3.3.3
     "@types/node": 18.15.11
+    "@types/nodemailer": 6
     "@types/passport": 1.0.14
     "@types/pg": 8
     "@types/shelljs": 0.8.14
@@ -11857,6 +11858,7 @@ __metadata:
     express: 4.18.2
     lodash: 4.17.21
     luxon: 3.4.3
+    nodemailer: 6.9.7
     nodemon: 3.0.1
     npm-check-updates: 16.14.6
     pg: 8.11.3

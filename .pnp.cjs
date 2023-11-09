@@ -18977,6 +18977,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/lodash", "npm:4.14.200"],\
             ["@types/luxon", "npm:3.3.3"],\
             ["@types/node", "npm:18.15.11"],\
+            ["@types/nodemailer", "npm:6.4.7"],\
             ["@types/passport", "npm:1.0.14"],\
             ["@types/pg", "npm:8.10.2"],\
             ["@types/shelljs", "npm:0.8.14"],\
@@ -18990,6 +18991,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["express", "npm:4.18.2"],\
             ["lodash", "npm:4.17.21"],\
             ["luxon", "npm:3.4.3"],\
+            ["nodemailer", "npm:6.9.7"],\
             ["nodemon", "npm:3.0.1"],\
             ["npm-check-updates", "npm:16.14.6"],\
             ["pg", "virtual:5d989e67e8ca83aa0556255791fdcac55623c9ccb3281b72bd3861d249df0961376ab2c76ee45bf4750178857c5c30bac3bb628af955e16567e426f9e366b233#npm:8.11.3"],\
