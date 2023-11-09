@@ -88,9 +88,15 @@
   "nextPurchaseDescriptionText": "From <date></date> you will be charged <option></option>",
   "purchaseAgreementText": "By purchasing plan you agree to our <link>Terms of Use</link> and auto renewal",
 
+  "purchaseSuccessMessage": "Purchase completed successfully!",
+  "purchaseErrorMessage": "Failed to purchase. Please try again or contact us.",
+  "changePlanSuccessMessage": "Plan changed successfully.",
+  "changePlanErrorMessage": "Failed to change plan. Please try again or contact us.",
+
   "upgradeButtonTitle": "Upgrade",
   "changeButtonTitle": "Change",
   "goAnnualButtonTitle": "Go annual",
+  "currentPlanButtonTitle": "Current plan",
 
   "paymentPreviewDefaultCardLabelText": "Default",
   "paymentPreviewChangeCardButtonText": "Change payment",
@@ -127,6 +133,13 @@
   "historyDateColumnText": "Date",
   "historyItemColumnText": "Items",
   "historyAmountColumnText": "Amount",
+  "historySeeDetailButtonText": "See details",
+
+  "historyDetailModalTitle": "Invoice details",
+  "historyDetailPurchaseIdText": "Purchase ID",
+  "historyDetailPurchaseDateText": "Date",
+  "historyDetailPaymentText": "Payment",
+  "historyDetailTotalAmountText": "Total amount",
 
   "planNameColumnText": "Plan",
   "planOptionColumnText": "Options",
@@ -154,5 +167,10 @@
   "cancelUnsubscribeSuccessMessage": "Subscribed plan successfully",
   "cancelUnsubscribeErrorMessage": "Failed to subscribe plan. Please try again.",
 
-  "updatePaymentMethodModalTitle": "Update payment details"
+  "updatePaymentMethodModalTitle": "Update payment details",
+
+  "licenseNotFoundErrorMessage": "Cannot find license information.",
+  "planNotSelectedErrorMessage": "Please select a plan.",
+  "samePlanSelectedErrorMessage": "Cannot select the same plan.",
+  "previewFailedErrorMessage": "Cannot preview the plan."
 }

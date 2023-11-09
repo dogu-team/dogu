@@ -100,6 +100,7 @@ const BillingPaymentMethod: React.FC<Props> = ({ method, organizationId }) => {
         }}
         cancelText={t('common:cancel')}
         okText={t('common:save')}
+        confirmLoading={updateLoading}
       >
         <BillingMethodRegistrationForm form={form} />
       </Modal>

@@ -1,4 +1,3 @@
-import { Radio } from 'antd';
 import styled from 'styled-components';
 
 import BillingCalculatedPreview from './BillingCalculatedPreview';
@@ -31,23 +30,4 @@ const FlexBox = styled.div`
 const FlexEnd = styled.div`
   display: flex;
   justify-content: flex-end;
-`;
-
-const PaymentContent = styled.div`
-  flex: 1;
-  flex-shrink: 0;
-`;
-
-const StyledRadio = styled(Radio)`
-  & > span:last-child {
-    width: 100%;
-  }
-`;
-
-const RadioContent = styled.div`
-  width: 100%;
-  display: flex;
-  padding: 0.5rem 1rem;
-  border-radius: 0.5rem;
-  border: 1px solid #d9d9d9;
 `;

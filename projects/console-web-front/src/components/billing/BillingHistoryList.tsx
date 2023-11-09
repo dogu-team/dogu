@@ -12,6 +12,7 @@ import useModal from '../../hooks/useModal';
 import useRefresh from '../../hooks/useRefresh';
 import { planDescriptionInfoMap } from '../../resources/plan';
 import { flexRowBaseStyle, listItemStyle, tableCellStyle, tableHeaderStyle } from '../../styles/box';
+import { getHistoryAmount } from '../../utils/billing';
 import { getLocaleFormattedDate, getLocaleFormattedPrice } from '../../utils/locale';
 import { buildQueryPraramsByObject } from '../../utils/query';
 import BillingHistoryDetail from './BillingHistoryDetail';
@@ -29,7 +30,7 @@ const HistoryItem: React.FC<ItemProps> = ({ history }) => {
     <Item>
       <ItemInner>
         <Cell flex={1}>
-          {getLocaleFormattedDate(router.locale ?? 'en', new Date(history.purchasedAt), {
+          {getLocaleFormattedDate(router.locale ?? 'en', new Date(history.createdAt), {
             year: 'numeric',
             month: 'numeric',
             day: 'numeric',
@@ -53,15 +54,23 @@ const HistoryItem: React.FC<ItemProps> = ({ history }) => {
             );
           })}
         </Cell>
-        <Cell flex={1}>{getLocaleFormattedPrice('ko', 'KRW', history.totalPrice)}</Cell>
+        <Cell flex={1}>{getLocaleFormattedPrice('ko', 'KRW', getHistoryAmount(history))}</Cell>
         <ButtonWrapper>
           <Button type="link" onClick={() => openModal()}>
-            See more
+            {t('historySeeDetailButtonText')}
           </Button>
         </ButtonWrapper>
       </ItemInner>
 
-      <Modal title="Billing details" open={isOpen} destroyOnClose centered footer={null} closable onCancel={closeModal}>
+      <Modal
+        title={t('historyDetailModalTitle')}
+        open={isOpen}
+        destroyOnClose
+        centered
+        footer={null}
+        closable
+        onCancel={closeModal}
+      >
         <BillingHistoryDetail history={history} />
       </Modal>
     </Item>

@@ -1,5 +1,7 @@
 import {
+  BillingHistoryBase,
   BillingPeriod,
+  BillingSubscriptionPlanHistoryBase,
   BillingSubscriptionPlanInfoBase,
   BillingSubscriptionPlanType,
   CloudLicenseBase,
@@ -43,18 +45,9 @@ export const parseNicePaymentMethodFormValues = (values: BillingMethodRegistrati
 };
 
 export const isLiveTestingFreePlan = (license: CloudLicenseResponse): boolean => {
-  const usingPlans = license.billingOrganization?.billingSubscriptionPlanInfos;
-  if (!usingPlans) {
-    return true;
-  }
+  const liveTestingPlan = getSubscriptionPlansFromLicense(license, ['live-testing']);
 
-  const liveTestingPlan = usingPlans.find((plan) => plan.type === 'live-testing');
-
-  if (!liveTestingPlan) {
-    return true;
-  }
-
-  return liveTestingPlan.state === 'unsubscribed';
+  return liveTestingPlan.length === 0;
 };
 
 type SelectedPlanWithPeriod = SelectedPlan & { period: BillingPeriod };
@@ -96,4 +89,12 @@ export const checkShouldPurchase = (
       return false;
     }
   }
+};
+
+export const getHistoryAmount = (history: BillingHistoryBase | BillingSubscriptionPlanHistoryBase): number => {
+  if (history.purchasedAmount !== null) {
+    return history.purchasedAmount;
+  }
+
+  return history.refundedAmount !== null ? -history.refundedAmount : 0;
 };

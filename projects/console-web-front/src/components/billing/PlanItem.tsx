@@ -1,10 +1,5 @@
 import { CheckOutlined } from '@ant-design/icons';
-import {
-  BillingPeriod,
-  BillingSubscriptionPlanOptionInfo,
-  BillingSubscriptionPlanType,
-  CloudLicenseBase,
-} from '@dogu-private/console';
+import { BillingPeriod, BillingSubscriptionPlanOptionInfo, BillingSubscriptionPlanType } from '@dogu-private/console';
 import { Button, Divider, Select, SelectProps } from 'antd';
 import useTranslation from 'next-translate/useTranslation';
 import { useState } from 'react';
@@ -14,6 +9,7 @@ import { shallow } from 'zustand/shallow';
 import { PlanDescriptionInfo } from '../../resources/plan';
 import useBillingPlanPurchaseStore from '../../stores/billing-plan-purchase';
 import useLicenseStore from '../../stores/license';
+import { getSubscriptionPlansFromLicense } from '../../utils/billing';
 import { getLocaleFormattedPrice } from '../../utils/locale';
 
 interface Props {
@@ -33,7 +29,7 @@ const PlanItem: React.FC<Props> = ({ planType, planInfo, descriptionInfo }) => {
   const updateSelectedPlan = useBillingPlanPurchaseStore((state) => state.updateSelectedPlan);
   const { t } = useTranslation('billing');
 
-  const usingPlans = (license as CloudLicenseBase).billingOrganization?.billingSubscriptionPlanInfos;
+  const usingPlans = license ? getSubscriptionPlansFromLicense(license, [planType]) : [];
   const baseOptions: SelectProps<string | number>['options'] = Object.keys(planInfo.optionMap).map((optionKey) => {
     return {
       value: optionKey,
@@ -48,8 +44,7 @@ const PlanItem: React.FC<Props> = ({ planType, planInfo, descriptionInfo }) => {
     : baseOptions;
 
   const [selectedValue, setSelectedValue] = useState<string | number | null | undefined>(() => {
-    // TODO: from user's current plan
-    return options[0].value;
+    return usingPlans?.[0]?.option ? `${usingPlans[0].option}` : options[0].value;
   });
 
   const handleChangeOption = (value: string | number) => {
@@ -61,18 +56,23 @@ const PlanItem: React.FC<Props> = ({ planType, planInfo, descriptionInfo }) => {
     disabled: boolean;
     shouldGoAnnual: boolean;
   } => {
-    const samePlan = usingPlans?.find((plan) => plan.type === planType);
     const period: BillingPeriod = isAnnual ? 'yearly' : 'monthly';
+    const plan = usingPlans[0];
 
-    if (samePlan && samePlan.option === Number(selectedValue) && isAnnual && samePlan.period === 'yearly') {
-      return { text: 'Current plan', disabled: true, shouldGoAnnual: false };
+    if (plan && plan.option === Number(selectedValue) && isAnnual && plan.period === 'yearly') {
+      return { text: t('currentPlanButtonTitle'), disabled: true, shouldGoAnnual: false };
     }
 
-    if (samePlan && samePlan.option === Number(selectedValue) && samePlan.period === 'monthly') {
+    if (plan && plan.option === Number(selectedValue) && plan.period === 'monthly') {
       return { text: t('goAnnualButtonTitle'), disabled: false, shouldGoAnnual: true };
     }
 
-    if (!samePlan || (samePlan && samePlan.period === period && samePlan.option < Number(selectedValue))) {
+    if (
+      !plan ||
+      (plan &&
+        (plan.period === period || (plan.period === 'monthly' && isAnnual)) &&
+        plan.option < Number(selectedValue))
+    ) {
       return { text: t('upgradeButtonTitle'), disabled: false, shouldGoAnnual: false };
     }
 

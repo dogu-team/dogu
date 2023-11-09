@@ -88,9 +88,15 @@
   "nextPurchaseDescriptionText": "<date></date>부터 <option></option>가 청구됩니다.",
   "purchaseAgreementText": "결제를 진행하시면 <link>이용약관</link>과 정기결제에 동의하는 것으로 간주됩니다.",
 
+  "purchaseSuccessMessage": "결제가 완료되었습니다!",
+  "purchaseErrorMessage": "결제에 실패했습니다. 다시 시도하거나 문의해주세요.",
+  "changePlanSuccessMessage": "플랜 변경이 예약되었습니다.",
+  "changePlanErrorMessage": "플랜 변경에 실패했습니다. 다시 시도하거나 문의해주세요.",
+
   "upgradeButtonTitle": "업그레이드",
   "changeButtonTitle": "변경하기",
   "goAnnualButtonTitle": "연간으로 변경하기",
+  "currentPlanButtonTitle": "현재 플랜",
 
   "paymentPreviewDefaultCardLabelText": "기본",
   "paymentPreviewChangeCardButtonText": "결제 수단 변경하기",
@@ -127,6 +133,13 @@
   "historyDateColumnText": "결제일",
   "historyItemColumnText": "항목",
   "historyAmountColumnText": "총 결제액",
+  "historySeeDetailButtonText": "자세히 보기",
+
+  "historyDetailModalTitle": "결제 상세",
+  "historyDetailPurchaseIdText": "주문 ID",
+  "historyDetailPurchaseDateText": "결제일",
+  "historyDetailPaymentText": "결제 수단",
+  "historyDetailTotalAmountText": "총 결제액",
 
   "planNameColumnText": "플랜",
   "planOptionColumnText": "옵션",
@@ -154,5 +167,10 @@
   "cancelUnsubscribeSuccessMessage": "구독을 완료했습니다.",
   "cancelUnsubscribeErrorMessage": "구독에 실패했습니다. 다시 시도해주세요.",
 
-  "updatePaymentMethodModalTitle": "결제 정보 변경하기"
+  "updatePaymentMethodModalTitle": "결제 정보 변경하기",
+
+  "licenseNotFoundErrorMessage": "라이센스 정보를 확인할 수 없습니다.",
+  "planNotSelectedErrorMessage": "플랜을 선택해 주세요.",
+  "samePlanSelectedErrorMessage": "같은 플랜으로 변경할 수 없습니다.",
+  "previewFailedErrorMessage": "미리보기를 가져올 수 없습니다."
 }

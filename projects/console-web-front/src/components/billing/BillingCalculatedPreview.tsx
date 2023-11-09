@@ -4,6 +4,7 @@ import {
   GetBillingSubscriptionPreviewResponse,
 } from '@dogu-private/console';
 import { Divider, Tag } from 'antd';
+import Trans from 'next-translate/Trans';
 import useTranslation from 'next-translate/useTranslation';
 import useSWR from 'swr';
 import styled from 'styled-components';
@@ -20,7 +21,6 @@ import { swrAuthFetcher } from '../../api';
 import { buildQueryPraramsByObject } from '../../utils/query';
 import useLicenseStore from '../../stores/license';
 import BillingPurchaseButton from './BillingPurchaseButton';
-import Trans from 'next-translate/Trans';
 import { checkShouldPurchase, getSubscriptionPlansFromLicense } from '../../utils/billing';
 
 interface Props {}
@@ -55,7 +55,7 @@ const BillingCalculatedPreview: React.FC<Props> = ({}) => {
   if (!license) {
     return (
       <Box>
-        <ErrorBox title="Oops" desc="License not found" />
+        <ErrorBox title="Oops" desc={t('licenseNotFoundErrorMessage')} />
       </Box>
     );
   }
@@ -63,7 +63,7 @@ const BillingCalculatedPreview: React.FC<Props> = ({}) => {
   if (!selectedPlan) {
     return (
       <Box>
-        <ErrorBox title="Oops" desc="Plan not selected" />
+        <ErrorBox title="Oops" desc={t('planNotSelectedErrorMessage')} />
       </Box>
     );
   }
@@ -82,13 +82,13 @@ const BillingCalculatedPreview: React.FC<Props> = ({}) => {
     if (data?.body?.resultCode.reason === 'subscription-plan-duplicated') {
       return (
         <Box>
-          <ErrorBox title="Oops" desc="Cannot select currently using plan!" />
+          <ErrorBox title="Oops" desc={t('samePlanSelectedErrorMessage')} />
         </Box>
       );
     }
     return (
       <Box>
-        <ErrorBox title="Oops" desc={data?.errorMessage ?? 'Failed to get preview'} />
+        <ErrorBox title="Oops" desc={data?.errorMessage ?? t('previewFailedErrorMessage')} />
       </Box>
     );
   }

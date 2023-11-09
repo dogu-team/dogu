@@ -30,11 +30,11 @@ const BillingPurchaseButton: React.FC = () => {
   const { t } = useTranslation('billing');
 
   if (!license) {
-    return <ErrorBox title="Something went wrong" desc="No license found" />;
+    return <ErrorBox title="Oops" desc={t('licenseNotFoundErrorMessage')} />;
   }
 
   if (!selectedPlan) {
-    return <ErrorBox title="Something went wrong" desc="No plan selected" />;
+    return <ErrorBox title="Oops" desc={t('planNotSelectedErrorMessage')} />;
   }
 
   const shouldPurchase = checkShouldPurchase(license, { ...selectedPlan, period: isAnnual ? 'yearly' : 'monthly' });
@@ -44,7 +44,7 @@ const BillingPurchaseButton: React.FC = () => {
     plan: BillingSubscriptionPlanInfoResponse | null,
     method: Partial<BillingMethodNiceBase> | null,
   ) => {
-    sendSuccessNotification(shouldPurchase ? 'Successfully purchased plan!' : 'Successfully changed plan!');
+    sendSuccessNotification(shouldPurchase ? t('purchaseSuccessMessage') : t('changePlanSuccessMessage'));
     fireEvent('onPurchaseCompleted');
 
     if (license) {
@@ -81,7 +81,7 @@ const BillingPurchaseButton: React.FC = () => {
         });
 
         if (rv.errorMessage || !rv.body?.ok) {
-          sendErrorNotification('Failed to purchase plan! Please contact us.');
+          sendErrorNotification(shouldPurchase ? t('purchaseErrorMessage') : t('changePlanErrorMessage'));
           return;
         }
 
@@ -99,14 +99,14 @@ const BillingPurchaseButton: React.FC = () => {
         });
 
         if (rv.errorMessage || !rv.body?.ok) {
-          sendErrorNotification('Failed to purchase plan! Please contact us.');
+          sendErrorNotification(shouldPurchase ? t('purchaseErrorMessage') : t('changePlanErrorMessage'));
           return;
         }
 
         handleSuccess(rv.body.license, rv.body.plan, rv.body.method);
       }
     } catch (e) {
-      sendErrorNotification('Failed to purchase plan! Please contact us.');
+      sendErrorNotification(shouldPurchase ? t('purchaseErrorMessage') : t('changePlanErrorMessage'));
     }
   };
 

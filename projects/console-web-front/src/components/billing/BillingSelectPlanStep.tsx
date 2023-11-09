@@ -21,7 +21,7 @@ const BillingSelectPlanStep: React.FC<Props> = ({}) => {
   const { t } = useTranslation('billing');
 
   if (!license) {
-    return <ErrorBox title="Something went wrong" desc="No license information" />;
+    return <ErrorBox title="Oops" desc={t('licenseNotFoundErrorMessage')} />;
   }
 
   const planTypes = groupType ? BillingPlanGroupMap[groupType] : BillingPlanGroupMap[currentGroup];
