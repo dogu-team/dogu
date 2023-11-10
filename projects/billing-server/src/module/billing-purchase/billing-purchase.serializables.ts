@@ -92,6 +92,7 @@ export async function processPurchaseSubscriptionPreview(
     };
   }
 
+  // promotion coupon
   let coupon = parseCouponResult.value;
   if (!coupon) {
     const subscribed = billingOrganization.billingSubscriptionPlanInfos?.find(
