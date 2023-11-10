@@ -9,6 +9,7 @@ import Cookies from 'universal-cookie';
 import { CommonUIProps } from 'src/types/common';
 import { koreanP3Style, maxWidthInnerStyle } from '../../styles/main';
 import { flexRowSpaceBetweenStyle } from '../../styles/box';
+import { LANDING_PRIVACY_POLICY_URL, LANDING_TEMRS_OF_USE_URL } from '../../utils/url';
 
 interface Props extends CommonUIProps {
   showCompanyInfo?: boolean;
@@ -50,12 +51,10 @@ const Footer = ({ showCompanyInfo = false, className }: Props) => {
       <Inner>
         <FlexBox>
           <LinkBox>
-            {/* {process.env.NEXT_PUBLIC_ENV !== 'production' && (
-            <StyledLink href="/" target="_blank">
+            <StyledLink href={LANDING_TEMRS_OF_USE_URL} target="_blank">
               {t('common:footerTermsOfUse')}
             </StyledLink>
-          )} */}
-            <StyledLink href={`${process.env.NEXT_PUBLIC_LANDING_URL}/notices/privacy`} target="_blank">
+            <StyledLink href={LANDING_PRIVACY_POLICY_URL} target="_blank">
               {t('common:footerPrivacyPolicy')}
             </StyledLink>
           </LinkBox>

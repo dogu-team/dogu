@@ -1,9 +1,10 @@
 import {
+  BillingSubscriptionPlanMap,
   CallBillingApiResponse,
   GetBillingSubscriptionPreviewDto,
   GetBillingSubscriptionPreviewResponse,
 } from '@dogu-private/console';
-import { Divider, Tag } from 'antd';
+import { Alert, Divider, Tag } from 'antd';
 import Trans from 'next-translate/Trans';
 import useTranslation from 'next-translate/useTranslation';
 import useSWR from 'swr';
@@ -232,7 +233,7 @@ const BillingCalculatedPreview: React.FC<Props> = ({}) => {
         {!!data.body.coupon && (
           <div style={{ marginTop: '.5rem' }}>
             <CalculatedPriceContent>
-              <span>{t('couponLabelText')}</span>
+              <span>{t(data.body.coupon.type === 'basic' ? 'couponLabelText' : 'promotionLabelText')}</span>
               <b className="minus">
                 {getLocaleFormattedPrice('ko', data.body.subscriptionPlan.currency, -data.body.coupon.discountedAmount)}
               </b>
@@ -342,6 +343,39 @@ const BillingCalculatedPreview: React.FC<Props> = ({}) => {
       <Content>
         <BillingCouponInput />
       </Content>
+
+      {isAnnualSubscription && (
+        <Alert
+          style={{ marginBottom: '.75rem' }}
+          type="success"
+          showIcon
+          message={
+            <div style={{ fontSize: '.75rem' }}>
+              <Trans
+                i18nKey="billing:annualSavedText"
+                components={{
+                  amount: (
+                    <b style={{ fontWeight: '600', color: '#52c41a' }}>
+                      {getLocaleFormattedPrice(
+                        router.locale,
+                        data.body.subscriptionPlan.currency,
+                        (BillingSubscriptionPlanMap[data.body.subscriptionPlan.type].optionMap[
+                          data.body.subscriptionPlan.option
+                        ][data.body.subscriptionPlan.currency].monthly -
+                          BillingSubscriptionPlanMap[data.body.subscriptionPlan.type].optionMap[
+                            data.body.subscriptionPlan.option
+                          ][data.body.subscriptionPlan.currency].yearly /
+                            12) *
+                          12,
+                      )}
+                    </b>
+                  ),
+                }}
+              />
+            </div>
+          }
+        />
+      )}
 
       <BillingPurchaseButton />
 

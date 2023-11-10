@@ -78,6 +78,7 @@
   "refundElapsedTitle": "Refunds for elapsed days",
   "refundRemainingTitle": "Refunds for remaining days",
   "couponLabelText": "Coupon",
+  "promotionLabelText": "Promotion",
   "couponOptionYearSingularText": "{{discount}}% discount for {{year}} year",
   "couponOptionYearPluralText": "{{discount}}% discount for {{year}} years",
   "couponOptionMonthSingularText": "{{discount}}% discount for {{month}} month",
@@ -86,6 +87,7 @@
   "totalLabelText": "Total",
   "purchaseButtonText": "Purchase",
   "nextPurchaseDescriptionText": "From <date></date> you will be charged <option></option>",
+  "annualSavedText": "You saved <amount></amount> by choosing annual plan!",
   "purchaseAgreementText": "By purchasing plan you agree to our <link>Terms of Use</link> and auto renewal",
 
   "purchaseSuccessMessage": "Purchase completed successfully!",

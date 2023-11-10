@@ -78,6 +78,7 @@
   "refundElapsedTitle": "지나간 기간에 대한 환불",
   "refundRemainingTitle": "남은 기간에 대한 환불",
   "couponLabelText": "쿠폰",
+  "promotionLabelText": "프로모션",
   "couponOptionYearSingularText": "{{year}}년간 {{discount}}% 할인",
   "couponOptionYearPluralText": "{{year}}년간 {{discount}}% 할인",
   "couponOptionMonthSingularText": "{{month}}개월간 {{discount}}% 할인",
@@ -86,6 +87,7 @@
   "totalLabelText": "총 금액",
   "purchaseButtonText": "결제하기",
   "nextPurchaseDescriptionText": "<date></date>부터 <option></option>가 청구됩니다.",
+  "annualSavedText": "연간 플랜으로 <amount></amount> 절약했습니다!",
   "purchaseAgreementText": "결제를 진행하시면 <link>이용약관</link>과 정기결제에 동의하는 것으로 간주됩니다.",
 
   "purchaseSuccessMessage": "결제가 완료되었습니다!",
