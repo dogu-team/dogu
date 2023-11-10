@@ -1,5 +1,6 @@
 import { errorify } from '@dogu-tech/common';
 import _ from 'lodash';
+import { Client } from 'pg';
 import { DataSource, EntityManager } from 'typeorm';
 import { DoguLogger } from '../module/logger/logger';
 
@@ -122,4 +123,9 @@ export async function retrySerialize<T>(
   }
 
   throw new Error('Must not reach here');
+}
+
+export async function getClient(dataSource: DataSource): Promise<Client> {
+  const [client, _] = (await dataSource.driver.obtainMasterConnection()) as [Client, unknown];
+  return client;
 }

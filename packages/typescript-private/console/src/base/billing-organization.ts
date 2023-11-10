@@ -16,6 +16,8 @@ export interface BillingOrganizationBase {
   subscriptionYearlyExpiredAt: Date | null;
   subscriptionMonthlyStartedAt: Date | null;
   subscriptionMonthlyExpiredAt: Date | null;
+  graceExpiredAt: Date | null;
+  graceNextPurchasedAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date | null;

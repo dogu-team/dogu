@@ -1,5 +1,5 @@
 import { ClassTransformOptions, plainToInstance } from 'class-transformer';
-import { validateOrReject, ValidatorOptions, ValidationError, validateSync } from 'class-validator';
+import { validateOrReject, validateSync, ValidationError, ValidatorOptions } from 'class-validator';
 import _ from 'lodash';
 import { ConsoleLogger, Printable } from '../logs';
 import { Class, Instance } from './types';
@@ -74,8 +74,22 @@ export async function transformAndValidate<T extends Class<T>, V>(constructor: T
   return instance;
 }
 
+export function transformAndValidateSync<T extends Class<T>, V>(constructor: T, plain: V, options?: TransformAndValidateOptions): Instance<T> {
+  const { classTransformOptions, validatorOptions, printable } = fillTransformAndValidateOptions(options);
+  const instance = transform(constructor, plain, classTransformOptions, printable);
+  const errors = validateSync(instance as object, validatorOptions);
+  if (errors.length > 0) {
+    throw new Error(`Validation failed: ${errors.map((error) => error.toString()).join(', ')}`);
+  }
+  return instance;
+}
+
 export class FillOptionsValidationError extends Error {
-  constructor(message: string, readonly validationErrors: ValidationError[], options?: ErrorOptions) {
+  constructor(
+    message: string,
+    readonly validationErrors: ValidationError[],
+    options?: ErrorOptions,
+  ) {
     super(message, options);
   }
 }

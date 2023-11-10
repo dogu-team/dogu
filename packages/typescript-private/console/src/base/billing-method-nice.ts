@@ -2,7 +2,7 @@ import { OrganizationId } from '@dogu-private/types';
 import { propertiesOf } from '@dogu-tech/common';
 import { Type } from 'class-transformer';
 import { IsUUID, ValidateNested } from 'class-validator';
-import { BillingResult, BillingResultWithExtras } from '..';
+import { BillingResult } from './billing-code';
 import { BillingOrganizationBase } from './billing-organization';
 import { RegisterCardDto } from './billing-purchase';
 
@@ -93,7 +93,7 @@ export interface NiceSubscribeRegistResponse {
   messageSource?: string;
 }
 
-export type NiceSubscribeRegistResult = BillingResultWithExtras<NiceSubscribeRegistResponse, { niceResultCode: string | null }>;
+export type NiceSubscribeRegistResult = BillingResult<NiceSubscribeRegistResponse, { niceResultCode: string | null }>;
 
 export interface NiceSubscribeExpireOptions {
   bid: string;
@@ -280,7 +280,7 @@ export interface NiceSubscribePaymentsResponse {
   messageSource: string | null;
 }
 
-export type NiceSubscribePaymentsResult = BillingResultWithExtras<NiceSubscribePaymentsResponse, { niceResultCode: string | null }>;
+export type NiceSubscribePaymentsResult = BillingResult<NiceSubscribePaymentsResponse, { niceResultCode: string | null }>;
 
 export interface NicePaymentsCancelOptions {
   tid: string;

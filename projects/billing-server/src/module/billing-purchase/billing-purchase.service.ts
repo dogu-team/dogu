@@ -25,8 +25,9 @@ import { retrySerialize } from '../../db/utils';
 import { BillingMethodNiceCaller } from '../billing-method/billing-method-nice.caller';
 import { createOrUpdateMethodNice } from '../billing-method/billing-method-nice.serializables';
 import { findBillingOrganizationWithMethodAndSubscriptionPlans, findBillingOrganizationWithSubscriptionPlans } from '../billing-organization/billing-organization.serializables';
-import { unlinkBillingSubscriptionPlanInfo } from '../billing-subscription-plan-info/billing-subscription-plan-info.utils';
+import { invalidateSubscriptionPlanInfo } from '../billing-subscription-plan-info/billing-subscription-plan-info.utils';
 import { ConsoleService } from '../console/console.service';
+import { DateTimeSimulatorService } from '../date-time-simulator/date-time-simulator.service';
 import { DoguLogger } from '../logger/logger';
 import { processNextPurchaseSubscription, processNowPurchaseSubscription, processPurchaseSubscriptionPreview } from './billing-purchase.serializables';
 
@@ -38,10 +39,12 @@ export class BillingPurchaseService {
     private readonly dataSource: DataSource,
     private readonly billingMethodNiceCaller: BillingMethodNiceCaller,
     private readonly consoleService: ConsoleService,
+    private readonly dateTimeSimulatorService: DateTimeSimulatorService,
   ) {}
 
   async getSubscriptionPreview(dto: GetBillingSubscriptionPreviewDto): Promise<GetBillingSubscriptionPreviewResponse> {
     return await retrySerialize(this.logger, this.dataSource, async (context) => {
+      const now = this.dateTimeSimulatorService.now();
       const billingOrganization = await findBillingOrganizationWithSubscriptionPlans(context, dto);
       if (!billingOrganization) {
         return {
@@ -53,6 +56,7 @@ export class BillingPurchaseService {
       const processPreviewResult = await processPurchaseSubscriptionPreview(context, {
         billingOrganization,
         dto,
+        now,
       });
       if (!processPreviewResult.ok) {
         return {
@@ -69,6 +73,7 @@ export class BillingPurchaseService {
   async createPurchaseSubscription(dto: CreatePurchaseSubscriptionDto): Promise<CreatePurchaseSubscriptionResponse> {
     return await retrySerialize(this.logger, this.dataSource, async (context) => {
       const { setTriggerRollbackBeforeReturn } = context;
+      const now = this.dateTimeSimulatorService.now();
       const billingOrganization = await findBillingOrganizationWithMethodAndSubscriptionPlans(context, dto);
       if (!billingOrganization) {
         return {
@@ -98,6 +103,7 @@ export class BillingPurchaseService {
       const processPreviewResult = await processPurchaseSubscriptionPreview(context, {
         billingOrganization,
         dto,
+        now,
       });
       if (!processPreviewResult.ok) {
         return {
@@ -174,6 +180,7 @@ export class BillingPurchaseService {
     return await retrySerialize(this.logger, this.dataSource, async (context) => {
       const { setTriggerRollbackBeforeReturn } = context;
       const { registerCard } = dto;
+      const now = this.dateTimeSimulatorService.now();
       const billingOrganization = await findBillingOrganizationWithMethodAndSubscriptionPlans(context, dto);
       if (!billingOrganization) {
         return {
@@ -190,6 +197,7 @@ export class BillingPurchaseService {
       const processPreviewResult = await processPurchaseSubscriptionPreview(context, {
         billingOrganization,
         dto,
+        now,
       });
       if (!processPreviewResult.ok) {
         return {
@@ -203,11 +211,15 @@ export class BillingPurchaseService {
       }
       const { needPurchase } = processPreviewResult.value;
 
-      const niceResult = await createOrUpdateMethodNice(context, this.billingMethodNiceCaller, {
-        billingOrganizationId,
-        subscribeRegist: {
-          registerCard,
+      const niceResult = await createOrUpdateMethodNice(context, {
+        billingMethodNiceCaller: this.billingMethodNiceCaller,
+        dto: {
+          billingOrganizationId,
+          subscribeRegist: {
+            registerCard,
+          },
         },
+        now,
       });
 
       if (!niceResult.ok) {
@@ -218,7 +230,7 @@ export class BillingPurchaseService {
           plan: null,
           method: null,
           license: null,
-          niceResultCode: niceResult.extras.niceResultCode,
+          niceResultCode: niceResult.niceResultCode,
         };
       }
 
@@ -395,7 +407,9 @@ export class BillingPurchaseService {
       });
       await manager.getRepository(BillingSubscriptionPlanHistory).save(newPlanHistory);
 
-      await unlinkBillingSubscriptionPlanInfo(manager, linked);
+      const now = this.dateTimeSimulatorService.now();
+      const unlinked = invalidateSubscriptionPlanInfo(linked, now);
+      await manager.getRepository(BillingSubscriptionPlanInfo).save(unlinked);
     });
   }
 
@@ -479,7 +493,9 @@ export class BillingPurchaseService {
         });
 
         if (linked) {
-          await unlinkBillingSubscriptionPlanInfo(manager, linked);
+          const now = this.dateTimeSimulatorService.now();
+          const unlinked = invalidateSubscriptionPlanInfo(linked, now);
+          await manager.getRepository(BillingSubscriptionPlanInfo).save(unlinked);
         }
       }
     });

@@ -1,5 +1,4 @@
-import { BillingOrganizationProp, BillingResultCode, CloudLicenseProp, CloudLicenseResponse, CreateCloudLicenseDto, FindCloudLicenseDto, resultCode } from '@dogu-private/console';
-import { assertUnreachable } from '@dogu-tech/common';
+import { BillingOrganizationProp, BillingResult, CloudLicenseProp, CloudLicenseResponse, CreateCloudLicenseDto, FindCloudLicenseDto, resultCode } from '@dogu-private/console';
 import { ConflictException, NotFoundException } from '@nestjs/common';
 import { v4 } from 'uuid';
 
@@ -8,6 +7,7 @@ import { CloudLicense } from '../../db/entity/cloud-license.entity';
 import { RetrySerializeContext } from '../../db/utils';
 import { createBillingOrganization } from '../billing-organization/billing-organization.serializables';
 import { BillingSubscriptionPlanInfoCommonModule } from '../common/plan-info-common.module';
+import { applyCloudLicense } from './cloud-license.utils';
 
 export async function createCloudLicense(context: RetrySerializeContext, dto: CreateCloudLicenseDto): Promise<CloudLicense> {
   const { manager } = context;
@@ -55,26 +55,16 @@ export async function findCloudLicense(context: RetrySerializeContext, dto: Find
   return response;
 }
 
-export interface ApplyCloudLicenseOptions {
-  billingSubscriptionPlanInfo: BillingSubscriptionPlanInfo;
+export interface UpdateCloudLicenseOptions {
+  billingOrganizationId: string;
+  planInfos: BillingSubscriptionPlanInfo[];
 }
 
-export interface ApplyCloudLicenseResultFailure {
-  ok: false;
-  resultCode: BillingResultCode;
-}
+export type UpdateCloudLicenseResult = BillingResult<CloudLicense>;
 
-export interface ApplyCloudLicenseResultSuccess {
-  ok: true;
-  license: CloudLicense;
-}
-
-export type ApplyCloudLicenseResult = ApplyCloudLicenseResultFailure | ApplyCloudLicenseResultSuccess;
-
-export async function applyCloudLicense(context: RetrySerializeContext, options: ApplyCloudLicenseOptions): Promise<ApplyCloudLicenseResult> {
+export async function updateCloudLicense(context: RetrySerializeContext, options: UpdateCloudLicenseOptions): Promise<UpdateCloudLicenseResult> {
   const { manager } = context;
-  const { billingSubscriptionPlanInfo } = options;
-  const { billingOrganizationId, type, option } = billingSubscriptionPlanInfo;
+  const { billingOrganizationId, planInfos } = options;
   const cloudLicense = await manager.getRepository(CloudLicense).findOne({
     where: {
       billingOrganizationId,
@@ -83,6 +73,7 @@ export async function applyCloudLicense(context: RetrySerializeContext, options:
       mode: 'pessimistic_write',
     },
   });
+
   if (cloudLicense === null) {
     return {
       ok: false,
@@ -92,20 +83,10 @@ export async function applyCloudLicense(context: RetrySerializeContext, options:
     };
   }
 
-  switch (type) {
-    case 'live-testing':
-      {
-        cloudLicense.liveTestingParallelCount = option;
-      }
-      break;
-    default: {
-      assertUnreachable(type);
-    }
-  }
-
+  planInfos.forEach((info) => applyCloudLicense(cloudLicense, info));
   const license = await manager.getRepository(CloudLicense).save(cloudLicense);
   return {
     ok: true,
-    license,
+    value: license,
   };
 }

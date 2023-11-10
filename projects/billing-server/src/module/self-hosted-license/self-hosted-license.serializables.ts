@@ -41,7 +41,7 @@ export async function findSelfHostedLicense(context: RetrySerializeContext, dto:
   return response;
 }
 
-export async function createSelfHostedLicense(context: RetrySerializeContext, dto: CreateSelfHostedLicenseDto): Promise<SelfHostedLicense> {
+export async function createSelfHostedLicense(context: RetrySerializeContext, dto: CreateSelfHostedLicenseDto, now: Date): Promise<SelfHostedLicense> {
   const { manager } = context;
   const { organizationId, expiredAt } = dto;
   const existingLicense = await manager.getRepository(SelfHostedLicense).findOne({ where: { organizationId } });
@@ -51,7 +51,7 @@ export async function createSelfHostedLicense(context: RetrySerializeContext, dt
   }
 
   const billingOrganization = await createBillingOrganization(context, { organizationId, category: 'self-hosted' });
-  const licenseKey = LicenseKeyService.createLicensKey();
+  const licenseKey = LicenseKeyService.createLicensKey(now);
   const license = manager.getRepository(SelfHostedLicense).create({
     selfHostedLicenseId: v4(),
     organizationId,

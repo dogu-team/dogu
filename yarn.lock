@@ -8790,6 +8790,27 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/pg-cursor@npm:^2":
+  version: 2.7.2
+  resolution: "@types/pg-cursor@npm:2.7.2"
+  dependencies:
+    "@types/node": "*"
+    "@types/pg": "*"
+  checksum: bedf37185917be9e9db01a865dca89676aedec55b25b6ab3fdb00e7bbb3f4bf40986086eab670aef55cdb513e5877a22b8c05c81460d8590014aeadd5276e126
+  languageName: node
+  linkType: hard
+
+"@types/pg@npm:*":
+  version: 8.10.9
+  resolution: "@types/pg@npm:8.10.9"
+  dependencies:
+    "@types/node": "*"
+    pg-protocol: "*"
+    pg-types: ^4.0.1
+  checksum: c0c750af1f0945fe31c2793931da33bf596476ec8b52babfdb20f61006570c1c6c7f62f2dedd0cb9aefd2cddab238f2ed279337d3b2aa734ddd1ee8958e2355e
+  languageName: node
+  linkType: hard
+
 "@types/pg@npm:8":
   version: 8.10.2
   resolution: "@types/pg@npm:8.10.2"
@@ -11847,6 +11868,7 @@ __metadata:
     "@types/nodemailer": 6
     "@types/passport": 1.0.14
     "@types/pg": 8
+    "@types/pg-cursor": ^2
     "@types/shelljs": 0.8.14
     "@types/uuid": 9.0.6
     "@types/ws": 8
@@ -11862,6 +11884,7 @@ __metadata:
     nodemon: 3.0.1
     npm-check-updates: 16.14.6
     pg: 8.11.3
+    pg-cursor: 2.10.3
     reflect-metadata: 0.1.13
     rxjs: 7.8.1
     shelljs: 0.8.5
@@ -26243,6 +26266,15 @@ __metadata:
   version: 2.6.2
   resolution: "pg-connection-string@npm:2.6.2"
   checksum: 22265882c3b6f2320785378d0760b051294a684989163d5a1cde4009e64e84448d7bf67d9a7b9e7f69440c3ee9e2212f9aa10dd17ad6773f6143c6020cebbcb5
+  languageName: node
+  linkType: hard
+
+"pg-cursor@npm:2.10.3":
+  version: 2.10.3
+  resolution: "pg-cursor@npm:2.10.3"
+  peerDependencies:
+    pg: ^8
+  checksum: 86dd66c4bf70da5272eb60d485a60f4216ebbffe2b7d314fe18a28a0cadf9b0d056d2291e0f108ed413be185818c2e82105bf290bf98fc91f73c52e4d0de42b8
   languageName: node
   linkType: hard
 

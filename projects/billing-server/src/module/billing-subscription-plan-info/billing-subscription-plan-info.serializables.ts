@@ -1,40 +1,27 @@
-import { BillingResultCode, BillingSubscriptionPlanData } from '@dogu-private/console';
+import { BillingResult, BillingSubscriptionPlanData } from '@dogu-private/console';
 import { v4 } from 'uuid';
-import { BillingOrganization } from '../../db/entity/billing-organization.entity';
 import { BillingSubscriptionPlanInfo } from '../../db/entity/billing-subscription-plan-info.entity';
 import { RetrySerializeContext } from '../../db/utils';
 import { UseCouponResult } from '../billing-coupon/billing-coupon.serializables';
 
-export interface CreateOrUpdateBillingSubscriptionPlanInfoOptions {
-  billingOrganization: BillingOrganization;
-  data: BillingSubscriptionPlanData;
+export interface CreateOrUpdateSubscriptionPlanInfoOptions {
+  billingOrganizationId: string;
+  subscriptionPlanInfos: BillingSubscriptionPlanInfo[];
+  planData: BillingSubscriptionPlanData;
   discountedAmount: number;
   useCouponResult: UseCouponResult;
   billingSubscriptionPlanSourceId: string | null;
 }
 
-export interface CreateOrUpdateBillingSubscriptionPlanInfoResultFailure {
-  ok: false;
-  resultCode: BillingResultCode;
-}
+export type CreateOrUpdateSubscriptionPlanInfoResult = BillingResult<BillingSubscriptionPlanInfo>;
 
-export interface CreateOrUpdateBillingSubscriptionPlanInfoResultSuccess {
-  ok: true;
-  billingSubscriptionPlanInfo: BillingSubscriptionPlanInfo;
-}
-
-export type CreateOrUpdateBillingSubscriptionPlanInfoResult = CreateOrUpdateBillingSubscriptionPlanInfoResultFailure | CreateOrUpdateBillingSubscriptionPlanInfoResultSuccess;
-
-export async function createOrUpdateBillingSubscriptionPlanInfo(
-  context: RetrySerializeContext,
-  options: CreateOrUpdateBillingSubscriptionPlanInfoOptions,
-): Promise<CreateOrUpdateBillingSubscriptionPlanInfoResult> {
-  const { logger, manager } = context;
-  const { billingOrganization, data, discountedAmount, billingSubscriptionPlanSourceId, useCouponResult } = options;
-  const { currency, period, type, category, option, originPrice } = data;
+export function createOrUpdateSubscriptionPlanInfo(context: RetrySerializeContext, options: CreateOrUpdateSubscriptionPlanInfoOptions): CreateOrUpdateSubscriptionPlanInfoResult {
+  const { manager } = context;
+  const { billingOrganizationId, subscriptionPlanInfos, planData, discountedAmount, billingSubscriptionPlanSourceId, useCouponResult } = options;
+  const { currency, period, type, category, option, originPrice } = planData;
   const { billingCouponId, couponRemainingApplyCount } = useCouponResult;
 
-  const found = billingOrganization.billingSubscriptionPlanInfos?.find((info) => info.type === type);
+  const found = subscriptionPlanInfos.find((info) => info.type === type);
   if (found) {
     found.category = category;
     found.option = option;
@@ -46,17 +33,15 @@ export async function createOrUpdateBillingSubscriptionPlanInfo(
     found.couponRemainingApplyCount = couponRemainingApplyCount;
     found.billingSubscriptionPlanSourceId = billingSubscriptionPlanSourceId;
     found.state = 'subscribed';
-    const saved = await manager.getRepository(BillingSubscriptionPlanInfo).save(found);
-    logger.info('updateSubscriptionPlanInfo', { billingSubscriptionPlanInfo: saved });
     return {
       ok: true,
-      billingSubscriptionPlanInfo: saved,
+      value: found,
     };
   }
 
-  const billingSubscriptionPlanInfo = manager.getRepository(BillingSubscriptionPlanInfo).create({
+  const planInfo = manager.getRepository(BillingSubscriptionPlanInfo).create({
     billingSubscriptionPlanInfoId: v4(),
-    billingOrganizationId: billingOrganization.billingOrganizationId,
+    billingOrganizationId,
     category,
     type,
     option,
@@ -69,10 +54,10 @@ export async function createOrUpdateBillingSubscriptionPlanInfo(
     billingSubscriptionPlanSourceId,
     state: 'subscribed',
   });
-  const saved = await manager.getRepository(BillingSubscriptionPlanInfo).save(billingSubscriptionPlanInfo);
-  logger.info('createSubscriptionPlanInfo', { billingSubscriptionPlanInfo: saved });
+
+  subscriptionPlanInfos.push(planInfo);
   return {
     ok: true,
-    billingSubscriptionPlanInfo: saved,
+    value: planInfo,
   };
 }

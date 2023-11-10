@@ -1,6 +1,6 @@
 import {
   BillingMethodNiceProp,
-  BillingResultWithExtras,
+  BillingResult,
   CreateOrUpdateMethodNiceDto,
   NiceSubscribePaymentsResponse,
   resultCode,
@@ -14,14 +14,17 @@ import { BillingOrganization } from '../../db/entity/billing-organization.entity
 import { RetrySerializeContext } from '../../db/utils';
 import { BillingMethodNiceCaller } from './billing-method-nice.caller';
 
-export type CreateOrUpdateMethodNiceResult = BillingResultWithExtras<BillingMethodNice, { niceResultCode: string | null }>;
+export interface CreateOrUpdateMethodNiceOptions {
+  billingMethodNiceCaller: BillingMethodNiceCaller;
+  dto: CreateOrUpdateMethodNiceDto;
+  now: Date;
+}
 
-export async function createOrUpdateMethodNice(
-  context: RetrySerializeContext, //
-  billingMethodNiceCaller: BillingMethodNiceCaller,
-  dto: CreateOrUpdateMethodNiceDto,
-): Promise<CreateOrUpdateMethodNiceResult> {
+export type CreateOrUpdateMethodNiceResult = BillingResult<BillingMethodNice, { niceResultCode: string | null }>;
+
+export async function createOrUpdateMethodNice(context: RetrySerializeContext, options: CreateOrUpdateMethodNiceOptions): Promise<CreateOrUpdateMethodNiceResult> {
   const { logger, manager, registerOnAfterRollback } = context;
+  const { billingMethodNiceCaller, dto, now } = options;
   const { billingOrganizationId, subscribeRegist } = dto;
   const { registerCard } = subscribeRegist;
   const { cardNumber, expirationYear, expirationMonth } = registerCard;
@@ -50,9 +53,7 @@ export async function createOrUpdateMethodNice(
     return {
       ok: false,
       resultCode: subscribeRegistResult.resultCode,
-      extras: {
-        niceResultCode: subscribeRegistResult.extras.niceResultCode,
-      },
+      niceResultCode: subscribeRegistResult.niceResultCode,
     };
   }
 
@@ -66,7 +67,7 @@ export async function createOrUpdateMethodNice(
     billingMethodNice.cardName = cardName;
     billingMethodNice.cardNumberLast4Digits = cardNumberLast4Digits;
     billingMethodNice.subscribeRegistResponse = value as unknown as Record<string, unknown>;
-    billingMethodNice.subscribeRegistAt = new Date();
+    billingMethodNice.subscribeRegistAt = now;
     billingMethodNice.expirationYear = expirationYear;
     billingMethodNice.expirationMonth = expirationMonth;
   } else {
@@ -78,7 +79,7 @@ export async function createOrUpdateMethodNice(
       cardName,
       cardNumberLast4Digits,
       subscribeRegistResponse: value as unknown as Record<string, unknown>,
-      subscribeRegistAt: new Date(),
+      subscribeRegistAt: now,
       expirationYear,
       expirationMonth,
     });
@@ -88,7 +89,6 @@ export async function createOrUpdateMethodNice(
   return {
     ok: true,
     value: saved,
-    extras: {},
   };
 }
 
@@ -98,7 +98,7 @@ export interface CreateNicePurchaseOptions {
   goodsName: string;
 }
 
-export type CreateNicePurchaseResult = BillingResultWithExtras<NiceSubscribePaymentsResponse, { niceResultCode: string | null }>;
+export type CreateNicePurchaseResult = BillingResult<NiceSubscribePaymentsResponse, { niceResultCode: string | null }>;
 
 export async function createPurchase(
   context: RetrySerializeContext,
@@ -119,9 +119,7 @@ export async function createPurchase(
       resultCode: resultCode('method-nice-not-found', {
         billingMethodNiceId,
       }),
-      extras: {
-        niceResultCode: null,
-      },
+      niceResultCode: null,
     };
   }
 
@@ -132,9 +130,7 @@ export async function createPurchase(
       resultCode: resultCode('method-nice-bid-not-found', {
         billingMethodNiceId,
       }),
-      extras: {
-        niceResultCode: null,
-      },
+      niceResultCode: null,
     };
   }
 
@@ -152,9 +148,7 @@ export async function createPurchase(
         amount,
         goodsName,
       }),
-      extras: {
-        niceResultCode: subscribePaymentsResult.extras.niceResultCode,
-      },
+      niceResultCode: subscribePaymentsResult.niceResultCode,
     };
   }
   const { value } = subscribePaymentsResult;
@@ -169,16 +163,18 @@ export async function createPurchase(
   return {
     ok: true,
     value,
-    extras: {},
   };
 }
 
-export async function updateBillingMethod(
-  context: RetrySerializeContext,
-  billingMethodNiceCaller: BillingMethodNiceCaller,
-  dto: UpdateMethodNiceDto,
-): Promise<UpdateBillingMethodResponse> {
+export interface UpdateBillingMethodOptions {
+  billingMethodNiceCaller: BillingMethodNiceCaller;
+  dto: UpdateMethodNiceDto;
+  now: Date;
+}
+
+export async function updateBillingMethod(context: RetrySerializeContext, options: UpdateBillingMethodOptions): Promise<UpdateBillingMethodResponse> {
   const { manager } = context;
+  const { billingMethodNiceCaller, dto, now } = options;
   const { registerCard } = dto;
 
   const billingOrganization = await manager.getRepository(BillingOrganization).findOne({
@@ -197,17 +193,21 @@ export async function updateBillingMethod(
     };
   }
 
-  const createOrUpdateMethodNiceResult = await createOrUpdateMethodNice(context, billingMethodNiceCaller, {
-    billingOrganizationId: billingOrganization.billingOrganizationId,
-    subscribeRegist: {
-      registerCard,
+  const createOrUpdateMethodNiceResult = await createOrUpdateMethodNice(context, {
+    billingMethodNiceCaller,
+    dto: {
+      billingOrganizationId: billingOrganization.billingOrganizationId,
+      subscribeRegist: {
+        registerCard,
+      },
     },
+    now,
   });
   if (!createOrUpdateMethodNiceResult.ok) {
     return {
       ok: false,
       resultCode: createOrUpdateMethodNiceResult.resultCode,
-      niceResultCode: createOrUpdateMethodNiceResult.extras.niceResultCode,
+      niceResultCode: createOrUpdateMethodNiceResult.niceResultCode,
     };
   }
 

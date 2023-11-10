@@ -97,9 +97,7 @@ export class BillingMethodNiceCaller {
         const result: NiceCallResult<NiceSubscribeRegistResponse> = {
           ok: false,
           resultCode: resultCode('method-nice-subscribe-regist-failed'),
-          extras: {
-            error: errorify(error),
-          },
+          error: errorify(error),
         };
         return result;
       });
@@ -109,9 +107,7 @@ export class BillingMethodNiceCaller {
       return {
         ok: false,
         resultCode: result.resultCode,
-        extras: {
-          niceResultCode: null,
-        },
+        niceResultCode: null,
       };
     }
 
@@ -125,9 +121,7 @@ export class BillingMethodNiceCaller {
           orderId,
           responseOrderId: response.orderId,
         }),
-        extras: {
-          niceResultCode: response.resultCode,
-        },
+        niceResultCode: response.resultCode,
       };
     }
 
@@ -138,9 +132,7 @@ export class BillingMethodNiceCaller {
           resultCode: response.resultCode,
           resultMsg: response.resultMsg,
         }),
-        extras: {
-          niceResultCode: response.resultCode,
-        },
+        niceResultCode: response.resultCode,
       };
     }
 
@@ -148,16 +140,13 @@ export class BillingMethodNiceCaller {
       return {
         ok: false,
         resultCode: resultCode('method-nice-bid-not-found'),
-        extras: {
-          niceResultCode: response.resultCode,
-        },
+        niceResultCode: response.resultCode,
       };
     }
 
     return {
       ok: true,
       value: response,
-      extras: {},
     };
   }
 
@@ -187,9 +176,7 @@ export class BillingMethodNiceCaller {
         const result: NiceCallResult<NiceSubscribeExpireResponse> = {
           ok: false,
           resultCode: resultCode('method-nice-subscribe-expire-failed'),
-          extras: {
-            error: errorify(error),
-          },
+          error: errorify(error),
         };
         return result;
       });
@@ -264,9 +251,7 @@ export class BillingMethodNiceCaller {
             const result: NiceCallResult<NiceSubscribePaymentsResponse> = {
               ok: false,
               resultCode: resultCode('method-nice-network-error'),
-              extras: {
-                error,
-              },
+              error,
             };
             return result;
           }
@@ -275,9 +260,7 @@ export class BillingMethodNiceCaller {
         const result: NiceCallResult<NiceSubscribePaymentsResponse> = {
           ok: false,
           resultCode: resultCode('method-nice-subscribe-payments-failed'),
-          extras: {
-            error,
-          },
+          error,
         };
         return result;
       });
@@ -296,9 +279,7 @@ export class BillingMethodNiceCaller {
       return {
         ok: false,
         resultCode: result.resultCode,
-        extras: {
-          niceResultCode: null,
-        },
+        niceResultCode: null,
       };
     }
 
@@ -312,9 +293,7 @@ export class BillingMethodNiceCaller {
           orderId,
           responseOrderId: response.orderId,
         }),
-        extras: {
-          niceResultCode: response.resultCode,
-        },
+        niceResultCode: response.resultCode,
       };
     }
 
@@ -325,9 +304,7 @@ export class BillingMethodNiceCaller {
           resultCode: response.resultCode,
           resultMsg: response.resultMsg,
         }),
-        extras: {
-          niceResultCode: response.resultCode,
-        },
+        niceResultCode: response.resultCode,
       };
     }
 
@@ -337,16 +314,13 @@ export class BillingMethodNiceCaller {
         resultCode: resultCode('method-nice-status-not-paid', {
           status: response.status,
         }),
-        extras: {
-          niceResultCode: response.resultCode,
-        },
+        niceResultCode: response.resultCode,
       };
     }
 
     return {
       ok: true,
       value: response,
-      extras: {},
     };
   }
 
@@ -379,9 +353,7 @@ export class BillingMethodNiceCaller {
         const result: NiceCallResult<NiceSubscribePaymentsResponse> = {
           ok: false,
           resultCode: resultCode('method-nice-payments-cancel-failed'),
-          extras: {
-            error,
-          },
+          error,
         };
         return result;
       });
@@ -445,9 +417,7 @@ export class BillingMethodNiceCaller {
         const result: NiceCallResult<NiceSubscribePaymentsResponse> = {
           ok: false,
           resultCode: resultCode('method-nice-payments-failed'),
-          extras: {
-            error,
-          },
+          error,
         };
         return result;
       });
@@ -505,9 +475,7 @@ export class BillingMethodNiceCaller {
         const result: NiceCallResult<NicePaymentsNetCancelResponse> = {
           ok: false,
           resultCode: resultCode('method-nice-payments-netcancel-failed'),
-          extras: {
-            error,
-          },
+          error,
         };
         return result;
       });

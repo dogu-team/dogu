@@ -325,3 +325,5 @@ export const BillingGracePeriodDays = 3;
 
 export const BillingLicenseStatus = ['not-expired', 'within-grace-period', 'expired'] as const;
 export type BillingLicenseStatus = (typeof BillingLicenseStatus)[number];
+
+export const BillingGoodsName = 'Dogu Platform Subscription';

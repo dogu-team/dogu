@@ -1,19 +1,28 @@
-import { BillingOrganizationProp } from '@dogu-private/console';
-import { assertUnreachable, errorify, stringify } from '@dogu-tech/common';
+import { BillingGoodsName, BillingGracePeriodDays, BillingOrganizationProp, BillingPeriod } from '@dogu-private/console';
+import { assertUnreachable, delay, errorify, stringify } from '@dogu-tech/common';
 import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
-import { setInterval } from 'timers/promises';
-import { DataSource, IsNull, LessThan, Not } from 'typeorm';
+import { DateTime } from 'luxon';
+import Cursor from 'pg-cursor';
+import { Brackets, DataSource, IsNull, LessThan, Not } from 'typeorm';
 import { v4 } from 'uuid';
 import { createExpiredAt, NormalizedDateTime } from '../../date-time-utils';
 import { BillingHistory } from '../../db/entity/billing-history.entity';
 import { BillingMethodNice } from '../../db/entity/billing-method-nice.entity';
-import { BillingOrganization } from '../../db/entity/billing-organization.entity';
+import { BillingOrganization, BillingOrganizationTableName } from '../../db/entity/billing-organization.entity';
 import { BillingSubscriptionPlanHistory } from '../../db/entity/billing-subscription-plan-history.entity';
 import { BillingSubscriptionPlanInfo } from '../../db/entity/billing-subscription-plan-info.entity';
-import { retrySerialize } from '../../db/utils';
+import { getClient, retrySerialize } from '../../db/utils';
+import { env } from '../../env';
 import { BillingMethodNiceCaller } from '../billing-method/billing-method-nice.caller';
-import { clearChangeRequested } from '../billing-subscription-plan-info/billing-subscription-plan-info.utils';
+import { invalidateBillingOrganization } from '../billing-organization/billing-organization.utils';
+import {
+  calculatePurchaseAmountAndUpdateCouponCount,
+  invalidateSubscriptionPlanInfo,
+  updateSubscriptionPlanInfoState,
+} from '../billing-subscription-plan-info/billing-subscription-plan-info.utils';
+import { updateCloudLicense } from '../cloud-license/cloud-license.serializables';
+import { DateTimeSimulatorService } from '../date-time-simulator/date-time-simulator.service';
 import { DoguLogger } from '../logger/logger';
 
 @Injectable()
@@ -25,6 +34,7 @@ export class BillingUpdaterService implements OnModuleInit, OnModuleDestroy {
     @InjectDataSource()
     private readonly dataSource: DataSource,
     private readonly billingMethodNiceCaller: BillingMethodNiceCaller,
+    private readonly dateTimeSimulatorService: DateTimeSimulatorService,
   ) {}
 
   onModuleInit(): void {
@@ -38,150 +48,209 @@ export class BillingUpdaterService implements OnModuleInit, OnModuleDestroy {
   }
 
   private async run(): Promise<void> {
-    for await (const _ of setInterval(60 * 1000)) {
-      if (this.closeRequested) {
-        break;
-      }
+    const client = await getClient(this.dataSource);
+    const query = new Cursor<Pick<BillingOrganization, 'billingOrganizationId'>>(
+      `SELECT "${BillingOrganizationProp.billingOrganizationId}" FROM ${BillingOrganizationTableName} ORDER BY "${BillingOrganizationProp.createdAt}" DESC`,
+    );
 
-      try {
-        await Promise.resolve();
-      } catch (error) {
-        this.logger.error('BillingUpdaterService.run.updateBilling error', { error: errorify(error) });
+    while (!this.closeRequested) {
+      const cursor = client.query(query);
+      while (!this.closeRequested) {
+        const rows = await cursor.read(1);
+        if (rows.length === 0) {
+          break;
+        }
+
+        const billingOrganization = rows[0];
+        try {
+          await this.update(billingOrganization.billingOrganizationId);
+        } catch (error) {
+          this.logger.error('BillingUpdaterService.run.update error', { error: errorify(error) });
+        }
+
+        if (env.DOGU_BILLING_RUN_TYPE === 'local') {
+          await delay(1000);
+        }
       }
     }
   }
 
-  private async updateBilling(): Promise<void> {
+  private async update(billingOrganizationId: string): Promise<void> {
     await retrySerialize(this.logger, this.dataSource, async (context) => {
-      const { manager } = context;
-      const now = new Date();
+      const { manager, registerOnAfterRollback } = context;
+      const now = this.dateTimeSimulatorService.now();
       const billingOrganization = await manager
         .getRepository(BillingOrganization)
         .createQueryBuilder(BillingOrganization.name)
         .leftJoinAndSelect(`${BillingOrganization.name}.${BillingOrganizationProp.billingSubscriptionPlanInfos}`, BillingSubscriptionPlanInfo.name)
         .leftJoinAndSelect(`${BillingOrganization.name}.${BillingOrganizationProp.billingMethodNice}`, BillingMethodNice.name)
         .where({
-          subscriptionYearlyExpiredAt: Not(IsNull()),
-          category: 'cloud',
+          billingOrganizationId,
         })
-        .andWhere({
-          subscriptionYearlyExpiredAt: LessThan(now),
-        })
+        .andWhere(
+          new Brackets((qb) =>
+            qb
+              .where(new Brackets((qb) => qb.where({ graceExpiredAt: Not(IsNull()) }).andWhere({ graceExpiredAt: LessThan(now) })))
+              .orWhere(new Brackets((qb) => qb.where({ graceNextPurchasedAt: Not(IsNull()) }).andWhere({ graceNextPurchasedAt: LessThan(now) })))
+              .orWhere(
+                new Brackets((qb) =>
+                  qb
+                    .where({ graceExpiredAt: IsNull(), graceNextPurchasedAt: IsNull() })
+                    .andWhere(
+                      new Brackets((qb) =>
+                        qb
+                          .where(new Brackets((qb) => qb.where({ subscriptionMonthlyExpiredAt: Not(IsNull()) }).andWhere({ subscriptionMonthlyExpiredAt: LessThan(now) })))
+                          .orWhere(new Brackets((qb) => qb.where({ subscriptionYearlyExpiredAt: Not(IsNull()) }).andWhere({ subscriptionYearlyExpiredAt: LessThan(now) }))),
+                      ),
+                    ),
+                ),
+              ),
+          ),
+        )
         .getOne();
-
       if (!billingOrganization) {
         return;
       }
 
-      const { billingMethodNice } = billingOrganization;
-      if (!billingMethodNice) {
-        throw new Error('billingMethodNice must not be null');
-      }
-
-      const purchases: BillingSubscriptionPlanInfo[] = [];
-      const infos = (billingOrganization.billingSubscriptionPlanInfos ?? []).filter((info) => {
-        return info.period === 'yearly';
-      });
-
-      for (const info of infos) {
-        switch (info.state) {
-          case 'unsubscribed': {
-            // noop
+      const invalidate = async (period: BillingPeriod): Promise<void> => {
+        switch (period) {
+          case 'monthly': {
+            billingOrganization.billingSubscriptionPlanInfos
+              ?.filter((planInfo) => planInfo.period === 'monthly')
+              .forEach((planInfo) => invalidateSubscriptionPlanInfo(planInfo, now));
             break;
           }
-          case 'unsubscribe-requested': {
-            info.state = 'unsubscribed';
-            info.unsubscribedAt = now;
-            break;
-          }
-          case 'change-option-or-period-requested': {
-            if (info.changeRequestedPeriod) {
-              info.period = info.changeRequestedPeriod;
-            }
-
-            if (info.changeRequestedOption) {
-              info.option = info.changeRequestedOption;
-            }
-
-            if (info.changeRequestedOriginPrice) {
-              info.originPrice = info.changeRequestedOriginPrice;
-            }
-
-            if (info.changeRequestedDiscountedAmount) {
-              info.discountedAmount = info.changeRequestedDiscountedAmount;
-            }
-
-            clearChangeRequested(info);
-            info.state = 'subscribed';
-            purchases.push(info);
-            break;
-          }
-          case 'subscribed': {
-            purchases.push(info);
+          case 'yearly': {
+            billingOrganization.billingSubscriptionPlanInfos?.forEach((planInfo) => invalidateSubscriptionPlanInfo(planInfo, now));
             break;
           }
           default: {
-            assertUnreachable(info.state);
+            assertUnreachable(period);
           }
         }
+
+        invalidateBillingOrganization(billingOrganization, period);
+        await manager.save(billingOrganization);
+      };
+
+      const { billingSubscriptionPlanInfos, billingMethodNice } = billingOrganization;
+      if (!billingSubscriptionPlanInfos) {
+        await invalidate('yearly');
+        this.logger.error('BillingUpdaterService.update billingSubscriptionPlanInfos must not be null. invalidated', { billingOrganizationId });
+        return;
       }
 
-      const purchaseAmountInfos = purchases.map((purchase) => {
-        if (purchase.couponRemainingApplyCount === null) {
-          const purchaseAmount = purchase.originPrice - purchase.discountedAmount;
-          return {
-            discountedAmount: purchase.discountedAmount,
-            purchaseAmount,
-          };
-        } else {
-          if (purchase.couponRemainingApplyCount > 0) {
-            purchase.couponRemainingApplyCount -= 1;
-            const purchaseAmount = purchase.originPrice - purchase.discountedAmount;
-            return {
-              discountedAmount: purchase.discountedAmount,
-              purchaseAmount,
-            };
-          } else {
-            const purchaseAmount = purchase.originPrice;
-            return {
-              discountedAmount: 0,
-              purchaseAmount,
-            };
-          }
-        }
-      });
-      const purchaseAmount = purchaseAmountInfos.reduce((acc, cur) => acc + cur.purchaseAmount, 0);
-
-      const { bid } = billingMethodNice;
-      if (bid === null) {
-        throw new Error('bid must not be null');
-      }
-
-      const goodsName = 'Dogu Platform Subscription';
-      const result = await this.billingMethodNiceCaller.subscribePayments({
-        bid,
-        amount: purchaseAmount,
-        goodsName,
-      });
-
-      if (!result.ok) {
-        throw new Error(`subscribePayments failed: ${stringify(result)}`);
+      const bid = billingMethodNice?.bid ?? null;
+      if (!billingMethodNice || !bid) {
+        await invalidate('yearly');
+        this.logger.error('BillingUpdaterService.update billingMethodNice must not be null. invalidated', { billingOrganizationId });
+        return;
       }
 
       if (!billingOrganization.currency) {
-        throw new Error('currency must not be null');
+        await invalidate('yearly');
+        this.logger.error('BillingUpdaterService.update currency must not be null. invalidated', { billingOrganizationId });
+        return;
       }
 
-      const newHistory = manager.getRepository(BillingHistory).create({
+      const isMonthlyGraceExpired =
+        billingOrganization.graceExpiredAt !== null &&
+        billingOrganization.subscriptionMonthlyExpiredAt !== null &&
+        billingOrganization.subscriptionMonthlyExpiredAt < billingOrganization.graceExpiredAt;
+      const isYearlyGraceExpired =
+        billingOrganization.graceExpiredAt !== null &&
+        billingOrganization.subscriptionYearlyExpiredAt !== null &&
+        billingOrganization.subscriptionYearlyExpiredAt < billingOrganization.graceExpiredAt;
+      const isMonthlyGraceNextPurchased =
+        billingOrganization.graceNextPurchasedAt !== null &&
+        billingOrganization.subscriptionMonthlyExpiredAt !== null &&
+        billingOrganization.subscriptionMonthlyExpiredAt < billingOrganization.graceNextPurchasedAt;
+      const isYearlyGraceNextPurchased =
+        billingOrganization.graceNextPurchasedAt !== null &&
+        billingOrganization.subscriptionYearlyExpiredAt !== null &&
+        billingOrganization.subscriptionYearlyExpiredAt < billingOrganization.graceNextPurchasedAt;
+      const isMonthlyExpired =
+        billingOrganization.graceExpiredAt === null && billingOrganization.graceNextPurchasedAt === null && billingOrganization.subscriptionMonthlyExpiredAt !== null;
+      const isYearlyExpired =
+        billingOrganization.graceExpiredAt === null && billingOrganization.graceNextPurchasedAt === null && billingOrganization.subscriptionYearlyExpiredAt !== null;
+      const monthlyTriggered = isMonthlyExpired || isMonthlyGraceNextPurchased;
+      const yearlyTriggered = isYearlyExpired || isYearlyGraceNextPurchased;
+
+      if (isYearlyGraceExpired) {
+        await invalidate('yearly');
+        this.logger.error('BillingUpdaterService.update yearly grace expired. invalidated', { billingOrganizationId });
+        return;
+      }
+
+      if (isMonthlyGraceExpired) {
+        await invalidate('monthly');
+        this.logger.error('BillingUpdaterService.update monthly grace expired. invalidated', { billingOrganizationId });
+        return;
+      }
+
+      const monthlyPlanInfos = monthlyTriggered ? billingSubscriptionPlanInfos.filter((planInfo) => planInfo.period === 'monthly') : [];
+      const yearlyPlanInfos = yearlyTriggered ? billingSubscriptionPlanInfos.filter((planInfo) => planInfo.period === 'yearly') : [];
+      const processingPlanInfos = [...monthlyPlanInfos, ...yearlyPlanInfos];
+      const updatedPlanInfos = processingPlanInfos.map((planInfo) => updateSubscriptionPlanInfoState(planInfo, now));
+      const purchasePlanInfos = updatedPlanInfos.filter((planInfo) => planInfo.state === 'subscribed');
+      const purchaseAmountInfos = purchasePlanInfos.map((planInfo) => calculatePurchaseAmountAndUpdateCouponCount(planInfo));
+      const totalPurchaseAmount = purchaseAmountInfos.reduce((acc, cur) => acc + cur.purchaseAmount, 0);
+
+      const paymentsResult = await this.billingMethodNiceCaller.subscribePayments({
+        bid,
+        amount: totalPurchaseAmount,
+        goodsName: BillingGoodsName,
+      });
+
+      if (!paymentsResult.ok) {
+        if (isMonthlyGraceNextPurchased || isYearlyGraceNextPurchased) {
+          if (!billingOrganization.graceNextPurchasedAt) {
+            throw new Error('graceNextPurchasedAt must not be null');
+          }
+
+          billingOrganization.graceNextPurchasedAt = DateTime.fromJSDate(billingOrganization.graceNextPurchasedAt).plus({ days: 1 }).toJSDate();
+        }
+
+        if (isMonthlyExpired) {
+          if (!billingOrganization.subscriptionMonthlyExpiredAt) {
+            throw new Error('subscriptionMonthlyExpiredAt must not be null');
+          }
+
+          billingOrganization.graceNextPurchasedAt = DateTime.fromJSDate(billingOrganization.subscriptionMonthlyExpiredAt).plus({ days: 1 }).toJSDate();
+          billingOrganization.graceExpiredAt = DateTime.fromJSDate(billingOrganization.subscriptionMonthlyExpiredAt).plus({ days: BillingGracePeriodDays }).toJSDate();
+        }
+
+        if (isYearlyExpired) {
+          if (!billingOrganization.subscriptionYearlyExpiredAt) {
+            throw new Error('subscriptionYearlyExpiredAt must not be null');
+          }
+
+          billingOrganization.graceNextPurchasedAt = DateTime.fromJSDate(billingOrganization.subscriptionYearlyExpiredAt).plus({ days: 1 }).toJSDate();
+          billingOrganization.graceExpiredAt = DateTime.fromJSDate(billingOrganization.subscriptionYearlyExpiredAt).plus({ days: BillingGracePeriodDays }).toJSDate();
+        }
+
+        await manager.save(billingOrganization);
+        this.logger.error('BillingUpdaterService.update paymentsResult is not ok. grace updated', { billingOrganizationId, paymentsResult: stringify(paymentsResult) });
+        return;
+      }
+
+      registerOnAfterRollback(async (error) => {
+        await this.billingMethodNiceCaller.paymentsCancel({
+          tid: paymentsResult.value.tid,
+          reason: error.message,
+        });
+      });
+
+      const createdHistory = manager.getRepository(BillingHistory).create({
         billingHistoryId: v4(),
         billingOrganizationId: billingOrganization.billingOrganizationId,
-        purchasedAmount: purchaseAmount,
+        purchasedAmount: totalPurchaseAmount,
         currency: billingOrganization.currency,
-        goodsName,
+        goodsName: BillingGoodsName,
         method: 'nice',
-        niceSubscribePaymentsResponse: result.value as unknown as Record<string, unknown>,
-        niceTid: result.value.tid,
-        niceOrderId: result.value.orderId,
+        niceSubscribePaymentsResponse: paymentsResult.value as unknown as Record<string, unknown>,
+        niceTid: paymentsResult.value.tid,
+        niceOrderId: paymentsResult.value.orderId,
         historyType: 'periodic-purchase',
         cardCode: billingMethodNice.cardCode,
         cardName: billingMethodNice.cardName,
@@ -189,43 +258,96 @@ export class BillingUpdaterService implements OnModuleInit, OnModuleDestroy {
         cardExpirationYear: billingMethodNice.expirationYear,
         cardExpirationMonth: billingMethodNice.expirationMonth,
       });
-      const savedHistory = await manager.save(newHistory);
+      const savedHistory = await manager.save(createdHistory);
 
-      let index = 0;
-      for (const purchase of purchases) {
-        const purchaseAmountInfo = purchaseAmountInfos[index];
+      const planHistories = purchaseAmountInfos.map((purchaseAmountInfo) => {
+        const { planInfo } = purchaseAmountInfo;
+        let startedAt: Date | null = null;
+        let expiredAt: Date | null = null;
+        switch (planInfo.period) {
+          case 'monthly': {
+            startedAt = billingOrganization.subscriptionMonthlyStartedAt;
+            expiredAt = billingOrganization.subscriptionMonthlyExpiredAt;
+            break;
+          }
+          case 'yearly': {
+            startedAt = billingOrganization.subscriptionYearlyStartedAt;
+            expiredAt = billingOrganization.subscriptionYearlyExpiredAt;
+            break;
+          }
+          default: {
+            assertUnreachable(planInfo.period);
+          }
+        }
+
+        if (!startedAt || !expiredAt) {
+          throw new Error('startedAt or expiredAt must not be null');
+        }
+
+        if (!billingOrganization.currency) {
+          throw new Error('currency must not be null');
+        }
+
         const planHistory = manager.getRepository(BillingSubscriptionPlanHistory).create({
           billingSubscriptionPlanHistoryId: v4(),
           billingOrganizationId: billingOrganization.billingOrganizationId,
           billingHistoryId: savedHistory.billingHistoryId,
-          billingCouponId: purchase.billingCouponId,
-          billingSubscriptionPlanSourceId: purchase.billingSubscriptionPlanSourceId,
+          billingCouponId: planInfo.billingCouponId,
+          billingSubscriptionPlanSourceId: planInfo.billingSubscriptionPlanSourceId,
           discountedAmount: purchaseAmountInfo.discountedAmount,
           purchasedAmount: purchaseAmountInfo.purchaseAmount,
-          startedAt: billingOrganization.subscriptionYearlyStartedAt,
-          expiredAt: billingOrganization.subscriptionYearlyExpiredAt,
+          startedAt,
+          expiredAt,
           category: billingOrganization.category,
-          type: purchase.type,
-          option: purchase.option,
+          type: planInfo.type,
+          option: planInfo.option,
           currency: billingOrganization.currency,
-          period: purchase.period,
-          originPrice: purchase.originPrice,
+          period: planInfo.period,
+          originPrice: planInfo.originPrice,
           historyType: 'periodic-purchase',
         });
-        await manager.save(planHistory);
+        return planHistory;
+      });
+      await manager.save(planHistories);
 
-        index += 1;
+      if (monthlyTriggered) {
+        const hasMonthlyPlanInfo = billingSubscriptionPlanInfos.some((planInfo) => planInfo.period === 'monthly' && planInfo.state === 'subscribed');
+        if (hasMonthlyPlanInfo) {
+          billingOrganization.subscriptionMonthlyStartedAt = billingOrganization.subscriptionMonthlyExpiredAt;
+          if (!billingOrganization.subscriptionMonthlyStartedAt) {
+            throw new Error('subscriptionMonthlyStartedAt must not be null');
+          }
+
+          billingOrganization.subscriptionMonthlyExpiredAt = createExpiredAt(NormalizedDateTime.fromDate(billingOrganization.subscriptionMonthlyStartedAt), 'monthly').date;
+        } else {
+          billingOrganization.subscriptionMonthlyStartedAt = null;
+          billingOrganization.subscriptionMonthlyExpiredAt = null;
+        }
       }
 
-      await manager.save(infos);
+      if (yearlyTriggered) {
+        const hasYearlyPlanInfo = billingSubscriptionPlanInfos.some((planInfo) => planInfo.period === 'yearly' && planInfo.state === 'subscribed');
+        if (hasYearlyPlanInfo) {
+          billingOrganization.subscriptionYearlyStartedAt = billingOrganization.subscriptionYearlyExpiredAt;
+          if (!billingOrganization.subscriptionYearlyStartedAt) {
+            throw new Error('subscriptionYearlyStartedAt must not be null');
+          }
 
-      if (billingOrganization.subscriptionYearlyExpiredAt === null) {
-        throw new Error('subscriptionYearlyExpiredAt must not be null');
+          billingOrganization.subscriptionYearlyExpiredAt = createExpiredAt(NormalizedDateTime.fromDate(billingOrganization.subscriptionYearlyStartedAt), 'yearly').date;
+        } else {
+          billingOrganization.subscriptionYearlyStartedAt = null;
+          billingOrganization.subscriptionYearlyExpiredAt = null;
+        }
       }
 
-      billingOrganization.subscriptionYearlyStartedAt = billingOrganization.subscriptionYearlyExpiredAt;
-      billingOrganization.subscriptionYearlyExpiredAt = createExpiredAt(NormalizedDateTime.fromDate(billingOrganization.subscriptionYearlyStartedAt), 'yearly').date;
+      billingOrganization.graceExpiredAt = null;
+      billingOrganization.graceNextPurchasedAt = null;
       await manager.save(billingOrganization);
+
+      await updateCloudLicense(context, {
+        billingOrganizationId,
+        planInfos: updatedPlanInfos,
+      });
     });
   }
 }

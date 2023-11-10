@@ -11,6 +11,7 @@ export const BillingResultCodeMap = {
   'organization-subscription-monthly-expired-at-not-found': 103,
   'organization-subscription-yearly-started-at-not-found': 105,
   'organization-subscription-yearly-expired-at-not-found': 106,
+  'organization-subscription-plan-infos-not-found': 107,
 
   // coupon
   'coupon-not-found': 200,
@@ -77,29 +78,11 @@ export interface BillingResultFailure {
   resultCode: BillingResultCode;
 }
 
-export interface BillingResultFailureWithExtras<Extras extends object> {
-  ok: false;
-  resultCode: BillingResultCode;
-  extras: Extras;
-}
-
 export interface BillingResultSuccess<Value> {
   ok: true;
   value: Value;
 }
 
-export interface BillingResultSuccessWithExtras<Value, Extras extends object> {
-  ok: true;
-  value: Value;
-  extras: Extras;
-}
-
 export type BillingResult<Value, FailureExtras extends object = object, SuccessExtras extends object = object> =
-  | BillingResultFailure
-  | BillingResultFailureWithExtras<FailureExtras>
-  | BillingResultSuccess<Value>
-  | BillingResultSuccessWithExtras<Value, SuccessExtras>;
-
-export type BillingResultWithExtras<Value, FailureExtras extends object = object, SuccessExtras extends object = object> =
-  | BillingResultFailureWithExtras<FailureExtras> //
-  | BillingResultSuccessWithExtras<Value, SuccessExtras>;
+  | (BillingResultFailure & FailureExtras) //
+  | (BillingResultSuccess<Value> & SuccessExtras);

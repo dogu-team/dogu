@@ -12,12 +12,12 @@ import {
 } from '@dogu-private/console';
 import { assertUnreachable } from '@dogu-tech/common';
 import { calculateFlooredNow, createExpiredAt, NormalizedDateTime } from '../../date-time-utils';
+import { BillingCoupon } from '../../db/entity/billing-coupon.entity';
 import { BillingOrganization } from '../../db/entity/billing-organization.entity';
 import { BillingSubscriptionPlanInfo } from '../../db/entity/billing-subscription-plan-info.entity';
-import { ParseCouponResultSuccess } from '../billing-coupon/billing-coupon.serializables';
 import { calculateCouponFactor, resolveCoupon } from '../billing-coupon/billing-coupon.utils';
 import { isMonthlySubscriptionExpiredOrNull, isYearlySubscriptionExpiredOrNull } from '../billing-organization/billing-organization.utils';
-import { ParseBillingSubscriptionPlanDataResultSuccess } from '../billing-subscription-plan-source/billing-subscription-plan-source.serializables';
+import { ParseSubscriptionPlanDataResultValue } from '../billing-subscription-plan-source/billing-subscription-plan-source.serializables';
 import { ProcessPurchaseSubscriptionPreviewResultValue } from './billing-purchase.serializables';
 
 export function resolveCurrency(billingOrganizationCurrency: BillingCurrency | null, argumentCurrency: BillingCurrency): BillingCurrency {
@@ -81,26 +81,16 @@ export function calculateRemainingPlan(options: CalculateRemainingPlanOptions): 
 }
 
 export interface CalculateElapsedPlanOptions {
-  data: BillingSubscriptionPlanData;
+  planData: BillingSubscriptionPlanData;
   discountedAmount: number;
   dateTimes: PurchaseSubscriptionDateTimes;
 }
 
-export interface CalculateElapsedPlanResultFailure {
-  ok: false;
-  resultCode: BillingResultCode;
-}
-
-export interface CalculateElapsedPlanResultSuccess {
-  ok: true;
-  elapsedPlan: ElapsedPlan;
-}
-
-export type CalculateElapsedPlanResult = CalculateElapsedPlanResultFailure | CalculateElapsedPlanResultSuccess;
+export type CalculateElapsedPlanResult = BillingResult<ElapsedPlan>;
 
 export function calculateElapsedPlan(options: CalculateElapsedPlanOptions): CalculateElapsedPlanResult {
-  const { data, discountedAmount, dateTimes } = options;
-  const { originPrice, period, category, type, option, currency } = data;
+  const { planData, discountedAmount, dateTimes } = options;
+  const { originPrice, period, category, type, option, currency } = planData;
   const { totalDays, elapsedDays } = dateTimes;
   const purchasedAmount = originPrice - discountedAmount;
   if (purchasedAmount < 0) {
@@ -115,7 +105,7 @@ export function calculateElapsedPlan(options: CalculateElapsedPlanOptions): Calc
   const elapsedDiscountedAmount = (purchasedAmount * elapsedDays) / totalDays;
   return {
     ok: true,
-    elapsedPlan: {
+    value: {
       category,
       type,
       option,
@@ -469,14 +459,17 @@ export interface ProcessPurchaseSubscriptionPreviewInternalOptions {
   dto: BillingSubscriptionPlanPreviewDto;
   billingOrganization: BillingOrganization;
   resolvedCurrency: BillingCurrency;
-  parseSubscriptionPlanDataResult: ParseBillingSubscriptionPlanDataResultSuccess;
-  parseCouponResult: ParseCouponResultSuccess;
+  parseSubscriptionPlanDataResultValue: ParseSubscriptionPlanDataResultValue;
+  coupon: BillingCoupon | null;
+  now: Date;
 }
 
 export function processPurchaseSubscriptionPreviewInternal(
   options: ProcessPurchaseSubscriptionPreviewInternalOptions,
 ): BillingResult<ProcessPurchaseSubscriptionPreviewResultValue> {
-  const { dto, billingOrganization, resolvedCurrency, parseSubscriptionPlanDataResult, parseCouponResult } = options;
+  const { dto, billingOrganization, resolvedCurrency, parseSubscriptionPlanDataResultValue, now } = options;
+  const newCoupon = options.coupon;
+
   if (billingOrganization.category !== dto.category) {
     return {
       ok: false,
@@ -487,7 +480,6 @@ export function processPurchaseSubscriptionPreviewInternal(
     };
   }
 
-  const now = new Date();
   const calculatePurchaseSubscriptionDateTimesResult = calculatePurchaseSubscriptionDateTimes({
     billingOrganization,
     now,
@@ -510,17 +502,15 @@ export function processPurchaseSubscriptionPreviewInternal(
     };
   }
 
-  const { billingSubscriptionPlanData: data, billingSubscriptionPlanSource: source } = parseSubscriptionPlanDataResult;
-  const dataDateTimes = getPurchaseSubscriptionDateTimes(calculatePurchaseSubscriptionDateTimesResult, data.period);
+  const { planData, planSource } = parseSubscriptionPlanDataResultValue;
+  const dataDateTimes = getPurchaseSubscriptionDateTimes(calculatePurchaseSubscriptionDateTimesResult, planData.period);
 
-  const { coupon: newCoupon } = parseCouponResult;
-
-  const foundInfo = infos.find((plan) => plan.type === data.type);
+  const foundInfo = infos.find((plan) => plan.type === planData.type);
 
   const couponResult = resolveCoupon({
     billingSubscriptionPlanInfo: foundInfo,
     newCoupon,
-    period: data.period,
+    period: planData.period,
   });
   if (!couponResult.ok) {
     return {
@@ -532,13 +522,13 @@ export function processPurchaseSubscriptionPreviewInternal(
 
   const { firstCouponFactor, secondCouponFactor } = calculateCouponFactor({
     couponResult,
-    period: data.period,
+    period: planData.period,
   });
 
   if (foundInfo === undefined) {
-    const totalPrice = Math.floor(data.originPrice * firstCouponFactor);
-    const nextPurchaseTotalPrice = Math.floor(data.originPrice * secondCouponFactor);
-    const discountedAmount = data.originPrice - totalPrice;
+    const totalPrice = Math.floor(planData.originPrice * firstCouponFactor);
+    const nextPurchaseTotalPrice = Math.floor(planData.originPrice * secondCouponFactor);
+    const discountedAmount = planData.originPrice - totalPrice;
     const couponPreviewResponse: CouponPreviewResponse | null = coupon
       ? {
           ...coupon,
@@ -547,7 +537,7 @@ export function processPurchaseSubscriptionPreviewInternal(
       : null;
 
     const calculateElapsedPlanResult = calculateElapsedPlan({
-      data,
+      planData,
       discountedAmount,
       dateTimes: dataDateTimes,
     });
@@ -557,7 +547,7 @@ export function processPurchaseSubscriptionPreviewInternal(
         resultCode: calculateElapsedPlanResult.resultCode,
       };
     }
-    const { elapsedPlan } = calculateElapsedPlanResult;
+    const elapsedPlan = calculateElapsedPlanResult.value;
 
     return {
       ok: true,
@@ -569,13 +559,13 @@ export function processPurchaseSubscriptionPreviewInternal(
           tax: 0,
           nextPurchaseTotalPrice,
           nextPurchasedAt: dataDateTimes.expiredAt.date,
-          subscriptionPlan: data,
+          subscriptionPlan: planData,
           elapsedPlans: elapsedPlan.elapsedDays > 0 ? [elapsedPlan] : [],
           remainingPlans: [],
           coupon: couponPreviewResponse,
         },
-        data,
-        source,
+        planData,
+        planSource,
         couponResult,
         discountedAmount,
         totalPrice,
@@ -584,7 +574,7 @@ export function processPurchaseSubscriptionPreviewInternal(
         dateTimes: calculatePurchaseSubscriptionDateTimesResult,
         planHistory: {
           billingCouponId: coupon?.billingCouponId ?? null,
-          billingSubscriptionPlanSourceId: source?.billingSubscriptionPlanSourceId ?? null,
+          billingSubscriptionPlanSourceId: planSource?.billingSubscriptionPlanSourceId ?? null,
           discountedAmount,
           purchasedAmount: totalPrice,
           startedAt: dataDateTimes.startedAt.date,
@@ -595,12 +585,12 @@ export function processPurchaseSubscriptionPreviewInternal(
           previousRemainingDiscountedAmount: null,
           previousOption: null,
           previousPeriod: null,
-          category: data.category,
-          type: data.type,
-          option: data.option,
-          currency: data.currency,
-          period: data.period,
-          originPrice: data.originPrice,
+          category: planData.category,
+          type: planData.type,
+          option: planData.option,
+          currency: planData.currency,
+          period: planData.period,
+          originPrice: planData.originPrice,
         },
       },
     };
@@ -622,7 +612,7 @@ export function processPurchaseSubscriptionPreviewInternal(
       const { remainingPlan } = calculateRemainingPlanResult;
       const { remainingDiscountedAmount } = remainingPlan;
 
-      const remainingPurchaseAmount = data.originPrice - remainingDiscountedAmount;
+      const remainingPurchaseAmount = planData.originPrice - remainingDiscountedAmount;
       const currentPurchaseAmount = remainingPurchaseAmount * firstCouponFactor;
       const discountedAmount = remainingPurchaseAmount - currentPurchaseAmount;
       const couponPreviewResponse: CouponPreviewResponse | null = coupon
@@ -633,7 +623,7 @@ export function processPurchaseSubscriptionPreviewInternal(
         : null;
 
       const calculateElapsedPlanResult = calculateElapsedPlan({
-        data,
+        planData,
         discountedAmount,
         dateTimes: dataDateTimes,
       });
@@ -644,10 +634,10 @@ export function processPurchaseSubscriptionPreviewInternal(
           resultCode: calculateElapsedPlanResult.resultCode,
         };
       }
-      const { elapsedPlan } = calculateElapsedPlanResult;
+      const elapsedPlan = calculateElapsedPlanResult.value;
 
       const totalPrice = Math.floor(currentPurchaseAmount - elapsedPlan.elapsedDiscountedAmount);
-      const nextPurchaseAmount = Math.floor(data.originPrice * secondCouponFactor);
+      const nextPurchaseAmount = Math.floor(planData.originPrice * secondCouponFactor);
       const nextPurchasedAt = dataDateTimes.expiredAt.date;
       return {
         ok: true,
@@ -659,13 +649,13 @@ export function processPurchaseSubscriptionPreviewInternal(
             tax: 0,
             nextPurchaseTotalPrice: nextPurchaseAmount,
             nextPurchasedAt,
-            subscriptionPlan: data,
+            subscriptionPlan: planData,
             coupon: couponPreviewResponse,
             elapsedPlans: elapsedPlan.elapsedDays > 0 ? [elapsedPlan] : [],
             remainingPlans: [remainingPlan],
           },
-          data,
-          source,
+          planData,
+          planSource,
           couponResult,
           discountedAmount,
           totalPrice,
@@ -674,7 +664,7 @@ export function processPurchaseSubscriptionPreviewInternal(
           dateTimes: calculatePurchaseSubscriptionDateTimesResult,
           planHistory: {
             billingCouponId: coupon?.billingCouponId ?? null,
-            billingSubscriptionPlanSourceId: source?.billingSubscriptionPlanSourceId ?? null,
+            billingSubscriptionPlanSourceId: planSource?.billingSubscriptionPlanSourceId ?? null,
             discountedAmount,
             purchasedAmount: totalPrice,
             startedAt: dataDateTimes.startedAt.date,
@@ -685,20 +675,20 @@ export function processPurchaseSubscriptionPreviewInternal(
             previousRemainingDiscountedAmount: remainingPlan.remainingDiscountedAmount,
             previousOption: remainingPlan.option,
             previousPeriod: remainingPlan.period,
-            category: data.category,
-            type: data.type,
-            option: data.option,
-            currency: data.currency,
-            period: data.period,
-            originPrice: data.originPrice,
+            category: planData.category,
+            type: planData.type,
+            option: planData.option,
+            currency: planData.currency,
+            period: planData.period,
+            originPrice: planData.originPrice,
           },
         },
       };
     };
 
     const processNextPurchaseReturn = (): BillingResult<ProcessPurchaseSubscriptionPreviewResultValue> => {
-      const nextPurchaseAmount = Math.floor(data.originPrice * firstCouponFactor);
-      const discountedAmount = data.originPrice - nextPurchaseAmount;
+      const nextPurchaseAmount = Math.floor(planData.originPrice * firstCouponFactor);
+      const discountedAmount = planData.originPrice - nextPurchaseAmount;
       const couponPreviewResponse: CouponPreviewResponse | null = coupon
         ? {
             ...coupon,
@@ -717,13 +707,13 @@ export function processPurchaseSubscriptionPreviewInternal(
             tax: 0,
             nextPurchaseTotalPrice: nextPurchaseAmount,
             nextPurchasedAt,
-            subscriptionPlan: data,
+            subscriptionPlan: planData,
             coupon: couponPreviewResponse,
             elapsedPlans: [],
             remainingPlans: [],
           },
-          data,
-          source,
+          planData,
+          planSource,
           couponResult,
           discountedAmount: 0,
           totalPrice: 0,
@@ -735,54 +725,54 @@ export function processPurchaseSubscriptionPreviewInternal(
       };
     };
 
-    if (foundInfo.period === 'monthly' && data.period === 'yearly') {
-      if (foundInfo.option < data.option) {
+    if (foundInfo.period === 'monthly' && planData.period === 'yearly') {
+      if (foundInfo.option < planData.option) {
         return processNowPurchaseReturn();
-      } else if (foundInfo.option === data.option) {
+      } else if (foundInfo.option === planData.option) {
         return processNowPurchaseReturn();
-      } else if (foundInfo.option > data.option) {
+      } else if (foundInfo.option > planData.option) {
         return processNextPurchaseReturn();
       } else {
         return {
           ok: false,
           resultCode: resultCode('unexpected-error', {
             foundInfoOption: foundInfo.option,
-            dataOption: data.option,
+            planDataOption: planData.option,
           }),
         };
       }
-    } else if (foundInfo.period === data.period) {
-      if (foundInfo.option < data.option) {
+    } else if (foundInfo.period === planData.period) {
+      if (foundInfo.option < planData.option) {
         return processNowPurchaseReturn();
-      } else if (foundInfo.option === data.option) {
+      } else if (foundInfo.option === planData.option) {
         return {
           ok: false,
           resultCode: resultCode('subscription-plan-duplicated'),
         };
-      } else if (foundInfo.option > data.option) {
+      } else if (foundInfo.option > planData.option) {
         return processNextPurchaseReturn();
       } else {
         return {
           ok: false,
           resultCode: resultCode('unexpected-error', {
             foundInfoOption: foundInfo.option,
-            dataOption: data.option,
+            planDataOption: planData.option,
           }),
         };
       }
-    } else if (foundInfo.period === 'yearly' && data.period === 'monthly') {
-      if (foundInfo.option < data.option) {
+    } else if (foundInfo.period === 'yearly' && planData.period === 'monthly') {
+      if (foundInfo.option < planData.option) {
         return processNextPurchaseReturn();
-      } else if (foundInfo.option === data.option) {
+      } else if (foundInfo.option === planData.option) {
         return processNextPurchaseReturn();
-      } else if (foundInfo.option > data.option) {
+      } else if (foundInfo.option > planData.option) {
         return processNextPurchaseReturn();
       } else {
         return {
           ok: false,
           resultCode: resultCode('unexpected-error', {
             foundInfoOption: foundInfo.option,
-            dataOption: data.option,
+            planDataOption: planData.option,
           }),
         };
       }
@@ -791,7 +781,7 @@ export function processPurchaseSubscriptionPreviewInternal(
         ok: false,
         resultCode: resultCode('unexpected-error', {
           foundInfoPeriod: foundInfo.period,
-          dataPeriod: data.period,
+          planDataPeriod: planData.period,
         }),
       };
     }

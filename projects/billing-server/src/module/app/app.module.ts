@@ -12,6 +12,7 @@ import { BillingTokenModule } from '../billing-token/billing-token.module';
 import { BillingUpdaterModule } from '../billing-updater/billing-updater.module';
 import { CloudLicenseModule } from '../cloud-license/cloud-license.module';
 import { ConsoleModule } from '../console/console.module';
+import { DateTimeSimulatorModule } from '../date-time-simulator/date-time-simulator.module';
 import { LoggerModule } from '../logger/logger.module';
 import { SelfHostedLicenseModule } from '../self-hosted-license/self-hosted-license.module';
 import { AppController } from './app.controller';
@@ -33,6 +34,7 @@ import { AppService } from './app.service';
     BillingSubscriptionPlanInfoModule,
     BillingUpdaterModule,
     ConsoleModule,
+    DateTimeSimulatorModule,
   ],
   controllers: [AppController],
   providers: [AppService],

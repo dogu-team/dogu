@@ -2,7 +2,7 @@ import {
   BillingCategory,
   BillingCurrency,
   BillingPeriod,
-  BillingResultCode,
+  BillingResult,
   BillingSubscriptionPlanData,
   BillingSubscriptionPlanMap,
   BillingSubscriptionPlanOptionInfo,
@@ -15,7 +15,7 @@ import _ from 'lodash';
 import { BillingSubscriptionPlanSource } from '../../db/entity/billing-subscription-plan-source.entity';
 import { RetrySerializeContext } from '../../db/utils';
 
-export interface ParseBillingSubscriptionPlanDataOptions {
+export interface ParseSubscriptionPlanDataOptions {
   billingOrganizationId: string;
   type: BillingSubscriptionPlanType;
   category: BillingCategory;
@@ -24,26 +24,17 @@ export interface ParseBillingSubscriptionPlanDataOptions {
   period: BillingPeriod;
 }
 
-export interface ParseBillingSubscriptionPlanDataResultFailure {
-  ok: false;
-  resultCode: BillingResultCode;
+export interface ParseSubscriptionPlanDataResultValue {
+  planData: BillingSubscriptionPlanData;
+  planSource: BillingSubscriptionPlanSource | null;
 }
 
-export interface ParseBillingSubscriptionPlanDataResultSuccess {
-  ok: true;
-  billingSubscriptionPlanData: BillingSubscriptionPlanData;
-  billingSubscriptionPlanSource: BillingSubscriptionPlanSource | null;
-}
+export type ParseSubscriptionPlanDataResult = BillingResult<ParseSubscriptionPlanDataResultValue>;
 
-export type ParseBillingSubscriptionPlanDataResult = ParseBillingSubscriptionPlanDataResultFailure | ParseBillingSubscriptionPlanDataResultSuccess;
-
-export async function parseBillingSubscriptionPlanData(
-  context: RetrySerializeContext,
-  options: ParseBillingSubscriptionPlanDataOptions,
-): Promise<ParseBillingSubscriptionPlanDataResult> {
+export async function parseSubscriptionPlanData(context: RetrySerializeContext, options: ParseSubscriptionPlanDataOptions): Promise<ParseSubscriptionPlanDataResult> {
   const { billingOrganizationId, type, category, option, currency, period } = options;
   const { manager } = context;
-  const billingSubscriptionPlanSource = await manager.getRepository(BillingSubscriptionPlanSource).findOne({
+  const planSource = await manager.getRepository(BillingSubscriptionPlanSource).findOne({
     where: {
       billingOrganizationId,
       type,
@@ -54,18 +45,20 @@ export async function parseBillingSubscriptionPlanData(
     },
   });
 
-  if (billingSubscriptionPlanSource) {
+  if (planSource) {
     return {
       ok: true,
-      billingSubscriptionPlanData: {
-        type: billingSubscriptionPlanSource.type,
-        category: billingSubscriptionPlanSource.category,
-        option: billingSubscriptionPlanSource.option,
-        currency: billingSubscriptionPlanSource.currency,
-        period: billingSubscriptionPlanSource.period,
-        originPrice: billingSubscriptionPlanSource.originPrice,
+      value: {
+        planData: {
+          type: planSource.type,
+          category: planSource.category,
+          option: planSource.option,
+          currency: planSource.currency,
+          period: planSource.period,
+          originPrice: planSource.originPrice,
+        },
+        planSource,
       },
-      billingSubscriptionPlanSource,
     };
   }
 
@@ -111,14 +104,16 @@ export async function parseBillingSubscriptionPlanData(
 
   return {
     ok: true,
-    billingSubscriptionPlanData: {
-      type,
-      category,
-      option,
-      currency,
-      period,
-      originPrice,
+    value: {
+      planData: {
+        type,
+        category,
+        option,
+        currency,
+        period,
+        originPrice,
+      },
+      planSource: null,
     },
-    billingSubscriptionPlanSource: null,
   };
 }

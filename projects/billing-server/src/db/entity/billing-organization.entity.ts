@@ -6,7 +6,9 @@ import { BillingSubscriptionPlanHistory } from './billing-subscription-plan-hist
 import { BillingSubscriptionPlanInfo } from './billing-subscription-plan-info.entity';
 import { BillingSubscriptionPlanSource } from './billing-subscription-plan-source.entity';
 
-@Entity()
+export const BillingOrganizationTableName = 'billing_organization';
+
+@Entity(BillingOrganizationTableName)
 export class BillingOrganization implements BillingOrganizationBase {
   @PrimaryColumn('uuid')
   billingOrganizationId!: string;
@@ -31,6 +33,12 @@ export class BillingOrganization implements BillingOrganizationBase {
 
   @DateColumn({ nullable: true })
   subscriptionMonthlyExpiredAt!: Date | null;
+
+  @DateColumn({ nullable: true })
+  graceExpiredAt!: Date | null;
+
+  @DateColumn({ nullable: true })
+  graceNextPurchasedAt!: Date | null;
 
   @CreatedAt()
   createdAt!: Date;

@@ -3,7 +3,7 @@ import {
   BillingOrganizationProp,
   BillingOrganizationUsedBillingCouponProp,
   BillingPeriod,
-  BillingResultCode,
+  BillingResult,
   BillingSubscriptionPlanType,
   CreateBillingCouponDto,
   GetAvailableBillingCouponsDto,
@@ -21,24 +21,17 @@ import { RetrySerializeContext } from '../../db/utils';
 import { registerUsedCoupon } from '../billing-organization/billing-organization.serializables';
 import { ResolveCouponResultSuccess } from './billing-coupon.utils';
 
-export interface ValidateBillingCouponResponseFailure {
-  ok: false;
-  resultCode: BillingResultCode;
+export interface ValidateCouponOptions extends ValidateBillingCouponDto {
+  now: Date;
 }
 
-export interface ValidateBillingCouponResponseSuccess {
-  ok: true;
-  resultCode: BillingResultCode;
-  coupon: BillingCoupon;
-}
+export type ValidateCouponResult = BillingResult<BillingCoupon>;
 
-export type ValidateBillingCouponResponse = ValidateBillingCouponResponseFailure | ValidateBillingCouponResponseSuccess;
-
-export async function validateCoupon(context: RetrySerializeContext, dto: ValidateBillingCouponDto): Promise<ValidateBillingCouponResponse> {
+export async function validateCoupon(context: RetrySerializeContext, options: ValidateCouponOptions): Promise<ValidateCouponResult> {
   const { manager } = context;
-  const { organizationId, code } = dto;
+  const { organizationId, code, period, subscriptionPlanType, now } = options;
   const findWhereOption: FindOptionsWhere<BillingCoupon> =
-    dto.period === 'monthly'
+    period === 'monthly'
       ? {
           code,
           monthlyApplyCount: Not(IsNull()),
@@ -58,14 +51,14 @@ export async function validateCoupon(context: RetrySerializeContext, dto: Valida
     };
   }
 
-  if (billingCoupon.subscriptionPlanType !== null && billingCoupon.subscriptionPlanType !== dto.subscriptionPlanType) {
+  if (billingCoupon.subscriptionPlanType !== null && billingCoupon.subscriptionPlanType !== subscriptionPlanType) {
     return {
       ok: false,
       resultCode: resultCode('coupon-subscription-plan-type-not-matched'),
     };
   }
 
-  if (billingCoupon.expiredAt && billingCoupon.expiredAt < new Date()) {
+  if (billingCoupon.expiredAt && billingCoupon.expiredAt < now) {
     return {
       ok: false,
       resultCode: resultCode('coupon-expired'),
@@ -131,8 +124,7 @@ export async function validateCoupon(context: RetrySerializeContext, dto: Valida
 
   return {
     ok: true,
-    resultCode: resultCode('ok'),
-    coupon: billingCoupon,
+    value: billingCoupon,
   };
 }
 
@@ -190,30 +182,21 @@ export interface ParseCouponOptions {
   couponCode: string | undefined;
   period: BillingPeriod;
   subscriptionPlanType: BillingSubscriptionPlanType;
+  now: Date;
 }
 
-export interface ParseCouponResultFailure {
-  ok: false;
-  resultCode: BillingResultCode;
-}
-
-export interface ParseCouponResultSuccess {
-  ok: true;
-  coupon: BillingCoupon | null;
-}
-
-export type ParseCouponResult = ParseCouponResultFailure | ParseCouponResultSuccess;
+export type ParseCouponResult = BillingResult<BillingCoupon | null>;
 
 export async function parseCoupon(options: ParseCouponOptions): Promise<ParseCouponResult> {
-  const { context, organizationId, couponCode, period, subscriptionPlanType } = options;
+  const { context, organizationId, couponCode, period, subscriptionPlanType, now } = options;
   if (couponCode === undefined) {
     return {
       ok: true,
-      coupon: null,
+      value: null,
     };
   }
 
-  const validateResult = await validateCoupon(context, { organizationId, code: couponCode, period, subscriptionPlanType });
+  const validateResult = await validateCoupon(context, { organizationId, code: couponCode, period, subscriptionPlanType, now });
   if (!validateResult.ok) {
     return {
       ok: false,
@@ -223,7 +206,7 @@ export async function parseCoupon(options: ParseCouponOptions): Promise<ParseCou
 
   return {
     ok: true,
-    coupon: validateResult.coupon,
+    value: validateResult.value,
   };
 }
 

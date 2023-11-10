@@ -14978,6 +14978,27 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["pg-types", "npm:4.0.1"]\
           ],\
           "linkType": "HARD"\
+        }],\
+        ["npm:8.10.9", {\
+          "packageLocation": "./.yarn/cache/@types-pg-npm-8.10.9-ee8620c8e7-c0c750af1f.zip/node_modules/@types/pg/",\
+          "packageDependencies": [\
+            ["@types/pg", "npm:8.10.9"],\
+            ["@types/node", "npm:18.15.13"],\
+            ["pg-protocol", "npm:1.6.0"],\
+            ["pg-types", "npm:4.0.1"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@types/pg-cursor", [\
+        ["npm:2.7.2", {\
+          "packageLocation": "./.yarn/cache/@types-pg-cursor-npm-2.7.2-90c70f1166-bedf371859.zip/node_modules/@types/pg-cursor/",\
+          "packageDependencies": [\
+            ["@types/pg-cursor", "npm:2.7.2"],\
+            ["@types/node", "npm:18.15.13"],\
+            ["@types/pg", "npm:8.10.9"]\
+          ],\
+          "linkType": "HARD"\
         }]\
       ]],\
       ["@types/plist", [\
@@ -18980,6 +19001,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/nodemailer", "npm:6.4.7"],\
             ["@types/passport", "npm:1.0.14"],\
             ["@types/pg", "npm:8.10.2"],\
+            ["@types/pg-cursor", "npm:2.7.2"],\
             ["@types/shelljs", "npm:0.8.14"],\
             ["@types/uuid", "npm:9.0.6"],\
             ["@types/ws", "npm:8.5.4"],\
@@ -18995,6 +19017,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["nodemon", "npm:3.0.1"],\
             ["npm-check-updates", "npm:16.14.6"],\
             ["pg", "virtual:5d989e67e8ca83aa0556255791fdcac55623c9ccb3281b72bd3861d249df0961376ab2c76ee45bf4750178857c5c30bac3bb628af955e16567e426f9e366b233#npm:8.11.3"],\
+            ["pg-cursor", "virtual:5d989e67e8ca83aa0556255791fdcac55623c9ccb3281b72bd3861d249df0961376ab2c76ee45bf4750178857c5c30bac3bb628af955e16567e426f9e366b233#npm:2.10.3"],\
             ["reflect-metadata", "npm:0.1.13"],\
             ["rxjs", "npm:7.8.1"],\
             ["shelljs", "npm:0.8.5"],\
@@ -35142,6 +35165,28 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/pg-connection-string-npm-2.6.2-43a4a40be5-22265882c3.zip/node_modules/pg-connection-string/",\
           "packageDependencies": [\
             ["pg-connection-string", "npm:2.6.2"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["pg-cursor", [\
+        ["npm:2.10.3", {\
+          "packageLocation": "./.yarn/cache/pg-cursor-npm-2.10.3-e5cf483ddf-86dd66c4bf.zip/node_modules/pg-cursor/",\
+          "packageDependencies": [\
+            ["pg-cursor", "npm:2.10.3"]\
+          ],\
+          "linkType": "SOFT"\
+        }],\
+        ["virtual:5d989e67e8ca83aa0556255791fdcac55623c9ccb3281b72bd3861d249df0961376ab2c76ee45bf4750178857c5c30bac3bb628af955e16567e426f9e366b233#npm:2.10.3", {\
+          "packageLocation": "./.yarn/__virtual__/pg-cursor-virtual-acf748bd40/0/cache/pg-cursor-npm-2.10.3-e5cf483ddf-86dd66c4bf.zip/node_modules/pg-cursor/",\
+          "packageDependencies": [\
+            ["pg-cursor", "virtual:5d989e67e8ca83aa0556255791fdcac55623c9ccb3281b72bd3861d249df0961376ab2c76ee45bf4750178857c5c30bac3bb628af955e16567e426f9e366b233#npm:2.10.3"],\
+            ["@types/pg", "npm:8.10.2"],\
+            ["pg", "virtual:5d989e67e8ca83aa0556255791fdcac55623c9ccb3281b72bd3861d249df0961376ab2c76ee45bf4750178857c5c30bac3bb628af955e16567e426f9e366b233#npm:8.11.3"]\
+          ],\
+          "packagePeers": [\
+            "@types/pg",\
+            "pg"\
           ],\
           "linkType": "HARD"\
         }]\
