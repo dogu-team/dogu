@@ -79,7 +79,7 @@ export function calculatePurchaseAmountAndApplyCouponCount(planInfo: BillingSubs
     };
   };
 
-  if (billingCoupon === undefined) {
+  if (!billingCoupon) {
     return clearAndReturn();
   }
 

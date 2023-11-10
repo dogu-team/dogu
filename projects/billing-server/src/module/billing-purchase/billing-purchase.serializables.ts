@@ -102,6 +102,7 @@ export async function processPurchaseSubscriptionPreview(
       const promotionCoupon = await findAvailablePromotionCoupon(context, {
         billingOrganizationId,
         subscriptionPlanType: parseSubscriptionPlanDataResult.value.planData.type,
+        now,
       });
       if (promotionCoupon) {
         const promotionResult = await parseCoupon({

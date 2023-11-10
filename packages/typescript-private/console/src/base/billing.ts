@@ -321,7 +321,10 @@ export interface BillingSubscriptionPlanData {
 export const BillingMethod = ['nice'] as const;
 export type BillingMethod = (typeof BillingMethod)[number];
 
-export const BillingGracePeriodDays = 3;
+/**
+ * @description If the payment fails at the expiration time, retry 3 times.
+ */
+export const BillingGracePeriodDays = 4;
 
 export const BillingLicenseStatus = ['not-expired', 'within-grace-period', 'expired'] as const;
 export type BillingLicenseStatus = (typeof BillingLicenseStatus)[number];

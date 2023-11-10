@@ -133,60 +133,78 @@ export class BillingUpdaterService implements OnModuleInit, OnModuleDestroy {
 
         invalidateBillingOrganization(billingOrganization, period);
         await manager.save(billingOrganization);
+        if (billingOrganization.billingSubscriptionPlanInfos) {
+          await manager.save(billingOrganization.billingSubscriptionPlanInfos);
+        }
       };
 
       const { billingSubscriptionPlanInfos, billingMethodNice } = billingOrganization;
       if (!billingSubscriptionPlanInfos) {
         await invalidate('yearly');
-        this.logger.error('BillingUpdaterService.update billingSubscriptionPlanInfos must not be null. invalidated', { billingOrganizationId });
+        this.logger.error('BillingUpdaterService.update billingSubscriptionPlanInfos must not be null. invalidated', { billingOrganizationId, now });
         return;
       }
 
       const bid = billingMethodNice?.bid ?? null;
       if (!billingMethodNice || !bid) {
         await invalidate('yearly');
-        this.logger.error('BillingUpdaterService.update billingMethodNice must not be null. invalidated', { billingOrganizationId });
+        this.logger.error('BillingUpdaterService.update billingMethodNice must not be null. invalidated', { billingOrganizationId, now });
         return;
       }
 
       if (!billingOrganization.currency) {
         await invalidate('yearly');
-        this.logger.error('BillingUpdaterService.update currency must not be null. invalidated', { billingOrganizationId });
+        this.logger.error('BillingUpdaterService.update currency must not be null. invalidated', { billingOrganizationId, now });
         return;
       }
 
       const isMonthlyGraceExpired =
         billingOrganization.graceExpiredAt !== null &&
+        billingOrganization.graceExpiredAt < now &&
         billingOrganization.subscriptionMonthlyExpiredAt !== null &&
         billingOrganization.subscriptionMonthlyExpiredAt < billingOrganization.graceExpiredAt;
       const isYearlyGraceExpired =
         billingOrganization.graceExpiredAt !== null &&
+        billingOrganization.graceExpiredAt < now &&
         billingOrganization.subscriptionYearlyExpiredAt !== null &&
         billingOrganization.subscriptionYearlyExpiredAt < billingOrganization.graceExpiredAt;
       const isMonthlyGraceNextPurchased =
         billingOrganization.graceNextPurchasedAt !== null &&
+        billingOrganization.graceNextPurchasedAt < now &&
         billingOrganization.subscriptionMonthlyExpiredAt !== null &&
         billingOrganization.subscriptionMonthlyExpiredAt < billingOrganization.graceNextPurchasedAt;
       const isYearlyGraceNextPurchased =
         billingOrganization.graceNextPurchasedAt !== null &&
+        billingOrganization.graceNextPurchasedAt < now &&
         billingOrganization.subscriptionYearlyExpiredAt !== null &&
         billingOrganization.subscriptionYearlyExpiredAt < billingOrganization.graceNextPurchasedAt;
       const isMonthlyExpired =
         billingOrganization.graceExpiredAt === null && billingOrganization.graceNextPurchasedAt === null && billingOrganization.subscriptionMonthlyExpiredAt !== null;
       const isYearlyExpired =
         billingOrganization.graceExpiredAt === null && billingOrganization.graceNextPurchasedAt === null && billingOrganization.subscriptionYearlyExpiredAt !== null;
+      this.logger.info('BillingUpdaterService.update', {
+        billingOrganizationId,
+        now,
+        isMonthlyGraceExpired,
+        isYearlyGraceExpired,
+        isMonthlyGraceNextPurchased,
+        isYearlyGraceNextPurchased,
+        isMonthlyExpired,
+        isYearlyExpired,
+      });
+
       const monthlyTriggered = isMonthlyExpired || isMonthlyGraceNextPurchased;
       const yearlyTriggered = isYearlyExpired || isYearlyGraceNextPurchased;
 
       if (isYearlyGraceExpired) {
         await invalidate('yearly');
-        this.logger.error('BillingUpdaterService.update yearly grace expired. invalidated', { billingOrganizationId });
+        this.logger.error('BillingUpdaterService.update yearly grace expired. invalidated', { billingOrganizationId, now });
         return;
       }
 
       if (isMonthlyGraceExpired) {
         await invalidate('monthly');
-        this.logger.error('BillingUpdaterService.update monthly grace expired. invalidated', { billingOrganizationId });
+        this.logger.error('BillingUpdaterService.update monthly grace expired. invalidated', { billingOrganizationId, now });
         return;
       }
 
@@ -196,34 +214,38 @@ export class BillingUpdaterService implements OnModuleInit, OnModuleDestroy {
       const processingPlanInfos = [...monthlyPlanInfos, ...yearlyPlanInfos];
       const appliedPlanInfos = processingPlanInfos.map((planInfo) => applySubscriptionPlanInfoState(planInfo, now));
 
-      // apply next startd at and expired at
+      // next started at, expired at
+      let subscriptionMonthlyStartedAt = billingOrganization.subscriptionMonthlyStartedAt;
+      let subscriptionMonthlyExpiredAt = billingOrganization.subscriptionMonthlyExpiredAt;
+      let subscriptionYearlyStartedAt = billingOrganization.subscriptionYearlyStartedAt;
+      let subscriptionYearlyExpiredAt = billingOrganization.subscriptionYearlyExpiredAt;
       const hasMonthlyPlanInfo = billingSubscriptionPlanInfos.some((planInfo) => planInfo.period === 'monthly' && planInfo.state === 'subscribed');
       if (hasMonthlyPlanInfo) {
-        if (billingOrganization.subscriptionMonthlyExpiredAt !== null) {
-          billingOrganization.subscriptionMonthlyStartedAt = billingOrganization.subscriptionMonthlyExpiredAt;
-          billingOrganization.subscriptionMonthlyExpiredAt = createExpiredAt(NormalizedDateTime.fromDate(billingOrganization.subscriptionMonthlyStartedAt), 'monthly').date;
-        } else if (billingOrganization.subscriptionYearlyExpiredAt !== null) {
-          billingOrganization.subscriptionMonthlyStartedAt = billingOrganization.subscriptionYearlyExpiredAt;
-          billingOrganization.subscriptionMonthlyExpiredAt = createExpiredAt(NormalizedDateTime.fromDate(billingOrganization.subscriptionMonthlyStartedAt), 'monthly').date;
+        if (subscriptionMonthlyExpiredAt !== null) {
+          subscriptionMonthlyStartedAt = subscriptionMonthlyExpiredAt;
+          subscriptionMonthlyExpiredAt = createExpiredAt(NormalizedDateTime.fromDate(subscriptionMonthlyStartedAt), 'monthly').date;
+        } else if (subscriptionYearlyExpiredAt !== null) {
+          subscriptionMonthlyStartedAt = subscriptionYearlyExpiredAt;
+          subscriptionMonthlyExpiredAt = createExpiredAt(NormalizedDateTime.fromDate(subscriptionMonthlyStartedAt), 'monthly').date;
         } else {
           throw new Error('subscriptionMonthlyExpiredAt or subscriptionYearlyExpiredAt must not be null');
         }
       } else {
-        billingOrganization.subscriptionMonthlyStartedAt = null;
-        billingOrganization.subscriptionMonthlyExpiredAt = null;
+        subscriptionMonthlyStartedAt = null;
+        subscriptionMonthlyExpiredAt = null;
       }
 
       const hasYearlyPlanInfo = billingSubscriptionPlanInfos.some((planInfo) => planInfo.period === 'yearly' && planInfo.state === 'subscribed');
       if (hasYearlyPlanInfo) {
-        billingOrganization.subscriptionYearlyStartedAt = billingOrganization.subscriptionYearlyExpiredAt;
-        if (!billingOrganization.subscriptionYearlyStartedAt) {
+        subscriptionYearlyStartedAt = subscriptionYearlyExpiredAt;
+        if (!subscriptionYearlyStartedAt) {
           throw new Error('subscriptionYearlyStartedAt must not be null');
         }
 
-        billingOrganization.subscriptionYearlyExpiredAt = createExpiredAt(NormalizedDateTime.fromDate(billingOrganization.subscriptionYearlyStartedAt), 'yearly').date;
+        subscriptionYearlyExpiredAt = createExpiredAt(NormalizedDateTime.fromDate(subscriptionYearlyStartedAt), 'yearly').date;
       } else {
-        billingOrganization.subscriptionYearlyStartedAt = null;
-        billingOrganization.subscriptionYearlyExpiredAt = null;
+        subscriptionYearlyStartedAt = null;
+        subscriptionYearlyExpiredAt = null;
       }
 
       // purchase
@@ -266,7 +288,7 @@ export class BillingUpdaterService implements OnModuleInit, OnModuleDestroy {
           }
 
           await manager.save(billingOrganization);
-          this.logger.error('BillingUpdaterService.update paymentsResult is not ok. grace updated', { billingOrganizationId, paymentsResult: stringify(paymentsResult) });
+          this.logger.error('BillingUpdaterService.update paymentsResult is not ok. grace updated', { billingOrganizationId, now, paymentsResult: stringify(paymentsResult) });
           return;
         }
 
@@ -302,13 +324,13 @@ export class BillingUpdaterService implements OnModuleInit, OnModuleDestroy {
           let expiredAt: Date | null = null;
           switch (planInfo.period) {
             case 'monthly': {
-              startedAt = billingOrganization.subscriptionMonthlyStartedAt;
-              expiredAt = billingOrganization.subscriptionMonthlyExpiredAt;
+              startedAt = subscriptionMonthlyStartedAt;
+              expiredAt = subscriptionMonthlyExpiredAt;
               break;
             }
             case 'yearly': {
-              startedAt = billingOrganization.subscriptionYearlyStartedAt;
-              expiredAt = billingOrganization.subscriptionYearlyExpiredAt;
+              startedAt = subscriptionYearlyStartedAt;
+              expiredAt = subscriptionYearlyExpiredAt;
               break;
             }
             default: {
@@ -352,6 +374,10 @@ export class BillingUpdaterService implements OnModuleInit, OnModuleDestroy {
       }
 
       // update
+      billingOrganization.subscriptionMonthlyStartedAt = subscriptionMonthlyStartedAt;
+      billingOrganization.subscriptionMonthlyExpiredAt = subscriptionMonthlyExpiredAt;
+      billingOrganization.subscriptionYearlyStartedAt = subscriptionYearlyStartedAt;
+      billingOrganization.subscriptionYearlyExpiredAt = subscriptionYearlyExpiredAt;
       if (billingOrganization.billingSubscriptionPlanInfos) {
         await manager.save(billingOrganization.billingSubscriptionPlanInfos);
       }

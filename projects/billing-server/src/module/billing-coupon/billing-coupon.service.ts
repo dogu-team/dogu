@@ -25,9 +25,10 @@ export class BillingCouponService {
 
   async validateCoupon(dto: ValidateBillingCouponDto): Promise<ValidateBillingCouponResponse> {
     return await retrySerialize(this.logger, this.dataSource, async (context) => {
+      const now = this.dateTimeSimulatorService.now();
       const result = await validateCoupon(context, {
         ...dto,
-        now: this.dateTimeSimulatorService.now(),
+        now,
       });
       if (!result.ok) {
         return {
@@ -47,7 +48,11 @@ export class BillingCouponService {
 
   async getAvailableCoupons(dto: GetAvailableBillingCouponsDto): Promise<BillingPromotionCouponResponse[]> {
     return await retrySerialize(this.logger, this.dataSource, async (context) => {
-      return await getAvailableCoupons(context, dto);
+      const now = this.dateTimeSimulatorService.now();
+      return await getAvailableCoupons(context, {
+        ...dto,
+        now,
+      });
     });
   }
 

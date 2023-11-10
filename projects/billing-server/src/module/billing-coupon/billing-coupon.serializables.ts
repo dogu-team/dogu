@@ -131,9 +131,13 @@ export async function validateCoupon(context: RetrySerializeContext, options: Va
   };
 }
 
-export async function getAvailableCoupons(context: RetrySerializeContext, dto: GetAvailableBillingCouponsDto): Promise<BillingPromotionCouponResponse[]> {
+export interface GetAvailableBillingCouponsOptions extends GetAvailableBillingCouponsDto {
+  now: Date;
+}
+
+export async function getAvailableCoupons(context: RetrySerializeContext, options: GetAvailableBillingCouponsOptions): Promise<BillingPromotionCouponResponse[]> {
   const { manager } = context;
-  const { organizationId, type, subscriptionPlanType, category } = dto;
+  const { organizationId, type, subscriptionPlanType, category, now } = options;
 
   if (type === 'promotion') {
     if (category === 'cloud') {
@@ -172,7 +176,7 @@ export async function getAvailableCoupons(context: RetrySerializeContext, dto: G
       return `${BillingCoupon.name}.${BillingCouponProp.billingCouponId} NOT IN ${subQuery}`;
     })
     .andWhere({ type })
-    .andWhere(new Brackets((qb) => qb.where({ expiredAt: IsNull() }).orWhere({ expiredAt: MoreThan(new Date()) })))
+    .andWhere(new Brackets((qb) => qb.where({ expiredAt: IsNull() }).orWhere({ expiredAt: MoreThan(now) })))
     .andWhere(subscriptionPlanType ? { subscriptionPlanType } : '1=1')
     .getMany();
 
@@ -192,11 +196,12 @@ export async function getAvailableCoupons(context: RetrySerializeContext, dto: G
 export interface FindAvailablePromotionCouponOptions {
   billingOrganizationId: string;
   subscriptionPlanType: BillingSubscriptionPlanType;
+  now: Date;
 }
 
 export async function findAvailablePromotionCoupon(context: RetrySerializeContext, options: FindAvailablePromotionCouponOptions): Promise<BillingCoupon | null> {
   const { manager } = context;
-  const { billingOrganizationId, subscriptionPlanType } = options;
+  const { billingOrganizationId, subscriptionPlanType, now } = options;
   const coupon = await manager
     .getRepository(BillingCoupon)
     .createQueryBuilder(BillingCoupon.name)
@@ -215,7 +220,7 @@ export async function findAvailablePromotionCoupon(context: RetrySerializeContex
       return `${BillingCoupon.name}.${BillingCouponProp.billingCouponId} NOT IN ${subQuery}`;
     })
     .andWhere({ type: 'promotion', subscriptionPlanType })
-    .andWhere(new Brackets((qb) => qb.where({ expiredAt: IsNull() }).orWhere({ expiredAt: MoreThan(new Date()) })))
+    .andWhere(new Brackets((qb) => qb.where({ expiredAt: IsNull() }).orWhere({ expiredAt: MoreThan(now) })))
     .andWhere(new Brackets((qb) => qb.where({ remainingAvailableCount: IsNull() }).orWhere({ remainingAvailableCount: Not(0) })))
     .getOne();
 
