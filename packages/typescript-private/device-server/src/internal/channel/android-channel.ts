@@ -136,6 +136,9 @@ export class AndroidChannel implements DeviceChannel {
     );
     await deviceAgent.wait();
 
+    await adb.uninstallApp('io.appium.settings', false).catch((error) => {
+      logger.error('adb.uninstallApp.io.appium.settings', { error: errorify(error) });
+    });
     const appiumContextProxy = deviceServerService.appiumService.createAndroidAppiumContext(
       serial,
       'builtin',
@@ -437,12 +440,12 @@ export class AndroidChannel implements DeviceChannel {
   }
 
   async setGeoLocation(geoLocation: GeoLocation): Promise<void> {
-    await this.adb.disableLocation('gps');
-    await this.adb.disableLocation('network');
-    await this.adb.enableLocation('gps');
+    // await this.adb.disableLocation('gps');
+    // await this.adb.disableLocation('network');
+    // await this.adb.enableLocation('gps');
     const newAppiumAdb = this.appiumAdb.clone({ adbExecTimeout: 1000 * 60 * 3 });
     await newAppiumAdb.setGeoLocation(geoLocation);
-    await this.adb.disableLocation('gps');
+    // await this.adb.disableLocation('gps');
   }
 
   async getAlert(): Promise<DeviceAlert | undefined> {

@@ -86,7 +86,10 @@ export const HostPaths = {
     selenium: {
       seleniumServerPath: (): string => path.resolve(HostPaths.external.externalsPath(), 'selenium/selenium-server.jar'),
     },
-
+    appium: {
+      settingsApk: (): string =>
+        path.resolve(HostPaths.external.defaultAppiumHomePath(), 'node_modules/appium-uiautomator2-driver/node_modules/io.appium.settings/apks/settings_apk-debug.apk'),
+    },
     preInstall: {
       gboard: {
         apk: (): string => path.resolve(HostPaths.external.externalsPath(), 'preinstall/Gboard.apk'),
@@ -172,6 +175,7 @@ function createThirdPartyPathMap(options?: ThirdPartyPathMapOptions): ThirdParty
   return {
     common: {
       androidDeviceAgent: path.resolve(thirdPartyPath, platformCommonDir, 'android_deviceagent.txt'),
+      androidAppiumSettingsApk: path.resolve(thirdPartyPath, platformCommonDir, 'io.appium.settings.apk'),
       adbJoinWifiApk: path.resolve(thirdPartyPath, platformCommonDir, `adb-join-wifi.apk`),
       goDeviceController: path.resolve(thirdPartyPath, platformDir, archDir, `go-device-controller${exeExtension}`),
       desktopCapturer: path.resolve(thirdPartyPath, platformDir, archDir, `desktop-capturer${exeExtension}`),

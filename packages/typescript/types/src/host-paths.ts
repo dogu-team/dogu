@@ -1,5 +1,6 @@
 interface CommonPathMap {
   androidDeviceAgent: string;
+  androidAppiumSettingsApk: string;
   adbJoinWifiApk: string;
   goDeviceController: string;
   desktopCapturer: string;

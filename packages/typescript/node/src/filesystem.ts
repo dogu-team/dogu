@@ -115,14 +115,30 @@ export async function checkDirectoryEqual(srcDirPath: string, destDirPath: strin
     if (!destFiles.includes(destFile)) {
       return { isEqual: false, reason: `file not found in dest. src:${srcFile}, dest:${destFile}` };
     }
-    const srcFileContents = await fs.promises.readFile(srcFile, { encoding: 'utf-8' });
-    const destFileContens = await fs.promises.readFile(destFile, { encoding: 'utf-8' });
-    if (srcFileContents.length !== destFileContens.length) {
-      return { isEqual: false, reason: `file size is different. src:${srcFileContents.length}, dest:${destFileContens.length}` };
+    const { isEqual, reason } = await checkFileEqual(srcFile, destFile);
+    if (!isEqual) {
+      return { isEqual, reason };
     }
-    if (srcFileContents !== destFileContens) {
-      return { isEqual: false, reason: `file contents is different. file: ${destFile}` };
-    }
+  }
+
+  return { isEqual: true, reason: '' };
+}
+
+export async function checkFileEqual(srcPath: string, destPath: string): Promise<{ isEqual: boolean; reason: string }> {
+  if (!fs.existsSync(srcPath)) {
+    return { isEqual: false, reason: `src file not found. src:${srcPath}` };
+  }
+  if (!fs.existsSync(destPath)) {
+    return { isEqual: false, reason: `dest file not found. dest:${destPath}` };
+  }
+
+  const srcFileContents = await fs.promises.readFile(srcPath, { encoding: 'utf-8' });
+  const destFileContens = await fs.promises.readFile(destPath, { encoding: 'utf-8' });
+  if (srcFileContents.length !== destFileContens.length) {
+    return { isEqual: false, reason: `file size is different. src:${srcFileContents.length}, dest:${destFileContens.length}` };
+  }
+  if (srcFileContents !== destFileContens) {
+    return { isEqual: false, reason: `file contents is different. file: ${destPath}` };
   }
 
   return { isEqual: true, reason: '' };
