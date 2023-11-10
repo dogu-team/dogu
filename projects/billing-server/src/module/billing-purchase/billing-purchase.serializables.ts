@@ -24,7 +24,7 @@ import { findAvailablePromotionCoupon, parseCoupon, useCoupon } from '../billing
 import { ResolveCouponResultSuccess } from '../billing-coupon/billing-coupon.utils';
 import { BillingMethodNiceCaller } from '../billing-method/billing-method-nice.caller';
 import { createPurchase } from '../billing-method/billing-method-nice.serializables';
-import { createOrUpdateSubscriptionPlanInfo } from '../billing-subscription-plan-info/billing-subscription-plan-info.serializables';
+import { newAndApplySubscriptionPlanInfo } from '../billing-subscription-plan-info/billing-subscription-plan-info.serializables';
 import { parseSubscriptionPlanData } from '../billing-subscription-plan-source/billing-subscription-plan-source.serializables';
 import { updateCloudLicense } from '../cloud-license/cloud-license.serializables';
 import { BillingSubscriptionPlanInfoCommonModule } from '../common/plan-info-common.module';
@@ -186,7 +186,7 @@ export async function processNowPurchaseSubscription(
   const { tid, orderId } = createPurchaseResult.value;
 
   const useCouponResult = await useCoupon(context, { couponResult, billingOrganizationId });
-  const planInfoResult = createOrUpdateSubscriptionPlanInfo(context, {
+  const planInfoResult = newAndApplySubscriptionPlanInfo(context, {
     billingOrganizationId,
     subscriptionPlanInfos: billingSubscriptionPlanInfos,
     planData,

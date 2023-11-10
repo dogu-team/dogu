@@ -251,6 +251,7 @@ export interface UseCouponResult {
   billingCouponId: string | null;
   couponRemainingApplyCount: number | null;
   couponApplied: boolean;
+  coupon: BillingCoupon | null;
 }
 
 export async function useCoupon(context: RetrySerializeContext, options: UseCouponOptions): Promise<UseCouponResult> {
@@ -287,6 +288,7 @@ export async function useCoupon(context: RetrySerializeContext, options: UseCoup
         billingCouponId: coupon.billingCouponId,
         couponRemainingApplyCount,
         couponApplied,
+        coupon,
       };
     }
     case 'old': {
@@ -307,6 +309,7 @@ export async function useCoupon(context: RetrySerializeContext, options: UseCoup
         billingCouponId: coupon.billingCouponId,
         couponRemainingApplyCount,
         couponApplied,
+        coupon,
       };
     }
     case 'none':
@@ -314,8 +317,8 @@ export async function useCoupon(context: RetrySerializeContext, options: UseCoup
         billingCouponId: null,
         couponRemainingApplyCount: null,
         couponApplied: false,
+        coupon: null,
       };
-      break;
     default: {
       assertUnreachable(type);
     }

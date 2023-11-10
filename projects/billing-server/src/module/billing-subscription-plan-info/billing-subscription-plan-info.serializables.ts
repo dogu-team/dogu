@@ -4,7 +4,7 @@ import { BillingSubscriptionPlanInfo } from '../../db/entity/billing-subscriptio
 import { RetrySerializeContext } from '../../db/utils';
 import { UseCouponResult } from '../billing-coupon/billing-coupon.serializables';
 
-export interface CreateOrUpdateSubscriptionPlanInfoOptions {
+export interface NewAndApplySubscriptionPlanInfoOptions {
   billingOrganizationId: string;
   subscriptionPlanInfos: BillingSubscriptionPlanInfo[];
   planData: BillingSubscriptionPlanData;
@@ -13,13 +13,13 @@ export interface CreateOrUpdateSubscriptionPlanInfoOptions {
   billingSubscriptionPlanSourceId: string | null;
 }
 
-export type CreateOrUpdateSubscriptionPlanInfoResult = BillingResult<BillingSubscriptionPlanInfo>;
+export type NewAndApplySubscriptionPlanInfoResult = BillingResult<BillingSubscriptionPlanInfo>;
 
-export function createOrUpdateSubscriptionPlanInfo(context: RetrySerializeContext, options: CreateOrUpdateSubscriptionPlanInfoOptions): CreateOrUpdateSubscriptionPlanInfoResult {
+export function newAndApplySubscriptionPlanInfo(context: RetrySerializeContext, options: NewAndApplySubscriptionPlanInfoOptions): NewAndApplySubscriptionPlanInfoResult {
   const { manager } = context;
   const { billingOrganizationId, subscriptionPlanInfos, planData, discountedAmount, billingSubscriptionPlanSourceId, useCouponResult } = options;
   const { currency, period, type, category, option, originPrice } = planData;
-  const { billingCouponId, couponRemainingApplyCount, couponApplied } = useCouponResult;
+  const { billingCouponId, couponRemainingApplyCount, couponApplied, coupon } = useCouponResult;
 
   const found = subscriptionPlanInfos.find((info) => info.type === type);
   if (found) {
@@ -34,6 +34,7 @@ export function createOrUpdateSubscriptionPlanInfo(context: RetrySerializeContex
     found.couponApplied = couponApplied;
     found.billingSubscriptionPlanSourceId = billingSubscriptionPlanSourceId;
     found.state = 'subscribed';
+    found.billingCoupon = coupon ? coupon : found.billingCoupon;
     return {
       ok: true,
       value: found,
@@ -55,8 +56,8 @@ export function createOrUpdateSubscriptionPlanInfo(context: RetrySerializeContex
     couponApplied,
     billingSubscriptionPlanSourceId,
     state: 'subscribed',
+    billingCoupon: coupon ? coupon : undefined,
   });
-
   subscriptionPlanInfos.push(planInfo);
   return {
     ok: true,
