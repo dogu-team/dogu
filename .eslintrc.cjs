@@ -18,6 +18,7 @@ module.exports = {
       './projects/billing-server/tsconfig.json',
       './projects/console-web-front/tsconfig.json',
       './projects/console-web-server/tsconfig.json',
+      './projects/test-executor/tsconfig.json',
       './packages/typescript/action-common/tsconfig.json',
       './packages/typescript/action-kit/tsconfig.json',
       './packages/typescript/common/tsconfig.json',

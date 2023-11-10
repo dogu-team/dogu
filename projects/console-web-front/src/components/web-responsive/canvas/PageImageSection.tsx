@@ -6,7 +6,7 @@ interface SectionProps {
   title: Vendor;
 }
 
-const Section = ({ title }: SectionProps) => {
+const PageImageSection = ({ title }: SectionProps) => {
   return (
     <Box>
       <Title>{title}</Title>
@@ -34,4 +34,4 @@ const StyledHr = styled.hr`
   margin-top: 96px;
 `;
 
-export default Section;
+export default PageImageSection;

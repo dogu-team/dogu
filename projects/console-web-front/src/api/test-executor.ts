@@ -1,37 +1,29 @@
-import { CreateWebResponsiveDtoBase, TestExecutorWebResponsiveSnapshots } from '@dogu-private/console';
+import {
+  CreateWebResponsiveDtoBase,
+  getWebResponsiveListDtoBase,
+  GetWebResponsiveSnapshotsDtoBase,
+  TestExecutorBase,
+  TestExecutorWebResponsiveSnapshotMap,
+} from '@dogu-private/console';
 import { GetServerSidePropsContext } from 'next';
 
 import api from '.';
 import { EmptyTokenError, getServersideCookies, setCookiesInServerSide } from '../utils/auth';
 
-export const createWebResponsive = async (dto: CreateWebResponsiveDtoBase) => {
+export const createWebResponsiveSnapshots = async (dto: CreateWebResponsiveDtoBase) => {
   await api.post<void>(`/test-executor/web-responsive/create`, dto);
 };
 
-export const getWebResponsiveSnapshotsServerSide = async (
+export const getWebResponsiveListServerSide = async (
   context: GetServerSidePropsContext,
-  organizationId: string,
-  testExecutorId: string,
+  dto: getWebResponsiveListDtoBase,
 ) => {
+  const { organizationId } = dto;
   const { authToken } = getServersideCookies(context.req.cookies);
 
   if (authToken) {
-    const response = await api.get<TestExecutorWebResponsiveSnapshots>(`/test-executor/web-responsive/snapshot`, {
-      params: { organizationId, testExecutorId },
-      headers: { Authorization: `Bearer ${authToken}` },
-    });
-
-    setCookiesInServerSide(response, context);
-    const snapshots = response.data;
-    return snapshots;
-  }
-};
-
-export const getWebResponsiveListServerSide = async (context: GetServerSidePropsContext) => {
-  const { authToken } = getServersideCookies(context.req.cookies);
-
-  if (authToken) {
-    const response = await api.get(`/test-executor/web-responsive/list`, {
+    const response = await api.get<TestExecutorBase[]>(`/test-executor/web-responsive/list`, {
+      params: { organizationId },
       headers: { Authorization: `Bearer ${authToken}` },
     });
 
@@ -41,4 +33,23 @@ export const getWebResponsiveListServerSide = async (context: GetServerSideProps
   }
 
   throw new EmptyTokenError();
+};
+
+export const getWebResponsiveSnapshotsServerSide = async (
+  context: GetServerSidePropsContext,
+  dto: GetWebResponsiveSnapshotsDtoBase,
+) => {
+  const { organizationId, testExecutorId } = dto;
+  const { authToken } = getServersideCookies(context.req.cookies);
+
+  if (authToken) {
+    const response = await api.get<TestExecutorWebResponsiveSnapshotMap>(`/test-executor/web-responsive/snapshot`, {
+      params: { organizationId, testExecutorId },
+      headers: { Authorization: `Bearer ${authToken}` },
+    });
+
+    setCookiesInServerSide(response, context);
+    const snapshots = response.data;
+    return snapshots;
+  }
 };

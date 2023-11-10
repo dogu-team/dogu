@@ -1,65 +1,72 @@
+import CloudRunClient from '@google-cloud/run';
+import { google } from '@google-cloud/run/build/protos/protos';
 import { File, GetSignedUrlConfig, Storage } from '@google-cloud/storage';
 import { exec } from 'child_process';
-import { GoogleAuth } from 'google-auth-library';
 import path from 'path';
 import { promisify } from 'util';
 
 const execAsync = promisify(exec);
 
+const PROJECT_ID = 'dogu-project-379607';
 process.env.GOOGLE_APPLICATION_CREDENTIALS = `${path.join(__dirname, '../../dogu-project-379607-f41da1c1d175.json')}`;
 
 export enum BucketName {
   TEST_EXECUTOR = 'dogu-test-executor',
 }
 
+export enum JobName {
+  TEST_EXECUTOR_WEB_RESPONSIVE = 'test-executor-web-responsive',
+}
+
 export module GCP {
-  type JobKey = 'test-executor-web-responsive';
-  const storage = new Storage();
+  const storageClient = new Storage();
+  const executionClient = new CloudRunClient.ExecutionsClient();
 
-  export async function init() {}
+  // export async function init() {
+  //   const auth = new GoogleAuth({
+  //     scopes: ['https://www.googleapis.com/auth/cloud-platform'],
+  //   });
 
-  async function getAccessToken(): Promise<string> {
-    const auth = new GoogleAuth({
-      scopes: ['https://www.googleapis.com/auth/cloud-platform'],
-    });
-    const client = await auth.getClient();
-    const response = await client.getAccessToken();
-    const token = response.token;
+  //   client = (await auth.getClient()) as JSONClient;
+  // }
 
-    if (!token) {
-      throw new Error('Failed to get access token');
-    }
+  // async function getAccessToken(): Promise<string> {
+  //   const response = await client.getAccessToken();
+  //   const token = response.token;
 
-    return token;
-  }
+  //   if (!token) {
+  //     throw new Error('Failed to get access token');
+  //   }
 
-  async function getIdToken(serivceUrl: string): Promise<string> {
-    const auth = new GoogleAuth();
-    const client = await auth.getIdTokenClient(serivceUrl);
-    const response = await client.request({ url: serivceUrl });
-    const token = response.config.headers!['Authorization'].split(' ')[1];
+  //   return token;
+  // }
 
-    if (!token) {
-      throw new Error('Failed to get access token');
-    }
+  // async function getIdToken(serivceUrl: string): Promise<string> {
+  //   const client = await auth.getIdTokenClient(serivceUrl);
+  //   const response = await client.request({ url: serivceUrl });
+  //   const token = response.config.headers!['Authorization'].split(' ')[1];
 
-    return token;
-  }
+  //   if (!token) {
+  //     throw new Error('Failed to get access token');
+  //   }
+
+  //   return token;
+  // }
 
   export async function getBuckets() {
-    const buckets = await storage.getBuckets();
+    const buckets = await storageClient.getBuckets();
     return buckets;
   }
 
   export async function getFiles(bucketName: BucketName, prefix: string, delimiter = '/'): Promise<File[]> {
-    const bucket = storage.bucket(bucketName);
+    const bucket = storageClient.bucket(bucketName);
     const [files] = await bucket.getFiles({ prefix, delimiter });
 
     return files;
   }
 
   export async function getSignedFileUrl(bucketName: BucketName, filePath: string, expiresSeconds: number): Promise<string> {
-    const bucket = storage.bucket(bucketName);
+    const bucket = storageClient.bucket(bucketName);
     const file = bucket.file(filePath);
 
     const signedUrlConfig: GetSignedUrlConfig = {
@@ -72,7 +79,7 @@ export module GCP {
   }
 
   export async function putImage(bucketName: BucketName, filePath: string, buffer: Buffer, type: string): Promise<void> {
-    const bucket = storage.bucket(bucketName);
+    const bucket = storageClient.bucket(bucketName);
 
     const file = bucket.file(filePath);
     const stream = file.createWriteStream({
@@ -94,8 +101,10 @@ export module GCP {
     });
   }
 
-  export async function runJob(jobKey: JobKey, args: string[]): Promise<string> {
-    const { stderr } = await execAsync(`yes | gcloud beta run jobs execute ${jobKey} --args=${args.join(',')}`);
+  export async function runJob(jobName: JobName, args: string[]): Promise<string> {
+    const [organizationId, testExecutorId, urls, vendors] = args;
+    const cli = `yes | gcloud beta run jobs execute ${jobName} --args="${organizationId}" --args="${testExecutorId}" --args="${urls}" --args="${vendors}"`;
+    const { stderr } = await execAsync(cli);
 
     const lines = stderr.split('\n');
     const lastLine = lines[lines.length - 2];
@@ -110,17 +119,13 @@ export module GCP {
       }
     }
 
-    throw new Error(`Failed to parse task ID: ${lastLine}`);
+    throw new Error(`Failed to parse execution ID: ${lastLine}`);
   }
 
-  // export async function runService(serviceKey: ServiceKey) {
-  //   const serviceUrl = serviceUrls[serviceKey];
-  //   const idToken = await getIdToken(serviceUrl);
+  export async function getJobExecution(location: string, jobName: JobName, executionId: string): Promise<google.cloud.run.v2.IExecution> {
+    const name = executionClient.executionPath(PROJECT_ID, location, jobName, executionId);
+    const [execution] = await executionClient.getExecution({ name });
 
-  //   try {
-  //     const { data } = await axios.get(serviceUrl, { headers: { Authorization: `Bearer ${idToken}` } });
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // }
+    return execution;
+  }
 }

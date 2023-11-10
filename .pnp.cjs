@@ -7455,6 +7455,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@dogu-tech/common", "workspace:packages/typescript/common"],\
             ["@dogu-tech/console-gamium", "workspace:packages/typescript/console-gamium"],\
             ["@dogu-tech/device-client-common", "workspace:packages/typescript/device-client-common"],\
+            ["@google-cloud/run", "npm:1.0.2"],\
             ["@types/js-yaml", "npm:4.0.5"],\
             ["@types/lodash", "npm:4.14.186"],\
             ["@types/node", "npm:18.15.11"],\
@@ -7764,6 +7765,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@dogu-private/types", "workspace:packages/typescript-private/types"],\
             ["@dogu-tech/common", "workspace:packages/typescript/common"],\
             ["@dogu-tech/node", "workspace:packages/typescript/node"],\
+            ["@google-cloud/run", "npm:1.0.2"],\
             ["@google-cloud/storage", "npm:7.5.0"],\
             ["@types/node", "npm:18.15.11"],\
             ["axios", "npm:1.6.0"],\
@@ -20859,7 +20861,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@dogu-tech/env-tools", "workspace:packages/typescript/env-tools"],\
             ["@dogu-tech/node", "workspace:packages/typescript/node"],\
             ["@gitbeaker/node", "npm:35.8.1"],\
-            ["@google-cloud/run", "npm:1.0.2"],\
             ["@google-cloud/storage", "npm:7.5.0"],\
             ["@influxdata/influxdb-client", "npm:1.33.2"],\
             ["@nestjs-modules/mailer", "virtual:af52db50ce1e17ae30d2a127ee5eb203e2459595ebbd4aaffd83a5dbfc8ae6774ee976f28c80a96cee2a1b783ba84770e425442edbbe56c55f18094f55940734#npm:1.9.1"],\
@@ -41435,7 +41436,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@google-cloud/run", "npm:1.0.2"],\
             ["@google-cloud/storage", "npm:7.5.0"],\
             ["@types/lodash", "npm:4.14.195"],\
-            ["@types/node", "npm:18.15.11"],\
             ["@types/selenium-webdriver", "npm:4.1.15"],\
             ["@yarnpkg/pnpify", "npm:4.0.0"],\
             ["cheerio", "npm:1.0.0-rc.12"],\
@@ -41444,7 +41444,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["playwright", "npm:1.37.1"],\
             ["selenium-webdriver", "npm:4.14.0"],\
             ["sharp", "npm:0.32.4"],\
-            ["ts-node", "virtual:f2635a2fcff48218c189c72f8ec68a58c0c9a493231eeb25fc0d4d97932a237dd3a38bfaa7c8a6d4be36984c08b243589188d7525f771fc6d7018c6cf79aeba1#npm:10.9.1"],\
+            ["ts-node", "virtual:c2f719cfb35d96e2805a620e541e37bde2017dc6c437a06e49e1ed67c6f4deb8babb78b5ec9246878bc00b058fd4645a0c76d9dc7033b7be38663171d109ad72#npm:10.9.1"],\
             ["typescript", "patch:typescript@npm%3A4.7.4#~builtin<compat/typescript>::version=4.7.4&hash=65a307"]\
           ],\
           "linkType": "SOFT"\
@@ -42089,6 +42089,42 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["ts-node", "npm:10.9.1"]\
           ],\
           "linkType": "SOFT"\
+        }],\
+        ["virtual:c2f719cfb35d96e2805a620e541e37bde2017dc6c437a06e49e1ed67c6f4deb8babb78b5ec9246878bc00b058fd4645a0c76d9dc7033b7be38663171d109ad72#npm:10.9.1", {\
+          "packageLocation": "./.yarn/__virtual__/ts-node-virtual-2e1f9df65f/0/cache/ts-node-npm-10.9.1-6c268be7f4-090adff130.zip/node_modules/ts-node/",\
+          "packageDependencies": [\
+            ["ts-node", "virtual:c2f719cfb35d96e2805a620e541e37bde2017dc6c437a06e49e1ed67c6f4deb8babb78b5ec9246878bc00b058fd4645a0c76d9dc7033b7be38663171d109ad72#npm:10.9.1"],\
+            ["@cspotcode/source-map-support", "npm:0.8.1"],\
+            ["@swc/core", null],\
+            ["@swc/wasm", null],\
+            ["@tsconfig/node10", "npm:1.0.9"],\
+            ["@tsconfig/node12", "npm:1.0.11"],\
+            ["@tsconfig/node14", "npm:1.0.3"],\
+            ["@tsconfig/node16", "npm:1.0.3"],\
+            ["@types/node", null],\
+            ["@types/swc__core", null],\
+            ["@types/swc__wasm", null],\
+            ["@types/typescript", null],\
+            ["acorn", "npm:8.8.2"],\
+            ["acorn-walk", "npm:8.2.0"],\
+            ["arg", "npm:4.1.3"],\
+            ["create-require", "npm:1.1.1"],\
+            ["diff", "npm:4.0.2"],\
+            ["make-error", "npm:1.3.6"],\
+            ["typescript", "patch:typescript@npm%3A4.7.4#~builtin<compat/typescript>::version=4.7.4&hash=65a307"],\
+            ["v8-compile-cache-lib", "npm:3.0.1"],\
+            ["yn", "npm:3.1.1"]\
+          ],\
+          "packagePeers": [\
+            "@swc/core",\
+            "@swc/wasm",\
+            "@types/node",\
+            "@types/swc__core",\
+            "@types/swc__wasm",\
+            "@types/typescript",\
+            "typescript"\
+          ],\
+          "linkType": "HARD"\
         }],\
         ["virtual:f2635a2fcff48218c189c72f8ec68a58c0c9a493231eeb25fc0d4d97932a237dd3a38bfaa7c8a6d4be36984c08b243589188d7525f771fc6d7018c6cf79aeba1#npm:10.9.1", {\
           "packageLocation": "./.yarn/__virtual__/ts-node-virtual-bd004917c5/0/cache/ts-node-npm-10.9.1-6c268be7f4-090adff130.zip/node_modules/ts-node/",\

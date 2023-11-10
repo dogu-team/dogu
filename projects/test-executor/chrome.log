@@ -1,0 +1,4201 @@
+[1699598341.728][INFO]: Starting ChromeDriver 119.0.6045.105 (38c72552c5e15ba9b3117c0967a0fd105072d7c6-refs/branch-heads/6045@{#1103}) on port 57086
+[1699598341.728][INFO]: Please see https://chromedriver.chromium.org/security-considerations for suggestions on keeping ChromeDriver safe.
+[1699598341.760][INFO]: [4ca883279bcbd0db9f9e01bbdf5484b2] COMMAND InitSession {
+   "capabilities": {
+      "alwaysMatch": {
+         "browserName": "chrome",
+         "goog:chromeOptions": {
+            "args": [ "--headless=new", "--disable-gpu", "--disable-dev-shm-usage", "--no-sandbox", "--user-agent=Mozilla/5.0 (Linux; Android 13; SM-G981B) AppleWebKit/604.1 (KHTML, like Gecko) Chrome/119.0.0.0 Mobile Safari/604.1" ],
+            "binary": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+            "excludeSwitches": [ "enable-automation" ]
+         }
+      },
+      "firstMatch": [ {
+      } ]
+   }
+}
+[1699598341.761][INFO]: Populating Preferences file: {
+   "alternate_error_pages": {
+      "enabled": false
+   },
+   "autofill": {
+      "enabled": false
+   },
+   "browser": {
+      "check_default_browser": false
+   },
+   "distribution": {
+      "import_bookmarks": false,
+      "import_history": false,
+      "import_search_engine": false,
+      "make_chrome_default_for_user": false,
+      "skip_first_run_ui": true
+   },
+   "dns_prefetching": {
+      "enabled": false
+   },
+   "profile": {
+      "content_settings": {
+         "pattern_pairs": {
+            "https://*,*": {
+               "media-stream": {
+                  "audio": "Default",
+                  "video": "Default"
+               }
+            }
+         }
+      },
+      "default_content_setting_values": {
+         "geolocation": 1
+      },
+      "default_content_settings": {
+         "geolocation": 1,
+         "mouselock": 1,
+         "notifications": 1,
+         "popups": 1,
+         "ppapi-broker": 1
+      },
+      "password_manager_enabled": false
+   },
+   "safebrowsing": {
+      "enabled": false
+   },
+   "search": {
+      "suggest_enabled": false
+   },
+   "translate": {
+      "enabled": false
+   }
+}
+[1699598341.761][INFO]: Populating Local State file: {
+   "background_mode": {
+      "enabled": false
+   },
+   "ssl": {
+      "rev_checking": {
+         "enabled": false
+      }
+   }
+}
+[1699598341.761][INFO]: ChromeDriver supports communication with Chrome via pipes. This is more reliable and more secure.
+[1699598341.761][INFO]: Use the --remote-debugging-pipe Chrome switch instead of the default --remote-debugging-port to enable this communication mode.
+[1699598341.761][INFO]: Launching chrome: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --allow-pre-commit-input --disable-background-networking --disable-client-side-phishing-detection --disable-default-apps --disable-dev-shm-usage --disable-gpu --disable-hang-monitor --disable-popup-blocking --disable-prompt-on-repost --disable-sync --enable-logging --headless=new --log-level=0 --no-first-run --no-sandbox --no-service-autorun --password-store=basic --remote-debugging-port=0 --test-type=webdriver --use-mock-keychain --user-agent=Mozilla/5.0 (Linux; Android 13; SM-G981B) AppleWebKit/604.1 (KHTML, like Gecko) Chrome/119.0.0.0 Mobile Safari/604.1 --user-data-dir=/var/folders/jh/9l101dss5bv5_y9_nl9032n40000gp/T/.org.chromium.Chromium.MH4yBQ data:,
+
+DevTools listening on ws://127.0.0.1:57091/devtools/browser/2814d837-c8f6-4d52-a4b1-2628c1dc43e7
+[1699598342.148][DEBUG]: DevTools HTTP Request: http://localhost:57091/json/version
+[1699598342.189][DEBUG]: DevTools HTTP Response: {
+   "Browser": "Chrome/119.0.6045.123",
+   "Protocol-Version": "1.3",
+   "User-Agent": "Mozilla/5.0 (Linux; Android 13; SM-G981B) AppleWebKit/604.1 (KHTML, like Gecko) Chrome/119.0.0.0 Mobile Safari/604.1",
+   "V8-Version": "11.9.169.6",
+   "WebKit-Version": "537.36 (@b9e5b8a154549bb57a57b9c822607bc3289fc5b9)",
+   "webSocketDebuggerUrl": "ws://localhost:57091/devtools/browser/2814d837-c8f6-4d52-a4b1-2628c1dc43e7"
+}
+
+[1699598342.197][DEBUG]: DevTools HTTP Request: http://localhost:57091/json/list
+[1699598342.200][DEBUG]: DevTools HTTP Response: [ {
+   "description": "",
+   "devtoolsFrontendUrl": "/devtools/inspector.html?ws=localhost:57091/devtools/page/8DA56A96137E93CD9DD0D20615E130E0",
+   "id": "8DA56A96137E93CD9DD0D20615E130E0",
+   "title": "data:,",
+   "type": "page",
+   "url": "data:,",
+   "webSocketDebuggerUrl": "ws://localhost:57091/devtools/page/8DA56A96137E93CD9DD0D20615E130E0"
+} ]
+
+[1699598342.217][INFO]: resolved localhost to ["::1","127.0.0.1"]
+[1699598342.219][DEBUG]: DevTools WebSocket Command: Target.getTargets (id=1) (session_id=) browser {
+}
+[1699598342.271][DEBUG]: DevTools WebSocket Response: Target.getTargets (id=1) (session_id=) browser {
+   "targetInfos": [ {
+      "attached": false,
+      "browserContextId": "0E3944D484EC32C2E76ED48C9A1FE57F",
+      "canAccessOpener": false,
+      "targetId": "8DA56A96137E93CD9DD0D20615E130E0",
+      "title": "data:,",
+      "type": "page",
+      "url": "data:,"
+   } ]
+}
+[1699598342.287][DEBUG]: DevTools WebSocket Command: Target.attachToTarget (id=2) (session_id=) browser {
+   "flatten": true,
+   "targetId": "8DA56A96137E93CD9DD0D20615E130E0"
+}
+[1699598342.290][DEBUG]: DevTools WebSocket Event: Target.attachedToTarget (session_id=) browser {
+   "sessionId": "A9D27598339865558A9937F045DA174A",
+   "targetInfo": {
+      "attached": true,
+      "browserContextId": "0E3944D484EC32C2E76ED48C9A1FE57F",
+      "canAccessOpener": false,
+      "targetId": "8DA56A96137E93CD9DD0D20615E130E0",
+      "title": "data:,",
+      "type": "page",
+      "url": "data:,"
+   },
+   "waitingForDebugger": false
+}
+[1699598342.305][DEBUG]: DevTools WebSocket Response: Target.attachToTarget (id=2) (session_id=) browser {
+   "sessionId": "A9D27598339865558A9937F045DA174A"
+}
+[1699598342.306][DEBUG]: DevTools WebSocket Command: Page.enable (id=3) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+}
+[1699598342.341][DEBUG]: DevTools WebSocket Command: Page.addScriptToEvaluateOnNewDocument (id=4) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "source": "(function () {window.cdc_adoQpoasnfa76pfcZLmcfl_Array = window.Array;window.cdc_adoQpoasnfa76pfcZLmcfl_Object = window.Object;window.cdc_adoQpoasnfa76pfcZLmcfl_Promise = window.Promise;window.cdc_a..."
+}
+[1699598342.343][DEBUG]: DevTools WebSocket Command: Runtime.evaluate (id=5) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "expression": "(function () {window.cdc_adoQpoasnfa76pfcZLmcfl_Array = window.Array;window.cdc_adoQpoasnfa76pfcZLmcfl_Object = window.Object;window.cdc_adoQpoasnfa76pfcZLmcfl_Promise = window.Promise;window.cdc_a..."
+}
+[1699598342.345][DEBUG]: DevTools WebSocket Command: Log.enable (id=6) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+}
+[1699598342.347][DEBUG]: DevTools WebSocket Command: Target.setAutoAttach (id=7) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "autoAttach": true,
+   "flatten": true,
+   "waitForDebuggerOnStart": false
+}
+[1699598342.348][DEBUG]: DevTools WebSocket Command: Page.enable (id=8) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+}
+[1699598342.365][DEBUG]: DevTools WebSocket Command: Page.enable (id=9) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+}
+[1699598342.383][DEBUG]: DevTools WebSocket Response: Page.enable (id=3) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+}
+[1699598342.400][DEBUG]: DevTools WebSocket Response: Page.addScriptToEvaluateOnNewDocument (id=4) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "identifier": "1"
+}
+[1699598342.417][DEBUG]: DevTools WebSocket Response: Runtime.evaluate (id=5) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "result": {
+      "type": "undefined"
+   }
+}
+[1699598342.418][DEBUG]: DevTools WebSocket Response: Log.enable (id=6) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+}
+[1699598342.418][DEBUG]: DevTools WebSocket Response: Target.setAutoAttach (id=7) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+}
+[1699598342.418][DEBUG]: DevTools WebSocket Response: Page.enable (id=8) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+}
+[1699598342.418][DEBUG]: DevTools WebSocket Response: Page.enable (id=9) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+}
+[1699598342.418][DEBUG]: DevTools WebSocket Command: Runtime.enable (id=10) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+}
+[1699598342.420][DEBUG]: DevTools WebSocket Event: Runtime.executionContextCreated (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "context": {
+      "auxData": {
+         "frameId": "8DA56A96137E93CD9DD0D20615E130E0",
+         "isDefault": true,
+         "type": "default"
+      },
+      "id": 1,
+      "name": "",
+      "origin": "://",
+      "uniqueId": "4170570890378017417.840533997252323464"
+   }
+}
+[1699598342.420][DEBUG]: DevTools WebSocket Response: Runtime.enable (id=10) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+}
+[1699598342.421][DEBUG]: DevTools WebSocket Command: Page.enable (id=11) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+}
+[1699598342.421][DEBUG]: DevTools WebSocket Response: Page.enable (id=11) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+}
+[1699598342.422][DEBUG]: DevTools WebSocket Command: Runtime.enable (id=12) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+}
+[1699598342.422][DEBUG]: DevTools WebSocket Response: Runtime.enable (id=12) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+}
+[1699598342.422][INFO]: [4ca883279bcbd0db9f9e01bbdf5484b2] RESPONSE InitSession {
+   "capabilities": {
+      "acceptInsecureCerts": false,
+      "browserName": "chrome",
+      "browserVersion": "119.0.6045.123",
+      "chrome": {
+         "chromedriverVersion": "119.0.6045.105 (38c72552c5e15ba9b3117c0967a0fd105072d7c6-refs/branch-heads/6045@{#1103})",
+         "userDataDir": "/var/folders/jh/9l101dss5bv5_y9_nl9032n40000gp/T/.org.chromium.Chromium.MH4yBQ"
+      },
+      "fedcm:accounts": true,
+      "goog:chromeOptions": {
+         "debuggerAddress": "localhost:57091"
+      },
+      "networkConnectionEnabled": false,
+      "pageLoadStrategy": "normal",
+      "platformName": "mac",
+      "proxy": {
+      },
+      "setWindowRect": true,
+      "strictFileInteractability": false,
+      "timeouts": {
+         "implicit": 0,
+         "pageLoad": 300000,
+         "script": 30000
+      },
+      "unhandledPromptBehavior": "dismiss and notify",
+      "webauthn:extension:credBlob": true,
+      "webauthn:extension:largeBlob": true,
+      "webauthn:extension:minPinLength": true,
+      "webauthn:extension:prf": true,
+      "webauthn:virtualAuthenticators": true
+   },
+   "sessionId": "4ca883279bcbd0db9f9e01bbdf5484b2"
+}
+[1699598342.425][INFO]: [4ca883279bcbd0db9f9e01bbdf5484b2] COMMAND Navigate {
+   "url": "https://www.naver.com"
+}
+[1699598342.439][INFO]: Waiting for pending navigations...
+[1699598342.440][DEBUG]: DevTools WebSocket Command: Runtime.evaluate (id=13) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "expression": "1"
+}
+[1699598342.440][DEBUG]: DevTools WebSocket Response: Runtime.evaluate (id=13) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "result": {
+      "description": "1",
+      "type": "number",
+      "value": 1
+   }
+}
+[1699598342.441][DEBUG]: DevTools WebSocket Command: Runtime.evaluate (id=14) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "expression": "document",
+   "objectGroup": "7a219890-636b-4122-ac8d-8c24b1c77050"
+}
+[1699598342.441][DEBUG]: DevTools WebSocket Response: Runtime.evaluate (id=14) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "result": {
+      "className": "HTMLDocument",
+      "description": "#document",
+      "objectId": "-8663355032953499035.1.1",
+      "subtype": "node",
+      "type": "object"
+   }
+}
+[1699598342.458][DEBUG]: DevTools WebSocket Command: DOM.describeNode (id=15) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "objectId": "-8663355032953499035.1.1"
+}
+[1699598342.460][DEBUG]: DevTools WebSocket Response: DOM.describeNode (id=15) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "node": {
+      "backendNodeId": 1,
+      "baseURL": "data:,",
+      "childNodeCount": 1,
+      "compatibilityMode": "NoQuirksMode",
+      "documentURL": "data:,",
+      "localName": "",
+      "nodeId": 0,
+      "nodeName": "#document",
+      "nodeType": 9,
+      "nodeValue": "",
+      "xmlVersion": ""
+   }
+}
+[1699598342.477][DEBUG]: DevTools WebSocket Command: Runtime.releaseObjectGroup (id=16) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "objectGroup": "7a219890-636b-4122-ac8d-8c24b1c77050"
+}
+[1699598342.477][DEBUG]: DevTools WebSocket Command: Runtime.evaluate (id=17) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "awaitPromise": false,
+   "expression": "document.readyState",
+   "returnByValue": true,
+   "uniqueContextId": "4170570890378017417.840533997252323464"
+}
+[1699598342.496][DEBUG]: DevTools WebSocket Response: Runtime.releaseObjectGroup (id=16) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+}
+[1699598342.513][DEBUG]: DevTools WebSocket Response: Runtime.evaluate (id=17) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "result": {
+      "type": "string",
+      "value": "complete"
+   }
+}
+[1699598342.513][INFO]: Done waiting for pending navigations. Status: ok
+[1699598342.513][DEBUG]: DevTools WebSocket Command: Page.navigate (id=18) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "url": "https://www.naver.com"
+}
+[1699598342.515][DEBUG]: DevTools WebSocket Event: Page.frameStartedLoading (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "frameId": "8DA56A96137E93CD9DD0D20615E130E0"
+}
+[1699598342.619][DEBUG]: DevTools WebSocket Response: Page.navigate (id=18) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "frameId": "8DA56A96137E93CD9DD0D20615E130E0",
+   "loaderId": "31E26C1282BEE793B0D6E94A3F4B0A1B"
+}
+[1699598342.623][INFO]: Waiting for pending navigations...
+[1699598342.625][DEBUG]: DevTools WebSocket Event: Runtime.executionContextsCleared (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+}
+[1699598342.626][DEBUG]: DevTools WebSocket Event: Runtime.executionContextsCleared (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+}
+[1699598342.627][DEBUG]: DevTools WebSocket Event: Page.frameNavigated (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "frame": {
+      "adFrameStatus": {
+         "adFrameType": "none"
+      },
+      "crossOriginIsolatedContextType": "NotIsolated",
+      "domainAndRegistry": "naver.com",
+      "gatedAPIFeatures": [  ],
+      "id": "8DA56A96137E93CD9DD0D20615E130E0",
+      "loaderId": "31E26C1282BEE793B0D6E94A3F4B0A1B",
+      "mimeType": "text/html",
+      "secureContextType": "Secure",
+      "securityOrigin": "https://m.naver.com",
+      "url": "https://m.naver.com/"
+   },
+   "type": "Navigation"
+}
+[1699598342.627][DEBUG]: DevTools WebSocket Event: Runtime.executionContextCreated (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "context": {
+      "auxData": {
+         "frameId": "8DA56A96137E93CD9DD0D20615E130E0",
+         "isDefault": true,
+         "type": "default"
+      },
+      "id": 1,
+      "name": "",
+      "origin": "https://m.naver.com",
+      "uniqueId": "1849447899621837364.1603277596245246295"
+   }
+}
+[1699598342.627][DEBUG]: DevTools WebSocket Command: Runtime.evaluate (id=19) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "expression": "1"
+}
+[1699598342.628][DEBUG]: DevTools WebSocket Response: Runtime.evaluate (id=19) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "result": {
+      "description": "1",
+      "type": "number",
+      "value": 1
+   }
+}
+[1699598342.919][DEBUG]: DevTools WebSocket Event: Page.domContentEventFired (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "timestamp": 84233.462911
+}
+[1699598342.919][DEBUG]: DevTools WebSocket Command: Runtime.evaluate (id=20) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "expression": "1"
+}
+[1699598342.920][DEBUG]: DevTools WebSocket Response: Runtime.evaluate (id=20) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "result": {
+      "description": "1",
+      "type": "number",
+      "value": 1
+   }
+}
+[1699598342.973][DEBUG]: DevTools WebSocket Event: Page.loadEventFired (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "timestamp": 84233.519677
+}
+[1699598342.973][DEBUG]: DevTools WebSocket Command: Runtime.evaluate (id=21) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "awaitPromise": false,
+   "expression": "document.readyState",
+   "returnByValue": true,
+   "uniqueContextId": "1849447899621837364.1603277596245246295"
+}
+[1699598342.974][DEBUG]: DevTools WebSocket Event: Page.frameStoppedLoading (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "frameId": "8DA56A96137E93CD9DD0D20615E130E0"
+}
+[1699598343.018][DEBUG]: DevTools WebSocket Event: Page.frameAttached (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "frameId": "A7CE447A90000438E5D366D884D5FA17",
+   "parentFrameId": "8DA56A96137E93CD9DD0D20615E130E0",
+   "stack": {
+      "callFrames": [ {
+         "columnNumber": 80731,
+         "functionName": "_getIFrame",
+         "lineNumber": 22,
+         "scriptId": "10",
+         "url": "https://mm.pstatic.net/js/build/vendors.6c9f397e.js?o=m"
+      }, {
+         "columnNumber": 80131,
+         "functionName": "_assignValueToMemberVariable",
+         "lineNumber": 22,
+         "scriptId": "10",
+         "url": "https://mm.pstatic.net/js/build/vendors.6c9f397e.js?o=m"
+      }, {
+         "columnNumber": 79032,
+         "functionName": "construct",
+         "lineNumber": 22,
+         "scriptId": "10",
+         "url": "https://mm.pstatic.net/js/build/vendors.6c9f397e.js?o=m"
+      }, {
+         "columnNumber": 77069,
+         "functionName": "i",
+         "lineNumber": 22,
+         "scriptId": "10",
+         "url": "https://mm.pstatic.net/js/build/vendors.6c9f397e.js?o=m"
+      }, {
+         "columnNumber": 85281,
+         "functionName": "_initVar",
+         "lineNumber": 22,
+         "scriptId": "10",
+         "url": "https://mm.pstatic.net/js/build/vendors.6c9f397e.js?o=m"
+      }, {
+         "columnNumber": 82510,
+         "functionName": "construct",
+         "lineNumber": 22,
+         "scriptId": "10",
+         "url": "https://mm.pstatic.net/js/build/vendors.6c9f397e.js?o=m"
+      }, {
+         "columnNumber": 77069,
+         "functionName": "i",
+         "lineNumber": 22,
+         "scriptId": "10",
+         "url": "https://mm.pstatic.net/js/build/vendors.6c9f397e.js?o=m"
+      }, {
+         "columnNumber": 77002,
+         "functionName": "i",
+         "lineNumber": 22,
+         "scriptId": "10",
+         "url": "https://mm.pstatic.net/js/build/vendors.6c9f397e.js?o=m"
+      }, {
+         "columnNumber": 59157,
+         "functionName": "t.getStorageObject",
+         "lineNumber": 44,
+         "scriptId": "10",
+         "url": "https://mm.pstatic.net/js/build/vendors.6c9f397e.js?o=m"
+      }, {
+         "columnNumber": 58918,
+         "functionName": "t",
+         "lineNumber": 44,
+         "scriptId": "10",
+         "url": "https://mm.pstatic.net/js/build/vendors.6c9f397e.js?o=m"
+      }, {
+         "columnNumber": 37728,
+         "functionName": "e.initComponents",
+         "lineNumber": 96,
+         "scriptId": "10",
+         "url": "https://mm.pstatic.net/js/build/vendors.6c9f397e.js?o=m"
+      }, {
+         "columnNumber": 36335,
+         "functionName": "t",
+         "lineNumber": 96,
+         "scriptId": "10",
+         "url": "https://mm.pstatic.net/js/build/vendors.6c9f397e.js?o=m"
+      }, {
+         "columnNumber": 211829,
+         "functionName": "it",
+         "lineNumber": 0,
+         "scriptId": "14",
+         "url": "https://mm.pstatic.net/js/build/main.ce9b6cf0.js?o=m"
+      }, {
+         "columnNumber": 223547,
+         "functionName": "",
+         "lineNumber": 0,
+         "scriptId": "14",
+         "url": "https://mm.pstatic.net/js/build/main.ce9b6cf0.js?o=m"
+      }, {
+         "columnNumber": 226049,
+         "functionName": "init",
+         "lineNumber": 0,
+         "scriptId": "14",
+         "url": "https://mm.pstatic.net/js/build/main.ce9b6cf0.js?o=m"
+      }, {
+         "columnNumber": 6773,
+         "functionName": "",
+         "lineNumber": 0,
+         "scriptId": "14",
+         "url": "https://mm.pstatic.net/js/build/main.ce9b6cf0.js?o=m"
+      }, {
+         "columnNumber": 7287,
+         "functionName": "",
+         "lineNumber": 0,
+         "scriptId": "14",
+         "url": "https://mm.pstatic.net/js/build/main.ce9b6cf0.js?o=m"
+      } ]
+   }
+}
+[1699598343.029][DEBUG]: DevTools WebSocket Event: Page.frameStartedLoading (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "frameId": "A7CE447A90000438E5D366D884D5FA17"
+}
+[1699598343.032][DEBUG]: DevTools WebSocket Event: Page.frameNavigated (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "frame": {
+      "adFrameStatus": {
+         "adFrameType": "none",
+         "explanations": [  ]
+      },
+      "crossOriginIsolatedContextType": "NotIsolated",
+      "domainAndRegistry": "",
+      "gatedAPIFeatures": [  ],
+      "id": "A7CE447A90000438E5D366D884D5FA17",
+      "loaderId": "6703A307AFCA6FB09DD3F13300811AB0",
+      "mimeType": "text/html",
+      "name": "RF_STORAGE_1699598343015_15",
+      "parentId": "8DA56A96137E93CD9DD0D20615E130E0",
+      "secureContextType": "Secure",
+      "securityOrigin": "://",
+      "url": "about:blank"
+   },
+   "type": "Navigation"
+}
+[1699598343.032][DEBUG]: DevTools WebSocket Event: Runtime.executionContextCreated (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "context": {
+      "auxData": {
+         "frameId": "A7CE447A90000438E5D366D884D5FA17",
+         "isDefault": true,
+         "type": "default"
+      },
+      "id": 2,
+      "name": "",
+      "origin": "https://m.naver.com",
+      "uniqueId": "-8591712162656967522.-2101275070827693126"
+   }
+}
+[1699598343.032][DEBUG]: DevTools WebSocket Event: Page.frameStoppedLoading (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "frameId": "A7CE447A90000438E5D366D884D5FA17"
+}
+[1699598343.032][DEBUG]: DevTools WebSocket Event: Page.frameScheduledNavigation (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "delay": 0,
+   "frameId": "A7CE447A90000438E5D366D884D5FA17",
+   "reason": "scriptInitiated",
+   "url": "https://m.search.naver.com/remote_frame"
+}
+[1699598343.032][DEBUG]: DevTools WebSocket Event: Page.frameRequestedNavigation (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "disposition": "currentTab",
+   "frameId": "A7CE447A90000438E5D366D884D5FA17",
+   "reason": "scriptInitiated",
+   "url": "https://m.search.naver.com/remote_frame"
+}
+[1699598343.032][DEBUG]: DevTools WebSocket Event: Page.frameStartedLoading (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "frameId": "A7CE447A90000438E5D366D884D5FA17"
+}
+[1699598343.032][DEBUG]: DevTools WebSocket Event: Page.frameClearedScheduledNavigation (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "frameId": "A7CE447A90000438E5D366D884D5FA17"
+}
+[1699598343.032][DEBUG]: DevTools WebSocket Response: Runtime.evaluate (id=21) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "result": {
+      "type": "string",
+      "value": "complete"
+   }
+}
+[1699598343.032][DEBUG]: DevTools WebSocket Command: Runtime.evaluate (id=22) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "expression": "1"
+}
+[1699598343.040][DEBUG]: DevTools WebSocket Response: Runtime.evaluate (id=22) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "result": {
+      "description": "1",
+      "type": "number",
+      "value": 1
+   }
+}
+[1699598343.040][INFO]: Done waiting for pending navigations. Status: ok
+[1699598343.040][INFO]: [4ca883279bcbd0db9f9e01bbdf5484b2] RESPONSE Navigate
+[1699598343.074][DEBUG]: DevTools WebSocket Event: Runtime.executionContextDestroyed (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "executionContextId": 2,
+   "executionContextUniqueId": "-8591712162656967522.-2101275070827693126"
+}
+[1699598343.074][DEBUG]: DevTools WebSocket Event: Page.frameNavigated (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "frame": {
+      "adFrameStatus": {
+         "adFrameType": "none",
+         "explanations": [  ]
+      },
+      "crossOriginIsolatedContextType": "NotIsolatedFeatureDisabled",
+      "domainAndRegistry": "naver.com",
+      "gatedAPIFeatures": [  ],
+      "id": "A7CE447A90000438E5D366D884D5FA17",
+      "loaderId": "593387D27A93920BA40D5D9D4B245AD3",
+      "mimeType": "text/html",
+      "name": "RF_STORAGE_1699598343015_15",
+      "parentId": "8DA56A96137E93CD9DD0D20615E130E0",
+      "secureContextType": "Secure",
+      "securityOrigin": "https://m.search.naver.com",
+      "url": "https://m.search.naver.com/remote_frame"
+   },
+   "type": "Navigation"
+}
+[1699598343.074][DEBUG]: DevTools WebSocket Event: Runtime.executionContextCreated (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "context": {
+      "auxData": {
+         "frameId": "A7CE447A90000438E5D366D884D5FA17",
+         "isDefault": true,
+         "type": "default"
+      },
+      "id": 3,
+      "name": "",
+      "origin": "https://m.search.naver.com",
+      "uniqueId": "-2103443407299664333.1274022612777564514"
+   }
+}
+[1699598343.097][DEBUG]: DevTools WebSocket Event: Page.frameStoppedLoading (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "frameId": "A7CE447A90000438E5D366D884D5FA17"
+}
+[1699598343.115][DEBUG]: DevTools WebSocket Event: Page.frameAttached (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "frameId": "7D99DF7FD8BBF66CB0ED6CA08164BF9F",
+   "parentFrameId": "8DA56A96137E93CD9DD0D20615E130E0",
+   "stack": {
+      "callFrames": [ {
+         "columnNumber": 26042,
+         "functionName": "value",
+         "lineNumber": 0,
+         "scriptId": "17",
+         "url": "https://ssl.pstatic.net/tveta/libs/glad/prod/2.21.1/gfp-ext-nda.js"
+      }, {
+         "columnNumber": 46307,
+         "functionName": "value",
+         "lineNumber": 0,
+         "scriptId": "17",
+         "url": "https://ssl.pstatic.net/tveta/libs/glad/prod/2.21.1/gfp-ext-nda.js"
+      }, {
+         "columnNumber": 97229,
+         "functionName": "value",
+         "lineNumber": 0,
+         "scriptId": "16",
+         "url": "https://ssl.pstatic.net/tveta/libs/glad/prod/2.21.1/gfp-sdk.js"
+      }, {
+         "columnNumber": 106944,
+         "functionName": "value",
+         "lineNumber": 0,
+         "scriptId": "16",
+         "url": "https://ssl.pstatic.net/tveta/libs/glad/prod/2.21.1/gfp-sdk.js"
+      }, {
+         "columnNumber": 103223,
+         "functionName": "value",
+         "lineNumber": 0,
+         "scriptId": "16",
+         "url": "https://ssl.pstatic.net/tveta/libs/glad/prod/2.21.1/gfp-sdk.js"
+      }, {
+         "columnNumber": 87522,
+         "functionName": "",
+         "lineNumber": 0,
+         "scriptId": "16",
+         "url": "https://ssl.pstatic.net/tveta/libs/glad/prod/2.21.1/gfp-sdk.js"
+      }, {
+         "columnNumber": 117627,
+         "functionName": "",
+         "lineNumber": 0,
+         "scriptId": "16",
+         "url": "https://ssl.pstatic.net/tveta/libs/glad/prod/2.21.1/gfp-sdk.js"
+      }, {
+         "columnNumber": 117597,
+         "functionName": "value",
+         "lineNumber": 0,
+         "scriptId": "16",
+         "url": "https://ssl.pstatic.net/tveta/libs/glad/prod/2.21.1/gfp-sdk.js"
+      }, {
+         "columnNumber": 117812,
+         "functionName": "value",
+         "lineNumber": 0,
+         "scriptId": "16",
+         "url": "https://ssl.pstatic.net/tveta/libs/glad/prod/2.21.1/gfp-sdk.js"
+      }, {
+         "columnNumber": 122696,
+         "functionName": "",
+         "lineNumber": 0,
+         "scriptId": "16",
+         "url": "https://ssl.pstatic.net/tveta/libs/glad/prod/2.21.1/gfp-sdk.js"
+      } ]
+   }
+}
+[1699598343.116][DEBUG]: DevTools WebSocket Event: Page.frameStartedLoading (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "frameId": "7D99DF7FD8BBF66CB0ED6CA08164BF9F"
+}
+[1699598343.117][DEBUG]: DevTools WebSocket Event: Page.frameNavigated (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "frame": {
+      "adFrameStatus": {
+         "adFrameType": "none",
+         "explanations": [  ]
+      },
+      "crossOriginIsolatedContextType": "NotIsolated",
+      "domainAndRegistry": "",
+      "gatedAPIFeatures": [  ],
+      "id": "7D99DF7FD8BBF66CB0ED6CA08164BF9F",
+      "loaderId": "F84E81375C8E99C5E78DD8533A7F7816",
+      "mimeType": "text/html",
+      "name": "{\"iFrameId\":\"nmap_search_1_tgtLREC\",\"isFluid\":true,\"adm\":\"\u003Cscript src=\\\"https://ssl.pstatic.net/tveta/libs/glad/glad-bridge.min.js\\\">\u003C/script>\\n\\n\u003Clink rel=\\\"stylesheet\\\" href=\\\"https://ssl.pstatic...",
+      "parentId": "8DA56A96137E93CD9DD0D20615E130E0",
+      "secureContextType": "Secure",
+      "securityOrigin": "://",
+      "url": "about:blank"
+   },
+   "type": "Navigation"
+}
+[1699598343.117][DEBUG]: DevTools WebSocket Event: Runtime.executionContextCreated (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "context": {
+      "auxData": {
+         "frameId": "7D99DF7FD8BBF66CB0ED6CA08164BF9F",
+         "isDefault": true,
+         "type": "default"
+      },
+      "id": 4,
+      "name": "",
+      "origin": "https://m.naver.com",
+      "uniqueId": "-7338373539784749455.6092163418493445621"
+   }
+}
+[1699598343.117][DEBUG]: DevTools WebSocket Event: Page.frameStoppedLoading (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "frameId": "7D99DF7FD8BBF66CB0ED6CA08164BF9F"
+}
+[1699598343.217][DEBUG]: DevTools WebSocket Event: Page.documentOpened (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "frame": {
+      "adFrameStatus": {
+         "adFrameType": "none",
+         "explanations": [  ]
+      },
+      "crossOriginIsolatedContextType": "NotIsolated",
+      "domainAndRegistry": "naver.com",
+      "gatedAPIFeatures": [  ],
+      "id": "7D99DF7FD8BBF66CB0ED6CA08164BF9F",
+      "loaderId": "F84E81375C8E99C5E78DD8533A7F7816",
+      "mimeType": "text/html",
+      "name": "{\"iFrameId\":\"nmap_search_1_tgtLREC\",\"isFluid\":true,\"adm\":\"\u003Cscript src=\\\"https://ssl.pstatic.net/tveta/libs/glad/glad-bridge.min.js\\\">\u003C/script>\\n\\n\u003Clink rel=\\\"stylesheet\\\" href=\\\"https://ssl.pstatic...",
+      "parentId": "8DA56A96137E93CD9DD0D20615E130E0",
+      "secureContextType": "Secure",
+      "securityOrigin": "https://m.naver.com",
+      "url": "https://m.naver.com/"
+   }
+}
+[1699598344.043][INFO]: [4ca883279bcbd0db9f9e01bbdf5484b2] COMMAND ExecuteScript {
+   "args": [  ],
+   "script": "document.body.style.overflow = 'hidden';"
+}
+[1699598344.043][INFO]: Waiting for pending navigations...
+[1699598344.043][DEBUG]: DevTools WebSocket Command: Runtime.evaluate (id=23) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "expression": "1"
+}
+[1699598344.044][DEBUG]: DevTools WebSocket Response: Runtime.evaluate (id=23) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "result": {
+      "description": "1",
+      "type": "number",
+      "value": 1
+   }
+}
+[1699598344.044][INFO]: Done waiting for pending navigations. Status: ok
+[1699598344.044][DEBUG]: DevTools WebSocket Command: Page.getFrameTree (id=24) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+}
+[1699598344.044][DEBUG]: DevTools WebSocket Response: Page.getFrameTree (id=24) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "frameTree": {
+      "childFrames": [ {
+         "frame": {
+            "adFrameStatus": {
+               "adFrameType": "none",
+               "explanations": [  ]
+            },
+            "crossOriginIsolatedContextType": "NotIsolatedFeatureDisabled",
+            "domainAndRegistry": "naver.com",
+            "gatedAPIFeatures": [  ],
+            "id": "A7CE447A90000438E5D366D884D5FA17",
+            "loaderId": "593387D27A93920BA40D5D9D4B245AD3",
+            "mimeType": "text/html",
+            "name": "RF_STORAGE_1699598343015_15",
+            "parentId": "8DA56A96137E93CD9DD0D20615E130E0",
+            "secureContextType": "Secure",
+            "securityOrigin": "https://m.search.naver.com",
+            "url": "https://m.search.naver.com/remote_frame"
+         }
+      }, {
+         "frame": {
+            "adFrameStatus": {
+               "adFrameType": "none",
+               "explanations": [  ]
+            },
+            "crossOriginIsolatedContextType": "NotIsolated",
+            "domainAndRegistry": "naver.com",
+            "gatedAPIFeatures": [  ],
+            "id": "7D99DF7FD8BBF66CB0ED6CA08164BF9F",
+            "loaderId": "F84E81375C8E99C5E78DD8533A7F7816",
+            "mimeType": "text/html",
+            "name": "nmap_search_1_tgtLREC",
+            "parentId": "8DA56A96137E93CD9DD0D20615E130E0",
+            "secureContextType": "Secure",
+            "securityOrigin": "https://m.naver.com",
+            "url": "https://m.naver.com/"
+         }
+      } ],
+      "frame": {
+         "adFrameStatus": {
+            "adFrameType": "none"
+         },
+         "crossOriginIsolatedContextType": "NotIsolated",
+         "domainAndRegistry": "naver.com",
+         "gatedAPIFeatures": [  ],
+         "id": "8DA56A96137E93CD9DD0D20615E130E0",
+         "loaderId": "31E26C1282BEE793B0D6E94A3F4B0A1B",
+         "mimeType": "text/html",
+         "secureContextType": "Secure",
+         "securityOrigin": "https://m.naver.com",
+         "url": "https://m.naver.com/"
+      }
+   }
+}
+[1699598344.044][DEBUG]: DevTools WebSocket Command: Page.getFrameTree (id=25) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+}
+[1699598344.045][DEBUG]: DevTools WebSocket Response: Page.getFrameTree (id=25) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "frameTree": {
+      "childFrames": [ {
+         "frame": {
+            "adFrameStatus": {
+               "adFrameType": "none",
+               "explanations": [  ]
+            },
+            "crossOriginIsolatedContextType": "NotIsolatedFeatureDisabled",
+            "domainAndRegistry": "naver.com",
+            "gatedAPIFeatures": [  ],
+            "id": "A7CE447A90000438E5D366D884D5FA17",
+            "loaderId": "593387D27A93920BA40D5D9D4B245AD3",
+            "mimeType": "text/html",
+            "name": "RF_STORAGE_1699598343015_15",
+            "parentId": "8DA56A96137E93CD9DD0D20615E130E0",
+            "secureContextType": "Secure",
+            "securityOrigin": "https://m.search.naver.com",
+            "url": "https://m.search.naver.com/remote_frame"
+         }
+      }, {
+         "frame": {
+            "adFrameStatus": {
+               "adFrameType": "none",
+               "explanations": [  ]
+            },
+            "crossOriginIsolatedContextType": "NotIsolated",
+            "domainAndRegistry": "naver.com",
+            "gatedAPIFeatures": [  ],
+            "id": "7D99DF7FD8BBF66CB0ED6CA08164BF9F",
+            "loaderId": "F84E81375C8E99C5E78DD8533A7F7816",
+            "mimeType": "text/html",
+            "name": "nmap_search_1_tgtLREC",
+            "parentId": "8DA56A96137E93CD9DD0D20615E130E0",
+            "secureContextType": "Secure",
+            "securityOrigin": "https://m.naver.com",
+            "url": "https://m.naver.com/"
+         }
+      } ],
+      "frame": {
+         "adFrameStatus": {
+            "adFrameType": "none"
+         },
+         "crossOriginIsolatedContextType": "NotIsolated",
+         "domainAndRegistry": "naver.com",
+         "gatedAPIFeatures": [  ],
+         "id": "8DA56A96137E93CD9DD0D20615E130E0",
+         "loaderId": "31E26C1282BEE793B0D6E94A3F4B0A1B",
+         "mimeType": "text/html",
+         "secureContextType": "Secure",
+         "securityOrigin": "https://m.naver.com",
+         "url": "https://m.naver.com/"
+      }
+   }
+}
+[1699598344.045][DEBUG]: DevTools WebSocket Command: Runtime.callFunctionOn (id=26) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "arguments": [  ],
+   "awaitPromise": true,
+   "functionDeclaration": "function(){ return (function() { // Copyright 2012 The Chromium Authors\n// Use of this source code is governed by a BSD-style license that can be\n// found in the LICENSE file.\n\n/**\n * Enum for WebD...",
+   "objectGroup": "b8966505-7a24-4cdf-8f6b-15f295fa1b85",
+   "serializationOptions": {
+      "serialization": "deep"
+   },
+   "uniqueContextId": "1849447899621837364.1603277596245246295"
+}
+[1699598344.047][DEBUG]: DevTools WebSocket Response: Runtime.callFunctionOn (id=26) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "result": {
+      "className": "Array",
+      "deepSerializedValue": {
+         "type": "array",
+         "value": [ {
+            "type": "string",
+            "value": "{\"status\":0,\"value\":null}"
+         } ]
+      },
+      "description": "Array(1)",
+      "objectId": "-4067059546531893782.1.1",
+      "subtype": "array",
+      "type": "object"
+   }
+}
+[1699598344.047][DEBUG]: DevTools WebSocket Command: Runtime.releaseObjectGroup (id=27) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "objectGroup": "b8966505-7a24-4cdf-8f6b-15f295fa1b85"
+}
+[1699598344.047][INFO]: Waiting for pending navigations...
+[1699598344.047][DEBUG]: DevTools WebSocket Command: Runtime.evaluate (id=28) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "expression": "1"
+}
+[1699598344.047][DEBUG]: DevTools WebSocket Response: Runtime.releaseObjectGroup (id=27) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+}
+[1699598344.047][DEBUG]: DevTools WebSocket Response: Runtime.evaluate (id=28) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "result": {
+      "description": "1",
+      "type": "number",
+      "value": 1
+   }
+}
+[1699598344.047][INFO]: Done waiting for pending navigations. Status: ok
+[1699598344.047][INFO]: [4ca883279bcbd0db9f9e01bbdf5484b2] RESPONSE ExecuteScript null
+[1699598345.095][DEBUG]: DevTools WebSocket Event: Page.frameResized (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+}
+[1699598345.120][INFO]: [4ca883279bcbd0db9f9e01bbdf5484b2] COMMAND ExecuteScript {
+   "args": [  ],
+   "script": "window.scrollBy({left: 0, top: document.body.scrollHeight})"
+}
+[1699598345.120][INFO]: Waiting for pending navigations...
+[1699598345.120][DEBUG]: DevTools WebSocket Command: Runtime.evaluate (id=29) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "expression": "1"
+}
+[1699598345.125][DEBUG]: DevTools WebSocket Response: Runtime.evaluate (id=29) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "result": {
+      "description": "1",
+      "type": "number",
+      "value": 1
+   }
+}
+[1699598345.125][INFO]: Done waiting for pending navigations. Status: ok
+[1699598345.125][DEBUG]: DevTools WebSocket Command: Page.getFrameTree (id=30) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+}
+[1699598345.129][DEBUG]: DevTools WebSocket Response: Page.getFrameTree (id=30) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "frameTree": {
+      "childFrames": [ {
+         "frame": {
+            "adFrameStatus": {
+               "adFrameType": "none",
+               "explanations": [  ]
+            },
+            "crossOriginIsolatedContextType": "NotIsolatedFeatureDisabled",
+            "domainAndRegistry": "naver.com",
+            "gatedAPIFeatures": [  ],
+            "id": "A7CE447A90000438E5D366D884D5FA17",
+            "loaderId": "593387D27A93920BA40D5D9D4B245AD3",
+            "mimeType": "text/html",
+            "name": "RF_STORAGE_1699598343015_15",
+            "parentId": "8DA56A96137E93CD9DD0D20615E130E0",
+            "secureContextType": "Secure",
+            "securityOrigin": "https://m.search.naver.com",
+            "url": "https://m.search.naver.com/remote_frame"
+         }
+      }, {
+         "frame": {
+            "adFrameStatus": {
+               "adFrameType": "none",
+               "explanations": [  ]
+            },
+            "crossOriginIsolatedContextType": "NotIsolated",
+            "domainAndRegistry": "naver.com",
+            "gatedAPIFeatures": [  ],
+            "id": "7D99DF7FD8BBF66CB0ED6CA08164BF9F",
+            "loaderId": "F84E81375C8E99C5E78DD8533A7F7816",
+            "mimeType": "text/html",
+            "name": "nmap_search_1_tgtLREC",
+            "parentId": "8DA56A96137E93CD9DD0D20615E130E0",
+            "secureContextType": "Secure",
+            "securityOrigin": "https://m.naver.com",
+            "url": "https://m.naver.com/"
+         }
+      } ],
+      "frame": {
+         "adFrameStatus": {
+            "adFrameType": "none"
+         },
+         "crossOriginIsolatedContextType": "NotIsolated",
+         "domainAndRegistry": "naver.com",
+         "gatedAPIFeatures": [  ],
+         "id": "8DA56A96137E93CD9DD0D20615E130E0",
+         "loaderId": "31E26C1282BEE793B0D6E94A3F4B0A1B",
+         "mimeType": "text/html",
+         "secureContextType": "Secure",
+         "securityOrigin": "https://m.naver.com",
+         "url": "https://m.naver.com/"
+      }
+   }
+}
+[1699598345.129][DEBUG]: DevTools WebSocket Command: Page.getFrameTree (id=31) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+}
+[1699598345.129][DEBUG]: DevTools WebSocket Response: Page.getFrameTree (id=31) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "frameTree": {
+      "childFrames": [ {
+         "frame": {
+            "adFrameStatus": {
+               "adFrameType": "none",
+               "explanations": [  ]
+            },
+            "crossOriginIsolatedContextType": "NotIsolatedFeatureDisabled",
+            "domainAndRegistry": "naver.com",
+            "gatedAPIFeatures": [  ],
+            "id": "A7CE447A90000438E5D366D884D5FA17",
+            "loaderId": "593387D27A93920BA40D5D9D4B245AD3",
+            "mimeType": "text/html",
+            "name": "RF_STORAGE_1699598343015_15",
+            "parentId": "8DA56A96137E93CD9DD0D20615E130E0",
+            "secureContextType": "Secure",
+            "securityOrigin": "https://m.search.naver.com",
+            "url": "https://m.search.naver.com/remote_frame"
+         }
+      }, {
+         "frame": {
+            "adFrameStatus": {
+               "adFrameType": "none",
+               "explanations": [  ]
+            },
+            "crossOriginIsolatedContextType": "NotIsolated",
+            "domainAndRegistry": "naver.com",
+            "gatedAPIFeatures": [  ],
+            "id": "7D99DF7FD8BBF66CB0ED6CA08164BF9F",
+            "loaderId": "F84E81375C8E99C5E78DD8533A7F7816",
+            "mimeType": "text/html",
+            "name": "nmap_search_1_tgtLREC",
+            "parentId": "8DA56A96137E93CD9DD0D20615E130E0",
+            "secureContextType": "Secure",
+            "securityOrigin": "https://m.naver.com",
+            "url": "https://m.naver.com/"
+         }
+      } ],
+      "frame": {
+         "adFrameStatus": {
+            "adFrameType": "none"
+         },
+         "crossOriginIsolatedContextType": "NotIsolated",
+         "domainAndRegistry": "naver.com",
+         "gatedAPIFeatures": [  ],
+         "id": "8DA56A96137E93CD9DD0D20615E130E0",
+         "loaderId": "31E26C1282BEE793B0D6E94A3F4B0A1B",
+         "mimeType": "text/html",
+         "secureContextType": "Secure",
+         "securityOrigin": "https://m.naver.com",
+         "url": "https://m.naver.com/"
+      }
+   }
+}
+[1699598345.130][DEBUG]: DevTools WebSocket Command: Runtime.callFunctionOn (id=32) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "arguments": [  ],
+   "awaitPromise": true,
+   "functionDeclaration": "function(){ return (function() { // Copyright 2012 The Chromium Authors\n// Use of this source code is governed by a BSD-style license that can be\n// found in the LICENSE file.\n\n/**\n * Enum for WebD...",
+   "objectGroup": "7acc74f2-8c2f-4b38-a5ff-406135860712",
+   "serializationOptions": {
+      "serialization": "deep"
+   },
+   "uniqueContextId": "1849447899621837364.1603277596245246295"
+}
+[1699598345.131][DEBUG]: DevTools WebSocket Response: Runtime.callFunctionOn (id=32) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "result": {
+      "className": "Array",
+      "deepSerializedValue": {
+         "type": "array",
+         "value": [ {
+            "type": "string",
+            "value": "{\"status\":0,\"value\":null}"
+         } ]
+      },
+      "description": "Array(1)",
+      "objectId": "-4067059546531893782.1.2",
+      "subtype": "array",
+      "type": "object"
+   }
+}
+[1699598345.131][DEBUG]: DevTools WebSocket Command: Runtime.releaseObjectGroup (id=33) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "objectGroup": "7acc74f2-8c2f-4b38-a5ff-406135860712"
+}
+[1699598345.131][INFO]: Waiting for pending navigations...
+[1699598345.131][DEBUG]: DevTools WebSocket Command: Runtime.evaluate (id=34) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "expression": "1"
+}
+[1699598345.131][DEBUG]: DevTools WebSocket Response: Runtime.releaseObjectGroup (id=33) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+}
+[1699598345.131][DEBUG]: DevTools WebSocket Response: Runtime.evaluate (id=34) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "result": {
+      "description": "1",
+      "type": "number",
+      "value": 1
+   }
+}
+[1699598345.131][INFO]: Done waiting for pending navigations. Status: ok
+[1699598345.131][INFO]: [4ca883279bcbd0db9f9e01bbdf5484b2] RESPONSE ExecuteScript null
+[1699598345.612][DEBUG]: DevTools WebSocket Event: Page.frameDetached (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "frameId": "7D99DF7FD8BBF66CB0ED6CA08164BF9F",
+   "reason": "remove"
+}
+[1699598345.625][DEBUG]: DevTools WebSocket Event: Runtime.executionContextDestroyed (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "executionContextId": 4,
+   "executionContextUniqueId": "-7338373539784749455.6092163418493445621"
+}
+[1699598345.626][DEBUG]: DevTools WebSocket Event: Page.frameAttached (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "frameId": "B761970523C3A8F76CA0C6EBAA302C72",
+   "parentFrameId": "8DA56A96137E93CD9DD0D20615E130E0",
+   "stack": {
+      "callFrames": [ {
+         "columnNumber": 35250,
+         "functionName": "Pt",
+         "lineNumber": 0,
+         "scriptId": "10",
+         "url": "https://mm.pstatic.net/js/build/vendors.6c9f397e.js?o=m"
+      }, {
+         "columnNumber": 35696,
+         "functionName": "",
+         "lineNumber": 0,
+         "scriptId": "10",
+         "url": "https://mm.pstatic.net/js/build/vendors.6c9f397e.js?o=m"
+      }, {
+         "columnNumber": 23976,
+         "functionName": "L",
+         "lineNumber": 0,
+         "scriptId": "10",
+         "url": "https://mm.pstatic.net/js/build/vendors.6c9f397e.js?o=m"
+      }, {
+         "columnNumber": 35654,
+         "functionName": "",
+         "lineNumber": 0,
+         "scriptId": "10",
+         "url": "https://mm.pstatic.net/js/build/vendors.6c9f397e.js?o=m"
+      }, {
+         "columnNumber": 23976,
+         "functionName": "L",
+         "lineNumber": 0,
+         "scriptId": "10",
+         "url": "https://mm.pstatic.net/js/build/vendors.6c9f397e.js?o=m"
+      }, {
+         "columnNumber": 35632,
+         "functionName": "",
+         "lineNumber": 0,
+         "scriptId": "10",
+         "url": "https://mm.pstatic.net/js/build/vendors.6c9f397e.js?o=m"
+      }, {
+         "columnNumber": 23976,
+         "functionName": "L",
+         "lineNumber": 0,
+         "scriptId": "10",
+         "url": "https://mm.pstatic.net/js/build/vendors.6c9f397e.js?o=m"
+      }, {
+         "columnNumber": 35613,
+         "functionName": "Ct",
+         "lineNumber": 0,
+         "scriptId": "10",
+         "url": "https://mm.pstatic.net/js/build/vendors.6c9f397e.js?o=m"
+      }, {
+         "columnNumber": 35953,
+         "functionName": "T.before",
+         "lineNumber": 0,
+         "scriptId": "10",
+         "url": "https://mm.pstatic.net/js/build/vendors.6c9f397e.js?o=m"
+      }, {
+         "columnNumber": 658945,
+         "functionName": "Vv",
+         "lineNumber": 0,
+         "scriptId": "14",
+         "url": "https://mm.pstatic.net/js/build/main.ce9b6cf0.js?o=m"
+      }, {
+         "columnNumber": 711820,
+         "functionName": "r",
+         "lineNumber": 0,
+         "scriptId": "14",
+         "url": "https://mm.pstatic.net/js/build/main.ce9b6cf0.js?o=m"
+      }, {
+         "columnNumber": 712118,
+         "functionName": "s",
+         "lineNumber": 0,
+         "scriptId": "14",
+         "url": "https://mm.pstatic.net/js/build/main.ce9b6cf0.js?o=m"
+      }, {
+         "columnNumber": 267247,
+         "functionName": "",
+         "lineNumber": 0,
+         "scriptId": "14",
+         "url": "https://mm.pstatic.net/js/build/main.ce9b6cf0.js?o=m"
+      }, {
+         "columnNumber": 267222,
+         "functionName": "value",
+         "lineNumber": 0,
+         "scriptId": "14",
+         "url": "https://mm.pstatic.net/js/build/main.ce9b6cf0.js?o=m"
+      }, {
+         "columnNumber": 55970,
+         "functionName": "value",
+         "lineNumber": 0,
+         "scriptId": "14",
+         "url": "https://mm.pstatic.net/js/build/main.ce9b6cf0.js?o=m"
+      }, {
+         "columnNumber": 218822,
+         "functionName": "Rt",
+         "lineNumber": 0,
+         "scriptId": "14",
+         "url": "https://mm.pstatic.net/js/build/main.ce9b6cf0.js?o=m"
+      }, {
+         "columnNumber": 221866,
+         "functionName": "",
+         "lineNumber": 0,
+         "scriptId": "14",
+         "url": "https://mm.pstatic.net/js/build/main.ce9b6cf0.js?o=m"
+      }, {
+         "columnNumber": 138756,
+         "functionName": "m",
+         "lineNumber": 8,
+         "scriptId": "10",
+         "url": "https://mm.pstatic.net/js/build/vendors.6c9f397e.js?o=m"
+      }, {
+         "columnNumber": 139031,
+         "functionName": "_",
+         "lineNumber": 8,
+         "scriptId": "10",
+         "url": "https://mm.pstatic.net/js/build/vendors.6c9f397e.js?o=m"
+      }, "..." ]
+   }
+}
+[1699598345.626][DEBUG]: DevTools WebSocket Event: Page.frameStartedLoading (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "frameId": "B761970523C3A8F76CA0C6EBAA302C72"
+}
+[1699598345.626][DEBUG]: DevTools WebSocket Event: Page.frameNavigated (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "frame": {
+      "adFrameStatus": {
+         "adFrameType": "none",
+         "explanations": [  ]
+      },
+      "crossOriginIsolatedContextType": "NotIsolated",
+      "domainAndRegistry": "",
+      "gatedAPIFeatures": [  ],
+      "id": "B761970523C3A8F76CA0C6EBAA302C72",
+      "loaderId": "CD0EA9A73D98503173BE6650C9AF3EB8",
+      "mimeType": "text/html",
+      "name": "nmap_search_1_tgtLREC",
+      "parentId": "8DA56A96137E93CD9DD0D20615E130E0",
+      "secureContextType": "Secure",
+      "securityOrigin": "://",
+      "url": "about:blank"
+   },
+   "type": "Navigation"
+}
+[1699598345.626][DEBUG]: DevTools WebSocket Event: Runtime.executionContextCreated (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "context": {
+      "auxData": {
+         "frameId": "B761970523C3A8F76CA0C6EBAA302C72",
+         "isDefault": true,
+         "type": "default"
+      },
+      "id": 5,
+      "name": "",
+      "origin": "https://m.naver.com",
+      "uniqueId": "4448014621181064334.4241612419210613965"
+   }
+}
+[1699598345.626][DEBUG]: DevTools WebSocket Event: Page.frameStoppedLoading (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "frameId": "B761970523C3A8F76CA0C6EBAA302C72"
+}
+[1699598345.626][DEBUG]: DevTools WebSocket Event: Page.frameDetached (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "frameId": "B761970523C3A8F76CA0C6EBAA302C72",
+   "reason": "remove"
+}
+[1699598345.626][DEBUG]: DevTools WebSocket Event: Runtime.executionContextDestroyed (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "executionContextId": 5,
+   "executionContextUniqueId": "4448014621181064334.4241612419210613965"
+}
+[1699598345.697][DEBUG]: DevTools WebSocket Event: Page.frameAttached (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "frameId": "F71A274939B4E174EB6788A9997A4766",
+   "parentFrameId": "8DA56A96137E93CD9DD0D20615E130E0",
+   "stack": {
+      "callFrames": [ {
+         "columnNumber": 26042,
+         "functionName": "value",
+         "lineNumber": 0,
+         "scriptId": "17",
+         "url": "https://ssl.pstatic.net/tveta/libs/glad/prod/2.21.1/gfp-ext-nda.js"
+      }, {
+         "columnNumber": 46307,
+         "functionName": "value",
+         "lineNumber": 0,
+         "scriptId": "17",
+         "url": "https://ssl.pstatic.net/tveta/libs/glad/prod/2.21.1/gfp-ext-nda.js"
+      }, {
+         "columnNumber": 97229,
+         "functionName": "value",
+         "lineNumber": 0,
+         "scriptId": "16",
+         "url": "https://ssl.pstatic.net/tveta/libs/glad/prod/2.21.1/gfp-sdk.js"
+      }, {
+         "columnNumber": 106944,
+         "functionName": "value",
+         "lineNumber": 0,
+         "scriptId": "16",
+         "url": "https://ssl.pstatic.net/tveta/libs/glad/prod/2.21.1/gfp-sdk.js"
+      }, {
+         "columnNumber": 103223,
+         "functionName": "value",
+         "lineNumber": 0,
+         "scriptId": "16",
+         "url": "https://ssl.pstatic.net/tveta/libs/glad/prod/2.21.1/gfp-sdk.js"
+      }, {
+         "columnNumber": 87522,
+         "functionName": "",
+         "lineNumber": 0,
+         "scriptId": "16",
+         "url": "https://ssl.pstatic.net/tveta/libs/glad/prod/2.21.1/gfp-sdk.js"
+      }, {
+         "columnNumber": 117627,
+         "functionName": "",
+         "lineNumber": 0,
+         "scriptId": "16",
+         "url": "https://ssl.pstatic.net/tveta/libs/glad/prod/2.21.1/gfp-sdk.js"
+      }, {
+         "columnNumber": 117597,
+         "functionName": "value",
+         "lineNumber": 0,
+         "scriptId": "16",
+         "url": "https://ssl.pstatic.net/tveta/libs/glad/prod/2.21.1/gfp-sdk.js"
+      }, {
+         "columnNumber": 117812,
+         "functionName": "value",
+         "lineNumber": 0,
+         "scriptId": "16",
+         "url": "https://ssl.pstatic.net/tveta/libs/glad/prod/2.21.1/gfp-sdk.js"
+      }, {
+         "columnNumber": 122696,
+         "functionName": "",
+         "lineNumber": 0,
+         "scriptId": "16",
+         "url": "https://ssl.pstatic.net/tveta/libs/glad/prod/2.21.1/gfp-sdk.js"
+      } ]
+   }
+}
+[1699598345.713][DEBUG]: DevTools WebSocket Event: Page.frameStartedLoading (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "frameId": "F71A274939B4E174EB6788A9997A4766"
+}
+[1699598345.713][DEBUG]: DevTools WebSocket Event: Page.frameNavigated (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "frame": {
+      "adFrameStatus": {
+         "adFrameType": "none",
+         "explanations": [  ]
+      },
+      "crossOriginIsolatedContextType": "NotIsolated",
+      "domainAndRegistry": "",
+      "gatedAPIFeatures": [  ],
+      "id": "F71A274939B4E174EB6788A9997A4766",
+      "loaderId": "306F67DB812F18CFED1DB5FF7D1C907A",
+      "mimeType": "text/html",
+      "name": "{\"iFrameId\":\"nmap_search_1_tgtLREC\",\"isFluid\":true,\"adm\":\"\u003Cscript src=\\\"https://ssl.pstatic.net/tveta/libs/glad/glad-bridge.min.js\\\">\u003C/script>\\n\\n\u003Clink rel=\\\"stylesheet\\\" href=\\\"https://ssl.pstatic...",
+      "parentId": "8DA56A96137E93CD9DD0D20615E130E0",
+      "secureContextType": "Secure",
+      "securityOrigin": "://",
+      "url": "about:blank"
+   },
+   "type": "Navigation"
+}
+[1699598345.713][DEBUG]: DevTools WebSocket Event: Runtime.executionContextCreated (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "context": {
+      "auxData": {
+         "frameId": "F71A274939B4E174EB6788A9997A4766",
+         "isDefault": true,
+         "type": "default"
+      },
+      "id": 6,
+      "name": "",
+      "origin": "https://m.naver.com",
+      "uniqueId": "-8218899818597075505.-6493310175114208157"
+   }
+}
+[1699598345.713][DEBUG]: DevTools WebSocket Event: Page.frameStoppedLoading (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "frameId": "F71A274939B4E174EB6788A9997A4766"
+}
+[1699598345.713][DEBUG]: DevTools WebSocket Event: Page.documentOpened (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "frame": {
+      "adFrameStatus": {
+         "adFrameType": "none",
+         "explanations": [  ]
+      },
+      "crossOriginIsolatedContextType": "NotIsolated",
+      "domainAndRegistry": "naver.com",
+      "gatedAPIFeatures": [  ],
+      "id": "F71A274939B4E174EB6788A9997A4766",
+      "loaderId": "306F67DB812F18CFED1DB5FF7D1C907A",
+      "mimeType": "text/html",
+      "name": "{\"iFrameId\":\"nmap_search_1_tgtLREC\",\"isFluid\":true,\"adm\":\"\u003Cscript src=\\\"https://ssl.pstatic.net/tveta/libs/glad/glad-bridge.min.js\\\">\u003C/script>\\n\\n\u003Clink rel=\\\"stylesheet\\\" href=\\\"https://ssl.pstatic...",
+      "parentId": "8DA56A96137E93CD9DD0D20615E130E0",
+      "secureContextType": "Secure",
+      "securityOrigin": "https://m.naver.com",
+      "url": "https://m.naver.com/"
+   }
+}
+[1699598346.134][INFO]: [4ca883279bcbd0db9f9e01bbdf5484b2] COMMAND ExecuteScript {
+   "args": [  ],
+   "script": "window.scrollTo({left: 0, top: 0});"
+}
+[1699598346.134][INFO]: Waiting for pending navigations...
+[1699598346.134][DEBUG]: DevTools WebSocket Command: Runtime.evaluate (id=35) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "expression": "1"
+}
+[1699598346.134][DEBUG]: DevTools WebSocket Response: Runtime.evaluate (id=35) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "result": {
+      "description": "1",
+      "type": "number",
+      "value": 1
+   }
+}
+[1699598346.134][INFO]: Done waiting for pending navigations. Status: ok
+[1699598346.134][DEBUG]: DevTools WebSocket Command: Page.getFrameTree (id=36) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+}
+[1699598346.135][DEBUG]: DevTools WebSocket Response: Page.getFrameTree (id=36) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "frameTree": {
+      "childFrames": [ {
+         "frame": {
+            "adFrameStatus": {
+               "adFrameType": "none",
+               "explanations": [  ]
+            },
+            "crossOriginIsolatedContextType": "NotIsolatedFeatureDisabled",
+            "domainAndRegistry": "naver.com",
+            "gatedAPIFeatures": [  ],
+            "id": "A7CE447A90000438E5D366D884D5FA17",
+            "loaderId": "593387D27A93920BA40D5D9D4B245AD3",
+            "mimeType": "text/html",
+            "name": "RF_STORAGE_1699598343015_15",
+            "parentId": "8DA56A96137E93CD9DD0D20615E130E0",
+            "secureContextType": "Secure",
+            "securityOrigin": "https://m.search.naver.com",
+            "url": "https://m.search.naver.com/remote_frame"
+         }
+      }, {
+         "frame": {
+            "adFrameStatus": {
+               "adFrameType": "none",
+               "explanations": [  ]
+            },
+            "crossOriginIsolatedContextType": "NotIsolated",
+            "domainAndRegistry": "naver.com",
+            "gatedAPIFeatures": [  ],
+            "id": "F71A274939B4E174EB6788A9997A4766",
+            "loaderId": "306F67DB812F18CFED1DB5FF7D1C907A",
+            "mimeType": "text/html",
+            "name": "nmap_search_1_tgtLREC",
+            "parentId": "8DA56A96137E93CD9DD0D20615E130E0",
+            "secureContextType": "Secure",
+            "securityOrigin": "https://m.naver.com",
+            "url": "https://m.naver.com/"
+         }
+      } ],
+      "frame": {
+         "adFrameStatus": {
+            "adFrameType": "none"
+         },
+         "crossOriginIsolatedContextType": "NotIsolated",
+         "domainAndRegistry": "naver.com",
+         "gatedAPIFeatures": [  ],
+         "id": "8DA56A96137E93CD9DD0D20615E130E0",
+         "loaderId": "31E26C1282BEE793B0D6E94A3F4B0A1B",
+         "mimeType": "text/html",
+         "secureContextType": "Secure",
+         "securityOrigin": "https://m.naver.com",
+         "url": "https://m.naver.com/"
+      }
+   }
+}
+[1699598346.135][DEBUG]: DevTools WebSocket Command: Page.getFrameTree (id=37) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+}
+[1699598346.138][DEBUG]: DevTools WebSocket Response: Page.getFrameTree (id=37) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "frameTree": {
+      "childFrames": [ {
+         "frame": {
+            "adFrameStatus": {
+               "adFrameType": "none",
+               "explanations": [  ]
+            },
+            "crossOriginIsolatedContextType": "NotIsolatedFeatureDisabled",
+            "domainAndRegistry": "naver.com",
+            "gatedAPIFeatures": [  ],
+            "id": "A7CE447A90000438E5D366D884D5FA17",
+            "loaderId": "593387D27A93920BA40D5D9D4B245AD3",
+            "mimeType": "text/html",
+            "name": "RF_STORAGE_1699598343015_15",
+            "parentId": "8DA56A96137E93CD9DD0D20615E130E0",
+            "secureContextType": "Secure",
+            "securityOrigin": "https://m.search.naver.com",
+            "url": "https://m.search.naver.com/remote_frame"
+         }
+      }, {
+         "frame": {
+            "adFrameStatus": {
+               "adFrameType": "none",
+               "explanations": [  ]
+            },
+            "crossOriginIsolatedContextType": "NotIsolated",
+            "domainAndRegistry": "naver.com",
+            "gatedAPIFeatures": [  ],
+            "id": "F71A274939B4E174EB6788A9997A4766",
+            "loaderId": "306F67DB812F18CFED1DB5FF7D1C907A",
+            "mimeType": "text/html",
+            "name": "nmap_search_1_tgtLREC",
+            "parentId": "8DA56A96137E93CD9DD0D20615E130E0",
+            "secureContextType": "Secure",
+            "securityOrigin": "https://m.naver.com",
+            "url": "https://m.naver.com/"
+         }
+      } ],
+      "frame": {
+         "adFrameStatus": {
+            "adFrameType": "none"
+         },
+         "crossOriginIsolatedContextType": "NotIsolated",
+         "domainAndRegistry": "naver.com",
+         "gatedAPIFeatures": [  ],
+         "id": "8DA56A96137E93CD9DD0D20615E130E0",
+         "loaderId": "31E26C1282BEE793B0D6E94A3F4B0A1B",
+         "mimeType": "text/html",
+         "secureContextType": "Secure",
+         "securityOrigin": "https://m.naver.com",
+         "url": "https://m.naver.com/"
+      }
+   }
+}
+[1699598346.138][DEBUG]: DevTools WebSocket Command: Runtime.callFunctionOn (id=38) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "arguments": [  ],
+   "awaitPromise": true,
+   "functionDeclaration": "function(){ return (function() { // Copyright 2012 The Chromium Authors\n// Use of this source code is governed by a BSD-style license that can be\n// found in the LICENSE file.\n\n/**\n * Enum for WebD...",
+   "objectGroup": "d80b96ed-d0ce-4110-93cb-1d0b07e47963",
+   "serializationOptions": {
+      "serialization": "deep"
+   },
+   "uniqueContextId": "1849447899621837364.1603277596245246295"
+}
+[1699598346.140][DEBUG]: DevTools WebSocket Response: Runtime.callFunctionOn (id=38) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "result": {
+      "className": "Array",
+      "deepSerializedValue": {
+         "type": "array",
+         "value": [ {
+            "type": "string",
+            "value": "{\"status\":0,\"value\":null}"
+         } ]
+      },
+      "description": "Array(1)",
+      "objectId": "-4067059546531893782.1.3",
+      "subtype": "array",
+      "type": "object"
+   }
+}
+[1699598346.140][DEBUG]: DevTools WebSocket Command: Runtime.releaseObjectGroup (id=39) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "objectGroup": "d80b96ed-d0ce-4110-93cb-1d0b07e47963"
+}
+[1699598346.140][INFO]: Waiting for pending navigations...
+[1699598346.140][DEBUG]: DevTools WebSocket Command: Runtime.evaluate (id=40) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "expression": "1"
+}
+[1699598346.141][DEBUG]: DevTools WebSocket Response: Runtime.releaseObjectGroup (id=39) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+}
+[1699598346.141][DEBUG]: DevTools WebSocket Response: Runtime.evaluate (id=40) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "result": {
+      "description": "1",
+      "type": "number",
+      "value": 1
+   }
+}
+[1699598346.141][INFO]: Done waiting for pending navigations. Status: ok
+[1699598346.141][INFO]: [4ca883279bcbd0db9f9e01bbdf5484b2] RESPONSE ExecuteScript null
+[1699598346.481][DEBUG]: DevTools WebSocket Event: Log.entryAdded (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "entry": {
+      "level": "warning",
+      "source": "javascript",
+      "text": "The resource https://ssl.pstatic.net/sstatic/search/mobile/img/sp_common_4be85b6a.png was preloaded using link preload but not used within a few seconds from the window's load event. Please make su...",
+      "timestamp": 1.6995983464806409e+12,
+      "url": "https://m.search.naver.com/remote_frame"
+   }
+}
+[1699598346.481][DEBUG]: DevTools WebSocket Event: Log.entryAdded (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "entry": {
+      "level": "warning",
+      "source": "javascript",
+      "text": "The resource https://ssl.pstatic.net/sstatic/search/mobile/css/w_new_231109.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it ...",
+      "timestamp": 1.699598346480722e+12,
+      "url": "https://m.search.naver.com/remote_frame"
+   }
+}
+[1699598347.148][INFO]: [4ca883279bcbd0db9f9e01bbdf5484b2] COMMAND ExecuteScript {
+   "args": [  ],
+   "script": "return document.documentElement.clientWidth"
+}
+[1699598347.148][INFO]: Waiting for pending navigations...
+[1699598347.148][DEBUG]: DevTools WebSocket Command: Runtime.evaluate (id=41) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "expression": "1"
+}
+[1699598347.149][DEBUG]: DevTools WebSocket Response: Runtime.evaluate (id=41) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "result": {
+      "description": "1",
+      "type": "number",
+      "value": 1
+   }
+}
+[1699598347.149][INFO]: Done waiting for pending navigations. Status: ok
+[1699598347.149][DEBUG]: DevTools WebSocket Command: Page.getFrameTree (id=42) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+}
+[1699598347.149][DEBUG]: DevTools WebSocket Response: Page.getFrameTree (id=42) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "frameTree": {
+      "childFrames": [ {
+         "frame": {
+            "adFrameStatus": {
+               "adFrameType": "none",
+               "explanations": [  ]
+            },
+            "crossOriginIsolatedContextType": "NotIsolatedFeatureDisabled",
+            "domainAndRegistry": "naver.com",
+            "gatedAPIFeatures": [  ],
+            "id": "A7CE447A90000438E5D366D884D5FA17",
+            "loaderId": "593387D27A93920BA40D5D9D4B245AD3",
+            "mimeType": "text/html",
+            "name": "RF_STORAGE_1699598343015_15",
+            "parentId": "8DA56A96137E93CD9DD0D20615E130E0",
+            "secureContextType": "Secure",
+            "securityOrigin": "https://m.search.naver.com",
+            "url": "https://m.search.naver.com/remote_frame"
+         }
+      }, {
+         "frame": {
+            "adFrameStatus": {
+               "adFrameType": "none",
+               "explanations": [  ]
+            },
+            "crossOriginIsolatedContextType": "NotIsolated",
+            "domainAndRegistry": "naver.com",
+            "gatedAPIFeatures": [  ],
+            "id": "F71A274939B4E174EB6788A9997A4766",
+            "loaderId": "306F67DB812F18CFED1DB5FF7D1C907A",
+            "mimeType": "text/html",
+            "name": "nmap_search_1_tgtLREC",
+            "parentId": "8DA56A96137E93CD9DD0D20615E130E0",
+            "secureContextType": "Secure",
+            "securityOrigin": "https://m.naver.com",
+            "url": "https://m.naver.com/"
+         }
+      } ],
+      "frame": {
+         "adFrameStatus": {
+            "adFrameType": "none"
+         },
+         "crossOriginIsolatedContextType": "NotIsolated",
+         "domainAndRegistry": "naver.com",
+         "gatedAPIFeatures": [  ],
+         "id": "8DA56A96137E93CD9DD0D20615E130E0",
+         "loaderId": "31E26C1282BEE793B0D6E94A3F4B0A1B",
+         "mimeType": "text/html",
+         "secureContextType": "Secure",
+         "securityOrigin": "https://m.naver.com",
+         "url": "https://m.naver.com/"
+      }
+   }
+}
+[1699598347.149][DEBUG]: DevTools WebSocket Command: Page.getFrameTree (id=43) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+}
+[1699598347.150][DEBUG]: DevTools WebSocket Response: Page.getFrameTree (id=43) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "frameTree": {
+      "childFrames": [ {
+         "frame": {
+            "adFrameStatus": {
+               "adFrameType": "none",
+               "explanations": [  ]
+            },
+            "crossOriginIsolatedContextType": "NotIsolatedFeatureDisabled",
+            "domainAndRegistry": "naver.com",
+            "gatedAPIFeatures": [  ],
+            "id": "A7CE447A90000438E5D366D884D5FA17",
+            "loaderId": "593387D27A93920BA40D5D9D4B245AD3",
+            "mimeType": "text/html",
+            "name": "RF_STORAGE_1699598343015_15",
+            "parentId": "8DA56A96137E93CD9DD0D20615E130E0",
+            "secureContextType": "Secure",
+            "securityOrigin": "https://m.search.naver.com",
+            "url": "https://m.search.naver.com/remote_frame"
+         }
+      }, {
+         "frame": {
+            "adFrameStatus": {
+               "adFrameType": "none",
+               "explanations": [  ]
+            },
+            "crossOriginIsolatedContextType": "NotIsolated",
+            "domainAndRegistry": "naver.com",
+            "gatedAPIFeatures": [  ],
+            "id": "F71A274939B4E174EB6788A9997A4766",
+            "loaderId": "306F67DB812F18CFED1DB5FF7D1C907A",
+            "mimeType": "text/html",
+            "name": "nmap_search_1_tgtLREC",
+            "parentId": "8DA56A96137E93CD9DD0D20615E130E0",
+            "secureContextType": "Secure",
+            "securityOrigin": "https://m.naver.com",
+            "url": "https://m.naver.com/"
+         }
+      } ],
+      "frame": {
+         "adFrameStatus": {
+            "adFrameType": "none"
+         },
+         "crossOriginIsolatedContextType": "NotIsolated",
+         "domainAndRegistry": "naver.com",
+         "gatedAPIFeatures": [  ],
+         "id": "8DA56A96137E93CD9DD0D20615E130E0",
+         "loaderId": "31E26C1282BEE793B0D6E94A3F4B0A1B",
+         "mimeType": "text/html",
+         "secureContextType": "Secure",
+         "securityOrigin": "https://m.naver.com",
+         "url": "https://m.naver.com/"
+      }
+   }
+}
+[1699598347.150][DEBUG]: DevTools WebSocket Command: Runtime.callFunctionOn (id=44) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "arguments": [  ],
+   "awaitPromise": true,
+   "functionDeclaration": "function(){ return (function() { // Copyright 2012 The Chromium Authors\n// Use of this source code is governed by a BSD-style license that can be\n// found in the LICENSE file.\n\n/**\n * Enum for WebD...",
+   "objectGroup": "57136b31-7546-45ae-ade7-9aa804823bdf",
+   "serializationOptions": {
+      "serialization": "deep"
+   },
+   "uniqueContextId": "1849447899621837364.1603277596245246295"
+}
+[1699598347.152][DEBUG]: DevTools WebSocket Response: Runtime.callFunctionOn (id=44) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "result": {
+      "className": "Array",
+      "deepSerializedValue": {
+         "type": "array",
+         "value": [ {
+            "type": "string",
+            "value": "{\"status\":0,\"value\":360}"
+         } ]
+      },
+      "description": "Array(1)",
+      "objectId": "-4067059546531893782.1.4",
+      "subtype": "array",
+      "type": "object"
+   }
+}
+[1699598347.152][DEBUG]: DevTools WebSocket Command: Runtime.releaseObjectGroup (id=45) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "objectGroup": "57136b31-7546-45ae-ade7-9aa804823bdf"
+}
+[1699598347.152][INFO]: Waiting for pending navigations...
+[1699598347.152][DEBUG]: DevTools WebSocket Command: Runtime.evaluate (id=46) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "expression": "1"
+}
+[1699598347.152][DEBUG]: DevTools WebSocket Response: Runtime.releaseObjectGroup (id=45) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+}
+[1699598347.152][DEBUG]: DevTools WebSocket Response: Runtime.evaluate (id=46) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "result": {
+      "description": "1",
+      "type": "number",
+      "value": 1
+   }
+}
+[1699598347.152][INFO]: Done waiting for pending navigations. Status: ok
+[1699598347.152][INFO]: [4ca883279bcbd0db9f9e01bbdf5484b2] RESPONSE ExecuteScript 360
+[1699598347.152][INFO]: [4ca883279bcbd0db9f9e01bbdf5484b2] COMMAND ExecuteScript {
+   "args": [  ],
+   "script": "return window.innerWidth"
+}
+[1699598347.152][INFO]: Waiting for pending navigations...
+[1699598347.152][DEBUG]: DevTools WebSocket Command: Runtime.evaluate (id=47) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "expression": "1"
+}
+[1699598347.153][DEBUG]: DevTools WebSocket Response: Runtime.evaluate (id=47) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "result": {
+      "description": "1",
+      "type": "number",
+      "value": 1
+   }
+}
+[1699598347.153][INFO]: Done waiting for pending navigations. Status: ok
+[1699598347.153][DEBUG]: DevTools WebSocket Command: Page.getFrameTree (id=48) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+}
+[1699598347.153][DEBUG]: DevTools WebSocket Response: Page.getFrameTree (id=48) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "frameTree": {
+      "childFrames": [ {
+         "frame": {
+            "adFrameStatus": {
+               "adFrameType": "none",
+               "explanations": [  ]
+            },
+            "crossOriginIsolatedContextType": "NotIsolatedFeatureDisabled",
+            "domainAndRegistry": "naver.com",
+            "gatedAPIFeatures": [  ],
+            "id": "A7CE447A90000438E5D366D884D5FA17",
+            "loaderId": "593387D27A93920BA40D5D9D4B245AD3",
+            "mimeType": "text/html",
+            "name": "RF_STORAGE_1699598343015_15",
+            "parentId": "8DA56A96137E93CD9DD0D20615E130E0",
+            "secureContextType": "Secure",
+            "securityOrigin": "https://m.search.naver.com",
+            "url": "https://m.search.naver.com/remote_frame"
+         }
+      }, {
+         "frame": {
+            "adFrameStatus": {
+               "adFrameType": "none",
+               "explanations": [  ]
+            },
+            "crossOriginIsolatedContextType": "NotIsolated",
+            "domainAndRegistry": "naver.com",
+            "gatedAPIFeatures": [  ],
+            "id": "F71A274939B4E174EB6788A9997A4766",
+            "loaderId": "306F67DB812F18CFED1DB5FF7D1C907A",
+            "mimeType": "text/html",
+            "name": "nmap_search_1_tgtLREC",
+            "parentId": "8DA56A96137E93CD9DD0D20615E130E0",
+            "secureContextType": "Secure",
+            "securityOrigin": "https://m.naver.com",
+            "url": "https://m.naver.com/"
+         }
+      } ],
+      "frame": {
+         "adFrameStatus": {
+            "adFrameType": "none"
+         },
+         "crossOriginIsolatedContextType": "NotIsolated",
+         "domainAndRegistry": "naver.com",
+         "gatedAPIFeatures": [  ],
+         "id": "8DA56A96137E93CD9DD0D20615E130E0",
+         "loaderId": "31E26C1282BEE793B0D6E94A3F4B0A1B",
+         "mimeType": "text/html",
+         "secureContextType": "Secure",
+         "securityOrigin": "https://m.naver.com",
+         "url": "https://m.naver.com/"
+      }
+   }
+}
+[1699598347.153][DEBUG]: DevTools WebSocket Command: Page.getFrameTree (id=49) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+}
+[1699598347.153][DEBUG]: DevTools WebSocket Response: Page.getFrameTree (id=49) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "frameTree": {
+      "childFrames": [ {
+         "frame": {
+            "adFrameStatus": {
+               "adFrameType": "none",
+               "explanations": [  ]
+            },
+            "crossOriginIsolatedContextType": "NotIsolatedFeatureDisabled",
+            "domainAndRegistry": "naver.com",
+            "gatedAPIFeatures": [  ],
+            "id": "A7CE447A90000438E5D366D884D5FA17",
+            "loaderId": "593387D27A93920BA40D5D9D4B245AD3",
+            "mimeType": "text/html",
+            "name": "RF_STORAGE_1699598343015_15",
+            "parentId": "8DA56A96137E93CD9DD0D20615E130E0",
+            "secureContextType": "Secure",
+            "securityOrigin": "https://m.search.naver.com",
+            "url": "https://m.search.naver.com/remote_frame"
+         }
+      }, {
+         "frame": {
+            "adFrameStatus": {
+               "adFrameType": "none",
+               "explanations": [  ]
+            },
+            "crossOriginIsolatedContextType": "NotIsolated",
+            "domainAndRegistry": "naver.com",
+            "gatedAPIFeatures": [  ],
+            "id": "F71A274939B4E174EB6788A9997A4766",
+            "loaderId": "306F67DB812F18CFED1DB5FF7D1C907A",
+            "mimeType": "text/html",
+            "name": "nmap_search_1_tgtLREC",
+            "parentId": "8DA56A96137E93CD9DD0D20615E130E0",
+            "secureContextType": "Secure",
+            "securityOrigin": "https://m.naver.com",
+            "url": "https://m.naver.com/"
+         }
+      } ],
+      "frame": {
+         "adFrameStatus": {
+            "adFrameType": "none"
+         },
+         "crossOriginIsolatedContextType": "NotIsolated",
+         "domainAndRegistry": "naver.com",
+         "gatedAPIFeatures": [  ],
+         "id": "8DA56A96137E93CD9DD0D20615E130E0",
+         "loaderId": "31E26C1282BEE793B0D6E94A3F4B0A1B",
+         "mimeType": "text/html",
+         "secureContextType": "Secure",
+         "securityOrigin": "https://m.naver.com",
+         "url": "https://m.naver.com/"
+      }
+   }
+}
+[1699598347.154][DEBUG]: DevTools WebSocket Command: Runtime.callFunctionOn (id=50) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "arguments": [  ],
+   "awaitPromise": true,
+   "functionDeclaration": "function(){ return (function() { // Copyright 2012 The Chromium Authors\n// Use of this source code is governed by a BSD-style license that can be\n// found in the LICENSE file.\n\n/**\n * Enum for WebD...",
+   "objectGroup": "53cadde4-288c-4d26-8cb3-62ea66c1ff15",
+   "serializationOptions": {
+      "serialization": "deep"
+   },
+   "uniqueContextId": "1849447899621837364.1603277596245246295"
+}
+[1699598347.155][DEBUG]: DevTools WebSocket Response: Runtime.callFunctionOn (id=50) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "result": {
+      "className": "Array",
+      "deepSerializedValue": {
+         "type": "array",
+         "value": [ {
+            "type": "string",
+            "value": "{\"status\":0,\"value\":360}"
+         } ]
+      },
+      "description": "Array(1)",
+      "objectId": "-4067059546531893782.1.5",
+      "subtype": "array",
+      "type": "object"
+   }
+}
+[1699598347.155][DEBUG]: DevTools WebSocket Command: Runtime.releaseObjectGroup (id=51) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "objectGroup": "53cadde4-288c-4d26-8cb3-62ea66c1ff15"
+}
+[1699598347.155][INFO]: Waiting for pending navigations...
+[1699598347.155][DEBUG]: DevTools WebSocket Command: Runtime.evaluate (id=52) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "expression": "1"
+}
+[1699598347.155][DEBUG]: DevTools WebSocket Response: Runtime.releaseObjectGroup (id=51) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+}
+[1699598347.155][DEBUG]: DevTools WebSocket Response: Runtime.evaluate (id=52) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "result": {
+      "description": "1",
+      "type": "number",
+      "value": 1
+   }
+}
+[1699598347.155][INFO]: Done waiting for pending navigations. Status: ok
+[1699598347.155][INFO]: [4ca883279bcbd0db9f9e01bbdf5484b2] RESPONSE ExecuteScript 360
+[1699598347.155][INFO]: [4ca883279bcbd0db9f9e01bbdf5484b2] COMMAND ExecuteScript {
+   "args": [  ],
+   "script": "return document.documentElement.clientHeight"
+}
+[1699598347.156][INFO]: Waiting for pending navigations...
+[1699598347.156][DEBUG]: DevTools WebSocket Command: Runtime.evaluate (id=53) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "expression": "1"
+}
+[1699598347.156][DEBUG]: DevTools WebSocket Response: Runtime.evaluate (id=53) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "result": {
+      "description": "1",
+      "type": "number",
+      "value": 1
+   }
+}
+[1699598347.156][INFO]: Done waiting for pending navigations. Status: ok
+[1699598347.156][DEBUG]: DevTools WebSocket Command: Page.getFrameTree (id=54) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+}
+[1699598347.156][DEBUG]: DevTools WebSocket Response: Page.getFrameTree (id=54) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "frameTree": {
+      "childFrames": [ {
+         "frame": {
+            "adFrameStatus": {
+               "adFrameType": "none",
+               "explanations": [  ]
+            },
+            "crossOriginIsolatedContextType": "NotIsolatedFeatureDisabled",
+            "domainAndRegistry": "naver.com",
+            "gatedAPIFeatures": [  ],
+            "id": "A7CE447A90000438E5D366D884D5FA17",
+            "loaderId": "593387D27A93920BA40D5D9D4B245AD3",
+            "mimeType": "text/html",
+            "name": "RF_STORAGE_1699598343015_15",
+            "parentId": "8DA56A96137E93CD9DD0D20615E130E0",
+            "secureContextType": "Secure",
+            "securityOrigin": "https://m.search.naver.com",
+            "url": "https://m.search.naver.com/remote_frame"
+         }
+      }, {
+         "frame": {
+            "adFrameStatus": {
+               "adFrameType": "none",
+               "explanations": [  ]
+            },
+            "crossOriginIsolatedContextType": "NotIsolated",
+            "domainAndRegistry": "naver.com",
+            "gatedAPIFeatures": [  ],
+            "id": "F71A274939B4E174EB6788A9997A4766",
+            "loaderId": "306F67DB812F18CFED1DB5FF7D1C907A",
+            "mimeType": "text/html",
+            "name": "nmap_search_1_tgtLREC",
+            "parentId": "8DA56A96137E93CD9DD0D20615E130E0",
+            "secureContextType": "Secure",
+            "securityOrigin": "https://m.naver.com",
+            "url": "https://m.naver.com/"
+         }
+      } ],
+      "frame": {
+         "adFrameStatus": {
+            "adFrameType": "none"
+         },
+         "crossOriginIsolatedContextType": "NotIsolated",
+         "domainAndRegistry": "naver.com",
+         "gatedAPIFeatures": [  ],
+         "id": "8DA56A96137E93CD9DD0D20615E130E0",
+         "loaderId": "31E26C1282BEE793B0D6E94A3F4B0A1B",
+         "mimeType": "text/html",
+         "secureContextType": "Secure",
+         "securityOrigin": "https://m.naver.com",
+         "url": "https://m.naver.com/"
+      }
+   }
+}
+[1699598347.156][DEBUG]: DevTools WebSocket Command: Page.getFrameTree (id=55) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+}
+[1699598347.157][DEBUG]: DevTools WebSocket Response: Page.getFrameTree (id=55) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "frameTree": {
+      "childFrames": [ {
+         "frame": {
+            "adFrameStatus": {
+               "adFrameType": "none",
+               "explanations": [  ]
+            },
+            "crossOriginIsolatedContextType": "NotIsolatedFeatureDisabled",
+            "domainAndRegistry": "naver.com",
+            "gatedAPIFeatures": [  ],
+            "id": "A7CE447A90000438E5D366D884D5FA17",
+            "loaderId": "593387D27A93920BA40D5D9D4B245AD3",
+            "mimeType": "text/html",
+            "name": "RF_STORAGE_1699598343015_15",
+            "parentId": "8DA56A96137E93CD9DD0D20615E130E0",
+            "secureContextType": "Secure",
+            "securityOrigin": "https://m.search.naver.com",
+            "url": "https://m.search.naver.com/remote_frame"
+         }
+      }, {
+         "frame": {
+            "adFrameStatus": {
+               "adFrameType": "none",
+               "explanations": [  ]
+            },
+            "crossOriginIsolatedContextType": "NotIsolated",
+            "domainAndRegistry": "naver.com",
+            "gatedAPIFeatures": [  ],
+            "id": "F71A274939B4E174EB6788A9997A4766",
+            "loaderId": "306F67DB812F18CFED1DB5FF7D1C907A",
+            "mimeType": "text/html",
+            "name": "nmap_search_1_tgtLREC",
+            "parentId": "8DA56A96137E93CD9DD0D20615E130E0",
+            "secureContextType": "Secure",
+            "securityOrigin": "https://m.naver.com",
+            "url": "https://m.naver.com/"
+         }
+      } ],
+      "frame": {
+         "adFrameStatus": {
+            "adFrameType": "none"
+         },
+         "crossOriginIsolatedContextType": "NotIsolated",
+         "domainAndRegistry": "naver.com",
+         "gatedAPIFeatures": [  ],
+         "id": "8DA56A96137E93CD9DD0D20615E130E0",
+         "loaderId": "31E26C1282BEE793B0D6E94A3F4B0A1B",
+         "mimeType": "text/html",
+         "secureContextType": "Secure",
+         "securityOrigin": "https://m.naver.com",
+         "url": "https://m.naver.com/"
+      }
+   }
+}
+[1699598347.157][DEBUG]: DevTools WebSocket Command: Runtime.callFunctionOn (id=56) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "arguments": [  ],
+   "awaitPromise": true,
+   "functionDeclaration": "function(){ return (function() { // Copyright 2012 The Chromium Authors\n// Use of this source code is governed by a BSD-style license that can be\n// found in the LICENSE file.\n\n/**\n * Enum for WebD...",
+   "objectGroup": "db72bea9-03a9-4f2c-9e20-9ffa28c9fd3f",
+   "serializationOptions": {
+      "serialization": "deep"
+   },
+   "uniqueContextId": "1849447899621837364.1603277596245246295"
+}
+[1699598347.158][DEBUG]: DevTools WebSocket Response: Runtime.callFunctionOn (id=56) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "result": {
+      "className": "Array",
+      "deepSerializedValue": {
+         "type": "array",
+         "value": [ {
+            "type": "string",
+            "value": "{\"status\":0,\"value\":880}"
+         } ]
+      },
+      "description": "Array(1)",
+      "objectId": "-4067059546531893782.1.6",
+      "subtype": "array",
+      "type": "object"
+   }
+}
+[1699598347.158][DEBUG]: DevTools WebSocket Command: Runtime.releaseObjectGroup (id=57) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "objectGroup": "db72bea9-03a9-4f2c-9e20-9ffa28c9fd3f"
+}
+[1699598347.158][INFO]: Waiting for pending navigations...
+[1699598347.158][DEBUG]: DevTools WebSocket Command: Runtime.evaluate (id=58) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "expression": "1"
+}
+[1699598347.158][DEBUG]: DevTools WebSocket Response: Runtime.releaseObjectGroup (id=57) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+}
+[1699598347.158][DEBUG]: DevTools WebSocket Response: Runtime.evaluate (id=58) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "result": {
+      "description": "1",
+      "type": "number",
+      "value": 1
+   }
+}
+[1699598347.158][INFO]: Done waiting for pending navigations. Status: ok
+[1699598347.158][INFO]: [4ca883279bcbd0db9f9e01bbdf5484b2] RESPONSE ExecuteScript 880
+[1699598347.158][INFO]: [4ca883279bcbd0db9f9e01bbdf5484b2] COMMAND ExecuteScript {
+   "args": [  ],
+   "script": "return window.innerHeight"
+}
+[1699598347.158][INFO]: Waiting for pending navigations...
+[1699598347.158][DEBUG]: DevTools WebSocket Command: Runtime.evaluate (id=59) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "expression": "1"
+}
+[1699598347.159][DEBUG]: DevTools WebSocket Response: Runtime.evaluate (id=59) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "result": {
+      "description": "1",
+      "type": "number",
+      "value": 1
+   }
+}
+[1699598347.159][INFO]: Done waiting for pending navigations. Status: ok
+[1699598347.159][DEBUG]: DevTools WebSocket Command: Page.getFrameTree (id=60) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+}
+[1699598347.159][DEBUG]: DevTools WebSocket Response: Page.getFrameTree (id=60) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "frameTree": {
+      "childFrames": [ {
+         "frame": {
+            "adFrameStatus": {
+               "adFrameType": "none",
+               "explanations": [  ]
+            },
+            "crossOriginIsolatedContextType": "NotIsolatedFeatureDisabled",
+            "domainAndRegistry": "naver.com",
+            "gatedAPIFeatures": [  ],
+            "id": "A7CE447A90000438E5D366D884D5FA17",
+            "loaderId": "593387D27A93920BA40D5D9D4B245AD3",
+            "mimeType": "text/html",
+            "name": "RF_STORAGE_1699598343015_15",
+            "parentId": "8DA56A96137E93CD9DD0D20615E130E0",
+            "secureContextType": "Secure",
+            "securityOrigin": "https://m.search.naver.com",
+            "url": "https://m.search.naver.com/remote_frame"
+         }
+      }, {
+         "frame": {
+            "adFrameStatus": {
+               "adFrameType": "none",
+               "explanations": [  ]
+            },
+            "crossOriginIsolatedContextType": "NotIsolated",
+            "domainAndRegistry": "naver.com",
+            "gatedAPIFeatures": [  ],
+            "id": "F71A274939B4E174EB6788A9997A4766",
+            "loaderId": "306F67DB812F18CFED1DB5FF7D1C907A",
+            "mimeType": "text/html",
+            "name": "nmap_search_1_tgtLREC",
+            "parentId": "8DA56A96137E93CD9DD0D20615E130E0",
+            "secureContextType": "Secure",
+            "securityOrigin": "https://m.naver.com",
+            "url": "https://m.naver.com/"
+         }
+      } ],
+      "frame": {
+         "adFrameStatus": {
+            "adFrameType": "none"
+         },
+         "crossOriginIsolatedContextType": "NotIsolated",
+         "domainAndRegistry": "naver.com",
+         "gatedAPIFeatures": [  ],
+         "id": "8DA56A96137E93CD9DD0D20615E130E0",
+         "loaderId": "31E26C1282BEE793B0D6E94A3F4B0A1B",
+         "mimeType": "text/html",
+         "secureContextType": "Secure",
+         "securityOrigin": "https://m.naver.com",
+         "url": "https://m.naver.com/"
+      }
+   }
+}
+[1699598347.159][DEBUG]: DevTools WebSocket Command: Page.getFrameTree (id=61) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+}
+[1699598347.159][DEBUG]: DevTools WebSocket Response: Page.getFrameTree (id=61) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "frameTree": {
+      "childFrames": [ {
+         "frame": {
+            "adFrameStatus": {
+               "adFrameType": "none",
+               "explanations": [  ]
+            },
+            "crossOriginIsolatedContextType": "NotIsolatedFeatureDisabled",
+            "domainAndRegistry": "naver.com",
+            "gatedAPIFeatures": [  ],
+            "id": "A7CE447A90000438E5D366D884D5FA17",
+            "loaderId": "593387D27A93920BA40D5D9D4B245AD3",
+            "mimeType": "text/html",
+            "name": "RF_STORAGE_1699598343015_15",
+            "parentId": "8DA56A96137E93CD9DD0D20615E130E0",
+            "secureContextType": "Secure",
+            "securityOrigin": "https://m.search.naver.com",
+            "url": "https://m.search.naver.com/remote_frame"
+         }
+      }, {
+         "frame": {
+            "adFrameStatus": {
+               "adFrameType": "none",
+               "explanations": [  ]
+            },
+            "crossOriginIsolatedContextType": "NotIsolated",
+            "domainAndRegistry": "naver.com",
+            "gatedAPIFeatures": [  ],
+            "id": "F71A274939B4E174EB6788A9997A4766",
+            "loaderId": "306F67DB812F18CFED1DB5FF7D1C907A",
+            "mimeType": "text/html",
+            "name": "nmap_search_1_tgtLREC",
+            "parentId": "8DA56A96137E93CD9DD0D20615E130E0",
+            "secureContextType": "Secure",
+            "securityOrigin": "https://m.naver.com",
+            "url": "https://m.naver.com/"
+         }
+      } ],
+      "frame": {
+         "adFrameStatus": {
+            "adFrameType": "none"
+         },
+         "crossOriginIsolatedContextType": "NotIsolated",
+         "domainAndRegistry": "naver.com",
+         "gatedAPIFeatures": [  ],
+         "id": "8DA56A96137E93CD9DD0D20615E130E0",
+         "loaderId": "31E26C1282BEE793B0D6E94A3F4B0A1B",
+         "mimeType": "text/html",
+         "secureContextType": "Secure",
+         "securityOrigin": "https://m.naver.com",
+         "url": "https://m.naver.com/"
+      }
+   }
+}
+[1699598347.159][DEBUG]: DevTools WebSocket Command: Runtime.callFunctionOn (id=62) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "arguments": [  ],
+   "awaitPromise": true,
+   "functionDeclaration": "function(){ return (function() { // Copyright 2012 The Chromium Authors\n// Use of this source code is governed by a BSD-style license that can be\n// found in the LICENSE file.\n\n/**\n * Enum for WebD...",
+   "objectGroup": "b8e4bc13-ec9f-4ab7-a8f1-98082ce5cce9",
+   "serializationOptions": {
+      "serialization": "deep"
+   },
+   "uniqueContextId": "1849447899621837364.1603277596245246295"
+}
+[1699598347.160][DEBUG]: DevTools WebSocket Response: Runtime.callFunctionOn (id=62) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "result": {
+      "className": "Array",
+      "deepSerializedValue": {
+         "type": "array",
+         "value": [ {
+            "type": "string",
+            "value": "{\"status\":0,\"value\":880}"
+         } ]
+      },
+      "description": "Array(1)",
+      "objectId": "-4067059546531893782.1.7",
+      "subtype": "array",
+      "type": "object"
+   }
+}
+[1699598347.160][DEBUG]: DevTools WebSocket Command: Runtime.releaseObjectGroup (id=63) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "objectGroup": "b8e4bc13-ec9f-4ab7-a8f1-98082ce5cce9"
+}
+[1699598347.160][INFO]: Waiting for pending navigations...
+[1699598347.160][DEBUG]: DevTools WebSocket Command: Runtime.evaluate (id=64) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "expression": "1"
+}
+[1699598347.161][DEBUG]: DevTools WebSocket Response: Runtime.releaseObjectGroup (id=63) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+}
+[1699598347.161][DEBUG]: DevTools WebSocket Response: Runtime.evaluate (id=64) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "result": {
+      "description": "1",
+      "type": "number",
+      "value": 1
+   }
+}
+[1699598347.161][INFO]: Done waiting for pending navigations. Status: ok
+[1699598347.161][INFO]: [4ca883279bcbd0db9f9e01bbdf5484b2] RESPONSE ExecuteScript 880
+[1699598347.161][INFO]: [4ca883279bcbd0db9f9e01bbdf5484b2] COMMAND ExecuteScript {
+   "args": [  ],
+   "script": "return Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);"
+}
+[1699598347.161][INFO]: Waiting for pending navigations...
+[1699598347.161][DEBUG]: DevTools WebSocket Command: Runtime.evaluate (id=65) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "expression": "1"
+}
+[1699598347.161][DEBUG]: DevTools WebSocket Response: Runtime.evaluate (id=65) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "result": {
+      "description": "1",
+      "type": "number",
+      "value": 1
+   }
+}
+[1699598347.161][INFO]: Done waiting for pending navigations. Status: ok
+[1699598347.161][DEBUG]: DevTools WebSocket Command: Page.getFrameTree (id=66) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+}
+[1699598347.161][DEBUG]: DevTools WebSocket Response: Page.getFrameTree (id=66) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "frameTree": {
+      "childFrames": [ {
+         "frame": {
+            "adFrameStatus": {
+               "adFrameType": "none",
+               "explanations": [  ]
+            },
+            "crossOriginIsolatedContextType": "NotIsolatedFeatureDisabled",
+            "domainAndRegistry": "naver.com",
+            "gatedAPIFeatures": [  ],
+            "id": "A7CE447A90000438E5D366D884D5FA17",
+            "loaderId": "593387D27A93920BA40D5D9D4B245AD3",
+            "mimeType": "text/html",
+            "name": "RF_STORAGE_1699598343015_15",
+            "parentId": "8DA56A96137E93CD9DD0D20615E130E0",
+            "secureContextType": "Secure",
+            "securityOrigin": "https://m.search.naver.com",
+            "url": "https://m.search.naver.com/remote_frame"
+         }
+      }, {
+         "frame": {
+            "adFrameStatus": {
+               "adFrameType": "none",
+               "explanations": [  ]
+            },
+            "crossOriginIsolatedContextType": "NotIsolated",
+            "domainAndRegistry": "naver.com",
+            "gatedAPIFeatures": [  ],
+            "id": "F71A274939B4E174EB6788A9997A4766",
+            "loaderId": "306F67DB812F18CFED1DB5FF7D1C907A",
+            "mimeType": "text/html",
+            "name": "nmap_search_1_tgtLREC",
+            "parentId": "8DA56A96137E93CD9DD0D20615E130E0",
+            "secureContextType": "Secure",
+            "securityOrigin": "https://m.naver.com",
+            "url": "https://m.naver.com/"
+         }
+      } ],
+      "frame": {
+         "adFrameStatus": {
+            "adFrameType": "none"
+         },
+         "crossOriginIsolatedContextType": "NotIsolated",
+         "domainAndRegistry": "naver.com",
+         "gatedAPIFeatures": [  ],
+         "id": "8DA56A96137E93CD9DD0D20615E130E0",
+         "loaderId": "31E26C1282BEE793B0D6E94A3F4B0A1B",
+         "mimeType": "text/html",
+         "secureContextType": "Secure",
+         "securityOrigin": "https://m.naver.com",
+         "url": "https://m.naver.com/"
+      }
+   }
+}
+[1699598347.161][DEBUG]: DevTools WebSocket Command: Page.getFrameTree (id=67) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+}
+[1699598347.162][DEBUG]: DevTools WebSocket Response: Page.getFrameTree (id=67) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "frameTree": {
+      "childFrames": [ {
+         "frame": {
+            "adFrameStatus": {
+               "adFrameType": "none",
+               "explanations": [  ]
+            },
+            "crossOriginIsolatedContextType": "NotIsolatedFeatureDisabled",
+            "domainAndRegistry": "naver.com",
+            "gatedAPIFeatures": [  ],
+            "id": "A7CE447A90000438E5D366D884D5FA17",
+            "loaderId": "593387D27A93920BA40D5D9D4B245AD3",
+            "mimeType": "text/html",
+            "name": "RF_STORAGE_1699598343015_15",
+            "parentId": "8DA56A96137E93CD9DD0D20615E130E0",
+            "secureContextType": "Secure",
+            "securityOrigin": "https://m.search.naver.com",
+            "url": "https://m.search.naver.com/remote_frame"
+         }
+      }, {
+         "frame": {
+            "adFrameStatus": {
+               "adFrameType": "none",
+               "explanations": [  ]
+            },
+            "crossOriginIsolatedContextType": "NotIsolated",
+            "domainAndRegistry": "naver.com",
+            "gatedAPIFeatures": [  ],
+            "id": "F71A274939B4E174EB6788A9997A4766",
+            "loaderId": "306F67DB812F18CFED1DB5FF7D1C907A",
+            "mimeType": "text/html",
+            "name": "nmap_search_1_tgtLREC",
+            "parentId": "8DA56A96137E93CD9DD0D20615E130E0",
+            "secureContextType": "Secure",
+            "securityOrigin": "https://m.naver.com",
+            "url": "https://m.naver.com/"
+         }
+      } ],
+      "frame": {
+         "adFrameStatus": {
+            "adFrameType": "none"
+         },
+         "crossOriginIsolatedContextType": "NotIsolated",
+         "domainAndRegistry": "naver.com",
+         "gatedAPIFeatures": [  ],
+         "id": "8DA56A96137E93CD9DD0D20615E130E0",
+         "loaderId": "31E26C1282BEE793B0D6E94A3F4B0A1B",
+         "mimeType": "text/html",
+         "secureContextType": "Secure",
+         "securityOrigin": "https://m.naver.com",
+         "url": "https://m.naver.com/"
+      }
+   }
+}
+[1699598347.162][DEBUG]: DevTools WebSocket Command: Runtime.callFunctionOn (id=68) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "arguments": [  ],
+   "awaitPromise": true,
+   "functionDeclaration": "function(){ return (function() { // Copyright 2012 The Chromium Authors\n// Use of this source code is governed by a BSD-style license that can be\n// found in the LICENSE file.\n\n/**\n * Enum for WebD...",
+   "objectGroup": "6f9a6667-703b-441c-a5de-616d32ef9e20",
+   "serializationOptions": {
+      "serialization": "deep"
+   },
+   "uniqueContextId": "1849447899621837364.1603277596245246295"
+}
+[1699598347.163][DEBUG]: DevTools WebSocket Response: Runtime.callFunctionOn (id=68) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "result": {
+      "className": "Array",
+      "deepSerializedValue": {
+         "type": "array",
+         "value": [ {
+            "type": "string",
+            "value": "{\"status\":0,\"value\":2409}"
+         } ]
+      },
+      "description": "Array(1)",
+      "objectId": "-4067059546531893782.1.8",
+      "subtype": "array",
+      "type": "object"
+   }
+}
+[1699598347.163][DEBUG]: DevTools WebSocket Command: Runtime.releaseObjectGroup (id=69) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "objectGroup": "6f9a6667-703b-441c-a5de-616d32ef9e20"
+}
+[1699598347.163][INFO]: Waiting for pending navigations...
+[1699598347.163][DEBUG]: DevTools WebSocket Command: Runtime.evaluate (id=70) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "expression": "1"
+}
+[1699598347.163][DEBUG]: DevTools WebSocket Response: Runtime.releaseObjectGroup (id=69) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+}
+[1699598347.163][DEBUG]: DevTools WebSocket Response: Runtime.evaluate (id=70) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "result": {
+      "description": "1",
+      "type": "number",
+      "value": 1
+   }
+}
+[1699598347.163][INFO]: Done waiting for pending navigations. Status: ok
+[1699598347.163][INFO]: [4ca883279bcbd0db9f9e01bbdf5484b2] RESPONSE ExecuteScript 2409
+[1699598347.165][INFO]: [4ca883279bcbd0db9f9e01bbdf5484b2] COMMAND ExecuteScript {
+   "args": [  ],
+   "script": "window.scrollTo(0, 0)"
+}
+[1699598347.165][INFO]: Waiting for pending navigations...
+[1699598347.165][DEBUG]: DevTools WebSocket Command: Runtime.evaluate (id=71) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "expression": "1"
+}
+[1699598347.165][DEBUG]: DevTools WebSocket Response: Runtime.evaluate (id=71) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "result": {
+      "description": "1",
+      "type": "number",
+      "value": 1
+   }
+}
+[1699598347.165][INFO]: Done waiting for pending navigations. Status: ok
+[1699598347.165][DEBUG]: DevTools WebSocket Command: Page.getFrameTree (id=72) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+}
+[1699598347.166][DEBUG]: DevTools WebSocket Response: Page.getFrameTree (id=72) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "frameTree": {
+      "childFrames": [ {
+         "frame": {
+            "adFrameStatus": {
+               "adFrameType": "none",
+               "explanations": [  ]
+            },
+            "crossOriginIsolatedContextType": "NotIsolatedFeatureDisabled",
+            "domainAndRegistry": "naver.com",
+            "gatedAPIFeatures": [  ],
+            "id": "A7CE447A90000438E5D366D884D5FA17",
+            "loaderId": "593387D27A93920BA40D5D9D4B245AD3",
+            "mimeType": "text/html",
+            "name": "RF_STORAGE_1699598343015_15",
+            "parentId": "8DA56A96137E93CD9DD0D20615E130E0",
+            "secureContextType": "Secure",
+            "securityOrigin": "https://m.search.naver.com",
+            "url": "https://m.search.naver.com/remote_frame"
+         }
+      }, {
+         "frame": {
+            "adFrameStatus": {
+               "adFrameType": "none",
+               "explanations": [  ]
+            },
+            "crossOriginIsolatedContextType": "NotIsolated",
+            "domainAndRegistry": "naver.com",
+            "gatedAPIFeatures": [  ],
+            "id": "F71A274939B4E174EB6788A9997A4766",
+            "loaderId": "306F67DB812F18CFED1DB5FF7D1C907A",
+            "mimeType": "text/html",
+            "name": "nmap_search_1_tgtLREC",
+            "parentId": "8DA56A96137E93CD9DD0D20615E130E0",
+            "secureContextType": "Secure",
+            "securityOrigin": "https://m.naver.com",
+            "url": "https://m.naver.com/"
+         }
+      } ],
+      "frame": {
+         "adFrameStatus": {
+            "adFrameType": "none"
+         },
+         "crossOriginIsolatedContextType": "NotIsolated",
+         "domainAndRegistry": "naver.com",
+         "gatedAPIFeatures": [  ],
+         "id": "8DA56A96137E93CD9DD0D20615E130E0",
+         "loaderId": "31E26C1282BEE793B0D6E94A3F4B0A1B",
+         "mimeType": "text/html",
+         "secureContextType": "Secure",
+         "securityOrigin": "https://m.naver.com",
+         "url": "https://m.naver.com/"
+      }
+   }
+}
+[1699598347.166][DEBUG]: DevTools WebSocket Command: Page.getFrameTree (id=73) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+}
+[1699598347.166][DEBUG]: DevTools WebSocket Response: Page.getFrameTree (id=73) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "frameTree": {
+      "childFrames": [ {
+         "frame": {
+            "adFrameStatus": {
+               "adFrameType": "none",
+               "explanations": [  ]
+            },
+            "crossOriginIsolatedContextType": "NotIsolatedFeatureDisabled",
+            "domainAndRegistry": "naver.com",
+            "gatedAPIFeatures": [  ],
+            "id": "A7CE447A90000438E5D366D884D5FA17",
+            "loaderId": "593387D27A93920BA40D5D9D4B245AD3",
+            "mimeType": "text/html",
+            "name": "RF_STORAGE_1699598343015_15",
+            "parentId": "8DA56A96137E93CD9DD0D20615E130E0",
+            "secureContextType": "Secure",
+            "securityOrigin": "https://m.search.naver.com",
+            "url": "https://m.search.naver.com/remote_frame"
+         }
+      }, {
+         "frame": {
+            "adFrameStatus": {
+               "adFrameType": "none",
+               "explanations": [  ]
+            },
+            "crossOriginIsolatedContextType": "NotIsolated",
+            "domainAndRegistry": "naver.com",
+            "gatedAPIFeatures": [  ],
+            "id": "F71A274939B4E174EB6788A9997A4766",
+            "loaderId": "306F67DB812F18CFED1DB5FF7D1C907A",
+            "mimeType": "text/html",
+            "name": "nmap_search_1_tgtLREC",
+            "parentId": "8DA56A96137E93CD9DD0D20615E130E0",
+            "secureContextType": "Secure",
+            "securityOrigin": "https://m.naver.com",
+            "url": "https://m.naver.com/"
+         }
+      } ],
+      "frame": {
+         "adFrameStatus": {
+            "adFrameType": "none"
+         },
+         "crossOriginIsolatedContextType": "NotIsolated",
+         "domainAndRegistry": "naver.com",
+         "gatedAPIFeatures": [  ],
+         "id": "8DA56A96137E93CD9DD0D20615E130E0",
+         "loaderId": "31E26C1282BEE793B0D6E94A3F4B0A1B",
+         "mimeType": "text/html",
+         "secureContextType": "Secure",
+         "securityOrigin": "https://m.naver.com",
+         "url": "https://m.naver.com/"
+      }
+   }
+}
+[1699598347.166][DEBUG]: DevTools WebSocket Command: Runtime.callFunctionOn (id=74) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "arguments": [  ],
+   "awaitPromise": true,
+   "functionDeclaration": "function(){ return (function() { // Copyright 2012 The Chromium Authors\n// Use of this source code is governed by a BSD-style license that can be\n// found in the LICENSE file.\n\n/**\n * Enum for WebD...",
+   "objectGroup": "7bba7c1b-a0fb-4be2-801c-2ed1fe41d3e5",
+   "serializationOptions": {
+      "serialization": "deep"
+   },
+   "uniqueContextId": "1849447899621837364.1603277596245246295"
+}
+[1699598347.167][DEBUG]: DevTools WebSocket Response: Runtime.callFunctionOn (id=74) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "result": {
+      "className": "Array",
+      "deepSerializedValue": {
+         "type": "array",
+         "value": [ {
+            "type": "string",
+            "value": "{\"status\":0,\"value\":null}"
+         } ]
+      },
+      "description": "Array(1)",
+      "objectId": "-4067059546531893782.1.9",
+      "subtype": "array",
+      "type": "object"
+   }
+}
+[1699598347.167][DEBUG]: DevTools WebSocket Command: Runtime.releaseObjectGroup (id=75) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "objectGroup": "7bba7c1b-a0fb-4be2-801c-2ed1fe41d3e5"
+}
+[1699598347.167][INFO]: Waiting for pending navigations...
+[1699598347.167][DEBUG]: DevTools WebSocket Command: Runtime.evaluate (id=76) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "expression": "1"
+}
+[1699598347.167][DEBUG]: DevTools WebSocket Response: Runtime.releaseObjectGroup (id=75) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+}
+[1699598347.167][DEBUG]: DevTools WebSocket Response: Runtime.evaluate (id=76) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "result": {
+      "description": "1",
+      "type": "number",
+      "value": 1
+   }
+}
+[1699598347.167][INFO]: Done waiting for pending navigations. Status: ok
+[1699598347.167][INFO]: [4ca883279bcbd0db9f9e01bbdf5484b2] RESPONSE ExecuteScript null
+[1699598348.205][DEBUG]: DevTools WebSocket Event: Page.frameResized (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+}
+[1699598348.226][DEBUG]: DevTools WebSocket Event: Page.frameResized (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+}
+[1699598348.337][INFO]: [4ca883279bcbd0db9f9e01bbdf5484b2] COMMAND ExecuteScript {
+   "args": [  ],
+   "script": "return Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);"
+}
+[1699598348.337][INFO]: Waiting for pending navigations...
+[1699598348.337][DEBUG]: DevTools WebSocket Command: Runtime.evaluate (id=77) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "expression": "1"
+}
+[1699598348.337][DEBUG]: DevTools WebSocket Response: Runtime.evaluate (id=77) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "result": {
+      "description": "1",
+      "type": "number",
+      "value": 1
+   }
+}
+[1699598348.337][INFO]: Done waiting for pending navigations. Status: ok
+[1699598348.337][DEBUG]: DevTools WebSocket Command: Page.getFrameTree (id=78) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+}
+[1699598348.338][DEBUG]: DevTools WebSocket Response: Page.getFrameTree (id=78) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "frameTree": {
+      "childFrames": [ {
+         "frame": {
+            "adFrameStatus": {
+               "adFrameType": "none",
+               "explanations": [  ]
+            },
+            "crossOriginIsolatedContextType": "NotIsolatedFeatureDisabled",
+            "domainAndRegistry": "naver.com",
+            "gatedAPIFeatures": [  ],
+            "id": "A7CE447A90000438E5D366D884D5FA17",
+            "loaderId": "593387D27A93920BA40D5D9D4B245AD3",
+            "mimeType": "text/html",
+            "name": "RF_STORAGE_1699598343015_15",
+            "parentId": "8DA56A96137E93CD9DD0D20615E130E0",
+            "secureContextType": "Secure",
+            "securityOrigin": "https://m.search.naver.com",
+            "url": "https://m.search.naver.com/remote_frame"
+         }
+      }, {
+         "frame": {
+            "adFrameStatus": {
+               "adFrameType": "none",
+               "explanations": [  ]
+            },
+            "crossOriginIsolatedContextType": "NotIsolated",
+            "domainAndRegistry": "naver.com",
+            "gatedAPIFeatures": [  ],
+            "id": "F71A274939B4E174EB6788A9997A4766",
+            "loaderId": "306F67DB812F18CFED1DB5FF7D1C907A",
+            "mimeType": "text/html",
+            "name": "nmap_search_1_tgtLREC",
+            "parentId": "8DA56A96137E93CD9DD0D20615E130E0",
+            "secureContextType": "Secure",
+            "securityOrigin": "https://m.naver.com",
+            "url": "https://m.naver.com/"
+         }
+      } ],
+      "frame": {
+         "adFrameStatus": {
+            "adFrameType": "none"
+         },
+         "crossOriginIsolatedContextType": "NotIsolated",
+         "domainAndRegistry": "naver.com",
+         "gatedAPIFeatures": [  ],
+         "id": "8DA56A96137E93CD9DD0D20615E130E0",
+         "loaderId": "31E26C1282BEE793B0D6E94A3F4B0A1B",
+         "mimeType": "text/html",
+         "secureContextType": "Secure",
+         "securityOrigin": "https://m.naver.com",
+         "url": "https://m.naver.com/"
+      }
+   }
+}
+[1699598348.338][DEBUG]: DevTools WebSocket Command: Page.getFrameTree (id=79) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+}
+[1699598348.338][DEBUG]: DevTools WebSocket Response: Page.getFrameTree (id=79) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "frameTree": {
+      "childFrames": [ {
+         "frame": {
+            "adFrameStatus": {
+               "adFrameType": "none",
+               "explanations": [  ]
+            },
+            "crossOriginIsolatedContextType": "NotIsolatedFeatureDisabled",
+            "domainAndRegistry": "naver.com",
+            "gatedAPIFeatures": [  ],
+            "id": "A7CE447A90000438E5D366D884D5FA17",
+            "loaderId": "593387D27A93920BA40D5D9D4B245AD3",
+            "mimeType": "text/html",
+            "name": "RF_STORAGE_1699598343015_15",
+            "parentId": "8DA56A96137E93CD9DD0D20615E130E0",
+            "secureContextType": "Secure",
+            "securityOrigin": "https://m.search.naver.com",
+            "url": "https://m.search.naver.com/remote_frame"
+         }
+      }, {
+         "frame": {
+            "adFrameStatus": {
+               "adFrameType": "none",
+               "explanations": [  ]
+            },
+            "crossOriginIsolatedContextType": "NotIsolated",
+            "domainAndRegistry": "naver.com",
+            "gatedAPIFeatures": [  ],
+            "id": "F71A274939B4E174EB6788A9997A4766",
+            "loaderId": "306F67DB812F18CFED1DB5FF7D1C907A",
+            "mimeType": "text/html",
+            "name": "nmap_search_1_tgtLREC",
+            "parentId": "8DA56A96137E93CD9DD0D20615E130E0",
+            "secureContextType": "Secure",
+            "securityOrigin": "https://m.naver.com",
+            "url": "https://m.naver.com/"
+         }
+      } ],
+      "frame": {
+         "adFrameStatus": {
+            "adFrameType": "none"
+         },
+         "crossOriginIsolatedContextType": "NotIsolated",
+         "domainAndRegistry": "naver.com",
+         "gatedAPIFeatures": [  ],
+         "id": "8DA56A96137E93CD9DD0D20615E130E0",
+         "loaderId": "31E26C1282BEE793B0D6E94A3F4B0A1B",
+         "mimeType": "text/html",
+         "secureContextType": "Secure",
+         "securityOrigin": "https://m.naver.com",
+         "url": "https://m.naver.com/"
+      }
+   }
+}
+[1699598348.338][DEBUG]: DevTools WebSocket Command: Runtime.callFunctionOn (id=80) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "arguments": [  ],
+   "awaitPromise": true,
+   "functionDeclaration": "function(){ return (function() { // Copyright 2012 The Chromium Authors\n// Use of this source code is governed by a BSD-style license that can be\n// found in the LICENSE file.\n\n/**\n * Enum for WebD...",
+   "objectGroup": "15c901aa-f9db-4b4f-b457-4938614bfc5f",
+   "serializationOptions": {
+      "serialization": "deep"
+   },
+   "uniqueContextId": "1849447899621837364.1603277596245246295"
+}
+[1699598348.339][DEBUG]: DevTools WebSocket Response: Runtime.callFunctionOn (id=80) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "result": {
+      "className": "Array",
+      "deepSerializedValue": {
+         "type": "array",
+         "value": [ {
+            "type": "string",
+            "value": "{\"status\":0,\"value\":2409}"
+         } ]
+      },
+      "description": "Array(1)",
+      "objectId": "-4067059546531893782.1.10",
+      "subtype": "array",
+      "type": "object"
+   }
+}
+[1699598348.339][DEBUG]: DevTools WebSocket Command: Runtime.releaseObjectGroup (id=81) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "objectGroup": "15c901aa-f9db-4b4f-b457-4938614bfc5f"
+}
+[1699598348.339][INFO]: Waiting for pending navigations...
+[1699598348.339][DEBUG]: DevTools WebSocket Command: Runtime.evaluate (id=82) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "expression": "1"
+}
+[1699598348.339][DEBUG]: DevTools WebSocket Response: Runtime.releaseObjectGroup (id=81) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+}
+[1699598348.339][DEBUG]: DevTools WebSocket Response: Runtime.evaluate (id=82) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "result": {
+      "description": "1",
+      "type": "number",
+      "value": 1
+   }
+}
+[1699598348.339][INFO]: Done waiting for pending navigations. Status: ok
+[1699598348.339][INFO]: [4ca883279bcbd0db9f9e01bbdf5484b2] RESPONSE ExecuteScript 2409
+[1699598348.340][INFO]: [4ca883279bcbd0db9f9e01bbdf5484b2] COMMAND ExecuteScript {
+   "args": [  ],
+   "script": "\n      const allElements = document.querySelectorAll('*');\n      const fixedElements = [];\n\n      for (const element of allElements) {\n        elementPosition = window.getComputedStyle(element).position;\n\n        if (elementPosition === 'fixed' || elementPosition === 'sticky') {\n          fixedElements.push(element);\n        }\n\n        if (element.shadowRoot) {\n          const shadowRoot = element.shadowRoot;\n          const shadowElements = shadowRoot.querySelectorAll('*');\n\n          for(const shadowElement of shadowElements) {\n            const elementPosition = window.getComputedStyle(shadowElement).position;\n            if (elementPosition === 'fixed' || elementPosition === 'sticky' ) {\n              fixedElements.push(shadowElement);\n            }\n          }\n        }\n      }\n\n      fixedElements.forEach(function(element) {\n        element.style.opacity = 0;\n      });\n      "
+}
+[1699598348.340][INFO]: Waiting for pending navigations...
+[1699598348.340][DEBUG]: DevTools WebSocket Command: Runtime.evaluate (id=83) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "expression": "1"
+}
+[1699598348.340][DEBUG]: DevTools WebSocket Response: Runtime.evaluate (id=83) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "result": {
+      "description": "1",
+      "type": "number",
+      "value": 1
+   }
+}
+[1699598348.340][INFO]: Done waiting for pending navigations. Status: ok
+[1699598348.340][DEBUG]: DevTools WebSocket Command: Page.getFrameTree (id=84) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+}
+[1699598348.340][DEBUG]: DevTools WebSocket Response: Page.getFrameTree (id=84) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "frameTree": {
+      "childFrames": [ {
+         "frame": {
+            "adFrameStatus": {
+               "adFrameType": "none",
+               "explanations": [  ]
+            },
+            "crossOriginIsolatedContextType": "NotIsolatedFeatureDisabled",
+            "domainAndRegistry": "naver.com",
+            "gatedAPIFeatures": [  ],
+            "id": "A7CE447A90000438E5D366D884D5FA17",
+            "loaderId": "593387D27A93920BA40D5D9D4B245AD3",
+            "mimeType": "text/html",
+            "name": "RF_STORAGE_1699598343015_15",
+            "parentId": "8DA56A96137E93CD9DD0D20615E130E0",
+            "secureContextType": "Secure",
+            "securityOrigin": "https://m.search.naver.com",
+            "url": "https://m.search.naver.com/remote_frame"
+         }
+      }, {
+         "frame": {
+            "adFrameStatus": {
+               "adFrameType": "none",
+               "explanations": [  ]
+            },
+            "crossOriginIsolatedContextType": "NotIsolated",
+            "domainAndRegistry": "naver.com",
+            "gatedAPIFeatures": [  ],
+            "id": "F71A274939B4E174EB6788A9997A4766",
+            "loaderId": "306F67DB812F18CFED1DB5FF7D1C907A",
+            "mimeType": "text/html",
+            "name": "nmap_search_1_tgtLREC",
+            "parentId": "8DA56A96137E93CD9DD0D20615E130E0",
+            "secureContextType": "Secure",
+            "securityOrigin": "https://m.naver.com",
+            "url": "https://m.naver.com/"
+         }
+      } ],
+      "frame": {
+         "adFrameStatus": {
+            "adFrameType": "none"
+         },
+         "crossOriginIsolatedContextType": "NotIsolated",
+         "domainAndRegistry": "naver.com",
+         "gatedAPIFeatures": [  ],
+         "id": "8DA56A96137E93CD9DD0D20615E130E0",
+         "loaderId": "31E26C1282BEE793B0D6E94A3F4B0A1B",
+         "mimeType": "text/html",
+         "secureContextType": "Secure",
+         "securityOrigin": "https://m.naver.com",
+         "url": "https://m.naver.com/"
+      }
+   }
+}
+[1699598348.341][DEBUG]: DevTools WebSocket Command: Page.getFrameTree (id=85) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+}
+[1699598348.341][DEBUG]: DevTools WebSocket Response: Page.getFrameTree (id=85) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "frameTree": {
+      "childFrames": [ {
+         "frame": {
+            "adFrameStatus": {
+               "adFrameType": "none",
+               "explanations": [  ]
+            },
+            "crossOriginIsolatedContextType": "NotIsolatedFeatureDisabled",
+            "domainAndRegistry": "naver.com",
+            "gatedAPIFeatures": [  ],
+            "id": "A7CE447A90000438E5D366D884D5FA17",
+            "loaderId": "593387D27A93920BA40D5D9D4B245AD3",
+            "mimeType": "text/html",
+            "name": "RF_STORAGE_1699598343015_15",
+            "parentId": "8DA56A96137E93CD9DD0D20615E130E0",
+            "secureContextType": "Secure",
+            "securityOrigin": "https://m.search.naver.com",
+            "url": "https://m.search.naver.com/remote_frame"
+         }
+      }, {
+         "frame": {
+            "adFrameStatus": {
+               "adFrameType": "none",
+               "explanations": [  ]
+            },
+            "crossOriginIsolatedContextType": "NotIsolated",
+            "domainAndRegistry": "naver.com",
+            "gatedAPIFeatures": [  ],
+            "id": "F71A274939B4E174EB6788A9997A4766",
+            "loaderId": "306F67DB812F18CFED1DB5FF7D1C907A",
+            "mimeType": "text/html",
+            "name": "nmap_search_1_tgtLREC",
+            "parentId": "8DA56A96137E93CD9DD0D20615E130E0",
+            "secureContextType": "Secure",
+            "securityOrigin": "https://m.naver.com",
+            "url": "https://m.naver.com/"
+         }
+      } ],
+      "frame": {
+         "adFrameStatus": {
+            "adFrameType": "none"
+         },
+         "crossOriginIsolatedContextType": "NotIsolated",
+         "domainAndRegistry": "naver.com",
+         "gatedAPIFeatures": [  ],
+         "id": "8DA56A96137E93CD9DD0D20615E130E0",
+         "loaderId": "31E26C1282BEE793B0D6E94A3F4B0A1B",
+         "mimeType": "text/html",
+         "secureContextType": "Secure",
+         "securityOrigin": "https://m.naver.com",
+         "url": "https://m.naver.com/"
+      }
+   }
+}
+[1699598348.341][DEBUG]: DevTools WebSocket Command: Runtime.callFunctionOn (id=86) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "arguments": [  ],
+   "awaitPromise": true,
+   "functionDeclaration": "function(){ return (function() { // Copyright 2012 The Chromium Authors\n// Use of this source code is governed by a BSD-style license that can be\n// found in the LICENSE file.\n\n/**\n * Enum for WebD...",
+   "objectGroup": "37505fcf-2bf0-448c-ba35-a4857eea9184",
+   "serializationOptions": {
+      "serialization": "deep"
+   },
+   "uniqueContextId": "1849447899621837364.1603277596245246295"
+}
+[1699598348.368][DEBUG]: DevTools WebSocket Response: Runtime.callFunctionOn (id=86) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "result": {
+      "className": "Array",
+      "deepSerializedValue": {
+         "type": "array",
+         "value": [ {
+            "type": "string",
+            "value": "{\"status\":0,\"value\":null}"
+         } ]
+      },
+      "description": "Array(1)",
+      "objectId": "-4067059546531893782.1.11",
+      "subtype": "array",
+      "type": "object"
+   }
+}
+[1699598348.368][DEBUG]: DevTools WebSocket Command: Runtime.releaseObjectGroup (id=87) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "objectGroup": "37505fcf-2bf0-448c-ba35-a4857eea9184"
+}
+[1699598348.368][INFO]: Waiting for pending navigations...
+[1699598348.368][DEBUG]: DevTools WebSocket Command: Runtime.evaluate (id=88) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "expression": "1"
+}
+[1699598348.370][DEBUG]: DevTools WebSocket Response: Runtime.releaseObjectGroup (id=87) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+}
+[1699598348.370][DEBUG]: DevTools WebSocket Response: Runtime.evaluate (id=88) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "result": {
+      "description": "1",
+      "type": "number",
+      "value": 1
+   }
+}
+[1699598348.370][INFO]: Done waiting for pending navigations. Status: ok
+[1699598348.370][INFO]: [4ca883279bcbd0db9f9e01bbdf5484b2] RESPONSE ExecuteScript null
+[1699598348.371][INFO]: [4ca883279bcbd0db9f9e01bbdf5484b2] COMMAND ExecuteScript {
+   "args": [  ],
+   "script": "return Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);"
+}
+[1699598348.371][INFO]: Waiting for pending navigations...
+[1699598348.371][DEBUG]: DevTools WebSocket Command: Runtime.evaluate (id=89) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "expression": "1"
+}
+[1699598348.371][DEBUG]: DevTools WebSocket Response: Runtime.evaluate (id=89) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "result": {
+      "description": "1",
+      "type": "number",
+      "value": 1
+   }
+}
+[1699598348.372][INFO]: Done waiting for pending navigations. Status: ok
+[1699598348.372][DEBUG]: DevTools WebSocket Command: Page.getFrameTree (id=90) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+}
+[1699598348.372][DEBUG]: DevTools WebSocket Response: Page.getFrameTree (id=90) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "frameTree": {
+      "childFrames": [ {
+         "frame": {
+            "adFrameStatus": {
+               "adFrameType": "none",
+               "explanations": [  ]
+            },
+            "crossOriginIsolatedContextType": "NotIsolatedFeatureDisabled",
+            "domainAndRegistry": "naver.com",
+            "gatedAPIFeatures": [  ],
+            "id": "A7CE447A90000438E5D366D884D5FA17",
+            "loaderId": "593387D27A93920BA40D5D9D4B245AD3",
+            "mimeType": "text/html",
+            "name": "RF_STORAGE_1699598343015_15",
+            "parentId": "8DA56A96137E93CD9DD0D20615E130E0",
+            "secureContextType": "Secure",
+            "securityOrigin": "https://m.search.naver.com",
+            "url": "https://m.search.naver.com/remote_frame"
+         }
+      }, {
+         "frame": {
+            "adFrameStatus": {
+               "adFrameType": "none",
+               "explanations": [  ]
+            },
+            "crossOriginIsolatedContextType": "NotIsolated",
+            "domainAndRegistry": "naver.com",
+            "gatedAPIFeatures": [  ],
+            "id": "F71A274939B4E174EB6788A9997A4766",
+            "loaderId": "306F67DB812F18CFED1DB5FF7D1C907A",
+            "mimeType": "text/html",
+            "name": "nmap_search_1_tgtLREC",
+            "parentId": "8DA56A96137E93CD9DD0D20615E130E0",
+            "secureContextType": "Secure",
+            "securityOrigin": "https://m.naver.com",
+            "url": "https://m.naver.com/"
+         }
+      } ],
+      "frame": {
+         "adFrameStatus": {
+            "adFrameType": "none"
+         },
+         "crossOriginIsolatedContextType": "NotIsolated",
+         "domainAndRegistry": "naver.com",
+         "gatedAPIFeatures": [  ],
+         "id": "8DA56A96137E93CD9DD0D20615E130E0",
+         "loaderId": "31E26C1282BEE793B0D6E94A3F4B0A1B",
+         "mimeType": "text/html",
+         "secureContextType": "Secure",
+         "securityOrigin": "https://m.naver.com",
+         "url": "https://m.naver.com/"
+      }
+   }
+}
+[1699598348.372][DEBUG]: DevTools WebSocket Command: Page.getFrameTree (id=91) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+}
+[1699598348.372][DEBUG]: DevTools WebSocket Response: Page.getFrameTree (id=91) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "frameTree": {
+      "childFrames": [ {
+         "frame": {
+            "adFrameStatus": {
+               "adFrameType": "none",
+               "explanations": [  ]
+            },
+            "crossOriginIsolatedContextType": "NotIsolatedFeatureDisabled",
+            "domainAndRegistry": "naver.com",
+            "gatedAPIFeatures": [  ],
+            "id": "A7CE447A90000438E5D366D884D5FA17",
+            "loaderId": "593387D27A93920BA40D5D9D4B245AD3",
+            "mimeType": "text/html",
+            "name": "RF_STORAGE_1699598343015_15",
+            "parentId": "8DA56A96137E93CD9DD0D20615E130E0",
+            "secureContextType": "Secure",
+            "securityOrigin": "https://m.search.naver.com",
+            "url": "https://m.search.naver.com/remote_frame"
+         }
+      }, {
+         "frame": {
+            "adFrameStatus": {
+               "adFrameType": "none",
+               "explanations": [  ]
+            },
+            "crossOriginIsolatedContextType": "NotIsolated",
+            "domainAndRegistry": "naver.com",
+            "gatedAPIFeatures": [  ],
+            "id": "F71A274939B4E174EB6788A9997A4766",
+            "loaderId": "306F67DB812F18CFED1DB5FF7D1C907A",
+            "mimeType": "text/html",
+            "name": "nmap_search_1_tgtLREC",
+            "parentId": "8DA56A96137E93CD9DD0D20615E130E0",
+            "secureContextType": "Secure",
+            "securityOrigin": "https://m.naver.com",
+            "url": "https://m.naver.com/"
+         }
+      } ],
+      "frame": {
+         "adFrameStatus": {
+            "adFrameType": "none"
+         },
+         "crossOriginIsolatedContextType": "NotIsolated",
+         "domainAndRegistry": "naver.com",
+         "gatedAPIFeatures": [  ],
+         "id": "8DA56A96137E93CD9DD0D20615E130E0",
+         "loaderId": "31E26C1282BEE793B0D6E94A3F4B0A1B",
+         "mimeType": "text/html",
+         "secureContextType": "Secure",
+         "securityOrigin": "https://m.naver.com",
+         "url": "https://m.naver.com/"
+      }
+   }
+}
+[1699598348.372][DEBUG]: DevTools WebSocket Command: Runtime.callFunctionOn (id=92) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "arguments": [  ],
+   "awaitPromise": true,
+   "functionDeclaration": "function(){ return (function() { // Copyright 2012 The Chromium Authors\n// Use of this source code is governed by a BSD-style license that can be\n// found in the LICENSE file.\n\n/**\n * Enum for WebD...",
+   "objectGroup": "9d3b5212-a304-4e19-b810-b4023cfa0409",
+   "serializationOptions": {
+      "serialization": "deep"
+   },
+   "uniqueContextId": "1849447899621837364.1603277596245246295"
+}
+[1699598348.373][DEBUG]: DevTools WebSocket Response: Runtime.callFunctionOn (id=92) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "result": {
+      "className": "Array",
+      "deepSerializedValue": {
+         "type": "array",
+         "value": [ {
+            "type": "string",
+            "value": "{\"status\":0,\"value\":2409}"
+         } ]
+      },
+      "description": "Array(1)",
+      "objectId": "-4067059546531893782.1.12",
+      "subtype": "array",
+      "type": "object"
+   }
+}
+[1699598348.373][DEBUG]: DevTools WebSocket Command: Runtime.releaseObjectGroup (id=93) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "objectGroup": "9d3b5212-a304-4e19-b810-b4023cfa0409"
+}
+[1699598348.373][INFO]: Waiting for pending navigations...
+[1699598348.373][DEBUG]: DevTools WebSocket Command: Runtime.evaluate (id=94) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "expression": "1"
+}
+[1699598348.373][DEBUG]: DevTools WebSocket Response: Runtime.releaseObjectGroup (id=93) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+}
+[1699598348.373][DEBUG]: DevTools WebSocket Response: Runtime.evaluate (id=94) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "result": {
+      "description": "1",
+      "type": "number",
+      "value": 1
+   }
+}
+[1699598348.373][INFO]: Done waiting for pending navigations. Status: ok
+[1699598348.373][INFO]: [4ca883279bcbd0db9f9e01bbdf5484b2] RESPONSE ExecuteScript 2409
+[1699598348.374][INFO]: [4ca883279bcbd0db9f9e01bbdf5484b2] COMMAND ExecuteScript {
+   "args": [  ],
+   "script": "window.scrollTo(0, 880)"
+}
+[1699598348.374][INFO]: Waiting for pending navigations...
+[1699598348.374][DEBUG]: DevTools WebSocket Command: Runtime.evaluate (id=95) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "expression": "1"
+}
+[1699598348.374][DEBUG]: DevTools WebSocket Response: Runtime.evaluate (id=95) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "result": {
+      "description": "1",
+      "type": "number",
+      "value": 1
+   }
+}
+[1699598348.374][INFO]: Done waiting for pending navigations. Status: ok
+[1699598348.374][DEBUG]: DevTools WebSocket Command: Page.getFrameTree (id=96) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+}
+[1699598348.375][DEBUG]: DevTools WebSocket Response: Page.getFrameTree (id=96) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "frameTree": {
+      "childFrames": [ {
+         "frame": {
+            "adFrameStatus": {
+               "adFrameType": "none",
+               "explanations": [  ]
+            },
+            "crossOriginIsolatedContextType": "NotIsolatedFeatureDisabled",
+            "domainAndRegistry": "naver.com",
+            "gatedAPIFeatures": [  ],
+            "id": "A7CE447A90000438E5D366D884D5FA17",
+            "loaderId": "593387D27A93920BA40D5D9D4B245AD3",
+            "mimeType": "text/html",
+            "name": "RF_STORAGE_1699598343015_15",
+            "parentId": "8DA56A96137E93CD9DD0D20615E130E0",
+            "secureContextType": "Secure",
+            "securityOrigin": "https://m.search.naver.com",
+            "url": "https://m.search.naver.com/remote_frame"
+         }
+      }, {
+         "frame": {
+            "adFrameStatus": {
+               "adFrameType": "none",
+               "explanations": [  ]
+            },
+            "crossOriginIsolatedContextType": "NotIsolated",
+            "domainAndRegistry": "naver.com",
+            "gatedAPIFeatures": [  ],
+            "id": "F71A274939B4E174EB6788A9997A4766",
+            "loaderId": "306F67DB812F18CFED1DB5FF7D1C907A",
+            "mimeType": "text/html",
+            "name": "nmap_search_1_tgtLREC",
+            "parentId": "8DA56A96137E93CD9DD0D20615E130E0",
+            "secureContextType": "Secure",
+            "securityOrigin": "https://m.naver.com",
+            "url": "https://m.naver.com/"
+         }
+      } ],
+      "frame": {
+         "adFrameStatus": {
+            "adFrameType": "none"
+         },
+         "crossOriginIsolatedContextType": "NotIsolated",
+         "domainAndRegistry": "naver.com",
+         "gatedAPIFeatures": [  ],
+         "id": "8DA56A96137E93CD9DD0D20615E130E0",
+         "loaderId": "31E26C1282BEE793B0D6E94A3F4B0A1B",
+         "mimeType": "text/html",
+         "secureContextType": "Secure",
+         "securityOrigin": "https://m.naver.com",
+         "url": "https://m.naver.com/"
+      }
+   }
+}
+[1699598348.375][DEBUG]: DevTools WebSocket Command: Page.getFrameTree (id=97) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+}
+[1699598348.375][DEBUG]: DevTools WebSocket Response: Page.getFrameTree (id=97) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "frameTree": {
+      "childFrames": [ {
+         "frame": {
+            "adFrameStatus": {
+               "adFrameType": "none",
+               "explanations": [  ]
+            },
+            "crossOriginIsolatedContextType": "NotIsolatedFeatureDisabled",
+            "domainAndRegistry": "naver.com",
+            "gatedAPIFeatures": [  ],
+            "id": "A7CE447A90000438E5D366D884D5FA17",
+            "loaderId": "593387D27A93920BA40D5D9D4B245AD3",
+            "mimeType": "text/html",
+            "name": "RF_STORAGE_1699598343015_15",
+            "parentId": "8DA56A96137E93CD9DD0D20615E130E0",
+            "secureContextType": "Secure",
+            "securityOrigin": "https://m.search.naver.com",
+            "url": "https://m.search.naver.com/remote_frame"
+         }
+      }, {
+         "frame": {
+            "adFrameStatus": {
+               "adFrameType": "none",
+               "explanations": [  ]
+            },
+            "crossOriginIsolatedContextType": "NotIsolated",
+            "domainAndRegistry": "naver.com",
+            "gatedAPIFeatures": [  ],
+            "id": "F71A274939B4E174EB6788A9997A4766",
+            "loaderId": "306F67DB812F18CFED1DB5FF7D1C907A",
+            "mimeType": "text/html",
+            "name": "nmap_search_1_tgtLREC",
+            "parentId": "8DA56A96137E93CD9DD0D20615E130E0",
+            "secureContextType": "Secure",
+            "securityOrigin": "https://m.naver.com",
+            "url": "https://m.naver.com/"
+         }
+      } ],
+      "frame": {
+         "adFrameStatus": {
+            "adFrameType": "none"
+         },
+         "crossOriginIsolatedContextType": "NotIsolated",
+         "domainAndRegistry": "naver.com",
+         "gatedAPIFeatures": [  ],
+         "id": "8DA56A96137E93CD9DD0D20615E130E0",
+         "loaderId": "31E26C1282BEE793B0D6E94A3F4B0A1B",
+         "mimeType": "text/html",
+         "secureContextType": "Secure",
+         "securityOrigin": "https://m.naver.com",
+         "url": "https://m.naver.com/"
+      }
+   }
+}
+[1699598348.375][DEBUG]: DevTools WebSocket Command: Runtime.callFunctionOn (id=98) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "arguments": [  ],
+   "awaitPromise": true,
+   "functionDeclaration": "function(){ return (function() { // Copyright 2012 The Chromium Authors\n// Use of this source code is governed by a BSD-style license that can be\n// found in the LICENSE file.\n\n/**\n * Enum for WebD...",
+   "objectGroup": "0702a719-85cf-4120-a9ba-6cc77e656410",
+   "serializationOptions": {
+      "serialization": "deep"
+   },
+   "uniqueContextId": "1849447899621837364.1603277596245246295"
+}
+[1699598348.376][DEBUG]: DevTools WebSocket Response: Runtime.callFunctionOn (id=98) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "result": {
+      "className": "Array",
+      "deepSerializedValue": {
+         "type": "array",
+         "value": [ {
+            "type": "string",
+            "value": "{\"status\":0,\"value\":null}"
+         } ]
+      },
+      "description": "Array(1)",
+      "objectId": "-4067059546531893782.1.13",
+      "subtype": "array",
+      "type": "object"
+   }
+}
+[1699598348.376][DEBUG]: DevTools WebSocket Command: Runtime.releaseObjectGroup (id=99) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "objectGroup": "0702a719-85cf-4120-a9ba-6cc77e656410"
+}
+[1699598348.376][INFO]: Waiting for pending navigations...
+[1699598348.376][DEBUG]: DevTools WebSocket Command: Runtime.evaluate (id=100) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "expression": "1"
+}
+[1699598348.377][DEBUG]: DevTools WebSocket Response: Runtime.releaseObjectGroup (id=99) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+}
+[1699598348.377][DEBUG]: DevTools WebSocket Response: Runtime.evaluate (id=100) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "result": {
+      "description": "1",
+      "type": "number",
+      "value": 1
+   }
+}
+[1699598348.377][INFO]: Done waiting for pending navigations. Status: ok
+[1699598348.377][INFO]: [4ca883279bcbd0db9f9e01bbdf5484b2] RESPONSE ExecuteScript null
+[1699598349.440][DEBUG]: DevTools WebSocket Event: Page.frameResized (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+}
+[1699598349.467][DEBUG]: DevTools WebSocket Event: Page.frameResized (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+}
+[1699598349.605][INFO]: [4ca883279bcbd0db9f9e01bbdf5484b2] COMMAND ExecuteScript {
+   "args": [  ],
+   "script": "return Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);"
+}
+[1699598349.605][INFO]: Waiting for pending navigations...
+[1699598349.605][DEBUG]: DevTools WebSocket Command: Runtime.evaluate (id=101) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "expression": "1"
+}
+[1699598349.610][DEBUG]: DevTools WebSocket Response: Runtime.evaluate (id=101) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "result": {
+      "description": "1",
+      "type": "number",
+      "value": 1
+   }
+}
+[1699598349.610][INFO]: Done waiting for pending navigations. Status: ok
+[1699598349.610][DEBUG]: DevTools WebSocket Command: Page.getFrameTree (id=102) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+}
+[1699598349.610][DEBUG]: DevTools WebSocket Response: Page.getFrameTree (id=102) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "frameTree": {
+      "childFrames": [ {
+         "frame": {
+            "adFrameStatus": {
+               "adFrameType": "none",
+               "explanations": [  ]
+            },
+            "crossOriginIsolatedContextType": "NotIsolatedFeatureDisabled",
+            "domainAndRegistry": "naver.com",
+            "gatedAPIFeatures": [  ],
+            "id": "A7CE447A90000438E5D366D884D5FA17",
+            "loaderId": "593387D27A93920BA40D5D9D4B245AD3",
+            "mimeType": "text/html",
+            "name": "RF_STORAGE_1699598343015_15",
+            "parentId": "8DA56A96137E93CD9DD0D20615E130E0",
+            "secureContextType": "Secure",
+            "securityOrigin": "https://m.search.naver.com",
+            "url": "https://m.search.naver.com/remote_frame"
+         }
+      }, {
+         "frame": {
+            "adFrameStatus": {
+               "adFrameType": "none",
+               "explanations": [  ]
+            },
+            "crossOriginIsolatedContextType": "NotIsolated",
+            "domainAndRegistry": "naver.com",
+            "gatedAPIFeatures": [  ],
+            "id": "F71A274939B4E174EB6788A9997A4766",
+            "loaderId": "306F67DB812F18CFED1DB5FF7D1C907A",
+            "mimeType": "text/html",
+            "name": "nmap_search_1_tgtLREC",
+            "parentId": "8DA56A96137E93CD9DD0D20615E130E0",
+            "secureContextType": "Secure",
+            "securityOrigin": "https://m.naver.com",
+            "url": "https://m.naver.com/"
+         }
+      } ],
+      "frame": {
+         "adFrameStatus": {
+            "adFrameType": "none"
+         },
+         "crossOriginIsolatedContextType": "NotIsolated",
+         "domainAndRegistry": "naver.com",
+         "gatedAPIFeatures": [  ],
+         "id": "8DA56A96137E93CD9DD0D20615E130E0",
+         "loaderId": "31E26C1282BEE793B0D6E94A3F4B0A1B",
+         "mimeType": "text/html",
+         "secureContextType": "Secure",
+         "securityOrigin": "https://m.naver.com",
+         "url": "https://m.naver.com/"
+      }
+   }
+}
+[1699598349.610][DEBUG]: DevTools WebSocket Command: Page.getFrameTree (id=103) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+}
+[1699598349.611][DEBUG]: DevTools WebSocket Response: Page.getFrameTree (id=103) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "frameTree": {
+      "childFrames": [ {
+         "frame": {
+            "adFrameStatus": {
+               "adFrameType": "none",
+               "explanations": [  ]
+            },
+            "crossOriginIsolatedContextType": "NotIsolatedFeatureDisabled",
+            "domainAndRegistry": "naver.com",
+            "gatedAPIFeatures": [  ],
+            "id": "A7CE447A90000438E5D366D884D5FA17",
+            "loaderId": "593387D27A93920BA40D5D9D4B245AD3",
+            "mimeType": "text/html",
+            "name": "RF_STORAGE_1699598343015_15",
+            "parentId": "8DA56A96137E93CD9DD0D20615E130E0",
+            "secureContextType": "Secure",
+            "securityOrigin": "https://m.search.naver.com",
+            "url": "https://m.search.naver.com/remote_frame"
+         }
+      }, {
+         "frame": {
+            "adFrameStatus": {
+               "adFrameType": "none",
+               "explanations": [  ]
+            },
+            "crossOriginIsolatedContextType": "NotIsolated",
+            "domainAndRegistry": "naver.com",
+            "gatedAPIFeatures": [  ],
+            "id": "F71A274939B4E174EB6788A9997A4766",
+            "loaderId": "306F67DB812F18CFED1DB5FF7D1C907A",
+            "mimeType": "text/html",
+            "name": "nmap_search_1_tgtLREC",
+            "parentId": "8DA56A96137E93CD9DD0D20615E130E0",
+            "secureContextType": "Secure",
+            "securityOrigin": "https://m.naver.com",
+            "url": "https://m.naver.com/"
+         }
+      } ],
+      "frame": {
+         "adFrameStatus": {
+            "adFrameType": "none"
+         },
+         "crossOriginIsolatedContextType": "NotIsolated",
+         "domainAndRegistry": "naver.com",
+         "gatedAPIFeatures": [  ],
+         "id": "8DA56A96137E93CD9DD0D20615E130E0",
+         "loaderId": "31E26C1282BEE793B0D6E94A3F4B0A1B",
+         "mimeType": "text/html",
+         "secureContextType": "Secure",
+         "securityOrigin": "https://m.naver.com",
+         "url": "https://m.naver.com/"
+      }
+   }
+}
+[1699598349.611][DEBUG]: DevTools WebSocket Command: Runtime.callFunctionOn (id=104) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "arguments": [  ],
+   "awaitPromise": true,
+   "functionDeclaration": "function(){ return (function() { // Copyright 2012 The Chromium Authors\n// Use of this source code is governed by a BSD-style license that can be\n// found in the LICENSE file.\n\n/**\n * Enum for WebD...",
+   "objectGroup": "da8a97aa-de35-4dde-b6e8-c85a8c4fb9c8",
+   "serializationOptions": {
+      "serialization": "deep"
+   },
+   "uniqueContextId": "1849447899621837364.1603277596245246295"
+}
+[1699598349.612][DEBUG]: DevTools WebSocket Response: Runtime.callFunctionOn (id=104) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "result": {
+      "className": "Array",
+      "deepSerializedValue": {
+         "type": "array",
+         "value": [ {
+            "type": "string",
+            "value": "{\"status\":0,\"value\":2935}"
+         } ]
+      },
+      "description": "Array(1)",
+      "objectId": "-4067059546531893782.1.14",
+      "subtype": "array",
+      "type": "object"
+   }
+}
+[1699598349.612][DEBUG]: DevTools WebSocket Command: Runtime.releaseObjectGroup (id=105) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "objectGroup": "da8a97aa-de35-4dde-b6e8-c85a8c4fb9c8"
+}
+[1699598349.612][INFO]: Waiting for pending navigations...
+[1699598349.612][DEBUG]: DevTools WebSocket Command: Runtime.evaluate (id=106) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "expression": "1"
+}
+[1699598349.612][DEBUG]: DevTools WebSocket Response: Runtime.releaseObjectGroup (id=105) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+}
+[1699598349.612][DEBUG]: DevTools WebSocket Response: Runtime.evaluate (id=106) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "result": {
+      "description": "1",
+      "type": "number",
+      "value": 1
+   }
+}
+[1699598349.612][INFO]: Done waiting for pending navigations. Status: ok
+[1699598349.612][INFO]: [4ca883279bcbd0db9f9e01bbdf5484b2] RESPONSE ExecuteScript 2935
+[1699598349.613][INFO]: [4ca883279bcbd0db9f9e01bbdf5484b2] COMMAND ExecuteScript {
+   "args": [  ],
+   "script": "window.scrollTo(0, 1760)"
+}
+[1699598349.613][INFO]: Waiting for pending navigations...
+[1699598349.613][DEBUG]: DevTools WebSocket Command: Runtime.evaluate (id=107) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "expression": "1"
+}
+[1699598349.613][DEBUG]: DevTools WebSocket Response: Runtime.evaluate (id=107) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "result": {
+      "description": "1",
+      "type": "number",
+      "value": 1
+   }
+}
+[1699598349.613][INFO]: Done waiting for pending navigations. Status: ok
+[1699598349.613][DEBUG]: DevTools WebSocket Command: Page.getFrameTree (id=108) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+}
+[1699598349.614][DEBUG]: DevTools WebSocket Response: Page.getFrameTree (id=108) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "frameTree": {
+      "childFrames": [ {
+         "frame": {
+            "adFrameStatus": {
+               "adFrameType": "none",
+               "explanations": [  ]
+            },
+            "crossOriginIsolatedContextType": "NotIsolatedFeatureDisabled",
+            "domainAndRegistry": "naver.com",
+            "gatedAPIFeatures": [  ],
+            "id": "A7CE447A90000438E5D366D884D5FA17",
+            "loaderId": "593387D27A93920BA40D5D9D4B245AD3",
+            "mimeType": "text/html",
+            "name": "RF_STORAGE_1699598343015_15",
+            "parentId": "8DA56A96137E93CD9DD0D20615E130E0",
+            "secureContextType": "Secure",
+            "securityOrigin": "https://m.search.naver.com",
+            "url": "https://m.search.naver.com/remote_frame"
+         }
+      }, {
+         "frame": {
+            "adFrameStatus": {
+               "adFrameType": "none",
+               "explanations": [  ]
+            },
+            "crossOriginIsolatedContextType": "NotIsolated",
+            "domainAndRegistry": "naver.com",
+            "gatedAPIFeatures": [  ],
+            "id": "F71A274939B4E174EB6788A9997A4766",
+            "loaderId": "306F67DB812F18CFED1DB5FF7D1C907A",
+            "mimeType": "text/html",
+            "name": "nmap_search_1_tgtLREC",
+            "parentId": "8DA56A96137E93CD9DD0D20615E130E0",
+            "secureContextType": "Secure",
+            "securityOrigin": "https://m.naver.com",
+            "url": "https://m.naver.com/"
+         }
+      } ],
+      "frame": {
+         "adFrameStatus": {
+            "adFrameType": "none"
+         },
+         "crossOriginIsolatedContextType": "NotIsolated",
+         "domainAndRegistry": "naver.com",
+         "gatedAPIFeatures": [  ],
+         "id": "8DA56A96137E93CD9DD0D20615E130E0",
+         "loaderId": "31E26C1282BEE793B0D6E94A3F4B0A1B",
+         "mimeType": "text/html",
+         "secureContextType": "Secure",
+         "securityOrigin": "https://m.naver.com",
+         "url": "https://m.naver.com/"
+      }
+   }
+}
+[1699598349.614][DEBUG]: DevTools WebSocket Command: Page.getFrameTree (id=109) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+}
+[1699598349.614][DEBUG]: DevTools WebSocket Response: Page.getFrameTree (id=109) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "frameTree": {
+      "childFrames": [ {
+         "frame": {
+            "adFrameStatus": {
+               "adFrameType": "none",
+               "explanations": [  ]
+            },
+            "crossOriginIsolatedContextType": "NotIsolatedFeatureDisabled",
+            "domainAndRegistry": "naver.com",
+            "gatedAPIFeatures": [  ],
+            "id": "A7CE447A90000438E5D366D884D5FA17",
+            "loaderId": "593387D27A93920BA40D5D9D4B245AD3",
+            "mimeType": "text/html",
+            "name": "RF_STORAGE_1699598343015_15",
+            "parentId": "8DA56A96137E93CD9DD0D20615E130E0",
+            "secureContextType": "Secure",
+            "securityOrigin": "https://m.search.naver.com",
+            "url": "https://m.search.naver.com/remote_frame"
+         }
+      }, {
+         "frame": {
+            "adFrameStatus": {
+               "adFrameType": "none",
+               "explanations": [  ]
+            },
+            "crossOriginIsolatedContextType": "NotIsolated",
+            "domainAndRegistry": "naver.com",
+            "gatedAPIFeatures": [  ],
+            "id": "F71A274939B4E174EB6788A9997A4766",
+            "loaderId": "306F67DB812F18CFED1DB5FF7D1C907A",
+            "mimeType": "text/html",
+            "name": "nmap_search_1_tgtLREC",
+            "parentId": "8DA56A96137E93CD9DD0D20615E130E0",
+            "secureContextType": "Secure",
+            "securityOrigin": "https://m.naver.com",
+            "url": "https://m.naver.com/"
+         }
+      } ],
+      "frame": {
+         "adFrameStatus": {
+            "adFrameType": "none"
+         },
+         "crossOriginIsolatedContextType": "NotIsolated",
+         "domainAndRegistry": "naver.com",
+         "gatedAPIFeatures": [  ],
+         "id": "8DA56A96137E93CD9DD0D20615E130E0",
+         "loaderId": "31E26C1282BEE793B0D6E94A3F4B0A1B",
+         "mimeType": "text/html",
+         "secureContextType": "Secure",
+         "securityOrigin": "https://m.naver.com",
+         "url": "https://m.naver.com/"
+      }
+   }
+}
+[1699598349.614][DEBUG]: DevTools WebSocket Command: Runtime.callFunctionOn (id=110) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "arguments": [  ],
+   "awaitPromise": true,
+   "functionDeclaration": "function(){ return (function() { // Copyright 2012 The Chromium Authors\n// Use of this source code is governed by a BSD-style license that can be\n// found in the LICENSE file.\n\n/**\n * Enum for WebD...",
+   "objectGroup": "a3d65799-94ee-45c7-850a-ed04e347252e",
+   "serializationOptions": {
+      "serialization": "deep"
+   },
+   "uniqueContextId": "1849447899621837364.1603277596245246295"
+}
+[1699598349.615][DEBUG]: DevTools WebSocket Response: Runtime.callFunctionOn (id=110) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "result": {
+      "className": "Array",
+      "deepSerializedValue": {
+         "type": "array",
+         "value": [ {
+            "type": "string",
+            "value": "{\"status\":0,\"value\":null}"
+         } ]
+      },
+      "description": "Array(1)",
+      "objectId": "-4067059546531893782.1.15",
+      "subtype": "array",
+      "type": "object"
+   }
+}
+[1699598349.615][DEBUG]: DevTools WebSocket Command: Runtime.releaseObjectGroup (id=111) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "objectGroup": "a3d65799-94ee-45c7-850a-ed04e347252e"
+}
+[1699598349.615][INFO]: Waiting for pending navigations...
+[1699598349.615][DEBUG]: DevTools WebSocket Command: Runtime.evaluate (id=112) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "expression": "1"
+}
+[1699598349.615][DEBUG]: DevTools WebSocket Response: Runtime.releaseObjectGroup (id=111) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+}
+[1699598349.615][DEBUG]: DevTools WebSocket Response: Runtime.evaluate (id=112) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "result": {
+      "description": "1",
+      "type": "number",
+      "value": 1
+   }
+}
+[1699598349.615][INFO]: Done waiting for pending navigations. Status: ok
+[1699598349.615][INFO]: [4ca883279bcbd0db9f9e01bbdf5484b2] RESPONSE ExecuteScript null
+[1699598350.647][DEBUG]: DevTools WebSocket Event: Page.frameResized (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+}
+[1699598350.665][DEBUG]: DevTools WebSocket Event: Page.frameResized (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+}
+[1699598350.729][INFO]: [4ca883279bcbd0db9f9e01bbdf5484b2] COMMAND ExecuteScript {
+   "args": [  ],
+   "script": "return Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);"
+}
+[1699598350.729][INFO]: Waiting for pending navigations...
+[1699598350.729][DEBUG]: DevTools WebSocket Command: Runtime.evaluate (id=113) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "expression": "1"
+}
+[1699598350.743][DEBUG]: DevTools WebSocket Response: Runtime.evaluate (id=113) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "result": {
+      "description": "1",
+      "type": "number",
+      "value": 1
+   }
+}
+[1699598350.743][INFO]: Done waiting for pending navigations. Status: ok
+[1699598350.743][DEBUG]: DevTools WebSocket Command: Page.getFrameTree (id=114) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+}
+[1699598350.743][DEBUG]: DevTools WebSocket Response: Page.getFrameTree (id=114) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "frameTree": {
+      "childFrames": [ {
+         "frame": {
+            "adFrameStatus": {
+               "adFrameType": "none",
+               "explanations": [  ]
+            },
+            "crossOriginIsolatedContextType": "NotIsolatedFeatureDisabled",
+            "domainAndRegistry": "naver.com",
+            "gatedAPIFeatures": [  ],
+            "id": "A7CE447A90000438E5D366D884D5FA17",
+            "loaderId": "593387D27A93920BA40D5D9D4B245AD3",
+            "mimeType": "text/html",
+            "name": "RF_STORAGE_1699598343015_15",
+            "parentId": "8DA56A96137E93CD9DD0D20615E130E0",
+            "secureContextType": "Secure",
+            "securityOrigin": "https://m.search.naver.com",
+            "url": "https://m.search.naver.com/remote_frame"
+         }
+      }, {
+         "frame": {
+            "adFrameStatus": {
+               "adFrameType": "none",
+               "explanations": [  ]
+            },
+            "crossOriginIsolatedContextType": "NotIsolated",
+            "domainAndRegistry": "naver.com",
+            "gatedAPIFeatures": [  ],
+            "id": "F71A274939B4E174EB6788A9997A4766",
+            "loaderId": "306F67DB812F18CFED1DB5FF7D1C907A",
+            "mimeType": "text/html",
+            "name": "nmap_search_1_tgtLREC",
+            "parentId": "8DA56A96137E93CD9DD0D20615E130E0",
+            "secureContextType": "Secure",
+            "securityOrigin": "https://m.naver.com",
+            "url": "https://m.naver.com/"
+         }
+      } ],
+      "frame": {
+         "adFrameStatus": {
+            "adFrameType": "none"
+         },
+         "crossOriginIsolatedContextType": "NotIsolated",
+         "domainAndRegistry": "naver.com",
+         "gatedAPIFeatures": [  ],
+         "id": "8DA56A96137E93CD9DD0D20615E130E0",
+         "loaderId": "31E26C1282BEE793B0D6E94A3F4B0A1B",
+         "mimeType": "text/html",
+         "secureContextType": "Secure",
+         "securityOrigin": "https://m.naver.com",
+         "url": "https://m.naver.com/"
+      }
+   }
+}
+[1699598350.743][DEBUG]: DevTools WebSocket Command: Page.getFrameTree (id=115) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+}
+[1699598350.744][DEBUG]: DevTools WebSocket Response: Page.getFrameTree (id=115) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "frameTree": {
+      "childFrames": [ {
+         "frame": {
+            "adFrameStatus": {
+               "adFrameType": "none",
+               "explanations": [  ]
+            },
+            "crossOriginIsolatedContextType": "NotIsolatedFeatureDisabled",
+            "domainAndRegistry": "naver.com",
+            "gatedAPIFeatures": [  ],
+            "id": "A7CE447A90000438E5D366D884D5FA17",
+            "loaderId": "593387D27A93920BA40D5D9D4B245AD3",
+            "mimeType": "text/html",
+            "name": "RF_STORAGE_1699598343015_15",
+            "parentId": "8DA56A96137E93CD9DD0D20615E130E0",
+            "secureContextType": "Secure",
+            "securityOrigin": "https://m.search.naver.com",
+            "url": "https://m.search.naver.com/remote_frame"
+         }
+      }, {
+         "frame": {
+            "adFrameStatus": {
+               "adFrameType": "none",
+               "explanations": [  ]
+            },
+            "crossOriginIsolatedContextType": "NotIsolated",
+            "domainAndRegistry": "naver.com",
+            "gatedAPIFeatures": [  ],
+            "id": "F71A274939B4E174EB6788A9997A4766",
+            "loaderId": "306F67DB812F18CFED1DB5FF7D1C907A",
+            "mimeType": "text/html",
+            "name": "nmap_search_1_tgtLREC",
+            "parentId": "8DA56A96137E93CD9DD0D20615E130E0",
+            "secureContextType": "Secure",
+            "securityOrigin": "https://m.naver.com",
+            "url": "https://m.naver.com/"
+         }
+      } ],
+      "frame": {
+         "adFrameStatus": {
+            "adFrameType": "none"
+         },
+         "crossOriginIsolatedContextType": "NotIsolated",
+         "domainAndRegistry": "naver.com",
+         "gatedAPIFeatures": [  ],
+         "id": "8DA56A96137E93CD9DD0D20615E130E0",
+         "loaderId": "31E26C1282BEE793B0D6E94A3F4B0A1B",
+         "mimeType": "text/html",
+         "secureContextType": "Secure",
+         "securityOrigin": "https://m.naver.com",
+         "url": "https://m.naver.com/"
+      }
+   }
+}
+[1699598350.744][DEBUG]: DevTools WebSocket Command: Runtime.callFunctionOn (id=116) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "arguments": [  ],
+   "awaitPromise": true,
+   "functionDeclaration": "function(){ return (function() { // Copyright 2012 The Chromium Authors\n// Use of this source code is governed by a BSD-style license that can be\n// found in the LICENSE file.\n\n/**\n * Enum for WebD...",
+   "objectGroup": "3ae7cecd-ca4b-4fb1-8164-0f7ce7d4e345",
+   "serializationOptions": {
+      "serialization": "deep"
+   },
+   "uniqueContextId": "1849447899621837364.1603277596245246295"
+}
+[1699598350.745][DEBUG]: DevTools WebSocket Response: Runtime.callFunctionOn (id=116) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "result": {
+      "className": "Array",
+      "deepSerializedValue": {
+         "type": "array",
+         "value": [ {
+            "type": "string",
+            "value": "{\"status\":0,\"value\":2935}"
+         } ]
+      },
+      "description": "Array(1)",
+      "objectId": "-4067059546531893782.1.16",
+      "subtype": "array",
+      "type": "object"
+   }
+}
+[1699598350.745][DEBUG]: DevTools WebSocket Command: Runtime.releaseObjectGroup (id=117) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "objectGroup": "3ae7cecd-ca4b-4fb1-8164-0f7ce7d4e345"
+}
+[1699598350.745][INFO]: Waiting for pending navigations...
+[1699598350.745][DEBUG]: DevTools WebSocket Command: Runtime.evaluate (id=118) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "expression": "1"
+}
+[1699598350.745][DEBUG]: DevTools WebSocket Response: Runtime.releaseObjectGroup (id=117) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+}
+[1699598350.745][DEBUG]: DevTools WebSocket Response: Runtime.evaluate (id=118) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "result": {
+      "description": "1",
+      "type": "number",
+      "value": 1
+   }
+}
+[1699598350.745][INFO]: Done waiting for pending navigations. Status: ok
+[1699598350.745][INFO]: [4ca883279bcbd0db9f9e01bbdf5484b2] RESPONSE ExecuteScript 2935
+[1699598350.747][INFO]: [4ca883279bcbd0db9f9e01bbdf5484b2] COMMAND ExecuteScript {
+   "args": [  ],
+   "script": "window.scrollTo(0, 2640)"
+}
+[1699598350.747][INFO]: Waiting for pending navigations...
+[1699598350.747][DEBUG]: DevTools WebSocket Command: Runtime.evaluate (id=119) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "expression": "1"
+}
+[1699598350.747][DEBUG]: DevTools WebSocket Response: Runtime.evaluate (id=119) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "result": {
+      "description": "1",
+      "type": "number",
+      "value": 1
+   }
+}
+[1699598350.747][INFO]: Done waiting for pending navigations. Status: ok
+[1699598350.747][DEBUG]: DevTools WebSocket Command: Page.getFrameTree (id=120) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+}
+[1699598350.747][DEBUG]: DevTools WebSocket Response: Page.getFrameTree (id=120) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "frameTree": {
+      "childFrames": [ {
+         "frame": {
+            "adFrameStatus": {
+               "adFrameType": "none",
+               "explanations": [  ]
+            },
+            "crossOriginIsolatedContextType": "NotIsolatedFeatureDisabled",
+            "domainAndRegistry": "naver.com",
+            "gatedAPIFeatures": [  ],
+            "id": "A7CE447A90000438E5D366D884D5FA17",
+            "loaderId": "593387D27A93920BA40D5D9D4B245AD3",
+            "mimeType": "text/html",
+            "name": "RF_STORAGE_1699598343015_15",
+            "parentId": "8DA56A96137E93CD9DD0D20615E130E0",
+            "secureContextType": "Secure",
+            "securityOrigin": "https://m.search.naver.com",
+            "url": "https://m.search.naver.com/remote_frame"
+         }
+      }, {
+         "frame": {
+            "adFrameStatus": {
+               "adFrameType": "none",
+               "explanations": [  ]
+            },
+            "crossOriginIsolatedContextType": "NotIsolated",
+            "domainAndRegistry": "naver.com",
+            "gatedAPIFeatures": [  ],
+            "id": "F71A274939B4E174EB6788A9997A4766",
+            "loaderId": "306F67DB812F18CFED1DB5FF7D1C907A",
+            "mimeType": "text/html",
+            "name": "nmap_search_1_tgtLREC",
+            "parentId": "8DA56A96137E93CD9DD0D20615E130E0",
+            "secureContextType": "Secure",
+            "securityOrigin": "https://m.naver.com",
+            "url": "https://m.naver.com/"
+         }
+      } ],
+      "frame": {
+         "adFrameStatus": {
+            "adFrameType": "none"
+         },
+         "crossOriginIsolatedContextType": "NotIsolated",
+         "domainAndRegistry": "naver.com",
+         "gatedAPIFeatures": [  ],
+         "id": "8DA56A96137E93CD9DD0D20615E130E0",
+         "loaderId": "31E26C1282BEE793B0D6E94A3F4B0A1B",
+         "mimeType": "text/html",
+         "secureContextType": "Secure",
+         "securityOrigin": "https://m.naver.com",
+         "url": "https://m.naver.com/"
+      }
+   }
+}
+[1699598350.747][DEBUG]: DevTools WebSocket Command: Page.getFrameTree (id=121) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+}
+[1699598350.747][DEBUG]: DevTools WebSocket Response: Page.getFrameTree (id=121) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "frameTree": {
+      "childFrames": [ {
+         "frame": {
+            "adFrameStatus": {
+               "adFrameType": "none",
+               "explanations": [  ]
+            },
+            "crossOriginIsolatedContextType": "NotIsolatedFeatureDisabled",
+            "domainAndRegistry": "naver.com",
+            "gatedAPIFeatures": [  ],
+            "id": "A7CE447A90000438E5D366D884D5FA17",
+            "loaderId": "593387D27A93920BA40D5D9D4B245AD3",
+            "mimeType": "text/html",
+            "name": "RF_STORAGE_1699598343015_15",
+            "parentId": "8DA56A96137E93CD9DD0D20615E130E0",
+            "secureContextType": "Secure",
+            "securityOrigin": "https://m.search.naver.com",
+            "url": "https://m.search.naver.com/remote_frame"
+         }
+      }, {
+         "frame": {
+            "adFrameStatus": {
+               "adFrameType": "none",
+               "explanations": [  ]
+            },
+            "crossOriginIsolatedContextType": "NotIsolated",
+            "domainAndRegistry": "naver.com",
+            "gatedAPIFeatures": [  ],
+            "id": "F71A274939B4E174EB6788A9997A4766",
+            "loaderId": "306F67DB812F18CFED1DB5FF7D1C907A",
+            "mimeType": "text/html",
+            "name": "nmap_search_1_tgtLREC",
+            "parentId": "8DA56A96137E93CD9DD0D20615E130E0",
+            "secureContextType": "Secure",
+            "securityOrigin": "https://m.naver.com",
+            "url": "https://m.naver.com/"
+         }
+      } ],
+      "frame": {
+         "adFrameStatus": {
+            "adFrameType": "none"
+         },
+         "crossOriginIsolatedContextType": "NotIsolated",
+         "domainAndRegistry": "naver.com",
+         "gatedAPIFeatures": [  ],
+         "id": "8DA56A96137E93CD9DD0D20615E130E0",
+         "loaderId": "31E26C1282BEE793B0D6E94A3F4B0A1B",
+         "mimeType": "text/html",
+         "secureContextType": "Secure",
+         "securityOrigin": "https://m.naver.com",
+         "url": "https://m.naver.com/"
+      }
+   }
+}
+[1699598350.748][DEBUG]: DevTools WebSocket Command: Runtime.callFunctionOn (id=122) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "arguments": [  ],
+   "awaitPromise": true,
+   "functionDeclaration": "function(){ return (function() { // Copyright 2012 The Chromium Authors\n// Use of this source code is governed by a BSD-style license that can be\n// found in the LICENSE file.\n\n/**\n * Enum for WebD...",
+   "objectGroup": "6c8a476f-5550-4fd5-b935-3f4cf4a0d26a",
+   "serializationOptions": {
+      "serialization": "deep"
+   },
+   "uniqueContextId": "1849447899621837364.1603277596245246295"
+}
+[1699598350.749][DEBUG]: DevTools WebSocket Response: Runtime.callFunctionOn (id=122) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "result": {
+      "className": "Array",
+      "deepSerializedValue": {
+         "type": "array",
+         "value": [ {
+            "type": "string",
+            "value": "{\"status\":0,\"value\":null}"
+         } ]
+      },
+      "description": "Array(1)",
+      "objectId": "-4067059546531893782.1.17",
+      "subtype": "array",
+      "type": "object"
+   }
+}
+[1699598350.749][DEBUG]: DevTools WebSocket Command: Runtime.releaseObjectGroup (id=123) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "objectGroup": "6c8a476f-5550-4fd5-b935-3f4cf4a0d26a"
+}
+[1699598350.749][INFO]: Waiting for pending navigations...
+[1699598350.749][DEBUG]: DevTools WebSocket Command: Runtime.evaluate (id=124) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "expression": "1"
+}
+[1699598350.749][DEBUG]: DevTools WebSocket Response: Runtime.releaseObjectGroup (id=123) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+}
+[1699598350.749][DEBUG]: DevTools WebSocket Response: Runtime.evaluate (id=124) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "result": {
+      "description": "1",
+      "type": "number",
+      "value": 1
+   }
+}
+[1699598350.749][INFO]: Done waiting for pending navigations. Status: ok
+[1699598350.749][INFO]: [4ca883279bcbd0db9f9e01bbdf5484b2] RESPONSE ExecuteScript null
+[1699598351.807][DEBUG]: DevTools WebSocket Event: Page.frameResized (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+}
+[1699598351.833][DEBUG]: DevTools WebSocket Event: Page.frameResized (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+}
+[1699598351.863][INFO]: [4ca883279bcbd0db9f9e01bbdf5484b2] COMMAND ExecuteScript {
+   "args": [  ],
+   "script": "return Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);"
+}
+[1699598351.863][INFO]: Waiting for pending navigations...
+[1699598351.863][DEBUG]: DevTools WebSocket Command: Runtime.evaluate (id=125) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "expression": "1"
+}
+[1699598351.863][DEBUG]: DevTools WebSocket Response: Runtime.evaluate (id=125) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "result": {
+      "description": "1",
+      "type": "number",
+      "value": 1
+   }
+}
+[1699598351.863][INFO]: Done waiting for pending navigations. Status: ok
+[1699598351.863][DEBUG]: DevTools WebSocket Command: Page.getFrameTree (id=126) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+}
+[1699598351.864][DEBUG]: DevTools WebSocket Response: Page.getFrameTree (id=126) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "frameTree": {
+      "childFrames": [ {
+         "frame": {
+            "adFrameStatus": {
+               "adFrameType": "none",
+               "explanations": [  ]
+            },
+            "crossOriginIsolatedContextType": "NotIsolatedFeatureDisabled",
+            "domainAndRegistry": "naver.com",
+            "gatedAPIFeatures": [  ],
+            "id": "A7CE447A90000438E5D366D884D5FA17",
+            "loaderId": "593387D27A93920BA40D5D9D4B245AD3",
+            "mimeType": "text/html",
+            "name": "RF_STORAGE_1699598343015_15",
+            "parentId": "8DA56A96137E93CD9DD0D20615E130E0",
+            "secureContextType": "Secure",
+            "securityOrigin": "https://m.search.naver.com",
+            "url": "https://m.search.naver.com/remote_frame"
+         }
+      }, {
+         "frame": {
+            "adFrameStatus": {
+               "adFrameType": "none",
+               "explanations": [  ]
+            },
+            "crossOriginIsolatedContextType": "NotIsolated",
+            "domainAndRegistry": "naver.com",
+            "gatedAPIFeatures": [  ],
+            "id": "F71A274939B4E174EB6788A9997A4766",
+            "loaderId": "306F67DB812F18CFED1DB5FF7D1C907A",
+            "mimeType": "text/html",
+            "name": "nmap_search_1_tgtLREC",
+            "parentId": "8DA56A96137E93CD9DD0D20615E130E0",
+            "secureContextType": "Secure",
+            "securityOrigin": "https://m.naver.com",
+            "url": "https://m.naver.com/"
+         }
+      } ],
+      "frame": {
+         "adFrameStatus": {
+            "adFrameType": "none"
+         },
+         "crossOriginIsolatedContextType": "NotIsolated",
+         "domainAndRegistry": "naver.com",
+         "gatedAPIFeatures": [  ],
+         "id": "8DA56A96137E93CD9DD0D20615E130E0",
+         "loaderId": "31E26C1282BEE793B0D6E94A3F4B0A1B",
+         "mimeType": "text/html",
+         "secureContextType": "Secure",
+         "securityOrigin": "https://m.naver.com",
+         "url": "https://m.naver.com/"
+      }
+   }
+}
+[1699598351.864][DEBUG]: DevTools WebSocket Command: Page.getFrameTree (id=127) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+}
+[1699598351.864][DEBUG]: DevTools WebSocket Response: Page.getFrameTree (id=127) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "frameTree": {
+      "childFrames": [ {
+         "frame": {
+            "adFrameStatus": {
+               "adFrameType": "none",
+               "explanations": [  ]
+            },
+            "crossOriginIsolatedContextType": "NotIsolatedFeatureDisabled",
+            "domainAndRegistry": "naver.com",
+            "gatedAPIFeatures": [  ],
+            "id": "A7CE447A90000438E5D366D884D5FA17",
+            "loaderId": "593387D27A93920BA40D5D9D4B245AD3",
+            "mimeType": "text/html",
+            "name": "RF_STORAGE_1699598343015_15",
+            "parentId": "8DA56A96137E93CD9DD0D20615E130E0",
+            "secureContextType": "Secure",
+            "securityOrigin": "https://m.search.naver.com",
+            "url": "https://m.search.naver.com/remote_frame"
+         }
+      }, {
+         "frame": {
+            "adFrameStatus": {
+               "adFrameType": "none",
+               "explanations": [  ]
+            },
+            "crossOriginIsolatedContextType": "NotIsolated",
+            "domainAndRegistry": "naver.com",
+            "gatedAPIFeatures": [  ],
+            "id": "F71A274939B4E174EB6788A9997A4766",
+            "loaderId": "306F67DB812F18CFED1DB5FF7D1C907A",
+            "mimeType": "text/html",
+            "name": "nmap_search_1_tgtLREC",
+            "parentId": "8DA56A96137E93CD9DD0D20615E130E0",
+            "secureContextType": "Secure",
+            "securityOrigin": "https://m.naver.com",
+            "url": "https://m.naver.com/"
+         }
+      } ],
+      "frame": {
+         "adFrameStatus": {
+            "adFrameType": "none"
+         },
+         "crossOriginIsolatedContextType": "NotIsolated",
+         "domainAndRegistry": "naver.com",
+         "gatedAPIFeatures": [  ],
+         "id": "8DA56A96137E93CD9DD0D20615E130E0",
+         "loaderId": "31E26C1282BEE793B0D6E94A3F4B0A1B",
+         "mimeType": "text/html",
+         "secureContextType": "Secure",
+         "securityOrigin": "https://m.naver.com",
+         "url": "https://m.naver.com/"
+      }
+   }
+}
+[1699598351.864][DEBUG]: DevTools WebSocket Command: Runtime.callFunctionOn (id=128) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "arguments": [  ],
+   "awaitPromise": true,
+   "functionDeclaration": "function(){ return (function() { // Copyright 2012 The Chromium Authors\n// Use of this source code is governed by a BSD-style license that can be\n// found in the LICENSE file.\n\n/**\n * Enum for WebD...",
+   "objectGroup": "08a2b0e0-943e-42a3-a098-6a99618da284",
+   "serializationOptions": {
+      "serialization": "deep"
+   },
+   "uniqueContextId": "1849447899621837364.1603277596245246295"
+}
+[1699598351.878][DEBUG]: DevTools WebSocket Response: Runtime.callFunctionOn (id=128) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "result": {
+      "className": "Array",
+      "deepSerializedValue": {
+         "type": "array",
+         "value": [ {
+            "type": "string",
+            "value": "{\"status\":0,\"value\":2935}"
+         } ]
+      },
+      "description": "Array(1)",
+      "objectId": "-4067059546531893782.1.18",
+      "subtype": "array",
+      "type": "object"
+   }
+}
+[1699598351.878][DEBUG]: DevTools WebSocket Command: Runtime.releaseObjectGroup (id=129) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "objectGroup": "08a2b0e0-943e-42a3-a098-6a99618da284"
+}
+[1699598351.878][INFO]: Waiting for pending navigations...
+[1699598351.878][DEBUG]: DevTools WebSocket Command: Runtime.evaluate (id=130) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "expression": "1"
+}
+[1699598351.884][DEBUG]: DevTools WebSocket Response: Runtime.releaseObjectGroup (id=129) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+}
+[1699598351.884][DEBUG]: DevTools WebSocket Response: Runtime.evaluate (id=130) (session_id=A9D27598339865558A9937F045DA174A) 8DA56A96137E93CD9DD0D20615E130E0 {
+   "result": {
+      "description": "1",
+      "type": "number",
+      "value": 1
+   }
+}
+[1699598351.884][INFO]: Done waiting for pending navigations. Status: ok
+[1699598351.884][INFO]: [4ca883279bcbd0db9f9e01bbdf5484b2] RESPONSE ExecuteScript 2935
+[1699598351.887][INFO]: [4ca883279bcbd0db9f9e01bbdf5484b2] COMMAND Quit {
+}
+[1699598351.942][INFO]: [4ca883279bcbd0db9f9e01bbdf5484b2] RESPONSE Quit
+[1699598351.942][DEBUG]: Log type 'driver' lost 0 entries on destruction
+[1699598351.942][DEBUG]: Log type 'browser' lost 2 entries on destruction

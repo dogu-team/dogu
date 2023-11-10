@@ -7,7 +7,8 @@
   "author": "",
   "main": "index.js",
   "scripts": {
-    "start": "ts-node src/start.ts"
+    "start": "node -r ts-node/register src/start.ts",
+    "test": "ts-node src/test.ts"
   },
   "dependencies": {
     "@dogu-private/device-data": "workspace:^",
@@ -24,7 +25,6 @@
   },
   "devDependencies": {
     "@types/lodash": "4.14.195",
-    "@types/node": "18.15.11",
     "@types/selenium-webdriver": "4.1.15",
     "@yarnpkg/pnpify": "^4.0.0",
     "typescript": "4.7.4"

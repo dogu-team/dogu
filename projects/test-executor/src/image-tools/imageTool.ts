@@ -1,4 +1,4 @@
-import sharp, { Sharp } from 'sharp';
+import sharp, { OverlayOptions, Sharp } from 'sharp';
 
 export module ImageTool {
   export async function mergeVertically(imagesBase64: string[]): Promise<Sharp> {
@@ -14,7 +14,7 @@ export module ImageTool {
     });
 
     const metaDatas = await Promise.all(
-      images.map((image) => {
+      images.map(async (image) => {
         return image.metadata();
       }),
     );
@@ -35,7 +35,7 @@ export module ImageTool {
     let currentHeight = 0;
     canvas.composite(
       imageBuffers.map((buffer, index) => {
-        const options: any = {
+        const options: OverlayOptions = {
           input: buffer,
           top: currentHeight,
           left: 0,
@@ -49,12 +49,12 @@ export module ImageTool {
 
     const jpegBuffer = await canvas
       .jpeg({
-        quality: 80,
+        quality: 90,
       })
       .toBuffer();
 
-    const resizedWidth = Math.round(metaDatas[0].width! / 2);
-    const resizedHeight = Math.round(maxHeight / 2);
+    const resizedWidth = Math.round(metaDatas[0].width! / 1.5);
+    const resizedHeight = Math.round(maxHeight / 1.5);
 
     const resizedImage = sharp(jpegBuffer, {}).resize({
       width: resizedWidth,

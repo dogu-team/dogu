@@ -1,4 +1,4 @@
-import { TestExecutorWebResponsiveSnapshots } from '@dogu-private/console';
+import { TestExecutorBase, TestExecutorWebResponsiveSnapshotMap } from '@dogu-private/console';
 import { UserPayload } from '@dogu-private/types';
 import { Body, Controller, Get, Inject, Post, Query } from '@nestjs/common';
 
@@ -14,23 +14,23 @@ export class TestExecutorController {
     private readonly service: TestExecutorService,
   ) {}
 
-  @Get('/web-responsive/snapshot')
-  @OrganizationPermission(ORGANIZATION_ROLE.MEMBER)
-  async getWebResponsiveSnapshots(@User() user: UserPayload, @Query() dto: GetWebResponsiveSnapshotsDto): Promise<TestExecutorWebResponsiveSnapshots> {
-    const snapshots = await this.service.getWebResponsiveSnapshots(dto.organizationId, dto.testExecutorId);
-    return snapshots;
-  }
-
   @Get('/web-responsive/list')
   @OrganizationPermission(ORGANIZATION_ROLE.MEMBER)
-  async getWebResponsiveList(@User() user: UserPayload, @Query() dto: GetWebResponsiveListDto): Promise<void> {
+  async getWebResponsiveList(@User() user: UserPayload, @Query() dto: GetWebResponsiveListDto): Promise<TestExecutorBase[]> {
     const webResponsiveList = await this.service.getWebResponsiveList(dto);
     return webResponsiveList;
   }
 
+  @Get('/web-responsive/snapshot')
+  @OrganizationPermission(ORGANIZATION_ROLE.MEMBER)
+  async getWebResponsiveSnapshots(@User() user: UserPayload, @Query() dto: GetWebResponsiveSnapshotsDto): Promise<TestExecutorWebResponsiveSnapshotMap> {
+    const snapshots = await this.service.getWebResponsiveSnapshots(dto);
+    return snapshots;
+  }
+
   @Post('/web-responsive/create')
   @OrganizationPermission(ORGANIZATION_ROLE.MEMBER)
-  async createWebResponsive(@User() user: UserPayload, @Body() dto: CreateWebResponsiveDto): Promise<void> {
-    await this.service.createWebResponsive(user.userId, dto);
+  async createWebResponsiveSnapshots(@User() user: UserPayload, @Body() dto: CreateWebResponsiveDto): Promise<void> {
+    await this.service.createWebResponsiveSnapshots(user.userId, dto);
   }
 }

@@ -8,11 +8,22 @@ import ConsoleLayout from 'src/components/layouts/ConsoleLayout';
 import OrganizationSideBar from 'src/components/layouts/OrganizationSideBar';
 import { getOrganizationPageServerSideProps, OrganizationServerSideProps } from 'src/ssr/organization';
 import LiveChat from 'src/components/external/livechat';
-import WebResponsiveHistoryList from 'src/components/web-responsive/list/WebResponsiveHistoryList';
+import WebResponsiveTable from 'src/components/web-responsive/list/WebResponsiveList';
 import TableListView from 'src/components/common/TableListView';
+import { getWebResponsiveListServerSide } from '../../../../src/api/test-executor';
+import { TestExecutorBase } from '@dogu-private/console';
+import { getCloudLicenseInServerSide } from '../../../../enterprise/api/license';
+import { getOrganizationInServerSide } from '../../../../src/api/organization';
+import { getUserInServerSide } from '../../../../src/api/registery';
 
-const ResponsiveWebTestingPage: NextPageWithLayout<OrganizationServerSideProps> = ({ user, organization }) => {
+interface WebResponsiveServerSideProps extends OrganizationServerSideProps {
+  testExecutors: TestExecutorBase[];
+}
+
+const WebResponsivePage: NextPageWithLayout<WebResponsiveServerSideProps> = ({ user, organization, testExecutors }) => {
   const { t } = useTranslation();
+
+  console.log(testExecutors);
 
   return (
     <>
@@ -20,7 +31,7 @@ const ResponsiveWebTestingPage: NextPageWithLayout<OrganizationServerSideProps> 
         <title>Web Responsive Checker - {organization.name} | Dogu</title>
       </Head>
       <Box>
-        <TableListView top={null} table={<WebResponsiveHistoryList />} />
+        <TableListView top={null} table={<WebResponsiveTable testExecutors={testExecutors} />} />
       </Box>
       <LiveChat
         user={{
@@ -33,7 +44,7 @@ const ResponsiveWebTestingPage: NextPageWithLayout<OrganizationServerSideProps> 
   );
 };
 
-ResponsiveWebTestingPage.getLayout = (page) => {
+WebResponsivePage.getLayout = (page) => {
   return (
     <ConsoleLayout {...page.props} sidebar={<OrganizationSideBar />} titleI18nKey="organization:webResponsivePageTitle">
       {page}
@@ -41,21 +52,41 @@ ResponsiveWebTestingPage.getLayout = (page) => {
   );
 };
 
-export const getServerSideProps: GetServerSideProps<OrganizationServerSideProps> = async (context) => {
-  return {
-    notFound: true,
-  };
-
+export const getServerSideProps: GetServerSideProps<WebResponsiveServerSideProps> = async (context) => {
   if (process.env.DOGU_RUN_TYPE === 'self-hosted') {
     return {
       notFound: true,
     };
   }
 
-  return await getOrganizationPageServerSideProps(context);
+  try {
+    const [organization, license, user] = await Promise.all([
+      getOrganizationInServerSide(context),
+      getCloudLicenseInServerSide(context),
+      getUserInServerSide(context),
+    ]);
+    const testExecutors = await getWebResponsiveListServerSide(context, {
+      organizationId: organization.organizationId,
+    });
+
+    if (testExecutors) {
+      return {
+        props: {
+          organization,
+          license,
+          user,
+          testExecutors,
+        },
+      };
+    }
+  } catch (error) {
+    return {
+      notFound: true,
+    };
+  }
 };
 
-export default ResponsiveWebTestingPage;
+export default WebResponsivePage;
 
 const Box = styled.div`
   display: flex;

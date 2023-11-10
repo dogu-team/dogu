@@ -1,8 +1,8 @@
-import { getDevicesByDisplay, Vendor } from '@dogu-private/device-data';
+import { getDevicesByDisplay } from '@dogu-private/device-data';
 
-import { TestExecutorWebResponsiveSnapshots } from '@dogu-private/console';
+import { TestExecutorWebResponsiveSnapshot, TestExecutorWebResponsiveSnapshotMap } from '@dogu-private/console';
 import { PageImageProps } from '../PageImage';
-import GroupNode from './GroupNode';
+import GroupNode, { GroupNodeDataProps } from './GroupNode';
 
 export interface Node {
   id: string;
@@ -15,64 +15,72 @@ export const nodeTypes = {
   groupNode: GroupNode,
 };
 
-export function createNodes(vendors: Vendor[], snapshots: TestExecutorWebResponsiveSnapshots): Node[] {
-  vendors.sort();
-
-  const POSITION_Y_GAP = 1920;
-  let currentPositionY = 0;
+export function createNodes(snapshotMap: TestExecutorWebResponsiveSnapshotMap): Node[] {
   const nodes: Node[] = [];
 
-  for (const vendor of vendors) {
-    const node: Node = {
-      id: vendor,
-      type: 'groupNode',
-      position: { x: 0, y: currentPositionY },
-      data: {
-        category: vendor,
-        pageImageItems: [],
-      },
+  const POSITION_X_GAP = 1920 * 5;
+  let currentPositionX = 0;
+
+  for (const url in snapshotMap) {
+    const snapshot = snapshotMap[url];
+    snapshot.vendors.sort();
+
+    const groupNodeProps: GroupNodeDataProps = {
+      url: url,
+      vendors: snapshot.vendors,
+      pageImagePropsMap: {},
     };
 
-    appendImagesToNode(node, snapshots);
+    const node: Node = {
+      id: url,
+      type: 'groupNode',
+      position: { x: currentPositionX, y: 0 },
+      data: groupNodeProps,
+    };
+
+    appendImagesToNode(node, snapshot);
     nodes.push(node);
 
-    currentPositionY += POSITION_Y_GAP;
+    currentPositionX += POSITION_X_GAP;
   }
 
   return nodes;
 }
 
-const appendImagesToNode = (node: Node, snapshots: TestExecutorWebResponsiveSnapshots) => {
-  const devicesByDisplay = getDevicesByDisplay([node.data.category]);
+const appendImagesToNode = (node: Node, snapshot: TestExecutorWebResponsiveSnapshot) => {
+  for (const vendor of snapshot.vendors) {
+    node.data.pageImagePropsMap[vendor] = [];
+    const pageImageProps = node.data.pageImagePropsMap[vendor];
 
-  console.log(snapshots);
+    const devicesByDisplay = getDevicesByDisplay([vendor]);
 
-  for (const display in devicesByDisplay) {
-    const [width, height] = display.split('x');
-    const devices = devicesByDisplay[display];
+    for (const display in devicesByDisplay) {
+      const [width, height] = display.split('x');
+      const devices = devicesByDisplay[display];
 
-    const pageImageItem = {
-      width: Number(width),
-      height: Number(height),
-      imageUrl: snapshots[display],
-      devices: devices,
-    };
+      const pageImagePropsItem = {
+        width: Number(width),
+        height: Number(height),
+        imageUrl: snapshot['images'][display],
+        devices: devices,
+      };
 
-    node.data.pageImageItems.push(pageImageItem);
+      pageImageProps.push(pageImagePropsItem);
+    }
+
+    pageImageProps.sort((a: PageImageProps, b: PageImageProps) => {
+      const aWidth = a.width;
+      const bWidth = b.width;
+
+      if (aWidth < bWidth) {
+        return -1;
+      }
+
+      if (aWidth > bWidth) {
+        return 1;
+      }
+
+      return 0;
+    });
   }
-
-  node.data.pageImageItems.sort((a: PageImageProps, b: PageImageProps) => {
-    const aWidth = a.width;
-    const bWidth = b.width;
-
-    if (aWidth < bWidth) {
-      return -1;
-    }
-
-    if (aWidth > bWidth) {
-      return 1;
-    }
-
-    return 0;
-  });
 };
