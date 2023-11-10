@@ -35,7 +35,7 @@ export function invalidateSubscriptionPlanInfo(planInfo: BillingSubscriptionPlan
   return planInfo;
 }
 
-export function updateSubscriptionPlanInfoState(planInfo: BillingSubscriptionPlanInfo, now: Date): BillingSubscriptionPlanInfo {
+export function applySubscriptionPlanInfoState(planInfo: BillingSubscriptionPlanInfo, now: Date): BillingSubscriptionPlanInfo {
   const { state } = planInfo;
   switch (state) {
     case 'unsubscribed': {
@@ -66,31 +66,65 @@ export interface PurchaseAmountInfo {
   purchaseAmount: number;
 }
 
-export function calculatePurchaseAmountAndUpdateCouponCount(planInfo: BillingSubscriptionPlanInfo): PurchaseAmountInfo {
-  const { originPrice, discountedAmount } = planInfo;
-  if (planInfo.couponRemainingApplyCount === null) {
-    const purchaseAmount = originPrice - discountedAmount;
+export function calculatePurchaseAmountAndApplyCouponCount(planInfo: BillingSubscriptionPlanInfo): PurchaseAmountInfo {
+  const { originPrice, period, billingCoupon } = planInfo;
+
+  const clearAndReturn = (): PurchaseAmountInfo => {
+    planInfo.couponApplied = false;
+    const purchaseAmount = originPrice;
     return {
       planInfo,
-      discountedAmount,
+      discountedAmount: 0,
       purchaseAmount,
     };
+  };
+
+  if (billingCoupon === undefined) {
+    return clearAndReturn();
   }
 
-  if (planInfo.couponRemainingApplyCount > 0) {
+  if (planInfo.couponRemainingApplyCount !== null && planInfo.couponRemainingApplyCount <= 0) {
+    return clearAndReturn();
+  }
+
+  const isApplyDiscount = planInfo.couponRemainingApplyCount === null || planInfo.couponRemainingApplyCount > 0;
+  let discountedAmount = 0;
+  if (isApplyDiscount) {
+    switch (period) {
+      case 'monthly': {
+        const discountPercent = billingCoupon.monthlyDiscountPercent;
+        if (discountPercent === null) {
+          return clearAndReturn();
+        }
+
+        discountedAmount = Math.floor((originPrice * discountPercent) / 100);
+        break;
+      }
+      case 'yearly': {
+        const discountPercent = billingCoupon.yearlyDiscountPercent;
+        if (discountPercent === null) {
+          return clearAndReturn();
+        }
+
+        discountedAmount = Math.floor((originPrice * discountPercent) / 100);
+        break;
+      }
+      default: {
+        assertUnreachable(period);
+      }
+    }
+  }
+
+  if (planInfo.couponRemainingApplyCount !== null && planInfo.couponRemainingApplyCount > 0) {
     planInfo.couponRemainingApplyCount -= 1;
-    const purchaseAmount = originPrice - discountedAmount;
-    return {
-      planInfo,
-      discountedAmount,
-      purchaseAmount,
-    };
   }
 
-  const purchaseAmount = originPrice;
+  planInfo.discountedAmount = discountedAmount;
+  planInfo.couponApplied = true;
+  const purchaseAmount = originPrice - discountedAmount;
   return {
     planInfo,
-    discountedAmount: 0,
+    discountedAmount,
     purchaseAmount,
   };
 }

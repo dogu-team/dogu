@@ -218,6 +218,7 @@ export interface UseCouponOptions {
 export interface UseCouponResult {
   billingCouponId: string | null;
   couponRemainingApplyCount: number | null;
+  couponApplied: boolean;
 }
 
 export async function useCoupon(context: RetrySerializeContext, options: UseCouponOptions): Promise<UseCouponResult> {
@@ -237,6 +238,13 @@ export async function useCoupon(context: RetrySerializeContext, options: UseCoup
         billingCouponId: coupon.billingCouponId,
       });
 
+      let couponApplied = false;
+      if (couponResult.couponRemainingApplyCount === null) {
+        couponApplied = true;
+      } else if (couponResult.couponRemainingApplyCount > 0) {
+        couponApplied = true;
+      }
+
       let couponRemainingApplyCount: number | null = null;
       if (couponResult.couponRemainingApplyCount !== null) {
         const count = couponResult.couponRemainingApplyCount - 1;
@@ -246,23 +254,34 @@ export async function useCoupon(context: RetrySerializeContext, options: UseCoup
       return {
         billingCouponId: coupon.billingCouponId,
         couponRemainingApplyCount,
+        couponApplied,
       };
     }
     case 'old': {
+      let couponApplied = false;
+      if (couponResult.couponRemainingApplyCount === null) {
+        couponApplied = true;
+      } else if (couponResult.couponRemainingApplyCount > 0) {
+        couponApplied = true;
+      }
+
       let couponRemainingApplyCount = couponResult.couponRemainingApplyCount;
-      if (couponResult.isReapply && couponResult.couponRemainingApplyCount !== null) {
+      if (couponResult.couponRemainingApplyCount !== null) {
         const count = couponResult.couponRemainingApplyCount - 1;
         couponRemainingApplyCount = count > 0 ? count : 0;
       }
+
       return {
         billingCouponId: coupon.billingCouponId,
         couponRemainingApplyCount,
+        couponApplied,
       };
     }
     case 'none':
       return {
         billingCouponId: null,
         couponRemainingApplyCount: null,
+        couponApplied: false,
       };
       break;
     default: {

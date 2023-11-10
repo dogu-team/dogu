@@ -19,7 +19,7 @@ export function createOrUpdateSubscriptionPlanInfo(context: RetrySerializeContex
   const { manager } = context;
   const { billingOrganizationId, subscriptionPlanInfos, planData, discountedAmount, billingSubscriptionPlanSourceId, useCouponResult } = options;
   const { currency, period, type, category, option, originPrice } = planData;
-  const { billingCouponId, couponRemainingApplyCount } = useCouponResult;
+  const { billingCouponId, couponRemainingApplyCount, couponApplied } = useCouponResult;
 
   const found = subscriptionPlanInfos.find((info) => info.type === type);
   if (found) {
@@ -31,6 +31,7 @@ export function createOrUpdateSubscriptionPlanInfo(context: RetrySerializeContex
     found.discountedAmount = discountedAmount;
     found.billingCouponId = billingCouponId;
     found.couponRemainingApplyCount = couponRemainingApplyCount;
+    found.couponApplied = couponApplied;
     found.billingSubscriptionPlanSourceId = billingSubscriptionPlanSourceId;
     found.state = 'subscribed';
     return {
@@ -51,6 +52,7 @@ export function createOrUpdateSubscriptionPlanInfo(context: RetrySerializeContex
     discountedAmount,
     billingCouponId,
     couponRemainingApplyCount,
+    couponApplied,
     billingSubscriptionPlanSourceId,
     state: 'subscribed',
   });

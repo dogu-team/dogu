@@ -12,7 +12,7 @@ export class BillingHistory implements BillingHistoryBase {
   @Column({ type: 'uuid' })
   billingOrganizationId!: string;
 
-  @Column({ type: 'jsonb' })
+  @Column({ type: 'jsonb', nullable: true })
   previewResponse!: Record<string, unknown> | null;
 
   @Column({ type: 'double precision', nullable: true })

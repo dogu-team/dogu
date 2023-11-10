@@ -124,7 +124,6 @@ export interface ResolveCouponResultSuccessOld {
   type: 'old';
   coupon: BillingCoupon;
   couponRemainingApplyCount: number | null;
-  isReapply: boolean;
 }
 
 export interface ResolveCouponResultSuccessNone {
@@ -186,7 +185,6 @@ export function resolveCoupon(options: ResolveCouponOptions): ResolveCouponResul
           coupon: oldCoupon,
           type: 'old',
           couponRemainingApplyCount: oldCoupon.yearlyApplyCount,
-          isReapply: true,
         };
       } else {
         return {
@@ -202,7 +200,6 @@ export function resolveCoupon(options: ResolveCouponOptions): ResolveCouponResul
           coupon: oldCoupon,
           type: 'old',
           couponRemainingApplyCount: oldCoupon.monthlyApplyCount,
-          isReapply: true,
         };
       } else {
         return {
@@ -212,13 +209,22 @@ export function resolveCoupon(options: ResolveCouponOptions): ResolveCouponResul
         };
       }
     } else if (billingSubscriptionPlanInfo.period === period) {
-      return {
-        ok: true,
-        coupon: oldCoupon,
-        type: 'old',
-        couponRemainingApplyCount: billingSubscriptionPlanInfo.couponRemainingApplyCount,
-        isReapply: false,
-      };
+      if (billingSubscriptionPlanInfo.couponApplied && billingSubscriptionPlanInfo.couponRemainingApplyCount !== null) {
+        // If user change the option with the coupon applied, user can use the existing coupon again.
+        return {
+          ok: true,
+          coupon: oldCoupon,
+          type: 'old',
+          couponRemainingApplyCount: billingSubscriptionPlanInfo.couponRemainingApplyCount + 1,
+        };
+      } else {
+        return {
+          ok: true,
+          coupon: oldCoupon,
+          type: 'old',
+          couponRemainingApplyCount: billingSubscriptionPlanInfo.couponRemainingApplyCount,
+        };
+      }
     } else {
       return {
         ok: false,

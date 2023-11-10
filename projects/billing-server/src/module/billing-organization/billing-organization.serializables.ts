@@ -1,6 +1,7 @@
-import { BillingOrganizationProp, BillingSubscriptionPlanProp, CreateBillingOrganizationDto, FindBillingOrganizationDto } from '@dogu-private/console';
+import { BillingOrganizationProp, BillingSubscriptionPlanInfoProp, CreateBillingOrganizationDto, FindBillingOrganizationDto } from '@dogu-private/console';
 import { ConflictException } from '@nestjs/common';
 import { v4 } from 'uuid';
+import { BillingCoupon } from '../../db/entity/billing-coupon.entity';
 import { BillingMethodNice } from '../../db/entity/billing-method-nice.entity';
 import { BillingOrganizationUsedBillingCoupon } from '../../db/entity/billing-organization-used-billing-coupon.entity';
 import { BillingOrganization } from '../../db/entity/billing-organization.entity';
@@ -14,7 +15,7 @@ export async function findBillingOrganizationWithSubscriptionPlans(context: Retr
     .getRepository(BillingOrganization)
     .createQueryBuilder(BillingOrganization.name)
     .leftJoinAndSelect(`${BillingOrganization.name}.${BillingOrganizationProp.billingSubscriptionPlanInfos}`, BillingSubscriptionPlanInfo.name)
-    .leftJoinAndSelect(`${BillingSubscriptionPlanInfo.name}.${BillingSubscriptionPlanProp.billingCoupon}`, BillingOrganizationUsedBillingCoupon.name)
+    .leftJoinAndSelect(`${BillingSubscriptionPlanInfo.name}.${BillingSubscriptionPlanInfoProp.billingCoupon}`, BillingCoupon.name)
     .where({ organizationId })
     .getOne();
 }
@@ -38,7 +39,7 @@ export async function findBillingOrganizationWithMethodAndSubscriptionPlans(cont
     .createQueryBuilder(BillingOrganization.name)
     .leftJoinAndSelect(`${BillingOrganization.name}.${BillingOrganizationProp.billingMethodNice}`, BillingMethodNice.name)
     .leftJoinAndSelect(`${BillingOrganization.name}.${BillingOrganizationProp.billingSubscriptionPlanInfos}`, BillingSubscriptionPlanInfo.name)
-    .leftJoinAndSelect(`${BillingSubscriptionPlanInfo.name}.${BillingSubscriptionPlanProp.billingCoupon}`, BillingOrganizationUsedBillingCoupon.name)
+    .leftJoinAndSelect(`${BillingSubscriptionPlanInfo.name}.${BillingSubscriptionPlanInfoProp.billingCoupon}`, BillingCoupon.name)
     .where({ organizationId })
     .getOne();
 }

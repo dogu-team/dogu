@@ -3,7 +3,7 @@ import {
   BillingCurrency,
   BillingPeriod,
   BillingSubscriptionPlanInfoBase,
-  BillingSubscriptionPlanProp,
+  BillingSubscriptionPlanInfoProp,
   BillingSubscriptionPlanState,
   BillingSubscriptionPlanType,
 } from '@dogu-private/console';
@@ -48,6 +48,9 @@ export class BillingSubscriptionPlanInfo implements BillingSubscriptionPlanInfoB
   @Column({ type: 'integer', nullable: true })
   couponRemainingApplyCount!: number | null;
 
+  @Column({ type: 'boolean', default: false })
+  couponApplied!: boolean;
+
   @Column({ type: 'double precision' })
   discountedAmount!: number;
 
@@ -82,14 +85,14 @@ export class BillingSubscriptionPlanInfo implements BillingSubscriptionPlanInfoB
   deletedAt!: Date | null;
 
   @ManyToOne(() => BillingOrganization, (billingOrganization) => billingOrganization.billingSubscriptionPlanInfos)
-  @JoinColumn({ name: BillingSubscriptionPlanProp.billingOrganizationId })
+  @JoinColumn({ name: BillingSubscriptionPlanInfoProp.billingOrganizationId })
   billingOrganization?: BillingOrganization;
 
   @ManyToOne(() => BillingCoupon)
-  @JoinColumn({ name: BillingSubscriptionPlanProp.billingCouponId })
+  @JoinColumn({ name: BillingSubscriptionPlanInfoProp.billingCouponId })
   billingCoupon?: BillingCoupon;
 
   @ManyToOne(() => BillingSubscriptionPlanSource)
-  @JoinColumn({ name: BillingSubscriptionPlanProp.billingSubscriptionPlanSourceId })
+  @JoinColumn({ name: BillingSubscriptionPlanInfoProp.billingSubscriptionPlanSourceId })
   billingSubscriptionPlanSource?: BillingSubscriptionPlanSource;
 }

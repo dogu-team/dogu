@@ -18,6 +18,7 @@ export interface BillingSubscriptionPlanInfoBase extends BillingSubscriptionPlan
    * @description null means unlimited
    */
   couponRemainingApplyCount: number | null;
+  couponApplied: boolean;
   discountedAmount: number;
   billingSubscriptionPlanSourceId: string | null;
   changeRequestedPeriod: BillingPeriod | null;
@@ -35,7 +36,7 @@ export interface BillingSubscriptionPlanInfoBase extends BillingSubscriptionPlan
   billingSubscriptionPlanSource?: BillingSubscriptionPlanSourceBase;
 }
 
-export const BillingSubscriptionPlanProp = propertiesOf<BillingSubscriptionPlanInfoBase>();
+export const BillingSubscriptionPlanInfoProp = propertiesOf<BillingSubscriptionPlanInfoBase>();
 
 export class UpdateBillingSubscriptionPlanInfoDto {
   @IsIn(BillingPeriod)

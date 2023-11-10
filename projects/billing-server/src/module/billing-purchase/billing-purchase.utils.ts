@@ -82,6 +82,7 @@ export function calculateRemainingPlan(options: CalculateRemainingPlanOptions): 
 
 export interface CalculateElapsedPlanOptions {
   planData: BillingSubscriptionPlanData;
+  remainingPurchaseAmount: number;
   discountedAmount: number;
   dateTimes: PurchaseSubscriptionDateTimes;
 }
@@ -89,10 +90,10 @@ export interface CalculateElapsedPlanOptions {
 export type CalculateElapsedPlanResult = BillingResult<ElapsedPlan>;
 
 export function calculateElapsedPlan(options: CalculateElapsedPlanOptions): CalculateElapsedPlanResult {
-  const { planData, discountedAmount, dateTimes } = options;
-  const { originPrice, period, category, type, option, currency } = planData;
+  const { planData, remainingPurchaseAmount, discountedAmount, dateTimes } = options;
+  const { period, category, type, option, currency } = planData;
   const { totalDays, elapsedDays } = dateTimes;
-  const purchasedAmount = originPrice - discountedAmount;
+  const purchasedAmount = remainingPurchaseAmount - discountedAmount;
   if (purchasedAmount < 0) {
     return {
       ok: false,
@@ -505,7 +506,7 @@ export function processPurchaseSubscriptionPreviewInternal(
   const { planData, planSource } = parseSubscriptionPlanDataResultValue;
   const dataDateTimes = getPurchaseSubscriptionDateTimes(calculatePurchaseSubscriptionDateTimesResult, planData.period);
 
-  const foundInfo = infos.find((plan) => plan.type === planData.type);
+  const foundInfo = infos.find((plan) => plan.type === planData.type && plan.state !== 'unsubscribed');
 
   const couponResult = resolveCoupon({
     billingSubscriptionPlanInfo: foundInfo,
@@ -526,9 +527,13 @@ export function processPurchaseSubscriptionPreviewInternal(
   });
 
   if (foundInfo === undefined) {
-    const totalPrice = Math.floor(planData.originPrice * firstCouponFactor);
+    const remainingPurchaseAmount = planData.originPrice;
+    const currentPurchaseAmount = remainingPurchaseAmount * firstCouponFactor;
+    const discountedAmount = remainingPurchaseAmount - currentPurchaseAmount;
+
+    const totalPrice = Math.floor(currentPurchaseAmount);
     const nextPurchaseTotalPrice = Math.floor(planData.originPrice * secondCouponFactor);
-    const discountedAmount = planData.originPrice - totalPrice;
+
     const couponPreviewResponse: CouponPreviewResponse | null = coupon
       ? {
           ...coupon,
@@ -538,6 +543,7 @@ export function processPurchaseSubscriptionPreviewInternal(
 
     const calculateElapsedPlanResult = calculateElapsedPlan({
       planData,
+      remainingPurchaseAmount,
       discountedAmount,
       dateTimes: dataDateTimes,
     });
@@ -555,7 +561,7 @@ export function processPurchaseSubscriptionPreviewInternal(
         previewResponse: {
           ok: true,
           resultCode: resultCode('ok'),
-          totalPrice,
+          totalPrice: currentPurchaseAmount,
           tax: 0,
           nextPurchaseTotalPrice,
           nextPurchasedAt: dataDateTimes.expiredAt.date,
@@ -624,6 +630,7 @@ export function processPurchaseSubscriptionPreviewInternal(
 
       const calculateElapsedPlanResult = calculateElapsedPlan({
         planData,
+        remainingPurchaseAmount,
         discountedAmount,
         dateTimes: dataDateTimes,
       });
