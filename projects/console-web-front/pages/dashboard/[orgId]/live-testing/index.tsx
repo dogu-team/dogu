@@ -30,6 +30,7 @@ import LiveTestingFeedbackModal, {
 import useModal from '../../../../src/hooks/useModal';
 import LiveTestingSessionCounter from '../../../../src/components/cloud/LiveTestingSessionCounter';
 import LiveTestingFreeTierTopBanner from '../../../../src/components/billing/LiveTestingFreeTierTopBanner';
+import usePromotionStore from '../../../../src/stores/promotion';
 
 const OrganizationLiveTestingPage: NextPageWithLayout<OrganizationServerSideProps> = ({
   user,
@@ -41,12 +42,27 @@ const OrganizationLiveTestingPage: NextPageWithLayout<OrganizationServerSideProp
     swrAuthFetcher,
     { refreshInterval: 10000 },
   );
+  const [updateIsPromotionOpenablePage, updateCurrentPlanType] = usePromotionStore((state) => [
+    state.updateIsPromotionOpenablePage,
+    state.updateCurrentPlanType,
+  ]);
   const [isOpen, openModal, closeModal, payload] = useModal<LiveSessionId>();
   const { t } = useTranslation();
 
   useRefresh(['onRefreshClicked', 'onCloudLiveTestingSessionCreated', 'onCloudLiveTestingSessionClosed'], () =>
     mutate(),
   );
+
+  useEffect(() => {
+    updateIsPromotionOpenablePage(true);
+    updateCurrentPlanType('live-testing');
+
+    return () => {
+      updateIsPromotionOpenablePage(false);
+      updateCurrentPlanType(null);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     const bc = new BroadcastChannel('dogu-live-testing');

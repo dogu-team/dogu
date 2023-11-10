@@ -16,6 +16,7 @@ import useLicenseStore from '../../stores/license';
 import { flexRowBaseStyle, flexRowCenteredStyle } from '../../styles/box';
 import { hasAdminPermission } from '../../utils/auth';
 import AccountMenu from '../AccountMenu';
+import PromotionBanner from '../billing/PromotionBanner';
 import ChangeLogButton from '../change-logs/ChangeLogButton';
 import DoguText from '../common/DoguText';
 import Header from './Header';
@@ -30,13 +31,6 @@ const ConsoleBasicLayout = ({ children, user, license: licenseInfo }: Props) => 
   const { me, isLoading, error, mutate } = useAuth(user);
   const [license, updateLicense] = useLicenseStore((state) => [state.license, state.updateLicense], shallow);
   const router = useRouter();
-  const [isBannerVisible, setIsBannerVisible] = useState(() => {
-    if (typeof window === 'undefined') {
-      return false;
-    }
-
-    return !localStorage.getItem('hideHeaderBanner');
-  });
 
   useEffect(() => {
     updateLicense(licenseInfo);
@@ -70,31 +64,8 @@ const ConsoleBasicLayout = ({ children, user, license: licenseInfo }: Props) => 
   return (
     <>
       <Box>
-        {isBannerVisible && (
-          <AlertBanner>
-            <Trans
-              i18nKey="common:betaBannerTitle"
-              components={{
-                dogu: <DoguText />,
-                link: (
-                  <a
-                    href="https://join.slack.com/t/dogu-community/shared_invite/zt-1zespy16o-TgYIureSBI6ma6o_nG3gVw"
-                    target="_blank"
-                  />
-                ),
-              }}
-            />
+        <PromotionBanner />
 
-            <CloseAlertButton
-              onClick={() => {
-                localStorage.setItem('hideHeaderBanner', 'true');
-                setIsBannerVisible(false);
-              }}
-            >
-              <CloseOutlined />
-            </CloseAlertButton>
-          </AlertBanner>
-        )}
         <Header
           links={license ? <LicenseTag licenseInfo={license} me={me} /> : null}
           right={
@@ -160,32 +131,6 @@ const StyledLink = styled(Link)`
 
   &:hover {
     background-color: #f5f5f5;
-  }
-`;
-
-const AlertBanner = styled.div`
-  padding: 0.25rem 2rem;
-  font-size: 0.85rem;
-  background-color: ${(props) => props.theme.main.colors.blue3};
-  line-height: 1.5;
-  text-align: center;
-  color: #fff;
-
-  a {
-    color: #76f17e;
-    text-decoration: underline;
-  }
-`;
-
-const CloseAlertButton = styled.button`
-  position: absolute;
-  padding: 0 0.25rem;
-  right: 2rem;
-  border-radius: 4px;
-  background-color: transparent;
-
-  &:hover {
-    background-color: ${(props) => props.theme.main.colors.blue5};
   }
 `;
 

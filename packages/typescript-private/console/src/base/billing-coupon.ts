@@ -1,5 +1,6 @@
 import { IsFilledString, propertiesOf } from '@dogu-tech/common';
 import { IsIn, IsNumber, IsOptional, IsUUID } from 'class-validator';
+import { BillingCategory } from '..';
 
 import { BillingPeriod, BillingSubscriptionPlanType } from './billing';
 import { BillingResultCode } from './billing-code';
@@ -76,6 +77,13 @@ export class GetAvailableBillingCouponsDto {
 
   @IsFilledString()
   type!: BillingCouponType;
+
+  @IsIn(BillingCategory)
+  category!: BillingCategory;
+
+  @IsOptional()
+  @IsIn(BillingSubscriptionPlanType)
+  subscriptionPlanType?: BillingSubscriptionPlanType;
 }
 
 export class CreateBillingCouponDto {
@@ -109,3 +117,8 @@ export class CreateBillingCouponDto {
   @IsNumber()
   remainingAvailableCount!: number;
 }
+
+export type BillingPromotionCouponResponse = Pick<
+  BillingCouponBase,
+  'code' | 'type' | 'monthlyApplyCount' | 'yearlyApplyCount' | 'monthlyDiscountPercent' | 'yearlyDiscountPercent' | 'subscriptionPlanType' | 'createdAt' | 'expiredAt'
+>;

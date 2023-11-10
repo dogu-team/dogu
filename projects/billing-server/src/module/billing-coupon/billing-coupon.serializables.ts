@@ -3,6 +3,7 @@ import {
   BillingOrganizationProp,
   BillingOrganizationUsedBillingCouponProp,
   BillingPeriod,
+  BillingPromotionCouponResponse,
   BillingResult,
   BillingSubscriptionPlanType,
   CreateBillingCouponDto,
@@ -12,13 +13,15 @@ import {
 } from '@dogu-private/console';
 import { assertUnreachable } from '@dogu-tech/common';
 import { ConflictException } from '@nestjs/common';
-import { Brackets, FindOptionsWhere, IsNull, Not } from 'typeorm';
+import { Brackets, FindOptionsWhere, IsNull, MoreThan, Not } from 'typeorm';
 import { v4 } from 'uuid';
+
 import { BillingCoupon } from '../../db/entity/billing-coupon.entity';
 import { BillingOrganizationUsedBillingCoupon } from '../../db/entity/billing-organization-used-billing-coupon.entity';
 import { BillingOrganization } from '../../db/entity/billing-organization.entity';
 import { RetrySerializeContext } from '../../db/utils';
 import { registerUsedCoupon } from '../billing-organization/billing-organization.serializables';
+import { findCloudLicense } from '../cloud-license/cloud-license.serializables';
 import { ResolveCouponResultSuccess } from './billing-coupon.utils';
 
 export interface ValidateCouponOptions extends ValidateBillingCouponDto {
@@ -128,10 +131,30 @@ export async function validateCoupon(context: RetrySerializeContext, options: Va
   };
 }
 
-export async function getAvailableCoupons(context: RetrySerializeContext, dto: GetAvailableBillingCouponsDto): Promise<BillingCoupon[]> {
+export async function getAvailableCoupons(context: RetrySerializeContext, dto: GetAvailableBillingCouponsDto): Promise<BillingPromotionCouponResponse[]> {
   const { manager } = context;
-  const { organizationId, type } = dto;
-  return await manager
+  const { organizationId, type, subscriptionPlanType, category } = dto;
+
+  if (type === 'promotion') {
+    if (category === 'cloud') {
+      const cloudLicense = await findCloudLicense(context, { organizationId });
+
+      if (!cloudLicense) {
+        return [];
+      }
+
+      if (subscriptionPlanType) {
+        const usingPlan = cloudLicense.billingOrganization.billingSubscriptionPlanInfos.find((info) => info.type === subscriptionPlanType && info.state !== 'unsubscribed');
+        if (usingPlan) {
+          return [];
+        }
+      }
+    } else {
+      return [];
+    }
+  }
+
+  const availableCoupons = await manager
     .getRepository(BillingCoupon)
     .createQueryBuilder(BillingCoupon.name)
     .where((qb) => {
@@ -149,7 +172,21 @@ export async function getAvailableCoupons(context: RetrySerializeContext, dto: G
       return `${BillingCoupon.name}.${BillingCouponProp.billingCouponId} NOT IN ${subQuery}`;
     })
     .andWhere({ type })
+    .andWhere(new Brackets((qb) => qb.where({ expiredAt: IsNull() }).orWhere({ expiredAt: MoreThan(new Date()) })))
+    .andWhere(subscriptionPlanType ? { subscriptionPlanType } : '1=1')
     .getMany();
+
+  return availableCoupons.map((coupon) => ({
+    code: coupon.code,
+    type: coupon.type,
+    monthlyDiscountPercent: coupon.monthlyDiscountPercent,
+    monthlyApplyCount: coupon.monthlyApplyCount,
+    yearlyDiscountPercent: coupon.yearlyDiscountPercent,
+    yearlyApplyCount: coupon.yearlyApplyCount,
+    subscriptionPlanType: coupon.subscriptionPlanType,
+    createdAt: coupon.createdAt,
+    expiredAt: coupon.expiredAt,
+  }));
 }
 
 export interface FindAvailablePromotionCouponOptions {
@@ -177,9 +214,11 @@ export async function findAvailablePromotionCoupon(context: RetrySerializeContex
         .getQuery();
       return `${BillingCoupon.name}.${BillingCouponProp.billingCouponId} NOT IN ${subQuery}`;
     })
-    .andWhere({ type: 'promotion', subscriptionPlanType, expiredAt: IsNull() })
+    .andWhere({ type: 'promotion', subscriptionPlanType })
+    .andWhere(new Brackets((qb) => qb.where({ expiredAt: IsNull() }).orWhere({ expiredAt: MoreThan(new Date()) })))
     .andWhere(new Brackets((qb) => qb.where({ remainingAvailableCount: IsNull() }).orWhere({ remainingAvailableCount: Not(0) })))
     .getOne();
+
   return coupon;
 }
 

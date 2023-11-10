@@ -1,4 +1,10 @@
-import { CreateBillingCouponDto, GetAvailableBillingCouponsDto, ValidateBillingCouponDto, ValidateBillingCouponResponse } from '@dogu-private/console';
+import {
+  BillingPromotionCouponResponse,
+  CreateBillingCouponDto,
+  GetAvailableBillingCouponsDto,
+  ValidateBillingCouponDto,
+  ValidateBillingCouponResponse,
+} from '@dogu-private/console';
 import { BadRequestException, Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { BillingCoupon } from '../../db/entity/billing-coupon.entity';
 import { BillingTokenPermission } from '../auth/guard/billing-token.guard';
@@ -21,7 +27,7 @@ export class BillingCouponController {
 
   @Get('/availables')
   @BillingTokenPermission()
-  async getAvailableBillingCoupons(@Query() dto: GetAvailableBillingCouponsDto): Promise<BillingCoupon[]> {
+  async getAvailableBillingCoupons(@Query() dto: GetAvailableBillingCouponsDto): Promise<BillingPromotionCouponResponse[]> {
     return await this.billingCouponService.getAvailableCoupons(dto);
   }
 

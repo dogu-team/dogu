@@ -1,10 +1,12 @@
 import {
+  BillingPromotionCouponResponse,
   BillingSubscriptionPlanInfoResponse,
   CallBillingApiResponse,
   CreatePurchaseSubscriptionDto,
   CreatePurchaseSubscriptionResponse,
   CreatePurchaseSubscriptionWithNewCardDto,
   CreatePurchaseSubscriptionWithNewCardResponse,
+  GetAvailableBillingCouponsDto,
   UpdateBillingMethodResponse,
   UpdateBillingSubscriptionPlanInfoStateDto,
   UpdateMethodNiceDto,
@@ -21,6 +23,16 @@ export const validateBillingCoupon = async (
   const query = buildQueryPraramsByObject(dto);
   const { data } = await api.get<CallBillingApiResponse<ValidateBillingCouponResponse>>(
     `/billing/coupons/validate?${query}`,
+  );
+  return data;
+};
+
+export const findAvailablePromotions = async (
+  dto: Omit<GetAvailableBillingCouponsDto, 'type'>,
+): Promise<CallBillingApiResponse<BillingPromotionCouponResponse[]>> => {
+  const query = buildQueryPraramsByObject(dto);
+  const { data } = await api.get<CallBillingApiResponse<BillingPromotionCouponResponse[]>>(
+    `/billing/promotions?${query}`,
   );
   return data;
 };

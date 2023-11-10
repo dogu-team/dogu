@@ -1,6 +1,7 @@
 import {
-  BillingCouponBase,
+  BillingCouponType,
   BillingHistoryBase,
+  BillingPromotionCouponResponse,
   CallBillingApiResponse,
   CreatePurchaseSubscriptionWithNewCardResponse,
   GetBillingSubscriptionPreviewResponse,
@@ -33,13 +34,17 @@ export class BillingController {
     });
   }
 
-  @Get('/coupons/availables')
-  @OrganizationPermission(ORGANIZATION_ROLE.ADMIN)
-  async findAvailableCoupon(@Query() query: object): Promise<CallBillingApiResponse<BillingCouponBase[]>> {
-    return await this.billingCaller.callBillingApi<BillingCouponBase[]>({
+  @Get('/promotions')
+  @OrganizationPermission(ORGANIZATION_ROLE.MEMBER)
+  async findPromotions(@Query() query: object): Promise<CallBillingApiResponse<BillingPromotionCouponResponse[]>> {
+    const promotionType: BillingCouponType = 'promotion';
+    return await this.billingCaller.callBillingApi<BillingPromotionCouponResponse[]>({
       method: 'GET',
       path: 'billing/coupons/availables',
-      query,
+      query: {
+        ...query,
+        type: promotionType,
+      },
     });
   }
 
