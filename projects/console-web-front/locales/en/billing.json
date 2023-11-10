@@ -171,6 +171,11 @@
 
   "updatePaymentMethodModalTitle": "Update payment details",
 
+  "promotionBannerMonthSingularMessage": "{{discount}}% discount for {{month}} month!",
+  "promotionBannerMonthPluralMessage": "{{discount}}% discount for {{month}} months!",
+  "promotionBannerButtonText": "Buy now",
+  "promotionBannerTimerLeftText": "{{time}} left",
+
   "licenseNotFoundErrorMessage": "Cannot find license information.",
   "planNotSelectedErrorMessage": "Please select a plan.",
   "samePlanSelectedErrorMessage": "Cannot select the same plan.",

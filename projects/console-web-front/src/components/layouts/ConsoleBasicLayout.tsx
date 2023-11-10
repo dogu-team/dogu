@@ -18,7 +18,6 @@ import { hasAdminPermission } from '../../utils/auth';
 import AccountMenu from '../AccountMenu';
 import PromotionBanner from '../billing/PromotionBanner';
 import ChangeLogButton from '../change-logs/ChangeLogButton';
-import DoguText from '../common/DoguText';
 import Header from './Header';
 
 interface Props {

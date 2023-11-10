@@ -13,6 +13,7 @@ import ProfileImage from 'src/components/ProfileImage';
 import { signOut } from 'src/api/registery';
 import useAuthStore from '../stores/auth';
 import useEventStore from '../stores/events';
+import usePromotionStore from '../stores/promotion';
 
 const AccountMenu = () => {
   const { cache } = useSWRConfig();
@@ -21,6 +22,7 @@ const AccountMenu = () => {
   const router = useRouter();
   const { t } = useTranslation();
   const imageRef = useRef<HTMLImageElement>(null);
+  const resetPromotion = usePromotionStore((state) => state.resetWithOrganizationId);
 
   useEffect(() => {
     useEventStore.subscribe(({ eventName, payload }) => {
@@ -114,6 +116,7 @@ const AccountMenu = () => {
                 const cookie = new Cookies();
                 cookie.remove(USER_ACCESS_TOKEN_COOKIE_NAME);
               }
+              resetPromotion('');
               sessionStorage.clear();
               router.push('/');
             }}
