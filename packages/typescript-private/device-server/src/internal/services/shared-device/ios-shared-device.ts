@@ -50,7 +50,7 @@ export class IosSharedDeviceService implements Zombieable {
     private iosWebDriverInfo: IosWebDriverInfo,
     public printable: FilledPrintable,
   ) {
-    this.timer = new CheckTimer(this.printable);
+    this.timer = new CheckTimer({ logger: printable });
     this.zombieWaiter = ZombieServiceInstance.addComponent(this);
   }
 

@@ -121,7 +121,7 @@ const DeviceControlToolbar: React.FC<Props> = () => {
 
       {isCloudDevice && (
         <ToolbarButton
-          workingPlatforms={[Platform.PLATFORM_ANDROID]}
+          workingPlatforms={[Platform.PLATFORM_ANDROID, Platform.PLATFORM_IOS]}
           icon={<MdGpsFixed />}
           text="Location"
           content={<DeviceLocationChanger />}

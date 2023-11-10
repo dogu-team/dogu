@@ -285,7 +285,7 @@ export class AndroidSharedDeviceService implements Zombieable {
     public printable: SerialPrintable,
   ) {
     this.zombieWaiter = ZombieServiceInstance.addComponent(this);
-    this.timer = new CheckTimer(this.printable);
+    this.timer = new CheckTimer({ logger: printable });
     this.adb = new AdbSerial(serial, printable);
   }
 

@@ -186,7 +186,7 @@ export class IosResetService {
     private iosWebDriverInfo: IosWebDriverInfo,
     private logger: SerialPrintable,
   ) {
-    this.timer = new CheckTimer(this.logger);
+    this.timer = new CheckTimer({ logger });
   }
 
   get isResetting(): boolean {
@@ -228,7 +228,7 @@ export class IosResetService {
       async (): Promise<void> => {
         const driver = appiumContext.driver();
         if (!driver) {
-          throw new Error(`IosResetService.clearSafariCache driver is null`);
+          throw new Error(`IosResetService.reset driver is null`);
         }
         const iosDriver = new IosWebDriver(driver, wda, iosWebDriverInfo, logger);
         const helper = new IosResetHelper(iosDriver);

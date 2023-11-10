@@ -293,8 +293,8 @@ export class AndroidChannel implements DeviceChannel {
 
   async reset(): Promise<void> {
     const { logger } = this;
-    const appiumContextImpl = await checkTime(`AndroidChannel.reset.waitUntilBuiltin`, this._appiumContext.waitUntilBuiltin(), logger);
-    await checkTime(`AndroidChannel.reset.reset`, this._reset.reset(this.info, this.appiumAdb, appiumContextImpl), logger);
+    const appiumContextImpl = await checkTime(`AndroidChannel.reset.waitUntilBuiltin`, this._appiumContext.waitUntilBuiltin(), { logger });
+    await checkTime(`AndroidChannel.reset.reset`, this._reset.reset(this.info, this.appiumAdb, appiumContextImpl), { logger });
   }
 
   async killOnPort(port: number): Promise<void> {
