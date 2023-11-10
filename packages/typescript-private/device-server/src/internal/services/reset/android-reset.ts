@@ -21,7 +21,7 @@ export class AndroidResetService {
     private serial: Serial,
     private logger: SerialPrintable,
   ) {
-    this.timer = new CheckTimer(this.logger);
+    this.timer = new CheckTimer({ logger });
     this.adb = new AdbSerial(serial, logger);
   }
 

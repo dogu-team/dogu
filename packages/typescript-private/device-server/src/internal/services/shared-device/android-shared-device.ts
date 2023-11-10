@@ -285,7 +285,7 @@ export class AndroidSharedDeviceService implements Zombieable {
     public printable: SerialPrintable,
   ) {
     this.zombieWaiter = ZombieServiceInstance.addComponent(this);
-    this.timer = new CheckTimer(this.printable);
+    this.timer = new CheckTimer({ logger: printable });
     this.adb = new AdbSerial(serial, printable);
   }
 
@@ -340,9 +340,7 @@ export class AndroidSharedDeviceService implements Zombieable {
       this.printable.error(`AndroidSharedDeviceService.revive.setBrightness failed.`, { serial, error: errorify(e) });
     });
 
-    await this.checkSetup(`AndroidSharedDeviceService.setup.joinWifi`, adb.joinWifi(env.DOGU_WIFI_SSID, env.DOGU_WIFI_PASSWORD)).catch((e) => {
-      this.printable.error(`AndroidSharedDeviceService.revive.joinWifi failed.`, { serial, error: errorify(e) });
-    });
+    await this.checkSetup(`AndroidSharedDeviceService.setup.joinWifi`, adb.joinWifi(env.DOGU_WIFI_SSID, env.DOGU_WIFI_PASSWORD));
 
     await this.checkSetup(`AndroidSharedDeviceService.setup.stayOnWhilePluggedIn`, adb.stayOnWhilePluggedIn()).catch((e) => {
       this.printable.error(`AndroidSharedDeviceService.revive.stayOnWhilePluggedIn failed.`, { serial, error: errorify(e) });
