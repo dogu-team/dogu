@@ -12,7 +12,7 @@ import {
 } from '@dogu-private/console';
 import { assertUnreachable } from '@dogu-tech/common';
 import { ConflictException } from '@nestjs/common';
-import { FindOptionsWhere, IsNull, Not } from 'typeorm';
+import { Brackets, FindOptionsWhere, IsNull, Not } from 'typeorm';
 import { v4 } from 'uuid';
 import { BillingCoupon } from '../../db/entity/billing-coupon.entity';
 import { BillingOrganizationUsedBillingCoupon } from '../../db/entity/billing-organization-used-billing-coupon.entity';
@@ -177,7 +177,8 @@ export async function findAvailablePromotionCoupon(context: RetrySerializeContex
         .getQuery();
       return `${BillingCoupon.name}.${BillingCouponProp.billingCouponId} NOT IN ${subQuery}`;
     })
-    .andWhere({ type: 'promotion', subscriptionPlanType })
+    .andWhere({ type: 'promotion', subscriptionPlanType, expiredAt: IsNull() })
+    .andWhere(new Brackets((qb) => qb.where({ remainingAvailableCount: IsNull() }).orWhere({ remainingAvailableCount: Not(0) })))
     .getOne();
   return coupon;
 }
