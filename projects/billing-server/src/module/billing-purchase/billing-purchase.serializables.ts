@@ -94,21 +94,26 @@ export async function processPurchaseSubscriptionPreview(
 
   let coupon = parseCouponResult.value;
   if (!coupon) {
-    const promotionCoupon = await findAvailablePromotionCoupon(context, {
-      billingOrganizationId,
-      subscriptionPlanType: parseSubscriptionPlanDataResult.value.planData.type,
-    });
-    if (promotionCoupon) {
-      const promotionResult = await parseCoupon({
-        context,
-        organizationId,
-        couponCode: promotionCoupon.code,
-        period: dto.period,
+    const subscribed = billingOrganization.billingSubscriptionPlanInfos?.find(
+      (plan) => plan.type === parseSubscriptionPlanDataResult.value.planData.type && plan.state !== 'unsubscribed',
+    );
+    if (!subscribed) {
+      const promotionCoupon = await findAvailablePromotionCoupon(context, {
+        billingOrganizationId,
         subscriptionPlanType: parseSubscriptionPlanDataResult.value.planData.type,
-        now,
       });
-      if (promotionResult.ok) {
-        coupon = promotionResult.value;
+      if (promotionCoupon) {
+        const promotionResult = await parseCoupon({
+          context,
+          organizationId,
+          couponCode: promotionCoupon.code,
+          period: dto.period,
+          subscriptionPlanType: parseSubscriptionPlanDataResult.value.planData.type,
+          now,
+        });
+        if (promotionResult.ok) {
+          coupon = promotionResult.value;
+        }
       }
     }
   }
