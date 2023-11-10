@@ -86,6 +86,10 @@ export class CreateBillingCouponDto {
   type!: BillingCouponType;
 
   @IsOptional()
+  @IsIn(BillingSubscriptionPlanType)
+  subscriptionPlanType?: BillingSubscriptionPlanType;
+
+  @IsOptional()
   @IsNumber()
   monthlyDiscountPercent?: number;
 

@@ -154,7 +154,7 @@ export async function getAvailableCoupons(context: RetrySerializeContext, dto: G
 
 export async function createBillingCoupon(context: RetrySerializeContext, dto: CreateBillingCouponDto): Promise<BillingCoupon> {
   const { manager } = context;
-  const { code, type, monthlyApplyCount, monthlyDiscountPercent, yearlyApplyCount, yearlyDiscountPercent, remainingAvailableCount } = dto;
+  const { code, type, monthlyApplyCount, monthlyDiscountPercent, yearlyApplyCount, yearlyDiscountPercent, remainingAvailableCount, subscriptionPlanType } = dto;
 
   const exsitCoupon = await manager.getRepository(BillingCoupon).findOne({ where: { code } });
 
@@ -171,6 +171,7 @@ export async function createBillingCoupon(context: RetrySerializeContext, dto: C
     yearlyDiscountPercent: yearlyDiscountPercent ?? null,
     yearlyApplyCount: yearlyApplyCount ?? null,
     remainingAvailableCount: remainingAvailableCount ?? null,
+    subscriptionPlanType: subscriptionPlanType ?? null,
     expiredAt: null,
   });
   return await manager.getRepository(BillingCoupon).save(coupon);

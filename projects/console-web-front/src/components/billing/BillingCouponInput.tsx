@@ -9,6 +9,7 @@ import { validateBillingCoupon } from '../../api/billing';
 import useRequest from '../../hooks/useRequest';
 import useBillingPlanPurchaseStore from '../../stores/billing-plan-purchase';
 import useLicenseStore from '../../stores/license';
+import { sendErrorNotification } from '../../utils/antd';
 
 interface Props {}
 
@@ -16,6 +17,7 @@ const BillingCouponInput: React.FC<Props> = () => {
   const [couponInputValue, setCouponInputValue] = useState<string | null>(null);
   const [couponError, setCouponError] = useState<string | null>(null);
   const [validateBillingCouponLoading, requestValidateBillingCoupon] = useRequest(validateBillingCoupon);
+  const selectedPlan = useBillingPlanPurchaseStore((state) => state.selectedPlan);
   const license = useLicenseStore((state) => state.license);
   const isAnnual = useBillingPlanPurchaseStore((state) => state.isAnnual);
   const [billingCoupon, updateBillingCoupon] = useBillingPlanPurchaseStore(
@@ -43,7 +45,7 @@ const BillingCouponInput: React.FC<Props> = () => {
   };
 
   const checkCoupon = async () => {
-    if (!license?.organizationId || !couponInputValue) {
+    if (!license?.organizationId || !couponInputValue || !selectedPlan) {
       return;
     }
 
@@ -52,6 +54,7 @@ const BillingCouponInput: React.FC<Props> = () => {
         organizationId: license.organizationId,
         code: couponInputValue,
         period: isAnnual ? 'yearly' : 'monthly',
+        subscriptionPlanType: selectedPlan.type,
       });
 
       if (rv.errorMessage || !rv.body?.ok) {
