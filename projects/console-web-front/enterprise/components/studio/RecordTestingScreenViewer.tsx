@@ -1,5 +1,5 @@
 import { ProjectBase } from '@dogu-private/console';
-import { RecordTestCaseId, RecordTestStepId } from '@dogu-private/types';
+import { Platform, RecordTestCaseId, RecordTestStepId } from '@dogu-private/types';
 import { Spin } from 'antd';
 import { useCallback, useState } from 'react';
 import styled from 'styled-components';
@@ -23,7 +23,7 @@ interface Props {
 }
 
 const RecordTestingScreenViewer = ({ project, caseId, stepId }: Props) => {
-  const { loading, deviceRTCCaller, videoRef } = useDeviceStreamingContext();
+  const { loading, deviceRTCCaller, device, videoRef } = useDeviceStreamingContext();
   const [requestLoading, request] = useRequest(createRecordTestStep);
   const [isRecording, setIsRecording] = useState(false);
   const [isDeviceKeyboardShown, setIsDeviceKeyboardShown] = useState(false);
@@ -38,7 +38,7 @@ const RecordTestingScreenViewer = ({ project, caseId, stepId }: Props) => {
     handleWheel,
     handleBlur,
     handleFocus,
-  } = useDeviceInput(deviceRTCCaller ?? undefined);
+  } = useDeviceInput(deviceRTCCaller ?? undefined, device?.platform ?? Platform.PLATFORM_UNSPECIFIED);
   const fireEvent = useEventStore((state) => state.fireEvent, shallow);
 
   const handleClick = useCallback(
