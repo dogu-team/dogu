@@ -1,6 +1,8 @@
 import styled from 'styled-components';
 import Trans from 'next-translate/Trans';
 import Link from 'next/link';
+import DoguText from '../common/DoguText';
+import { LANDING_PRIVACY_POLICY_URL, LANDING_TEMRS_OF_USE_URL } from '../../utils/url';
 
 const ServiceAgreement = () => {
   return (
@@ -8,7 +10,11 @@ const ServiceAgreement = () => {
       <StyledText>
         <Trans
           i18nKey="registery:signUpServiceAgreement"
-          components={[<StyledLink key="privacy" href="https://dogutech.io/notices/privacy" target="_blank" />]}
+          components={{
+            dogu: <DoguText />,
+            privacy: <StyledLink href={LANDING_PRIVACY_POLICY_URL} target="_blank" />,
+            term: <StyledLink href={LANDING_TEMRS_OF_USE_URL} target="_blank" />,
+          }}
         />
       </StyledText>
     </Box>

@@ -22,6 +22,7 @@ import { buildQueryPraramsByObject } from '../../utils/query';
 import useLicenseStore from '../../stores/license';
 import BillingPurchaseButton from './BillingPurchaseButton';
 import { checkShouldPurchase, getSubscriptionPlansFromLicense } from '../../utils/billing';
+import { LANDING_TEMRS_OF_USE_URL } from '../../utils/url';
 
 interface Props {}
 
@@ -349,7 +350,7 @@ const BillingCalculatedPreview: React.FC<Props> = ({}) => {
           <Trans
             i18nKey="billing:purchaseAgreementText"
             components={{
-              link: <a target="_blank" />,
+              link: <a target="_blank" href={LANDING_TEMRS_OF_USE_URL} />,
             }}
           />
         </Agreement>
