@@ -97,10 +97,11 @@ const BillingCalculatedPreview: React.FC<Props> = ({}) => {
 
   const shouldPurchase = checkShouldPurchase(license, { ...selectedPlan, period: data.body.subscriptionPlan.period });
   const planDescription = planDescriptionInfoMap[selectedPlan.type];
-  const isAnnualSubscription = data.body.subscriptionPlan.period === 'yearly';
+  const responseSubscriptionPlan = data.body.subscriptionPlan;
+  const isAnnualSubscription = responseSubscriptionPlan.period === 'yearly';
   const originPricePerMonth = isAnnualSubscription
-    ? data.body.subscriptionPlan.originPrice / 12
-    : data.body.subscriptionPlan.originPrice;
+    ? responseSubscriptionPlan.originPrice / 12
+    : responseSubscriptionPlan.originPrice;
 
   const ProductBadge = () => {
     if (getSubscriptionPlansFromLicense(license, [selectedPlan.type]).length === 0) {
@@ -122,27 +123,27 @@ const BillingCalculatedPreview: React.FC<Props> = ({}) => {
           <PlanTitle>{t(planDescription.titleI18nKey)}</PlanTitle>
           <div>
             <MonthlyPrice>
-              {getLocaleFormattedPrice('ko', data.body.subscriptionPlan.currency, originPricePerMonth)}
+              {getLocaleFormattedPrice('ko', responseSubscriptionPlan.currency, originPricePerMonth)}
             </MonthlyPrice>
             <PerMonthText> / {t('perMonthText')}</PerMonthText>
           </div>
           <OptionDescription>
             {isAnnualSubscription ? `${t('billedAnnuallyText')} | ` : ''}
-            {t(planDescription.getOptionLabelI18nKey(data.body.subscriptionPlan.option), {
-              option: data.body.subscriptionPlan.option,
+            {t(planDescription.getOptionLabelI18nKey(responseSubscriptionPlan.option), {
+              option: responseSubscriptionPlan.option,
             })}
           </OptionDescription>
 
           <div style={{ marginTop: '.25rem' }}>
             <CalculatedPriceContent>
               <span>
-                {getLocaleFormattedPrice('ko', data.body.subscriptionPlan.currency, originPricePerMonth)} *{' '}
+                {getLocaleFormattedPrice('ko', responseSubscriptionPlan.currency, originPricePerMonth)} *{' '}
                 {isAnnualSubscription ? t('monthCountPlural', { month: 12 }) : t('monthCountSingular', { month: 1 })}
               </span>
               <b>
                 {getLocaleFormattedPrice(
                   'ko',
-                  data.body.subscriptionPlan.currency,
+                  responseSubscriptionPlan.currency,
                   originPricePerMonth * (isAnnualSubscription ? 12 : 1),
                 )}
               </b>
@@ -157,7 +158,7 @@ const BillingCalculatedPreview: React.FC<Props> = ({}) => {
               <b className="minus">
                 {getLocaleFormattedPrice(
                   'ko',
-                  data.body.subscriptionPlan.currency,
+                  responseSubscriptionPlan.currency,
                   -(
                     data.body.elapsedPlans.reduce((amount, plan) => amount + plan.elapsedDiscountedAmount, 0) +
                     data.body.remainingPlans.reduce((amount, plan) => amount + plan.remainingDiscountedAmount, 0)
@@ -235,7 +236,7 @@ const BillingCalculatedPreview: React.FC<Props> = ({}) => {
             <CalculatedPriceContent>
               <span>{t(data.body.coupon.type === 'basic' ? 'couponLabelText' : 'promotionLabelText')}</span>
               <b className="minus">
-                {getLocaleFormattedPrice('ko', data.body.subscriptionPlan.currency, -data.body.coupon.discountedAmount)}
+                {getLocaleFormattedPrice('ko', responseSubscriptionPlan.currency, -data.body.coupon.discountedAmount)}
               </b>
             </CalculatedPriceContent>
             <OptionDescription style={{ fontSize: '.75rem' }}>
@@ -273,7 +274,7 @@ const BillingCalculatedPreview: React.FC<Props> = ({}) => {
             <CalculatedPriceContent>
               <TotalText>{t('totalLabelText')}</TotalText>
               <TotalText>
-                {getLocaleFormattedPrice('ko', data.body.subscriptionPlan.currency, data.body.totalPrice)}
+                {getLocaleFormattedPrice('ko', responseSubscriptionPlan.currency, data.body.totalPrice)}
               </TotalText>
             </CalculatedPriceContent>
           </div>
@@ -296,7 +297,7 @@ const BillingCalculatedPreview: React.FC<Props> = ({}) => {
                     <b style={{ fontWeight: '600' }}>
                       {getLocaleFormattedPrice(
                         'ko',
-                        data.body.subscriptionPlan.currency,
+                        responseSubscriptionPlan.currency,
                         data.body.nextPurchaseTotalPrice,
                       )}
                       /{isAnnual ? 'year' : 'month'}
@@ -327,7 +328,7 @@ const BillingCalculatedPreview: React.FC<Props> = ({}) => {
                     <span>
                       {getLocaleFormattedPrice(
                         'ko',
-                        data.body.subscriptionPlan.currency,
+                        responseSubscriptionPlan.currency,
                         data.body.nextPurchaseTotalPrice,
                       )}
                       /{isAnnual ? 'year' : 'month'}
@@ -358,13 +359,13 @@ const BillingCalculatedPreview: React.FC<Props> = ({}) => {
                     <b style={{ fontWeight: '600', color: '#52c41a' }}>
                       {getLocaleFormattedPrice(
                         router.locale,
-                        data.body.subscriptionPlan.currency,
-                        (BillingSubscriptionPlanMap[data.body.subscriptionPlan.type].optionMap[
-                          data.body.subscriptionPlan.option
-                        ][data.body.subscriptionPlan.currency].monthly -
-                          BillingSubscriptionPlanMap[data.body.subscriptionPlan.type].optionMap[
-                            data.body.subscriptionPlan.option
-                          ][data.body.subscriptionPlan.currency].yearly /
+                        responseSubscriptionPlan.currency,
+                        (BillingSubscriptionPlanMap[responseSubscriptionPlan.type].optionMap[
+                          responseSubscriptionPlan.option
+                        ][responseSubscriptionPlan.currency].monthly -
+                          BillingSubscriptionPlanMap[responseSubscriptionPlan.type].optionMap[
+                            responseSubscriptionPlan.option
+                          ][responseSubscriptionPlan.currency].yearly /
                             12) *
                           12,
                       )}
