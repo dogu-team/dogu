@@ -152,6 +152,36 @@ export async function getAvailableCoupons(context: RetrySerializeContext, dto: G
     .getMany();
 }
 
+export interface FindAvailablePromotionCouponOptions {
+  billingOrganizationId: string;
+  subscriptionPlanType: BillingSubscriptionPlanType;
+}
+
+export async function findAvailablePromotionCoupon(context: RetrySerializeContext, options: FindAvailablePromotionCouponOptions): Promise<BillingCoupon | null> {
+  const { manager } = context;
+  const { billingOrganizationId, subscriptionPlanType } = options;
+  const coupon = await manager
+    .getRepository(BillingCoupon)
+    .createQueryBuilder(BillingCoupon.name)
+    .where((qb) => {
+      const subQuery = qb
+        .subQuery()
+        .select(`${BillingOrganizationUsedBillingCoupon.name}.${BillingOrganizationUsedBillingCouponProp.billingCouponId}`)
+        .from(BillingOrganizationUsedBillingCoupon, BillingOrganizationUsedBillingCoupon.name)
+        .innerJoin(
+          BillingOrganization,
+          BillingOrganization.name,
+          `${BillingOrganization.name}.${BillingOrganizationProp.billingOrganizationId} = ${BillingOrganizationUsedBillingCoupon.name}.${BillingOrganizationUsedBillingCouponProp.billingOrganizationId}`,
+        )
+        .where(`${BillingOrganization.name}.${BillingOrganizationProp.billingOrganizationId} = :billingOrganizationId`, { billingOrganizationId })
+        .getQuery();
+      return `${BillingCoupon.name}.${BillingCouponProp.billingCouponId} NOT IN ${subQuery}`;
+    })
+    .andWhere({ type: 'promotion', subscriptionPlanType })
+    .getOne();
+  return coupon;
+}
+
 export async function createBillingCoupon(context: RetrySerializeContext, dto: CreateBillingCouponDto): Promise<BillingCoupon> {
   const { manager } = context;
   const { code, type, monthlyApplyCount, monthlyDiscountPercent, yearlyApplyCount, yearlyDiscountPercent, remainingAvailableCount, subscriptionPlanType } = dto;

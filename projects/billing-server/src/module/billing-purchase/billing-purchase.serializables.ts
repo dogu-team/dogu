@@ -20,7 +20,7 @@ import { BillingSubscriptionPlanSource } from '../../db/entity/billing-subscript
 import { CloudLicense } from '../../db/entity/cloud-license.entity';
 import { SelfHostedLicense } from '../../db/entity/self-hosted-license.entity';
 import { RetrySerializeContext } from '../../db/utils';
-import { parseCoupon, useCoupon } from '../billing-coupon/billing-coupon.serializables';
+import { findAvailablePromotionCoupon, parseCoupon, useCoupon } from '../billing-coupon/billing-coupon.serializables';
 import { ResolveCouponResultSuccess } from '../billing-coupon/billing-coupon.utils';
 import { BillingMethodNiceCaller } from '../billing-method/billing-method-nice.caller';
 import { createPurchase } from '../billing-method/billing-method-nice.serializables';
@@ -92,12 +92,33 @@ export async function processPurchaseSubscriptionPreview(
     };
   }
 
+  let coupon = parseCouponResult.value;
+  if (!coupon) {
+    const promotionCoupon = await findAvailablePromotionCoupon(context, {
+      billingOrganizationId,
+      subscriptionPlanType: parseSubscriptionPlanDataResult.value.planData.type,
+    });
+    if (promotionCoupon) {
+      const promotionResult = await parseCoupon({
+        context,
+        organizationId,
+        couponCode: promotionCoupon.code,
+        period: dto.period,
+        subscriptionPlanType: parseSubscriptionPlanDataResult.value.planData.type,
+        now,
+      });
+      if (promotionResult.ok) {
+        coupon = promotionResult.value;
+      }
+    }
+  }
+
   return processPurchaseSubscriptionPreviewInternal({
     billingOrganization,
     dto,
     resolvedCurrency,
     parseSubscriptionPlanDataResultValue: parseSubscriptionPlanDataResult.value,
-    coupon: parseCouponResult.value,
+    coupon,
     now,
   });
 }
