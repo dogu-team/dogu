@@ -561,7 +561,7 @@ export function processPurchaseSubscriptionPreviewInternal(
         previewResponse: {
           ok: true,
           resultCode: resultCode('ok'),
-          totalPrice: currentPurchaseAmount,
+          totalPrice,
           tax: 0,
           nextPurchaseTotalPrice,
           nextPurchasedAt: dataDateTimes.expiredAt.date,

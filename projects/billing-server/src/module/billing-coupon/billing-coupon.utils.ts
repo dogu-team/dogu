@@ -14,6 +14,8 @@ export interface CalculateCouponFactorResult {
 }
 
 export function calculateCouponFactor(options: CalculateCouponFactorOptions): CalculateCouponFactorResult {
+  const toFixed = (value: number): number => parseFloat(value.toFixed(2));
+
   const { couponResult, period } = options;
   if (couponResult.type === 'none') {
     return {
@@ -50,21 +52,21 @@ export function calculateCouponFactor(options: CalculateCouponFactorOptions): Ca
 
       if (couponRemainingApplyCount === null) {
         return {
-          firstCouponFactor: 1 - monthlyDiscountPercent / 100,
-          secondCouponFactor: 1 - monthlyDiscountPercent / 100,
+          firstCouponFactor: toFixed(1 - monthlyDiscountPercent / 100),
+          secondCouponFactor: toFixed(1 - monthlyDiscountPercent / 100),
         };
       }
 
       if (couponRemainingApplyCount <= 1) {
         return {
-          firstCouponFactor: 1 - monthlyDiscountPercent / 100,
+          firstCouponFactor: toFixed(1 - monthlyDiscountPercent / 100),
           secondCouponFactor: 1,
         };
       }
 
       return {
-        firstCouponFactor: 1 - monthlyDiscountPercent / 100,
-        secondCouponFactor: 1 - monthlyDiscountPercent / 100,
+        firstCouponFactor: toFixed(1 - monthlyDiscountPercent / 100),
+        secondCouponFactor: toFixed(1 - monthlyDiscountPercent / 100),
       };
     }
     case 'yearly': {
@@ -78,21 +80,21 @@ export function calculateCouponFactor(options: CalculateCouponFactorOptions): Ca
 
       if (couponRemainingApplyCount === null) {
         return {
-          firstCouponFactor: 1 - yearlyDiscountPercent / 100,
-          secondCouponFactor: 1 - yearlyDiscountPercent / 100,
+          firstCouponFactor: toFixed(1 - yearlyDiscountPercent / 100),
+          secondCouponFactor: toFixed(1 - yearlyDiscountPercent / 100),
         };
       }
 
       if (couponRemainingApplyCount <= 1) {
         return {
-          firstCouponFactor: 1 - yearlyDiscountPercent / 100,
+          firstCouponFactor: toFixed(1 - yearlyDiscountPercent / 100),
           secondCouponFactor: 1,
         };
       }
 
       return {
-        firstCouponFactor: 1 - yearlyDiscountPercent / 100,
-        secondCouponFactor: 1 - yearlyDiscountPercent / 100,
+        firstCouponFactor: toFixed(1 - yearlyDiscountPercent / 100),
+        secondCouponFactor: toFixed(1 - yearlyDiscountPercent / 100),
       };
     }
     default: {
