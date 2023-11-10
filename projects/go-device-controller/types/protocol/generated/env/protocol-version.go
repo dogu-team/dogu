@@ -1,5 +1,5 @@
 package env
 
 const (
-	DOGU_PROTOCOL_VERSION string = "6a414ba95973eb99a68d54ae2406b1fc"
+	DOGU_PROTOCOL_VERSION string = "c570716e80db8e84acdc4f916222f958"
 )
