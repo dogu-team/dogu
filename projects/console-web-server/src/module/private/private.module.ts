@@ -8,6 +8,7 @@ import { RoutineStep } from '../../db/entity/step.entity';
 import { DeviceMessageModule } from '../device-message/device-message.module';
 import { EventModule } from '../event/event.module';
 import { InfluxDbModule } from '../influxdb/influxdb.module';
+import { LiveSessionModule } from '../live-session/live-session.module';
 import { DeviceModule } from '../organization/device/device.module';
 import { PipelineModule } from '../routine/pipeline/pipeline.module';
 import { PrivateDeviceJobController } from './private-device-job-controller';
@@ -17,7 +18,15 @@ import { PrivateHostController } from './private-host.controller';
 import { PrivateStepController } from './private-step-controller';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Organization, Device, Host, RoutineStep, RoutineDeviceJob]), DeviceModule, DeviceMessageModule, InfluxDbModule, PipelineModule, EventModule],
+  imports: [
+    TypeOrmModule.forFeature([Organization, Device, Host, RoutineStep, RoutineDeviceJob]),
+    DeviceModule,
+    DeviceMessageModule,
+    InfluxDbModule,
+    PipelineModule,
+    EventModule,
+    LiveSessionModule,
+  ],
   controllers: [PrivateHostTokenController, PrivateHostController, PrivateDeviceController, PrivateDeviceJobController, PrivateStepController],
 })
 export class PrivateModule {}
