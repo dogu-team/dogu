@@ -9,16 +9,18 @@ import {
   WriteDeviceRunTimeInfosRequestBody,
 } from '@dogu-private/console-host-agent';
 import { FindDeviceBySerialQuery, UpdateDeviceRequestBody } from '@dogu-private/console-host-agent/src/http-specs/private-device';
-import { DeviceId, DEVICE_DISPLAY_ERROR_MAX_LENGTH, findDeviceModelNameByModelId, OrganizationId } from '@dogu-private/types';
+import { DeviceId, DEVICE_DISPLAY_ERROR_MAX_LENGTH, findDeviceModelNameByModelId, LiveSessionState, OrganizationId } from '@dogu-private/types';
 import { Instance, transformAndValidate } from '@dogu-tech/common';
 import { Body, ConflictException, Controller, Get, NotFoundException, Param, Patch, Post, Query } from '@nestjs/common';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, Not, Repository } from 'typeorm';
 import { Device, DEVICE_DEFAULT_MAX_PARALLEL_JOBS_IF_IS_HOST } from '../../db/entity/device.entity';
+import { LiveSession } from '../../db/entity/live-session.entity';
 import { HOST_ACTION_TYPE } from '../auth/auth.types';
 import { HostPermission } from '../auth/decorators';
 import { DeviceMessageQueue } from '../device-message/device-message.queue';
 import { InfluxDbDeviceService } from '../influxdb/influxdb-device.service';
+import { LiveSessionService } from '../live-session/live-session.service';
 import { DoguLogger } from '../logger/logger';
 import { DeviceStatusService } from '../organization/device/device-status.service';
 import { IsDeviceExist } from '../organization/device/device.decorators';
@@ -134,6 +136,9 @@ export class PrivateDeviceController {
       );
       await DeviceStatusService.updateDeviceBrowserInstallations(manager, deviceId, browserInstallations);
       await DeviceStatusService.updateDeviceRunners(manager, deviceId);
+      const liveSessions = await manager.getRepository(LiveSession).find({ where: { deviceId, state: Not(LiveSessionState.CLOSED) } });
+      const toCloseLiveSessions = liveSessions.map((liveSession) => LiveSessionService.updateLiveSessionToClosed(liveSession));
+      await manager.getRepository(LiveSession).save(toCloseLiveSessions);
     });
   }
 

@@ -1,5 +1,6 @@
 import { CloudLicenseBase, DevicePropCamel, DeviceUsageState, LiveSessionCreateRequestBodyDto, LiveSessionFindQueryDto, OrganizationPropCamel } from '@dogu-private/console';
 import { DeviceConnectionState, LiveSessionActiveStates, LiveSessionId, LiveSessionState, OrganizationId } from '@dogu-private/types';
+import { errorify } from '@dogu-tech/common';
 import { HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource, EntityManager, In } from 'typeorm';
@@ -16,6 +17,46 @@ import { RedisService } from '../redis/redis.service';
 
 @Injectable()
 export class LiveSessionService {
+  static updateLiveSessionToClosed(liveSession: LiveSession): LiveSession {
+    liveSession.state = LiveSessionState.CLOSED;
+    liveSession.closedAt = new Date();
+    return liveSession;
+  }
+
+  static async closeInTransaction(logger: DoguLogger, deviceCommandService: DeviceCommandService, manager: EntityManager, liveSessions: LiveSession[]): Promise<LiveSession[]> {
+    const toCloseds = liveSessions.map((liveSession) => LiveSessionService.updateLiveSessionToClosed(liveSession));
+    const closeds = await manager.getRepository(LiveSession).save(toCloseds);
+
+    logger.debug('LiveSessionService.close.liveSessions', {
+      liveSessions,
+    });
+
+    const deviceIds = liveSessions.map((liveSession) => liveSession.deviceId);
+    const devices = await manager.getRepository(Device).find({
+      where: {
+        deviceId: In(deviceIds),
+      },
+    });
+    devices.forEach((device) => {
+      device.usageState = DeviceUsageState.PREPARING;
+    });
+    await manager.getRepository(Device).save(devices);
+    logger.debug('LiveSessionService.close.devices', {
+      devices,
+    });
+
+    devices.forEach((device) => {
+      deviceCommandService.reset(device.organizationId, device.deviceId, device.serial).catch((error) => {
+        logger.error('LiveSessionService.close.reset error', {
+          error: errorify(error),
+          device,
+        });
+      });
+    });
+
+    return closeds;
+  }
+
   constructor(
     @InjectDataSource()
     private readonly dataSource: DataSource,
@@ -128,42 +169,6 @@ export class LiveSessionService {
   /**
    * @description do NOT access this.dataSource in this method
    */
-  async closeInTransaction(manager: EntityManager, liveSessions: LiveSession[]): Promise<LiveSession[]> {
-    liveSessions.forEach((liveSession) => {
-      liveSession.state = LiveSessionState.CLOSED;
-      liveSession.closedAt = new Date();
-    });
-    const closeds = await manager.getRepository(LiveSession).save(liveSessions);
-
-    this.logger.debug('LiveSessionService.close.liveSessions', {
-      liveSessions,
-    });
-
-    const deviceIds = liveSessions.map((liveSession) => liveSession.deviceId);
-    const devices = await manager.getRepository(Device).find({
-      where: {
-        deviceId: In(deviceIds),
-      },
-    });
-    devices.forEach((device) => {
-      device.usageState = DeviceUsageState.PREPARING;
-    });
-    await manager.getRepository(Device).save(devices);
-    this.logger.debug('LiveSessionService.close.devices', {
-      devices,
-    });
-
-    devices.forEach((device) => {
-      this.deviceCommandService.reset(device.organizationId, device.deviceId, device.serial).catch((error) => {
-        this.logger.error('LiveSessionService.close.reset error', {
-          error,
-          device,
-        });
-      });
-    });
-
-    return closeds;
-  }
 
   async closeByLiveSessionId(liveSessionId: LiveSessionId): Promise<LiveSession> {
     const liveSession = await this.dataSource.getRepository(LiveSession).findOne({ where: { liveSessionId } });
@@ -177,7 +182,7 @@ export class LiveSessionService {
     }
 
     const closedSession = await this.dataSource.transaction(async (manager) => {
-      const rv = await this.closeInTransaction(manager, [liveSession]);
+      const rv = await LiveSessionService.closeInTransaction(this.logger, this.deviceCommandService, manager, [liveSession]);
       return rv[0];
     });
 
@@ -192,7 +197,7 @@ export class LiveSessionService {
     });
     await this.updateCloudLicenseId(liveSessionId, cloudLicenseId);
     await this.updateCloudLicenseLiveTestingHeartbeat(cloudLicenseId);
-    await this.cloudLicenseService.startUpdateLiveTesting(cloudLicenseId, {
+    this.cloudLicenseService.startUpdateLiveTesting(cloudLicenseId, {
       onOpen: async (close) => {
         await this.subscribeCloseEvent(liveSessionId, () => {
           close();
