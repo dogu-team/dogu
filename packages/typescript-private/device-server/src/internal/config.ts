@@ -8,7 +8,7 @@ export const config = {
     port: 50055,
   },
   externalIosDeviceAgent: {
-    use: true,
+    use: false,
     webDriverPort: 10000,
     grpcPort: 10001,
   },
