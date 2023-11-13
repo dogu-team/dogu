@@ -1,6 +1,7 @@
 import { DeviceBase, OrganizationBase, UserBase } from '@dogu-private/console';
 import { useRouter } from 'next/router';
 import styled from 'styled-components';
+import useEventStore from '../../stores/events';
 
 import { flexRowCenteredStyle } from '../../styles/box';
 import ErrorBox from '../common/boxes/ErrorBox';
@@ -28,13 +29,13 @@ const DeviceStreamingLayout = ({
 }: DeviceStreamingLayoutProps) => {
   const router = useRouter();
 
-  if (device && device.displayError !== null) {
-    return (
-      <Box style={{ justifyContent: 'center' }}>
-        <ErrorBox title="Something went wrong" desc={`Device Error: ${device.displayError}`} />
-      </Box>
-    );
-  }
+  // if (device && device.displayError !== null) {
+  //   return (
+  //     <Box style={{ justifyContent: 'center' }}>
+  //       <ErrorBox title="Something went wrong" desc={`Device Error: ${device.displayError}`} />
+  //     </Box>
+  //   );
+  // }
 
   return (
     <DeviceStreaming device={device} isCloudDevice={isCloudDevice} isAdmin={organization.shareable}>

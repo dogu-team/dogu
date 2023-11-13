@@ -6,7 +6,7 @@ import { useRouter } from 'next/router';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { checkDeviceStateAsync } from 'src/api/device';
-import useStreamingOptionStore from 'src/stores/streaming-option';
+// import useStreamingOptionStore from 'src/stores/streaming-option';
 import { StreamingError, StreamingErrorType } from 'src/types/streaming';
 import { config } from '../../../config';
 import useEventStore from '../../stores/events';
@@ -24,15 +24,18 @@ type Option = {
 const useRTCConnection = ({ device, pid, isCloudDevice }: Option, sendThrottleMs: number) => {
   const router = useRouter();
   const organizationId = router.query.orgId as OrganizationId;
-  const { fps, resolution } = useStreamingOptionStore((state) => state.option);
+  // const { fps, resolution } = useStreamingOptionStore((state) => state.option);
   const timer = useRef<NodeJS.Timeout | null>(null);
   const peerConnectionRef = useRef<RTCPeerConnection | undefined>();
   const deviceRTCCallerRef = useRef<DeviceRTCCaller | undefined>();
   const [haConnectionError, setHAConnectionError] = useState<StreamingError>();
   const [loading, setLoading] = useState(true);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const fireEvent = useEventStore((state) => state.fireEvent);
 
   const cleanUp = useCallback(() => {
+    console.log('cleanUp');
+    fireEvent('onStreamingClosed', device?.deviceId);
     console.debug('deviceRTCCaller', deviceRTCCallerRef?.current);
     deviceRTCCallerRef.current?.channel?.close();
     console.debug(`close connection data ${device?.deviceId}`);
@@ -46,14 +49,21 @@ const useRTCConnection = ({ device, pid, isCloudDevice }: Option, sendThrottleMs
     if (peerConnectionRef.current) {
       const unsub = useEventStore.subscribe(({ eventName }) => {
         if (eventName === 'onCloudHeartbeatSocketClosed') {
-          cleanUp();
           setHAConnectionError(new StreamingError(StreamingErrorType.CONNECTION_REFUSED, 'Session has been expired'));
+          cleanUp();
         }
       });
 
       return unsub;
     }
-  }, [peerConnectionRef.current, cleanUp]);
+  }, [cleanUp]);
+
+  useEffect(() => {
+    if (device?.displayError) {
+      setHAConnectionError(new StreamingError(StreamingErrorType.DEVICE_ERROR, device.displayError));
+      cleanUp();
+    }
+  }, [device?.displayError, cleanUp]);
 
   useEffect(() => {
     const checkDeviceState = async () => {
@@ -67,6 +77,7 @@ const useRTCConnection = ({ device, pid, isCloudDevice }: Option, sendThrottleMs
         if (e instanceof AxiosError) {
           console.debug('checkDeviceState error', e.response?.data);
           setHAConnectionError(new StreamingError(StreamingErrorType.HA_DISCONNECT, e.response?.data));
+          cleanUp();
         }
       }
     };
@@ -77,10 +88,10 @@ const useRTCConnection = ({ device, pid, isCloudDevice }: Option, sendThrottleMs
     return () => {
       clearInterval(timer.current ?? undefined);
     };
-  }, [device, organizationId]);
+  }, [device, organizationId, cleanUp]);
 
   useEffect(() => {
-    if (haConnectionError && timer) {
+    if (haConnectionError && timer.current) {
       clearInterval(timer.current ?? undefined);
     }
   }, [haConnectionError, timer]);
@@ -204,6 +215,7 @@ const useRTCConnection = ({ device, pid, isCloudDevice }: Option, sendThrottleMs
             return;
           }
           setHAConnectionError(error);
+          cleanUp();
         },
       );
 
@@ -223,8 +235,9 @@ const useRTCConnection = ({ device, pid, isCloudDevice }: Option, sendThrottleMs
       peerConnectionRef.current = undefined;
       setHAConnectionError(undefined);
       setLoading(true);
+      cleanUp();
     };
-  }, [device?.deviceId, pid]);
+  }, [device?.deviceId, pid, cleanUp, isCloudDevice, router.query.sessionId, sendThrottleMs]);
 
   useEffect(() => {
     return () => {

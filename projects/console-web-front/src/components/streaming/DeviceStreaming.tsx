@@ -57,6 +57,17 @@ const DeviceStreaming = ({ device, children, pid, isCloudDevice, isAdmin }: Prop
       );
     }
 
+    if (error.type === StreamingErrorType.DEVICE_ERROR) {
+      return (
+        <div style={{ flex: 1 }}>
+          <ErrorBox
+            title={t('device-streaming:deviceStreamingStreamingErrorTitle')}
+            desc={`Device has an error: ${error.reason}`}
+          />
+        </div>
+      );
+    }
+
     return (
       <div style={{ flex: 1 }}>
         <ErrorBox
