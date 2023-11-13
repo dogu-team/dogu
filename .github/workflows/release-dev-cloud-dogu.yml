@@ -93,6 +93,7 @@ jobs:
           echo "NEXT_PUBLIC_DOGU_GA_ID=${{ secrets.DEV_DOGU_GA_ID }}" >> ./docker-compose.env
           echo "NEXT_PUBLIC_SENTRY_DSN=${{ secrets.DOGU_SENTRY_DSN }}" >> ./docker-compose.env
           echo "DOGU_SLACK_BOT_TOKEN=${{ secrets.SLACK_BOT_TOKEN }}" >> ./docker-compose.env
+          echo "NEXT_PUBLIC_GOOGLE_MAP_API_KEY=${{ secrets.GOOGLE_MAP_API_KEY }}" >> ./docker-compose.env
 
           # console - back
           echo "DOGU_RUN_TYPE=development" >> ./docker-compose.env
