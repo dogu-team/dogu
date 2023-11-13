@@ -34,6 +34,7 @@
     "/dashboard/[orgId]/live-testing/[sessionId]/[deviceId]": ["organization", "device-streaming"],
     "/dashboard/[orgId]/web-responsive": ["organization", "web-responsive"],
     "/dashboard/[orgId]/web-responsive/creator": ["organization"],
+    "/dashboard/[orgId]/web-responsive/[executorId]/viewer": ["organization"],
 
     "/dashboard/[orgId]/projects/[pid]": ["project"],
     "/dashboard/[orgId]/projects/[pid]/members": ["project", "project-member"],

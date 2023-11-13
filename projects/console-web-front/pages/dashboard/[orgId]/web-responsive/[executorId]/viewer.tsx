@@ -3,24 +3,24 @@ import styled from 'styled-components';
 import Head from 'next/head';
 import { GetServerSideProps } from 'next';
 import useTranslation from 'next-translate/useTranslation';
+import { TestExecutorId } from '@dogu-private/types';
+import { TestExecutorWebResponsiveSnapshotMap } from '@dogu-private/console';
 
 import { NextPageWithLayout } from 'pages/_app';
 import ConsoleLayout from 'src/components/layouts/ConsoleLayout';
 import OrganizationSideBar from 'src/components/layouts/OrganizationSideBar';
-import { getOrganizationPageServerSideProps, OrganizationServerSideProps } from 'src/ssr/organization';
 import Canvas from '../../../../../src/components/web-responsive/canvas/Canvas';
+import { OrganizationServerSideProps } from 'src/ssr/organization';
 import { getWebResponsiveSnapshotsServerSide } from '../../../../../src/api/test-executor';
 import { getOrganizationInServerSide } from '../../../../../src/api/organization';
-import { TestExecutorId } from '@dogu-private/types';
-import { OrganizationBase, TestExecutorWebResponsiveSnapshots } from '@dogu-private/console';
 import { getUserInServerSide } from '../../../../../src/api/registery';
 import { getCloudLicenseInServerSide } from '../../../../../enterprise/api/license';
 
-interface ResponsiveWebVeiwerPageProps extends OrganizationServerSideProps {
-  snapshots: TestExecutorWebResponsiveSnapshots;
+interface ResponsiveWebVeiwerServerSideProps extends OrganizationServerSideProps {
+  snapshots: TestExecutorWebResponsiveSnapshotMap;
 }
 
-const ResponsiveWebVeiwerPage: NextPageWithLayout<ResponsiveWebVeiwerPageProps> = ({
+const ResponsiveWebVeiwerPage: NextPageWithLayout<ResponsiveWebVeiwerServerSideProps> = ({
   user,
   organization,
   snapshots,
@@ -33,7 +33,7 @@ const ResponsiveWebVeiwerPage: NextPageWithLayout<ResponsiveWebVeiwerPageProps> 
         <title>Web Responsive - {organization.name} | Dogu</title>
       </Head>
       <Box>
-        <Canvas vendors={['Samsung']} snapshots={snapshots} />
+        <Canvas snapshots={snapshots} />
       </Box>
     </>
   );
@@ -47,7 +47,7 @@ ResponsiveWebVeiwerPage.getLayout = (page) => {
   );
 };
 
-export const getServerSideProps: GetServerSideProps<ResponsiveWebVeiwerPageProps> = async (context) => {
+export const getServerSideProps: GetServerSideProps<ResponsiveWebVeiwerServerSideProps> = async (context) => {
   if (process.env.DOGU_RUN_TYPE === 'self-hosted') {
     return {
       notFound: true,
@@ -67,7 +67,10 @@ export const getServerSideProps: GetServerSideProps<ResponsiveWebVeiwerPageProps
       getCloudLicenseInServerSide(context),
       getUserInServerSide(context),
     ]);
-    const snapshots = await getWebResponsiveSnapshotsServerSide(context, organization.organizationId, webResponsiveId);
+    const snapshots = await getWebResponsiveSnapshotsServerSide(context, {
+      organizationId: organization.organizationId,
+      testExecutorId: webResponsiveId,
+    });
 
     if (snapshots) {
       return {

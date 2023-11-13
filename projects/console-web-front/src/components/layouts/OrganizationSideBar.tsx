@@ -61,7 +61,7 @@ const OrganizationSideBar = () => {
     process.env.NEXT_PUBLIC_ENV !== 'self-hosted'
       ? {
           type: 'group',
-          label: collapsed ? null : 'Mobile',
+          label: collapsed ? null : 'Maunal Testing',
           children: [
             {
               key: 'live-testing',

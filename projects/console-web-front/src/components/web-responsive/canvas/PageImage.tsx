@@ -1,6 +1,7 @@
 import { Device } from '@dogu-private/device-data';
 import React, { useState } from 'react';
 import styled from 'styled-components';
+import Image from 'next/image';
 
 export interface PageImageProps {
   width: number;
@@ -15,7 +16,7 @@ const PageImage = ({ width, height, imageUrl, devices }: PageImageProps) => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
       <DimensionHorizontalIndicator value={`${width} px`} />
-      <img src={imageUrl} height={'1080px'} alt="PageImage" />
+      <img src={imageUrl} alt="PageImage" />
       <DeviceTitleBox>
         {devices.map((device) => {
           return (
