@@ -5,6 +5,7 @@ import styled from 'styled-components';
 import { Popconfirm } from 'antd';
 
 import useDeviceStreamingContext from '../../hooks/streaming/useDeviceStreamingContext';
+import { LoadingOutlined } from '@ant-design/icons';
 
 interface Props {}
 
@@ -27,11 +28,13 @@ const DeviceLocationChanger: React.FC<Props> = () => {
         return;
       }
 
+      setLoading(true);
       try {
         const location = await deviceService.deviceClientRef.current.getGeoLocation(device.serial);
         setCurrentLocation(location);
         backupLocation.current = location;
       } catch (e) {}
+      setLoading(false);
     })();
   }, [deviceService?.deviceClientRef, device?.serial]);
 
@@ -63,8 +66,6 @@ const DeviceLocationChanger: React.FC<Props> = () => {
   return (
     <div>
       <MapWrapper>
-        {(isOpen || !isLoaded) && <LoadingBox />}
-
         {isLoaded && (
           <GoogleMap
             center={{
@@ -93,6 +94,11 @@ const DeviceLocationChanger: React.FC<Props> = () => {
               }}
             />
           </GoogleMap>
+        )}
+        {(loading || isOpen || !isLoaded) && (
+          <LoadingBox>
+            <LoadingOutlined />
+          </LoadingBox>
         )}
       </MapWrapper>
       <Popconfirm
