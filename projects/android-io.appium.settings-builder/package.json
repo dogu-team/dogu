@@ -6,7 +6,7 @@
   "author": "Dogu Technologies",
   "main": "build/src/index.js",
   "scripts": {
-    "build:archive": "ts-node scripts/build",
+    "build:archive": "tsc -b && ts-node scripts/build",
     "clean:archive": "shx rm -rf build"
   },
   "types": "build/src/index.d.ts",

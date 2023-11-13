@@ -19,7 +19,7 @@ const ThirdPartyCommonPath = path.resolve(__dirname, '..', '..', '..', 'third-pa
 
 const logger = new ConsoleLogger();
 (async () => {
-  const timer = new CheckTimer(logger);
+  const timer = new CheckTimer({ logger });
   await timer.check(
     'download',
     download({
