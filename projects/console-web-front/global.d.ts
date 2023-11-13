@@ -1,5 +1,5 @@
 interface Window {
-  __ENV: NodeJS.ProcessEnv;
+  google: any;
 }
 
 declare module '*.svg' {
