@@ -178,11 +178,7 @@ export const config = {
 
 export const dataSourceConfig: DataSourceOptions = {
   type: 'postgres',
-  database: env.DOGU_RDS_SCHEMA,
-  host: env.DOGU_RDS_HOST,
-  port: env.DOGU_RDS_PORT,
-  username: env.DOGU_RDS_USERNAME,
-  password: env.DOGU_RDS_PASSWORD,
+  url: env.DOGU_CONSOLE_DB_URL,
   logging: false,
   // synchronize: false,
   entities: [CONSOLE_BACKEND_ENTITIES_PATH],
@@ -190,7 +186,7 @@ export const dataSourceConfig: DataSourceOptions = {
   migrationsRun: false,
   migrationsTableName: 'migration',
   useUTC: true,
-  ssl: env.DOGU_RDS_SSL_CONNECTION ? { rejectUnauthorized: false } : false,
+  ssl: env.DOGU_CONSOLE_DB_SSL_CONNECTION ? { rejectUnauthorized: false } : false,
 };
 
 logger.warn('[DB Config]', {

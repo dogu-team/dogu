@@ -7,12 +7,8 @@ import { PostgreSql } from '../utils/pgsql';
 import { exec } from '../utils/utils';
 
 const pgsqlConnectionOptions = {
-  host: env.DOGU_RDS_HOST,
-  port: env.DOGU_RDS_PORT,
-  user: env.DOGU_RDS_USERNAME,
-  password: env.DOGU_RDS_PASSWORD,
-  database: env.DOGU_RDS_SCHEMA,
-  ssl: env.DOGU_RDS_SSL_CONNECTION ? { rejectUnauthorized: false } : false,
+  connectionString: env.DOGU_CONSOLE_DB_URL,
+  ssl: env.DOGU_CONSOLE_DB_SSL_CONNECTION ? { rejectUnauthorized: false } : false,
 };
 console.log('config', pgsqlConnectionOptions);
 
@@ -35,10 +31,11 @@ async function checkDbInitialized(): Promise<boolean> {
   return resultValue;
 }
 
-async function runDbMigration(): Promise<void> {
+async function runDbMigration(cwd: string): Promise<void> {
   console.log('Run migrations...');
   await exec(`yarn run typeorm:run`, {
     errorMessage: 'Error: run typeorm migration failed',
+    cwd,
     retry: true,
     retryCount: 3,
     retryInterval: 3000,
@@ -53,6 +50,7 @@ async function runDbMigration(): Promise<void> {
 }
 
 (async (): Promise<void> => {
+  const cwd = process.cwd();
   const workspaceDir = node_package.findRootWorkspace();
   process.chdir(workspaceDir);
   const isInitialized = await checkDbInitialized();
@@ -64,7 +62,7 @@ async function runDbMigration(): Promise<void> {
     await createSeedData(pgsqlConnectionOptions);
   } else {
     console.log('Database already initaialized');
-    await runDbMigration();
+    await runDbMigration(cwd);
   }
 
   process.exit(0);

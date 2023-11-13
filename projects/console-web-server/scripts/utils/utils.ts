@@ -10,11 +10,17 @@ export interface ShellOptions {
    * @default 'Error: Command failed'
    */
   errorMessage: string;
+
+  /**
+   * @default process.cwd()
+   */
+  cwd?: string;
 }
 
 export function defaultShellOptions(): Required<ShellOptions> {
   return {
     errorMessage: 'Error: Command failed',
+    cwd: process.cwd(),
   };
 }
 
@@ -70,13 +76,13 @@ export function which(command: string, options?: ShellOptions): ShellString {
 }
 
 export async function exec(command: string, options?: ExecOptions): Promise<ShellString> {
-  const { errorMessage, retry: retry_, retryCount, retryInterval, resultChecker } = fillExecOptions(options);
+  const { errorMessage, retry: retry_, retryCount, retryInterval, resultChecker, cwd } = fillExecOptions(options);
 
   let result: ShellString | null = null;
   if (retry_) {
     result = await retry<ShellString>(
       () => {
-        return shelljs.exec(command);
+        return shelljs.exec(command, { cwd });
       },
       {
         retryCount: retryCount,
@@ -86,7 +92,7 @@ export async function exec(command: string, options?: ExecOptions): Promise<Shel
       },
     );
   } else {
-    result = shelljs.exec(command);
+    result = shelljs.exec(command, { cwd });
   }
 
   if (result === null || result.code !== 0) {
