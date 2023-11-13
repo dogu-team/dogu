@@ -84,6 +84,10 @@ export const getServerSideProps: GetServerSideProps<WebResponsiveServerSideProps
       notFound: true,
     };
   }
+
+  return {
+    notFound: true,
+  };
 };
 
 export default WebResponsivePage;
