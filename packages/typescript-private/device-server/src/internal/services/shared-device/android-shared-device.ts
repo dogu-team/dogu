@@ -316,6 +316,7 @@ export class AndroidSharedDeviceService implements Zombieable {
 
     const newAppiumAdb = this.appiumAdb.clone({ adbExecTimeout: 1000 * 60 * 3 });
     await this.checkSetup(`AndroidSharedDeviceService.setup.setDeviceLocale`, newAppiumAdb.setDeviceLocale('en-US'));
+    await this.checkSetup(`AndroidSharedDeviceService.setup.setGeoLocation`, newAppiumAdb.setGeoLocation({ longitude: 126.939, latitude: 37.392, altitude: 0 }));
 
     await this.checkSetup(`AndroidSharedDeviceService.setup.allowNonMarketApps`, adb.allowNonMarketApps()).catch((e) => {
       this.printable.error(`AndroidSharedDeviceService.revive.allowNonMarketApps failed.`, { serial, error: errorify(e) });
@@ -342,7 +343,6 @@ export class AndroidSharedDeviceService implements Zombieable {
     });
 
     await this.checkSetup(`AndroidSharedDeviceService.setup.joinWifi`, adb.joinWifi(env.DOGU_WIFI_SSID, env.DOGU_WIFI_PASSWORD));
-    await this.checkSetup(`AndroidSharedDeviceService.setup.disableGooglePlayProtect`, this.disableLocationGoogleAccuracy());
 
     await this.checkSetup(`AndroidSharedDeviceService.setup.stayOnWhilePluggedIn`, adb.stayOnWhilePluggedIn()).catch((e) => {
       this.printable.error(`AndroidSharedDeviceService.revive.stayOnWhilePluggedIn failed.`, { serial, error: errorify(e) });
@@ -541,35 +541,69 @@ export class AndroidSharedDeviceService implements Zombieable {
     return this.timer.check(name, promise);
   }
 
-  async disableLocationGoogleAccuracy(): Promise<void> {
-    const { adb, appiumContext } = this;
-    const driver = appiumContext.driver();
-    if (!driver) {
-      throw new Error(`AndroidResetService.disableLocationGoogleAccuracy Appium Driver is not found`);
-    }
-    const aosDriver = new AndroidWebDriver(driver, this.printable);
-    await adb.runActivity('android.settings.LOCATION_SOURCE_SETTINGS');
+  // async disableLocationGoogleAccuracy(): Promise<void> {
+  //   const { adb, appiumContext } = this;
+  //   const driver = appiumContext.driver();
+  //   if (!driver) {
+  //     throw new Error(`AndroidResetService.disableLocationGoogleAccuracy Appium Driver is not found`);
+  //   }
+  //   const aosDriver = new AndroidWebDriver(driver, this.printable);
+  //   await adb.runActivity('android.settings.LOCATION_SOURCE_SETTINGS');
 
-    const locationServices = await aosDriver.waitElementsExist(`android=new UiSelector().className("android.widget.TextView").text("Location services")`, { seconds: 4 });
-    if (0 < locationServices.length) {
-      await locationServices[0].click();
-    }
+  //   const locationServices = await aosDriver.waitElementsExist(`android=new UiSelector().className("android.widget.TextView").text("Location services")`, { seconds: 4 });
+  //   if (0 < locationServices.length) {
+  //     await locationServices[0].click();
+  //   }
 
-    const locationAccuracy = await aosDriver.waitElementExist(`android=new UiSelector().className("android.widget.TextView").text("Google Location Accuracy")`, { seconds: 4 });
-    if (locationAccuracy.error) {
-      throw new Error(`AndroidResetService.disableLocationGoogleAccuracy Google Location Accuracy is not found`);
-    }
-    await locationAccuracy.click();
+  //   const locationAccuracy = await aosDriver.waitElementExist(`android=new UiSelector().className("android.widget.TextView").text("Google Location Accuracy")`, { seconds: 4 });
+  //   if (locationAccuracy.error) {
+  //     throw new Error(`AndroidResetService.disableLocationGoogleAccuracy Google Location Accuracy is not found`);
+  //   }
+  //   await locationAccuracy.click();
 
-    const toggle = await aosDriver.waitElementExist(`android=new UiSelector().className("android.widget.Switch")`, { seconds: 5 });
-    if (toggle.error) {
-      throw new Error(`AndroidResetService.disableLocationGoogleAccuracy toggle not found`);
-    }
-    const checked = await toggle.getAttribute('checked');
-    this.printable.info(`AndroidResetService.disableLocationGoogleAccuracy checked`, { checked });
-    if (checked.toLowerCase() === 'true') {
-      await toggle.click();
-      await delay(300);
-    }
-  }
+  //   const toggle = await aosDriver.waitElementExist(`android=new UiSelector().className("android.widget.Switch")`, { seconds: 5 });
+  //   if (toggle.error) {
+  //     throw new Error(`AndroidResetService.disableLocationGoogleAccuracy toggle not found`);
+  //   }
+  //   const checked = await toggle.getAttribute('checked');
+  //   this.printable.info(`AndroidResetService.disableLocationGoogleAccuracy checked`, { checked });
+  //   if (checked.toLowerCase() === 'true') {
+  //     await toggle.click();
+  //     await delay(300);
+  //   }
+  // }
+
+  // async disableWifiAccuracy(): Promise<void> {
+  //   const { adb, appiumContext } = this;
+  //   const driver = appiumContext.driver();
+  //   if (!driver) {
+  //     throw new Error(`AndroidResetService.disableLocationGoogleAccuracy Appium Driver is not found`);
+  //   }
+  //   const aosDriver = new AndroidWebDriver(driver, this.printable);
+  //   await adb.runActivity('android.settings.LOCATION_SOURCE_SETTINGS');
+
+  //   const locationServices = await aosDriver.waitElementsExist(`android=new UiSelector().className("android.widget.TextView").text("Location services")`, { seconds: 4 });
+  //   if (0 < locationServices.length) {
+  //     await locationServices[0].click();
+  //   }
+  //   const improveAccuracy = await aosDriver.waitElementsExist(`android=new UiSelector().className("android.widget.TextView").text("Improve accuracy")`, { seconds: 4 });
+  //   if (0 < improveAccuracy.length) {
+  //     await improveAccuracy[0].click();
+  //   }
+  //   const wifiScanning = await aosDriver.waitElementsExist(`android=new UiSelector().className("android.widget.TextView").text("Wi-Fi scanning")`, { seconds: 4 });
+  //   if (0 === wifiScanning.length) {
+  //     throw new Error(`AndroidResetService.disableLocationGoogleAccuracy wifiScanning not found`);
+  //   }
+
+  //   const toggles = await aosDriver.waitElementsExist(`android=new UiSelector().className("android.widget.Switch")`, { seconds: 5 });
+  //   for (const toggle of toggles) {
+  //     const checked = await toggle.getAttribute('checked');
+  //     this.printable.info(`AndroidResetService.disableLocationGoogleAccuracy checked`, { checked });
+  //     if (checked.toLowerCase() === 'true') {
+  //       await toggle.click();
+  //       await delay(300);
+  //     }
+  //   }
+  //   return;
+  // }
 }
