@@ -10,5 +10,6 @@ export const URLTitle = ({ title }: Props) => {
 };
 
 const Title = styled.p`
-  font-size: 156px;
+  font-weight: bold;
+  font-size: 192px;
 `;

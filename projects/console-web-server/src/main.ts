@@ -70,6 +70,20 @@ async function bootstrap(): Promise<void> {
 
   await app.listen(env.DOGU_CONSOLE_WEB_SERVER_PORT);
   logger.info(`ready - started server on ${env.DOGU_CONSOLE_WEB_SERVER_PORT}`);
+
+  //@ts-ignore
+  const router = httpServer._events.request._router;
+
+  for (const layer of router.stack) {
+    if (layer.route && layer.route.path) {
+      const { path, stack } = layer.route;
+      const method = stack.map((layer: any) => layer.method.toUpperCase()).join(', ');
+      console.log(`[${method}]`, layer.route.path);
+    }
+  }
+
+  const reflector = new Reflector();
+  const args = reflector.get;
 }
 
 bootstrap().catch((error) => {

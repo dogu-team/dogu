@@ -54,7 +54,7 @@ const Box = styled.div`
 const URLBox = styled.div`
   display: flex;
   flex-direction: row;
-  margin-bottom: 8rem;
+  margin-bottom: 12rem;
 `;
 
 const PageImageBox = styled.div`

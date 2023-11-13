@@ -21,13 +21,13 @@ const Box = styled.div`
 `;
 
 const Title = styled.p`
-  font-size: 196px;
+  font-size: 152px;
   font-weight: bold;
 `;
 
 const StyledHr = styled.hr`
   display: block;
-  width: 960px;
+  width: 100%;
   height: 32px;
   background-color: ${(props) => props.theme.colors.gray2};
   border: none;
