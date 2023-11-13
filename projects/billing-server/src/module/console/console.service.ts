@@ -66,7 +66,6 @@ AND ouor.organization_role_id = 1`);
         cardName: planHistory.cardName ?? '',
         amount: this.getTotalAmount(plan.currency, planHistory.purchasedAmount ?? 0),
         purchaseDate: planHistory.createdAt,
-        nextPurchaseDate: planHistory.createdAt,
       }),
     }).catch((err) => {
       this.logger.error(`Failed to send email to ${email}`);
@@ -94,7 +93,7 @@ AND ouor.organization_role_id = 1`);
   private getTotalAmount(currency: BillingCurrency, amount: number): string {
     switch (currency) {
       case 'KRW':
-        return `W${amount.toLocaleString('ko-KR')}`;
+        return `₩${amount.toLocaleString('ko-KR')}`;
       case 'USD':
         return `$${amount.toLocaleString('en-US')}`;
       default:

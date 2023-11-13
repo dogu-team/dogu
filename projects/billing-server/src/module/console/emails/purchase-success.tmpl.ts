@@ -7,7 +7,6 @@ export type PurchaseSuccessEmailTemplateParams = {
   amount: string;
   cardLast4Digits: string;
   cardName: string;
-  nextPurchaseDate: Date;
 };
 
 export const getPurcaseSuccessEmailTemplate = ({
@@ -19,7 +18,6 @@ export const getPurcaseSuccessEmailTemplate = ({
   amount,
   cardLast4Digits,
   cardName,
-  nextPurchaseDate,
 }: PurchaseSuccessEmailTemplateParams): string => {
   return `<!doctype html>
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -69,7 +67,7 @@ export const getPurcaseSuccessEmailTemplate = ({
 
                         <div style="height: 2px; background-color: #cccccc; margin: 16px 0 16px 0;"></div>
 
-                        <!-- <p style="margin: 0 0 0 0; line-height: 1.5"><span>Date</span>: </p> -->
+                        <p style="margin: 0 0 0 0; line-height: 1.5"><span>Date</span>: ${purchaseDate.toUTCString()}</p>
                         <p style="margin: 0 0 0 0; line-height: 1.5"><span>Total</span>: ${amount}</p>
                         <p style="margin: 0 0 0 0; line-height: 1.5"><span>Payment</span>: <span style="vertical-align: sub;">**** **** ****</span> ${cardLast4Digits} (${cardName})</p>
                       </div>
@@ -77,11 +75,6 @@ export const getPurcaseSuccessEmailTemplate = ({
                   </tr>
                   <tr>
                     <td align="left">
-                      <!--
-                      <p style="margin: 0 0 16px 0; line-height: 1.5; font-size: 16px">
-                        Your next purchase will be on <strong>2022-08-01</strong>.
-                      </p>
-                      -->
                       <p style="margin: 0 0 0 0; line-height: 1.5; font-size: 16px">
                         If you have any questions, please contact us via <a href="mailto:contact@dogutech.io">email</a> or chat service on <a href="https://dogutech.io">our website</a>.
                       </p>
