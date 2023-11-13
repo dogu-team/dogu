@@ -34,7 +34,7 @@ export class DeviceServerChild implements Child {
     const DOGU_RUN_TYPE = appConfigService.get<string>('DOGU_RUN_TYPE');
     const DOGU_DEVICE_SERVER_PORT = appConfigService.get<number>('DOGU_DEVICE_SERVER_PORT');
     const DOGU_DEVICE_PLATFORM_ENABLED = appConfigService.get<string>('DOGU_DEVICE_PLATFORM_ENABLED');
-    const DOGU_DEVICE_IOS_RESTART_ON_INIT = appConfigService.getOrDefault<boolean>('DOGU_DEVICE_IOS_RESTART_ON_INIT', true);
+    const DOGU_DEVICE_RESTART_IOS_ON_INIT = appConfigService.getOrDefault<boolean>('DOGU_DEVICE_RESTART_IOS_ON_INIT', true);
     const DOGU_DEVICE_IS_SHAREABLE = appConfigService.getOrDefault<boolean>('DOGU_DEVICE_IS_SHAREABLE', false);
     const DOGU_DEVICE_IOS_IS_IDAPROJECT_VALIDATED = await checkProjectEqual(this.logger).catch(() => false);
     const DOGU_LINUX_DEVICE_SERIAL = appConfigService.getOrDefault<string>('DOGU_LINUX_DEVICE_SERIAL', '');
@@ -67,7 +67,7 @@ export class DeviceServerChild implements Child {
           PATH,
           DOGU_LOG_LEVEL,
           DOGU_DEVICE_PLATFORM_ENABLED,
-          DOGU_DEVICE_IOS_RESTART_ON_INIT: DOGU_DEVICE_IOS_RESTART_ON_INIT ? 'true' : 'false',
+          DOGU_DEVICE_RESTART_IOS_ON_INIT: DOGU_DEVICE_RESTART_IOS_ON_INIT ? 'true' : 'false',
           DOGU_DEVICE_IOS_IS_IDAPROJECT_VALIDATED: DOGU_DEVICE_IOS_IS_IDAPROJECT_VALIDATED ? 'true' : 'false',
           DOGU_DEVICE_IS_SHAREABLE: DOGU_DEVICE_IS_SHAREABLE ? 'true' : 'false',
           DOGU_LINUX_DEVICE_SERIAL,

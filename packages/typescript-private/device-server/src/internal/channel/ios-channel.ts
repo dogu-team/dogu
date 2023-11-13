@@ -290,14 +290,14 @@ export class IosChannel implements DeviceChannel {
   }
 
   static async restartIfAvailiable(serial: Serial, logger: Printable): Promise<void> {
-    logger.info('IosChannel restartIfAvailiable', { on: env.DOGU_DEVICE_IOS_RESTART_ON_INIT });
+    logger.info('IosChannel restartIfAvailiable', { on: env.DOGU_DEVICE_RESTART_IOS_ON_INIT });
     if (config.externalIosDeviceAgent.use) {
       return;
     }
     if (!(await IosResetService.isDirty(serial))) {
       return;
     }
-    if (env.DOGU_DEVICE_IOS_RESTART_ON_INIT) {
+    if (env.DOGU_DEVICE_RESTART_IOS_ON_INIT) {
       await IdeviceDiagnostics.restart(serial, logger);
       try {
         await delay(1000);
