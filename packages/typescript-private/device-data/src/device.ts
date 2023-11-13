@@ -25,6 +25,8 @@ export const devices: Device[] = [
   // new Device('QHD Desktop', 'Desktop', 2023, { viewportWidth: 2560, viewportHeight: 1440, pixelRatio: 1 }),
   // new Device('FHD Desktop', 'Desktop', 2023, { viewportWidth: 1920, viewportHeight: 1080, pixelRatio: 1 }),
 
+  // new Device('Galaxy Z Flip 3', 'Samsung', 2021, { viewportWidth: 360, viewportHeight: 880, pixelRatio: 2 }),
+
   new Device('Galaxy Tab S9 FE Plus', 'Samsung', 2023, { viewportWidth: 1600 / 2, viewportHeight: 2560 / 2, pixelRatio: 2 }),
   new Device('Galaxy Tab S9 FE', 'Samsung', 2023, { viewportWidth: 1440 / 2, viewportHeight: 2304 / 2, pixelRatio: 2 }),
   new Device('Galaxy Tab S9 Ultra', 'Samsung', 2023, { viewportWidth: 1848 / 2, viewportHeight: 2960 / 2, pixelRatio: 2 }),

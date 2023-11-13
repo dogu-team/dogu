@@ -15,6 +15,7 @@
     "@dogu-private/types": "workspace:^",
     "@dogu-tech/common": "workspace:^",
     "@dogu-tech/node": "workspace:^",
+    "@google-cloud/run": "^1.0.2",
     "@google-cloud/storage": "^7.5.0",
     "axios": "^1.6.0",
     "class-transformer": "0.5.1",
