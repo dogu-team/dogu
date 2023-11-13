@@ -1,16 +1,15 @@
-import { CloseOutlined, SlackOutlined } from '@ant-design/icons';
+import { SlackOutlined } from '@ant-design/icons';
 import { CloudLicenseResponse, SelfHostedLicenseResponse, UserBase } from '@dogu-private/console';
 import { Button, Tooltip } from 'antd';
 import Trans from 'next-translate/Trans';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { ImPriceTag } from 'react-icons/im';
 import styled from 'styled-components';
 import { shallow } from 'zustand/shallow';
 
 import LicenseTag from '../../../enterprise/components/license/LicenseTag';
-import useAuth from '../../hooks/useAuth';
+import useAuthStore from '../../stores/auth';
 import useEventStore from '../../stores/events';
 import useLicenseStore from '../../stores/license';
 import { flexRowBaseStyle, flexRowCenteredStyle } from '../../styles/box';
@@ -27,14 +26,21 @@ interface Props {
 }
 
 const ConsoleBasicLayout = ({ children, user, license: licenseInfo }: Props) => {
-  const { me, isLoading, error, mutate } = useAuth(user);
+  // const { me, isLoading, error, mutate } = useAuth(user);
+  const [me, updateMe] = useAuthStore((state) => [state.me, state.updateMe], shallow);
   const [license, updateLicense] = useLicenseStore((state) => [state.license, state.updateLicense], shallow);
-  const router = useRouter();
 
   useEffect(() => {
     updateLicense(licenseInfo);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [licenseInfo]);
+
+  useEffect(() => {
+    if (user) {
+      updateMe(user);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
 
   useEffect(() => {
     useEventStore.subscribe(({ eventName, payload }) => {
@@ -47,17 +53,7 @@ const ConsoleBasicLayout = ({ children, user, license: licenseInfo }: Props) => 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  if (isLoading) {
-    return null;
-  }
-
-  if (!me || error) {
-    if (!me) {
-      router.push(`/signin?redirect=${router.asPath}`);
-      return null;
-    }
-
-    router.push(`/dashboard/${me.organizationAndUserAndOrganizationRoles?.[0].organizationId}`);
+  if (!me) {
     return null;
   }
 
@@ -96,7 +92,7 @@ const ConsoleBasicLayout = ({ children, user, license: licenseInfo }: Props) => 
                   <SlackOutlined />
                 </StyledLink>
               </Tooltip>
-              <ChangeLogButton me={me} mutateMe={mutate} />
+              <ChangeLogButton />
               <AccountMenu />
             </FlexRow>
           }

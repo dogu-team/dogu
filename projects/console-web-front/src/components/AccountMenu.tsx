@@ -7,8 +7,8 @@ import Cookies from 'universal-cookie';
 import { USER_ACCESS_TOKEN_COOKIE_NAME } from '@dogu-private/types';
 import { UserBase } from '@dogu-private/console';
 import { useEffect, useRef } from 'react';
+import { shallow } from 'zustand/shallow';
 
-import useAuth from 'src/hooks/useAuth';
 import ProfileImage from 'src/components/ProfileImage';
 import { signOut } from 'src/api/registery';
 import useAuthStore from '../stores/auth';
@@ -17,8 +17,7 @@ import usePromotionStore from '../stores/promotion';
 
 const AccountMenu = () => {
   const { cache } = useSWRConfig();
-  const { me, mutate } = useAuth();
-  const [storedMe, updateAuthStore] = useAuthStore((state) => [state.me, state.updateAuthStore]);
+  const [me, updateMe] = useAuthStore((state) => [state.me, state.updateMe], shallow);
   const router = useRouter();
   const { t } = useTranslation();
   const imageRef = useRef<HTMLImageElement>(null);
@@ -30,30 +29,18 @@ const AccountMenu = () => {
         const user = payload as UserBase | undefined;
         if (user) {
           if (user.profileImageUrl) {
-            mutate(
-              (prev) => ({
-                ...prev,
-                ...user,
-                profileImageUrl: (user.profileImageUrl += `?lastModified=${new Date().getTime()}`),
-              }),
-              false,
-            );
-            updateAuthStore({
+            updateMe({
+              ...me,
               ...user,
               profileImageUrl: (user.profileImageUrl += `?lastModified=${new Date().getTime()}`),
             });
           } else {
-            mutate((prev) => {
-              if (prev) {
-                return { ...prev, user };
-              }
-            }, false);
-            updateAuthStore(user);
+            updateMe({ ...me, ...user });
           }
         }
       }
     });
-  }, [mutate]);
+  }, [me, updateMe]);
 
   if (!me) {
     return null;
@@ -69,10 +56,10 @@ const AccountMenu = () => {
           label: (
             <StyledItem onClick={() => router.push('/account')}>
               <AccountItem>
-                <ProfileImage name={storedMe?.name} size={48} profileImageUrl={storedMe?.profileImageUrl} />
+                <ProfileImage name={me?.name} size={48} profileImageUrl={me?.profileImageUrl} />
                 <AccountTextWrapper>
-                  <Name id="account-name">{storedMe?.name}</Name>
-                  <Email>{storedMe?.email}</Email>
+                  <Name id="account-name">{me?.name}</Name>
+                  <Email>{me?.email}</Email>
                 </AccountTextWrapper>
               </AccountItem>
             </StyledItem>
@@ -111,7 +98,7 @@ const AccountMenu = () => {
               try {
                 await signOut();
                 cache.delete(`/registery/check`);
-                updateAuthStore(null);
+                updateMe(null);
               } catch (e) {
                 const cookie = new Cookies();
                 cookie.remove(USER_ACCESS_TOKEN_COOKIE_NAME);
@@ -132,7 +119,7 @@ const AccountMenu = () => {
   return (
     <StyledDropDown menu={{ items }} trigger={['click']}>
       <Wrapper>
-        <ProfileImage ref={imageRef} profileImageUrl={storedMe?.profileImageUrl} name={storedMe?.name} size={32} />
+        <ProfileImage ref={imageRef} profileImageUrl={me?.profileImageUrl} name={me?.name} size={32} />
       </Wrapper>
     </StyledDropDown>
   );

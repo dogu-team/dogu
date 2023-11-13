@@ -45,7 +45,7 @@ interface Props {
 }
 
 const AccountPage: NextPageWithLayout<Props> = ({ user }) => {
-  const [me, updateMe] = useAuthStore((state) => [state.me, state.updateAuthStore]);
+  const [me, updateMe] = useAuthStore((state) => [state.me, state.updateMe]);
   const [editingMe, setEditingMe] = useState<UserBase>();
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState<number | null>(null);
