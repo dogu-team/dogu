@@ -23,6 +23,7 @@ const LiveTestingFreeTierTopBanner: React.FC<Props> = () => {
   }
 
   const isFreePlan = isLiveTestingFreePlan(license);
+  const remainingSeconds = license.liveTestingRemainingFreeSeconds < 0 ? 0 : license.liveTestingRemainingFreeSeconds;
 
   if (isFreePlan) {
     return (
@@ -35,7 +36,7 @@ const LiveTestingFreeTierTopBanner: React.FC<Props> = () => {
             <Trans
               i18nKey="billing:liveTestingFreeTierInfoBannerMessage"
               components={{
-                time: <>{stringifyDurationAsTimer(license.liveTestingRemainingFreeSeconds * 1000)}</>,
+                time: <>{remainingSeconds / 60}</>,
               }}
             />
           </p>

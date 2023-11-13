@@ -85,6 +85,9 @@ const PromotionBanner: React.FC = () => {
     { revalidateOnFocus: false },
   );
   const { t } = useTranslation('billing');
+  const hasUsingPlan = !!license?.billingOrganization.billingSubscriptionPlanInfos.find(
+    (info) => info.type === currentPlanType && info.state !== 'unsubscribed',
+  );
 
   if (!isPromotionOpenablePage) {
     return null;
@@ -95,6 +98,10 @@ const PromotionBanner: React.FC = () => {
   }
 
   if (!currentPlanType) {
+    return null;
+  }
+
+  if (hasUsingPlan) {
     return null;
   }
 

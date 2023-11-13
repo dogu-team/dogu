@@ -17,9 +17,16 @@ import { createLiveTestingSession } from '../../api/live-session';
 import useEventStore from '../../stores/events';
 import LiveTestingStartButton from './LiveTestingStartButton';
 import { isPaymentRequired } from '../../../enterprise/utils/error';
+import useModal from '../../hooks/useModal';
+import UpgradePlanModal from '../billing/UpgradePlanModal';
+import useBillingPlanPurchaseStore from '../../stores/billing-plan-purchase';
 
 const SelectItem: React.FC<{ item: CloudDeviceByModelResponse; platform: Platform }> = ({ item, platform }) => {
   const fireEvent = useEventStore((state) => state.fireEvent, shallow);
+  const [isOpen, openModal, closeModal] = useModal();
+  const updateBillingGroupType = useBillingPlanPurchaseStore((state) => state.updateBillingGroupType);
+  const updateIsAnnual = useBillingPlanPurchaseStore((state) => state.updateIsAnnual);
+
   const router = useRouter();
 
   const organizationId = router.query.orgId as OrganizationId;
@@ -39,7 +46,9 @@ const SelectItem: React.FC<{ item: CloudDeviceByModelResponse; platform: Platfor
     } catch (e) {
       if (isAxiosError(e)) {
         if (isPaymentRequired(e)) {
-          sendErrorNotification(`You can use only one session during the Beta. Please close the other session.`);
+          updateBillingGroupType('live-testing-group');
+          updateIsAnnual(false);
+          openModal();
           return;
         }
         sendErrorNotification(`Cannot start device: ${getErrorMessageFromAxios(e)}`);
@@ -48,18 +57,22 @@ const SelectItem: React.FC<{ item: CloudDeviceByModelResponse; platform: Platfor
   };
 
   return (
-    <Item>
-      <ItemInner>
-        <OneSpan>
-          <PlatformIcon platform={platform} />
-          &nbsp;{item.version}
-        </OneSpan>
-        <OneSpan>Korea</OneSpan>
-        <ButtonWrapper>
-          <LiveTestingStartButton device={item} onClick={handleStart} />
-        </ButtonWrapper>
-      </ItemInner>
-    </Item>
+    <>
+      <Item>
+        <ItemInner>
+          <OneSpan>
+            <PlatformIcon platform={platform} />
+            &nbsp;{item.version}
+          </OneSpan>
+          <OneSpan>Korea</OneSpan>
+          <ButtonWrapper>
+            <LiveTestingStartButton device={item} onClick={handleStart} />
+          </ButtonWrapper>
+        </ItemInner>
+      </Item>
+
+      <UpgradePlanModal isOpen={isOpen} close={closeModal} />
+    </>
   );
 };
 

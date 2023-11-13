@@ -12,7 +12,7 @@ import { deviceBrandMapper } from '../../resources/device/brand';
 import useRefresh from '../../hooks/useRefresh';
 import useModal from '../../hooks/useModal';
 import PlatformIcon from '../device/PlatformIcon';
-import CloudDeviceVersionList from './CloudDeviceSelectList';
+import CloudDeviceVersionList from './CloudDeviceVersionList';
 import useCloudDeviceFilterStore from '../../stores/cloud-device-filter';
 import useEventStore from '../../stores/events';
 import usePaginationSWR from '../../hooks/usePaginationSWR';

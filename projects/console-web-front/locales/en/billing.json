@@ -119,7 +119,7 @@
   "billingPaymentMethodTitle": "Payment method",
   "billingInvoiceTitle": "Invoices",
 
-  "liveTestingFreeTierInfoBannerMessage": "You are using the free plan. Live testing is available for <time></time>.",
+  "liveTestingFreeTierInfoBannerMessage": "You are using the free plan. Live testing is available for <time></time> min.",
   "liveTestingPlanGroupTitle": "Live testing",
   "liveTestingPlanTitle": "Live testing",
   "liveTestingOptionSingular": "{{option}} parallel session",
@@ -173,7 +173,7 @@
 
   "promotionBannerMonthSingularMessage": "{{discount}}% discount for {{month}} month!",
   "promotionBannerMonthPluralMessage": "{{discount}}% discount for {{month}} months!",
-  "promotionBannerButtonText": "Buy now",
+  "promotionBannerButtonText": "Claim Now",
   "promotionBannerTimerLeftText": "{{time}} left",
 
   "licenseNotFoundErrorMessage": "Cannot find license information.",
