@@ -87,8 +87,11 @@ const ToolbarButton = ({
 interface Props {}
 
 const DeviceControlToolbar: React.FC<Props> = () => {
-  const { deviceRTCCaller, isCloudDevice } = useDeviceStreamingContext();
-  const { handleToolMenuInput } = useDeviceInput(deviceRTCCaller ?? undefined);
+  const { deviceRTCCaller, device, isCloudDevice } = useDeviceStreamingContext();
+  const { handleToolMenuInput } = useDeviceInput(
+    deviceRTCCaller ?? undefined,
+    device?.platform ?? Platform.PLATFORM_UNSPECIFIED,
+  );
 
   return (
     <ToolbarBox>

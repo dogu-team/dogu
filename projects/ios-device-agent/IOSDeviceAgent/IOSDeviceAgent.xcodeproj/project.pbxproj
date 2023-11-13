@@ -112,7 +112,7 @@
 		718226CC2587443700661B83 /* GCDAsyncSocket.h in Headers */ = {isa = PBXBuildFile; fileRef = 718226C72587443600661B83 /* GCDAsyncSocket.h */; };
 		718226CE2587443700661B83 /* GCDAsyncSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 718226C82587443600661B83 /* GCDAsyncSocket.m */; };
 		718226D02587443700661B83 /* GCDAsyncUdpSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 718226C92587443600661B83 /* GCDAsyncUdpSocket.m */; };
-		71930C4220662E1F00D3AFEC /* FBPasteboard.h in Headers */ = {isa = PBXBuildFile; fileRef = 71930C4020662E1F00D3AFEC /* FBPasteboard.h */; };
+		71930C4220662E1F00D3AFEC /* FBPasteboard.h in Headers */ = {isa = PBXBuildFile; fileRef = 71930C4020662E1F00D3AFEC /* FBPasteboard.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		71930C4320662E1F00D3AFEC /* FBPasteboard.m in Sources */ = {isa = PBXBuildFile; fileRef = 71930C4120662E1F00D3AFEC /* FBPasteboard.m */; };
 		719CD8F82126C78F00C7D0C2 /* FBAlertsMonitor.h in Headers */ = {isa = PBXBuildFile; fileRef = 719CD8F62126C78F00C7D0C2 /* FBAlertsMonitor.h */; };
 		719CD8F92126C78F00C7D0C2 /* FBAlertsMonitor.m in Sources */ = {isa = PBXBuildFile; fileRef = 719CD8F72126C78F00C7D0C2 /* FBAlertsMonitor.m */; };
@@ -159,6 +159,9 @@
 		A63686062AFA3A7B00129D32 /* Transform.swift in Sources */ = {isa = PBXBuildFile; fileRef = A63686052AFA3A7B00129D32 /* Transform.swift */; };
 		A64995C2299CCAEF00238E2A /* ControlResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = A64995C1299CCAEF00238E2A /* ControlResult.swift */; };
 		A65D24142AF275C2003A2149 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = A65D24132AF275C2003A2149 /* Constants.swift */; };
+		A6818DD92AFE3BF20076CC8C /* SetClipboardStructures.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6818DD62AFE3BF20076CC8C /* SetClipboardStructures.swift */; };
+		A6818DDA2AFE3BF20076CC8C /* SetClipboardBroker.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6818DD72AFE3BF20076CC8C /* SetClipboardBroker.swift */; };
+		A6818DDB2AFE3BF20076CC8C /* SetClipboardControlPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6818DD82AFE3BF20076CC8C /* SetClipboardControlPlayer.swift */; };
 		A69289572A2739BF0026DC33 /* ReplayKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A69289562A2739BF0026DC33 /* ReplayKit.framework */; };
 		A692895A2A2739BF0026DC33 /* SampleHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = A69289592A2739BF0026DC33 /* SampleHandler.swift */; };
 		A692895E2A2739BF0026DC33 /* DoguScreen.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = A69289552A2739BF0026DC33 /* DoguScreen.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -220,7 +223,7 @@
 		AD6C26991CF2481700F8B5FF /* XCUIDevice+FBHelpers.m in Sources */ = {isa = PBXBuildFile; fileRef = AD6C26971CF2481700F8B5FF /* XCUIDevice+FBHelpers.m */; };
 		AD6C269C1CF2494200F8B5FF /* XCUIApplication+FBHelpers.h in Headers */ = {isa = PBXBuildFile; fileRef = AD6C269A1CF2494200F8B5FF /* XCUIApplication+FBHelpers.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		AD6C269D1CF2494200F8B5FF /* XCUIApplication+FBHelpers.m in Sources */ = {isa = PBXBuildFile; fileRef = AD6C269B1CF2494200F8B5FF /* XCUIApplication+FBHelpers.m */; };
-		AD76723D1D6B7CC000610457 /* XCUIElement+FBTyping.h in Headers */ = {isa = PBXBuildFile; fileRef = AD76723B1D6B7CC000610457 /* XCUIElement+FBTyping.h */; };
+		AD76723D1D6B7CC000610457 /* XCUIElement+FBTyping.h in Headers */ = {isa = PBXBuildFile; fileRef = AD76723B1D6B7CC000610457 /* XCUIElement+FBTyping.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		AD76723E1D6B7CC000610457 /* XCUIElement+FBTyping.m in Sources */ = {isa = PBXBuildFile; fileRef = AD76723C1D6B7CC000610457 /* XCUIElement+FBTyping.m */; };
 		C8FB547422D3949C00B69954 /* LSApplicationWorkspace.h in Headers */ = {isa = PBXBuildFile; fileRef = C8FB547322D3949C00B69954 /* LSApplicationWorkspace.h */; };
 		C8FB547922D4C1FC00B69954 /* FBUnattachedAppLauncher.h in Headers */ = {isa = PBXBuildFile; fileRef = C8FB547722D4C1FC00B69954 /* FBUnattachedAppLauncher.h */; };
@@ -733,6 +736,9 @@
 		A63686052AFA3A7B00129D32 /* Transform.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Transform.swift; sourceTree = "<group>"; };
 		A64995C1299CCAEF00238E2A /* ControlResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlResult.swift; sourceTree = "<group>"; };
 		A65D24132AF275C2003A2149 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		A6818DD62AFE3BF20076CC8C /* SetClipboardStructures.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SetClipboardStructures.swift; sourceTree = "<group>"; };
+		A6818DD72AFE3BF20076CC8C /* SetClipboardBroker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SetClipboardBroker.swift; sourceTree = "<group>"; };
+		A6818DD82AFE3BF20076CC8C /* SetClipboardControlPlayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SetClipboardControlPlayer.swift; sourceTree = "<group>"; };
 		A69289552A2739BF0026DC33 /* DoguScreen.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = DoguScreen.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		A69289562A2739BF0026DC33 /* ReplayKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ReplayKit.framework; path = System/Library/Frameworks/ReplayKit.framework; sourceTree = SDKROOT; };
 		A69289592A2739BF0026DC33 /* SampleHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleHandler.swift; sourceTree = "<group>"; };
@@ -1162,6 +1168,9 @@
 				A6E7687E2AF384F900F2D595 /* ScrollControlBroker.swift */,
 				A6E7687C2AF384EF00F2D595 /* ScrollControlPlayer.swift */,
 				A6E768802AF385EB00F2D595 /* ScrollControlStructures.swift */,
+				A6818DD72AFE3BF20076CC8C /* SetClipboardBroker.swift */,
+				A6818DD82AFE3BF20076CC8C /* SetClipboardControlPlayer.swift */,
+				A6818DD62AFE3BF20076CC8C /* SetClipboardStructures.swift */,
 				2867C686DE715D678AF0D730 /* ActionPerformer.swift */,
 				14882543293BC23400FABE8E /* WebDriverAgentLibUtils.swift */,
 				2867CFFF1802661B4EB2FDFD /* LogEnum.swift */,
@@ -2053,6 +2062,8 @@
 				EE158B5F1CBD47A000A3E3F0 /* WebDriverAgentLib.h in Headers */,
 				AD6C269C1CF2494200F8B5FF /* XCUIApplication+FBHelpers.h in Headers */,
 				EEBBD48B1D47746D00656A81 /* XCUIElement+FBFind.h in Headers */,
+				71930C4220662E1F00D3AFEC /* FBPasteboard.h in Headers */,
+				AD76723D1D6B7CC000610457 /* XCUIElement+FBTyping.h in Headers */,
 				715AFAC11FFA29180053896D /* FBScreen.h in Headers */,
 				EE6B64FD1D0F86EF00E85F5D /* XCTestPrivateSymbols.h in Headers */,
 				713AE575243A53BE0000D657 /* FBW3CActionsHelpers.h in Headers */,
@@ -2110,7 +2121,6 @@
 				EE158AE31CBD456F00A3E3F0 /* FBSession-Private.h in Headers */,
 				716E0BCE1E917E810087A825 /* NSString+FBXMLSafeString.h in Headers */,
 				EE35AD511E3B77D600A02D78 /* XCTestObservation-Protocol.h in Headers */,
-				AD76723D1D6B7CC000610457 /* XCUIElement+FBTyping.h in Headers */,
 				EEE376451D59F81400ED88DD /* XCUIElement+FBUtilities.h in Headers */,
 				EE158AB21CBD456F00A3E3F0 /* XCUIElement+FBScrolling.h in Headers */,
 				EE35AD361E3B77D600A02D78 /* XCSourceCodeTreeNode.h in Headers */,
@@ -2241,7 +2251,6 @@
 				C8FB547422D3949C00B69954 /* LSApplicationWorkspace.h in Headers */,
 				E444DCAF24913C220060D7EB /* Route.h in Headers */,
 				EE7E271E1D06C69F001BEC7B /* FBXCTestCaseImplementationFailureHoldingProxy.h in Headers */,
-				71930C4220662E1F00D3AFEC /* FBPasteboard.h in Headers */,
 				714097471FAE1B32008FB2C5 /* FBAppiumActionsSynthesizer.h in Headers */,
 				7155D703211DCEF400166C20 /* FBMjpegServer.h in Headers */,
 				71E75E6D254824230099FC87 /* XCUIElementQuery+FBHelpers.h in Headers */,
@@ -2516,6 +2525,7 @@
 				A6A9D76B2AA9EB0400D7FECD /* SizePrefixedRecvQueue.swift in Sources */,
 				140E05CC294055CD00A32DB5 /* WebDriverAgentLibUtils.swift in Sources */,
 				A6E768812AF385EB00F2D595 /* ScrollControlStructures.swift in Sources */,
+				A6818DDA2AFE3BF20076CC8C /* SetClipboardBroker.swift in Sources */,
 				A6A9D7042AA9DD6900D7FECD /* outer_streaming_webrtc.pb.swift in Sources */,
 				A6A9D7012AA9DD6900D7FECD /* outer_streaming_streaming.pb.swift in Sources */,
 				A6E7687B2AF3679B00F2D595 /* DuplicateCallGuarder.swift in Sources */,
@@ -2547,6 +2557,7 @@
 				A69289682A2855260026DC33 /* XCTestUtils.swift in Sources */,
 				A6A9D70F2AA9DD6900D7FECD /* outer_platform.pb.swift in Sources */,
 				A6A9D6FC2AA9DD6900D7FECD /* outer_profile_profile_method.pb.swift in Sources */,
+				A6818DDB2AFE3BF20076CC8C /* SetClipboardControlPlayer.swift in Sources */,
 				A6A9D6D72AA9DD4400D7FECD /* Data+String+Extensions.swift in Sources */,
 				A6A9D6DC2AA9DD4400D7FECD /* WebDriverClient.swift in Sources */,
 				2867C32825C55849B5F39AD2 /* KeyControlPlayer.swift in Sources */,
@@ -2557,6 +2568,7 @@
 				A63686062AFA3A7B00129D32 /* Transform.swift in Sources */,
 				A6A9D6D92AA9DD4400D7FECD /* ProtoPlatform+NodeJSConversion.swift in Sources */,
 				A6E7687D2AF384EF00F2D595 /* ScrollControlPlayer.swift in Sources */,
+				A6818DD92AFE3BF20076CC8C /* SetClipboardStructures.swift in Sources */,
 				A6A9D7032AA9DD6900D7FECD /* inner_params_dc_da.pb.swift in Sources */,
 				A6A9D7082AA9DD6900D7FECD /* outer_errors.pb.swift in Sources */,
 				A6A9D76F2AAA0D2400D7FECD /* ControlSessionListener.swift in Sources */,

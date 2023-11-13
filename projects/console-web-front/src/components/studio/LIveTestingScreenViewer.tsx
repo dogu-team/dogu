@@ -1,3 +1,4 @@
+import { Platform } from '@dogu-private/types';
 import { useRouter } from 'next/router';
 import { useCallback } from 'react';
 import styled from 'styled-components';
@@ -11,7 +12,7 @@ import { VideoSize } from '../streaming/StreamingVideo';
 
 const LiveTestingScreenViewer: React.FC = () => {
   const router = useRouter();
-  const { mode, inspector, deviceRTCCaller, updateMode } = useDeviceStreamingContext();
+  const { mode, inspector, deviceRTCCaller, device, updateMode } = useDeviceStreamingContext();
   const tab = (router.query.tab as StreamingTabMenuKey | undefined) ?? StreamingTabMenuKey.INFO;
   const {
     handleDoubleClick,
@@ -24,7 +25,7 @@ const LiveTestingScreenViewer: React.FC = () => {
     handleWheel,
     handleFocus,
     handleBlur,
-  } = useDeviceInput(deviceRTCCaller ?? undefined);
+  } = useDeviceInput(deviceRTCCaller ?? undefined, device?.platform ?? Platform.PLATFORM_UNSPECIFIED);
 
   const handleMouseDownVideo = useCallback(
     (e: React.MouseEvent<HTMLTextAreaElement>, videoSize: VideoSize) => {

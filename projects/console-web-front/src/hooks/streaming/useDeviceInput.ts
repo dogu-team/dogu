@@ -1,4 +1,4 @@
-import { Code, CodeUtil, input, PrivateProtocol } from '@dogu-private/types';
+import { Code, CodeUtil, input, Platform, PrivateProtocol } from '@dogu-private/types';
 import { DeviceRTCCaller } from '@dogu-private/webrtc';
 import { useCallback, useRef } from 'react';
 import { shallow } from 'zustand/shallow';
@@ -30,7 +30,7 @@ export interface DeviceInputOption {
   isDoubleClicked?: boolean;
 }
 
-const useDeviceInput = (deviceRTCCaller: DeviceRTCCaller | undefined) => {
+const useDeviceInput = (deviceRTCCaller: DeviceRTCCaller | undefined, platform: Platform) => {
   const isPressing = useRef<boolean>(false);
   const fireEvent = useEventStore((state) => state.fireEvent, shallow);
 
@@ -168,6 +168,9 @@ const useDeviceInput = (deviceRTCCaller: DeviceRTCCaller | undefined) => {
           });
           fireEvent('onDeviceInput', result);
           handleControlResult(result);
+          if (platform === Platform.PLATFORM_IOS) {
+            return;
+          }
         } catch (e) {}
       }
 
@@ -188,7 +191,7 @@ const useDeviceInput = (deviceRTCCaller: DeviceRTCCaller | undefined) => {
       });
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [deviceRTCCaller, handleControlResult],
+    [deviceRTCCaller, handleControlResult, platform],
   );
 
   const handleToolMenuInput = useCallback(

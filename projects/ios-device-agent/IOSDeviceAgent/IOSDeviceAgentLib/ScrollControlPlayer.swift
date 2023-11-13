@@ -8,7 +8,6 @@ actor ScrollControlPlayer: IControlPlayer {
   }
 
   private var broker: Broker? = nil
-  private var webDriverClient: WebDriverClient? = nil
   private var actionPerformer: ActionPerformer? = nil
   private let period: TimeInterval = 1.0 / 30
   private var timer: Cancellable? = nil
@@ -16,7 +15,6 @@ actor ScrollControlPlayer: IControlPlayer {
   private var lastPlayTime: UInt64 = 0  // client's event.timeStamp. unit: milliseconds
 
   func open(with param: ControlOpenParam, broker: Broker) throws {
-    self.webDriverClient = param.webDriverClient
     self.actionPerformer = param.actionPerformer
     self.screenSize = param.screenSize
     self.broker = broker

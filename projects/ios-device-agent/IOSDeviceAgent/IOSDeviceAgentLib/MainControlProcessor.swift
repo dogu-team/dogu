@@ -13,10 +13,14 @@ actor MainControlProcessor {
     let keyControlProcessor = ControlProcessor<KeyControlFactory, KeyControlBroker, KeyControlPlayer>()
     try await keyControlProcessor.open(with: param)
     processors[.iosInjectKeycode] = keyControlProcessor
-    
+
     let scrollControlProcessor = ControlProcessor<ScrollControlFactory, ScrollControlBroker, ScrollControlPlayer>()
     try await scrollControlProcessor.open(with: param)
     processors[.iosInjectScrollEvent] = scrollControlProcessor
+
+    let setClipboardProcessor = ControlProcessor<SetClipboardFactory, SetClipboardBroker, SetClipboardPlayer>()
+    try await setClipboardProcessor.open(with: param)
+    processors[.iosSetClipboard] = setClipboardProcessor
 
   }
 

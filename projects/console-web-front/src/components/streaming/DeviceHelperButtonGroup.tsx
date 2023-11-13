@@ -1,4 +1,4 @@
-import { PrivateProtocol } from '@dogu-private/types';
+import { Platform, PrivateProtocol } from '@dogu-private/types';
 import { Tooltip } from 'antd';
 import styled from 'styled-components';
 import Image from 'next/image';
@@ -11,8 +11,11 @@ const DeviceControlKeycode = PrivateProtocol.DeviceControlKeycode;
 const DeviceControlAction = PrivateProtocol.DeviceControlAction;
 
 const DeviceHelperButtonGroup: React.FC = () => {
-  const { deviceRTCCaller } = useDeviceStreamingContext();
-  const { sendAndroidKeycode } = useDeviceInput(deviceRTCCaller ?? undefined);
+  const { deviceRTCCaller, device } = useDeviceStreamingContext();
+  const { sendAndroidKeycode } = useDeviceInput(
+    deviceRTCCaller ?? undefined,
+    device?.platform ?? Platform.PLATFORM_UNSPECIFIED,
+  );
 
   return (
     <Box>

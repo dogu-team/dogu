@@ -121,6 +121,14 @@ public final class DeviceControlOuterClass {
      */
     public static final DeviceControlType DEVICE_CONTROL_TYPE_IOS_INJECT_SCROLL_EVENT = DEVICE_CONTROL_TYPE_AOS_INJECT_SCROLL_EVENT;
     /**
+     * <code>DEVICE_CONTROL_TYPE_IOS_GET_CLIPBOARD = 9;</code>
+     */
+    public static final DeviceControlType DEVICE_CONTROL_TYPE_IOS_GET_CLIPBOARD = DEVICE_CONTROL_TYPE_AOS_GET_CLIPBOARD;
+    /**
+     * <code>DEVICE_CONTROL_TYPE_IOS_SET_CLIPBOARD = 10;</code>
+     */
+    public static final DeviceControlType DEVICE_CONTROL_TYPE_IOS_SET_CLIPBOARD = DEVICE_CONTROL_TYPE_AOS_SET_CLIPBOARD;
+    /**
      * <code>DEVICE_CONTROL_TYPE_UNSPECIFIED = 0;</code>
      */
     public static final int DEVICE_CONTROL_TYPE_UNSPECIFIED_VALUE = 0;
@@ -224,6 +232,14 @@ public final class DeviceControlOuterClass {
      * <code>DEVICE_CONTROL_TYPE_IOS_INJECT_SCROLL_EVENT = 4;</code>
      */
     public static final int DEVICE_CONTROL_TYPE_IOS_INJECT_SCROLL_EVENT_VALUE = 4;
+    /**
+     * <code>DEVICE_CONTROL_TYPE_IOS_GET_CLIPBOARD = 9;</code>
+     */
+    public static final int DEVICE_CONTROL_TYPE_IOS_GET_CLIPBOARD_VALUE = 9;
+    /**
+     * <code>DEVICE_CONTROL_TYPE_IOS_SET_CLIPBOARD = 10;</code>
+     */
+    public static final int DEVICE_CONTROL_TYPE_IOS_SET_CLIPBOARD_VALUE = 10;
 
 
     @java.lang.Override

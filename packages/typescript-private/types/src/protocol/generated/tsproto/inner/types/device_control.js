@@ -35,6 +35,8 @@ var DeviceControlType;
     DeviceControlType[DeviceControlType["DEVICE_CONTROL_TYPE_IOS_INJECT_TEXT"] = 2] = "DEVICE_CONTROL_TYPE_IOS_INJECT_TEXT";
     DeviceControlType[DeviceControlType["DEVICE_CONTROL_TYPE_IOS_INJECT_TOUCH_EVENT"] = 3] = "DEVICE_CONTROL_TYPE_IOS_INJECT_TOUCH_EVENT";
     DeviceControlType[DeviceControlType["DEVICE_CONTROL_TYPE_IOS_INJECT_SCROLL_EVENT"] = 4] = "DEVICE_CONTROL_TYPE_IOS_INJECT_SCROLL_EVENT";
+    DeviceControlType[DeviceControlType["DEVICE_CONTROL_TYPE_IOS_GET_CLIPBOARD"] = 9] = "DEVICE_CONTROL_TYPE_IOS_GET_CLIPBOARD";
+    DeviceControlType[DeviceControlType["DEVICE_CONTROL_TYPE_IOS_SET_CLIPBOARD"] = 10] = "DEVICE_CONTROL_TYPE_IOS_SET_CLIPBOARD";
     DeviceControlType[DeviceControlType["UNRECOGNIZED"] = -1] = "UNRECOGNIZED";
 })(DeviceControlType = exports.DeviceControlType || (exports.DeviceControlType = {}));
 function deviceControlTypeFromJSON(object) {
@@ -114,6 +116,12 @@ function deviceControlTypeFromJSON(object) {
         case 4:
         case 'DEVICE_CONTROL_TYPE_IOS_INJECT_SCROLL_EVENT':
             return DeviceControlType.DEVICE_CONTROL_TYPE_IOS_INJECT_SCROLL_EVENT;
+        case 9:
+        case 'DEVICE_CONTROL_TYPE_IOS_GET_CLIPBOARD':
+            return DeviceControlType.DEVICE_CONTROL_TYPE_IOS_GET_CLIPBOARD;
+        case 10:
+        case 'DEVICE_CONTROL_TYPE_IOS_SET_CLIPBOARD':
+            return DeviceControlType.DEVICE_CONTROL_TYPE_IOS_SET_CLIPBOARD;
         case -1:
         case 'UNRECOGNIZED':
         default:
@@ -173,6 +181,10 @@ function deviceControlTypeToJSON(object) {
             return 'DEVICE_CONTROL_TYPE_IOS_INJECT_TOUCH_EVENT';
         case DeviceControlType.DEVICE_CONTROL_TYPE_IOS_INJECT_SCROLL_EVENT:
             return 'DEVICE_CONTROL_TYPE_IOS_INJECT_SCROLL_EVENT';
+        case DeviceControlType.DEVICE_CONTROL_TYPE_IOS_GET_CLIPBOARD:
+            return 'DEVICE_CONTROL_TYPE_IOS_GET_CLIPBOARD';
+        case DeviceControlType.DEVICE_CONTROL_TYPE_IOS_SET_CLIPBOARD:
+            return 'DEVICE_CONTROL_TYPE_IOS_SET_CLIPBOARD';
         case DeviceControlType.UNRECOGNIZED:
         default:
             return 'UNRECOGNIZED';
