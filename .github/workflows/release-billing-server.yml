@@ -80,9 +80,11 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: Bhacaz/checkout-files@v2
+        uses: actions/checkout@v3
         with:
-          files: docker-compose-billing.yml
+          path: .
+          sparse-checkout: |
+            docker-compose-billing.yml
 
       - name: DEV Configure AWS credentials
         if: github.event.inputs.build_type == 'dev'
