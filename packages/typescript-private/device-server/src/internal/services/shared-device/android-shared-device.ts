@@ -316,7 +316,6 @@ export class AndroidSharedDeviceService implements Zombieable {
 
     const newAppiumAdb = this.appiumAdb.clone({ adbExecTimeout: 1000 * 60 * 3 });
     await this.checkSetup(`AndroidSharedDeviceService.setup.setDeviceLocale`, newAppiumAdb.setDeviceLocale('en-US'));
-    await this.checkSetup(`AndroidSharedDeviceService.setup.setGeoLocation`, newAppiumAdb.setGeoLocation({ longitude: 126.939, latitude: 37.392, altitude: 0 }));
 
     await this.checkSetup(`AndroidSharedDeviceService.setup.allowNonMarketApps`, adb.allowNonMarketApps()).catch((e) => {
       this.printable.error(`AndroidSharedDeviceService.revive.allowNonMarketApps failed.`, { serial, error: errorify(e) });
