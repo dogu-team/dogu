@@ -32,7 +32,7 @@ function App() {
   useEffect(() => {
     (async () => {
       try {
-        const [platform, isDev, isShowDevUI, showApiUrlInput, useAppUpdate, useSentry, showTLSAuthReject, runType] = await Promise.all([
+        const [platform, isDev, isShowDevUI, showApiUrlInput, useAppUpdate, useSentry, showTLSAuthReject, runType, isDeviceShare] = await Promise.all([
           ipc.settingsClient.getPlatform(),
           ipc.settingsClient.isDev(),
           ipc.settingsClient.isShowDevUI(),
@@ -41,6 +41,7 @@ function App() {
           ipc.featureConfigClient.get('useSentry'),
           ipc.featureConfigClient.get('showTLSAuthReject'),
           ipc.appConfigClient.get('DOGU_RUN_TYPE'),
+          ipc.appConfigClient.get('DOGU_DEVICE_IS_SHAREABLE'),
         ]);
         setEnvironment({
           platform,
@@ -54,6 +55,7 @@ function App() {
           },
           appConfig: {
             DOGU_RUN_TYPE: runType,
+            DOGU_DEVICE_IS_SHAREABLE: isDeviceShare,
           },
         });
 

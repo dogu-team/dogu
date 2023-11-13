@@ -33,7 +33,7 @@ export class TestExecutor extends BaseEntity implements TestExecutorBase {
   deletedAt!: Date | null;
 
   @OneToMany(() => TestExecutorWebResponsive, (webResponsive) => webResponsive.testExecutor, { createForeignKeyConstraints: false })
-  webResponsives?: TestExecutorWebResponsive[];
+  testExecutorWebResponsives?: TestExecutorWebResponsive[];
 
   @ManyToOne(() => User, (user) => user.routinePipelines, { createForeignKeyConstraints: false })
   @JoinColumn({ name: TestExecutorPropSnake.creator_id })

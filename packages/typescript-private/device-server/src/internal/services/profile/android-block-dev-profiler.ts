@@ -79,7 +79,7 @@ export class BlockDeveloperOptionsProfiler implements AndroidAdbProfiler {
   private logcatProc: child_process.ChildProcess | undefined = undefined;
   private locale: AndroidFullLocale | undefined = undefined;
   async profile(params: AndroidAdbProfilerParams): Promise<Partial<RuntimeInfo>> {
-    if (!env.DOGU_IS_DEVICE_SHARE) {
+    if (!env.DOGU_DEVICE_IS_SHAREABLE) {
       return {};
     }
     const { context, appium, logger, adb } = params;

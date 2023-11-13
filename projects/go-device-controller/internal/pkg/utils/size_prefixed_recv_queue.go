@@ -38,6 +38,16 @@ func (q *SizePrefixedRecvQueue) PushBytes(data []byte) {
 	q.slice = append(q.slice, data...)
 }
 
+func (q *SizePrefixedRecvQueue) PopLoop(callback func([]byte, error)) {
+	for i := 0; i < 100000; i++ {
+		if !q.Has() {
+			break
+		}
+		data, err := q.Pop()
+		callback(data, err)
+	}
+}
+
 func (q *SizePrefixedRecvQueue) Has() bool {
 	if len(q.slice) < 4 {
 		return false
@@ -48,6 +58,9 @@ func (q *SizePrefixedRecvQueue) Has() bool {
 	return uint32(len(q.slice)) >= 4+size
 }
 
+/*
+* Caution: When call after Push() Has(), you should pop until Has returns false.
+ */
 func (q *SizePrefixedRecvQueue) Pop() ([]byte, error) {
 	if !q.Has() {
 		return nil, errors.New("SizePrefixedRecvQueue.Pop no data")

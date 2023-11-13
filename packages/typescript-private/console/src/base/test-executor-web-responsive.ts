@@ -1,8 +1,16 @@
+import { Vendor } from '@dogu-private/device-data';
 import { TestExecutorId, TestExecutorWebResponsiveId } from '@dogu-private/types';
 import { camelToSnakeCasePropertiesOf, propertiesOf } from '@dogu-tech/common';
 
-export type TestExecutorWebResponsiveSnapshots = {
-  [display: string]: string;
+export type TestExecutorWebResponsiveSnapshot = {
+  vendors: Vendor[];
+  images: {
+    [display: string]: string;
+  };
+};
+
+export type TestExecutorWebResponsiveSnapshotMap = {
+  [url: string]: TestExecutorWebResponsiveSnapshot;
 };
 
 export interface TestExecutorWebResponsiveBaseTraits {
@@ -10,6 +18,7 @@ export interface TestExecutorWebResponsiveBaseTraits {
   testExecutorId: TestExecutorId;
   url: string;
   snapshotCount: number;
+  vendors: Vendor[];
   createdAt: Date;
   deletedAt: Date | null;
 }

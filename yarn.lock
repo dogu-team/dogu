@@ -3058,6 +3058,7 @@ __metadata:
     "@dogu-tech/common": "workspace:^"
     "@dogu-tech/console-gamium": "workspace:^"
     "@dogu-tech/device-client-common": "workspace:^"
+    "@google-cloud/run": ^1.0.2
     "@types/js-yaml": 4.0.5
     "@types/lodash": 4.14.186
     "@types/node": 18.15.11
@@ -3306,6 +3307,7 @@ __metadata:
     "@dogu-private/types": "workspace:^"
     "@dogu-tech/common": "workspace:^"
     "@dogu-tech/node": "workspace:^"
+    "@google-cloud/run": ^1.0.2
     "@google-cloud/storage": ^7.5.0
     "@types/node": 18.15.11
     axios: ^1.6.0
@@ -3997,12 +3999,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@googlemaps/js-api-loader@npm:^1.13.8":
+"@googlemaps/js-api-loader@npm:1.16.2":
   version: 1.16.2
   resolution: "@googlemaps/js-api-loader@npm:1.16.2"
   dependencies:
     fast-deep-equal: ^3.1.3
   checksum: 122ee57cc6a936e50358aedc4e79042353590467210e901fb42d4e7d9123c248c4db5cd5407a350cb5bea6de9e9ef1a508c08ba593475285d90bc4b93db42f51
+  languageName: node
+  linkType: hard
+
+"@googlemaps/markerclusterer@npm:2.3.2":
+  version: 2.3.2
+  resolution: "@googlemaps/markerclusterer@npm:2.3.2"
+  dependencies:
+    fast-deep-equal: ^3.1.3
+    supercluster: ^8.0.1
+  checksum: 44a542d179c02a7c7eb03856aa700d9995ad55722c0c74271b75ed487fc06d33c98461c10972ad7a29ea833a14395379d72e6679bd244192166cd383f803d798
   languageName: node
   linkType: hard
 
@@ -5048,13 +5060,6 @@ __metadata:
   bin:
     node-pre-gyp: bin/node-pre-gyp
   checksum: b848f6abc531a11961d780db813cc510ca5a5b6bf3184d72134089c6875a91c44d571ba6c1879470020803f7803609e7b2e6e429651c026fe202facd11d444b8
-  languageName: node
-  linkType: hard
-
-"@mapbox/point-geometry@npm:^0.1.0":
-  version: 0.1.0
-  resolution: "@mapbox/point-geometry@npm:0.1.0"
-  checksum: ed41c1ce0140de81039424415d9a199abba72cdb2287314e1b8c3e295da3224f7e8c1b0ae99a9b097703e7abe63e1978a518e29896989cc8bba3d482360bc22f
   languageName: node
   linkType: hard
 
@@ -6533,6 +6538,37 @@ __metadata:
     react: ">=16.9.0"
     react-dom: ">=16.9.0"
   checksum: 3c1db298216cf8799f8bad51d62e1adc73f68eb488a31384bf3cdcff8e2b6e0b33bab64a245217a4e4603d0b5bf01537afbc0c09d0874fe48b8c3e036ea6258b
+  languageName: node
+  linkType: hard
+
+"@react-google-maps/api@npm:^2.19.2":
+  version: 2.19.2
+  resolution: "@react-google-maps/api@npm:2.19.2"
+  dependencies:
+    "@googlemaps/js-api-loader": 1.16.2
+    "@googlemaps/markerclusterer": 2.3.2
+    "@react-google-maps/infobox": 2.19.2
+    "@react-google-maps/marker-clusterer": 2.19.2
+    "@types/google.maps": 3.53.5
+    invariant: 2.2.4
+  peerDependencies:
+    react: ^16.8 || ^17 || ^18
+    react-dom: ^16.8 || ^17 || ^18
+  checksum: 07ba34939e66d7539adc899810079571c022e3da3077c0c61f25f4f93515e6b6611b3845bc0829a939a3fe7fe9690c67f32e56430d16feab9a75fe4ebf3a11a9
+  languageName: node
+  linkType: hard
+
+"@react-google-maps/infobox@npm:2.19.2":
+  version: 2.19.2
+  resolution: "@react-google-maps/infobox@npm:2.19.2"
+  checksum: e2022d857931492d0fd457b72fa729076da1e3e0c5281a402a71127e35d683cb7ca4074e2888682a612ca4b5d2b0d6abc26cce94aa9a315abeaa61b4f6239f24
+  languageName: node
+  linkType: hard
+
+"@react-google-maps/marker-clusterer@npm:2.19.2":
+  version: 2.19.2
+  resolution: "@react-google-maps/marker-clusterer@npm:2.19.2"
+  checksum: fde23240ae153ec8aeddd1d702f1e2a8ee51412fe3b5079a88d4e1697f8c580e743afe6bb815214b218cefddb1a2097a9d982440c2207906dd1dd2a88b8068cb
   languageName: node
   linkType: hard
 
@@ -8318,12 +8354,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/google-map-react@npm:^2":
-  version: 2.1.9
-  resolution: "@types/google-map-react@npm:2.1.9"
-  dependencies:
-    "@types/react": "*"
-  checksum: 74f2484ab4af9c6f29f243b0bfdd7d4f856177d2aee88c32457fa986150e793f9c6a6161f3d9185d0ae2b1624f33a60917ba80d61e76d013ea0458bf7599e6fb
+"@types/google.maps@npm:3.53.5":
+  version: 3.53.5
+  resolution: "@types/google.maps@npm:3.53.5"
+  checksum: 57862d61435a523ae769d19ebcca99dc1d4a2ea976bbdf92da25bda3f2bed71871f8d78ef50b567bcbc54c8a78a55cfa16e8bd785e3d503fe2c3b5ef8fd76972
   languageName: node
   linkType: hard
 
@@ -10657,6 +10691,23 @@ __metadata:
     shelljs: 0.8.5
     shx: 0.3.4
     ts-jest: 29.0.3
+    ts-node: 10.9.1
+    typescript: 4.7.4
+  languageName: unknown
+  linkType: soft
+
+"android-io.appium.settings-builder@workspace:projects/android-io.appium.settings-builder":
+  version: 0.0.0-use.local
+  resolution: "android-io.appium.settings-builder@workspace:projects/android-io.appium.settings-builder"
+  dependencies:
+    "@dogu-dev-private/build-tools": "workspace:^"
+    "@dogu-tech/common": "workspace:^"
+    "@dogu-tech/node": "workspace:^"
+    "@types/shelljs": 0.8.11
+    compressing: 1.9.0
+    nodemon: 2.0.22
+    shelljs: 0.8.5
+    shx: 0.3.4
     ts-node: 10.9.1
     typescript: 4.7.4
   languageName: unknown
@@ -13478,12 +13529,12 @@ __metadata:
     "@dogu-tech/node": "workspace:^"
     "@emotion/is-prop-valid": 1.2.0
     "@monaco-editor/react": 4.5.0-beta.0
+    "@react-google-maps/api": ^2.19.2
     "@sentry/nextjs": 7.50.0
     "@slack/web-api": ^6.9.0
     "@svgr/webpack": 8.0.1
     "@swc/core": 1.2.220
     "@types/cookie": 0.5.1
-    "@types/google-map-react": ^2
     "@types/hoist-non-react-statics": 3.3.1
     "@types/lodash": 4.14.186
     "@types/node": 18.15.11
@@ -13519,7 +13570,6 @@ __metadata:
     find-up: 6.3.0
     flatbuffers: 22.10.26
     gamium: 2.0.2
-    google-map-react: ^2.2.1
     hoist-non-react-statics: 3.3.2
     lodash: 4.17.21
     moment: 2.29.4
@@ -13575,7 +13625,6 @@ __metadata:
     "@dogu-tech/env-tools": "workspace:^"
     "@dogu-tech/node": "workspace:^"
     "@gitbeaker/node": 35.8.1
-    "@google-cloud/run": ^1.0.2
     "@google-cloud/storage": ^7.5.0
     "@influxdata/influxdb-client": 1.33.2
     "@nestjs-modules/mailer": 1.9.1
@@ -17917,21 +17966,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"google-map-react@npm:^2.2.1":
-  version: 2.2.1
-  resolution: "google-map-react@npm:2.2.1"
-  dependencies:
-    "@googlemaps/js-api-loader": ^1.13.8
-    "@mapbox/point-geometry": ^0.1.0
-    eventemitter3: ^4.0.4
-    prop-types: ^15.7.2
-  peerDependencies:
-    react: ^16.0.0 || ^17.0.0 || ^18.0.0
-    react-dom: ^16.0.0 || ^17.0.0 || ^18.0.0
-  checksum: 6bc082581c44ffe1e048766849308bc078ebe0a695b485d284ded9783fa4ffd9ddc4d62597fa11379fe667f17a54a2e2f6ade8e2eda78299959fe81551563a14
-  languageName: node
-  linkType: hard
-
 "google-p12-pem@npm:^4.0.0":
   version: 4.0.1
   resolution: "google-p12-pem@npm:4.0.1"
@@ -18856,7 +18890,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"invariant@npm:*, invariant@npm:^2.2.4":
+"invariant@npm:*, invariant@npm:2.2.4, invariant@npm:^2.2.4":
   version: 2.2.4
   resolution: "invariant@npm:2.2.4"
   dependencies:
@@ -21600,6 +21634,13 @@ __metadata:
     jwa: ^2.0.0
     safe-buffer: ^5.0.1
   checksum: d68d07aa6d1b8cb35c363a9bd2b48f15064d342a5d9dc18a250dbbce8dc06bd7e4792516c50baa16b8d14f61167c19e851fd7f66b59ecc68b7f6a013759765f7
+  languageName: node
+  linkType: hard
+
+"kdbush@npm:^4.0.2":
+  version: 4.0.2
+  resolution: "kdbush@npm:4.0.2"
+  checksum: 6782ef2cdaec9322376b9955a16b0163beda0cefa2f87da76e8970ade2572d8b63bec915347aaeac609484b0c6e84d7b591f229ef353b68b460238095bacde2d
   languageName: node
   linkType: hard
 
@@ -26929,7 +26970,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prop-types@npm:*, prop-types@npm:15.8.1, prop-types@npm:^15.0.0, prop-types@npm:^15.5.0, prop-types@npm:^15.6.2, prop-types@npm:^15.7.2, prop-types@npm:^15.8.1":
+"prop-types@npm:*, prop-types@npm:15.8.1, prop-types@npm:^15.0.0, prop-types@npm:^15.5.0, prop-types@npm:^15.6.2, prop-types@npm:^15.8.1":
   version: 15.8.1
   resolution: "prop-types@npm:15.8.1"
   dependencies:
@@ -30973,6 +31014,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"supercluster@npm:^8.0.1":
+  version: 8.0.1
+  resolution: "supercluster@npm:8.0.1"
+  dependencies:
+    kdbush: ^4.0.2
+  checksum: 39d141f768a511efa53260252f9dab9a2ce0228b334e55482c8d3019e151932f05e1a9a0252d681737651b13c741c665542a6ddb40ec27de96159ea7ad41f7f4
+  languageName: node
+  linkType: hard
+
 "supports-color@npm:5.4.0":
   version: 5.4.0
   resolution: "supports-color@npm:5.4.0"
@@ -31343,7 +31393,6 @@ __metadata:
     "@google-cloud/run": ^1.0.2
     "@google-cloud/storage": ^7.4.0
     "@types/lodash": 4.14.195
-    "@types/node": 18.15.11
     "@types/selenium-webdriver": 4.1.15
     "@yarnpkg/pnpify": ^4.0.0
     cheerio: ^1.0.0-rc.12

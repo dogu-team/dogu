@@ -32,13 +32,13 @@ export const AppConfigSchema = {
   DOGU_DEVICE_PLATFORM_ENABLED: {
     type: 'string',
   },
-  DOGU_DEVICE_IOS_RESTART_ON_INIT: {
+  DOGU_DEVICE_RESTART_IOS_ON_INIT: {
     type: 'boolean',
   },
   DOGU_LINUX_DEVICE_SERIAL: {
     type: 'string',
   },
-  DOGU_IS_DEVICE_SHARE: {
+  DOGU_DEVICE_IS_SHAREABLE: {
     type: 'boolean',
   },
   DOGU_WIFI_SSID: {

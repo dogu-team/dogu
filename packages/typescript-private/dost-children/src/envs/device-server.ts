@@ -37,7 +37,7 @@ export class DeviceServerEnv extends PreloadDeviceServerEnv {
 
   @IsBoolean()
   @TransformBooleanString()
-  DOGU_DEVICE_IOS_RESTART_ON_INIT = false;
+  DOGU_DEVICE_RESTART_IOS_ON_INIT = false;
 
   @IsBoolean()
   @TransformBooleanString()
@@ -45,7 +45,7 @@ export class DeviceServerEnv extends PreloadDeviceServerEnv {
 
   @IsBoolean()
   @TransformBooleanString()
-  DOGU_IS_DEVICE_SHARE = false;
+  DOGU_DEVICE_IS_SHAREABLE = false;
 
   @IsString()
   DOGU_LINUX_DEVICE_SERIAL = '';

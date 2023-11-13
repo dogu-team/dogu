@@ -49,7 +49,7 @@ const StreamingVideo = ({
   onBlur,
   readonly,
 }: Props) => {
-  const { videoRef, loading, deviceScreenshotBase64 } = useDeviceStreamingContext();
+  const { videoRef, loading, deviceScreenshotBase64, isCloudDevice } = useDeviceStreamingContext();
   const [videoSize, setVideoSize] = useState<VideoSize>({ width: 0, height: 0 });
   const boxRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -120,13 +120,22 @@ const StreamingVideo = ({
         <LoadingBox>
           <LoadingOutlined style={{ fontSize: '2rem' }} />
           <p style={{ lineHeight: '1.4' }}>
-            <Trans
-              i18nKey="device-streaming:deviceStreamingLoadingText"
-              components={{
-                br: <br />,
-                link: <Link href="https://docs.dogutech.io/device-farm/device/trouble-shooting" target="_blank" />,
-              }}
-            />
+            {isCloudDevice ? (
+              <Trans
+                i18nKey="device-streaming:cloudDeviceStreamingLoadingText"
+                components={{
+                  br: <br />,
+                }}
+              />
+            ) : (
+              <Trans
+                i18nKey="device-streaming:deviceStreamingLoadingText"
+                components={{
+                  br: <br />,
+                  link: <Link href="https://docs.dogutech.io/device-farm/device/trouble-shooting" target="_blank" />,
+                }}
+              />
+            )}
           </p>
         </LoadingBox>
       )}

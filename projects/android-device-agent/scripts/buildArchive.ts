@@ -1,5 +1,5 @@
+import { android } from '@dogu-dev-private/build-tools';
 import { buildAndroidRelease } from './buildAndroidRelease';
-import { checkBuildEnv } from './checkBuildenv';
 
 if (process.platform === 'linux') {
   console.log('Skipping android build on linux.');
@@ -13,7 +13,7 @@ if (process.platform === 'linux') {
 //   }
 // }
 
-if (!checkBuildEnv()) {
+if (!android.checkBuildEnv()) {
   process.exit(1);
 }
 buildAndroidRelease();

@@ -1,5 +1,6 @@
 import { Serial, SerialPrintable } from '@dogu-private/types';
 import { delay, filterAsync, loop, loopTime, PrefixLogger, Repeat, retry, TimeOptions, usingAsnyc } from '@dogu-tech/common';
+import { CheckTimer } from '@dogu-tech/node';
 import { boxBox } from 'intersects';
 import { AppiumContextImpl, WDIOElement } from '../../../appium/appium.context';
 import { IdeviceInstaller } from '../../externals/cli/ideviceinstaller';
@@ -13,7 +14,6 @@ import {
   IosWebDriver,
   IosWebDriverInfo,
 } from '../../externals/webdriver/ios-webdriver';
-import { CheckTimer } from '../../util/check-time';
 
 interface BlockAppInfo {
   bundleId: string;
@@ -186,7 +186,7 @@ export class IosResetService {
     private iosWebDriverInfo: IosWebDriverInfo,
     private logger: SerialPrintable,
   ) {
-    this.timer = new CheckTimer(this.logger);
+    this.timer = new CheckTimer({ logger });
   }
 
   get isResetting(): boolean {
@@ -228,7 +228,7 @@ export class IosResetService {
       async (): Promise<void> => {
         const driver = appiumContext.driver();
         if (!driver) {
-          throw new Error(`IosResetService.clearSafariCache driver is null`);
+          throw new Error(`IosResetService.reset driver is null`);
         }
         const iosDriver = new IosWebDriver(driver, wda, iosWebDriverInfo, logger);
         const helper = new IosResetHelper(iosDriver);
@@ -689,15 +689,18 @@ export class IosResetService {
               isResetHomeDone = true;
             }
 
-            await iosDriver.clickSelector(new IosClassChainSelector('**/XCUIElementTypeStaticText[`label == "Reset"`]'));
-            await iosDriver.clickSelector(new IosButtonPredicateStringSelector('Reset Location & Privacy'));
-            await iosDriver.clickSelector(new IosButtonPredicateStringSelector('Reset Settings'));
+            if (process.env.DOGU_DEVICE_RESET_IOS_LOCATION) {
+              // temporaily disable to prevent intermittent
+              await iosDriver.clickSelector(new IosClassChainSelector('**/XCUIElementTypeStaticText[`label == "Reset"`]'));
+              await iosDriver.clickSelector(new IosButtonPredicateStringSelector('Reset Location & Privacy'));
+              await iosDriver.clickSelector(new IosButtonPredicateStringSelector('Reset Settings'));
 
-            for await (const _ of loopTime({ period: { milliseconds: 300 }, expire: { seconds: 10 } })) {
-              try {
-                await iosDriver.clickSelector(new IosButtonPredicateStringSelector('Trust'));
-                break;
-              } catch (e) {}
+              for await (const _ of loopTime({ period: { milliseconds: 300 }, expire: { seconds: 10 } })) {
+                try {
+                  await iosDriver.clickSelector(new IosButtonPredicateStringSelector('Trust'));
+                  break;
+                } catch (e) {}
+              }
             }
           },
         ),

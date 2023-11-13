@@ -5,20 +5,21 @@ import path from 'path';
 import * as shelljs from 'shelljs';
 import { copyForce } from './build_helpers';
 
+interface BuildInfo {
+  cmakeProject: string;
+  cmakeBuildTool: string;
+  cmakeMoreArg: string;
+  artifacts: {
+    src: string;
+    dests: string[];
+  }[];
+  libs: {
+    path: string;
+  }[];
+}
 const doguWorkspacePath = path.resolve(__dirname, '../../..');
 const parameter: {
-  [key: string]: {
-    cmakeProject: string;
-    cmakeBuildTool: string;
-    cmakeMoreArg: string;
-    artifacts: {
-      src: string;
-      dests: string[];
-    }[];
-    libs: {
-      path: string;
-    }[];
-  }[];
+  [key: string]: BuildInfo[];
 } = {
   win32: [
     {
@@ -104,21 +105,7 @@ export async function buildDesktopCapturer(): Promise<void> {
   }
 }
 
-export async function buildDesktopCapturerWithParam(
-  desktopCapturerProjPath: string,
-  param: {
-    cmakeProject: string;
-    cmakeBuildTool: string;
-    cmakeMoreArg: string;
-    artifacts: {
-      src: string;
-      dests: string[];
-    }[];
-    libs: {
-      path: string;
-    }[];
-  },
-): Promise<void> {
+export async function buildDesktopCapturerWithParam(desktopCapturerProjPath: string, param: BuildInfo): Promise<void> {
   const projectName = param.cmakeProject;
   const projectMoreArg = param.cmakeMoreArg;
   const artifacts = param.artifacts;

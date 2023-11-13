@@ -1,9 +1,7 @@
-import { DeviceBase, FeatureTableBase, OrganizationBase, ProjectBase, UserBase } from '@dogu-private/console';
+import { DeviceBase, OrganizationBase, ProjectBase, UserBase } from '@dogu-private/console';
 import { DeviceId, LiveSessionId, OrganizationId } from '@dogu-private/types';
-import { Button } from 'antd';
 import { GetServerSideProps } from 'next';
 import { useRouter } from 'next/router';
-import { MdOutlineFeedback } from 'react-icons/md';
 
 import { getCloudDeviceByIdInServerSide } from '../../src/api/cloud-device';
 import { getDeviceByIdInServerSide } from '../../src/api/device';
@@ -15,7 +13,6 @@ import LiveTestingCloseSessionButton from '../../src/components/cloud/LiveTestin
 import LiveTestingSessionTimer from '../../src/components/cloud/LiveTestingSessionTimer';
 import ParticipantGroup from '../../src/components/studio/ParticipantGroup';
 import StudioDeviceSelector from '../../src/components/studio/StudioDeviceSelector';
-import { getFeatureConfigInServerSide } from '../api/feature';
 import StudioLayout from '../components/studio/StudioLayout';
 
 export interface StudioTestingPageProps {
@@ -23,12 +20,12 @@ export interface StudioTestingPageProps {
   project: ProjectBase;
   me: UserBase;
   device: DeviceBase;
-  feature: FeatureTableBase;
 }
 
 export interface CloudStudioTestingPageProps extends Omit<StudioTestingPageProps, 'project'> {}
 
 export const getStudioTestingLayout = (page: React.ReactElement<StudioTestingPageProps>) => {
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const router = useRouter();
 
   return (
@@ -71,6 +68,7 @@ export const getStudioTestingLayout = (page: React.ReactElement<StudioTestingPag
 };
 
 export const getCloudStudioTestingLayout = (page: React.ReactElement<CloudStudioTestingPageProps>) => {
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const router = useRouter();
   const liveSessionId = router.query.sessionId as LiveSessionId;
 
@@ -122,11 +120,10 @@ export const getStudioTestingServerSideProps: GetServerSideProps<StudioTestingPa
   }
 
   try {
-    const [organization, project, user, featureConfig, device] = await Promise.all([
+    const [organization, project, user, device] = await Promise.all([
       getOrganizationInServerSide(context),
       getProjectInServerSide(context),
       getUserInServerSide(context),
-      getFeatureConfigInServerSide(context),
       getDeviceByIdInServerSide(context, organizationId, deviceId),
     ]);
 
@@ -137,7 +134,6 @@ export const getStudioTestingServerSideProps: GetServerSideProps<StudioTestingPa
           project,
           me: user,
           device,
-          feature: featureConfig,
         },
       };
     }
@@ -170,10 +166,9 @@ export const getCloudDeviceStudioTestingServerSideProps: GetServerSideProps<Clou
   }
 
   try {
-    const [organization, user, featureConfig, device] = await Promise.all([
+    const [organization, user, device] = await Promise.all([
       getOrganizationInServerSide(context),
       getUserInServerSide(context),
-      getFeatureConfigInServerSide(context),
       getCloudDeviceByIdInServerSide(context, deviceId),
     ]);
 
@@ -183,7 +178,6 @@ export const getCloudDeviceStudioTestingServerSideProps: GetServerSideProps<Clou
           organization,
           me: user,
           device,
-          feature: featureConfig,
         },
       };
     }

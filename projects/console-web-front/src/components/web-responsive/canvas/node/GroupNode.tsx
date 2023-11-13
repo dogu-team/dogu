@@ -2,24 +2,45 @@ import { Vendor } from '@dogu-private/device-data';
 import styled from 'styled-components';
 
 import PageImage, { PageImageProps } from '../PageImage';
-import Section from '../Section';
+import PageImageSection from '../PageImageSection';
+import { URLTitle } from '../URLTitle';
 
-interface GroupNodeProps {
-  data: {
-    category: Vendor;
-    pageImageItems: PageImageProps[];
-  };
+export interface GroupNodeDataProps {
+  url: string;
+  vendors: Vendor[];
+  pageImagePropsMap: { [vendor in Vendor]?: PageImageProps[] };
+}
+
+export interface GroupNodeProps {
+  data: GroupNodeDataProps;
 }
 
 const GroupNode = ({ data }: GroupNodeProps) => {
+  const { url, vendors, pageImagePropsMap: pageImageItemMap } = data;
+
   return (
     <Box>
-      <Section title={data.category} />
-      <PageImageBox>
-        {data.pageImageItems.map((item) => {
-          return <PageImage key={item.imageUrl} {...item} />;
-        })}
-      </PageImageBox>
+      <URLBox>
+        <URLTitle title={url} />
+      </URLBox>
+      {vendors.map((vendor) => {
+        const pageImageProps = pageImageItemMap[vendor];
+
+        if (!pageImageProps) {
+          return null;
+        }
+
+        return (
+          <>
+            <PageImageSection title={vendor} />
+            <PageImageBox>
+              {pageImageProps.map((item) => {
+                return <PageImage key={item.imageUrl} {...item} />;
+              })}
+            </PageImageBox>
+          </>
+        );
+      })}
     </Box>
   );
 };
@@ -28,6 +49,12 @@ const Box = styled.div`
   display: flex;
   flex-direction: column;
   gap: 4rem;
+`;
+
+const URLBox = styled.div`
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 12rem;
 `;
 
 const PageImageBox = styled.div`

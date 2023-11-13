@@ -87,8 +87,11 @@ const ToolbarButton = ({
 interface Props {}
 
 const DeviceControlToolbar: React.FC<Props> = () => {
-  const { deviceRTCCaller, isCloudDevice } = useDeviceStreamingContext();
-  const { handleToolMenuInput } = useDeviceInput(deviceRTCCaller ?? undefined);
+  const { deviceRTCCaller, device, isCloudDevice } = useDeviceStreamingContext();
+  const { handleToolMenuInput } = useDeviceInput(
+    deviceRTCCaller ?? undefined,
+    device?.platform ?? Platform.PLATFORM_UNSPECIFIED,
+  );
 
   return (
     <ToolbarBox>
@@ -119,9 +122,9 @@ const DeviceControlToolbar: React.FC<Props> = () => {
         />
       )}
 
-      {/* {isCloudDevice && (
+      {isCloudDevice && (
         <ToolbarButton
-          workingPlatforms={[Platform.PLATFORM_ANDROID]}
+          workingPlatforms={[Platform.PLATFORM_ANDROID, Platform.PLATFORM_IOS]}
           icon={<MdGpsFixed />}
           text="Location"
           content={<DeviceLocationChanger />}
@@ -129,7 +132,7 @@ const DeviceControlToolbar: React.FC<Props> = () => {
           tooltipTitle="Change device location"
           destroyTooltipOnHide
         />
-      )} */}
+      )}
 
       <Divider style={{ margin: '.8rem 0' }} />
 

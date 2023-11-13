@@ -19,9 +19,10 @@ const LiveTestingSessionTimer: React.FC<Props> = ({ organizationId, sessionId })
   const { data } = useSWR<LiveSessionBase>(
     `/organizations/${organizationId}/live-sessions/${sessionId}`,
     swrAuthFetcher,
+    { revalidateOnFocus: false },
   );
   const [isTooltipOpen, setIsTooltipOpen] = useState<boolean>(false);
-  const [timer, setTimer] = useState<{
+  const [sessionTimeInfo, setSessionTimeInfo] = useState<{
     duration: number;
     remainingFreeSeconds: number;
   }>({
@@ -29,15 +30,16 @@ const LiveTestingSessionTimer: React.FC<Props> = ({ organizationId, sessionId })
     remainingFreeSeconds: 0,
   });
   const isUserCloseTooltip = useRef<boolean>(false);
+  const timer = useRef<NodeJS.Timer>();
 
   useEffect(() => {
     if (!data) {
       return;
     }
 
-    setTimer((prev) => ({ ...prev, duration: new Date().getTime() - new Date(data.createdAt).getTime() }));
+    setSessionTimeInfo((prev) => ({ ...prev, duration: new Date().getTime() - new Date(data.createdAt).getTime() }));
     const ct = setInterval(() => {
-      setTimer((prev) => {
+      setSessionTimeInfo((prev) => {
         if (prev.remainingFreeSeconds > 0) {
           return {
             duration: new Date().getTime() - new Date(data.createdAt).getTime(),
@@ -47,6 +49,7 @@ const LiveTestingSessionTimer: React.FC<Props> = ({ organizationId, sessionId })
         return { ...prev, duration: new Date().getTime() - new Date(data.createdAt).getTime() };
       });
     }, 1000);
+    timer.current = ct;
 
     return () => {
       clearInterval(ct);
@@ -58,11 +61,14 @@ const LiveTestingSessionTimer: React.FC<Props> = ({ organizationId, sessionId })
       if (eventName === 'onCloudRemainingFreeSecondMessage') {
         const message = payload as CloudLicenseMessage.LiveTestingReceive;
         if (message.remainingFreeSeconds < 5 * 60) {
-          setTimer((prev) => ({ ...prev, remainingFreeSeconds: message.remainingFreeSeconds }));
+          setSessionTimeInfo((prev) => ({ ...prev, remainingFreeSeconds: message.remainingFreeSeconds }));
           if (!isUserCloseTooltip.current) {
             setIsTooltipOpen(true);
           }
         }
+      } else if (eventName === 'onStreamingClosed') {
+        setIsTooltipOpen(false);
+        clearInterval(timer.current);
       }
     });
   }, []);
@@ -78,7 +84,7 @@ const LiveTestingSessionTimer: React.FC<Props> = ({ organizationId, sessionId })
       placement="bottom"
       title={
         <>
-          Your free trial will be end in <b>{stringifyDurationAsTimer(timer.remainingFreeSeconds * 1000)}</b>
+          Your free trial will be end in <b>{stringifyDurationAsTimer(sessionTimeInfo.remainingFreeSeconds * 1000)}</b>
           <CloseButton
             onClick={() => {
               setIsTooltipOpen(false);
@@ -92,7 +98,7 @@ const LiveTestingSessionTimer: React.FC<Props> = ({ organizationId, sessionId })
     >
       <Box>
         <FieldTimeOutlined style={{ marginRight: '.25rem' }} />
-        {stringifyDurationAsTimer(timer.duration)}
+        {stringifyDurationAsTimer(sessionTimeInfo.duration)}
       </Box>
     </Tooltip>
   );

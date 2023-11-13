@@ -4,6 +4,7 @@ export enum StreamingErrorType {
   HA_DISCONNECT,
   WS_DISCONNECT,
   RTC_DISCONNECT,
+  DEVICE_ERROR,
   RTC_FAILED,
   CONNECTION_REFUSED,
 }

@@ -120,20 +120,18 @@ func (ldc *DefaultLabeledDatachannel) onMessage(msg webrtc.DataChannelMessage) {
 	// befTime := time.Now()
 
 	ldc.recvQueue.PushBytes(msg.Data)
-	if !ldc.recvQueue.Has() {
-		return
-	}
-	buf, err := ldc.recvQueue.Pop()
-	if err != nil {
-		log.Inst.Error("DefaultLabeledDatachannel Receive pop failed", zap.Error(err))
-		return
-	}
+	ldc.recvQueue.PopLoop(func(data []byte, err error) {
+		if err != nil {
+			log.Inst.Error("DefaultLabeledDatachannel onMessage error", zap.Error(err))
+			return
+		}
 
-	err = ldc.devices.OnPeerMessage(ldc.serial, buf)
-	if err != nil {
-		log.Inst.Error("DefaultLabeledDatachannel onMessage error", zap.Error(err))
-		return
-	}
+		err = ldc.devices.OnPeerMessage(ldc.serial, data)
+		if err != nil {
+			log.Inst.Error("DefaultLabeledDatachannel onMessage error", zap.Error(err))
+			return
+		}
+	})
 
 	// curTime := time.Now()
 	// diffTime := curTime.Sub(befTime).Seconds()
@@ -277,63 +275,26 @@ func (ldc *DeviceServerHttpLabeledDatachannel) onMessage(msg webrtc.DataChannelM
 	log.Inst.Debug("DeviceServerHttpLabeledDatachannel OnMessage", zap.Int("len", len(msg.Data)))
 
 	ldc.recvQueue.PushBytes(msg.Data)
-	if !ldc.recvQueue.Has() {
-		return
-	}
-	buf, err := ldc.recvQueue.Pop()
-	if err != nil {
-		ldc.channel.Close()
-		return
-	}
-	httpRequestParam := &outer.HttpRequestParam{}
-	if err := proto.Unmarshal(buf, httpRequestParam); err != nil {
-		log.Inst.Error("DeviceServerHttpLabeledDatachannel Unmarshal error", zap.Error(err))
-		ldc.channel.Close()
-		return
-	}
-	sequenceId := httpRequestParam.GetSequenceId()
-	request := httpRequestParam.GetRequest()
-	if request == nil {
-		log.Inst.Error("DeviceServerHttpLabeledDatachannel request is nil")
-		if err := ldc.sendResult(sequenceId, &outer.HttpRequestResult{
-			Value: &outer.HttpRequestResult_Error{
-				Error: &outer.ErrorResult{
-					Code:    outer.Code_CODE_STRING_PARSE_FAILED,
-					Message: "request is nil",
-				},
-			},
-		}); err != nil {
-			log.Inst.Error("DeviceServerHttpLabeledDatachannel sendResult error", zap.Error(err))
+	ldc.recvQueue.PopLoop(func(buf []byte, err error) {
+		if err != nil {
+			ldc.channel.Close()
+			return
 		}
-		ldc.channel.Close()
-		return
-	}
-
-	rawQuery := ""
-	if query := request.GetQuery(); query != nil {
-		queryMap := url.Values{}
-		for k, v := range query.AsMap() {
-			queryMap.Add(k, fmt.Sprintf("%v", v))
+		httpRequestParam := &outer.HttpRequestParam{}
+		if err := proto.Unmarshal(buf, httpRequestParam); err != nil {
+			log.Inst.Error("DeviceServerHttpLabeledDatachannel Unmarshal error", zap.Error(err))
+			ldc.channel.Close()
+			return
 		}
-		rawQuery = queryMap.Encode()
-	}
-
-	url := url.URL{Scheme: "http", Host: fmt.Sprintf("127.0.0.1:%d", ldc.deviceServerPort), Path: request.GetPath(), RawQuery: rawQuery}
-
-	var rawBody *bytes.Buffer = nil
-	if body := request.GetBody(); body != nil {
-		switch body.Value.(type) {
-		case *outer.Body_BytesValue:
-			rawBody = bytes.NewBuffer(body.GetBytesValue())
-		case *outer.Body_StringValue:
-			rawBody = bytes.NewBufferString(body.GetStringValue())
-		default:
-			log.Inst.Error("DeviceServerHttpLabeledDatachannel body type error")
+		sequenceId := httpRequestParam.GetSequenceId()
+		request := httpRequestParam.GetRequest()
+		if request == nil {
+			log.Inst.Error("DeviceServerHttpLabeledDatachannel request is nil")
 			if err := ldc.sendResult(sequenceId, &outer.HttpRequestResult{
 				Value: &outer.HttpRequestResult_Error{
 					Error: &outer.ErrorResult{
 						Code:    outer.Code_CODE_STRING_PARSE_FAILED,
-						Message: "body type error",
+						Message: "request is nil",
 					},
 				},
 			}); err != nil {
@@ -342,97 +303,132 @@ func (ldc *DeviceServerHttpLabeledDatachannel) onMessage(msg webrtc.DataChannelM
 			ldc.channel.Close()
 			return
 		}
-	}
-	var req *http.Request = nil
-	if rawBody == nil {
-		req, err = http.NewRequest(request.GetMethod(), url.String(), nil)
-	} else {
-		req, err = http.NewRequest(request.GetMethod(), url.String(), rawBody)
-	}
-	if err != nil {
-		log.Inst.Error("DeviceServerHttpLabeledDatachannel NewRequest error", zap.Error(err))
-		if err := ldc.sendResult(sequenceId, &outer.HttpRequestResult{
-			Value: &outer.HttpRequestResult_Error{
-				Error: &outer.ErrorResult{
-					Code:    outer.Code_CODE_STRING_PARSE_FAILED,
-					Message: err.Error(),
+
+		rawQuery := ""
+		if query := request.GetQuery(); query != nil {
+			queryMap := url.Values{}
+			for k, v := range query.AsMap() {
+				queryMap.Add(k, fmt.Sprintf("%v", v))
+			}
+			rawQuery = queryMap.Encode()
+		}
+
+		url := url.URL{Scheme: "http", Host: fmt.Sprintf("127.0.0.1:%d", ldc.deviceServerPort), Path: request.GetPath(), RawQuery: rawQuery}
+
+		var rawBody *bytes.Buffer = nil
+		if body := request.GetBody(); body != nil {
+			switch body.Value.(type) {
+			case *outer.Body_BytesValue:
+				rawBody = bytes.NewBuffer(body.GetBytesValue())
+			case *outer.Body_StringValue:
+				rawBody = bytes.NewBufferString(body.GetStringValue())
+			default:
+				log.Inst.Error("DeviceServerHttpLabeledDatachannel body type error")
+				if err := ldc.sendResult(sequenceId, &outer.HttpRequestResult{
+					Value: &outer.HttpRequestResult_Error{
+						Error: &outer.ErrorResult{
+							Code:    outer.Code_CODE_STRING_PARSE_FAILED,
+							Message: "body type error",
+						},
+					},
+				}); err != nil {
+					log.Inst.Error("DeviceServerHttpLabeledDatachannel sendResult error", zap.Error(err))
+				}
+				ldc.channel.Close()
+				return
+			}
+		}
+		var req *http.Request = nil
+		if rawBody == nil {
+			req, err = http.NewRequest(request.GetMethod(), url.String(), nil)
+		} else {
+			req, err = http.NewRequest(request.GetMethod(), url.String(), rawBody)
+		}
+		if err != nil {
+			log.Inst.Error("DeviceServerHttpLabeledDatachannel NewRequest error", zap.Error(err))
+			if err := ldc.sendResult(sequenceId, &outer.HttpRequestResult{
+				Value: &outer.HttpRequestResult_Error{
+					Error: &outer.ErrorResult{
+						Code:    outer.Code_CODE_STRING_PARSE_FAILED,
+						Message: err.Error(),
+					},
 				},
-			},
-		}); err != nil {
-			log.Inst.Error("DeviceServerHttpLabeledDatachannel sendResult error", zap.Error(err))
+			}); err != nil {
+				log.Inst.Error("DeviceServerHttpLabeledDatachannel sendResult error", zap.Error(err))
+			}
+			ldc.channel.Close()
+			return
 		}
-		ldc.channel.Close()
-		return
-	}
 
-	if headers := request.GetHeaders(); headers != nil {
-		for _, v := range headers.GetValues() {
-			req.Header.Add(v.GetKey(), v.GetValue())
+		if headers := request.GetHeaders(); headers != nil {
+			for _, v := range headers.GetValues() {
+				req.Header.Add(v.GetKey(), v.GetValue())
+			}
 		}
-	}
 
-	log.Inst.Debug("DeviceServerHttpLabeledDatachannel OnMessage", zap.String("url", url.String()), zap.String("method", request.GetMethod()), zap.String("rawQuery", rawQuery), zap.Int("bodyLen", len(rawBody.String())))
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		log.Inst.Error("DeviceServerHttpLabeledDatachannel Do error", zap.Error(err))
-		if err := ldc.sendResult(sequenceId, &outer.HttpRequestResult{
-			Value: &outer.HttpRequestResult_Error{
-				Error: &outer.ErrorResult{
-					Code:    outer.Code_CODE_STRING_PARSE_FAILED,
-					Message: err.Error(),
+		log.Inst.Debug("DeviceServerHttpLabeledDatachannel OnMessage", zap.String("url", url.String()), zap.String("method", request.GetMethod()), zap.String("rawQuery", rawQuery), zap.Int("bodyLen", len(rawBody.String())))
+		resp, err := http.DefaultClient.Do(req)
+		if err != nil {
+			log.Inst.Error("DeviceServerHttpLabeledDatachannel Do error", zap.Error(err))
+			if err := ldc.sendResult(sequenceId, &outer.HttpRequestResult{
+				Value: &outer.HttpRequestResult_Error{
+					Error: &outer.ErrorResult{
+						Code:    outer.Code_CODE_STRING_PARSE_FAILED,
+						Message: err.Error(),
+					},
 				},
-			},
-		}); err != nil {
-			log.Inst.Error("DeviceServerHttpLabeledDatachannel sendResult error", zap.Error(err))
+			}); err != nil {
+				log.Inst.Error("DeviceServerHttpLabeledDatachannel sendResult error", zap.Error(err))
+			}
+			ldc.channel.Close()
+			return
 		}
-		ldc.channel.Close()
-		return
-	}
-	defer resp.Body.Close()
+		defer resp.Body.Close()
 
-	bodyBytes, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		log.Inst.Error("DeviceServerHttpLabeledDatachannel ReadAll error", zap.Error(err))
-		if err := ldc.sendResult(sequenceId, &outer.HttpRequestResult{
-			Value: &outer.HttpRequestResult_Error{
-				Error: &outer.ErrorResult{
-					Code:    outer.Code_CODE_STRING_PARSE_FAILED,
-					Message: err.Error(),
+		bodyBytes, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			log.Inst.Error("DeviceServerHttpLabeledDatachannel ReadAll error", zap.Error(err))
+			if err := ldc.sendResult(sequenceId, &outer.HttpRequestResult{
+				Value: &outer.HttpRequestResult_Error{
+					Error: &outer.ErrorResult{
+						Code:    outer.Code_CODE_STRING_PARSE_FAILED,
+						Message: err.Error(),
+					},
 				},
-			},
-		}); err != nil {
-			log.Inst.Error("DeviceServerHttpLabeledDatachannel sendResult error", zap.Error(err))
+			}); err != nil {
+				log.Inst.Error("DeviceServerHttpLabeledDatachannel sendResult error", zap.Error(err))
+			}
+			ldc.channel.Close()
+			return
 		}
-		ldc.channel.Close()
-		return
-	}
 
-	headers := &outer.Headers{}
-	for k, v := range resp.Header {
-		for _, vv := range v {
-			headers.Values = append(headers.Values, &outer.HeaderValue{
-				Key:   k,
-				Value: vv,
-			})
+		headers := &outer.Headers{}
+		for k, v := range resp.Header {
+			for _, vv := range v {
+				headers.Values = append(headers.Values, &outer.HeaderValue{
+					Key:   k,
+					Value: vv,
+				})
+			}
 		}
-	}
 
-	if err := ldc.sendResult(sequenceId, &outer.HttpRequestResult{
-		Value: &outer.HttpRequestResult_Response{
-			Response: &outer.HttpResponse{
-				StatusCode: int32(resp.StatusCode),
-				Headers:    headers,
-				Body: &outer.Body{
-					Value: &outer.Body_BytesValue{
-						BytesValue: bodyBytes,
+		if err := ldc.sendResult(sequenceId, &outer.HttpRequestResult{
+			Value: &outer.HttpRequestResult_Response{
+				Response: &outer.HttpResponse{
+					StatusCode: int32(resp.StatusCode),
+					Headers:    headers,
+					Body: &outer.Body{
+						Value: &outer.Body_BytesValue{
+							BytesValue: bodyBytes,
+						},
 					},
 				},
 			},
-		},
-	}); err != nil {
-		log.Inst.Error("DeviceServerHttpLabeledDatachannel sendResult error", zap.Error(err))
-		ldc.channel.Close()
-	}
+		}); err != nil {
+			log.Inst.Error("DeviceServerHttpLabeledDatachannel sendResult error", zap.Error(err))
+			ldc.channel.Close()
+		}
+	})
 }
 
 func newDeviceServerHttpLabeledDatachannel(label *types.DataChannelLabel, d *webrtc.DataChannel, deviceServerPort int32) *DeviceServerHttpLabeledDatachannel {
@@ -627,74 +623,72 @@ func (ldc *DeviceServerWebSocketLabeledDatachannel) onMessage(msg webrtc.DataCha
 		return
 	}
 	ldc.recvQueue.PushBytes(msg.Data)
-	if !ldc.recvQueue.Has() {
-		return
-	}
-	buf, err := ldc.recvQueue.Pop()
-	if err != nil {
-		ldc.sendErrorAndClose(err)
-		return
-	}
-	message := &outer.WebSocketMessage{}
-	if err := proto.Unmarshal(buf, message); err != nil {
-		ldc.sendErrorAndClose(err)
-		return
-	}
-
-	////////////////////////////////
-	// var received []byte = nil
-	// switch message.Value.(type) {
-	// case *outer.WebSocketMessage_BytesValue:
-	// 	received = message.GetBytesValue()
-	// case *outer.WebSocketMessage_StringValue:
-	// 	received = []byte(message.GetStringValue())
-	// }
-	// if received == nil {
-	// 	log.Inst.Error("@@@ DeviceServerWebSocketLabeledDatachannel received is nil")
-	// }
-	// parsed := &outer.DeviceHostUploadFileSendMessage{}
-	// if err := proto.Unmarshal(received, parsed); err != nil {
-	// 	log.Inst.Error("@@@ DeviceServerWebSocketLabeledDatachannel Unmarshal error", zap.Error(err))
-	// }
-	// start := parsed.GetStart()
-	// inProgress := parsed.GetInProgress()
-	// complete := parsed.GetComplete()
-	// if start != nil {
-	// 	filePath = start.GetFileName()
-	// 	fileByteCount = 0
-	// 	fp, err := os.OpenFile(filePath, os.O_CREATE|os.O_WRONLY, 0o644)
-	// 	if err != nil {
-	// 		log.Inst.Error("@@@ DeviceServerWebSocketLabeledDatachannel OpenFile error", zap.Error(err))
-	// 	}
-	// 	gfp = fp
-	// } else if inProgress != nil {
-	// 	fileByteCount = fileByteCount + len(inProgress.GetChunk())
-	// 	_, err := gfp.Write(inProgress.GetChunk())
-	// 	if err != nil {
-	// 		log.Inst.Error("@@@ DeviceServerWebSocketLabeledDatachannel Write error", zap.Error(err))
-	// 	}
-	// } else if complete != nil {
-	// 	gfp.Close()
-	// 	log.Inst.Info("file upload complete", zap.String("filePath", filePath), zap.Int("fileByteCount", fileByteCount))
-	// }
-	////////////////////////////////
-
-	switch message.Value.(type) {
-	case *outer.WebSocketMessage_BytesValue:
-		buf := message.GetBytesValue()
-		if err := ldc.conn.WriteMessage(websocket.BinaryMessage, buf); err != nil {
+	ldc.recvQueue.PopLoop(func(buf []byte, err error) {
+		if err != nil {
 			ldc.sendErrorAndClose(err)
 			return
 		}
-	case *outer.WebSocketMessage_StringValue:
-		if err := ldc.conn.WriteMessage(websocket.TextMessage, []byte(message.GetStringValue())); err != nil {
+		message := &outer.WebSocketMessage{}
+		if err := proto.Unmarshal(buf, message); err != nil {
 			ldc.sendErrorAndClose(err)
 			return
 		}
-	default:
-		ldc.sendErrorAndClose(fmt.Errorf("invalid message type"))
-		return
-	}
+
+		////////////////////////////////
+		// var received []byte = nil
+		// switch message.Value.(type) {
+		// case *outer.WebSocketMessage_BytesValue:
+		// 	received = message.GetBytesValue()
+		// case *outer.WebSocketMessage_StringValue:
+		// 	received = []byte(message.GetStringValue())
+		// }
+		// if received == nil {
+		// 	log.Inst.Error("@@@ DeviceServerWebSocketLabeledDatachannel received is nil")
+		// }
+		// parsed := &outer.DeviceHostUploadFileSendMessage{}
+		// if err := proto.Unmarshal(received, parsed); err != nil {
+		// 	log.Inst.Error("@@@ DeviceServerWebSocketLabeledDatachannel Unmarshal error", zap.Error(err))
+		// }
+		// start := parsed.GetStart()
+		// inProgress := parsed.GetInProgress()
+		// complete := parsed.GetComplete()
+		// if start != nil {
+		// 	filePath = start.GetFileName()
+		// 	fileByteCount = 0
+		// 	fp, err := os.OpenFile(filePath, os.O_CREATE|os.O_WRONLY, 0o644)
+		// 	if err != nil {
+		// 		log.Inst.Error("@@@ DeviceServerWebSocketLabeledDatachannel OpenFile error", zap.Error(err))
+		// 	}
+		// 	gfp = fp
+		// } else if inProgress != nil {
+		// 	fileByteCount = fileByteCount + len(inProgress.GetChunk())
+		// 	_, err := gfp.Write(inProgress.GetChunk())
+		// 	if err != nil {
+		// 		log.Inst.Error("@@@ DeviceServerWebSocketLabeledDatachannel Write error", zap.Error(err))
+		// 	}
+		// } else if complete != nil {
+		// 	gfp.Close()
+		// 	log.Inst.Info("file upload complete", zap.String("filePath", filePath), zap.Int("fileByteCount", fileByteCount))
+		// }
+		////////////////////////////////
+
+		switch message.Value.(type) {
+		case *outer.WebSocketMessage_BytesValue:
+			buf := message.GetBytesValue()
+			if err := ldc.conn.WriteMessage(websocket.BinaryMessage, buf); err != nil {
+				ldc.sendErrorAndClose(err)
+				return
+			}
+		case *outer.WebSocketMessage_StringValue:
+			if err := ldc.conn.WriteMessage(websocket.TextMessage, []byte(message.GetStringValue())); err != nil {
+				ldc.sendErrorAndClose(err)
+				return
+			}
+		default:
+			ldc.sendErrorAndClose(fmt.Errorf("invalid message type"))
+			return
+		}
+	})
 }
 
 var index = 0

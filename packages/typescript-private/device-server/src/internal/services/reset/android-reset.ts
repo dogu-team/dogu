@@ -1,10 +1,9 @@
 import { DeviceSystemInfo, Serial, SerialPrintable } from '@dogu-private/types';
 import { delay, filterAsync, loop, stringify } from '@dogu-tech/common';
+import { CheckTimer } from '@dogu-tech/node';
 import semver from 'semver';
 import { AppiumContextImpl } from '../../../appium/appium.context';
 import { AdbSerial, AppiumAdb } from '../../externals/index';
-import { CheckTimer } from '../../util/check-time';
-
 export interface AndroidResetInfo {
   lastResetTime: number;
 }
@@ -22,7 +21,7 @@ export class AndroidResetService {
     private serial: Serial,
     private logger: SerialPrintable,
   ) {
-    this.timer = new CheckTimer(this.logger);
+    this.timer = new CheckTimer({ logger });
     this.adb = new AdbSerial(serial, logger);
   }
 
@@ -169,8 +168,8 @@ export class AndroidResetService {
         `AndroidResetService.resetAccounts.clickRemoveAccount`,
         driver.$(`android=new UiSelector().resourceId("com.android.settings:id/button").text("Remove account")`),
       );
-      if (!removeButton) {
-        throw new Error('AndroidResetService.resetAccounts Remove button not found');
+      if (removeButton.error) {
+        throw new Error(`AndroidResetService.resetAccounts Remove button not found ${stringify(removeButton.error)}`);
       }
       await removeButton.click();
 
@@ -178,8 +177,8 @@ export class AndroidResetService {
         `AndroidResetService.resetAccounts.clickRemoveAccount`,
         driver.$(`android=new UiSelector().className("android.widget.Button").text("Remove account")`),
       );
-      if (!removeWidgetButton) {
-        throw new Error('AndroidResetService.resetAccounts Remove widget button not found');
+      if (removeWidgetButton.error) {
+        throw new Error(`AndroidResetService.resetAccounts Remove widget button not found ${stringify(removeWidgetButton.error)}`);
       }
       await removeWidgetButton.click();
     }

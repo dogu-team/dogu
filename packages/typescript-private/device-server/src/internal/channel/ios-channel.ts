@@ -19,7 +19,7 @@ import {
 } from '@dogu-private/types';
 import { Closable, delay, errorify, MixedLogger, Printable, PromiseOrValue, stringify, TimedCacheAsync } from '@dogu-tech/common';
 import { AppiumCapabilities, BrowserInstallation, StreamingOfferDto } from '@dogu-tech/device-client-common';
-import { ChildProcessError, killChildProcess } from '@dogu-tech/node';
+import { checkTime, CheckTimer, ChildProcessError, killChildProcess } from '@dogu-tech/node';
 import { ChildProcess } from 'child_process';
 import compressing from 'compressing';
 import fs from 'fs';
@@ -41,7 +41,7 @@ import { IdeviceInstaller } from '../externals/cli/ideviceinstaller';
 import { IosDeviceAgentProcess } from '../externals/cli/ios-device-agent';
 import { ZombieTunnel } from '../externals/cli/mobiledevice-tunnel';
 import { WebdriverAgentProcess } from '../externals/cli/webdriver-agent-process';
-import { IosWebDriverInfo } from '../externals/webdriver/ios-webdriver';
+import { IosWebDriver, IosWebDriverInfo } from '../externals/webdriver/ios-webdriver';
 import { DeviceChannel, DeviceChannelOpenParam, DeviceHealthStatus, DeviceServerService, LogHandler } from '../public/device-channel';
 import { IosDeviceAgentService } from '../services/device-agent/ios-device-agent-service';
 import { IosDisplayProfileService, IosProfileService } from '../services/profile/ios-profiler';
@@ -52,7 +52,6 @@ import { StreamingService } from '../services/streaming/streaming-service';
 import { IosSystemInfoService } from '../services/system-info/ios-system-info-service';
 import { Zombieable } from '../services/zombie/zombie-component';
 import { ZombieServiceInstance } from '../services/zombie/zombie-service';
-import { checkTime } from '../util/check-time';
 
 type DeviceControl = PrivateProtocol.DeviceControl;
 
@@ -90,7 +89,7 @@ export class IosChannel implements DeviceChannel {
     readonly browserInstallations: BrowserInstallation[],
   ) {
     this.logger.info(`IosChannel created: ${this.serial}`);
-    this._alertCache = new TimedCacheAsync<DeviceAlert | undefined>({ milliseconds: 900 });
+    this._alertCache = new TimedCacheAsync<DeviceAlert | undefined>({ milliseconds: 300 });
   }
 
   get serial(): Serial {
@@ -122,97 +121,120 @@ export class IosChannel implements DeviceChannel {
     const platform = Platform.PLATFORM_IOS;
 
     const logger = createIosLogger(param.serial);
+    const timer = new CheckTimer({ logger, logOnStart: true, logOnEnd: true });
 
     const productVersion = await IosSystemInfoService.getVersion(serial, logger);
-    if (semver.lt(productVersion, '14.0.0')) {
-      throw new Error(`iOS version must be 14 or higher. current version: ${productVersion.inspect()}`);
-    }
 
-    const isWdaReady = await WebdriverAgentProcess.isReady(serial);
-    if (isWdaReady === 'build not found') {
-      throw new Error(`WebDriverAgent can't be executed on this device. Please build WebDriverAgent.xcodeproj.`);
-    }
-    if (isWdaReady === 'device not registered') {
-      throw new Error(
-        `WebDriverAgent can't be executed on this device. Please register your device. reference: https://developer.apple.com/help/account/register-devices/register-a-single-device.`,
-      );
-    }
-    const isIdaReady = await IosDeviceAgentProcess.isReady(serial);
-    if (isIdaReady === 'build not found') {
-      throw new Error(`iOSDeviceAgent can't be executed on this device. Please build iOSDeviceAgent.xcodeproj.`);
-    }
-    if (isIdaReady === 'device not registered') {
-      throw new Error(
-        `iOSDeviceAgent can't be executed on this device. Please register your device. reference: https://developer.apple.com/help/account/register-devices/register-a-single-device.`,
-      );
-    }
+    await timer.check(
+      `IosChannel.create.validation`,
+      (async (): Promise<void> => {
+        if (semver.lt(productVersion, '14.0.0')) {
+          throw new Error(`iOS version must be 14 or higher. current version: ${productVersion.inspect()}`);
+        }
 
-    if (!env.DOGU_DEVICE_IOS_IS_IDAPROJECT_VALIDATED) {
-      throw new Error('iOSDeviceAgent build is not latest. Please clean and build iOSDeviceAgent.xcodeproj');
-    }
+        const isWdaReady = await WebdriverAgentProcess.isReady(serial);
+        if (isWdaReady === 'build not found') {
+          throw new Error(`WebDriverAgent can't be executed on this device. Please build WebDriverAgent.xcodeproj.`);
+        }
+        if (isWdaReady === 'device not registered') {
+          throw new Error(
+            `WebDriverAgent can't be executed on this device. Please register your device. reference: https://developer.apple.com/help/account/register-devices/register-a-single-device.`,
+          );
+        }
+        const isIdaReady = await IosDeviceAgentProcess.isReady(serial);
+        if (isIdaReady === 'build not found') {
+          throw new Error(`iOSDeviceAgent can't be executed on this device. Please build iOSDeviceAgent.xcodeproj.`);
+        }
+        if (isIdaReady === 'device not registered') {
+          throw new Error(
+            `iOSDeviceAgent can't be executed on this device. Please register your device. reference: https://developer.apple.com/help/account/register-devices/register-a-single-device.`,
+          );
+        }
 
-    await IosChannel.restartIfAvailiable(serial, logger);
-
-    logger.verbose('appium wda starting');
-    const wdaForwardPort = await deviceServerService.devicePortService.createOrGetHostPort(serial, 'WebdriverAgentForward');
-    const wda = await WebdriverAgentProcess.start(serial, wdaForwardPort, logger);
-    logger.verbose('appium wda  done');
-
-    logger.verbose('appium context starting');
-    const appiumContextProxy = deviceServerService.appiumService.createIosAppiumContext(
-      serial,
-      'builtin',
-      await deviceServerService.devicePortService.createOrGetHostPort(serial, 'iOSAppiumServer'),
-      wdaForwardPort,
+        if (!env.DOGU_DEVICE_IOS_IS_IDAPROJECT_VALIDATED) {
+          throw new Error('iOSDeviceAgent build is not latest. Please clean and build iOSDeviceAgent.xcodeproj');
+        }
+      })(),
     );
-    const appiumWaiter = ZombieServiceInstance.addComponent(appiumContextProxy);
-    await appiumWaiter.waitUntilAlive({ maxReviveCount: 100 });
-    logger.verbose('appium context started');
 
+    await timer.check('IosChannel.create.restartIfAvailiable', IosChannel.restartIfAvailiable(serial, logger));
+
+    const wdaForwardPort = await deviceServerService.devicePortService.createOrGetHostPort(serial, 'WebdriverAgentForward');
     const isIpad = await MobileDevice.getProductType(serial, logger).then((type) => type?.startsWith('iPad'));
     const iosWdInfo = new IosWebDriverInfo(isIpad, productVersion);
-    const reset = new IosResetService(serial, iosWdInfo, logger);
-    const appiumContextImpl = await appiumContextProxy.waitUntilBuiltin();
-    const shared = new IosSharedDeviceService(serial, wda, reset, appiumContextImpl, iosWdInfo, logger);
-    await shared.setup();
-    await shared.wait();
 
-    logger.verbose('ios device agent process starting');
+    const wda = await timer.check('IosChannel.create.WebdriverAgentProcess.start', WebdriverAgentProcess.start(serial, wdaForwardPort, logger));
+
+    const appiumContextProxy = await timer.check(
+      'IosChannel.create.AppiumContextProxy.create',
+      (async (): Promise<AppiumContextProxy> => {
+        const appiumContextProxy = deviceServerService.appiumService.createIosAppiumContext(
+          serial,
+          'builtin',
+          await deviceServerService.devicePortService.createOrGetHostPort(serial, 'iOSAppiumServer'),
+          wdaForwardPort,
+        );
+        const appiumWaiter = ZombieServiceInstance.addComponent(appiumContextProxy);
+        await appiumWaiter.waitUntilAlive({ maxReviveCount: 100 });
+        return appiumContextProxy;
+      })(),
+    );
+
+    await timer.check(
+      'IosChannel.create.checkWdaLocationPermission',
+      (async (): Promise<void> => {
+        const geoLocation = await wda.getGeoLocation();
+        if (3 === geoLocation.authorizationStatus) {
+          return;
+        }
+
+        const driver = appiumContextProxy.driver();
+        if (!driver) {
+          throw new Error(`IosChannel.create.checkWdaLocationPermission driver is null`);
+        }
+        const iosDriver = new IosWebDriver(driver, wda, iosWdInfo, logger);
+        await iosDriver.setWdaLocationPermissionAlways();
+      })(),
+    );
+
+    const reset = new IosResetService(serial, iosWdInfo, logger);
+
+    const shared = await timer.check(
+      'IosChannel.create.IosSharedDeviceService.start',
+      (async (): Promise<IosSharedDeviceService> => {
+        const appiumContextImpl = await appiumContextProxy.waitUntilBuiltin();
+        const shared = new IosSharedDeviceService(serial, wda, reset, appiumContextImpl, iosWdInfo, logger);
+        await shared.setup();
+        await shared.wait();
+        return shared;
+      })(),
+    );
+
     const screenForwardPort = await deviceServerService.devicePortService.createOrGetHostPort(serial, 'iOSScreenForward');
     const grpcForwardPort = await deviceServerService.devicePortService.createOrGetHostPort(serial, 'iOSGrpcForward');
     const deviceAgent = new IosDeviceAgentService(serial, screenForwardPort, grpcForwardPort, logger);
-    const iosDeviceAgentProcess = await IosDeviceAgentProcess.start(
-      serial,
-      screenForwardPort,
-      deviceServerService.devicePortService.getIosDeviceAgentScreenServerPort(),
-      grpcForwardPort,
-      deviceServerService.devicePortService.getIosDeviceAgentGrpcServerPort(),
-      wda,
-      deviceServerService.devicePortService.getIosDeviceAgentWebDriverAgentServerPort(),
-      deviceAgent,
-      streaming,
-      reset,
-      logger,
-    ).catch((error) => {
-      logger.error('IosDeviceAgentProcess start failed.', { error: errorify(error) });
-      throw error;
-    });
-    logger.verbose('ios device agent process started');
+    const iosDeviceAgentProcess = await timer.check(
+      'IosChannel.create.IosDeviceAgentProcess.start',
+      IosDeviceAgentProcess.start(
+        serial,
+        screenForwardPort,
+        deviceServerService.devicePortService.getIosDeviceAgentScreenServerPort(),
+        grpcForwardPort,
+        deviceServerService.devicePortService.getIosDeviceAgentGrpcServerPort(),
+        wda,
+        deviceServerService.devicePortService.getIosDeviceAgentWebDriverAgentServerPort(),
+        deviceAgent,
+        streaming,
+        reset,
+        logger,
+      ),
+    );
+    await timer.check('IosChannel.create.IosDeviceAgentService.wait', deviceAgent.wait());
 
-    logger.verbose('ios device agent service starting');
-    await deviceAgent.wait();
-    logger.verbose('ios device agent service started');
-
-    logger.verbose('ios system info service starting');
     const systemInfoService = new IosSystemInfoService(deviceAgent, logger);
-    const systemInfo = await systemInfoService.createSystemInfo(serial).catch((error) => {
-      logger.error('SystemInfoService createSystemInfo failed.', { error: errorify(error) });
-      throw error;
-    });
+    const systemInfo = await timer.check('IosChannel.create.IosSystemInfoService.createSystemInfo', systemInfoService.createSystemInfo(serial));
     deviceInfoLogger.info('iOSChannel.create', { serial, systemInfo, modelName: findDeviceModelNameByModelId(systemInfo.system.model) });
-    logger.verbose('ios system info service started');
 
-    logger.verbose('appium device web driver handler service starting');
     const appiumDeviceWebDriverHandler = new AppiumDeviceWebDriverHandler(
       platform,
       serial,
@@ -268,14 +290,14 @@ export class IosChannel implements DeviceChannel {
   }
 
   static async restartIfAvailiable(serial: Serial, logger: Printable): Promise<void> {
-    logger.info('IosChannel restartIfAvailiable', { on: env.DOGU_DEVICE_IOS_RESTART_ON_INIT });
+    logger.info('IosChannel restartIfAvailiable', { on: env.DOGU_DEVICE_RESTART_IOS_ON_INIT });
     if (config.externalIosDeviceAgent.use) {
       return;
     }
     if (!(await IosResetService.isDirty(serial))) {
       return;
     }
-    if (env.DOGU_DEVICE_IOS_RESTART_ON_INIT) {
+    if (env.DOGU_DEVICE_RESTART_IOS_ON_INIT) {
       await IdeviceDiagnostics.restart(serial, logger);
       try {
         await delay(1000);
@@ -498,8 +520,8 @@ export class IosChannel implements DeviceChannel {
   async reset(): Promise<void> {
     const { logger, webdriverAgentProcess } = this;
     await this.deviceAgent.send('dcIdaSwitchInputBlockParam', 'dcIdaSwitchInputBlockResult', { isBlock: false });
-    const appiumContextImpl = await checkTime(`IosChannel.reset.waitUntilBuiltin`, this._appiumContext.waitUntilBuiltin(), logger);
-    await checkTime(`IosChannel.reset.reset`, this._reset.reset(appiumContextImpl, webdriverAgentProcess), logger);
+    const appiumContextImpl = await checkTime(`IosChannel.reset.waitUntilBuiltin`, this._appiumContext.waitUntilBuiltin(), { logger });
+    await checkTime(`IosChannel.reset.reset`, this._reset.reset(appiumContextImpl, webdriverAgentProcess), { logger });
   }
 
   joinWifi(ssid: string, password: string): PromiseOrValue<void> {
@@ -542,25 +564,39 @@ export class IosChannel implements DeviceChannel {
   }
 
   async getGeoLocation(): Promise<GeoLocation> {
-    throw new Error('Method not implemented.');
+    const { _appiumContext: appiumContext } = this;
+    const driver = appiumContext.driver();
+    if (!driver) {
+      throw new Error(`IosResetService.clearSafariCache driver is null`);
+    }
+    const location = await driver.getGeoLocation();
+    return location as GeoLocation;
   }
 
   async setGeoLocation(geoLocation: GeoLocation): Promise<void> {
-    throw new Error('Method not implemented.');
+    const { _appiumContext: appiumContext } = this;
+    const driver = appiumContext.driver();
+    if (!driver) {
+      throw new Error(`IosResetService.clearSafariCache driver is null`);
+    }
+    await driver.setGeoLocation(geoLocation);
   }
 
   async getAlert(): Promise<DeviceAlert | undefined> {
-    return await this._alertCache.update(async () => {
-      const result = await this.deviceAgent.send('dcIdaQueryAlertParam', 'dcIdaQueryAlertResult', {});
-      if (!result) {
-        return undefined;
-      }
-      if (!result.isShow) {
-        return undefined;
-      }
-      return {
-        title: result.title,
-      };
+    return await this._alertCache.update({
+      call: async () => {
+        const result = await this.deviceAgent.send('dcIdaQueryAlertParam', 'dcIdaQueryAlertResult', {});
+        if (!result) {
+          return undefined;
+        }
+        if (!result.isShow) {
+          return undefined;
+        }
+        return {
+          title: result.title,
+        };
+      },
+      onCached: () => {},
     });
   }
 

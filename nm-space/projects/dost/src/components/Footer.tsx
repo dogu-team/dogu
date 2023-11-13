@@ -32,6 +32,7 @@ import { prettifyErrorString } from '../utils/prettify';
 import { ipc, offFocus, onFocus } from '../utils/window';
 import useEnvironmentStore from '../stores/environment';
 import useHostAgentConnectionStatusStore from '../stores/host-agent-connection-status';
+import DeviceSharedAlert from './DeviceSharedAlert';
 
 interface VersionUIProps {
   tooltipLabel: string;
@@ -167,6 +168,7 @@ function Footer() {
 
   return (
     <Container as="footer" role="contentinfo" py={{ base: '2' }} background={colorMode === 'dark' ? 'gray.900' : 'gray.100'} verticalAlign="bottom">
+      <DeviceSharedAlert />
       <Flex direction={['row']}>
         <Spacer />
         {hasPopOver ? (

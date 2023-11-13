@@ -10,8 +10,8 @@ import { BrowserDriver } from './browser';
 const wait = promisify(setTimeout);
 
 export class Safari extends BrowserDriver {
-  constructor(device: Device, viewportWidth: number, viewportHeight: number, pixelRatio: number) {
-    super(device, viewportWidth, viewportHeight, pixelRatio);
+  constructor(device: Device) {
+    super(device);
   }
 
   async build(): Promise<void> {
@@ -19,9 +19,19 @@ export class Safari extends BrowserDriver {
     this.driver = await new Builder().forBrowser(Browser.SAFARI).setSafariOptions(options).build();
 
     await this.driver.manage().window().setRect({
-      width: this.viewportWidth,
-      height: this.viewportHeight,
+      width: this.device.screen.viewportWidth,
+      height: this.device.screen.viewportHeight,
     });
+  }
+
+  async render(): Promise<void> {
+    await this.driver.executeScript(`document.body.style.overflow = 'hidden';`);
+
+    await wait(1000);
+    await this.driver.executeScript('window.scrollBy({left: 0, top: document.body.scrollHeight})');
+    await wait(2000);
+    await this.driver.executeScript('window.scrollTo({left: 0, top: 0});', '');
+    await wait(1000);
   }
 
   async takeScreenshot(): Promise<void> {

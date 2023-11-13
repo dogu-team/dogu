@@ -23,6 +23,7 @@ export interface StreamingContextValue {
   updateMode: (mode: StreamingMode) => void;
   isCloudDevice?: boolean;
   deviceScreenshotBase64: string | null;
+  isAdmin: boolean;
 }
 
 const defaultContextValue: StreamingContextValue = {
@@ -40,6 +41,7 @@ const defaultContextValue: StreamingContextValue = {
   updateMode: () => {},
   isCloudDevice: undefined,
   deviceScreenshotBase64: null,
+  isAdmin: false,
 };
 
 export const DeviceStreamingContext = React.createContext<StreamingContextValue>(defaultContextValue);

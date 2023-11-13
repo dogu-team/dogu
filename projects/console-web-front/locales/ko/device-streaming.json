@@ -2,6 +2,7 @@
   "deviceStreamingPageTitle": "스트리밍",
 
   "deviceStreamingLoadingText": "디바이스 화면을 가져오는 중...<br></br>이 화면이 30초 이상 계속되면 새로고침 또는 <link>디바이스 트러블슈팅</link> 가이드를 참고해 주세요.",
+  "cloudDeviceStreamingLoadingText": "디바이스 화면을 가져오는 중...<br></br>이 화면이 30초 이상 계속되면 새로고침 또는 피드백을 통해 리포트 해주세요.",
 
   "deviceStreamingHAErrorTitle": "디바이스 연결 에러",
   "deviceStreamingStreamingErrorTitle": "디바이스 스트리밍 연결 에러",

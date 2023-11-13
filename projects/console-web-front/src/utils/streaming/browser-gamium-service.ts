@@ -29,7 +29,10 @@ export class BrowserGamiumService implements GamiumService {
   private isConnected: boolean;
   private seq = 0;
 
-  constructor(public readonly channel: RTCDataChannel, private readonly requestTimeout: number = 50000) {
+  constructor(
+    public readonly channel: RTCDataChannel,
+    private readonly requestTimeout: number = 50000,
+  ) {
     this.isConnected = false;
 
     channel.addEventListener('open', (event) => {
@@ -37,14 +40,12 @@ export class BrowserGamiumService implements GamiumService {
     });
     channel.addEventListener('message', (event) => {
       this.recvQueue.pushBuffer(new Uint8Array(event.data as ArrayBuffer));
-      if (!this.recvQueue.has()) {
-        return;
-      }
-      const array = this.recvQueue.pop();
-      const buf = new flatbuffers.ByteBuffer(array);
-      const responseByteBuffer = GamiumProtocol.Response.getRootAsResponse(buf);
-      const response = responseByteBuffer.unpack();
-      this.responseEmitter.emit(response.seq.toString(), response);
+      this.recvQueue.popLoop((array: Uint8Array) => {
+        const buf = new flatbuffers.ByteBuffer(array);
+        const responseByteBuffer = GamiumProtocol.Response.getRootAsResponse(buf);
+        const response = responseByteBuffer.unpack();
+        this.responseEmitter.emit(response.seq.toString(), response);
+      });
     });
     channel.addEventListener('close', (event) => {
       console.debug('GamiumEngineService. client end');

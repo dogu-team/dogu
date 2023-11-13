@@ -1,8 +1,7 @@
 import { delay, FilledPrintable, loop, loopTime, PrefixLogger, retry, time, TimeOptions, usingAsnyc } from '@dogu-tech/common';
 import semver from 'semver';
-import WebDriverIO from 'webdriverio';
+import { WDIOElement } from '../../../appium/appium.context';
 import { WebdriverAgentProcess } from '../cli/webdriver-agent-process';
-export type WDIOElement = WebDriverIO.Element<'async'>;
 
 export interface IosSelector {
   build(): string;
@@ -207,6 +206,8 @@ export class IosWebDriver {
     throw new Error(`scrollToAccessibility ${selector.build()} failed`);
   }
 
+  //#region utils
+
   async removeWidget(elem: WDIOElement): Promise<void> {
     await elem.touchAction([{ action: 'longPress' }, 'release']);
     await retry(
@@ -272,4 +273,33 @@ export class IosWebDriver {
       },
     );
   }
+
+  async setWdaLocationPermissionAlways(): Promise<void> {
+    const { info } = this;
+    const { isIpad } = info;
+    if (isIpad) {
+      // not yet implemented
+      return;
+    }
+
+    await usingAsnyc(
+      {
+        create: async () => {
+          await this.relaunchApp('com.apple.Preferences');
+        },
+        dispose: async () => {
+          await this.terminateApp('com.apple.Preferences');
+        },
+      },
+      async () => {
+        await this.clickSelector(new IosAccessibilitiySelector('Privacy'));
+        await this.clickSelector(new IosAccessibilitiySelector('Location Services'));
+        const elem = await this.scrollDownToSelector(new IosAccessibilitiySelector('com.facebook.WebDriverAgentRunner.xctrunner'));
+        await elem.click();
+        await this.clickSelector(new IosAccessibilitiySelector('Always'));
+      },
+    );
+  }
+
+  //#endregion
 }

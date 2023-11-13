@@ -9,6 +9,7 @@ import DevButton from '../DevButton';
 import Header from './Header';
 import HeaderIconMenuButon from './HeaderIconMenuButon';
 import { ReportLogAlert } from '../overlays/ReportLogAlert';
+import DeviceSharedAlert from '../DeviceSharedAlert';
 
 const HeaderWithMenu = () => {
   const location = useLocation();

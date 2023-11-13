@@ -18,6 +18,12 @@ export interface ActiveAppInfo {
 }
 
 export type IosButtonNames = 'volumeup' | 'volumedown' | 'home';
+export interface WdaGeoLocation {
+  latitude: number;
+  authorizationStatus: number; // 3 means always
+  longitude: number;
+  altitude: number;
+}
 
 export class WebdriverAgentProcess {
   private readonly xctest: ZombieWdaXCTest;
@@ -215,6 +221,20 @@ export class WebdriverAgentProcess {
         this.logger.warn('accept alert failed');
       });
   }
+
+  //#region location
+  async getGeoLocation(): Promise<WdaGeoLocation> {
+    const { client } = this.xctest;
+
+    const response = await client.get(`/wda/device/location`);
+    if (!response || response.status !== 200) {
+      throw new Error(`response is not 200. ${response?.status}`);
+    }
+
+    const value = _.get(response, 'data.value', undefined) as unknown;
+    return value as WdaGeoLocation;
+  }
+  //#endregion
 }
 
 class ZombieWdaXCTest implements Zombieable {

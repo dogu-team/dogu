@@ -1,19 +1,20 @@
 import { GeoLocation } from '@dogu-private/types';
-import { useEffect, useRef, useState } from 'react';
-import GoogleMapReact from 'google-map-react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { GoogleMap, useJsApiLoader, MarkerF } from '@react-google-maps/api';
 import styled from 'styled-components';
-import Image from 'next/image';
 import { Popconfirm } from 'antd';
 
 import useDeviceStreamingContext from '../../hooks/streaming/useDeviceStreamingContext';
-import resources from '../../resources';
 
 interface Props {}
 
 const DeviceLocationChanger: React.FC<Props> = () => {
   const { deviceService, device } = useDeviceStreamingContext();
   const [currentLocation, setCurrentLocation] = useState<GeoLocation | undefined>();
-  const clickedLocation = useRef<GeoLocation | undefined>(undefined);
+  const { isLoaded } = useJsApiLoader({
+    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY,
+  });
+  const backupLocation = useRef<GeoLocation | undefined>(undefined);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -26,17 +27,29 @@ const DeviceLocationChanger: React.FC<Props> = () => {
       try {
         const location = await deviceService.deviceClientRef.current.getGeoLocation(device.serial);
         setCurrentLocation(location);
+        backupLocation.current = location;
       } catch (e) {}
     })();
   }, [deviceService?.deviceClientRef, device?.serial]);
 
-  const handleClick = async (e: GoogleMapReact.ClickEventValue) => {
-    clickedLocation.current = {
-      latitude: e.lat,
-      longitude: e.lng,
-    };
+  const onLoad = useCallback(
+    (map: any) => {
+      const bounds = new window.google.maps.LatLngBounds({
+        lat: currentLocation?.latitude ?? 0,
+        lng: currentLocation?.longitude ?? 0,
+      });
+      map.fitBounds(bounds);
+    },
+    [currentLocation],
+  );
+
+  const handleClick = useCallback((e: any) => {
+    setCurrentLocation({
+      latitude: e.latLng.lat(),
+      longitude: e.latLng.lng(),
+    });
     setIsOpen(true);
-  };
+  }, []);
 
   const handleConfirm = async () => {
     if (!deviceService?.deviceClientRef.current || !device?.serial) {
@@ -46,10 +59,10 @@ const DeviceLocationChanger: React.FC<Props> = () => {
     setLoading(true);
     try {
       await deviceService.deviceClientRef.current.setGeoLocation(device.serial, {
-        latitude: clickedLocation.current?.latitude ?? 0,
-        longitude: clickedLocation.current?.longitude ?? 0,
+        latitude: currentLocation?.latitude ?? 0,
+        longitude: currentLocation?.longitude ?? 0,
       });
-      setCurrentLocation(clickedLocation.current);
+      backupLocation.current = currentLocation;
     } catch (e) {}
     setLoading(false);
     setIsOpen(false);
@@ -58,7 +71,37 @@ const DeviceLocationChanger: React.FC<Props> = () => {
   return (
     <div>
       <MapWrapper>
-        <GoogleMapReact
+        {(isOpen || !isLoaded) && <LoadingBox />}
+
+        {isLoaded && (
+          <GoogleMap
+            center={{ lat: currentLocation?.latitude ?? 0, lng: currentLocation?.longitude ?? 0 }}
+            onLoad={onLoad}
+            onClick={handleClick}
+            mapContainerStyle={{
+              width: '100%',
+              height: '100%',
+            }}
+            options={{
+              zoomControl: false,
+              fullscreenControl: false,
+              streetViewControl: false,
+              mapTypeControl: false,
+              clickableIcons: false,
+              zoom: 3,
+            }}
+          >
+            {currentLocation && (
+              <MarkerF
+                position={{
+                  lat: currentLocation.latitude,
+                  lng: currentLocation.longitude,
+                }}
+              />
+            )}
+          </GoogleMap>
+        )}
+        {/* <GoogleMapReact
           bootstrapURLKeys={{
             key: process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY,
           }}
@@ -86,13 +129,14 @@ const DeviceLocationChanger: React.FC<Props> = () => {
               }}
             />
           )}
-        </GoogleMapReact>
-
-        {isOpen && <LoadingBox />}
+        </GoogleMapReact> */}
       </MapWrapper>
       <Popconfirm
         open={isOpen}
-        onCancel={() => setIsOpen(false)}
+        onCancel={() => {
+          setIsOpen(false);
+          setCurrentLocation(backupLocation.current);
+        }}
         onConfirm={handleConfirm}
         title="Location"
         description="Confirm to change location"

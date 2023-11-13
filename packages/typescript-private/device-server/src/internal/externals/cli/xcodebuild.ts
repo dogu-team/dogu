@@ -103,7 +103,7 @@ export class XCTestRunContext {
     this.startTime = Date.now();
     const redirectContext = { stop: false };
     proc.on('open', () => {
-      this.logger.debug?.(`xcodebuild opened. pid: ${this.pid}`);
+      this.logger.verbose(`xcodebuild opened. pid: ${this.pid}`);
     });
     proc.stdout?.setEncoding('utf8');
     proc.stdout?.on('data', (data) => {
@@ -114,8 +114,8 @@ export class XCTestRunContext {
       this.logger.debug?.(`stderr pid: ${this.pid}, data: ${String(data)}`);
     });
     proc.on('close', (code, signal) => {
-      this.logger.debug?.(`closed pid: ${this.pid}, with code: ${stringify(code)}, signal: ${stringify(signal)}`);
-      this.logger.debug?.(`xcodebuild closed with logs: ${this.history}`);
+      this.logger.verbose(`closed pid: ${this.pid}, with code: ${stringify(code)}, signal: ${stringify(signal)}`);
+      this.logger.verbose(`xcodebuild closed with logs: ${this.history}`);
       this.logger.error(`xcodebuild closed with with code: ${stringify(code)}, signal: ${stringify(signal)}`);
       this.isAlive = false;
       redirectContext.stop = true;

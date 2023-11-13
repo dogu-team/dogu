@@ -1,4 +1,5 @@
 import { copyiOSDeviceAgentProject, validateiOSDeviceAgentProjectExist } from '@dogu-private/dogu-agent-core/app';
+import { delay } from '@dogu-tech/common';
 import { findEndswith, HostPaths, newCleanNodeEnv } from '@dogu-tech/node';
 import { exec } from 'child_process';
 import compressing from 'compressing';
@@ -69,6 +70,7 @@ export class SettingsService {
   async restart(): Promise<void> {
     await ChildService.close();
     app.relaunch();
+    await delay(300);
     app.exit();
   }
 

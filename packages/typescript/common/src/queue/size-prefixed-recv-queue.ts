@@ -15,14 +15,24 @@ export class SizePrefixedRecvQueue {
     this.buffer = newBuffer;
   }
 
-  public has(): boolean {
+  public popLoop(callback: (array: Uint8Array) => void): void {
+    for (let i = 0; i < 100000; i++) {
+      if (!this.has()) {
+        return;
+      }
+      const array = this.pop();
+      callback(array);
+    }
+  }
+
+  private has(): boolean {
     if (this.buffer.length < 4) return false;
     const packetSize = Uint8ArrayUtil.readUint32(this.buffer, 0);
     if (this.buffer.length < packetSize + 4) return false;
     return true;
   }
 
-  public pop(): Uint8Array {
+  private pop(): Uint8Array {
     assert(this.has(), 'PacketQueue no package to pop');
 
     const packetSize = Uint8ArrayUtil.readUint32(this.buffer, 0);

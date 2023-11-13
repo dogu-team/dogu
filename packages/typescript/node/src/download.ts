@@ -30,6 +30,10 @@ export interface DownloadOptions {
    */
   client?: AxiosInstance;
 
+  skip?: {
+    expectedFileSize?: number;
+  };
+
   /**
    * @description Timeout for download request
    * @unit milliseconds
@@ -49,6 +53,7 @@ function mergeDownloadOptions(options: DownloadOptions): Required<DownloadOption
     {
       client: defaultClient,
       timeout: defaultDownloadRequestTimeout(),
+      skip: null,
       headers: {},
       logger: null,
       onProgress: null,
@@ -69,6 +74,15 @@ export async function download(options: DownloadOptions): Promise<void> {
 
   const responseContentLength = response.headers['content-length'] ? Number(response.headers['content-length']) : 0;
   logger?.verbose?.('download response', { url, filePath, responseContentLength });
+
+  const fileStat = await fs.promises.stat(filePath).catch(() => null);
+  if (options.skip?.expectedFileSize) {
+    const contentLengthMatchIfExist = responseContentLength > 0 ? responseContentLength === options.skip.expectedFileSize : true;
+    if (contentLengthMatchIfExist && fileStat?.size === options.skip.expectedFileSize) {
+      logger?.verbose?.('download skip because file size match', { url, filePath, responseContentLength });
+      return;
+    }
+  }
 
   await fs.promises.mkdir(path.dirname(filePath), { recursive: true });
   const writer = fs.createWriteStream(filePath);

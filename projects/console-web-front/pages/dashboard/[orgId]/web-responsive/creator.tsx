@@ -15,7 +15,7 @@ import DeviceVendorSelector from '../../../../src/components/web-responsive/gene
 import { ResponsiveWebTestingContext } from '../../../../src/components/web-responsive/hook/useResponsiveWebTestingContext';
 import WebAddressInput from '../../../../src/components/web-responsive/generator/WebAddressInput';
 import RunButton from '../../../../src/components/web-responsive/generator/RunButton';
-import { createWebResponsive } from '../../../../src/api/test-executor';
+import { createWebResponsiveSnapshots } from '../../../../src/api/test-executor';
 
 const WebResponsiveCreatorPage: NextPageWithLayout<OrganizationServerSideProps> = ({ user, organization }) => {
   const [selectedVendors, setSelectedVendors] = useState<Vendor[]>([]);
@@ -36,10 +36,19 @@ const WebResponsiveCreatorPage: NextPageWithLayout<OrganizationServerSideProps> 
           <WebAddressInput />
           <RunButton
             onClick={async () => {
-              await createWebResponsive({
+              await createWebResponsiveSnapshots({
                 organizationId: organization.organizationId,
                 vendors: selectedVendors,
-                urls: ['https://www.google.com'],
+                urls: [
+                  'https://web.joongna.com/',
+                  // 'https://vmogroup.com',
+                  // 'https://www.naver.com',
+                  // 'https://section.cafe.naver.com/ca-fe/home',
+                  // 'https://www.google.com',
+                  // 'https://dogutech.io',
+                  // 'https://finance.naver.com/',
+                  // 'https://section.blog.naver.com/BlogHome.naver?directoryNo=0&currentPage=1&groupId=0',
+                ],
               });
             }}
           />
@@ -58,10 +67,6 @@ WebResponsiveCreatorPage.getLayout = (page) => {
 };
 
 export const getServerSideProps: GetServerSideProps<OrganizationServerSideProps> = async (context) => {
-  return {
-    notFound: true,
-  };
-
   if (process.env.DOGU_RUN_TYPE === 'self-hosted') {
     return {
       notFound: true,

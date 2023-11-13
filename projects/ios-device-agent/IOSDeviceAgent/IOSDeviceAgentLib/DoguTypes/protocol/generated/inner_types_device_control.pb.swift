@@ -49,6 +49,8 @@ public enum Inner_Types_DeviceControlType: SwiftProtobuf.Enum {
   public static let iosInjectText = aosInjectText
   public static let iosInjectTouchEvent = aosInjectTouchEvent
   public static let iosInjectScrollEvent = aosInjectScrollEvent
+  public static let iosGetClipboard = aosGetClipboard
+  public static let iosSetClipboard = aosSetClipboard
   case UNRECOGNIZED(Int)
 
   public init() {
@@ -1950,8 +1952,8 @@ extension Inner_Types_DeviceControlType: SwiftProtobuf._ProtoNameProviding {
     6: .same(proto: "DEVICE_CONTROL_TYPE_AOS_EXPAND_NOTIFICATION_PANEL"),
     7: .same(proto: "DEVICE_CONTROL_TYPE_AOS_EXPAND_SETTINGS_PANEL"),
     8: .same(proto: "DEVICE_CONTROL_TYPE_AOS_COLLAPSE_PANELS"),
-    9: .aliased(proto: "DEVICE_CONTROL_TYPE_AOS_GET_CLIPBOARD", aliases: ["DEVICE_CONTROL_TYPE_DESKTOP_GET_CLIPBOARD"]),
-    10: .aliased(proto: "DEVICE_CONTROL_TYPE_AOS_SET_CLIPBOARD", aliases: ["DEVICE_CONTROL_TYPE_DESKTOP_SET_CLIPBOARD"]),
+    9: .aliased(proto: "DEVICE_CONTROL_TYPE_AOS_GET_CLIPBOARD", aliases: ["DEVICE_CONTROL_TYPE_DESKTOP_GET_CLIPBOARD", "DEVICE_CONTROL_TYPE_IOS_GET_CLIPBOARD"]),
+    10: .aliased(proto: "DEVICE_CONTROL_TYPE_AOS_SET_CLIPBOARD", aliases: ["DEVICE_CONTROL_TYPE_DESKTOP_SET_CLIPBOARD", "DEVICE_CONTROL_TYPE_IOS_SET_CLIPBOARD"]),
     11: .same(proto: "DEVICE_CONTROL_TYPE_AOS_SET_SCREEN_POWER_MODE"),
     12: .same(proto: "DEVICE_CONTROL_TYPE_AOS_ROTATE_DEVICE"),
     30: .same(proto: "DEVICE_CONTROL_TYPE_DESKTOP_ONSCREEN_FOCUSED"),

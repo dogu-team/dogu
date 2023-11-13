@@ -1,4 +1,3 @@
-
 import Foundation
 import Network
 import SwiftProtobuf
@@ -63,7 +62,6 @@ public actor ControlSession {
   }
 
   private func receiveData(on connection: NWConnection) {
-    NSLog("ControlSession.receiveData")
     connection.receive(
       minimumIncompleteLength: 1, maximumLength: 1400,
       completion: { [weak self] data, context, isComplete, error in
@@ -85,20 +83,21 @@ public actor ControlSession {
 
   private func onRecvData(data: Data, isComplete: Bool, error: NWError?) async throws {
     self.recvQueue.pushBuffer(buffer: data)
-    for _ in 0..<10000 {
-      if !self.recvQueue.has() {
-        break
-      }
-      let packet = self.recvQueue.pop()
-      let paramList = try Inner_Params_DcIdaParamList(serializedData: packet)
-      for param in paramList.params {
-        Task.catchable(
-          {
-            try await self.eventListener.onParam(session: self, abstractParam: param)
-          },
-          catch: {
-            Log.shared.error("ControlSession.onRecvData onParam handle error: \($0.localizedDescription)")
-          })
+    self.recvQueue.popLoop { packet in
+      do {
+        let paramList = try Inner_Params_DcIdaParamList(serializedData: packet)
+        for param in paramList.params {
+          Task.catchable(
+            {
+              Log.shared.info("ControlSession.onRecvData onParam: \(param)")
+              try await self.eventListener.onParam(session: self, abstractParam: param)
+            },
+            catch: {
+              Log.shared.error("ControlSession.onRecvData onParam handle error: \($0.localizedDescription)")
+            })
+        }
+      } catch {
+        Log.shared.error("ControlSession.onRecvData decode error: \(error.localizedDescription)")
       }
     }
 

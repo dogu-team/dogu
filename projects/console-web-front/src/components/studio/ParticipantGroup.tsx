@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 import useDeviceStreamingContext from '../../hooks/streaming/useDeviceStreamingContext';
 
 import useWebSocket from '../../hooks/useWebSocket';
+import useEventStore from '../../stores/events';
 import { theme } from '../../styles/theme';
 import ProfileImage from '../ProfileImage';
 
@@ -37,6 +38,22 @@ const ParticipantGroup: React.FC<Props> = ({ organizationId, deviceId, userId })
       }
     };
   }, [socketRef]);
+
+  useEffect(() => {
+    const unsub = useEventStore.subscribe(({ eventName, payload }) => {
+      if (eventName === 'onStreamingClosed') {
+        console.log('here');
+        if (deviceId === payload) {
+          socketRef.current?.close();
+          setUsers([]);
+        }
+      }
+    });
+
+    return () => {
+      unsub();
+    };
+  }, [deviceId]);
 
   return (
     <Avatar.Group>

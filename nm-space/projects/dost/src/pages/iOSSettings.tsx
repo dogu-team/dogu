@@ -52,20 +52,20 @@ function IosSettings() {
 
   const loadConfig = async () => {
     try {
-      const isRestart = await ipc.appConfigClient.getOrDefault<boolean>('DOGU_DEVICE_IOS_RESTART_ON_INIT', true);
+      const isRestart = await ipc.appConfigClient.getOrDefault<boolean>('DOGU_DEVICE_RESTART_IOS_ON_INIT', true);
       setIsRestartIosOnInit(isRestart);
     } catch (e) {
-      ipc.rendererLogger.error('Error while getting DOGU_DEVICE_IOS_RESTART_ON_INIT', { error: e });
+      ipc.rendererLogger.error('Error while getting DOGU_DEVICE_RESTART_IOS_ON_INIT', { error: e });
     }
   };
 
   const onIosRestartChange = async (checked: boolean) => {
     try {
-      await ipc.appConfigClient.set<boolean>('DOGU_DEVICE_IOS_RESTART_ON_INIT', checked);
+      await ipc.appConfigClient.set<boolean>('DOGU_DEVICE_RESTART_IOS_ON_INIT', checked);
       setIsRestartIosOnInit(checked);
       onRestartOpen();
     } catch (e) {
-      ipc.rendererLogger.error('Error while setting DOGU_DEVICE_IOS_RESTART_ON_INIT', { error: e });
+      ipc.rendererLogger.error('Error while setting DOGU_DEVICE_RESTART_IOS_ON_INIT', { error: e });
     }
   };
 

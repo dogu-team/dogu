@@ -10,12 +10,13 @@ export class TimedCacheAsync<ValueType> {
 
   constructor(private readonly expire: TimeOptions) {}
 
-  async update(func: () => Promise<ValueType>): Promise<ValueType> {
+  async update(option: { call: () => Promise<ValueType>; onCached?: () => void }): Promise<ValueType> {
     const { data } = this;
     if (data && Date.now() - data.lastUpdate < time(this.expire)) {
+      option.onCached?.();
       return data.value;
     }
-    const newValue = await func();
+    const newValue = await option.call();
     this.data = {
       value: newValue,
       lastUpdate: Date.now(),

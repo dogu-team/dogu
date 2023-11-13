@@ -17,7 +17,7 @@ import {
 } from '@dogu-private/types';
 import { Closable, PromiseOrValue, stringify } from '@dogu-tech/common';
 import { BrowserInstallation, StreamingOfferDto } from '@dogu-tech/device-client-common';
-import { ChildProcess, isFreePort } from '@dogu-tech/node';
+import { CheckTimer, ChildProcess, isFreePort } from '@dogu-tech/node';
 import { Observable } from 'rxjs';
 import systeminformation from 'systeminformation';
 import { AppiumRemoteContextRental } from '../../appium/appium.context.proxy';
@@ -32,7 +32,6 @@ import { NullDeviceAgentService } from '../services/device-agent/null-device-age
 import { DesktopProfileService } from '../services/profile/desktop-profiler';
 import { ProfileService } from '../services/profile/profile-service';
 import { StreamingService } from '../services/streaming/streaming-service';
-import { checkTime } from '../util/check-time';
 import { parseRecord } from '../util/parse';
 
 type DeviceControl = PrivateProtocol.DeviceControl;
@@ -73,15 +72,16 @@ export class WindowsChannel implements DeviceChannel {
     const platform = Platform.PLATFORM_WINDOWS;
     const deviceAgent = new NullDeviceAgentService();
 
-    const osInfo = await checkTime('os', systeminformation.osInfo());
+    const timer = new CheckTimer({ logger });
+    const osInfo = await timer.check('os', systeminformation.osInfo());
     const info: DeviceSystemInfo = {
       ...DefaultDeviceSystemInfo(),
       nickname: osInfo.hostname,
       version: osInfo.release,
-      system: await checkTime('system', systeminformation.system()),
+      system: await timer.check('system', systeminformation.system()),
       os: { ...osInfo, platform },
-      uuid: await checkTime('uuid', systeminformation.uuid()),
-      cpu: await checkTime('cpu', systeminformation.cpu()),
+      uuid: await timer.check('uuid', systeminformation.uuid()),
+      cpu: await timer.check('cpu', systeminformation.cpu()),
     };
     deviceInfoLogger.info('WindowsChannel.create', { info });
     await streaming.deviceConnected(param.serial, {

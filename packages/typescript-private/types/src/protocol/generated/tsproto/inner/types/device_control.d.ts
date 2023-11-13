@@ -26,6 +26,8 @@ export declare enum DeviceControlType {
     DEVICE_CONTROL_TYPE_IOS_INJECT_TEXT = 2,
     DEVICE_CONTROL_TYPE_IOS_INJECT_TOUCH_EVENT = 3,
     DEVICE_CONTROL_TYPE_IOS_INJECT_SCROLL_EVENT = 4,
+    DEVICE_CONTROL_TYPE_IOS_GET_CLIPBOARD = 9,
+    DEVICE_CONTROL_TYPE_IOS_SET_CLIPBOARD = 10,
     UNRECOGNIZED = -1
 }
 export declare function deviceControlTypeFromJSON(object: any): DeviceControlType;

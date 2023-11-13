@@ -44,20 +44,36 @@ export class IosSystemInfoService {
       return 'unknown';
     });
     info.system.manufacturer = 'Apple Inc.';
-    const deviceAgentInfo = await this.service.send('dcIdaGetSystemInfoParam', 'dcIdaGetSystemInfoResult', {});
-    info.graphics.displays.push({
-      vendor: '',
-      vendorId: '',
-      model: '',
-      deviceName: '',
-      displayId: '',
-      resolutionX: deviceAgentInfo?.screenWidth ?? 0,
-      resolutionY: deviceAgentInfo?.screenHeight ?? 0,
-    });
-    const profileResult = await this.service.send('dcIdaQueryProfileParam', 'dcIdaQueryProfileResult', {
-      profileMethods: [ProfileMethods.Ios.MemVmStatistics],
-    });
-    info.memLayout.push({ size: profileResult?.info?.mems[0].total ?? 0 });
+    await retry(
+      async () => {
+        const deviceAgentInfo = await this.service.send('dcIdaGetSystemInfoParam', 'dcIdaGetSystemInfoResult', {});
+        if (!deviceAgentInfo) {
+          throw new Error('IosSystemInfoService.createSystemInfo systemInfo is null');
+        }
+        info.graphics.displays.push({
+          vendor: '',
+          vendorId: '',
+          model: '',
+          deviceName: '',
+          displayId: '',
+          resolutionX: deviceAgentInfo?.screenWidth ?? 0,
+          resolutionY: deviceAgentInfo?.screenHeight ?? 0,
+        });
+      },
+      { retryCount: 5, retryInterval: 500, printable: logger },
+    );
+    await retry(
+      async () => {
+        const profileResult = await this.service.send('dcIdaQueryProfileParam', 'dcIdaQueryProfileResult', {
+          profileMethods: [ProfileMethods.Ios.MemVmStatistics],
+        });
+        if (!profileResult) {
+          throw new Error('IosSystemInfoService.createSystemInfo profileResult is null');
+        }
+        info.memLayout.push({ size: profileResult?.info?.mems[0].total ?? 0 });
+      },
+      { retryCount: 5, retryInterval: 500, printable: logger },
+    );
     return info;
   }
 }

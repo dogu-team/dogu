@@ -269,9 +269,7 @@ export class AdbSerial {
     });
   }
 
-  /**
-   * network
-   */
+  //#region network
 
   async forward(hostPort: number, devicePort: number): Promise<void> {
     const { serial, printable } = this;
@@ -416,10 +414,9 @@ export class AdbSerial {
       });
     });
   }
+  //#endregion
 
-  /**
-   * app control
-   */
+  //#region app control
 
   @Retry({ retryCount: 3, retryInterval: 1000 })
   async uninstallApp(appName: string, keep = false): Promise<void> {
@@ -551,6 +548,9 @@ export class AdbSerial {
     });
   }
 
+  /*
+   * ref: predefined activities https://stackoverflow.com/a/39873312
+   */
   async runActivity(activityName: string): Promise<child_process.ChildProcess> {
     const { serial, printable } = this;
     return await usingAsnyc(new AdbSerialScope('runActivity', { serial, activityName }), async () => {
@@ -730,11 +730,9 @@ export class AdbSerial {
       return rv;
     });
   }
+  //#endregion
 
-  /**
-   * device info
-   */
-
+  //#region device info
   async getForegroundPackage(): Promise<FocusedAppInfo[]> {
     const { serial, printable } = this;
     return await usingAsnyc(new AdbSerialScope('getForegroundPackage', { serial }), async () => {
@@ -892,11 +890,9 @@ export class AdbSerial {
     });
     return result;
   }
+  //#endregion
 
-  /**
-   * display
-   */
-
+  //#region display
   async isScreenOn(): Promise<boolean> {
     const { serial, printable } = this;
     return await usingAsnyc(new AdbSerialScope('isScreenOn', { serial }), async () => {
@@ -1003,10 +999,9 @@ export class AdbSerial {
       await shellIgnoreError(serial, `settings put system screen_brightness ${value}`, { printable });
     });
   }
+  //#endregion
 
-  /**
-   *  security
-   */
+  //#region security
   async unlock(): Promise<void> {
     const { serial, printable } = this;
     return await usingAsnyc(new AdbSerialScope('unlock', { serial }), async () => {
@@ -1058,11 +1053,9 @@ export class AdbSerial {
       }
     });
   }
+  //#endregion
 
-  /**
-   * FileSystem
-   */
-
+  //#region file system
   @Retry({ retryCount: 3, retryInterval: 300 })
   async readDir(path: string): Promise<AndroidFileEntry[]> {
     const { serial, printable } = this;
@@ -1092,12 +1085,27 @@ export class AdbSerial {
       return rv;
     });
   }
+  //#endregion
 
-  /**
-   *  emulator
-   *
-   */
+  //#region location
 
+  async enableLocation(type: 'gps' | 'network'): Promise<void> {
+    const { serial } = this;
+    return await usingAsnyc(new AdbSerialScope('enableLocation', { serial }), async () => {
+      await shell(serial, `settings put secure location_providers_allowed +${type}`);
+    });
+  }
+
+  async disableLocation(type: 'gps' | 'network'): Promise<void> {
+    const { serial } = this;
+    return await usingAsnyc(new AdbSerialScope('disableLocation', { serial }), async () => {
+      await shell(serial, `settings put secure location_providers_allowed -${type}`);
+    });
+  }
+
+  //#endregion
+
+  //#region emulator
   async getEmulatorName(): Promise<string> {
     const { serial, printable } = this;
     return await usingAsnyc(new AdbSerialScope('getEmulatorName', { serial }), async () => {
@@ -1110,12 +1118,9 @@ export class AdbSerial {
       return rv;
     });
   }
+  //#endregion
 
-  /**
-   * reset
-   *
-   */
-
+  //#region reset
   ResetDangerousPackagePrefixes = ['com.sec.', 'com.samsung.', 'com.skt.', 'com.knox.', 'com.android.', 'com.google.'];
   NotDangerousPackagePrefixes = ['com.android.chrome', 'com.google.android.youtube', 'com.google.android.apps.maps', 'com.google.android.webview'];
 
@@ -1218,6 +1223,7 @@ export class AdbSerial {
       await shell(serial, `ime reset`);
     });
   }
+  //#endregion
 
   async getSystemBarVisibility(): Promise<AndroidSystemBarVisibility> {
     const { serial, printable } = this;

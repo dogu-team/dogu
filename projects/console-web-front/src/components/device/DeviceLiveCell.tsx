@@ -53,7 +53,7 @@ const DeviceLiveCell = ({ device, pid }: Props) => {
   }
 
   return (
-    <DeviceStreaming device={device} pid={pid}>
+    <DeviceStreaming device={device} pid={pid} isAdmin={false}>
       <DeviceCellInfo device={device} />
       <VideoWrapper style={{ height: isDesktop(device) ? '550px' : '400px' }}>
         <DeviceStreaming.Video style={{ alignItems: 'center' }} readonly />

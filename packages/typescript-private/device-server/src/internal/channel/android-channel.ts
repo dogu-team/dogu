@@ -21,7 +21,7 @@ import {
 } from '@dogu-private/types';
 import { Closable, errorify, MixedLogger, Printable, stringify } from '@dogu-tech/common';
 import { AppiumCapabilities, BrowserInstallation, StreamingOfferDto } from '@dogu-tech/device-client-common';
-import { killChildProcess, killProcessOnPort } from '@dogu-tech/node';
+import { checkTime, killChildProcess, killProcessOnPort } from '@dogu-tech/node';
 import { ChildProcess } from 'child_process';
 import fs from 'fs';
 import lodash from 'lodash';
@@ -48,7 +48,6 @@ import { StreamingService } from '../services/streaming/streaming-service';
 import { AndroidSystemInfoService } from '../services/system-info/android-system-info-service';
 import { Zombieable } from '../services/zombie/zombie-component';
 import { ZombieServiceInstance } from '../services/zombie/zombie-service';
-import { checkTime } from '../util/check-time';
 
 type DeviceControl = PrivateProtocol.DeviceControl;
 
@@ -137,6 +136,9 @@ export class AndroidChannel implements DeviceChannel {
     );
     await deviceAgent.wait();
 
+    await adb.uninstallApp('io.appium.settings', false).catch((error) => {
+      logger.error('adb.uninstallApp.io.appium.settings', { error: errorify(error) });
+    });
     const appiumContextProxy = deviceServerService.appiumService.createAndroidAppiumContext(
       serial,
       'builtin',
@@ -291,8 +293,8 @@ export class AndroidChannel implements DeviceChannel {
 
   async reset(): Promise<void> {
     const { logger } = this;
-    const appiumContextImpl = await checkTime(`AndroidChannel.reset.waitUntilBuiltin`, this._appiumContext.waitUntilBuiltin(), logger);
-    await checkTime(`AndroidChannel.reset.reset`, this._reset.reset(this.info, this.appiumAdb, appiumContextImpl), logger);
+    const appiumContextImpl = await checkTime(`AndroidChannel.reset.waitUntilBuiltin`, this._appiumContext.waitUntilBuiltin(), { logger });
+    await checkTime(`AndroidChannel.reset.reset`, this._reset.reset(this.info, this.appiumAdb, appiumContextImpl), { logger });
   }
 
   async killOnPort(port: number): Promise<void> {
@@ -438,8 +440,12 @@ export class AndroidChannel implements DeviceChannel {
   }
 
   async setGeoLocation(geoLocation: GeoLocation): Promise<void> {
+    // await this.adb.disableLocation('gps');
+    // await this.adb.disableLocation('network');
+    // await this.adb.enableLocation('gps');
     const newAppiumAdb = this.appiumAdb.clone({ adbExecTimeout: 1000 * 60 * 3 });
     await newAppiumAdb.setGeoLocation(geoLocation);
+    // await this.adb.disableLocation('gps');
   }
 
   async getAlert(): Promise<DeviceAlert | undefined> {
