@@ -4,7 +4,6 @@ import styled from 'styled-components';
 import useTranslation from 'next-translate/useTranslation';
 import useSWR from 'swr';
 import { isAxiosError } from 'axios';
-import { OrganizationBase } from '@dogu-private/console';
 
 import H4 from 'src/components/common/headings/H4';
 import ConsoleBasicLayout from './ConsoleBasicLayout';
