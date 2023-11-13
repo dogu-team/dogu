@@ -24,11 +24,12 @@ interface Props {
   children: React.ReactNode;
   pid?: number;
   isCloudDevice?: boolean;
+  isAdmin: boolean;
 }
 
 const THROTTLE_MS = 33;
 
-const DeviceStreaming = ({ device, children, pid, isCloudDevice }: Props) => {
+const DeviceStreaming = ({ device, children, pid, isCloudDevice, isAdmin }: Props) => {
   const [mode, setMode] = useState<StreamingMode>('input');
   const isSelf = useLocalDeviceDetect(device);
   const { loading, deviceRTCCallerRef, peerConnectionRef, videoRef, error } = useRTCConnection(
@@ -109,6 +110,7 @@ const DeviceStreaming = ({ device, children, pid, isCloudDevice }: Props) => {
         updateMode: setMode,
         isCloudDevice,
         deviceScreenshotBase64: imageBase64,
+        isAdmin,
       }}
     >
       <Box visible={!!device}>{children}</Box>

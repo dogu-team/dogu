@@ -3,7 +3,6 @@ import styled from 'styled-components';
 import useTranslation from 'next-translate/useTranslation';
 
 import resources from 'src/resources';
-import StreamingOptionController from './StreamingOptionController';
 import PlatformIcon from '../device/PlatformIcon';
 import { flexRowBaseStyle } from '../../styles/box';
 import useDeviceStreamingContext from '../../hooks/streaming/useDeviceStreamingContext';
@@ -13,7 +12,7 @@ interface Props {
 }
 
 const DeviceStreamingBasicMenu = ({ hideDeviceName }: Props) => {
-  const { device, peerConnection } = useDeviceStreamingContext();
+  const { device, peerConnection, isAdmin } = useDeviceStreamingContext();
   const { t } = useTranslation();
 
   return (
@@ -45,20 +44,22 @@ const DeviceStreamingBasicMenu = ({ hideDeviceName }: Props) => {
           </div>
         </Section>
       )}
-      <Section>
-        <TitleWrapper>
-          <Title>{t('device-streaming:infoTabVideoPerfomanceTitle')}</Title>
-        </TitleWrapper>
-        <div>{peerConnection && <PerformanceViewer peerConnection={peerConnection} />}</div>
-      </Section>
-      <Section>
+      {isAdmin && (
+        <Section>
+          <TitleWrapper>
+            <Title>{t('device-streaming:infoTabVideoPerfomanceTitle')}</Title>
+          </TitleWrapper>
+          <div>{peerConnection && <PerformanceViewer peerConnection={peerConnection} />}</div>
+        </Section>
+      )}
+      {/* <Section>
         <TitleWrapper>
           <Title>{t('device-streaming:infoTabOptionTitle')}</Title>
         </TitleWrapper>
         <div>
           <StreamingOptionController />
         </div>
-      </Section>
+      </Section> */}
       <Section>
         <TitleWrapper>
           <Title> {t('device-streaming:infoTabKeyboardTitle')}</Title>

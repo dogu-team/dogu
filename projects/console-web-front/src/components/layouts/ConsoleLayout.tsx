@@ -1,3 +1,4 @@
+import { OrganizationBase } from '@dogu-private/console';
 import { Layout } from 'antd';
 import styled from 'styled-components';
 import useTranslation from 'next-translate/useTranslation';
@@ -12,7 +13,6 @@ import ErrorBox from '../common/boxes/ErrorBox';
 import { OrganizationContext } from '../../hooks/context/useOrganizationContext';
 import { getErrorMessageFromAxios } from '../../utils/error';
 import { OrganizationServerSideProps } from '../../ssr/organization';
-import { OrganizationBase } from '@dogu-private/console';
 
 export interface ConsoleLayoutProps extends OrganizationServerSideProps {
   children: React.ReactNode;

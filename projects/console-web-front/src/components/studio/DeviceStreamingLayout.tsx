@@ -37,7 +37,7 @@ const DeviceStreamingLayout = ({
   }
 
   return (
-    <DeviceStreaming device={device} isCloudDevice={isCloudDevice}>
+    <DeviceStreaming device={device} isCloudDevice={isCloudDevice} isAdmin={organization.shareable}>
       <Box>
         <LeftBox>
           <DeviceControlToolbar />

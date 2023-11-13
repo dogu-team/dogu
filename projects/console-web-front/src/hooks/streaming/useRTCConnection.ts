@@ -40,7 +40,7 @@ const useRTCConnection = ({ device, pid, isCloudDevice }: Option, sendThrottleMs
     console.debug('peer', peerConnectionRef.current);
     peerConnectionRef.current?.close();
     console.debug(`close connection ${device?.deviceId}`);
-  }, []);
+  }, [device?.deviceId]);
 
   useEffect(() => {
     if (peerConnectionRef.current) {
@@ -180,9 +180,9 @@ const useRTCConnection = ({ device, pid, isCloudDevice }: Option, sendThrottleMs
 
     const streamingOption: StreamingOption = {
       screen: {
-        maxFps: fps ?? 60,
+        maxFps: 60,
         pid,
-        maxResolution: resolution ?? 720,
+        maxResolution: 720,
       },
     };
 
@@ -224,13 +224,13 @@ const useRTCConnection = ({ device, pid, isCloudDevice }: Option, sendThrottleMs
       setHAConnectionError(undefined);
       setLoading(true);
     };
-  }, [device?.deviceId, pid, fps, resolution]);
+  }, [device?.deviceId, pid]);
 
   useEffect(() => {
     return () => {
       cleanUp();
     };
-  }, [cleanUp, fps, resolution]);
+  }, [cleanUp]);
 
   return { loading, peerConnectionRef, deviceRTCCallerRef, videoRef, error: haConnectionError };
 };
