@@ -56,7 +56,9 @@ const BannerTimer: React.FC<Props> = ({ expiredAt }) => {
     return `${days}d ${hours}h`;
   };
 
-  return <span>⏰ {t('promotionBannerTimerLeftText', { time: getLeftDays((expiredAt.getTime() - now) / 1000) })}</span>;
+  return (
+    <span>(⏰ {t('promotionBannerTimerLeftText', { time: getLeftDays((expiredAt.getTime() - now) / 1000) })})</span>
+  );
 };
 
 const PromotionBanner: React.FC = () => {
@@ -121,11 +123,9 @@ const PromotionBanner: React.FC = () => {
               : 'promotionBannerMonthSingularMessage',
             { month: promotion.monthlyApplyCount, discount: promotion.monthlyDiscountPercent },
           )
-        : ''}{' '}
+        : ''}
+      <StyledButton groupType={planGroupType ?? null}>{t('promotionBannerButtonText')} 🚀</StyledButton>
       {!!expiredAt && <BannerTimer expiredAt={expiredAt} />}
-      <StyledButton groupType={planGroupType ?? null}>
-        {t('promotionBannerButtonText')} <ArrowRightOutlined />
-      </StyledButton>
       <CloseAlertButton
         onClick={() => {
           savePromotionCloseTime(currentPlanType);
@@ -168,11 +168,12 @@ const CloseAlertButton = styled.button`
 const StyledButton = styled(UpgradePlanButton)`
   background-color: ${(props) => props.theme.main.colors.blue3};
   padding: 0;
-  margin-left: 0.5rem;
+  margin: 0 0.4rem;
   border: none;
   color: #fff;
   height: auto;
   font-size: 0.85rem;
+  font-weight: 600;
 
   span {
     text-decoration: underline;
