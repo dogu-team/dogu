@@ -1,5 +1,5 @@
 import { PlatformAbility } from '@dogu-private/dost-children';
-import { PrivateProtocol, Serial } from '@dogu-private/types';
+import { GeoLocation, PrivateProtocol, Serial } from '@dogu-private/types';
 import { delay, errorify, FilledPrintable, IDisposableAsync, IDisposableSync, Printable, Retry, stringify, using, usingAsnyc } from '@dogu-tech/common';
 import { ChildProcess, HostPaths } from '@dogu-tech/node';
 import child_process, { execFile, ExecFileOptionsWithStringEncoding, spawn } from 'child_process';
@@ -1088,6 +1088,26 @@ export class AdbSerial {
   //#endregion
 
   //#region location
+
+  async getFusedLocation(): Promise<GeoLocation> {
+    const { serial, printable } = this;
+    return await usingAsnyc(new AdbSerialScope('getFusedLocation', { serial }), async () => {
+      const result = await shell(serial, 'dumpsys location');
+      const out = result.stdout;
+      const lines = out.split(os.EOL);
+      for (const line of lines) {
+        // match this text "Location[fused 37.392554,126.939496 hAcc=1600"
+        const regex = /Location\[fused (?<lat>[\d\.]+),(?<lon>[\d\.]+)/g;
+        const match = regex.exec(out);
+        if (match && match.groups) {
+          const latitude = parseFloat(match.groups.lat);
+          const longitude = parseFloat(match.groups.lon);
+          return { latitude, longitude };
+        }
+      }
+      throw new Error(`Failed to get location. ${out}`);
+    });
+  }
 
   async enableLocation(type: 'gps' | 'network'): Promise<void> {
     const { serial } = this;
