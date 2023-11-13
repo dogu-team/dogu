@@ -5,7 +5,7 @@ import compressing from 'compressing';
 import fs from 'fs';
 import path from 'path';
 import shelljs from 'shelljs';
-import { changeFusedLocation, changeLocationInterval } from './change-location-interval';
+import { changeFusedLocation, changeLocationAccuracy, changeLocationInterval } from './change-location-interval';
 
 const Version = '5.2.0';
 const Url = `https://github.com/appium/io.appium.settings/archive/refs/tags/v${Version}.zip`;
@@ -36,6 +36,7 @@ const logger = new ConsoleLogger();
   await timer.check('uncompress', compressing.zip.uncompress(ZipPath, path.dirname(ZipOutputDir)));
   await timer.check('changeLocationInterval', changeLocationInterval(ZipOutputDir));
   await timer.check('changeFusedLocation', changeFusedLocation(ZipOutputDir));
+  await timer.check('changeLocationAccuracy', changeLocationAccuracy(ZipOutputDir));
 
   const build = async () => {
     return new Promise<void>((resolve, reject) => {

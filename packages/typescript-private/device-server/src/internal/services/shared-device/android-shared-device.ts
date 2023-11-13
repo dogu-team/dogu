@@ -342,17 +342,16 @@ export class AndroidSharedDeviceService implements Zombieable {
     });
 
     await this.checkSetup(`AndroidSharedDeviceService.setup.joinWifi`, adb.joinWifi(env.DOGU_WIFI_SSID, env.DOGU_WIFI_PASSWORD));
-    await this.checkSetup(`AndroidSharedDeviceService.setup.disableGooglePlayProtect`, this.disableLocationGoogleAccuracy());
 
     await this.checkSetup(`AndroidSharedDeviceService.setup.stayOnWhilePluggedIn`, adb.stayOnWhilePluggedIn()).catch((e) => {
       this.printable.error(`AndroidSharedDeviceService.revive.stayOnWhilePluggedIn failed.`, { serial, error: errorify(e) });
     });
 
-    await this.checkSetup(`AndroidSharedDeviceService.setup.closeDialog`, this.closeDialog()).catch((e) => {
-      this.printable.error(`AndroidSharedDeviceService.revive.closeDialog failed.`, { serial, error: errorify(e) });
-    });
     await this.checkSetup(`AndroidSharedDeviceService.setup.clearActivityHostory`, this.clearActivityHostory()).catch((e) => {
       this.printable.error(`AndroidSharedDeviceService.revive.clearActivityHostory failed.`, { serial, error: errorify(e) });
+    });
+    await this.checkSetup(`AndroidSharedDeviceService.setup.closeDialog`, this.closeDialog()).catch((e) => {
+      this.printable.error(`AndroidSharedDeviceService.revive.closeDialog failed.`, { serial, error: errorify(e) });
     });
 
     const packages = await adb.getIntalledPackages();
@@ -513,6 +512,9 @@ export class AndroidSharedDeviceService implements Zombieable {
 
   private async clearActivityHostory(): Promise<void> {
     const { adb, appiumContext } = this;
+    await adb.keyevent(DeviceControlKeycode.DEVICE_CONTROL_KEYCODE_BACK);
+    await adb.keyevent(DeviceControlKeycode.DEVICE_CONTROL_KEYCODE_BACK);
+
     await adb.keyevent(DeviceControlKeycode.DEVICE_CONTROL_KEYCODE_APP_SWITCH);
     const driver = appiumContext.driver();
     if (!driver) {
@@ -524,6 +526,9 @@ export class AndroidSharedDeviceService implements Zombieable {
     if (0 < closeAll.length) {
       await closeAll[0].click();
     }
+
+    await adb.keyevent(DeviceControlKeycode.DEVICE_CONTROL_KEYCODE_BACK);
+    await adb.keyevent(DeviceControlKeycode.DEVICE_CONTROL_KEYCODE_BACK);
   }
 
   private killLogcatProcess(): void {
@@ -541,35 +546,69 @@ export class AndroidSharedDeviceService implements Zombieable {
     return this.timer.check(name, promise);
   }
 
-  async disableLocationGoogleAccuracy(): Promise<void> {
-    const { adb, appiumContext } = this;
-    const driver = appiumContext.driver();
-    if (!driver) {
-      throw new Error(`AndroidResetService.disableLocationGoogleAccuracy Appium Driver is not found`);
-    }
-    const aosDriver = new AndroidWebDriver(driver, this.printable);
-    await adb.runActivity('android.settings.LOCATION_SOURCE_SETTINGS');
+  // async disableLocationGoogleAccuracy(): Promise<void> {
+  //   const { adb, appiumContext } = this;
+  //   const driver = appiumContext.driver();
+  //   if (!driver) {
+  //     throw new Error(`AndroidResetService.disableLocationGoogleAccuracy Appium Driver is not found`);
+  //   }
+  //   const aosDriver = new AndroidWebDriver(driver, this.printable);
+  //   await adb.runActivity('android.settings.LOCATION_SOURCE_SETTINGS');
 
-    const locationServices = await aosDriver.waitElementsExist(`android=new UiSelector().className("android.widget.TextView").text("Location services")`, { seconds: 4 });
-    if (0 < locationServices.length) {
-      await locationServices[0].click();
-    }
+  //   const locationServices = await aosDriver.waitElementsExist(`android=new UiSelector().className("android.widget.TextView").text("Location services")`, { seconds: 4 });
+  //   if (0 < locationServices.length) {
+  //     await locationServices[0].click();
+  //   }
 
-    const locationAccuracy = await aosDriver.waitElementExist(`android=new UiSelector().className("android.widget.TextView").text("Google Location Accuracy")`, { seconds: 4 });
-    if (locationAccuracy.error) {
-      throw new Error(`AndroidResetService.disableLocationGoogleAccuracy Google Location Accuracy is not found`);
-    }
-    await locationAccuracy.click();
+  //   const locationAccuracy = await aosDriver.waitElementExist(`android=new UiSelector().className("android.widget.TextView").text("Google Location Accuracy")`, { seconds: 4 });
+  //   if (locationAccuracy.error) {
+  //     throw new Error(`AndroidResetService.disableLocationGoogleAccuracy Google Location Accuracy is not found`);
+  //   }
+  //   await locationAccuracy.click();
 
-    const toggle = await aosDriver.waitElementExist(`android=new UiSelector().className("android.widget.Switch")`, { seconds: 5 });
-    if (toggle.error) {
-      throw new Error(`AndroidResetService.disableLocationGoogleAccuracy toggle not found`);
-    }
-    const checked = await toggle.getAttribute('checked');
-    this.printable.info(`AndroidResetService.disableLocationGoogleAccuracy checked`, { checked });
-    if (checked.toLowerCase() === 'true') {
-      await toggle.click();
-      await delay(300);
-    }
-  }
+  //   const toggle = await aosDriver.waitElementExist(`android=new UiSelector().className("android.widget.Switch")`, { seconds: 5 });
+  //   if (toggle.error) {
+  //     throw new Error(`AndroidResetService.disableLocationGoogleAccuracy toggle not found`);
+  //   }
+  //   const checked = await toggle.getAttribute('checked');
+  //   this.printable.info(`AndroidResetService.disableLocationGoogleAccuracy checked`, { checked });
+  //   if (checked.toLowerCase() === 'true') {
+  //     await toggle.click();
+  //     await delay(300);
+  //   }
+  // }
+
+  // async disableWifiAccuracy(): Promise<void> {
+  //   const { adb, appiumContext } = this;
+  //   const driver = appiumContext.driver();
+  //   if (!driver) {
+  //     throw new Error(`AndroidResetService.disableLocationGoogleAccuracy Appium Driver is not found`);
+  //   }
+  //   const aosDriver = new AndroidWebDriver(driver, this.printable);
+  //   await adb.runActivity('android.settings.LOCATION_SOURCE_SETTINGS');
+
+  //   const locationServices = await aosDriver.waitElementsExist(`android=new UiSelector().className("android.widget.TextView").text("Location services")`, { seconds: 4 });
+  //   if (0 < locationServices.length) {
+  //     await locationServices[0].click();
+  //   }
+  //   const improveAccuracy = await aosDriver.waitElementsExist(`android=new UiSelector().className("android.widget.TextView").text("Improve accuracy")`, { seconds: 4 });
+  //   if (0 < improveAccuracy.length) {
+  //     await improveAccuracy[0].click();
+  //   }
+  //   const wifiScanning = await aosDriver.waitElementsExist(`android=new UiSelector().className("android.widget.TextView").text("Wi-Fi scanning")`, { seconds: 4 });
+  //   if (0 === wifiScanning.length) {
+  //     throw new Error(`AndroidResetService.disableLocationGoogleAccuracy wifiScanning not found`);
+  //   }
+
+  //   const toggles = await aosDriver.waitElementsExist(`android=new UiSelector().className("android.widget.Switch")`, { seconds: 5 });
+  //   for (const toggle of toggles) {
+  //     const checked = await toggle.getAttribute('checked');
+  //     this.printable.info(`AndroidResetService.disableLocationGoogleAccuracy checked`, { checked });
+  //     if (checked.toLowerCase() === 'true') {
+  //       await toggle.click();
+  //       await delay(300);
+  //     }
+  //   }
+  //   return;
+  // }
 }

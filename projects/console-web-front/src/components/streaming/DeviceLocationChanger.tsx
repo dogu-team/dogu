@@ -5,8 +5,12 @@ import styled from 'styled-components';
 import { Popconfirm } from 'antd';
 
 import useDeviceStreamingContext from '../../hooks/streaming/useDeviceStreamingContext';
+import { LoadingOutlined } from '@ant-design/icons';
 
 interface Props {}
+
+const DOGU_OFFICE_LAT = 37.392145462427834;
+const DOGU_OFFICE_LNG = 126.93941445526565;
 
 const DeviceLocationChanger: React.FC<Props> = () => {
   const { deviceService, device } = useDeviceStreamingContext();
@@ -24,24 +28,15 @@ const DeviceLocationChanger: React.FC<Props> = () => {
         return;
       }
 
+      setLoading(true);
       try {
         const location = await deviceService.deviceClientRef.current.getGeoLocation(device.serial);
         setCurrentLocation(location);
         backupLocation.current = location;
       } catch (e) {}
+      setLoading(false);
     })();
   }, [deviceService?.deviceClientRef, device?.serial]);
-
-  const onLoad = useCallback(
-    (map: any) => {
-      const bounds = new window.google.maps.LatLngBounds({
-        lat: currentLocation?.latitude ?? 0,
-        lng: currentLocation?.longitude ?? 0,
-      });
-      map.fitBounds(bounds);
-    },
-    [currentLocation],
-  );
 
   const handleClick = useCallback((e: any) => {
     setCurrentLocation({
@@ -59,8 +54,8 @@ const DeviceLocationChanger: React.FC<Props> = () => {
     setLoading(true);
     try {
       await deviceService.deviceClientRef.current.setGeoLocation(device.serial, {
-        latitude: currentLocation?.latitude ?? 0,
-        longitude: currentLocation?.longitude ?? 0,
+        latitude: currentLocation?.latitude ?? DOGU_OFFICE_LAT,
+        longitude: currentLocation?.longitude ?? DOGU_OFFICE_LNG,
       });
       backupLocation.current = currentLocation;
     } catch (e) {}
@@ -71,17 +66,18 @@ const DeviceLocationChanger: React.FC<Props> = () => {
   return (
     <div>
       <MapWrapper>
-        {(isOpen || !isLoaded) && <LoadingBox />}
-
         {isLoaded && (
           <GoogleMap
-            center={{ lat: currentLocation?.latitude ?? 0, lng: currentLocation?.longitude ?? 0 }}
-            onLoad={onLoad}
+            center={{
+              lat: currentLocation?.latitude ?? DOGU_OFFICE_LAT,
+              lng: currentLocation?.longitude ?? DOGU_OFFICE_LNG,
+            }}
             onClick={handleClick}
             mapContainerStyle={{
               width: '100%',
               height: '100%',
             }}
+            zoom={3}
             options={{
               zoomControl: false,
               fullscreenControl: false,
@@ -91,45 +87,19 @@ const DeviceLocationChanger: React.FC<Props> = () => {
               zoom: 3,
             }}
           >
-            {currentLocation && (
-              <MarkerF
-                position={{
-                  lat: currentLocation.latitude,
-                  lng: currentLocation.longitude,
-                }}
-              />
-            )}
-          </GoogleMap>
-        )}
-        {/* <GoogleMapReact
-          bootstrapURLKeys={{
-            key: process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY,
-          }}
-          center={{ lat: currentLocation?.latitude ?? 0, lng: currentLocation?.longitude ?? 0 }}
-          defaultZoom={3}
-          onClick={handleClick}
-          options={{
-            zoomControl: false,
-            fullscreenControl: false,
-          }}
-        >
-          {currentLocation && (
-            <Image
-              src={resources.icons.mapMarker}
-              // @ts-ignore
-              lat={currentLocation.latitude}
-              // @ts-ignore
-              lng={currentLocation.longitude}
-              width={24}
-              height={24}
-              alt={'map-marker'}
-              style={{
-                transform: 'translate(-50%, -100%)',
-                position: 'absolute',
+            <MarkerF
+              position={{
+                lat: currentLocation?.latitude ?? DOGU_OFFICE_LAT,
+                lng: currentLocation?.longitude ?? DOGU_OFFICE_LNG,
               }}
             />
-          )}
-        </GoogleMapReact> */}
+          </GoogleMap>
+        )}
+        {(loading || isOpen || !isLoaded) && (
+          <LoadingBox>
+            <LoadingOutlined />
+          </LoadingBox>
+        )}
       </MapWrapper>
       <Popconfirm
         open={isOpen}

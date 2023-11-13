@@ -21,6 +21,7 @@ import { SlackModule } from '../../enterprise/module/integration/slack/slack.mod
 import { LicenseModule } from '../../enterprise/module/license/license.module';
 import { DeviceMessageModule } from '../device-message/device-message.module';
 import { LiveSessionModule } from '../live-session/live-session.module';
+import { DeviceModule } from '../organization/device/device.module';
 import { ProjectModule } from '../project/project.module';
 import { RedisModule } from '../redis/redis.module';
 import { RemoteModule } from '../remote/remote.module';
@@ -75,6 +76,7 @@ import { UpdateProducer } from './update-producer';
     ProjectModule,
     LiveSessionModule,
     RedisModule,
+    DeviceModule,
   ],
   providers: [
     UpdateProducer,

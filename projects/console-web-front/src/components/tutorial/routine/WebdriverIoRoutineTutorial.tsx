@@ -66,10 +66,11 @@ const WebdriverIoRoutineTutorial = () => {
   );
   const frameworkLanguage = Object.keys(
     routineTutorialSdkSupportInfo[TutorialSupportSdk.APPIUM].frameworksPerLang,
-  ).find((language) =>
-    routineTutorialSdkSupportInfo[TutorialSupportSdk.APPIUM].frameworksPerLang[
-      language as TutorialSupportLanguage
-    ]?.includes(framework),
+  ).find(
+    (language) =>
+      routineTutorialSdkSupportInfo[TutorialSupportSdk.APPIUM].frameworksPerLang[
+        language as TutorialSupportLanguage
+      ]?.includes(framework),
   );
 
   const APP_ROUTINE_SAMPLE = `name: sample-routine
@@ -115,8 +116,6 @@ jobs:
             ${selectedGuide?.command ?? ''}
         cwd: ${selectedGuide?.cwd ?? ''}
 `;
-
-  console.log(WEB_ROUTINE_SAMPLE);
 
   if (!project) {
     return <ErrorBox title="Something went wrong" desc="Project not found" />;

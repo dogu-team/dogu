@@ -206,20 +206,12 @@ export class WebdriverAgentProcess {
     }
     await client
       .post(`/session/${sessionId}/alert/dismiss`)
-      .then(() => {
-        this.logger.info('dismiss alert success');
-      })
-      .catch(() => {
-        this.logger.warn('dismiss alert failed');
-      });
+      .then(() => {})
+      .catch(() => {});
     await client
       .post(`/session/${sessionId}/alert/accept`)
-      .then(() => {
-        this.logger.info('accept alert success');
-      })
-      .catch(() => {
-        this.logger.warn('accept alert failed');
-      });
+      .then(() => {})
+      .catch(() => {});
   }
 
   //#region location

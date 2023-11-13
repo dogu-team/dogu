@@ -1,5 +1,5 @@
 import { PlatformAbility } from '@dogu-private/dost-children';
-import { PrivateProtocol, Serial } from '@dogu-private/types';
+import { GeoLocation, PrivateProtocol, Serial } from '@dogu-private/types';
 import { delay, errorify, FilledPrintable, IDisposableAsync, IDisposableSync, Printable, Retry, stringify, using, usingAsnyc } from '@dogu-tech/common';
 import { ChildProcess, HostPaths } from '@dogu-tech/node';
 import child_process, { execFile, ExecFileOptionsWithStringEncoding, spawn } from 'child_process';
@@ -1089,6 +1089,26 @@ export class AdbSerial {
 
   //#region location
 
+  async getFusedLocation(): Promise<GeoLocation> {
+    const { serial, printable } = this;
+    return await usingAsnyc(new AdbSerialScope('getFusedLocation', { serial }), async () => {
+      const result = await shell(serial, 'dumpsys location');
+      const out = result.stdout;
+      const lines = out.split(os.EOL);
+      for (const line of lines) {
+        // match this text "Location[fused 37.392554,126.939496 hAcc=1600"
+        const regex = /Location\[fused (?<lat>[\d\.]+),(?<lon>[\d\.]+)/g;
+        const match = regex.exec(out);
+        if (match && match.groups) {
+          const latitude = parseFloat(match.groups.lat);
+          const longitude = parseFloat(match.groups.lon);
+          return { latitude, longitude };
+        }
+      }
+      throw new Error(`Failed to get location. ${out}`);
+    });
+  }
+
   async enableLocation(type: 'gps' | 'network'): Promise<void> {
     const { serial } = this;
     return await usingAsnyc(new AdbSerialScope('enableLocation', { serial }), async () => {
@@ -1122,7 +1142,30 @@ export class AdbSerial {
 
   //#region reset
   ResetDangerousPackagePrefixes = ['com.sec.', 'com.samsung.', 'com.skt.', 'com.knox.', 'com.android.', 'com.google.'];
-  NotDangerousPackagePrefixes = ['com.android.chrome', 'com.google.android.youtube', 'com.google.android.apps.maps', 'com.google.android.webview'];
+  NotDangerousPackagePrefixes = [
+    'com.android.bluetooth',
+    'com.android.calllogbackup',
+    'com.android.captiveportallogin',
+    'com.android.chrome',
+    'com.android.cts.priv.ctsshim',
+    'com.android.defcontainer',
+    'com.android.dreams',
+    'com.android.externalstorage',
+    'com.android.htmlviewer',
+    'com.android.inputdevices',
+    'com.android.keychain',
+    'com.android.location',
+    'com.android.mms',
+    'com.android.phone',
+    'com.android.providers',
+    'com.android.settings',
+    'com.android.server.telecom',
+    'com.android.traceur',
+    'com.android.vending',
+    'com.google.android.apps.maps',
+    'com.google.android.webview',
+    'com.google.android.youtube',
+  ];
 
   /**
    * @requires Android 10+
@@ -1173,9 +1216,8 @@ export class AdbSerial {
         return Promise.resolve();
       });
       const rmSystemsPromises = systemApps.map(async (app): Promise<void> => {
-        const hasDangeroousPrefix = this.ResetDangerousPackagePrefixes.find((prefix) => app.packageName.startsWith(prefix));
         const isNotDangerous = this.NotDangerousPackagePrefixes.find((prefix) => app.packageName.startsWith(prefix));
-        if (hasDangeroousPrefix && !isNotDangerous) {
+        if (!isNotDangerous) {
           return;
         }
         await this.clearApp(app.packageName);

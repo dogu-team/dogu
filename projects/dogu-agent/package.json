@@ -1,6 +1,6 @@
 {
   "name": "dogu-agent",
-  "version": "2.3.2",
+  "version": "2.5.3",
   "license": "SEE LICENSE IN https://github.com/dogu-team/dogu/blob/main/LICENSE.md",
   "author": "Dogu Technologies",
   "main": "./build/src/cli.js",

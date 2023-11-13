@@ -7,6 +7,7 @@ import { config } from '../../config';
 import { LiveSession } from '../../db/entity/live-session.entity';
 import { LiveSessionService } from '../live-session/live-session.service';
 import { DoguLogger } from '../logger/logger';
+import { DeviceCommandService } from '../organization/device/device-command.service';
 import { RedisService } from '../redis/redis.service';
 import { EventConsumer } from './event.consumer';
 import { EventProducer } from './event.producer';
@@ -22,6 +23,7 @@ export class LiveSessionUpdater implements OnModuleInit, OnModuleDestroy {
     private readonly redis: RedisService,
     private readonly logger: DoguLogger,
     private readonly liveSessionService: LiveSessionService,
+    private readonly deviceCommandService: DeviceCommandService,
   ) {
     this.eventProducer = new EventProducer({
       redis,
@@ -29,8 +31,8 @@ export class LiveSessionUpdater implements OnModuleInit, OnModuleDestroy {
       key: config.redis.key.updateLiveSession,
       produceInterval: 1000,
       eventExpireTimeout: 60 * 1000,
-      onProduce: async () => {
-        return '0';
+      onProduce: async (): Promise<string> => {
+        return Promise.resolve('0');
       },
     });
     this.eventConsumer = new EventConsumer({
@@ -38,16 +40,16 @@ export class LiveSessionUpdater implements OnModuleInit, OnModuleDestroy {
       logger,
       key: config.redis.key.updateLiveSession,
       consumeInterval: 1000,
-      onConsume: () => this.update(),
+      onConsume: async (): Promise<void> => this.update(),
     });
   }
 
-  onModuleInit() {
+  onModuleInit(): void {
     this.eventProducer.start();
     this.eventConsumer.start();
   }
 
-  onModuleDestroy() {
+  onModuleDestroy(): void {
     this.eventProducer.stop();
     this.eventConsumer.stop();
   }
@@ -166,7 +168,7 @@ export class LiveSessionUpdater implements OnModuleInit, OnModuleDestroy {
         });
 
       if (toCloses.length > 0) {
-        return await this.liveSessionService.closeInTransaction(manager, toCloses);
+        return await LiveSessionService.closeInTransaction(this.logger, this.deviceCommandService, manager, toCloses);
       }
     });
 

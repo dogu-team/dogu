@@ -429,23 +429,23 @@ export class AndroidChannel implements DeviceChannel {
   }
 
   async getGeoLocation(): Promise<GeoLocation> {
-    const location = await this.appiumAdb.getGeoLocation();
-    return {
-      longitude: typeof location.longitude === 'string' ? parseFloat(location.longitude) : location.longitude,
-      latitude: typeof location.latitude === 'string' ? parseFloat(location.latitude) : location.latitude,
-      altitude: typeof location.altitude === 'string' ? parseFloat(location.altitude) : location.altitude ?? 0,
-      satellites: typeof location.satellites === 'string' ? parseInt(location.satellites, 10) : location.satellites ?? 0,
-      speed: typeof location.speed === 'string' ? parseFloat(location.speed) : location.speed ?? 0,
-    };
+    try {
+      const location = await this.appiumAdb.getGeoLocation();
+      return {
+        longitude: typeof location.longitude === 'string' ? parseFloat(location.longitude) : location.longitude,
+        latitude: typeof location.latitude === 'string' ? parseFloat(location.latitude) : location.latitude,
+        altitude: typeof location.altitude === 'string' ? parseFloat(location.altitude) : location.altitude ?? 0,
+        satellites: typeof location.satellites === 'string' ? parseInt(location.satellites, 10) : location.satellites ?? 0,
+        speed: typeof location.speed === 'string' ? parseFloat(location.speed) : location.speed ?? 0,
+      };
+    } catch (e) {
+      return await this.adb.getFusedLocation();
+    }
   }
 
   async setGeoLocation(geoLocation: GeoLocation): Promise<void> {
-    // await this.adb.disableLocation('gps');
-    // await this.adb.disableLocation('network');
-    // await this.adb.enableLocation('gps');
     const newAppiumAdb = this.appiumAdb.clone({ adbExecTimeout: 1000 * 60 * 3 });
     await newAppiumAdb.setGeoLocation(geoLocation);
-    // await this.adb.disableLocation('gps');
   }
 
   async getAlert(): Promise<DeviceAlert | undefined> {

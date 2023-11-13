@@ -343,12 +343,12 @@ export class IosResetService {
         await iosDriver.clickSelector(new IosAccessibilitiySelector('CLEAR_HISTORY_AND_DATA'));
 
         if (!isIpad) {
-          await iosDriver.clickSelector(new IosAccessibilitiySelector('Clear History and Data'));
+          await iosDriver.clickSelector(new IosAccessibilitiySelector('Clear History and Data', { dismissAlert: false }));
         } else {
-          await iosDriver.clickSelector(new IosAccessibilitiySelector('Clear'));
+          await iosDriver.clickSelector(new IosAccessibilitiySelector('Clear', { dismissAlert: false }));
         }
 
-        await iosDriver.clickSelector(new IosClassChainSelector('**/XCUIElementTypeButton[`label == "Close Tabs"`]'));
+        await iosDriver.clickSelector(new IosClassChainSelector('**/XCUIElementTypeButton[`label == "Close Tabs"`]', { dismissAlert: false }));
       },
     );
   }
@@ -400,7 +400,7 @@ export class IosResetService {
         }
 
         await iosDriver.clickSelector(new IosButtonPredicateStringSelector('Delete'));
-        await iosDriver.clickSelector(new IosPredicateStringSelector(`type == 'XCUIElementTypeButton' && name CONTAINS 'Delete '`));
+        await iosDriver.clickSelector(new IosPredicateStringSelector(`type == 'XCUIElementTypeButton' && name CONTAINS 'Delete '`, { dismissAlert: false }));
       },
     );
   }
@@ -430,7 +430,7 @@ export class IosResetService {
         await iosDriver.clickSelector(new IosButtonPredicateStringSelector('Edit'));
 
         const deleteDialogBtns = await iosDriver.waitElementsExist(
-          new IosPredicateStringSelector(`type == 'XCUIElementTypeButton' && name CONTAINS 'Delete,'`),
+          new IosPredicateStringSelector(`type == 'XCUIElementTypeButton' && name CONTAINS 'Delete,'`, { dismissAlert: false }),
           WaitlementsTryLongTime,
         );
         if (deleteDialogBtns.length === 0) {
@@ -438,7 +438,10 @@ export class IosResetService {
         }
         await deleteDialogBtns[0].click();
 
-        await iosDriver.clickSelectors([new IosButtonPredicateStringSelector('Delete'), new IosButtonPredicateStringSelector('Delete Album')]);
+        await iosDriver.clickSelectors([
+          new IosButtonPredicateStringSelector('Delete', { dismissAlert: false }),
+          new IosButtonPredicateStringSelector('Delete Album', { dismissAlert: false }),
+        ]);
       },
     );
   }
@@ -476,8 +479,8 @@ export class IosResetService {
         await iosDriver.clickSelector(new IosClassChainSelector('**/XCUIElementTypeButton[`label == "Select"`]'));
         await iosDriver.clickSelector(new IosButtonPredicateStringSelector('Delete All'));
         await iosDriver.clickSelectors([
-          new IosPredicateStringSelector(`type == 'XCUIElementTypeButton' && name CONTAINS 'Delete From This'`),
-          new IosButtonPredicateStringSelector('Delete Photo'),
+          new IosPredicateStringSelector(`type == 'XCUIElementTypeButton' && name CONTAINS 'Delete From This'`, { dismissAlert: false }),
+          new IosButtonPredicateStringSelector('Delete Photo', { dismissAlert: false }),
         ]);
       },
     );
@@ -500,10 +503,10 @@ export class IosResetService {
         await iosDriver.clickSelector(new IosClassChainSelector('**/XCUIElementTypeCell[`label == "Photos"`]'));
 
         await iosDriver.clickSelector(new IosAccessibilitiySelector('ResetPeopleFeedback'));
-        await iosDriver.clickSelector(new IosAccessibilitiySelector('Reset'));
+        await iosDriver.clickSelector(new IosAccessibilitiySelector('Reset', { dismissAlert: false }));
 
         await iosDriver.clickSelector(new IosAccessibilitiySelector('ResetBlacklistedMemoryFeatures'));
-        await iosDriver.clickSelector(new IosAccessibilitiySelector('Reset'));
+        await iosDriver.clickSelector(new IosAccessibilitiySelector('Reset', { dismissAlert: false }));
       },
     );
   }
@@ -532,12 +535,12 @@ export class IosResetService {
         }
 
         await iosDriver.clickSelector(new IosAccessibilitiySelector('DOC.itemCollectionMenuButton.Ellipsis'));
-        await iosDriver.clickSelector(new IosButtonPredicateStringSelector('Icons'));
+        await iosDriver.clickSelector(new IosButtonPredicateStringSelector('Icons', { dismissAlert: false }));
         await iosDriver.clickSelector(new IosAccessibilitiySelector('DOC.itemCollectionMenuButton.Ellipsis'));
-        const viewOptions = await iosDriver.waitElementsExist(new IosButtonPredicateStringSelector('View Options'), { seconds: 2 });
+        const viewOptions = await iosDriver.waitElementsExist(new IosButtonPredicateStringSelector('View Options', { dismissAlert: false }), { seconds: 2 });
         if (0 < viewOptions.length) {
           await viewOptions[0].click();
-          await iosDriver.clickSelector(new IosAccessibilitiySelector('DOC.groupMenuButton.none'));
+          await iosDriver.clickSelector(new IosAccessibilitiySelector('DOC.groupMenuButton.none', { dismissAlert: false }));
         }
 
         const cellsTry = await iosDriver.waitElementsExist(new IosClassChainSelector('**/XCUIElementTypeCell'), WaitlementsTryLongTime);
@@ -546,7 +549,7 @@ export class IosResetService {
         }
 
         await iosDriver.clickSelector(new IosAccessibilitiySelector('DOC.itemCollectionMenuButton.Ellipsis'));
-        await iosDriver.clickSelector(new IosButtonPredicateStringSelector('Select'));
+        await iosDriver.clickSelector(new IosButtonPredicateStringSelector('Select', { dismissAlert: false }));
 
         const windowRect = await iosDriver.rawDriver.getWindowRect();
         const cells = await iosDriver.waitElementsExist(new IosClassChainSelector('**/XCUIElementTypeCell'), { seconds: 3 });
@@ -557,7 +560,7 @@ export class IosResetService {
           }
           await cell.click();
         }
-        await iosDriver.clickSelector(new IosButtonPredicateStringSelector('Delete'));
+        await iosDriver.clickSelector(new IosButtonPredicateStringSelector('Delete', { dismissAlert: false }));
       },
     );
   }
@@ -581,8 +584,8 @@ export class IosResetService {
         if (!isIpadAndSystemAppHasSidebar) {
           await helper.enterFilesBrowseHome();
 
-          await iosDriver.clickSelector(new IosButtonPredicateStringSelector('More'));
-          await iosDriver.clickSelector(new IosButtonPredicateStringSelector('Edit'));
+          await iosDriver.clickSelector(new IosButtonPredicateStringSelector('More', { dismissAlert: false }));
+          await iosDriver.clickSelector(new IosButtonPredicateStringSelector('Edit', { dismissAlert: false }));
         } else {
           const shows = await iosDriver.waitElementsExist(new IosButtonPredicateStringSelector('Show Sidebar'), { seconds: 3 });
           if (0 < shows.length) {
@@ -599,11 +602,11 @@ export class IosResetService {
           }
           await remove[0].click();
           await iosDriver.clickSelectors([
-            new IosClassChainSelector('**/XCUIElementTypeButton[`label == "Delete"`]'),
-            new IosClassChainSelector('**/XCUIElementTypeButton[`label == "Remove"`]'),
+            new IosClassChainSelector('**/XCUIElementTypeButton[`label == "Delete"`]', { dismissAlert: false }),
+            new IosClassChainSelector('**/XCUIElementTypeButton[`label == "Remove"`]', { dismissAlert: false }),
           ]);
         }
-        await iosDriver.clickSelector(new IosButtonPredicateStringSelector('Done'));
+        await iosDriver.clickSelector(new IosButtonPredicateStringSelector('Done', { dismissAlert: false }));
       },
     );
   }
@@ -638,18 +641,18 @@ export class IosResetService {
         }
 
         await iosDriver.clickSelector(new IosAccessibilitiySelector('DOC.itemCollectionMenuButton.Ellipsis'));
-        await iosDriver.clickSelector(new IosButtonPredicateStringSelector('Icons'));
+        await iosDriver.clickSelector(new IosButtonPredicateStringSelector('Icons', { dismissAlert: false }));
         await iosDriver.clickSelector(new IosAccessibilitiySelector('DOC.itemCollectionMenuButton.Ellipsis'));
-        const viewOptions = await iosDriver.waitElementsExist(new IosButtonPredicateStringSelector('View Options'), { seconds: 2 });
+        const viewOptions = await iosDriver.waitElementsExist(new IosButtonPredicateStringSelector('View Options', { dismissAlert: false }), { seconds: 2 });
         if (0 < viewOptions.length) {
           await viewOptions[0].click();
-          await iosDriver.clickSelector(new IosAccessibilitiySelector('DOC.groupMenuButton.none'));
+          await iosDriver.clickSelector(new IosAccessibilitiySelector('DOC.groupMenuButton.none', { dismissAlert: false }));
         }
 
         await iosDriver.clickSelector(new IosAccessibilitiySelector('DOC.itemCollectionMenuButton.Ellipsis'));
-        await iosDriver.clickSelector(new IosButtonPredicateStringSelector('Select'));
-        await iosDriver.clickSelector(new IosButtonPredicateStringSelector('Delete All'));
-        await iosDriver.clickSelector(new IosButtonPredicateStringSelector('Delete'));
+        await iosDriver.clickSelector(new IosButtonPredicateStringSelector('Select', { dismissAlert: false }));
+        await iosDriver.clickSelector(new IosButtonPredicateStringSelector('Delete All', { dismissAlert: false }));
+        await iosDriver.clickSelector(new IosButtonPredicateStringSelector('Delete', { dismissAlert: false }));
       },
     );
   }
@@ -677,27 +680,27 @@ export class IosResetService {
 
             if (!isResetKeyboardDone) {
               await iosDriver.clickSelector(new IosClassChainSelector('**/XCUIElementTypeStaticText[`label == "Reset"`]'));
-              await iosDriver.clickSelector(new IosButtonPredicateStringSelector('Reset Keyboard Dictionary'));
-              await iosDriver.clickSelector(new IosButtonPredicateStringSelector('Reset Dictionary'));
+              await iosDriver.clickSelector(new IosButtonPredicateStringSelector('Reset Keyboard Dictionary', { dismissAlert: false }));
+              await iosDriver.clickSelector(new IosButtonPredicateStringSelector('Reset Dictionary', { dismissAlert: false }));
               isResetKeyboardDone = true;
             }
 
             if (!isResetHomeDone) {
               await iosDriver.clickSelector(new IosClassChainSelector('**/XCUIElementTypeStaticText[`label == "Reset"`]'));
-              await iosDriver.clickSelector(new IosButtonPredicateStringSelector('Reset Home Screen Layout'));
-              await iosDriver.clickSelector(new IosButtonPredicateStringSelector('Reset Home Screen'));
+              await iosDriver.clickSelector(new IosButtonPredicateStringSelector('Reset Home Screen Layout', { dismissAlert: false }));
+              await iosDriver.clickSelector(new IosButtonPredicateStringSelector('Reset Home Screen', { dismissAlert: false }));
               isResetHomeDone = true;
             }
 
             if (process.env.DOGU_DEVICE_RESET_IOS_LOCATION) {
               // temporaily disable to prevent intermittent
               await iosDriver.clickSelector(new IosClassChainSelector('**/XCUIElementTypeStaticText[`label == "Reset"`]'));
-              await iosDriver.clickSelector(new IosButtonPredicateStringSelector('Reset Location & Privacy'));
-              await iosDriver.clickSelector(new IosButtonPredicateStringSelector('Reset Settings'));
+              await iosDriver.clickSelector(new IosButtonPredicateStringSelector('Reset Location & Privacy', { dismissAlert: false }));
+              await iosDriver.clickSelector(new IosButtonPredicateStringSelector('Reset Settings', { dismissAlert: false }));
 
               for await (const _ of loopTime({ period: { milliseconds: 300 }, expire: { seconds: 10 } })) {
                 try {
-                  await iosDriver.clickSelector(new IosButtonPredicateStringSelector('Trust'));
+                  await iosDriver.clickSelector(new IosButtonPredicateStringSelector('Trust', { dismissAlert: false }));
                   break;
                 } catch (e) {}
               }
