@@ -2,6 +2,7 @@
   "deviceStreamingPageTitle": "Streaming",
 
   "deviceStreamingLoadingText": "Getting device screen...<br></br>If this screen continues for more than 30 seconds, please refresh or follow <link>Device troubleshoot</link> guides.",
+  "cloudDeviceStreamingLoadingText": "Getting device screen...<br></br>If this screen continues for more than 30 seconds, please refresh or report an issue via feedback.",
 
   "deviceStreamingHAErrorTitle": "Device connection error",
   "deviceStreamingStreamingErrorTitle": "Device streaming connection error",
