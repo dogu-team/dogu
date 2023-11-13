@@ -120,6 +120,11 @@ export const getPurcaseSuccessEmailTemplate = ({
                       <div style="font-size: 12px; color: #888888; margin: 8px 0 0 0">
                         <a
                           style="font-size: 12px; color: #888888; text-decoration: none"
+                          href="https://dogutech.io/notices/terms"
+                          >Terms of Use</a
+                        > | 
+                        <a
+                          style="font-size: 12px; color: #888888; text-decoration: none"
                           href="https://dogutech.io/notices/privacy"
                           >Privacy Policy</a
                         >

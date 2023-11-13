@@ -111,12 +111,13 @@ export function getWelcomeEmailTemplate(user: UserBase): string {
                         "
                       >
                         <a
-                          style="
-                            font-size: 12px;
-                            color: #888888;
-                            text-decoration: none;
-                          "
-                          href="${process.env.DOGU_CONSOLE_URL as string}/notices/privacy"
+                          style="font-size: 12px; color: #888888; text-decoration: none"
+                          href="https://dogutech.io/notices/terms"
+                          >Terms of Use</a
+                        > | 
+                        <a
+                          style="font-size: 12px; color: #888888; text-decoration: none"
+                          href="https://dogutech.io/notices/privacy"
                           >Privacy Policy</a
                         >
                       </div>
