@@ -4,6 +4,7 @@ import { Outlet } from 'react-router-dom';
 import styled from 'styled-components';
 import useHostAgentConnectionStatusStore from '../../stores/host-agent-connection-status';
 import { ipc } from '../../utils/window';
+import DeviceSharedAlert from '../DeviceSharedAlert';
 
 import HeaderWithMenu from './HeaderWithMenu';
 import HomeMenuSider from './HomeMenuSider';
@@ -30,7 +31,6 @@ const HomeLayout = () => {
 
       <FlexRow>
         <HomeMenuSider />
-
         <OutletWrapper>
           <Outlet />
         </OutletWrapper>
