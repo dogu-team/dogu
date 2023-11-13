@@ -7,12 +7,8 @@ import { PostgreSql } from '../utils/pgsql';
 import { exec } from '../utils/utils';
 
 const pgsqlConnectionOptions = {
-  host: config.rds.host,
-  port: config.rds.port,
-  user: config.rds.username,
-  database: config.rds.schema,
-  password: config.rds.password,
-  ssl: config.rds.ssl,
+  connectionString: config.db.billingUrl,
+  ssl: config.db.ssl,
 };
 
 console.log('config', pgsqlConnectionOptions);
