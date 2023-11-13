@@ -70,6 +70,7 @@ const DeviceLocationChanger: React.FC<Props> = () => {
               width: '100%',
               height: '100%',
             }}
+            zoom={3}
             options={{
               zoomControl: false,
               fullscreenControl: false,
@@ -89,35 +90,6 @@ const DeviceLocationChanger: React.FC<Props> = () => {
             )}
           </GoogleMap>
         )}
-        {/* <GoogleMapReact
-          bootstrapURLKeys={{
-            key: process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY,
-          }}
-          center={{ lat: currentLocation?.latitude ?? 0, lng: currentLocation?.longitude ?? 0 }}
-          defaultZoom={3}
-          onClick={handleClick}
-          options={{
-            zoomControl: false,
-            fullscreenControl: false,
-          }}
-        >
-          {currentLocation && (
-            <Image
-              src={resources.icons.mapMarker}
-              // @ts-ignore
-              lat={currentLocation.latitude}
-              // @ts-ignore
-              lng={currentLocation.longitude}
-              width={24}
-              height={24}
-              alt={'map-marker'}
-              style={{
-                transform: 'translate(-50%, -100%)',
-                position: 'absolute',
-              }}
-            />
-          )}
-        </GoogleMapReact> */}
       </MapWrapper>
       <Popconfirm
         open={isOpen}
