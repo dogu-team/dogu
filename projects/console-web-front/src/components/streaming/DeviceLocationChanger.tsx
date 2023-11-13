@@ -32,17 +32,6 @@ const DeviceLocationChanger: React.FC<Props> = () => {
     })();
   }, [deviceService?.deviceClientRef, device?.serial]);
 
-  const onLoad = useCallback(
-    (map: any) => {
-      const bounds = new window.google.maps.LatLngBounds({
-        lat: currentLocation?.latitude ?? 0,
-        lng: currentLocation?.longitude ?? 0,
-      });
-      map.fitBounds(bounds);
-    },
-    [currentLocation],
-  );
-
   const handleClick = useCallback((e: any) => {
     setCurrentLocation({
       latitude: e.latLng.lat(),
@@ -76,7 +65,6 @@ const DeviceLocationChanger: React.FC<Props> = () => {
         {isLoaded && (
           <GoogleMap
             center={{ lat: currentLocation?.latitude ?? 0, lng: currentLocation?.longitude ?? 0 }}
-            onLoad={onLoad}
             onClick={handleClick}
             mapContainerStyle={{
               width: '100%',
