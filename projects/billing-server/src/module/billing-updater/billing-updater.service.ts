@@ -39,9 +39,13 @@ export class BillingUpdaterService implements OnModuleInit, OnModuleDestroy {
   ) {}
 
   onModuleInit(): void {
-    this.run().catch((error) => {
-      this.logger.error('BillingUpdaterService.run error', { error: errorify(error) });
-    });
+    this.run()
+      .then(() => {
+        this.logger.info('BillingUpdaterService.run closed');
+      })
+      .catch((error) => {
+        this.logger.error('BillingUpdaterService.run error', { error: errorify(error) });
+      });
   }
 
   onModuleDestroy(): void {
