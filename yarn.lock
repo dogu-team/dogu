@@ -3058,6 +3058,7 @@ __metadata:
     "@dogu-tech/common": "workspace:^"
     "@dogu-tech/console-gamium": "workspace:^"
     "@dogu-tech/device-client-common": "workspace:^"
+    "@google-cloud/run": ^1.0.2
     "@types/js-yaml": 4.0.5
     "@types/lodash": 4.14.186
     "@types/node": 18.15.11
@@ -3305,6 +3306,7 @@ __metadata:
     "@dogu-private/types": "workspace:^"
     "@dogu-tech/common": "workspace:^"
     "@dogu-tech/node": "workspace:^"
+    "@google-cloud/run": ^1.0.2
     "@google-cloud/storage": ^7.5.0
     "@types/node": 18.15.11
     axios: ^1.6.0
@@ -13571,7 +13573,6 @@ __metadata:
     "@dogu-tech/env-tools": "workspace:^"
     "@dogu-tech/node": "workspace:^"
     "@gitbeaker/node": 35.8.1
-    "@google-cloud/run": ^1.0.2
     "@google-cloud/storage": ^7.5.0
     "@influxdata/influxdb-client": 1.33.2
     "@nestjs-modules/mailer": 1.9.1
@@ -31330,7 +31331,6 @@ __metadata:
     "@google-cloud/run": ^1.0.2
     "@google-cloud/storage": ^7.4.0
     "@types/lodash": 4.14.195
-    "@types/node": 18.15.11
     "@types/selenium-webdriver": 4.1.15
     "@yarnpkg/pnpify": ^4.0.0
     cheerio: ^1.0.0-rc.12

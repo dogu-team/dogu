@@ -2,17 +2,20 @@ FROM --platform=linux/amd64 node:18 AS test-executor
 
 RUN apt-get update
 
-RUN apt-get install -y locales
-RUN localedef -i ko_KR -f UTF-8 ko_KR.UTF-8
+# Language
+RUN apt-get install -y fonts-noto-color-emoji
+RUN apt-get install -y locales fonts-noto-cjk
+RUN locale-gen ko_KR.UTF-8
 
+# Selenium Third Parties
 RUN apt-get install -y libnss3 libnspr4 libatk1.0-0 libatk-bridge2.0-0 libcups2 libdrm2 libxkbcommon0 libxcomposite1 libxdamage1 libxfixes3 libxrandr2 libgbm1 libasound2
 
 ENV LC_ALL ko_KR.UTF-8
-ENV NODE_OPTIONS --max-old-space-size=4196
+ENV NODE_OPTIONS --max-old-space-size=16384
 
-ENV MAX_PARALLEL = ''
-ENV GOOGLE_CLOUD_RUN = ''
-ENV EXECUTOR_NAME = ''
+ENV MAX_PARALLEL = '8'
+ENV GOOGLE_CLOUD_RUN = 'false'
+ENV EXECUTOR_NAME = 'web_responsive'
 
 WORKDIR /test-executor
 COPY .dogu-workspace ./.dogu-workspace
@@ -20,13 +23,19 @@ COPY .yarnrc.yml package.json tsconfig.json tsconfig.eslint.json .pnp.cjs .pnp.l
 COPY .yarn ./.yarn
 COPY .husky ./.husky
 COPY turbo.json ./turbo.json
-COPY packages/typescript ./packages/typescript
-COPY packages/typescript-private ./packages/typescript-private
+
+COPY packages/typescript/common ./packages/typescript/common
+COPY packages/typescript/node ./packages/typescript/node
+COPY packages/typescript/types ./packages/typescript/types
+COPY packages/typescript-private/device-data ./packages/typescript-private/device-data
+COPY packages/typescript-private/sdk ./packages/typescript-private/sdk
+COPY packages/typescript-private/types ./packages/typescript-private/types
 COPY packages/typescript-dev-private ./packages/typescript-dev-private
+
 COPY projects/test-executor ./projects/test-executor
 
 RUN yarn run newbie:cicd
-RUN yarn run build
+RUN yarn run build:packages
 
 ENTRYPOINT ["yarn", "workspace", "test-executor", "run", "start"]
 CMD ["defaultArg"]

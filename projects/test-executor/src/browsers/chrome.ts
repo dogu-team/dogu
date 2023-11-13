@@ -1,5 +1,12 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unnecessary-type-assertion */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* @typescript-eslint/no-unsafe-member-access */
+
 import { Device } from '@dogu-private/device-data';
-import path from 'path';
 import { Browser, Builder } from 'selenium-webdriver';
 import chrome from 'selenium-webdriver/chrome';
 import { promisify } from 'util';
@@ -9,10 +16,8 @@ import { BrowserDriver } from './browser';
 const wait = promisify(setTimeout);
 
 export class Chrome extends BrowserDriver {
-  static customChromeDriverPath = path.join(__dirname, '../binary/chromedriver');
-
-  constructor(device: Device, viewportWidth: number, viewportHeight: number, pixelRatio: number) {
-    super(device, viewportWidth, viewportHeight, pixelRatio);
+  constructor(device: Device) {
+    super(device);
   }
 
   async build(): Promise<void> {
@@ -27,55 +32,85 @@ export class Chrome extends BrowserDriver {
     options.addArguments('--disable-gpu');
     options.addArguments('--disable-dev-shm-usage');
     options.addArguments('--no-sandbox');
-    options.addArguments(`--window-size=${this.viewportWidth},${this.viewportHeight}`);
+    // options.addArguments(`--window-size=${this.device.screen.viewportWidth * 2},${this.device.screen.viewportHeight * 2}`);
     options.addArguments(`--user-agent=${this.createUserAgent()}`);
     options.excludeSwitches('enable-automation');
 
     this.driver = await new Builder().forBrowser(Browser.CHROME).setChromeOptions(options).setChromeService(service).build();
   }
 
-  async takeScreenshot(): Promise<void> {
+  async render(): Promise<void> {
+    await this.driver.executeScript(`document.body.style.overflow = 'hidden';`);
+    await wait(1000);
+
     const cdp = await this.driver.createCDPConnection('page');
-    const clientWidth: number = await this.driver.executeScript('return document.documentElement.clientWidth');
-    const innerWidth: number = await this.driver.executeScript('return window.innerWidth');
+    await cdp.send('Emulation.setDeviceMetricsOverride', {
+      mobile: true,
+      width: this.device.screen.viewportWidth,
+      height: this.device.screen.viewportHeight,
+      deviceScaleFactor: 1.0,
+      screenOrientation: {
+        angle: 0,
+        type: 'portraitPrimary',
+      },
+    });
+
+    await this.driver.executeScript('window.scrollBy({left: 0, top: document.body.scrollHeight})');
+    await wait(1000);
+    await this.driver.executeScript('window.scrollTo({left: 0, top: 0});');
+    await wait(1000);
+  }
+
+  async takeScreenshot(): Promise<void> {
+    const [cdp, clientWidth, innerWidth, clientHeight, innerHeight, staticMaxHeight] = await Promise.all([
+      this.driver.createCDPConnection('page'),
+      this.driver.executeScript('return document.documentElement.clientWidth') as Promise<number>,
+      this.driver.executeScript('return window.innerWidth') as Promise<number>,
+      this.driver.executeScript('return document.documentElement.clientHeight') as Promise<number>,
+      this.driver.executeScript('return window.innerHeight') as Promise<number>,
+      this.driver.executeScript('return Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);') as Promise<number>,
+    ]);
+
     const viewWidth = innerWidth - (innerWidth - clientWidth);
-    const clientHeight: number = await this.driver.executeScript('return document.documentElement.clientHeight');
-    const innerHeight: number = await this.driver.executeScript('return window.innerHeight');
     const viewHeight: number = innerHeight - (innerHeight - clientHeight);
-    let dynamicViewHeight: number = await this.driver.executeScript('return Math.max( document.body.scrollHeight, document.documentElement.scrollHeight );');
+    let currentMaxHeight = staticMaxHeight;
+
+    console.log(this.device.name, this.device.screen.viewportWidth, this.device.screen.viewportHeight);
+    console.log('client size', clientWidth, clientHeight);
+    console.log('inner size', innerWidth, innerHeight);
+    console.log('max height', currentMaxHeight);
 
     let isDeletedFixedPositions = false;
-    for (let currentY = 0; currentY < dynamicViewHeight; currentY += viewHeight) {
-      const screenshotHeight = currentY + viewHeight > dynamicViewHeight ? dynamicViewHeight % viewHeight : viewHeight;
+    for (let currentY = 0; currentY < currentMaxHeight; currentY += viewHeight) {
+      const clipViewHeight = currentY + viewHeight > currentMaxHeight ? currentMaxHeight % viewHeight : viewHeight;
       const screenshotConfig = {
         format: 'jpeg',
-        quality: 90,
-        captureBeyondViewport: false,
+        quality: 100,
+        captureBeyondViewport: true,
         fromSurface: true,
         clip: {
           width: viewWidth,
-          height: screenshotHeight,
+          height: clipViewHeight,
           x: 0,
           y: currentY,
           scale: 1,
         },
       };
-
       await this.driver.executeScript(`window.scrollTo(0, ${currentY})`);
       await wait(1000);
 
       const base64 = await cdp.send('Page.captureScreenshot', screenshotConfig);
       this.originalScreenShotsBase64.push(base64['result']['data']);
 
-      dynamicViewHeight = await this.driver.executeScript('return Math.max( document.body.scrollHeight, document.documentElement.scrollHeight );');
+      currentMaxHeight = await this.driver.executeScript('return Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);');
 
       if (!isDeletedFixedPositions) {
         await this.hideFixedElements();
-        const newViewHeight: number = await this.driver.executeScript('return Math.max( document.body.scrollHeight, document.documentElement.scrollHeight );');
-        const fixedElementHeight = dynamicViewHeight - newViewHeight;
+        const maxHeight: number = await this.driver.executeScript('return Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);');
+        const fixedElementHeight = currentMaxHeight - maxHeight;
 
         currentY = currentY - fixedElementHeight;
-        dynamicViewHeight = newViewHeight;
+        currentMaxHeight = maxHeight;
         isDeletedFixedPositions = true;
       }
     }

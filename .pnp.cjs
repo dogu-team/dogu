@@ -7460,6 +7460,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@dogu-tech/common", "workspace:packages/typescript/common"],\
             ["@dogu-tech/console-gamium", "workspace:packages/typescript/console-gamium"],\
             ["@dogu-tech/device-client-common", "workspace:packages/typescript/device-client-common"],\
+            ["@google-cloud/run", "npm:1.0.2"],\
             ["@types/js-yaml", "npm:4.0.5"],\
             ["@types/lodash", "npm:4.14.186"],\
             ["@types/node", "npm:18.15.11"],\
@@ -7769,6 +7770,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@dogu-private/types", "workspace:packages/typescript-private/types"],\
             ["@dogu-tech/common", "workspace:packages/typescript/common"],\
             ["@dogu-tech/node", "workspace:packages/typescript/node"],\
+            ["@google-cloud/run", "npm:1.0.2"],\
             ["@google-cloud/storage", "npm:7.5.0"],\
             ["@types/node", "npm:18.15.11"],\
             ["axios", "npm:1.6.0"],\
@@ -20883,7 +20885,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@dogu-tech/env-tools", "workspace:packages/typescript/env-tools"],\
             ["@dogu-tech/node", "workspace:packages/typescript/node"],\
             ["@gitbeaker/node", "npm:35.8.1"],\
-            ["@google-cloud/run", "npm:1.0.2"],\
             ["@google-cloud/storage", "npm:7.5.0"],\
             ["@influxdata/influxdb-client", "npm:1.33.2"],\
             ["@nestjs-modules/mailer", "virtual:af52db50ce1e17ae30d2a127ee5eb203e2459595ebbd4aaffd83a5dbfc8ae6774ee976f28c80a96cee2a1b783ba84770e425442edbbe56c55f18094f55940734#npm:1.9.1"],\
@@ -41459,7 +41460,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@google-cloud/run", "npm:1.0.2"],\
             ["@google-cloud/storage", "npm:7.5.0"],\
             ["@types/lodash", "npm:4.14.195"],\
-            ["@types/node", "npm:18.15.11"],\
             ["@types/selenium-webdriver", "npm:4.1.15"],\
             ["@yarnpkg/pnpify", "npm:4.0.0"],\
             ["cheerio", "npm:1.0.0-rc.12"],\
@@ -41468,7 +41468,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["playwright", "npm:1.37.1"],\
             ["selenium-webdriver", "npm:4.14.0"],\
             ["sharp", "npm:0.32.4"],\
-            ["ts-node", "virtual:f2635a2fcff48218c189c72f8ec68a58c0c9a493231eeb25fc0d4d97932a237dd3a38bfaa7c8a6d4be36984c08b243589188d7525f771fc6d7018c6cf79aeba1#npm:10.9.1"],\
+            ["ts-node", "virtual:702f44d6ea13d942ae221f31372bc0fbea03ae969cb058c5f4f6bfd51adfbdf70750983dcca9aa57651b88a98f3c5762eb1a91e1271bd7415c7dc4bde5d303b1#npm:10.9.1"],\
             ["typescript", "patch:typescript@npm%3A4.7.4#~builtin<compat/typescript>::version=4.7.4&hash=65a307"]\
           ],\
           "linkType": "SOFT"\
