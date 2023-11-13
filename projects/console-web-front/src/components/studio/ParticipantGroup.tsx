@@ -40,7 +40,6 @@ const ParticipantGroup: React.FC<Props> = ({ organizationId, deviceId, userId })
   useEffect(() => {
     const unsub = useEventStore.subscribe(({ eventName, payload }) => {
       if (eventName === 'onStreamingClosed') {
-        console.log('here');
         if (deviceId === payload) {
           socketRef.current?.close();
           setUsers([]);
@@ -51,6 +50,7 @@ const ParticipantGroup: React.FC<Props> = ({ organizationId, deviceId, userId })
     return () => {
       unsub();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [deviceId]);
 
   return (

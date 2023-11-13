@@ -34,7 +34,6 @@ const useRTCConnection = ({ device, pid, isCloudDevice }: Option, sendThrottleMs
   const fireEvent = useEventStore((state) => state.fireEvent);
 
   const cleanUp = useCallback(() => {
-    console.log('cleanUp');
     fireEvent('onStreamingClosed', device?.deviceId);
     console.debug('deviceRTCCaller', deviceRTCCallerRef?.current);
     deviceRTCCallerRef.current?.channel?.close();
@@ -43,6 +42,7 @@ const useRTCConnection = ({ device, pid, isCloudDevice }: Option, sendThrottleMs
     console.debug('peer', peerConnectionRef.current);
     peerConnectionRef.current?.close();
     console.debug(`close connection ${device?.deviceId}`);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [device?.deviceId]);
 
   useEffect(() => {
