@@ -1122,7 +1122,30 @@ export class AdbSerial {
 
   //#region reset
   ResetDangerousPackagePrefixes = ['com.sec.', 'com.samsung.', 'com.skt.', 'com.knox.', 'com.android.', 'com.google.'];
-  NotDangerousPackagePrefixes = ['com.android.chrome', 'com.google.android.youtube', 'com.google.android.apps.maps', 'com.google.android.webview'];
+  NotDangerousPackagePrefixes = [
+    'com.android.bluetooth',
+    'com.android.calllogbackup',
+    'com.android.captiveportallogin',
+    'com.android.chrome',
+    'com.android.cts.priv.ctsshim',
+    'com.android.defcontainer',
+    'com.android.dreams',
+    'com.android.externalstorage',
+    'com.android.htmlviewer',
+    'com.android.inputdevices',
+    'com.android.keychain',
+    'com.android.location',
+    'com.android.mms',
+    'com.android.phone',
+    'com.android.providers',
+    'com.android.settings',
+    'com.android.server.telecom',
+    'com.android.traceur',
+    'com.android.vending',
+    'com.google.android.apps.maps',
+    'com.google.android.webview',
+    'com.google.android.youtube',
+  ];
 
   /**
    * @requires Android 10+
@@ -1173,9 +1196,8 @@ export class AdbSerial {
         return Promise.resolve();
       });
       const rmSystemsPromises = systemApps.map(async (app): Promise<void> => {
-        const hasDangeroousPrefix = this.ResetDangerousPackagePrefixes.find((prefix) => app.packageName.startsWith(prefix));
         const isNotDangerous = this.NotDangerousPackagePrefixes.find((prefix) => app.packageName.startsWith(prefix));
-        if (hasDangeroousPrefix && !isNotDangerous) {
+        if (!isNotDangerous) {
           return;
         }
         await this.clearApp(app.packageName);

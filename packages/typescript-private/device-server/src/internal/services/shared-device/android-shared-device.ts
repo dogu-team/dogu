@@ -347,11 +347,11 @@ export class AndroidSharedDeviceService implements Zombieable {
       this.printable.error(`AndroidSharedDeviceService.revive.stayOnWhilePluggedIn failed.`, { serial, error: errorify(e) });
     });
 
-    await this.checkSetup(`AndroidSharedDeviceService.setup.closeDialog`, this.closeDialog()).catch((e) => {
-      this.printable.error(`AndroidSharedDeviceService.revive.closeDialog failed.`, { serial, error: errorify(e) });
-    });
     await this.checkSetup(`AndroidSharedDeviceService.setup.clearActivityHostory`, this.clearActivityHostory()).catch((e) => {
       this.printable.error(`AndroidSharedDeviceService.revive.clearActivityHostory failed.`, { serial, error: errorify(e) });
+    });
+    await this.checkSetup(`AndroidSharedDeviceService.setup.closeDialog`, this.closeDialog()).catch((e) => {
+      this.printable.error(`AndroidSharedDeviceService.revive.closeDialog failed.`, { serial, error: errorify(e) });
     });
 
     const packages = await adb.getIntalledPackages();
@@ -512,6 +512,9 @@ export class AndroidSharedDeviceService implements Zombieable {
 
   private async clearActivityHostory(): Promise<void> {
     const { adb, appiumContext } = this;
+    await adb.keyevent(DeviceControlKeycode.DEVICE_CONTROL_KEYCODE_BACK);
+    await adb.keyevent(DeviceControlKeycode.DEVICE_CONTROL_KEYCODE_BACK);
+
     await adb.keyevent(DeviceControlKeycode.DEVICE_CONTROL_KEYCODE_APP_SWITCH);
     const driver = appiumContext.driver();
     if (!driver) {
@@ -523,6 +526,9 @@ export class AndroidSharedDeviceService implements Zombieable {
     if (0 < closeAll.length) {
       await closeAll[0].click();
     }
+
+    await adb.keyevent(DeviceControlKeycode.DEVICE_CONTROL_KEYCODE_BACK);
+    await adb.keyevent(DeviceControlKeycode.DEVICE_CONTROL_KEYCODE_BACK);
   }
 
   private killLogcatProcess(): void {
