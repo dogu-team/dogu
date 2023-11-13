@@ -8,6 +8,9 @@ import useDeviceStreamingContext from '../../hooks/streaming/useDeviceStreamingC
 
 interface Props {}
 
+const DOGU_OFFICE_LAT = 37.392145462427834;
+const DOGU_OFFICE_LNG = 126.93941445526565;
+
 const DeviceLocationChanger: React.FC<Props> = () => {
   const { deviceService, device } = useDeviceStreamingContext();
   const [currentLocation, setCurrentLocation] = useState<GeoLocation | undefined>();
@@ -48,8 +51,8 @@ const DeviceLocationChanger: React.FC<Props> = () => {
     setLoading(true);
     try {
       await deviceService.deviceClientRef.current.setGeoLocation(device.serial, {
-        latitude: currentLocation?.latitude ?? 0,
-        longitude: currentLocation?.longitude ?? 0,
+        latitude: currentLocation?.latitude ?? DOGU_OFFICE_LAT,
+        longitude: currentLocation?.longitude ?? DOGU_OFFICE_LNG,
       });
       backupLocation.current = currentLocation;
     } catch (e) {}
@@ -64,7 +67,10 @@ const DeviceLocationChanger: React.FC<Props> = () => {
 
         {isLoaded && (
           <GoogleMap
-            center={{ lat: currentLocation?.latitude ?? 0, lng: currentLocation?.longitude ?? 0 }}
+            center={{
+              lat: currentLocation?.latitude ?? DOGU_OFFICE_LAT,
+              lng: currentLocation?.longitude ?? DOGU_OFFICE_LNG,
+            }}
             onClick={handleClick}
             mapContainerStyle={{
               width: '100%',
@@ -80,14 +86,12 @@ const DeviceLocationChanger: React.FC<Props> = () => {
               zoom: 3,
             }}
           >
-            {currentLocation && (
-              <MarkerF
-                position={{
-                  lat: currentLocation.latitude,
-                  lng: currentLocation.longitude,
-                }}
-              />
-            )}
+            <MarkerF
+              position={{
+                lat: currentLocation?.latitude ?? DOGU_OFFICE_LAT,
+                lng: currentLocation?.longitude ?? DOGU_OFFICE_LNG,
+              }}
+            />
           </GoogleMap>
         )}
       </MapWrapper>
