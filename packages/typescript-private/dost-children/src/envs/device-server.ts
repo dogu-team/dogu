@@ -45,7 +45,7 @@ export class DeviceServerEnv extends PreloadDeviceServerEnv {
 
   @IsBoolean()
   @TransformBooleanString()
-  DOGU_IS_DEVICE_SHAREABLE = false;
+  DOGU_DEVICE_IS_SHAREABLE = false;
 
   @IsString()
   DOGU_LINUX_DEVICE_SERIAL = '';

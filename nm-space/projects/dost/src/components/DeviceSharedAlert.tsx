@@ -2,7 +2,7 @@ import { Alert, AlertDescription, AlertIcon, AlertTitle, Button, useDisclosure }
 import useEnvironmentStore from '../stores/environment';
 
 const DeviceSharedAlert = () => {
-  const isDeviceShare = useEnvironmentStore((state) => state.appConfig.DOGU_IS_DEVICE_SHAREABLE);
+  const isDeviceShare = useEnvironmentStore((state) => state.appConfig.DOGU_DEVICE_IS_SHAREABLE);
 
   if (!isDeviceShare) {
     return null;

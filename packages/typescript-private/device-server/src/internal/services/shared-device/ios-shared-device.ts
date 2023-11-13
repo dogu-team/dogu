@@ -67,7 +67,7 @@ export class IosSharedDeviceService implements Zombieable {
   }
 
   async setup(): Promise<void> {
-    if (!env.DOGU_IS_DEVICE_SHAREABLE) {
+    if (!env.DOGU_DEVICE_IS_SHAREABLE) {
       return;
     }
     if (config.externalIosDeviceAgent.use) {
@@ -95,7 +95,7 @@ export class IosSharedDeviceService implements Zombieable {
   }
 
   async revive(): Promise<void> {
-    if (!env.DOGU_IS_DEVICE_SHAREABLE) {
+    if (!env.DOGU_DEVICE_IS_SHAREABLE) {
       return;
     }
 
