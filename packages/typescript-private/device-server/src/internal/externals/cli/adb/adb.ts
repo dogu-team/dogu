@@ -548,6 +548,9 @@ export class AdbSerial {
     });
   }
 
+  /*
+   * ref: predefined activities https://stackoverflow.com/a/39873312
+   */
   async runActivity(activityName: string): Promise<child_process.ChildProcess> {
     const { serial, printable } = this;
     return await usingAsnyc(new AdbSerialScope('runActivity', { serial, activityName }), async () => {
@@ -1099,6 +1102,7 @@ export class AdbSerial {
       await shell(serial, `settings put secure location_providers_allowed -${type}`);
     });
   }
+
   //#endregion
 
   //#region emulator

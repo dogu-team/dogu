@@ -1,8 +1,7 @@
 import { delay, FilledPrintable, loop, loopTime, PrefixLogger, retry, time, TimeOptions, usingAsnyc } from '@dogu-tech/common';
 import semver from 'semver';
-import WebDriverIO from 'webdriverio';
+import { WDIOElement } from '../../../appium/appium.context';
 import { WebdriverAgentProcess } from '../cli/webdriver-agent-process';
-export type WDIOElement = WebDriverIO.Element<'async'>;
 
 export interface IosSelector {
   build(): string;

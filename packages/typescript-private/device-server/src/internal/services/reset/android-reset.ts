@@ -168,8 +168,8 @@ export class AndroidResetService {
         `AndroidResetService.resetAccounts.clickRemoveAccount`,
         driver.$(`android=new UiSelector().resourceId("com.android.settings:id/button").text("Remove account")`),
       );
-      if (!removeButton) {
-        throw new Error('AndroidResetService.resetAccounts Remove button not found');
+      if (removeButton.error) {
+        throw new Error(`AndroidResetService.resetAccounts Remove button not found ${stringify(removeButton.error)}`);
       }
       await removeButton.click();
 
@@ -177,8 +177,8 @@ export class AndroidResetService {
         `AndroidResetService.resetAccounts.clickRemoveAccount`,
         driver.$(`android=new UiSelector().className("android.widget.Button").text("Remove account")`),
       );
-      if (!removeWidgetButton) {
-        throw new Error('AndroidResetService.resetAccounts Remove widget button not found');
+      if (removeWidgetButton.error) {
+        throw new Error(`AndroidResetService.resetAccounts Remove widget button not found ${stringify(removeWidgetButton.error)}`);
       }
       await removeWidgetButton.click();
     }

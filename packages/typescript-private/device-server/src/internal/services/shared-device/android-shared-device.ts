@@ -6,6 +6,7 @@ import fs from 'fs';
 import { AppiumContextImpl } from '../../../appium/appium.context';
 import { env } from '../../../env';
 import { AdbSerial, AndroidPropInfo, AppiumAdb, isHarnessEnabled } from '../../externals/index';
+import { AndroidWebDriver } from '../../externals/webdriver/android-webdriver';
 import { AndroidDeviceAgentService } from '../device-agent/android-device-agent-service';
 import { AndroidResetService } from '../reset/android-reset';
 import { Zombieable, ZombieProps, ZombieQueriable } from '../zombie/zombie-component';
@@ -341,6 +342,7 @@ export class AndroidSharedDeviceService implements Zombieable {
     });
 
     await this.checkSetup(`AndroidSharedDeviceService.setup.joinWifi`, adb.joinWifi(env.DOGU_WIFI_SSID, env.DOGU_WIFI_PASSWORD));
+    await this.checkSetup(`AndroidSharedDeviceService.setup.disableGooglePlayProtect`, this.disableLocationGoogleAccuracy());
 
     await this.checkSetup(`AndroidSharedDeviceService.setup.stayOnWhilePluggedIn`, adb.stayOnWhilePluggedIn()).catch((e) => {
       this.printable.error(`AndroidSharedDeviceService.revive.stayOnWhilePluggedIn failed.`, { serial, error: errorify(e) });
@@ -348,6 +350,9 @@ export class AndroidSharedDeviceService implements Zombieable {
 
     await this.checkSetup(`AndroidSharedDeviceService.setup.closeDialog`, this.closeDialog()).catch((e) => {
       this.printable.error(`AndroidSharedDeviceService.revive.closeDialog failed.`, { serial, error: errorify(e) });
+    });
+    await this.checkSetup(`AndroidSharedDeviceService.setup.clearActivityHostory`, this.clearActivityHostory()).catch((e) => {
+      this.printable.error(`AndroidSharedDeviceService.revive.clearActivityHostory failed.`, { serial, error: errorify(e) });
     });
 
     const packages = await adb.getIntalledPackages();
@@ -506,6 +511,21 @@ export class AndroidSharedDeviceService implements Zombieable {
     }
   }
 
+  private async clearActivityHostory(): Promise<void> {
+    const { adb, appiumContext } = this;
+    await adb.keyevent(DeviceControlKeycode.DEVICE_CONTROL_KEYCODE_APP_SWITCH);
+    const driver = appiumContext.driver();
+    if (!driver) {
+      throw new Error(`AndroidResetService.disableLocationGoogleAccuracy Appium Driver is not found`);
+    }
+    const aosDriver = new AndroidWebDriver(driver, this.printable);
+
+    const closeAll = await aosDriver.waitElementsExist(`android=new UiSelector().text("Close all")`, { seconds: 3 });
+    if (0 < closeAll.length) {
+      await closeAll[0].click();
+    }
+  }
+
   private killLogcatProcess(): void {
     if (!this.logcatProc) {
       return;
@@ -519,5 +539,37 @@ export class AndroidSharedDeviceService implements Zombieable {
   private async checkSetup<T>(name: string, promise: Promise<T>): Promise<T> {
     this.setupState = name;
     return this.timer.check(name, promise);
+  }
+
+  async disableLocationGoogleAccuracy(): Promise<void> {
+    const { adb, appiumContext } = this;
+    const driver = appiumContext.driver();
+    if (!driver) {
+      throw new Error(`AndroidResetService.disableLocationGoogleAccuracy Appium Driver is not found`);
+    }
+    const aosDriver = new AndroidWebDriver(driver, this.printable);
+    await adb.runActivity('android.settings.LOCATION_SOURCE_SETTINGS');
+
+    const locationServices = await aosDriver.waitElementsExist(`android=new UiSelector().className("android.widget.TextView").text("Location services")`, { seconds: 4 });
+    if (0 < locationServices.length) {
+      await locationServices[0].click();
+    }
+
+    const locationAccuracy = await aosDriver.waitElementExist(`android=new UiSelector().className("android.widget.TextView").text("Google Location Accuracy")`, { seconds: 4 });
+    if (locationAccuracy.error) {
+      throw new Error(`AndroidResetService.disableLocationGoogleAccuracy Google Location Accuracy is not found`);
+    }
+    await locationAccuracy.click();
+
+    const toggle = await aosDriver.waitElementExist(`android=new UiSelector().className("android.widget.Switch")`, { seconds: 5 });
+    if (toggle.error) {
+      throw new Error(`AndroidResetService.disableLocationGoogleAccuracy toggle not found`);
+    }
+    const checked = await toggle.getAttribute('checked');
+    this.printable.info(`AndroidResetService.disableLocationGoogleAccuracy checked`, { checked });
+    if (checked.toLowerCase() === 'true') {
+      await toggle.click();
+      await delay(300);
+    }
   }
 }
