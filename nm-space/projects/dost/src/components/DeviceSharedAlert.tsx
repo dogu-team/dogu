@@ -11,7 +11,7 @@ const DeviceSharedAlert = () => {
   return (
     <Alert status="error">
       <AlertIcon />
-      <AlertTitle fontSize="xs">Your devices will be reset automatically! You are currently in device sharing mode </AlertTitle>
+      <AlertTitle fontSize="xs">Your devices will be reset automatically! You are currently in shareable device mode </AlertTitle>
     </Alert>
   );
 };
