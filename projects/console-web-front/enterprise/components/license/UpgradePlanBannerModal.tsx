@@ -5,7 +5,7 @@ import useTranslation from 'next-translate/useTranslation';
 import Link from 'next/link';
 import styled from 'styled-components';
 
-import useOrganizationContext from '../../../src/hooks/context/useOrganizationContext';
+import useLicenseStore from '../../../src/stores/license';
 import { flexRowBaseStyle } from '../../../src/styles/box';
 import { checkCommunityEdition, checkExpired } from '../../utils/license';
 
@@ -61,7 +61,7 @@ interface Props {
 }
 
 export const UpgradeDevicePlanBannerModal: React.FC<Props> = ({ isOpen, close, title, description }) => {
-  const { license } = useOrganizationContext();
+  const license = useLicenseStore((state) => state.license);
   const { t } = useTranslation('billing');
   const licenseInfo = license as SelfHostedLicenseResponse | null;
 
@@ -135,7 +135,7 @@ export const UpgradeDevicePlanBannerModal: React.FC<Props> = ({ isOpen, close, t
 };
 
 export const UpgradeBrowserPlanModal: React.FC<Props> = ({ isOpen, close, title, description }) => {
-  const { license } = useOrganizationContext();
+  const license = useLicenseStore((state) => state.license);
   const { t } = useTranslation('billing');
   const licenseInfo = license as SelfHostedLicenseResponse | null;
 
@@ -209,7 +209,7 @@ export const UpgradeBrowserPlanModal: React.FC<Props> = ({ isOpen, close, title,
 };
 
 export const UpgradeConveniencePlanModal: React.FC<Props> = ({ isOpen, close, title, description }) => {
-  const { license } = useOrganizationContext();
+  const license = useLicenseStore((state) => state.license);
   const { t } = useTranslation('billing');
   const licenseInfo = license as SelfHostedLicenseResponse | undefined;
 

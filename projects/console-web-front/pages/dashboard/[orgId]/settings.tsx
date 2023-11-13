@@ -1,11 +1,10 @@
 import styled from 'styled-components';
-import { Button, Divider, Input } from 'antd';
+import { Button, Input } from 'antd';
 import { useCallback, useEffect, useState } from 'react';
 import { OrganizationBase, UserBase } from '@dogu-private/console';
 import useTranslation from 'next-translate/useTranslation';
 import Head from 'next/head';
 import { AxiosError } from 'axios';
-import { useRouter } from 'next/router';
 import Trans from 'next-translate/Trans';
 
 import { NextPageWithLayout } from 'pages/_app';
@@ -40,7 +39,6 @@ const OrganizationSettingPage: NextPageWithLayout<OrganizationServerSideProps> =
   const { mutate } = useOrganizationContext();
   const [progress, setProgress] = useState<number | null>(null);
   const { t } = useTranslation();
-  const router = useRouter();
 
   useEffect(() => {
     setEditingOrganization(organization);

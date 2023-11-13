@@ -17,11 +17,11 @@ import useRequest from '../../../src/hooks/useRequest';
 import { updateHostApp } from '../../api/host';
 import { sendErrorNotification, sendSuccessNotification } from '../../../src/utils/antd';
 import { getErrorMessageFromAxios } from '../../../src/utils/error';
-import useOrganizationContext from '../../../src/hooks/context/useOrganizationContext';
 import { isPaymentRequired, isTimeout } from '../../utils/error';
 import { UpgradeConveniencePlanModal } from '../license/UpgradePlanBannerModal';
 import TimeoutDocsModal from '../license/TimeoutDocsModal';
 import { checkCommunityEdition } from '../../utils/license';
+import useLicenseStore from '../../../src/stores/license';
 
 interface Props {
   host: HostBase;
@@ -29,7 +29,7 @@ interface Props {
 
 const HostVesrsionBadge = ({ host }: Props) => {
   const latestContext = useContext(DoguAgentLatestContext);
-  const { license } = useOrganizationContext();
+  const license = useLicenseStore((state) => state.license);
   const [isOpen, openModal, closeModal] = useModal();
   const [isBannerOpen, openBanner, closeBanner] = useModal();
   const [isDocsOtpen, openDocs, closeDocs] = useModal();

@@ -44,6 +44,7 @@ const ConsoleBasicLayout = ({ children, user, license: licenseInfo }: Props) => 
         }
       }
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (isLoading) {

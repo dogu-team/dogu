@@ -8,11 +8,11 @@ import styled from 'styled-components';
 
 import { useDeviceCount } from '../../../enterprise/api/device';
 import { checkExpired } from '../../../enterprise/utils/license';
-import useOrganizationContext from '../../hooks/context/useOrganizationContext';
 import useRefresh from '../../hooks/useRefresh';
+import useLicenseStore from '../../stores/license';
 
 const DeviceCounter: React.FC = () => {
-  const { license } = useOrganizationContext();
+  const license = useLicenseStore((state) => state.license);
   const { data: countInfo, mutate: mutateCountInfo } = useDeviceCount();
 
   useRefresh(['onDeviceAdded', 'onDeviceUpdated'], () => mutateCountInfo());
