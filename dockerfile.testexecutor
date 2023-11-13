@@ -10,9 +10,6 @@ RUN locale-gen ko_KR.UTF-8
 # Selenium Third Parties
 RUN apt-get install -y libnss3 libnspr4 libatk1.0-0 libatk-bridge2.0-0 libcups2 libdrm2 libxkbcommon0 libxcomposite1 libxdamage1 libxfixes3 libxrandr2 libgbm1 libasound2
 
-# # Virtual Display
-# RUN apt-get install -y xvfb x11vnc xorg openbox
-
 ENV LC_ALL ko_KR.UTF-8
 ENV NODE_OPTIONS --max-old-space-size=16384
 
@@ -39,10 +36,6 @@ COPY projects/test-executor ./projects/test-executor
 
 RUN yarn run newbie:cicd
 RUN yarn run build:packages
-
-# ENV DISPLAY :99
-
-# ENTRYPOINT ["sh", "-c", "Xvfb :99 -screen 0 1280x720x16 -ac & exec yarn workspace test-executor run start \"$@\"", "--"]
 
 ENTRYPOINT ["yarn", "workspace", "test-executor", "run", "start"]
 CMD ["defaultArg"]
