@@ -31,6 +31,7 @@ const ProjectRoutineEditorPage: NextPageWithLayout<ProjectServerSideProps> = ({
 
   useEffect(() => {
     store.updateGitIntegrationStatus(isGitIntegrated);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isGitIntegrated]);
 
   if (!routineId || !data) {

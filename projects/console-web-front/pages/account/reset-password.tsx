@@ -30,22 +30,26 @@ const ResetPasswordPage: NextPageWithLayout<Props> = ({ token, email, error }) =
   const router = useRouter();
   const { t } = useTranslation();
 
-  const handleSubmit = useCallback(async (_: string | undefined, newPassword: string, confirmPassword: string) => {
-    try {
-      await resetPasswordWithToken({
-        email,
-        token,
-        newPassword,
-        confirmPassword,
-      });
-      sendSuccessNotification(t('account:resetPasswordWithTokenSuccessMsg'));
-      router.push('/signin');
-    } catch (e) {
-      if (e instanceof AxiosError) {
-        sendErrorNotification(t('account:resetPasswordWithTokenFailMsg', { reason: getErrorMessageFromAxios(e) }));
+  const handleSubmit = useCallback(
+    async (_: string | undefined, newPassword: string, confirmPassword: string) => {
+      try {
+        await resetPasswordWithToken({
+          email,
+          token,
+          newPassword,
+          confirmPassword,
+        });
+        sendSuccessNotification(t('account:resetPasswordWithTokenSuccessMsg'));
+        router.push('/signin');
+      } catch (e) {
+        if (e instanceof AxiosError) {
+          sendErrorNotification(t('account:resetPasswordWithTokenFailMsg', { reason: getErrorMessageFromAxios(e) }));
+        }
       }
-    }
-  }, []);
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [email, token],
+  );
 
   // TODO:
   // if (error !== ResetPasswordErrorType.NONE) {

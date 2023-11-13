@@ -1,4 +1,4 @@
-import { CloudLicenseBase, LiveSessionBase } from '@dogu-private/console';
+import { LiveSessionBase } from '@dogu-private/console';
 import styled from 'styled-components';
 import Head from 'next/head';
 import { Divider } from 'antd';
@@ -84,7 +84,7 @@ const OrganizationLiveTestingPage: NextPageWithLayout<OrganizationServerSideProp
     return () => {
       bc.close();
     };
-  }, []);
+  }, [openModal]);
 
   if (isLoading) {
     return (

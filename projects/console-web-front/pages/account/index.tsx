@@ -131,6 +131,7 @@ const AccountPage: NextPageWithLayout<Props> = ({ user }) => {
         }
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [user],
   );
 
@@ -147,6 +148,7 @@ const AccountPage: NextPageWithLayout<Props> = ({ user }) => {
         sendErrorNotification(t('account:deleteAccountConfirmFailureMessage', { reason: getErrorMessageFromAxios(e) }));
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   const getToken = useCallback(async () => {
