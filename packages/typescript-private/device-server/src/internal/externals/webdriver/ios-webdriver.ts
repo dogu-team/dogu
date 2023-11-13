@@ -3,39 +3,60 @@ import semver from 'semver';
 import { WDIOElement } from '../../../appium/appium.context';
 import { WebdriverAgentProcess } from '../cli/webdriver-agent-process';
 
+export interface IosSelectorOption {
+  dismissAlert: boolean;
+}
+
+function DefaultIosSelectorOption(): IosSelectorOption {
+  return {
+    dismissAlert: true,
+  };
+}
 export interface IosSelector {
+  get option(): IosSelectorOption;
   build(): string;
 }
 
-export class IosAccessibilitiySelector {
-  constructor(private id: string) {}
+export class IosAccessibilitiySelector implements IosSelector {
+  constructor(
+    private id: string,
+    public option: IosSelectorOption = DefaultIosSelectorOption(),
+  ) {}
 
   build(): string {
     return `~${this.id}`;
   }
 }
 
-export class IosClassChainSelector {
-  constructor(private selector: string) {}
-
+export class IosClassChainSelector implements IosSelector {
+  constructor(
+    private selector: string,
+    public option: IosSelectorOption = DefaultIosSelectorOption(),
+  ) {}
   build(): string {
     return `-ios class chain:${this.selector}`;
   }
 }
 
-export class IosPredicateStringSelector {
-  constructor(private selector: string) {}
+export class IosPredicateStringSelector implements IosSelector {
+  constructor(
+    private selector: string,
+    public option: IosSelectorOption = DefaultIosSelectorOption(),
+  ) {}
 
   build(): string {
     return `-ios predicate string:${this.selector}`;
   }
 }
 
-export class IosButtonPredicateStringSelector {
-  constructor(private selector: string) {}
+export class IosButtonPredicateStringSelector implements IosSelector {
+  constructor(
+    private selector: string,
+    public option: IosSelectorOption = DefaultIosSelectorOption(),
+  ) {}
 
   build(): string {
-    return new IosPredicateStringSelector(`type == 'XCUIElementTypeButton' && label == '${this.selector}'`).build();
+    return new IosPredicateStringSelector(`type == 'XCUIElementTypeButton' && label == '${this.selector}'`, this.option).build();
   }
 }
 
@@ -129,10 +150,13 @@ export class IosWebDriver {
   }
 
   async clickSelector(selector: IosSelector): Promise<void> {
-    const { driver } = this;
+    const { driver, wda } = this;
     const WaitTimeout = 5_000;
     let lastError = '';
     for await (const _ of loopTime({ period: WaitElementsPeriod, expire: { milliseconds: WaitTimeout } })) {
+      if (selector.option.dismissAlert) {
+        await wda.dismissAlert();
+      }
       const elem = await driver.$(selector.build());
       if (elem.error) {
         lastError = elem.error.message;
@@ -157,8 +181,11 @@ export class IosWebDriver {
   }
 
   async waitElementsExist(selector: IosSelector, timeOption: TimeOptions): Promise<WDIOElement[]> {
-    const { driver } = this;
+    const { driver, wda } = this;
     for await (const _ of loopTime({ period: WaitElementsPeriod, expire: timeOption })) {
+      if (selector.option.dismissAlert) {
+        await wda.dismissAlert();
+      }
       const elems = await driver.$$(selector.build());
       if (0 < elems.length) {
         return elems;
@@ -168,8 +195,11 @@ export class IosWebDriver {
   }
 
   async waitElementExist(selector: IosSelector, timeOption: TimeOptions): Promise<WDIOElement> {
-    const { driver } = this;
+    const { driver, wda } = this;
     for await (const _ of loopTime({ period: WaitElementsPeriod, expire: timeOption })) {
+      if (selector.option.dismissAlert) {
+        await wda.dismissAlert();
+      }
       const elem = await driver.$(selector.build());
       if (elem.error) {
         continue;
@@ -190,10 +220,13 @@ export class IosWebDriver {
   }
 
   async scrollDownToSelector(selector: IosSelector): Promise<WDIOElement> {
-    const { driver } = this;
+    const { driver, wda } = this;
     const MaxScrollCount = 30;
 
     for await (const _ of loop(time(WaitElementsPeriod), MaxScrollCount)) {
+      if (selector.option.dismissAlert) {
+        await wda.dismissAlert();
+      }
       const elem = await driver.$(selector.build());
       if (elem.error) {
         await driver.execute('mobile: scroll', {
@@ -214,14 +247,17 @@ export class IosWebDriver {
     await retry(
       async () => {
         // Remove Stack or Remove Widget
-        const removeTopButtons = await this.waitElementsExist(new IosPredicateStringSelector(`type == 'XCUIElementTypeButton' && name CONTAINS 'Remove '`), { seconds: 3 });
+        const removeTopButtons = await this.waitElementsExist(
+          new IosPredicateStringSelector(`type == 'XCUIElementTypeButton' && name CONTAINS 'Remove '`, { dismissAlert: false }),
+          { seconds: 3 },
+        );
         if (0 < removeTopButtons.length) {
           await removeTopButtons[0].click();
-          await this.clickSelector(new IosButtonPredicateStringSelector('Remove'));
+          await this.clickSelector(new IosButtonPredicateStringSelector('Remove', { dismissAlert: false }));
           return;
         }
-        await this.clickSelector(new IosAccessibilitiySelector('com.apple.springboardhome.application-shortcut-item.remove-widget'));
-        await this.clickSelector(new IosButtonPredicateStringSelector('Remove'));
+        await this.clickSelector(new IosAccessibilitiySelector('com.apple.springboardhome.application-shortcut-item.remove-widget', { dismissAlert: false }));
+        await this.clickSelector(new IosButtonPredicateStringSelector('Remove', { dismissAlert: false }));
       },
       { retryCount: 3, retryInterval: 1000, printable: new PrefixLogger(this.logger, 'IosWebDriver.removeWidget') },
     );
