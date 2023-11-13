@@ -72,6 +72,7 @@ export class IosWebDriver {
   }
 
   async relaunchApp(bundleId: string): Promise<void> {
+    await this.homeAndDismissAlert();
     await this.terminateApp(bundleId);
     await this.launchApp(bundleId);
   }
