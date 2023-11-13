@@ -38,7 +38,7 @@ export const AppConfigSchema = {
   DOGU_LINUX_DEVICE_SERIAL: {
     type: 'string',
   },
-  DOGU_IS_DEVICE_SHARE: {
+  DOGU_IS_DEVICE_SHAREABLE: {
     type: 'boolean',
   },
   DOGU_WIFI_SSID: {

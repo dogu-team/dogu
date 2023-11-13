@@ -304,7 +304,7 @@ export class AndroidSharedDeviceService implements Zombieable {
   }
 
   async setup(): Promise<void> {
-    if (!env.DOGU_IS_DEVICE_SHARE) {
+    if (!env.DOGU_IS_DEVICE_SHAREABLE) {
       return;
     }
     const { serial, printable: logger, adb } = this;
@@ -372,7 +372,7 @@ export class AndroidSharedDeviceService implements Zombieable {
   }
 
   async revive(): Promise<void> {
-    if (!env.DOGU_IS_DEVICE_SHARE) {
+    if (!env.DOGU_IS_DEVICE_SHAREABLE) {
       return;
     }
     const { serial, printable: logger } = this;
@@ -382,7 +382,7 @@ export class AndroidSharedDeviceService implements Zombieable {
   }
 
   async update(): Promise<void> {
-    if (!env.DOGU_IS_DEVICE_SHARE) {
+    if (!env.DOGU_IS_DEVICE_SHAREABLE) {
       return;
     }
     const { adb } = this;

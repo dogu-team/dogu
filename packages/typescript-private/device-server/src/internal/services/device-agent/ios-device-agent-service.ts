@@ -94,7 +94,7 @@ export class IosDeviceAgentService implements DeviceAgentService, Zombieable {
   async revive(): Promise<void> {
     this.sendFailCount = 0;
     await this.connect();
-    await this.send('dcIdaSwitchInputBlockParam', 'dcIdaSwitchInputBlockResult', { isBlock: env.DOGU_IS_DEVICE_SHARE === true });
+    await this.send('dcIdaSwitchInputBlockParam', 'dcIdaSwitchInputBlockResult', { isBlock: env.DOGU_IS_DEVICE_SHAREABLE === true });
   }
 
   onDie(reason: string): void | Promise<void> {

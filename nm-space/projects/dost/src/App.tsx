@@ -41,7 +41,7 @@ function App() {
           ipc.featureConfigClient.get('useSentry'),
           ipc.featureConfigClient.get('showTLSAuthReject'),
           ipc.appConfigClient.get('DOGU_RUN_TYPE'),
-          ipc.appConfigClient.get('DOGU_IS_DEVICE_SHARE'),
+          ipc.appConfigClient.get('DOGU_IS_DEVICE_SHAREABLE'),
         ]);
         setEnvironment({
           platform,
@@ -55,7 +55,7 @@ function App() {
           },
           appConfig: {
             DOGU_RUN_TYPE: runType,
-            DOGU_IS_DEVICE_SHARE: isDeviceShare,
+            DOGU_IS_DEVICE_SHAREABLE: isDeviceShare,
           },
         });
 
