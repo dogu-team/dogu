@@ -689,15 +689,18 @@ export class IosResetService {
               isResetHomeDone = true;
             }
 
-            await iosDriver.clickSelector(new IosClassChainSelector('**/XCUIElementTypeStaticText[`label == "Reset"`]'));
-            await iosDriver.clickSelector(new IosButtonPredicateStringSelector('Reset Location & Privacy'));
-            await iosDriver.clickSelector(new IosButtonPredicateStringSelector('Reset Settings'));
+            if (process.env.DOGU_DEVICE_RESET_IOS_LOCATION) {
+              // temporaily disable to prevent intermittent
+              await iosDriver.clickSelector(new IosClassChainSelector('**/XCUIElementTypeStaticText[`label == "Reset"`]'));
+              await iosDriver.clickSelector(new IosButtonPredicateStringSelector('Reset Location & Privacy'));
+              await iosDriver.clickSelector(new IosButtonPredicateStringSelector('Reset Settings'));
 
-            for await (const _ of loopTime({ period: { milliseconds: 300 }, expire: { seconds: 10 } })) {
-              try {
-                await iosDriver.clickSelector(new IosButtonPredicateStringSelector('Trust'));
-                break;
-              } catch (e) {}
+              for await (const _ of loopTime({ period: { milliseconds: 300 }, expire: { seconds: 10 } })) {
+                try {
+                  await iosDriver.clickSelector(new IosButtonPredicateStringSelector('Trust'));
+                  break;
+                } catch (e) {}
+              }
             }
           },
         ),

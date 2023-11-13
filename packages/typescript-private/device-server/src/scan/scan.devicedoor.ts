@@ -1,5 +1,5 @@
 import { ErrorDevice, PlatformSerial, platformTypeFromPlatform, Serial } from '@dogu-private/types';
-import { errorify, loop, stringify, stringifyError } from '@dogu-tech/common';
+import { errorify, loop, Milisecond, stringify, stringifyError } from '@dogu-tech/common';
 import { DeviceChannel } from '../internal/public/device-channel';
 import { DeviceDriver } from '../internal/public/device-driver';
 import { logger } from '../logger/logger.instance';
@@ -16,6 +16,8 @@ interface DeviceDoorState {
   error: Error | null;
 }
 
+const DeviceCloseThreshold = Milisecond.t15Seconds;
+
 export class DeviceDoor {
   public channel: DeviceChannel | null = null;
   private _isClosedForALongTime = false;
@@ -26,7 +28,11 @@ export class DeviceDoor {
   private _closeReason = '';
   private _healthFaliCount = 0;
 
-  constructor(public readonly driver: DeviceDriver, public serial: Serial, private readonly callback: DeviceDoorEvent) {
+  constructor(
+    public readonly driver: DeviceDriver,
+    public serial: Serial,
+    private readonly callback: DeviceDoorEvent,
+  ) {
     this.process().catch((error) => {
       logger.error(`DeviceDoor.process. serial: ${serial}, platform:${driver.platform} is error`, { error: stringify(error) });
     });
@@ -104,7 +110,7 @@ export class DeviceDoor {
       }
     }
 
-    if ((this._latestOpenTime < this._latestCloseTime && 10000 < this._latestCloseTime - this._firstCloseTime) || closeForced) {
+    if ((this._latestOpenTime < this._latestCloseTime && DeviceCloseThreshold < this._latestCloseTime - this._firstCloseTime) || closeForced) {
       this.channel = null;
       logger.info(
         `DeviceDoor.processInternal closeChannel serial:${this.serial}, firstCloseTime: ${this._firstCloseTime}, latestCloseTime: ${this._latestCloseTime}, reason: ${
