@@ -18,26 +18,16 @@ export const config = {
     },
   },
   runType: env.DOGU_BILLING_RUN_TYPE,
-  rds: {
-    host: env.DOGU_BILLING_RDS_HOST,
-    port: env.DOGU_BILLING_RDS_PORT,
-    username: env.DOGU_BILLING_RDS_USERNAME,
-    password: env.DOGU_BILLING_RDS_PASSWORD,
-    schema: env.DOGU_BILLING_RDS_SCHEMA,
-    ssl: env.DOGU_BILLING_RDS_SSL_CONNECTION ? { rejectUnauthorized: false } : false,
-  },
-  messageQueue: {
-    popInterval: 5 * 1000,
+  db: {
+    billingUrl: env.DOGU_BILLING_DB_URL,
+    consoleUrl: env.DOGU_CONSOLE_DB_READ_URL,
+    ssl: env.DOGU_BILLING_DB_SSL_CONNECTION ? { rejectUnauthorized: false } : false,
   },
 };
 
 export const dataSourceConfig: DataSourceOptions = {
   type: 'postgres',
-  database: config.rds.schema,
-  host: config.rds.host,
-  port: config.rds.port,
-  username: config.rds.username,
-  password: config.rds.password,
+  url: config.db.billingUrl,
   logging: false,
   // synchronize: false,
   entities: [__dirname + `/db/entity/*.{ts,js}`],
@@ -45,14 +35,11 @@ export const dataSourceConfig: DataSourceOptions = {
   migrationsRun: false,
   migrationsTableName: 'migration',
   useUTC: true,
-  ssl: config.rds.ssl,
+  ssl: config.db.ssl,
 };
 
 console.warn('[DB Config]', {
-  database: dataSourceConfig.database,
-  host: dataSourceConfig.host,
-  port: dataSourceConfig.port,
-  username: dataSourceConfig.username,
+  url: dataSourceConfig.url,
   useUTC: true,
   syncronize: dataSourceConfig.synchronize,
 });

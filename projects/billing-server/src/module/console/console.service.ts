@@ -5,6 +5,7 @@ import { MailOptions } from 'nodemailer/lib/smtp-transport';
 import { Client } from 'pg';
 
 import { BillingCurrency } from '@dogu-private/console';
+import { config } from '../../config';
 import { BillingHistory } from '../../db/entity/billing-history.entity';
 import { BillingSubscriptionPlanInfo } from '../../db/entity/billing-subscription-plan-info.entity';
 import { env } from '../../env';
@@ -18,16 +19,18 @@ export class ConsoleService {
 
   constructor(private readonly logger: DoguLogger) {
     this.consolePgClient = new Client({
-      user: 'admin',
-      password: 'dogutech',
-      database: 'console_web',
-      host: 'localhost',
-      port: 5432,
+      connectionString: config.db.consoleUrl,
+      ssl: config.db.ssl,
     });
 
-    this.consolePgClient.connect().catch((err) => {
-      this.logger.error(`Failed to connect console DB`);
-    });
+    this.consolePgClient
+      .connect()
+      .then(() => {
+        this.logger.info(`Connected to console DB`);
+      })
+      .catch((err) => {
+        this.logger.error(`Failed to connect console DB`);
+      });
   }
 
   async sendSubscriptionSuccessEmailToOwner(

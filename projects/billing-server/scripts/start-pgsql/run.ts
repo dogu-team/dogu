@@ -1,22 +1,30 @@
 import { node_package } from '@dogu-dev-private/build-tools';
+import { config } from '../../src/config';
 import { checkDockerInstalled, clearDokerContainer, createDbSchema, createFakeDbMigrations, pullDockerImage } from '../common/common';
 import { exec, execute } from '../utils/utils';
-import { pgConfig } from './config';
+
+const containerName = 'dogu-billing-pgsql';
+const imageName = 'postgres:15.3';
+
+console.log('config', config);
+console.log('ENV', config.runType);
+
+const parsedUrl = new URL(config.db.billingUrl);
 
 async function startDockerContainer() {
   await checkDockerInstalled();
   await execute('Starting container...', async () =>
     exec(
       `docker run -d \
-      --name ${pgConfig.containerName} \
-      -e POSTGRES_DB=${pgConfig.schema} \
-      -e POSTGRES_USER=${pgConfig.rootUser} \
-      -e POSTGRES_PASSWORD=${pgConfig.rootPassword} \
-      -e PGPORT=${pgConfig.port} \
+      --name ${containerName} \
+      -e POSTGRES_DB=${parsedUrl.pathname.replace('/', '')} \
+      -e POSTGRES_USER=${parsedUrl.username} \
+      -e POSTGRES_PASSWORD=${parsedUrl.password} \
+      -e PGPORT=${parsedUrl.port} \
       -e TZ=Etc/UTC \
-      -p ${pgConfig.port}:${pgConfig.port} \
+      -p ${parsedUrl.port}:${parsedUrl.port} \
       --restart always \
-      ${pgConfig.imageName}`,
+      ${imageName}`,
       {
         errorMessage: 'Error: Docker run failed',
       },
@@ -28,8 +36,8 @@ async function startDockerContainer() {
   const currentDir = process.cwd();
   const workspaceDir = node_package.findRootWorkspace();
   process.chdir(workspaceDir);
-  await clearDokerContainer(pgConfig.containerName);
-  await pullDockerImage(pgConfig.imageName);
+  await clearDokerContainer(containerName);
+  await pullDockerImage(imageName);
   await startDockerContainer();
 
   process.chdir(currentDir);
