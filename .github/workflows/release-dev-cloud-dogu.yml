@@ -72,10 +72,6 @@ jobs:
           sed -i "s|DOGU_HOST=.*$|DOGU_HOST=${{ secrets.DEV_DOGU_HOST }}|" ./docker-compose.env
           sed -i "s|DOGU_CONSOLE_URL=.*$|DOGU_CONSOLE_URL=https://console.${{ secrets.DEV_DOGU_CONSOLE_DOMAIN }}|" ./docker-compose.env
 
-          # postgres
-          sed -i "s|POSTGRES_USER=.*$|POSTGRES_USER=${{ secrets.DEV_DOGU_RDS_USERNAME }}|" ./docker-compose.env
-          sed -i "s|POSTGRES_PASSWORD=.*$|POSTGRES_PASSWORD=${{ secrets.DEV_DOGU_RDS_PASSWORD }}|" ./docker-compose.env
-
           # influxdb
           sed -i "s|INFLUX_DB_INIT_ADMIN_TOKEN=.*$|INFLUX_DB_INIT_ADMIN_TOKEN=${{ secrets.DEV_DOGU_INFLUX_DB_TOKEN }}|" ./docker-compose.env
           sed -i "s|INFLUX_DB_USERNAME=.*$|INFLUX_DB_USERNAME=${{ secrets.DEV_DOGU_INFLUX_DB_USERNAME }}|" ./docker-compose.env
@@ -106,7 +102,6 @@ jobs:
           echo "DOGU_DOST_DOWNLOAD_BASE_URL=${{ secrets.DEV_DOGU_DOST_DOWNLOAD_BASE_URL }}" >> ./docker-compose.env
           echo "DOGU_EMAIL_ID=${{ secrets.DOGU_EMAIL_ID }}" >> ./docker-compose.env
           echo "DOGU_EMAIL_PW=${{ secrets.DOGU_EMAIL_PW }}" >> ./docker-compose.env
-          sed -i "s|DOGU_RDS_HOST=.*$|DOGU_RDS_HOST=${{ secrets.DEV_DOGU_RDS_HOST }}|" ./docker-compose.yml
           echo "DOGU_AWS_ACCESS_KEY=${{ secrets.AWS_DEV_SECRET_ACCESS_KEY }}" >> ./docker-compose.env
           echo "DOGU_AWS_KEY_ID=${{ secrets.AWS_DEV_ACCESS_KEY_ID }}" >> ./docker-compose.env
           echo "DOGU_USER_BUCKET=${{ secrets.DEV_DOGU_USER_BUCKET }}" >> ./docker-compose.env

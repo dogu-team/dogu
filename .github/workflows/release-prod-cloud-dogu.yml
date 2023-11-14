@@ -57,10 +57,6 @@ jobs:
           sed -i "s|DOGU_HOST=.*$|DOGU_HOST=https://console.dogutech.io|" ./docker-compose.env
           sed -i "s|DOGU_CONSOLE_URL=.*$|DOGU_CONSOLE_URL=https://console.dogutech.io|" ./docker-compose.env
 
-          # postgres
-          sed -i "s|POSTGRES_USER=.*$|POSTGRES_USER=${{ secrets.PROD_DOGU_RDS_USERNAME }}|" ./docker-compose.env
-          sed -i "s|POSTGRES_PASSWORD=.*$|POSTGRES_PASSWORD=${{ secrets.PROD_DOGU_RDS_PASSWORD }}|" ./docker-compose.env
-
           # influxdb
           sed -i "s|INFLUX_DB_INIT_ADMIN_TOKEN=.*$|INFLUX_DB_INIT_ADMIN_TOKEN=${{ secrets.PROD_DOGU_INFLUX_DB_TOKEN }}|" ./docker-compose.env
           sed -i "s|INFLUX_DB_USERNAME=.*$|INFLUX_DB_USERNAME=${{ secrets.PROD_DOGU_INFLUX_DB_USERNAME }}|" ./docker-compose.env
@@ -83,13 +79,13 @@ jobs:
           # console - back
           echo "DOGU_RUN_TYPE=production" >> ./docker-compose.env
           sed -i "s|DOGU_API_BASE_URL=.*$|DOGU_API_BASE_URL=https://api.dogutech.io|" ./docker-compose.yml
-          echo "DOGU_RDS_SSL_CONNECTION=TRUE" >> ./docker-compose.env
+          sed -i "s|DOGU_CONSOLE_DB_URL=.*$|DOGU_CONSOLE_DB_URL=${{ secrets.PROD_DOGU_CONSOLE_DB_URL }}|" ./docker-compose.yml
+          sed -i "s|DOGU_CONSOLE_DB_SSL_CONNECTION=.*$|DOGU_CONSOLE_DB_SSL_CONNECTION=${{ secrets.PROD_DOGU_CONSOLE_DB_SSL_CONNECTION }}|" ./docker-compose.yml
           sed -i "s|DOGU_CONSOLE_JWT_SECRET_KEY=.*$|DOGU_CONSOLE_JWT_SECRET_KEY=${{ secrets.PROD_DOGU_JWT_SECRET_KEY }}|" ./docker-compose.env
           sed -i "s|DOGU_CONSOLE_DOMAIN=.*$|DOGU_CONSOLE_DOMAIN=dogutech.io|" ./docker-compose.yml
           echo "DOGU_DOST_DOWNLOAD_BASE_URL=${{ secrets.PROD_DOGU_DOST_DOWNLOAD_BASE_URL }}" >> ./docker-compose.env
           echo "DOGU_EMAIL_ID=${{ secrets.DOGU_EMAIL_ID }}" >> ./docker-compose.env
           echo "DOGU_EMAIL_PW=${{ secrets.DOGU_EMAIL_PW }}" >> ./docker-compose.env
-          sed -i "s|DOGU_RDS_HOST=.*$|DOGU_RDS_HOST=${{ secrets.PROD_DOGU_RDS_HOST }}|" ./docker-compose.yml
           echo "DOGU_AWS_ACCESS_KEY=${{ secrets.AWS_PROD_SECRET_ACCESS_KEY }}" >> ./docker-compose.env
           echo "DOGU_AWS_KEY_ID=${{ secrets.AWS_PROD_ACCESS_KEY_ID }}" >> ./docker-compose.env
           echo "DOGU_USER_BUCKET=${{ secrets.PROD_DOGU_USER_BUCKET }}" >> ./docker-compose.env
