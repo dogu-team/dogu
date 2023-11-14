@@ -117,7 +117,7 @@ jobs:
       - name: .env init
         run: |
           mkdir -p $HOME/.dogu_secret
-          echo ${{ secrets.DOGU_ENV_SERVICE_ACCOUNT_KEY }} > $HOME/.dogu_secret/service-account-key.json
+          echo "${{ secrets.DOGU_ENV_SERVICE_ACCOUNT_KEY }}" > $HOME/.dogu_secret/service-account-key.json
           yarn install
 
       - name: DEV download .env
