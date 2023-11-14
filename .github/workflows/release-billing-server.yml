@@ -38,7 +38,7 @@ jobs:
     needs: input-validation
     steps:
       - name: docker init
-        run: docker system prune --volumes -a -f
+        run: docker system prune --volumes -af
 
       - name: Checkout
         uses: actions/checkout@v3
