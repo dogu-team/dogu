@@ -14,8 +14,8 @@
     "clean": "shx rm -rf build generated",
     "cli": "ts-node src/cli.ts",
     "dev": "nodemon",
-    "dist": "npm run rebuild && shx rm -rf bin && pkg . --compress GZip && shx mv bin/env-generator-win.exe bin/env-generator.exe && shx mv bin/env-generator-macos bin/env-generator",
-    "rebuild": "npm run clean && npm run build",
+    "dist": "yarn run rebuild && shx rm -rf bin && pkg . --compress GZip && shx mv bin/env-generator-win.exe bin/env-generator.exe && shx mv bin/env-generator-macos bin/env-generator",
+    "rebuild": "yarn run clean && yarn run build",
     "start": "ts-node src/index.ts",
     "watch": "clear; echo @dogu-dev-private/env-generator Watching... && nodemon"
   },
