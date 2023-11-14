@@ -116,7 +116,7 @@ export function transformBooleanString(value: unknown): boolean {
     return value;
   }
   const stringified = typeof value === 'string' ? value : String(value);
-  const lowerCased = stringified.toLowerCase();
+  const lowerCased = stringified.toLowerCase().trim();
   if (Trues.includes(lowerCased)) {
     return true;
   } else if (Falses.includes(lowerCased)) {
