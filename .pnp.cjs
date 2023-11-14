@@ -20566,13 +20566,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],\
           "linkType": "HARD"\
         }],\
-        ["npm:11.1.0", {\
-          "packageLocation": "./.yarn/cache/commander-npm-11.1.0-56e979613c-fd1a8557c6.zip/node_modules/commander/",\
-          "packageDependencies": [\
-            ["commander", "npm:11.1.0"]\
-          ],\
-          "linkType": "HARD"\
-        }],\
         ["npm:2.14.1", {\
           "packageLocation": "./.yarn/cache/commander-npm-2.14.1-c6046110cb-26bd49febe.zip/node_modules/commander/",\
           "packageDependencies": [\
@@ -23061,12 +23054,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/yargs", "npm:17.0.23"],\
             ["class-transformer", "npm:0.5.1"],\
             ["class-validator", "npm:0.14.0"],\
-            ["commander", "npm:11.1.0"],\
+            ["commander", "npm:11.0.0"],\
             ["dotenv", "npm:16.0.3"],\
             ["google-auth-library", "npm:8.9.0"],\
             ["googleapis", "npm:112.0.0"],\
             ["lodash", "npm:4.17.21"],\
             ["nodemon", "npm:2.0.22"],\
+            ["npm-check-updates", "npm:16.14.6"],\
             ["pkg", "virtual:8a49abd38a87587ea98a4904cf169e82ee77327157b6671b5a52e98a43b73e55aae39693e5f3c1eb340c8a922ef4d2db601ce9140d1bf7b4647b015af7b10b3c#npm:5.8.1"],\
             ["reflect-metadata", "npm:0.1.13"],\
             ["shx", "npm:0.3.4"],\

@@ -3929,7 +3929,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@google-cloud/local-auth@npm:^2.0.1":
+"@google-cloud/local-auth@npm:2.1.1":
   version: 2.1.1
   resolution: "@google-cloud/local-auth@npm:2.1.1"
   dependencies:
@@ -13276,13 +13276,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"commander@npm:^11.0.0":
-  version: 11.1.0
-  resolution: "commander@npm:11.1.0"
-  checksum: fd1a8557c6b5b622c89ecdfde703242ab7db3b628ea5d1755784c79b8e7cb0d74d65b4a262289b533359cd58e1bfc0bf50245dfbcd2954682a6f367c828b79ef
-  languageName: node
-  linkType: hard
-
 "commander@npm:^2.19.0, commander@npm:^2.20.0":
   version: 2.20.3
   resolution: "commander@npm:2.20.3"
@@ -15451,19 +15444,20 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "env-generator@workspace:env-generator"
   dependencies:
-    "@google-cloud/local-auth": ^2.0.1
+    "@google-cloud/local-auth": 2.1.1
     "@types/lodash": 4.14.186
     "@types/node": 18.15.11
     "@types/yargs": 17.0.23
     class-transformer: 0.5.1
     class-validator: 0.14.0
-    commander: ^11.0.0
+    commander: 11.0.0
     dotenv: 16.0.3
-    google-auth-library: ^8.7.0
+    google-auth-library: 8.9.0
     googleapis: 112.0.0
     lodash: 4.17.21
     nodemon: 2.0.22
-    pkg: ^5.8.1
+    npm-check-updates: 16.14.6
+    pkg: 5.8.1
     reflect-metadata: 0.1.13
     shx: 0.3.4
     ts-node: 10.9.1
@@ -17901,7 +17895,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"google-auth-library@npm:^8.0.2, google-auth-library@npm:^8.7.0":
+"google-auth-library@npm:8.9.0, google-auth-library@npm:^8.0.2":
   version: 8.9.0
   resolution: "google-auth-library@npm:8.9.0"
   dependencies:
@@ -26533,7 +26527,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pkg@npm:^5.8.1":
+"pkg@npm:5.8.1":
   version: 5.8.1
   resolution: "pkg@npm:5.8.1"
   dependencies:
