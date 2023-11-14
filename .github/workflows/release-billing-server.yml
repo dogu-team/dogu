@@ -99,6 +99,9 @@ jobs:
         with:
           node-version: '16.20'
 
+      - name: corepack enable
+        run: corepack enable
+
       - name: DEV Configure AWS credentials
         if: github.event.inputs.build_type == 'dev'
         uses: aws-actions/configure-aws-credentials@v1-node16
