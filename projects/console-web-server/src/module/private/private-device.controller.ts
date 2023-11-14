@@ -139,7 +139,14 @@ export class PrivateDeviceController {
       );
       await DeviceStatusService.updateDeviceBrowserInstallations(manager, deviceId, browserInstallations);
       await DeviceStatusService.updateDeviceRunners(manager, deviceId);
-      const liveSessions = await manager.getRepository(LiveSession).find({ where: { deviceId, state: Not(LiveSessionState.CLOSED) } });
+
+      const liveSessions = await manager.getRepository(LiveSession).find({
+        where: {
+          deviceId,
+          state: Not(LiveSessionState.CLOSED),
+        },
+      });
+
       if (liveSessions.length > 0) {
         const toCloseLiveSessions = liveSessions.map((liveSession) => LiveSessionService.updateLiveSessionToClosed(liveSession));
         const savedLiveSessions = await manager.getRepository(LiveSession).save(toCloseLiveSessions);

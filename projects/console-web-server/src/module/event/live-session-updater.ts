@@ -1,7 +1,7 @@
-import { LiveSessionActiveStates, LiveSessionState } from '@dogu-private/types';
+import { DeviceConnectionState, LiveSessionActiveStates, LiveSessionState } from '@dogu-private/types';
 import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
-import { DataSource, In } from 'typeorm';
+import { DataSource, In, Not } from 'typeorm';
 
 import { config } from '../../config';
 import { LiveSession } from '../../db/entity/live-session.entity';
@@ -56,6 +56,7 @@ export class LiveSessionUpdater implements OnModuleInit, OnModuleDestroy {
 
   private async update(): Promise<void> {
     await this.startUpdateCloudLicenseLiveTesting();
+    await this.toClosedIfDeviceDisconnected();
     await this.createdToCloseWait();
     await this.closeWaitToCreatedOrClosed();
   }
@@ -80,6 +81,38 @@ export class LiveSessionUpdater implements OnModuleInit, OnModuleDestroy {
       }
 
       await this.liveSessionService.startUpdateCloudLicenseLiveTesting(cloudLicenseId, liveSession.liveSessionId);
+    }
+  }
+
+  private async toClosedIfDeviceDisconnected(): Promise<void> {
+    const closedSessions = await this.dataSource.manager.transaction(async (manager) => {
+      const disconnecteds = await manager.getRepository(LiveSession).find({
+        where: {
+          state: Not(LiveSessionState.CLOSED),
+          device: {
+            connectionState: Not(DeviceConnectionState.DEVICE_CONNECTION_STATE_CONNECTED),
+          },
+        },
+        relations: {
+          device: true,
+        },
+      });
+
+      if (disconnecteds.length === 0) {
+        return [];
+      }
+
+      const toCloseds = disconnecteds.map((liveSession) => LiveSessionService.updateLiveSessionToClosed(liveSession));
+      const closeds = await manager.getRepository(LiveSession).save(toCloseds);
+      return closeds;
+    });
+
+    if (closedSessions.length > 0) {
+      await Promise.all(
+        closedSessions.map(async (liveSession) => {
+          await this.liveSessionService.publishCloseEvent(liveSession.liveSessionId, 'closed!');
+        }),
+      );
     }
   }
 
