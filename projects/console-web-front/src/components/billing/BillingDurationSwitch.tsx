@@ -8,21 +8,22 @@ import useBillingPlanPurchaseStore from '../../stores/billing-plan-purchase';
 interface Props {}
 
 const BillingDurationSwitch: React.FC<Props> = () => {
-  const [isAnnual, updateIsAnnual] = useBillingPlanPurchaseStore(
-    (state) => [state.isAnnual, state.updateIsAnnual],
-    shallow,
-  );
-  const { t } = useTranslation('billing');
+  return null;
+  // const [isAnnual, updateIsAnnual] = useBillingPlanPurchaseStore(
+  //   (state) => [state.isAnnual, state.updateIsAnnual],
+  //   shallow,
+  // );
+  // const { t } = useTranslation('billing');
 
-  return (
-    <SwitchWrapper>
-      <Label>{t('periodMonthlyLabel')}</Label>
-      <Switch checked={isAnnual} onChange={updateIsAnnual} style={{ margin: '0 .25rem' }} />
-      <Label>
-        {t('periodAnnuallyLabel')} <b>{`(${t('periodAnnuallySaveText', { save: 20 })})`}</b>
-      </Label>
-    </SwitchWrapper>
-  );
+  // return (
+  //   <SwitchWrapper>
+  //     <Label>{t('periodMonthlyLabel')}</Label>
+  //     <Switch checked={isAnnual} onChange={updateIsAnnual} style={{ margin: '0 .25rem' }} />
+  //     <Label>
+  //       {t('periodAnnuallyLabel')} <b>{`(${t('periodAnnuallySaveText', { save: 20 })})`}</b>
+  //     </Label>
+  //   </SwitchWrapper>
+  // );
 };
 
 export default BillingDurationSwitch;

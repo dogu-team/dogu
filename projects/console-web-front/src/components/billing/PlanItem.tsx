@@ -22,7 +22,7 @@ const CONTACT_US_OPTION_KEY = 'contact-us';
 
 const PlanItem: React.FC<Props> = ({ planType, planInfo, descriptionInfo }) => {
   const license = useLicenseStore((state) => state.license);
-  const [isAnnual, updateIsAnnaul] = useBillingPlanPurchaseStore(
+  const [isAnnual, updateIsAnnual] = useBillingPlanPurchaseStore(
     (state) => [state.isAnnual, state.updateIsAnnual],
     shallow,
   );
@@ -64,7 +64,9 @@ const PlanItem: React.FC<Props> = ({ planType, planInfo, descriptionInfo }) => {
     }
 
     if (plan && plan.option === Number(selectedValue) && plan.period === 'monthly') {
-      return { text: t('goAnnualButtonTitle'), disabled: false, shouldGoAnnual: true };
+      // annual plan is not available
+      // return { text: t('goAnnualButtonTitle'), disabled: false, shouldGoAnnual: true };
+      return { text: t('currentPlanButtonTitle'), disabled: true, shouldGoAnnual: false };
     }
 
     if (
@@ -88,7 +90,8 @@ const PlanItem: React.FC<Props> = ({ planType, planInfo, descriptionInfo }) => {
       category: planInfo.category,
     });
     if (shouldGoAnnual) {
-      updateIsAnnaul(true);
+      // annual plan is not available for now
+      // updateIsAnnual(true);
     }
   };
 

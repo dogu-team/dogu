@@ -25,7 +25,7 @@ const SelectItem: React.FC<{ item: CloudDeviceByModelResponse; platform: Platfor
   const fireEvent = useEventStore((state) => state.fireEvent, shallow);
   const [isOpen, openModal, closeModal] = useModal();
   const updateBillingGroupType = useBillingPlanPurchaseStore((state) => state.updateBillingGroupType);
-  const updateIsAnnual = useBillingPlanPurchaseStore((state) => state.updateIsAnnual);
+  // const updateIsAnnual = useBillingPlanPurchaseStore((state) => state.updateIsAnnual);
 
   const router = useRouter();
 
@@ -47,7 +47,8 @@ const SelectItem: React.FC<{ item: CloudDeviceByModelResponse; platform: Platfor
       if (isAxiosError(e)) {
         if (isPaymentRequired(e)) {
           updateBillingGroupType('live-testing-group');
-          updateIsAnnual(false);
+          // annual plan is not available for now
+          // updateIsAnnual(false);
           openModal();
           return;
         }

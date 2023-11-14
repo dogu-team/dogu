@@ -44,7 +44,8 @@ const PlanOption: React.FC<OptionProps> = ({ plan }) => {
   const clickChangeOption = () => {
     const groupType = BillingSubscriptionGroupType.find((group) => BillingPlanGroupMap[group].includes(plan.type));
     updateGroupType(groupType ?? null);
-    updateIsAnnual(isAnnual);
+    // annual plan is not available for now
+    // updateIsAnnual(isAnnual);
     openModal();
   };
 

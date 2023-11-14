@@ -12,11 +12,12 @@ interface Props extends Omit<ButtonProps, 'onClick'> {
 const UpgradePlanButton: React.FC<Props> = ({ groupType, ...props }) => {
   const [isOpen, openModal, closeModal] = useModal();
   const updateBillingGroupType = useBillingPlanPurchaseStore((state) => state.updateBillingGroupType);
-  const updateIsAnnual = useBillingPlanPurchaseStore((state) => state.updateIsAnnual);
+  // const updateIsAnnual = useBillingPlanPurchaseStore((state) => state.updateIsAnnual);
 
   const handleClick = () => {
     updateBillingGroupType(groupType);
-    updateIsAnnual(false);
+    // annual plan is not available for now
+    // updateIsAnnual(false);
     openModal();
   };
 
