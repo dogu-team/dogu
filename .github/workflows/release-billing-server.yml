@@ -112,7 +112,6 @@ jobs:
         with:
           name: service-account-key.json
           json: ${{ secrets.DOGU_ENV_SERVICE_ACCOUNT_KEY }}
-          dir: ${{ env.HOME }}/.dogu_secret
 
       - name: DEV download .env
         if: github.event.inputs.build_type== 'dev'
