@@ -8,6 +8,6 @@ import { DeviceHostResignAppFileService } from './device-host.resign-app-file';
   imports: [BrowserManagerModule],
   controllers: [DeviceHostController],
   providers: [DeviceHostDownloadSharedResourceService, DeviceHostResignAppFileService],
-  exports: [DeviceHostDownloadSharedResourceService],
+  exports: [DeviceHostDownloadSharedResourceService, DeviceHostResignAppFileService],
 })
 export class DeviceHostModule {}

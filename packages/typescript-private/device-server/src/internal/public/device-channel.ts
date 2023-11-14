@@ -21,6 +21,7 @@ import { AppiumContext } from '../../appium/appium.context';
 import { AppiumRemoteContextRental } from '../../appium/appium.context.proxy';
 import { AppiumService } from '../../appium/appium.service';
 import { BrowserManagerService } from '../../browser-manager/browser-manager.service';
+import { DeviceHostResignAppFileService } from '../../device-host/device-host.resign-app-file';
 import { DevicePortService } from '../../device-port/device-port.service';
 import { DeviceWebDriverHandler } from '../../device-webdriver/device-webdriver.common';
 import { GamiumContext } from '../../gamium/gamium.context';
@@ -52,6 +53,7 @@ export interface DeviceServerService {
   get appiumService(): AppiumService;
   get browserManagerService(): BrowserManagerService;
   get devicePortService(): DevicePortService;
+  get resignService(): DeviceHostResignAppFileService;
 }
 
 export interface DeviceChannel {

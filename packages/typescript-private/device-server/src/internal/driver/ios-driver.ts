@@ -8,6 +8,7 @@ import { IosChannel } from '../channel/ios-channel';
 import { IdeviceId, SystemProfiler, XcodeBuild, Xctrace } from '../externals';
 import { DeviceChannel, DeviceChannelOpenParam, DeviceServerService } from '../public/device-channel';
 import { DeviceDriver, DeviceScanResult } from '../public/device-driver';
+import { IosSharedDeviceService } from '../services/shared-device/ios-shared-device';
 import { PionStreamingService } from '../services/streaming/pion-streaming-service';
 
 let ScanResultCache: DeviceScanResult[] = [];
@@ -52,6 +53,7 @@ const IosIdeviceIdScanner: IosScanner = {
 const IosScanners = [IosXctraceScanner, IosIdeviceIdScanner];
 export class IosDriver implements DeviceDriver {
   private channelMap = new Map<Serial, IosChannel>();
+  public readonly platform = Platform.PLATFORM_IOS;
 
   private constructor(
     private readonly streaming: PionStreamingService,
@@ -59,6 +61,8 @@ export class IosDriver implements DeviceDriver {
   ) {}
 
   static async create(deviceServerService: DeviceServerService): Promise<IosDriver> {
+    const { resignService } = deviceServerService;
+    await IosSharedDeviceService.resignPreinstallApps(resignService);
     await IosDriver.clearIdaClones();
     await XcodeBuild.validateXcodeBuild();
 
@@ -66,12 +70,29 @@ export class IosDriver implements DeviceDriver {
     return new IosDriver(streaming, deviceServerService);
   }
 
-  get platform(): Platform {
-    return Platform.PLATFORM_IOS;
-  }
-
   async scanSerials(): Promise<DeviceScanResult[]> {
     return await IosDriver.scanSerials();
+  }
+
+  async openChannel(initParam: DeviceChannelOpenParam): Promise<DeviceChannel> {
+    const channel = await IosChannel.create(initParam, this.streaming, this.deviceServerService);
+    this.channelMap.set(initParam.serial, channel);
+    return channel;
+  }
+
+  async closeChannel(serial: Serial): Promise<void> {
+    const channel = this.channelMap.get(serial);
+    if (channel) {
+      await channel.close().catch((error) => {
+        logger.error('Failed to close channel', { error: errorify(error) });
+      });
+      this.channelMap.delete(serial);
+    }
+    return await this.streaming.deviceDisconnected(serial);
+  }
+
+  reset(): void {
+    throw new Error('Method not implemented.');
   }
 
   static async waitUntilConnected(serial: Serial): Promise<void> {
@@ -136,28 +157,7 @@ export class IosDriver implements DeviceDriver {
     return ret;
   }
 
-  async openChannel(initParam: DeviceChannelOpenParam): Promise<DeviceChannel> {
-    const channel = await IosChannel.create(initParam, this.streaming, this.deviceServerService);
-    this.channelMap.set(initParam.serial, channel);
-    return channel;
-  }
-
-  async closeChannel(serial: Serial): Promise<void> {
-    const channel = this.channelMap.get(serial);
-    if (channel) {
-      await channel.close().catch((error) => {
-        logger.error('Failed to close channel', { error: errorify(error) });
-      });
-      this.channelMap.delete(serial);
-    }
-    return await this.streaming.deviceDisconnected(serial);
-  }
-
-  reset(): void {
-    throw new Error('Method not implemented.');
-  }
-
-  static async clearIdaClones(): Promise<void> {
+  private static async clearIdaClones(): Promise<void> {
     const idaRunspacesPath = HostPaths.external.xcodeProject.idaDerivedDataClonePath();
     if (fs.existsSync(idaRunspacesPath)) {
       await fs.promises.rm(idaRunspacesPath, { recursive: true });

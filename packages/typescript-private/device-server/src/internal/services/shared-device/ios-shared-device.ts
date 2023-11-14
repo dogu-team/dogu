@@ -1,8 +1,9 @@
-import { Platform, PrivateProtocol, Serial } from '@dogu-private/types';
+import { Platform, Serial } from '@dogu-private/types';
 import { delay, FilledPrintable, usingAsnyc } from '@dogu-tech/common';
 import { CheckTimer, HostPaths } from '@dogu-tech/node';
 import fs from 'fs';
 import { AppiumContextImpl } from '../../../appium/appium.context';
+import { DeviceHostResignAppFileService } from '../../../device-host/device-host.resign-app-file';
 import { env } from '../../../env';
 import { config } from '../../config';
 import { IdeviceInstaller } from '../../externals/cli/ideviceinstaller';
@@ -11,15 +12,6 @@ import { IosAccessibilitiySelector, IosWebDriver, IosWebDriverInfo } from '../..
 import { IosResetService } from '../reset/ios-reset';
 import { Zombieable, ZombieProps, ZombieQueriable } from '../zombie/zombie-component';
 import { ZombieServiceInstance } from '../zombie/zombie-service';
-
-type DeviceControlKeycode = PrivateProtocol.DeviceControlKeycode;
-const DeviceControlKeycode = PrivateProtocol.DeviceControlKeycode;
-type DeviceControlType = PrivateProtocol.DeviceControlType;
-const DeviceControlType = PrivateProtocol.DeviceControlType;
-type DeviceControlAction = PrivateProtocol.DeviceControlAction;
-const DeviceControlAction = PrivateProtocol.DeviceControlAction;
-type DeviceControlMetaState = PrivateProtocol.DeviceControlMetaState;
-const DeviceControlMetaState = PrivateProtocol.DeviceControlMetaState;
 
 interface PreinstallAppInfo {
   packageName: string;
@@ -34,7 +26,8 @@ const TestFlightAppInfo: PreinstallAppInfo = {
   packageName: 'com.apple.TestFlight',
   filePath: () => HostPaths.external.preInstall.testflight.ipa(),
 };
-const PreinstallApps: PreinstallAppInfo[] = [ChromeAppInfo, TestFlightAppInfo];
+// const PreinstallApps: PreinstallAppInfo[] = [ChromeAppInfo, TestFlightAppInfo];
+const PreinstallApps: PreinstallAppInfo[] = []; // disable preinstall before fix relogin requested issue
 
 export class IosSharedDeviceService implements Zombieable {
   public name = 'IosSharedDeviceService';
@@ -103,6 +96,21 @@ export class IosSharedDeviceService implements Zombieable {
   }
 
   onDie(reason: string): void {}
+
+  static async resignPreinstallApps(resignService: DeviceHostResignAppFileService): Promise<void> {
+    if (!env.DOGU_DEVICE_IS_SHAREABLE) {
+      return;
+    }
+    for (const preinstall of PreinstallApps) {
+      if (!fs.existsSync(preinstall.filePath())) {
+        continue;
+      }
+      const resignResult = await resignService.queueResign({ filePath: preinstall.filePath() });
+      if (resignResult.result !== 'success') {
+        throw new Error(`IosDriver.create Failed to resign ${preinstall.packageName}.`);
+      }
+    }
+  }
 
   private async checkEnglish(iosDriver: IosWebDriver): Promise<void> {
     await usingAsnyc(
