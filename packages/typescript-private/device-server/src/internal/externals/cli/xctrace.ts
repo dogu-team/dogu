@@ -1,11 +1,10 @@
 import { Serial } from '@dogu-private/types';
-import { loopTime, Milisecond, Printable } from '@dogu-tech/common';
+import { Milisecond, Printable } from '@dogu-tech/common';
 import { ChildProcess, DirectoryRotation } from '@dogu-tech/node';
 import AsyncLock from 'async-lock';
-import child_process, { ExecOptions } from 'child_process';
+import child_process from 'child_process';
 import fs from 'fs';
 import { logger } from '../../../logger/logger.instance';
-import { DeviceScanResult } from '../../public/device-driver';
 
 const directoryRotation = new DirectoryRotation('xctrace', 30);
 
@@ -32,19 +31,19 @@ export async function record(appPath: string, serial: Serial, printable: Printab
 const XctraceListOutputGroup = ['Devices', 'Devices Offline', 'Simulators', 'unknown'];
 type XctraceListOutputGroup = (typeof XctraceListOutputGroup)[number];
 
-let scanCache: DeviceScanResult[] = [];
+let scanCache: Serial[] = [];
 let lastScanCacheTime = 0;
 const scanCacheExpire = Milisecond.t1Second;
 const scanLock: AsyncLock = new AsyncLock();
 
-export async function listDevices(printable: Printable, options: ExecOptions = {}): Promise<DeviceScanResult[]> {
+export async function listDevices(option = { timeout: Milisecond.t5Seconds }): Promise<Serial[]> {
   const ret = await scanLock.acquire('scan', async () => {
     if (Date.now() - lastScanCacheTime < scanCacheExpire) {
       return scanCache;
     }
-    const result = await ChildProcess.exec(`${XcTraceCommand} list devices`, options);
+    const result = await ChildProcess.exec(`${XcTraceCommand} list devices`, option);
 
-    const infos: DeviceScanResult[] = [];
+    const infos: Serial[] = [];
     let firstDeviceLine = undefined; // macOs Self Device
     let category: XctraceListOutputGroup = 'unknown';
 
@@ -69,11 +68,7 @@ export async function listDevices(printable: Printable, options: ExecOptions = {
       if (!device) {
         continue;
       }
-      infos.push({
-        serial: device.serial,
-        name: device.name,
-        status: 'online',
-      });
+      infos.push(device.serial);
     }
     scanCache = infos;
     lastScanCacheTime = Date.now();
@@ -82,34 +77,6 @@ export async function listDevices(printable: Printable, options: ExecOptions = {
   });
 
   return ret;
-}
-
-export async function waitUntilConnected(serial: Serial, printable: Printable): Promise<void> {
-  for await (const _ of loopTime({ period: { seconds: 3 }, expire: { minutes: 5 } })) {
-    const deviceInfosFromXctrace = await listDevices(printable, { timeout: Milisecond.t2Minutes }).catch((e) => []);
-    if (deviceInfosFromXctrace.find((deviceInfo) => deviceInfo.serial === serial)) {
-      break;
-    }
-  }
-  const deviceInfosFromXctrace = await listDevices(printable, { timeout: Milisecond.t2Minutes }).catch((e) => []);
-  if (!deviceInfosFromXctrace.find((deviceInfo) => deviceInfo.serial === serial)) {
-    throw new Error(`Wait until device ${serial} connected failed. Please check the usb connection.`);
-  }
-}
-
-export async function waitUntilDisonnected(serial: Serial, printable: Printable): Promise<void> {
-  for await (const _ of loopTime({ period: { seconds: 3 }, expire: { minutes: 5 } })) {
-    const deviceInfosFromXctrace = await listDevices(printable, { timeout: Milisecond.t2Minutes }).catch((e) => []);
-    const some = deviceInfosFromXctrace.find((deviceInfo) => deviceInfo.serial === serial);
-    if (!some) {
-      break;
-    }
-  }
-  const deviceInfosFromXctrace = await listDevices(printable, { timeout: Milisecond.t2Minutes }).catch((e) => []);
-  const some = deviceInfosFromXctrace.find((deviceInfo) => deviceInfo.serial === serial);
-  if (some) {
-    throw new Error(`Wait until device ${serial} disconnected failed.`);
-  }
 }
 
 function parseDeviceLine(line: string): { serial: string; osVersion: string; name: string } | null {

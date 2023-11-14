@@ -208,12 +208,8 @@ export module Adb {
         switch (state) {
           case 'device':
             return 'online';
-          case 'offline':
-            return 'offline';
-          case 'unauthorized':
-            return 'unauthorized';
           default:
-            return 'unknown';
+            return 'unstable';
         }
       };
 

@@ -55,8 +55,8 @@ actor ScrollControlPlayer: IControlPlayer {
     let beginPosition = try Transform.controlSpaceToScreenSpace(controlSpacePosition: control.control.position, screenSize: screenSize)
     let endPosition = CGPoint(x: beginPosition.x, y: beginPosition.y + CGFloat(vScrollSign) * screenSize.height * 0.2)
 
-    let gapTime = Date().unixTimeMilliseconds - control.control.timeStamp
-    if 900 < gapTime {
+    let latencyMs = Date().unixTimeMilliseconds - control.control.timeStamp
+    if 900 < latencyMs {
       return
     }
 

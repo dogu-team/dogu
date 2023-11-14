@@ -1,5 +1,5 @@
-import { ErrorDevice, PlatformSerial, platformTypeFromPlatform, Serial } from '@dogu-private/types';
-import { errorify, loop, Milisecond, stringify, stringifyError } from '@dogu-tech/common';
+import { ErrorDevice, Platform, PlatformSerial, platformTypeFromPlatform, Serial } from '@dogu-private/types';
+import { errorify, loop, stringify, stringifyError, time } from '@dogu-tech/common';
 import { DeviceChannel } from '../internal/public/device-channel';
 import { DeviceDriver } from '../internal/public/device-driver';
 import { logger } from '../logger/logger.instance';
@@ -16,7 +16,19 @@ interface DeviceDoorState {
   error: Error | null;
 }
 
-const DeviceCloseThreshold = Milisecond.t15Seconds;
+const AndroidDeviceCloseThreshold = time({ seconds: 10 });
+const IosDeviceCloseThreshold = time({ seconds: 30 });
+
+function getDeviceCloseThreshold(platform: Platform): number {
+  switch (platform) {
+    case Platform.PLATFORM_ANDROID:
+      return AndroidDeviceCloseThreshold;
+    case Platform.PLATFORM_IOS:
+      return IosDeviceCloseThreshold;
+    default:
+      return AndroidDeviceCloseThreshold;
+  }
+}
 
 export class DeviceDoor {
   public channel: DeviceChannel | null = null;
@@ -110,7 +122,7 @@ export class DeviceDoor {
       }
     }
 
-    if ((this._latestOpenTime < this._latestCloseTime && DeviceCloseThreshold < this._latestCloseTime - this._firstCloseTime) || closeForced) {
+    if ((this._latestOpenTime < this._latestCloseTime && getDeviceCloseThreshold(this.driver.platform) < this._latestCloseTime - this._firstCloseTime) || closeForced) {
       this.channel = null;
       logger.info(
         `DeviceDoor.processInternal closeChannel serial:${this.serial}, firstCloseTime: ${this._firstCloseTime}, latestCloseTime: ${this._latestCloseTime}, reason: ${
@@ -174,6 +186,18 @@ export class DeviceDoors {
           serial: door.serial,
         };
       });
+  }
+
+  /*
+   * all channels
+   */
+  get channelsRunning(): PlatformSerial[] {
+    return this._doors.map((door) => {
+      return {
+        platform: platformTypeFromPlatform(door.driver.platform),
+        serial: door.serial,
+      };
+    });
   }
 
   get channelsWithError(): ErrorDevice[] {

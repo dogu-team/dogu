@@ -17,7 +17,7 @@ import {
   SerialPrintable,
   StreamingAnswer,
 } from '@dogu-private/types';
-import { Closable, delay, errorify, MixedLogger, Printable, PromiseOrValue, stringify, TimedCacheAsync } from '@dogu-tech/common';
+import { Closable, errorify, MixedLogger, Printable, PromiseOrValue, stringify, TimedCacheAsync } from '@dogu-tech/common';
 import { AppiumCapabilities, BrowserInstallation, StreamingOfferDto } from '@dogu-tech/device-client-common';
 import { checkTime, CheckTimer, ChildProcessError, killChildProcess } from '@dogu-tech/node';
 import { ChildProcess } from 'child_process';
@@ -36,7 +36,8 @@ import { GamiumContext } from '../../gamium/gamium.context';
 import { deviceInfoLogger } from '../../logger/logger.instance';
 import { createIosLogger } from '../../logger/serial-logger.instance';
 import { config } from '../config';
-import { IdeviceDiagnostics, IdeviceSyslog, MobileDevice, Xctrace } from '../externals';
+import { IosDriver } from '../driver/ios-driver';
+import { IdeviceDiagnostics, IdeviceSyslog, MobileDevice } from '../externals';
 import { IdeviceInstaller } from '../externals/cli/ideviceinstaller';
 import { IosDeviceAgentProcess } from '../externals/cli/ios-device-agent';
 import { ZombieTunnel } from '../externals/cli/mobiledevice-tunnel';
@@ -300,8 +301,8 @@ export class IosChannel implements DeviceChannel {
     if (env.DOGU_DEVICE_RESTART_IOS_ON_INIT) {
       await IdeviceDiagnostics.restart(serial, logger);
       try {
-        await delay(1000);
-        await Xctrace.waitUntilConnected(serial, logger);
+        await IosDriver.waitUntilDisonnected(serial);
+        await IosDriver.waitUntilConnected(serial);
       } catch {
         throw new Error(`Device ${serial} is not found after restart. Please check the usb connection.`);
       }

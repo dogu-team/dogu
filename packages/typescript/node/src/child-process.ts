@@ -1,4 +1,4 @@
-import { BufferLogger, MixedLogger, Printable, stringify } from '@dogu-tech/common';
+import { BufferLogger, errorify, MixedLogger, Printable, stringify } from '@dogu-tech/common';
 import childProcess from 'child_process';
 import lodash from 'lodash';
 import { HostPaths } from '.';
@@ -136,6 +136,18 @@ async function _initialize(): Promise<void> {
     await exec('chcp 65001', {});
   }
 }
+
+//#region
+
+export function isSigtermError(e: unknown): boolean {
+  const error = errorify(e) as childProcess.ExecException;
+  if (!error.signal) {
+    return false;
+  }
+  return error.signal === 'SIGTERM';
+}
+
+//#endregion
 
 (async (): Promise<void> => {
   await _initialize();

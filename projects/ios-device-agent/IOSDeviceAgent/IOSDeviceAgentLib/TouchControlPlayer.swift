@@ -71,8 +71,8 @@ actor TouchControlPlayer: IControlPlayer {
     }
 
     let endPosition = try Transform.controlSpaceToScreenSpace(controlSpacePosition: up.control.position, screenSize: screenSize)
-    let gapTime = Date().unixTimeMilliseconds - down.control.timeStamp
-    if 3000 < gapTime {
+    let latencyMs = Date().unixTimeMilliseconds - down.control.timeStamp
+    if 3000 < latencyMs {
       return
     }
 

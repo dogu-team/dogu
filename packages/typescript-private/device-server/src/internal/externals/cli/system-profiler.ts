@@ -6,8 +6,8 @@ const execAsync = promisify(exec);
 const SystemProfiler = 'system_profiler';
 const SystemProfilerTimeout = 10 * 1000;
 
-export async function usbDataTypeToSerials(): Promise<string[]> {
-  const { stdout } = await execAsync(`${SystemProfiler} SPUSBDataType`, { timeout: SystemProfilerTimeout });
+export async function usbDataTypeToSerials(option = { timeout: SystemProfilerTimeout }): Promise<string[]> {
+  const { stdout } = await execAsync(`${SystemProfiler} SPUSBDataType`, option);
   const serials: string[] = [];
   for (const line of stdout.split('\n')) {
     const matches = line.match(/Serial Number: (.+)/);

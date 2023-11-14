@@ -20,7 +20,7 @@ import {
 import { GamiumService } from '../gamium/gamium.service';
 import { HttpRequestRelayService } from '../http-request-relay/http-request-relay.common';
 import { DeviceChannel } from '../internal/public/device-channel';
-import { DeviceDriver, DeviceScanFailed, DeviceScanResult } from '../internal/public/device-driver';
+import { DeviceDriver, DeviceScanResult, DeviceScanResultUnstable } from '../internal/public/device-driver';
 import { createDeviceDriverFactoryByHostPlatform } from '../internal/public/device-driver-factory';
 import { DoguLogger } from '../logger/logger';
 import { SeleniumService } from '../selenium/selenium.service';
@@ -32,7 +32,7 @@ export class ScanService implements OnModuleInit {
   private deviceDoors: DeviceDoors;
   private befTime = Date.now();
   private onUpdateGuarder = new DuplicatedCallGuarder();
-  private scanFailedDevices: ErrorDevice[] = [];
+  private scanUnstableDevices: ErrorDevice[] = [];
 
   constructor(
     private readonly eventEmitter: EventEmitter2,
@@ -83,12 +83,7 @@ export class ScanService implements OnModuleInit {
   }
 
   private get channelsWithScanError(): Readonly<ErrorDevice[]> {
-    return this.scanFailedDevices.filter((device) => {
-      const { serial } = device;
-      const channel = this.findChannel(serial);
-      if (channel) return false;
-      return true;
-    });
+    return this.scanUnstableDevices;
   }
 
   async onModuleInit(): Promise<void> {
@@ -207,39 +202,47 @@ export class ScanService implements OnModuleInit {
         this.logger.error(`ScanService.update scanSerials platform: ${platform}, error: ${stringifyError(e)}`);
         return [] as DeviceScanResult[];
       });
-      const scannedOnlineSerials = scanedSerials.filter((scanInfo) => scanInfo.status === 'online').map((scanInfo) => scanInfo.serial);
-      const scannedOfflineInfos = scanedSerials.filter((scanInfo) => scanInfo.status !== 'online') as DeviceScanFailed[];
+      // notify open close
+      {
+        const scannedOnlineSerials = scanedSerials.filter((scanInfo) => scanInfo.status === 'online').map((scanInfo) => scanInfo.serial);
+        const removedSerials = befSerials.filter((befSerial) => !scanedSerials.find((result) => befSerial === result.serial));
+        if (removedSerials.length !== 0) {
+          this.logger.info('ScanService.update removed', {
+            platform,
+            removedSerials,
+          });
+        }
+        scannedOnlineSerials.forEach((serial) => {
+          this.deviceDoors.openIfNotActive(driver, serial);
+        });
 
-      const befScanFailedSerials = this.scanFailedDevices.map((device) => device.serial);
-      this.scanFailedDevices = scannedOfflineInfos.map((scanInfo) => {
-        const { serial, description } = scanInfo;
-        return {
-          serial,
-          platform: platformTypeFromPlatform(platform),
-          error: new Error(description),
-        };
-      });
-      const newScanFailedDevices = this.scanFailedDevices.filter((device) => !befScanFailedSerials.includes(device.serial));
-      if (0 < newScanFailedDevices.length) {
-        await validateAndEmitEventAsync(this.eventEmitter, OnDevicesErrorEvent, { errorDevices: newScanFailedDevices }).catch((e) => {
-          this.logger.error(`ScanService.update OnDevicesErrorEvent emit error: ${stringifyError(e)}`);
+        removedSerials.forEach((serial) => {
+          this.deviceDoors.closeDoor(driver, serial, 'Not detected by scan');
         });
       }
 
-      const removedSerials = befSerials.filter((befSerial) => !scannedOnlineSerials.find((serial) => befSerial === serial));
-      if (removedSerials.length !== 0) {
-        this.logger.info('ScanService.update removed', {
-          platform,
-          removedSerials,
+      // notify unstable
+      {
+        const scannedUnstableInfos = (scanedSerials.filter((scanInfo) => scanInfo.status === 'unstable') as DeviceScanResultUnstable[]).filter((scanInfo) => {
+          const runningSerial = this.deviceDoors.channelsRunning.find((channel) => channel.serial === scanInfo.serial);
+          return !runningSerial;
         });
+        const befScanUnstableSerials = this.scanUnstableDevices.map((device) => device.serial);
+        this.scanUnstableDevices = scannedUnstableInfos.map((scanInfo) => {
+          const { serial, description } = scanInfo;
+          return {
+            serial,
+            platform: platformTypeFromPlatform(platform),
+            error: new Error(description),
+          };
+        });
+        const newScanUnstableDevices = this.scanUnstableDevices.filter((device) => !befScanUnstableSerials.includes(device.serial));
+        if (0 < newScanUnstableDevices.length) {
+          await validateAndEmitEventAsync(this.eventEmitter, OnDevicesErrorEvent, { errorDevices: newScanUnstableDevices }).catch((e) => {
+            this.logger.error(`ScanService.update OnDevicesErrorEvent emit error: ${stringifyError(e)}`);
+          });
+        }
       }
-      scannedOnlineSerials.forEach((serial) => {
-        this.deviceDoors.openIfNotActive(driver, serial);
-      });
-
-      removedSerials.forEach((serial) => {
-        this.deviceDoors.closeDoor(driver, serial, 'Not detected by scan');
-      });
     }
   }
 

@@ -20,7 +20,7 @@ interface File {
   unzipDirName?: string;
 }
 
-const LibimobiledeviceArchivesVersion = '12-10-2023';
+const LibimobiledeviceArchivesVersion = '13-11-2023';
 
 const files: File[] = [
   {
@@ -68,6 +68,23 @@ const files: File[] = [
     url: 'https://github.com/dogu-team/third-party-binaries/releases/download/libimobiledevice-1.0.6/ideviceinstaller-x64',
     path: () => HostPaths.external.libimobiledevice.ideviceinstaller(),
     archCheckPath: () => HostPaths.external.libimobiledevice.ideviceinstaller(),
+    fileMode: 0o777,
+    archName: 'x86_64',
+  },
+
+  {
+    condition: () => process.platform === 'darwin' && process.arch === 'arm64',
+    url: 'https://github.com/dogu-team/third-party-binaries/releases/download/libimobiledevice-1.0.6/idevice_id-arm64',
+    path: () => HostPaths.external.libimobiledevice.ideviceid(),
+    archCheckPath: () => HostPaths.external.libimobiledevice.ideviceid(),
+    fileMode: 0o777,
+    archName: 'arm64',
+  },
+  {
+    condition: () => process.platform === 'darwin' && process.arch === 'x64',
+    url: 'https://github.com/dogu-team/third-party-binaries/releases/download/libimobiledevice-1.0.6/idevice_id-x64',
+    path: () => HostPaths.external.libimobiledevice.ideviceid(),
+    archCheckPath: () => HostPaths.external.libimobiledevice.ideviceid(),
     fileMode: 0o777,
     archName: 'x86_64',
   },

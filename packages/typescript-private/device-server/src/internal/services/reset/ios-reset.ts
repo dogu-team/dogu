@@ -3,9 +3,10 @@ import { delay, filterAsync, loop, loopTime, PrefixLogger, Repeat, retry, TimeOp
 import { CheckTimer } from '@dogu-tech/node';
 import { boxBox } from 'intersects';
 import { AppiumContextImpl, WDIOElement } from '../../../appium/appium.context';
+import { IosDriver } from '../../driver/ios-driver';
 import { IdeviceInstaller } from '../../externals/cli/ideviceinstaller';
 import { WebdriverAgentProcess } from '../../externals/cli/webdriver-agent-process';
-import { IdeviceDiagnostics, Xctrace } from '../../externals/index';
+import { IdeviceDiagnostics } from '../../externals/index';
 import {
   IosAccessibilitiySelector,
   IosButtonPredicateStringSelector,
@@ -268,7 +269,7 @@ export class IosResetService {
                 logger.error(`IosResetService.reset.restart error but tried many times so ignore error`, { serial, error: e });
               }),
             );
-            await this.check('IosResetService.reset.waitUntilDisonnected', Xctrace.waitUntilDisonnected(serial, logger));
+            await this.check('IosResetService.reset.waitUntilDisonnected', IosDriver.waitUntilDisonnected(serial));
             IosResetService.map.set(serial, { lastResetTime: Date.now() });
           },
         );
