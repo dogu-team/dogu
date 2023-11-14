@@ -94,6 +94,11 @@ jobs:
             env-generator
             docker-compose-billing.yml
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16.20'
+
       - name: DEV Configure AWS credentials
         if: github.event.inputs.build_type == 'dev'
         uses: aws-actions/configure-aws-credentials@v1-node16
