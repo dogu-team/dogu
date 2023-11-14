@@ -98,8 +98,9 @@ jobs:
           # console - back
           echo "DOGU_RUN_TYPE=development" >> ./docker-compose.env
           sed -i "s|DOGU_API_BASE_URL=.*$|DOGU_API_BASE_URL=${{ secrets.DEV_DOGU_API_BASE_URL }}|" ./docker-compose.yml
+          sed -i "s|DOGU_CONSOLE_DB_URL=.*$|DOGU_CONSOLE_DB_URL=${{ secrets.DEV_DOGU_CONSOLE_DB_URL }}|" ./docker-compose.yml
+          sed -i "s|DOGU_CONSOLE_DB_SSL_CONNECTION=.*$|DOGU_CONSOLE_DB_SSL_CONNECTION=${{ secrets.DEV_DOGU_CONSOLE_DB_SSL_CONNECTION }}|" ./docker-compose.yml
 
-          echo "DOGU_RDS_SSL_CONNECTION=TRUE" >> ./docker-compose.env
           sed -i "s|DOGU_CONSOLE_JWT_SECRET_KEY=.*$|DOGU_CONSOLE_JWT_SECRET_KEY=${{ secrets.DEV_DOGU_JWT_SECRET_KEY }}|" ./docker-compose.env
           sed -i "s|DOGU_CONSOLE_DOMAIN=.*$|DOGU_CONSOLE_DOMAIN=${{ secrets.DEV_DOGU_CONSOLE_DOMAIN }}|" ./docker-compose.yml
           echo "DOGU_DOST_DOWNLOAD_BASE_URL=${{ secrets.DEV_DOGU_DOST_DOWNLOAD_BASE_URL }}" >> ./docker-compose.env
