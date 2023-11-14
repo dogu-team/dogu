@@ -56,5 +56,5 @@
   "inspectorEmptyTreeText": "발견된 요소가 없습니다.<br></br>UI 인스펙터에 대한 가이드를 보려면 <link>문서</link>를 참고하세요.",
 
   "liveSessionToCloseWaitModalTitle": "세션이 곧 종료됩니다!",
-  "liveSessionToCloseWaitModalContent": "20분간 활동이 없어 세션이 종료됩니다.<br></br>세션이 <timer></timer> 뒤 종료됩니다."
+  "liveSessionToCloseWaitModalContent": "30분간 활동이 없어 세션이 종료됩니다.<br></br>세션이 <timer></timer> 뒤 종료됩니다."
 }

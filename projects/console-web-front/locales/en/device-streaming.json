@@ -56,5 +56,5 @@
   "inspectorEmptyTreeText": "No element found.<br></br>If you want to see guide for UI inspector, please refer to <link>document</link>.",
 
   "liveSessionToCloseWaitModalTitle": "Your session will be closed!",
-  "liveSessionToCloseWaitModalContent": "There is no interaction for 20 minutes.<br></br>Your session will be closed in <timer></timer>."
+  "liveSessionToCloseWaitModalContent": "There is no interaction for 30 minutes.<br></br>Your session will be closed in <timer></timer>."
 }

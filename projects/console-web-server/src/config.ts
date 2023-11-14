@@ -154,7 +154,7 @@ export const config = {
   },
   liveSession: {
     heartbeat: {
-      allowedSeconds: 20 * 60,
+      allowedSeconds: 30 * 60,
     },
     closeWait: {
       allowedMilliseconds: 3 * 60 * 1000,
