@@ -1,47 +1,34 @@
-import { CreateSelfHostedLicenseDto } from '@dogu-private/console';
-import { stringify } from '@dogu-tech/common';
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { CreateSelfHostedLicenseDto, SelfHostedLicenseResponse } from '@dogu-private/console';
+import { Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
-import { v4 } from 'uuid';
 
 import { SelfHostedLicense } from '../../db/entity/self-hosted-license.entity';
-import { LicenseKeyService } from '../common/license-key.service';
+import { retrySerialize } from '../../db/utils';
+import { DateTimeSimulatorService } from '../date-time-simulator/date-time-simulator.service';
+import { DoguLogger } from '../logger/logger';
 import { FindSelfHostedLicenseQueryDto } from './self-hosted-license.dto';
+import { createSelfHostedLicense, findSelfHostedLicense } from './self-hosted-license.serializables';
 
 @Injectable()
 export class SelfHostedLicenseService {
   constructor(
+    private readonly logger: DoguLogger,
     @InjectDataSource()
     private readonly dataSource: DataSource,
+    private readonly dateTimeSimulatorService: DateTimeSimulatorService,
   ) {}
 
-  async createLicense(dto: CreateSelfHostedLicenseDto): Promise<SelfHostedLicense> {
-    const { organizationId, companyName, expiredAt } = dto;
-    const existingLicense = await this.dataSource.manager.getRepository(SelfHostedLicense).findOne({ where: { organizationId, companyName } });
-
-    if (existingLicense) {
-      throw new ConflictException(`Organization already has a self-hosted license. organizationId: ${stringify(organizationId)}`);
-    }
-
-    const licenseKey = LicenseKeyService.createLicensKey();
-
-    const license = this.dataSource.manager.getRepository(SelfHostedLicense).create({ selfHostedLicenseId: v4(), organizationId, companyName, expiredAt, licenseKey });
-    const rv = await this.dataSource.manager.getRepository(SelfHostedLicense).save(license);
-    return rv;
+  async createSelfHostedLicense(dto: CreateSelfHostedLicenseDto): Promise<SelfHostedLicense> {
+    return await retrySerialize(this.logger, this.dataSource, async (context) => {
+      const now = this.dateTimeSimulatorService.now();
+      return await createSelfHostedLicense(context, dto, now);
+    });
   }
 
-  async findLicense(dto: FindSelfHostedLicenseQueryDto): Promise<SelfHostedLicense> {
-    const { organizationId, licenseKey } = dto;
-    if (!organizationId) {
-      throw new NotFoundException(`Organization must be provided. organizationId: ${stringify(organizationId)}`);
-    }
-
-    const license = await this.dataSource.manager.getRepository(SelfHostedLicense).findOne({ where: { organizationId, licenseKey } });
-    if (!license) {
-      throw new NotFoundException(`Organization does not have a self-hosted license. organizationId: ${organizationId}`);
-    }
-
-    return license;
+  async findSelfHostedLicense(dto: FindSelfHostedLicenseQueryDto): Promise<SelfHostedLicenseResponse> {
+    return await retrySerialize(this.logger, this.dataSource, async (context) => {
+      return await findSelfHostedLicense(context, dto);
+    });
   }
 }

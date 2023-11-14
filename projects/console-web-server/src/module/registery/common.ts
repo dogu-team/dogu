@@ -6,7 +6,7 @@ import { UserEmailPreference } from '../../db/entity/user-email-preference.entit
 import { UserSns } from '../../db/entity/user-sns.entity';
 import { User } from '../../db/entity/user.entity';
 import { env } from '../../env';
-import { FEATURE_CONFIG } from '../../feature.config';
+import { FeatureConfig } from '../../feature.config';
 import { TokenService } from '../token/token.service';
 
 export async function createUser(manager: EntityManager, email: string, password: string | null, name: string) {
@@ -18,7 +18,7 @@ export async function createUser(manager: EntityManager, email: string, password
   }
 
   let isRootUser = false;
-  if (FEATURE_CONFIG.get('licenseModule') === 'self-hosted') {
+  if (FeatureConfig.get('licenseModule') === 'self-hosted') {
     const rootUser = await manager.getRepository(User).findOne({
       where: {
         isRoot: true,

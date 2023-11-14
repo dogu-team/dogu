@@ -7468,6 +7468,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["class-transformer", "npm:0.5.1"],\
             ["class-validator", "npm:0.14.0"],\
             ["js-yaml", "npm:4.1.0"],\
+            ["lodash", "npm:4.17.21"],\
             ["nodemon", "npm:2.0.22"],\
             ["reflect-metadata", "npm:0.1.13"],\
             ["shx", "npm:0.3.4"],\
@@ -15035,6 +15036,27 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["pg-types", "npm:4.0.1"]\
           ],\
           "linkType": "HARD"\
+        }],\
+        ["npm:8.10.9", {\
+          "packageLocation": "./.yarn/cache/@types-pg-npm-8.10.9-ee8620c8e7-c0c750af1f.zip/node_modules/@types/pg/",\
+          "packageDependencies": [\
+            ["@types/pg", "npm:8.10.9"],\
+            ["@types/node", "npm:18.15.13"],\
+            ["pg-protocol", "npm:1.6.0"],\
+            ["pg-types", "npm:4.0.1"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@types/pg-cursor", [\
+        ["npm:2.7.2", {\
+          "packageLocation": "./.yarn/cache/@types-pg-cursor-npm-2.7.2-90c70f1166-bedf371859.zip/node_modules/@types/pg-cursor/",\
+          "packageDependencies": [\
+            ["@types/pg-cursor", "npm:2.7.2"],\
+            ["@types/node", "npm:18.15.13"],\
+            ["@types/pg", "npm:8.10.9"]\
+          ],\
+          "linkType": "HARD"\
         }]\
       ]],\
       ["@types/plist", [\
@@ -19053,20 +19075,26 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/lodash", "npm:4.14.200"],\
             ["@types/luxon", "npm:3.3.3"],\
             ["@types/node", "npm:18.15.11"],\
+            ["@types/nodemailer", "npm:6.4.7"],\
             ["@types/passport", "npm:1.0.14"],\
             ["@types/pg", "npm:8.10.2"],\
+            ["@types/pg-cursor", "npm:2.7.2"],\
             ["@types/shelljs", "npm:0.8.14"],\
             ["@types/uuid", "npm:9.0.6"],\
             ["@types/ws", "npm:8.5.4"],\
+            ["aws-sdk", "npm:2.1481.0"],\
+            ["axios", "npm:1.5.1"],\
             ["class-transformer", "npm:0.5.1"],\
             ["class-validator", "npm:0.14.0"],\
             ["cross-env", "npm:7.0.3"],\
             ["express", "npm:4.18.2"],\
             ["lodash", "npm:4.17.21"],\
             ["luxon", "npm:3.4.3"],\
+            ["nodemailer", "npm:6.9.7"],\
             ["nodemon", "npm:3.0.1"],\
             ["npm-check-updates", "npm:16.14.6"],\
             ["pg", "virtual:5d989e67e8ca83aa0556255791fdcac55623c9ccb3281b72bd3861d249df0961376ab2c76ee45bf4750178857c5c30bac3bb628af955e16567e426f9e366b233#npm:8.11.3"],\
+            ["pg-cursor", "virtual:5d989e67e8ca83aa0556255791fdcac55623c9ccb3281b72bd3861d249df0961376ab2c76ee45bf4750178857c5c30bac3bb628af955e16567e426f9e366b233#npm:2.10.3"],\
             ["reflect-metadata", "npm:0.1.13"],\
             ["rxjs", "npm:7.8.1"],\
             ["shelljs", "npm:0.8.5"],\
@@ -19292,7 +19320,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/browserslist-npm-4.21.5-e3b9e9d029-9755986b22.zip/node_modules/browserslist/",\
           "packageDependencies": [\
             ["browserslist", "npm:4.21.5"],\
-            ["caniuse-lite", "npm:1.0.30001481"],\
+            ["caniuse-lite", "npm:1.0.30001559"],\
             ["electron-to-chromium", "npm:1.4.369"],\
             ["node-releases", "npm:2.0.10"],\
             ["update-browserslist-db", "virtual:e3b9e9d029ed690d72cbb29196ba0a23f15b398eeb926347678187be937db870a04cbf984eecc8e0ec9c290158a9cd8607d12f0188665abe039fa4a9051a22ac#npm:1.0.11"]\
@@ -19303,7 +19331,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/browserslist-npm-4.21.9-f6128308c1-80d3820584.zip/node_modules/browserslist/",\
           "packageDependencies": [\
             ["browserslist", "npm:4.21.9"],\
-            ["caniuse-lite", "npm:1.0.30001504"],\
+            ["caniuse-lite", "npm:1.0.30001559"],\
             ["electron-to-chromium", "npm:1.4.433"],\
             ["node-releases", "npm:2.0.12"],\
             ["update-browserslist-db", "virtual:f6128308c12e2b37fe427262226a88e213eb66128b3445db14a7af8a6dafb815a9c4562e232b574e216fb796ee19313d71844b195e41ad82170480289a6b575c#npm:1.0.11"]\
@@ -19697,17 +19725,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["caniuse-lite", [\
-        ["npm:1.0.30001481", {\
-          "packageLocation": "./.yarn/cache/caniuse-lite-npm-1.0.30001481-cd8272ecaa-8200a043c1.zip/node_modules/caniuse-lite/",\
+        ["npm:1.0.30001559", {\
+          "packageLocation": "./.yarn/cache/caniuse-lite-npm-1.0.30001559-d063fd74f7-17c7af1024.zip/node_modules/caniuse-lite/",\
           "packageDependencies": [\
-            ["caniuse-lite", "npm:1.0.30001481"]\
-          ],\
-          "linkType": "HARD"\
-        }],\
-        ["npm:1.0.30001504", {\
-          "packageLocation": "./.yarn/cache/caniuse-lite-npm-1.0.30001504-6cb638898a-0256f8ef2f.zip/node_modules/caniuse-lite/",\
-          "packageDependencies": [\
-            ["caniuse-lite", "npm:1.0.30001504"]\
+            ["caniuse-lite", "npm:1.0.30001559"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -33240,7 +33261,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/react-dom", "npm:18.2.0"],\
             ["@types/sass", null],\
             ["busboy", "npm:1.6.0"],\
-            ["caniuse-lite", "npm:1.0.30001481"],\
+            ["caniuse-lite", "npm:1.0.30001559"],\
             ["fibers", null],\
             ["postcss", "npm:8.4.14"],\
             ["react", "npm:18.2.0"],\
@@ -33286,7 +33307,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/react-dom", null],\
             ["@types/sass", null],\
             ["busboy", "npm:1.6.0"],\
-            ["caniuse-lite", "npm:1.0.30001481"],\
+            ["caniuse-lite", "npm:1.0.30001559"],\
             ["fibers", null],\
             ["node-sass", null],\
             ["postcss", "npm:8.4.14"],\
@@ -35198,6 +35219,28 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/pg-connection-string-npm-2.6.2-43a4a40be5-22265882c3.zip/node_modules/pg-connection-string/",\
           "packageDependencies": [\
             ["pg-connection-string", "npm:2.6.2"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["pg-cursor", [\
+        ["npm:2.10.3", {\
+          "packageLocation": "./.yarn/cache/pg-cursor-npm-2.10.3-e5cf483ddf-86dd66c4bf.zip/node_modules/pg-cursor/",\
+          "packageDependencies": [\
+            ["pg-cursor", "npm:2.10.3"]\
+          ],\
+          "linkType": "SOFT"\
+        }],\
+        ["virtual:5d989e67e8ca83aa0556255791fdcac55623c9ccb3281b72bd3861d249df0961376ab2c76ee45bf4750178857c5c30bac3bb628af955e16567e426f9e366b233#npm:2.10.3", {\
+          "packageLocation": "./.yarn/__virtual__/pg-cursor-virtual-acf748bd40/0/cache/pg-cursor-npm-2.10.3-e5cf483ddf-86dd66c4bf.zip/node_modules/pg-cursor/",\
+          "packageDependencies": [\
+            ["pg-cursor", "virtual:5d989e67e8ca83aa0556255791fdcac55623c9ccb3281b72bd3861d249df0961376ab2c76ee45bf4750178857c5c30bac3bb628af955e16567e426f9e366b233#npm:2.10.3"],\
+            ["@types/pg", "npm:8.10.2"],\
+            ["pg", "virtual:5d989e67e8ca83aa0556255791fdcac55623c9ccb3281b72bd3861d249df0961376ab2c76ee45bf4750178857c5c30bac3bb628af955e16567e426f9e366b233#npm:8.11.3"]\
+          ],\
+          "packagePeers": [\
+            "@types/pg",\
+            "pg"\
           ],\
           "linkType": "HARD"\
         }]\

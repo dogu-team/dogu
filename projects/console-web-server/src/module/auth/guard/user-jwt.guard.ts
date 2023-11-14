@@ -30,7 +30,7 @@ export class UserJwtGuard implements CanActivate {
     }
 
     const userId = payload.userId;
-    this.dataSource.manager.getRepository(User).update(userId, { lastAccessedAt: new Date() });
+    await this.dataSource.manager.getRepository(User).update(userId, { lastAccessedAt: new Date() });
 
     req.user = payload;
     return true;

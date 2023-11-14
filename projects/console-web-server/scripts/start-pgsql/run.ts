@@ -4,17 +4,19 @@ import { exec, execute } from '../utils/utils';
 import { config, pgsqlConnectionOptions } from './config';
 
 async function startDockerContainer() {
+  const parsedUrl = new URL(pgsqlConnectionOptions.connectionString);
+
   await checkDockerInstalled();
   await execute('Starting container...', () =>
     exec(
       `docker run -d \
       --name ${config.containerName} \
-      -e POSTGRES_DB=${config.schema} \
-      -e POSTGRES_USER=${config.rootUser} \
-      -e POSTGRES_PASSWORD=${config.rootPassword} \
-      -e PGPORT=${config.port} \
+      -e POSTGRES_DB=${parsedUrl.pathname.replace('/', '')} \
+      -e POSTGRES_USER=${parsedUrl.username} \
+      -e POSTGRES_PASSWORD=${parsedUrl.password} \
+      -e PGPORT=${parsedUrl.port} \
       -e TZ=Etc/UTC \
-      -p ${config.port}:${config.port} \
+      -p ${parsedUrl.port}:${parsedUrl.port} \
       --restart always \
       ${config.imageName}`,
       {

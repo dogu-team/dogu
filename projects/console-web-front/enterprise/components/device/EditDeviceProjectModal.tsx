@@ -207,14 +207,14 @@ const EditDeviceProjectModal = ({ device, isOpen, close, isGlobal: isGlobalProp 
         <UpgradeBrowserPlanModal
           isOpen={isBannerOpen}
           close={closeBanner}
-          title={t('license:addHostDeviceModalTitle')}
+          title={t('billing:addHostDeviceModalTitle')}
           description={null}
         />
       ) : (
         <UpgradeDevicePlanBannerModal
           isOpen={isBannerOpen}
           close={closeBanner}
-          title={t('license:addDeviceModalTitle')}
+          title={t('billing:addDeviceModalTitle')}
           description={null}
         />
       )}

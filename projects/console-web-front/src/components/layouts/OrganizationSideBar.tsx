@@ -4,6 +4,7 @@ import useTranslation from 'next-translate/useTranslation';
 import {
   BookOutlined,
   ClusterOutlined,
+  CreditCardOutlined,
   ProjectOutlined,
   SettingOutlined,
   TeamOutlined,
@@ -173,7 +174,7 @@ const OrganizationSideBar = () => {
         },
     {
       type: 'group',
-      label: collapsed ? null : 'General',
+      label: collapsed ? null : 'Members',
       children: [
         {
           key: 'member',
@@ -221,6 +222,12 @@ const OrganizationSideBar = () => {
           ),
           style: { borderRadius: '6px' },
         },
+      ],
+    },
+    {
+      type: 'group',
+      label: collapsed ? null : 'General',
+      children: [
         {
           key: 'settings',
           icon: collapsed ? (

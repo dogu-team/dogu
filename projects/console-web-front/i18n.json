@@ -2,7 +2,7 @@
   "locales": ["en", "ko"],
   "defaultLocale": "en",
   "pages": {
-    "*": ["common", "license"],
+    "*": ["common", "billing"],
     "/account": ["account"],
     "/account/reset-password": ["account"],
     "/signup": ["registery", "social-signin"],

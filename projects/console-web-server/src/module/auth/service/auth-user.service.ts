@@ -35,14 +35,14 @@ export class AuthUserService {
   async validateUser(req: Request, res: Response): Promise<UserPayload> {
     const userAuthToken = this.getUserAuthTokenByRequest(req);
     if (!userAuthToken) {
-      throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
+      throw new HttpException('Unauthorized: getUserAuthTokenByRequest', HttpStatus.UNAUTHORIZED);
     }
     const { accessToken, refreshToken } = userAuthToken;
 
     const payload = await this.verifyUserAuthToken(res, accessToken, refreshToken);
     if (!payload) {
       clearSignCookiesInResponse(res);
-      throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
+      throw new HttpException('Unauthorized: verifyUserAuthToken', HttpStatus.UNAUTHORIZED);
     }
     return payload;
   }

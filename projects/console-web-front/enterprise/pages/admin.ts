@@ -1,11 +1,11 @@
-import { SelfHostedLicenseBase, UserBase } from '@dogu-private/console';
+import { SelfHostedLicenseResponse, UserBase } from '@dogu-private/console';
 import { GetServerSideProps } from 'next';
 
 import { getUserInServerSide } from '../../src/api/registery';
 import { getSelfHostedLicenseInServerSide } from '../api/license';
 
 export interface AdminProps {
-  license: SelfHostedLicenseBase;
+  license: SelfHostedLicenseResponse;
   user: UserBase;
 }
 

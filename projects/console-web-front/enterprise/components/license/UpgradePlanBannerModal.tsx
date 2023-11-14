@@ -1,11 +1,11 @@
 import { CheckOutlined } from '@ant-design/icons';
-import { SelfHostedLicenseBase } from '@dogu-private/console';
+import { SelfHostedLicenseResponse } from '@dogu-private/console';
 import { Button, Divider, Modal, Tag } from 'antd';
 import useTranslation from 'next-translate/useTranslation';
 import Link from 'next/link';
 import styled from 'styled-components';
 
-import useOrganizationContext from '../../../src/hooks/context/useOrganizationContext';
+import useLicenseStore from '../../../src/stores/license';
 import { flexRowBaseStyle } from '../../../src/styles/box';
 import { checkCommunityEdition, checkExpired } from '../../utils/license';
 
@@ -26,7 +26,7 @@ const PricingItem: React.FC<PricingItemProps> = ({
   isCurrentPlan,
   button,
 }) => {
-  const { t } = useTranslation('license');
+  const { t } = useTranslation('billing');
 
   return (
     <PricingItemBox>
@@ -61,9 +61,9 @@ interface Props {
 }
 
 export const UpgradeDevicePlanBannerModal: React.FC<Props> = ({ isOpen, close, title, description }) => {
-  const { license } = useOrganizationContext();
-  const { t } = useTranslation('license');
-  const licenseInfo = license as SelfHostedLicenseBase | null;
+  const license = useLicenseStore((state) => state.license);
+  const { t } = useTranslation('billing');
+  const licenseInfo = license as SelfHostedLicenseResponse | null;
 
   return (
     <Modal destroyOnClose open={isOpen} onCancel={close} closable title={title} footer={null} centered>
@@ -135,9 +135,9 @@ export const UpgradeDevicePlanBannerModal: React.FC<Props> = ({ isOpen, close, t
 };
 
 export const UpgradeBrowserPlanModal: React.FC<Props> = ({ isOpen, close, title, description }) => {
-  const { license } = useOrganizationContext();
-  const { t } = useTranslation('license');
-  const licenseInfo = license as SelfHostedLicenseBase | null;
+  const license = useLicenseStore((state) => state.license);
+  const { t } = useTranslation('billing');
+  const licenseInfo = license as SelfHostedLicenseResponse | null;
 
   return (
     <Modal destroyOnClose open={isOpen} onCancel={close} closable title={title} footer={null} centered>
@@ -209,9 +209,9 @@ export const UpgradeBrowserPlanModal: React.FC<Props> = ({ isOpen, close, title,
 };
 
 export const UpgradeConveniencePlanModal: React.FC<Props> = ({ isOpen, close, title, description }) => {
-  const { license } = useOrganizationContext();
-  const { t } = useTranslation('license');
-  const licenseInfo = license as SelfHostedLicenseBase | undefined;
+  const license = useLicenseStore((state) => state.license);
+  const { t } = useTranslation('billing');
+  const licenseInfo = license as SelfHostedLicenseResponse | undefined;
 
   return (
     <Modal destroyOnClose open={isOpen} onCancel={close} closable title={title} footer={null} centered>

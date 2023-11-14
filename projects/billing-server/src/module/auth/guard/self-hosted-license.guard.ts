@@ -28,7 +28,7 @@ export class SelfHostedLicenseGuard implements CanActivate {
       throw new BadRequestException(`invalid token`);
     }
 
-    const license = await this.selfHostedLicenseService.findLicense({ organizationId: username, licenseKey: password });
+    const license = await this.selfHostedLicenseService.findSelfHostedLicense({ organizationId: username, licenseKey: password });
     const selfHostedLicenseUser: SelfHostedLicenseUser = {
       type: 'self-hosted-license',
       organizationId: license.organizationId,

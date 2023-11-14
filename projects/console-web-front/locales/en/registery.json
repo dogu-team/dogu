@@ -23,7 +23,7 @@
   "forgotPasswordSignInLinkText": "Sign in",
   "forgotPasswordSignUpLinkText": "Create an account",
 
-  "signUpServiceAgreement": "By signing up, you agree to our <0>Privacy Policy</0>",
+  "signUpServiceAgreement": "By signing up, you agree to our <term>Terms of Use</term> and <privacy>Privacy Policy</privacy>",
   "signUpAlreadyAccountExist": "Have an account? <0>Sign in</0>",
   "signUpFormOrganizationNameLabel": "Organization name",
   "signUpFormNameLabel": "Username",

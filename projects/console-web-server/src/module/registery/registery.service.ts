@@ -18,7 +18,7 @@ import { Organization, OrganizationAndUserAndOrganizationRole, Token, User, User
 import { UserAndVerificationToken } from '../../db/entity/relations/user-and-verification-token.entity';
 import { UserSns } from '../../db/entity/user-sns.entity';
 import { CloudLicenseService } from '../../enterprise/module/license/cloud-license.service';
-import { FEATURE_CONFIG } from '../../feature.config';
+import { FeatureConfig } from '../../feature.config';
 import { EmailService } from '../../module/email/email.service';
 import { SendVerifyEmailDto, VerifyEmailDto } from '../../module/registery/dto/registery.dto';
 import { TokenService } from '../../module/token/token.service';
@@ -90,7 +90,7 @@ export class RegisteryService {
 
       let organization: OrganizationBase;
       // create organization or join organization if self-hosted
-      if (FEATURE_CONFIG.get('licenseModule') === 'self-hosted' && !user.isRoot) {
+      if (FeatureConfig.get('licenseModule') === 'self-hosted' && !user.isRoot) {
         const result = await entityManager.getRepository(Organization).createQueryBuilder('organization').orderBy('organization.createdAt', 'DESC').getMany();
 
         if (result.length === 0) {
@@ -109,7 +109,7 @@ export class RegisteryService {
         organization = await this.organizationService.createOrganization(entityManager, user.userId, { name: `${user.name}'s organization` });
       }
 
-      if (FEATURE_CONFIG.get('licenseModule') === 'cloud') {
+      if (FeatureConfig.get('licenseModule') === 'cloud') {
         await this.cloudLicenseService.createLicense({ organizationId: organization.organizationId });
       }
 

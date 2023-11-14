@@ -7,14 +7,14 @@ import { AuthLicenseService } from '../../enterprise/module/auth/service/auth-li
 import { V1AuthOpenApiService } from '../../enterprise/module/auth/service/open-api/v1/auth-open-api.service';
 import { LicenseModule } from '../../enterprise/module/license/license.module';
 import { env } from '../../env';
-import { FEATURE_CONFIG } from '../../feature.config';
+import { FeatureConfig } from '../../feature.config';
 import { AuthHostService } from './service/auth-host.service';
 import { AuthJwtService } from './service/auth-jwt.service';
 import { AuthRemoteService } from './service/auth-remote.service';
 import { AuthUserService } from './service/auth-user.service';
 import { GoogleStrategy } from './strategy/google-strategy';
 
-const PROVIDERS = FEATURE_CONFIG.get('thirdPartyLogin')
+const PROVIDERS = FeatureConfig.get('thirdPartyLogin')
   ? [AuthUserService, AuthJwtService, AuthHostService, AuthRemoteService, V1AuthOpenApiService, AuthLicenseService, GoogleStrategy] //
   : [AuthUserService, AuthJwtService, AuthHostService, AuthRemoteService, V1AuthOpenApiService, AuthLicenseService];
 

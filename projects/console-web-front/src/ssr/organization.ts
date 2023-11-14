@@ -1,16 +1,15 @@
-import { CloudLicenseBase, OrganizationBase, SelfHostedLicenseBase, UserBase } from '@dogu-private/console';
+import { CloudLicenseResponse, OrganizationBase, SelfHostedLicenseResponse, UserBase } from '@dogu-private/console';
 import { AxiosError } from 'axios';
 import { GetServerSideProps } from 'next';
 
 import { getOrganizationInServerSide } from 'src/api/organization';
-import { getCloudLicenseInServerSide, getSelfHostedLicenseInServerSide } from '../../enterprise/api/license';
-import { IS_CLOUD } from '../../pages/_app';
+import { getLicenseInServerSide } from '../../enterprise/api/license';
 import { redirectWithLocale } from '../ssr/locale';
 import { checkUserVerifiedInServerSide } from '../utils/auth';
 
 export interface OrganizationServerSideProps {
   organization: OrganizationBase;
-  license: CloudLicenseBase | SelfHostedLicenseBase;
+  license: CloudLicenseResponse | SelfHostedLicenseResponse;
   user: UserBase;
 }
 
@@ -30,7 +29,7 @@ export const getOrganizationPageServerSideProps: GetServerSideProps<Organization
 
     const [organization, license] = await Promise.all([
       getOrganizationInServerSide(context),
-      IS_CLOUD ? getCloudLicenseInServerSide(context) : getSelfHostedLicenseInServerSide(context),
+      getLicenseInServerSide(context),
     ]);
 
     return {

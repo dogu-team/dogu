@@ -1,5 +1,6 @@
 import { errorify } from '@dogu-tech/common';
 import _ from 'lodash';
+import { Client } from 'pg';
 import { DataSource, EntityManager } from 'typeorm';
 import { DoguLogger } from '../module/logger/logger';
 
@@ -25,19 +26,81 @@ function defaultSerializableTransactionOptions(): Required<SerializableTransacti
   };
 }
 
+export type OnAfterRollback = (error: Error) => Promise<void>;
+
+export interface RetrySerializeHandler {
+  onAfterRollback?: OnAfterRollback;
+}
+
+export interface RetrySerializeContext {
+  logger: DoguLogger;
+  manager: EntityManager;
+  registerOnAfterRollback: (onAfterRollback: OnAfterRollback) => void;
+  setTriggerRollbackBeforeReturn: () => void;
+}
+
+export type RetrySerializeFunction<T> = (context: RetrySerializeContext) => Promise<T>;
+
+class RollbackWithReturnError<T> extends Error {
+  constructor(readonly returnValue: T) {
+    super('RollbackWithReturnError');
+  }
+}
+
 export async function retrySerialize<T>(
-  logger: DoguLogger,
+  logger: DoguLogger, //
   dataSource: DataSource,
-  fn: (manager: EntityManager) => Promise<T>,
+  fn: RetrySerializeFunction<T>,
   options?: SerializableTransactionOptions,
 ): Promise<T> {
   const { retryCount, retryInterval } = { ...defaultSerializableTransactionOptions(), ...options };
-  for (let i = 0; i < retryCount; i++) {
-    try {
-      return dataSource.transaction('SERIALIZABLE', fn);
-    } catch (error) {
-      if (i < retryCount - 1) {
-        const code = _.get(error, 'code') as string | undefined;
+  const queryRunner = dataSource.createQueryRunner();
+  await queryRunner.connect();
+
+  try {
+    for (let tryCount = 1; tryCount <= retryCount; tryCount++) {
+      const onAfterRollbacks = new Set<OnAfterRollback>();
+      try {
+        await queryRunner.startTransaction('SERIALIZABLE');
+
+        let triggerRollbackBeforeReturn: boolean = false;
+        const result = await fn({
+          logger,
+          manager: queryRunner.manager,
+          registerOnAfterRollback: (onAfterRollback) => {
+            onAfterRollbacks.add(onAfterRollback);
+          },
+          setTriggerRollbackBeforeReturn: () => {
+            triggerRollbackBeforeReturn = true;
+          },
+        });
+
+        if (triggerRollbackBeforeReturn) {
+          throw new RollbackWithReturnError(result);
+        }
+
+        await queryRunner.commitTransaction();
+        return result;
+      } catch (e) {
+        const error = errorify(e);
+        logger.warn('retrySerialize.catch transaction failed', { tryCount, error });
+        await queryRunner.rollbackTransaction();
+
+        for (const onAfterRollback of onAfterRollbacks) {
+          try {
+            await onAfterRollback(error);
+          } catch (e) {
+            logger.error('retrySerialize.catch onAfterRollback failed', { error: errorify(e) });
+          }
+        }
+
+        if (error instanceof RollbackWithReturnError<T>) {
+          return error.returnValue as T;
+        }
+
+        if (tryCount === retryCount) {
+          throw error;
+        }
 
         /**
          * @see https://www.postgresql.org/docs/13/errcodes-appendix.html
@@ -45,15 +108,24 @@ export async function retrySerialize<T>(
          *  40001 serialization_failure
          *  40P01 deadlock_detected
          */
+        const code = _.get(error, 'code') as string | undefined;
         if (code === '40001' || code === '40P01') {
-          logger.warn(`transaction serialization failure. retry after ${retryInterval}ms try(${i + 1}/${retryCount})`, { error: errorify(error) });
+          logger.warn(`retrySerialize.catch serialization failure. retry after`, { tryCount, retryCount, retryInterval, error });
           await new Promise((resolve) => setTimeout(resolve, retryInterval));
+          continue;
         }
-      } else {
+
         throw error;
       }
     }
+  } finally {
+    await queryRunner.release();
   }
 
   throw new Error('Must not reach here');
+}
+
+export async function getClient(dataSource: DataSource): Promise<Client> {
+  const [client, _] = (await dataSource.driver.obtainMasterConnection()) as [Client, unknown];
+  return client;
 }

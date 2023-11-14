@@ -1,21 +1,28 @@
 import { OrganizationId } from '@dogu-private/types';
-import { camelToSnakeCasePropertiesOf, propertiesOf } from '@dogu-tech/common';
+import { propertiesOf } from '@dogu-tech/common';
 import { IsBoolean, IsNumber, IsUUID } from 'class-validator';
-import { CloudSubscriptionItemBase } from './cloud-subscription-item';
+import { BillingCategory } from '..';
+import { BillingOrganizationBase, BillingOrganizationResponse } from './billing-organization';
 
 export interface CloudLicenseBase {
   cloudLicenseId: string;
+  billingOrganizationId: string;
   organizationId: OrganizationId;
   liveTestingRemainingFreeSeconds: number;
   liveTestingParallelCount: number;
+  category: BillingCategory;
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date | null;
-  cloudSubscriptionItems?: CloudSubscriptionItemBase[];
+  billingOrganization?: BillingOrganizationBase;
 }
 
-export const CloudLicenseBasePropCamel = propertiesOf<CloudLicenseBase>();
-export const CloudLicensePropSnake = camelToSnakeCasePropertiesOf<CloudLicenseBase>();
+export const CloudLicenseProp = propertiesOf<CloudLicenseBase>();
+
+export class FindCloudLicenseDto {
+  @IsUUID()
+  organizationId!: string;
+}
 
 export namespace CloudLicenseMessage {
   export class LiveTestingSend {
@@ -36,4 +43,8 @@ export namespace CloudLicenseMessage {
     @IsNumber()
     remainingFreeSeconds!: number;
   }
+}
+
+export interface CloudLicenseResponse extends CloudLicenseBase {
+  billingOrganization: BillingOrganizationResponse;
 }

@@ -23,7 +23,7 @@
   "forgotPasswordSignInLinkText": "로그인",
   "forgotPasswordSignUpLinkText": "회원가입",
 
-  "signUpServiceAgreement": "가입하기 버튼을 클릭하면 Dogu의 <0>개인정보처리방침</0>에 동의하게 됩니다.",
+  "signUpServiceAgreement": "가입하기 버튼을 클릭하면 <dogu></dogu>의 <term>이용약관</term>, <privacy>개인정보처리방침</privacy>에 동의하게 됩니다.",
   "signUpAlreadyAccountExist": "계정이 이미 있나요? <0>로그인</0>",
   "signUpFormOrganizationNameLabel": "조직 이름",
   "signUpFormNameLabel": "사용자 이름",

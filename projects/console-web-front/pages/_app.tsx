@@ -44,6 +44,7 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout) {
       router.events.on('routeChangeComplete', finishProgress);
       router.events.on('routeChangeError', finishProgress);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {

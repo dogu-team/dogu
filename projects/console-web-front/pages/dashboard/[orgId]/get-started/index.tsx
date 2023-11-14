@@ -1,27 +1,26 @@
 import { ClusterOutlined } from '@ant-design/icons';
-import { OrganizationBase, ProjectBase, UserBase } from '@dogu-private/console';
+import { ProjectBase } from '@dogu-private/console';
+import { isAxiosError } from 'axios';
 import { GetServerSideProps } from 'next';
 import Trans from 'next-translate/Trans';
 import useTranslation from 'next-translate/useTranslation';
 import Head from 'next/head';
 import { useCallback, useState } from 'react';
 import styled from 'styled-components';
-
+import { getLicenseInServerSide } from '../../../../enterprise/api/license';
 import { getOrganizationInServerSide } from '../../../../src/api/organization';
+
 import ConsoleBasicLayout from '../../../../src/components/layouts/ConsoleBasicLayout';
 import DeviceFarmTutorial from '../../../../src/components/tutorial/DeviceFarmTutorial';
 import SkipTutorialButton from '../../../../src/components/tutorial/SkipTutorialButton';
 import { TutorialContext } from '../../../../src/hooks/context/useTutorialContext';
+import { redirectWithLocale } from '../../../../src/ssr/locale';
+import { OrganizationServerSideProps } from '../../../../src/ssr/organization';
 import { flexRowBaseStyle } from '../../../../src/styles/box';
 import { checkUserVerifiedInServerSide } from '../../../../src/utils/auth';
-import { IS_CLOUD, NextPageWithLayout } from '../../../_app';
+import { NextPageWithLayout } from '../../../_app';
 
-interface ServerSideProps {
-  organization: OrganizationBase;
-  me: UserBase;
-}
-
-const OrganizationTutorialPage: NextPageWithLayout<ServerSideProps> = ({ organization, me }) => {
+const OrganizationTutorialPage: NextPageWithLayout<OrganizationServerSideProps> = ({ organization, user }) => {
   const [project, setProject] = useState<ProjectBase>();
   const { t } = useTranslation('tutorial');
 
@@ -34,7 +33,7 @@ const OrganizationTutorialPage: NextPageWithLayout<ServerSideProps> = ({ organiz
       value={{
         organization,
         project: project ?? null,
-        me,
+        me: user,
         updateProject,
       }}
     >
@@ -70,22 +69,39 @@ OrganizationTutorialPage.getLayout = (page) => {
   return <ConsoleBasicLayout {...page.props}>{page}</ConsoleBasicLayout>;
 };
 
-export const getServerSideProps: GetServerSideProps<ServerSideProps> = async (context) => {
-  const [organization, checkResult] = await Promise.all([
-    getOrganizationInServerSide(context),
-    checkUserVerifiedInServerSide(context),
-  ]);
+export const getServerSideProps: GetServerSideProps<OrganizationServerSideProps> = async (context) => {
+  try {
+    const checkResult = await checkUserVerifiedInServerSide(context);
 
-  if (checkResult.redirect) {
-    return checkResult;
+    if (checkResult.redirect) {
+      return checkResult;
+    }
+
+    const [organization, license] = await Promise.all([
+      getOrganizationInServerSide(context),
+      getLicenseInServerSide(context),
+    ]);
+
+    return {
+      props: {
+        organization,
+        license,
+        user: checkResult.props.fallback['/registery/check'],
+      },
+    };
+  } catch (e) {
+    if (isAxiosError(e)) {
+      if (e.response?.status === 404 || e.response?.status === 401) {
+        return {
+          notFound: true,
+        };
+      }
+    }
+
+    return {
+      redirect: redirectWithLocale(context, '/signin', false),
+    };
   }
-
-  return {
-    props: {
-      organization,
-      me: checkResult.props.fallback['/registery/check'],
-    },
-  };
 };
 
 export default OrganizationTutorialPage;

@@ -1,8 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unnecessary-type-assertion */
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Platform, Serial } from '@dogu-private/types';
 import { callAsyncWithTimeout, delay, errorify, NullLogger, Retry, stringify } from '@dogu-tech/common';
 import { Android, AppiumContextInfo, ContextPageSource, Rect, ScreenSize, SystemBar } from '@dogu-tech/device-client-common';
@@ -64,7 +59,7 @@ function transformId(context: unknown): string {
   }
 }
 
-function callClientAsyncWithTimeout<T>(callClientAsync: Promise<T>): Promise<T> {
+async function callClientAsyncWithTimeout<T>(callClientAsync: Promise<T>): Promise<T> {
   return callAsyncWithTimeout(callClientAsync, { timeout: AppiumClientCallAsyncTimeout });
 }
 

@@ -30,7 +30,7 @@ const projectNameToSheet: {
   },
   'billing-server': {
     path: 'projects/billing-server',
-    sheets: [{ name: '.env.local', id: CONSOLE_WEB_SERVER_SPREADSHEET_ID }],
+    sheets: [{ name: '.env.local', id: BILLING_SERVER_SPREADSHEET_ID }],
   },
   'host-agent': {
     path: 'projects/host-agent',

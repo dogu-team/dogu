@@ -6,6 +6,7 @@ import { Brackets, DataSource, IsNull, Like, MoreThan } from 'typeorm';
 import { v4 } from 'uuid';
 import { BillingToken } from '../../db/entity/billing-token.entity';
 import { env } from '../../env';
+import { DateTimeSimulatorService } from '../date-time-simulator/date-time-simulator.service';
 import { DoguLogger } from '../logger/logger';
 
 const billingTokenPrefix = 'billing-token-';
@@ -14,14 +15,16 @@ const billingTokenDevelopment = 'billing-token-development';
 @Injectable()
 export class BillingTokenService implements OnModuleInit {
   constructor(
+    private readonly logger: DoguLogger,
     @InjectDataSource()
     private readonly dataSource: DataSource,
-    private readonly logger: DoguLogger,
+    private readonly dateTimeSimulatorService: DateTimeSimulatorService,
   ) {}
 
   async onModuleInit(): Promise<void> {
+    const now = this.dateTimeSimulatorService.now();
     await this.createBillingTokenForDevelopment();
-    await this.createBillingTokenIfNotExists();
+    await this.createBillingTokenIfNotExists(now);
   }
 
   private async createBillingTokenForDevelopment(): Promise<void> {
@@ -45,12 +48,12 @@ export class BillingTokenService implements OnModuleInit {
     }
   }
 
-  private async createBillingTokenIfNotExists(): Promise<void> {
+  private async createBillingTokenIfNotExists(now: Date): Promise<void> {
     const token = await this.dataSource
       .getRepository(BillingToken)
       .createQueryBuilder(BillingToken.name)
       .where({ token: Like(`${billingTokenPrefix}%`) })
-      .andWhere(new Brackets((qb) => qb.where({ expiredAt: MoreThan(new Date()) }).orWhere({ expiredAt: IsNull() })))
+      .andWhere(new Brackets((qb) => qb.where({ expiredAt: MoreThan(now) }).orWhere({ expiredAt: IsNull() })))
       .getOne();
     if (!token) {
       const newBillingToken = await this.createBillingToken();
@@ -58,12 +61,12 @@ export class BillingTokenService implements OnModuleInit {
     }
   }
 
-  async findValidBillingToken(token: string): Promise<BillingToken | null> {
+  async findValidBillingToken(token: string, now: Date): Promise<BillingToken | null> {
     const billingToken = await this.dataSource
       .getRepository(BillingToken)
       .createQueryBuilder(BillingToken.name)
       .where({ token })
-      .andWhere(new Brackets((qb) => qb.where({ expiredAt: MoreThan(new Date()) }).orWhere({ expiredAt: IsNull() })))
+      .andWhere(new Brackets((qb) => qb.where({ expiredAt: MoreThan(now) }).orWhere({ expiredAt: IsNull() })))
       .getOne();
     return billingToken;
   }
@@ -78,14 +81,14 @@ export class BillingTokenService implements OnModuleInit {
     return saved;
   }
 
-  async validateBillingApiTokenFromRequest(request: IncomingMessage): Promise<void> {
+  async validateBillingApiTokenFromRequest(request: IncomingMessage, now: Date): Promise<void> {
     const parsedUrl = new URL(request.url ?? '', 'http://localhost');
-    const token = parsedUrl.searchParams.get('auth');
+    const token = parsedUrl.searchParams.get('token');
     if (!token) {
       throw new Error(`token is required`);
     }
 
-    const billingToken = await this.findValidBillingToken(token);
+    const billingToken = await this.findValidBillingToken(token, now);
     if (!billingToken) {
       throw new Error(`token is invalid`);
     }
@@ -95,18 +98,8 @@ export class BillingTokenService implements OnModuleInit {
     return v4();
   }
 
-  static createExpiredAt(duration: DurationLike): Date {
-    return DateTime.now().plus(duration).toJSDate();
-  }
-
-  static isExpired(expiredAt: Date | null | string): boolean {
-    if (!expiredAt) return false;
-
-    if (typeof expiredAt === 'string') expiredAt = new Date(expiredAt);
-    if (expiredAt && expiredAt.getTime() < new Date().getTime()) {
-      return true;
-    }
-    return false;
+  static createExpiredAt(duration: DurationLike, now: Date): Date {
+    return DateTime.fromJSDate(now).plus(duration).toJSDate();
   }
 
   static createBillingToken(): string {

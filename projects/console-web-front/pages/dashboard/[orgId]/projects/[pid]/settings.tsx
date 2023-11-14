@@ -86,6 +86,7 @@ const ProjectSettingPage: NextPageWithLayout<ProjectServerSideProps> = ({ projec
         sendErrorNotification(t('project:projectDeleteFailedMsg', { reason: getErrorMessageFromAxios(e) }));
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [organization.organizationId, serverProject.projectId, router]);
 
   const getToken = useCallback(async () => {

@@ -85,7 +85,16 @@ export function getInvitationEmailTemplate(
                     <td align="center">
                       <p style="font-size: 12px; margin: 0 0 0 0;">© 2023 Dogu Technologies Inc. All rights reserved</p>
                       <div style="font-size: 12px; color: #888888; margin: 8px 0 0 0;">
-                        <a style="font-size: 12px; color: #888888; text-decoration: none;" href="https://dogutech.io/notices/privacy">Privacy Policy</a>
+                        <a
+                          style="font-size: 12px; color: #888888; text-decoration: none"
+                          href="https://dogutech.io/notices/terms"
+                          >Terms of Use</a
+                        > | 
+                        <a
+                          style="font-size: 12px; color: #888888; text-decoration: none"
+                          href="https://dogutech.io/notices/privacy"
+                          >Privacy Policy</a
+                        >
                       </div>
                     </td>
                   </tr>

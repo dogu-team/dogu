@@ -2,6 +2,7 @@ import { UserBase } from '@dogu-private/console';
 import { DeviceId, OrganizationId, WS_PING_MESSAGE } from '@dogu-private/types';
 import { Avatar, Tooltip } from 'antd';
 import { useState, useEffect } from 'react';
+import useDeviceStreamingContext from '../../hooks/streaming/useDeviceStreamingContext';
 
 import useWebSocket from '../../hooks/useWebSocket';
 import useEventStore from '../../stores/events';
@@ -15,6 +16,7 @@ interface Props {
 }
 
 const ParticipantGroup: React.FC<Props> = ({ organizationId, deviceId, userId }) => {
+  const { peerConnection } = useDeviceStreamingContext();
   const socketRef = useWebSocket(`/ws/device-streaming-session?organizationId=${organizationId}&deviceId=${deviceId}`);
   const [users, setUsers] = useState<UserBase[]>([]);
 

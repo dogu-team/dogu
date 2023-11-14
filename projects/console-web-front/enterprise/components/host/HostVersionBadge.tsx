@@ -1,5 +1,5 @@
 import { CheckCircleOutlined, CloseCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
-import { HostBase, SelfHostedLicenseBase } from '@dogu-private/console';
+import { HostBase, SelfHostedLicenseResponse } from '@dogu-private/console';
 import { HostConnectionState } from '@dogu-private/types';
 import { Button, Tag, Tooltip } from 'antd';
 import { useContext } from 'react';
@@ -17,11 +17,11 @@ import useRequest from '../../../src/hooks/useRequest';
 import { updateHostApp } from '../../api/host';
 import { sendErrorNotification, sendSuccessNotification } from '../../../src/utils/antd';
 import { getErrorMessageFromAxios } from '../../../src/utils/error';
-import useOrganizationContext from '../../../src/hooks/context/useOrganizationContext';
 import { isPaymentRequired, isTimeout } from '../../utils/error';
 import { UpgradeConveniencePlanModal } from '../license/UpgradePlanBannerModal';
 import TimeoutDocsModal from '../license/TimeoutDocsModal';
 import { checkCommunityEdition } from '../../utils/license';
+import useLicenseStore from '../../../src/stores/license';
 
 interface Props {
   host: HostBase;
@@ -29,7 +29,7 @@ interface Props {
 
 const HostVesrsionBadge = ({ host }: Props) => {
   const latestContext = useContext(DoguAgentLatestContext);
-  const { license } = useOrganizationContext();
+  const license = useLicenseStore((state) => state.license);
   const [isOpen, openModal, closeModal] = useModal();
   const [isBannerOpen, openBanner, closeBanner] = useModal();
   const [isDocsOtpen, openDocs, closeDocs] = useModal();
@@ -72,7 +72,7 @@ const HostVesrsionBadge = ({ host }: Props) => {
     (updatableInfo.reason || updatableInfo.isUpdatable);
   const isCommunityEdition =
     process.env.NEXT_PUBLIC_ENV === 'self-hosted' &&
-    (!license || checkCommunityEdition(license as SelfHostedLicenseBase));
+    (!license || checkCommunityEdition(license as SelfHostedLicenseResponse));
 
   return (
     <>
@@ -138,7 +138,7 @@ const HostVesrsionBadge = ({ host }: Props) => {
       <UpgradeConveniencePlanModal
         isOpen={isBannerOpen}
         close={closeBanner}
-        title={t('license:agentUpdateModalTitle')}
+        title={t('billing:agentUpdateModalTitle')}
         description={null}
       />
       <TimeoutDocsModal isOpen={isDocsOtpen} close={closeDocs} />

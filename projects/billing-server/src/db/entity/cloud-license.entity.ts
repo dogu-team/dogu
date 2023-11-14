@@ -1,32 +1,41 @@
-import { CloudLicenseBase, CloudLicensePropSnake } from '@dogu-private/console';
+import { BillingCategory, CloudLicenseBase, CloudLicenseProp } from '@dogu-private/console';
 import { OrganizationId } from '@dogu-private/types';
-import { Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
-import { CloudSubscriptionItem } from './cloud-subscription-item.entity';
-import { ColumnTemplate } from './util/decorators';
+import { Column, Entity, JoinColumn, OneToOne, PrimaryColumn } from 'typeorm';
+import { CreatedAt, DeletedAt, UpdatedAt } from '../decorators';
+import { BillingOrganization } from './billing-organization.entity';
 
-@Entity('cloud_license')
+export const DefaultLiveTestingParallelCount = 1;
+
+@Entity()
 export class CloudLicense implements CloudLicenseBase {
-  @PrimaryColumn('uuid', { name: CloudLicensePropSnake.cloud_license_id })
+  @PrimaryColumn('uuid')
   cloudLicenseId!: string;
 
-  @Column({ type: 'character varying', name: CloudLicensePropSnake.organization_id, unique: true })
+  @Column({ type: 'uuid', unique: true })
+  billingOrganizationId!: string;
+
+  @Column({ type: 'uuid', unique: true })
   organizationId!: OrganizationId;
 
-  @Column({ type: 'integer', name: CloudLicensePropSnake.live_testing_remaining_free_seconds, default: 180 * 60 })
+  @Column({ type: 'enum', enum: BillingCategory })
+  category!: BillingCategory;
+
+  @Column({ type: 'integer', default: 180 * 60 })
   liveTestingRemainingFreeSeconds!: number;
 
-  @Column({ type: 'integer', name: CloudLicensePropSnake.live_testing_parallel_count, default: 1 })
+  @Column({ type: 'integer', default: DefaultLiveTestingParallelCount })
   liveTestingParallelCount!: number;
 
-  @ColumnTemplate.CreateDate(CloudLicensePropSnake.created_at)
+  @CreatedAt()
   createdAt!: Date;
 
-  @ColumnTemplate.UpdateDate(CloudLicensePropSnake.updated_at)
+  @UpdatedAt()
   updatedAt!: Date;
 
-  @ColumnTemplate.DeleteDate(CloudLicensePropSnake.deleted_at)
+  @DeletedAt()
   deletedAt!: Date | null;
 
-  @OneToMany(() => CloudSubscriptionItem, (cloudSubscriptionItem) => cloudSubscriptionItem.cloudLicense, { cascade: ['soft-remove'] })
-  cloudSubscriptionItems?: CloudSubscriptionItem[];
+  @OneToOne(() => BillingOrganization)
+  @JoinColumn({ name: CloudLicenseProp.billingOrganizationId })
+  billingOrganization?: BillingOrganization;
 }

@@ -20,6 +20,7 @@ import { getErrorMessageFromAxios } from '../../src/utils/error';
 import SocialSignInForm from '../../src/components/social-signin/SocialSignInForm';
 import { redirectWithLocale } from '../../src/ssr/locale';
 import { hasRootUser } from '../../src/api/feature';
+import usePromotionStore from '../../src/stores/promotion';
 
 interface Props {
   shouldSetupRoot: boolean;
@@ -28,6 +29,7 @@ interface Props {
 const SignUpPage: NextPageWithLayout<Props> = ({ shouldSetupRoot }) => {
   const { t } = useTranslation();
   const router = useRouter();
+  const resetPromotion = usePromotionStore((state) => state.resetWithOrganizationId);
 
   const handleSignUp = useCallback(async (email: string, name: string, password: string, newsletter: boolean) => {
     try {
@@ -37,6 +39,7 @@ const SignUpPage: NextPageWithLayout<Props> = ({ shouldSetupRoot }) => {
         password,
         newsletter: newsletter ?? false,
       });
+      resetPromotion(organizationId);
       const cookies = new Cookies();
       cookies.set('newOrgId', organizationId, { path: '/' });
       router.push('/auth/entry');

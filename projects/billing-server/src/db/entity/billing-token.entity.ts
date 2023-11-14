@@ -1,21 +1,24 @@
-import { BillingTokenBase, BillingTokenPropSnake } from '@dogu-private/console';
-import { Entity, PrimaryColumn } from 'typeorm';
-import { ColumnTemplate } from './util/decorators';
+import { BillingTokenBase } from '@dogu-private/console';
+import { Column, Entity, PrimaryColumn } from 'typeorm';
+import { CreatedAt, DateColumn, DeletedAt, UpdatedAt } from '../decorators';
 
-@Entity('billing_token')
+@Entity()
 export class BillingToken implements BillingTokenBase {
-  @PrimaryColumn('uuid', { name: BillingTokenPropSnake.billing_token_id })
+  @PrimaryColumn('uuid')
   billingTokenId!: string;
 
-  @PrimaryColumn({ type: 'character varying', name: BillingTokenPropSnake.token })
+  @Column({ type: 'character varying', unique: true })
   token!: string;
 
-  @ColumnTemplate.CreateDate(BillingTokenPropSnake.created_at)
-  createdAt!: Date;
-
-  @ColumnTemplate.Date(BillingTokenPropSnake.expired_at, true)
+  @DateColumn({ nullable: true })
   expiredAt!: Date | null;
 
-  @ColumnTemplate.DeleteDate(BillingTokenPropSnake.deleted_at)
+  @CreatedAt()
+  createdAt!: Date;
+
+  @UpdatedAt()
+  updatedAt!: Date;
+
+  @DeletedAt()
   deletedAt!: Date | null;
 }

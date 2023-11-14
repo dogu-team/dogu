@@ -6,7 +6,7 @@ import yaml from 'js-yaml';
 import path from 'path';
 import { config } from '../../config';
 import { env } from '../../env';
-import { FEATURE_CONFIG } from '../../feature.config';
+import { FeatureConfig } from '../../feature.config';
 import { LatestYamlDownloadParseResult } from '../../types/download';
 import { Page } from '../common/dto/pagination/page';
 import { PageDto } from '../common/dto/pagination/page.dto';
@@ -135,11 +135,11 @@ export class DownloadService {
   // }
 
   async getDoguAgentPackageList(dto: PageDto): Promise<Page<DownloadablePackageResult>> {
-    return FEATURE_CONFIG.get('doguAgentAppLocation') === 's3' ? await this.getDoguAgentS3PackageList(dto) : await this.getDoguAgentGithubPackageList(dto);
+    return FeatureConfig.get('doguAgentAppLocation') === 's3' ? await this.getDoguAgentS3PackageList(dto) : await this.getDoguAgentGithubPackageList(dto);
   }
 
   async getDoguAgentLatest(): Promise<DownloadablePackageResult[]> {
-    return FEATURE_CONFIG.get('doguAgentAppLocation') === 's3' ? await this.getDoguAgentS3LatestWithBeta() : await this.getDoguAgentGithubLatest();
+    return FeatureConfig.get('doguAgentAppLocation') === 's3' ? await this.getDoguAgentS3LatestWithBeta() : await this.getDoguAgentGithubLatest();
   }
 
   private async getDoguAgentGithubPackageList(dto: PageDto): Promise<Page<DownloadablePackageResult>> {

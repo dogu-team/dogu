@@ -120,7 +120,7 @@ const HostDeviceRunnerSettingModal: React.FC<Props> = ({ device, isOpen, close }
       <UpgradeBrowserPlanModal
         isOpen={isBannerOpen}
         close={closeBanner}
-        title={t('license:addHostDeviceModalTitle')}
+        title={t('billing:addHostDeviceModalTitle')}
         description={null}
       />
       <TimeoutDocsModal isOpen={isDocsOtpen} close={closeDocs} />

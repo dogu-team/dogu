@@ -1,19 +1,20 @@
-import { CloudLicenseBase, CloudLicenseMessage, CreateCloudLicenseDto } from '@dogu-private/console';
+import { CloudLicenseBase, CloudLicenseMessage, CreateCloudLicenseDto, FindCloudLicenseDto } from '@dogu-private/console';
 import { OrganizationId } from '@dogu-private/types';
-import { closeWebSocketWithTruncateReason, setAxiosErrorFilterToIntercepter, transformAndValidate } from '@dogu-tech/common';
-import { WebSocketClientFactory } from '@dogu-tech/node';
+import { closeWebSocketWithTruncateReason, errorify, setAxiosErrorFilterToIntercepter, transformAndValidate } from '@dogu-tech/common';
+import { rawToString, WebSocketClientFactory } from '@dogu-tech/node';
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
 import { WebSocket } from 'ws';
 
 import { env } from '../../../env';
-import { FEATURE_CONFIG } from '../../../feature.config';
+import { FeatureConfig } from '../../../feature.config';
 import { DoguLogger } from '../../../module/logger/logger';
 import { getBillingServerWebSocketUrl, updateAuthHeaderByBillingApiToken } from './common/utils';
 
 export interface CloudLicenseLiveTestingFreeSecondsHandler {
-  onOpen: (close: () => void) => void;
-  onMessage: (message: CloudLicenseMessage.LiveTestingReceive) => void;
+  onOpen: (close: () => void) => Promise<void>;
+  onClose: () => Promise<void>;
+  onMessage: (message: CloudLicenseMessage.LiveTestingReceive) => Promise<void>;
 }
 
 @Injectable()
@@ -25,36 +26,33 @@ export class CloudLicenseService {
       baseURL: env.DOGU_BILLING_SERVER_URL,
     });
     setAxiosErrorFilterToIntercepter(this.api);
-    if (FEATURE_CONFIG.get('licenseModule') === 'cloud') {
+    if (FeatureConfig.get('licenseModule') === 'cloud') {
       updateAuthHeaderByBillingApiToken(this.api.defaults.headers);
     }
   }
 
   async createLicense(dto: CreateCloudLicenseDto): Promise<CloudLicenseBase> {
-    try {
-      const response = await this.api.post<CloudLicenseBase>('/cloud-licenses', dto);
-      return response.data;
-    } catch (e) {
-      throw e;
-    }
+    const response = await this.api.post<CloudLicenseBase>('/cloud-licenses', dto);
+    return response.data;
   }
 
   async getLicenseInfo(organizationId: OrganizationId): Promise<CloudLicenseBase> {
-    try {
-      const response = await this.api.get<CloudLicenseBase>(`/cloud-licenses/${organizationId}`);
-      return response.data;
-    } catch (e) {
-      throw e;
-    }
+    const query: FindCloudLicenseDto = {
+      organizationId,
+    };
+    const response = await this.api.get<CloudLicenseBase>(`/cloud-licenses`, {
+      params: query,
+    });
+    return response.data;
   }
 
-  async startUpdateLiveTesting(cloudLicenseId: string, handler: CloudLicenseLiveTestingFreeSecondsHandler): Promise<void> {
+  startUpdateLiveTesting(cloudLicenseId: string, handler: CloudLicenseLiveTestingFreeSecondsHandler): void {
     const intervalSeconds = 5;
-    const url = `${getBillingServerWebSocketUrl()}/cloud-licenses/live-testing?auth=${env.DOGU_BILLING_TOKEN}`;
+    const url = `${getBillingServerWebSocketUrl()}/cloud-licenses/live-testing?token=${env.DOGU_BILLING_TOKEN}`;
     const webSocket = new WebSocketClientFactory().create({ url });
     webSocket.on('open', () => {
       let updatedAt = Date.now();
-      const update = () => {
+      const update = (): void => {
         if (webSocket.readyState !== WebSocket.OPEN) {
           return;
         }
@@ -80,16 +78,31 @@ export class CloudLicenseService {
         update();
       }, intervalSeconds * 1000);
 
-      const close = () => {
+      const close = (): void => {
         update();
         closeWebSocketWithTruncateReason(webSocket, 1000, 'closed');
       };
-      handler.onOpen(close);
+      handler.onOpen(close).catch((error) => {
+        this.logger.error('LiveSessionService.startUpdateLiveTesting.onOpen error', {
+          error: errorify(error),
+          cloudLicenseId,
+        });
+        close();
+      });
+    });
+
+    webSocket.on('close', () => {
+      handler.onClose().catch((error) => {
+        this.logger.error('LiveSessionService.startUpdateLiveTesting.onClose error', {
+          error: errorify(error),
+          cloudLicenseId,
+        });
+      });
     });
 
     webSocket.on('message', (data) => {
-      (async () => {
-        const receiveMessage = await transformAndValidate(CloudLicenseMessage.LiveTestingReceive, JSON.parse(data.toString()));
+      (async (): Promise<void> => {
+        const receiveMessage = await transformAndValidate(CloudLicenseMessage.LiveTestingReceive, JSON.parse(rawToString(data)));
         if (receiveMessage.cloudLicenseId !== cloudLicenseId) {
           this.logger.error('LiveSessionService.startUpdateLiveTesting.message cloudLicenseId not matched', {
             cloudLicenseId,
@@ -98,10 +111,10 @@ export class CloudLicenseService {
           return;
         }
 
-        handler.onMessage(receiveMessage);
+        await handler.onMessage(receiveMessage);
       })().catch((error) => {
         this.logger.error('LiveSessionService.startUpdateLiveTesting.message error', {
-          error,
+          error: errorify(error),
           cloudLicenseId,
         });
       });

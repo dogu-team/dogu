@@ -2,22 +2,22 @@ import { TfiAnnouncement } from 'react-icons/tfi';
 import styled from 'styled-components';
 import { useEffect, useState } from 'react';
 import { Drawer, Empty } from 'antd';
-import useSWR, { KeyedMutator } from 'swr';
+import useSWR from 'swr';
 import { LoadingOutlined } from '@ant-design/icons';
-import { ChangeLogBase, UserBase } from '@dogu-private/console';
+import { ChangeLogBase } from '@dogu-private/console';
+import { shallow } from 'zustand/shallow';
 
 import { swrAuthFetcher } from '../../api/index';
 import { flexRowCenteredStyle } from '../../styles/box';
 import ChangeLogCard from './ChangeLogCard';
 import { updateLastSeen } from '../../api/change-log';
 import useRefresh from '../../hooks/useRefresh';
+import useAuthStore from '../../stores/auth';
 
-interface Props {
-  me: UserBase;
-  mutateMe: KeyedMutator<UserBase>;
-}
+interface Props {}
 
-const ChangeLogButton = ({ me, mutateMe }: Props) => {
+const ChangeLogButton = ({}: Props) => {
+  const [me, updateMe] = useAuthStore((state) => [state.me, state.updateMe], shallow);
   const [isOpen, setIsOpen] = useState(false);
   const [hasNewLogs, setHasNewLogs] = useState(false);
   const { data, isLoading, error, mutate } = useSWR<ChangeLogBase[]>(`/change-logs`, swrAuthFetcher, {
@@ -32,7 +32,7 @@ const ChangeLogButton = ({ me, mutateMe }: Props) => {
         return;
       }
 
-      if (!me.lastChangeLogSeenAt) {
+      if (!me?.lastChangeLogSeenAt) {
         setHasNewLogs(true);
         return;
       }
@@ -43,10 +43,12 @@ const ChangeLogButton = ({ me, mutateMe }: Props) => {
     }
   }, [data, me]);
 
-  const handleOpen = async () => {
+  const handleOpen = () => {
     setIsOpen(true);
     setHasNewLogs(false);
-    mutateMe({ ...me, lastChangeLogSeenAt: new Date() }, false);
+    if (me) {
+      updateMe({ ...me, lastChangeLogSeenAt: new Date() });
+    }
     if (hasNewLogs) {
       updateLastSeen().catch((e) => {});
     }
@@ -88,7 +90,6 @@ const StyledButton = styled.button`
   ${flexRowCenteredStyle}
   width: 2rem;
   height: 2rem;
-  margin-right: 0.75rem;
   border-radius: 50%;
   color: #000;
   font-size: 1.2rem;

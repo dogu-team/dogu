@@ -80,9 +80,12 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: Bhacaz/checkout-files@v2
+        uses: actions/checkout@v3
         with:
-          files: docker-compose-billing.yml
+          path: .
+          clean: true
+          sparse-checkout: |
+            docker-compose-billing.yml
 
       - name: DEV Configure AWS credentials
         if: github.event.inputs.build_type == 'dev'
@@ -110,24 +113,26 @@ jobs:
       - name: DEV set .env
         if: github.event.inputs.build_type== 'dev'
         run: |
-          sed -i "s|DOGU_BILLING_RDS_HOST=.*$|DOGU_BILLING_RDS_HOST=${{secrets.DEV_DOGU_BILLING_RDS_HOST }}|" ./docker-compose-billing.yml
-          sed -i "s|DOGU_BILLING_RDS_PORT=.*$|DOGU_BILLING_RDS_PORT=${{secrets.DEV_DOGU_BILLING_RDS_PORT }}|" ./docker-compose-billing.yml
-          sed -i "s|DOGU_BILLING_RDS_USERNAME=.*$|DOGU_BILLING_RDS_USERNAME=${{secrets.DEV_DOGU_BILLING_RDS_USERNAME }}|" ./docker-compose-billing.yml
-          sed -i "s|DOGU_BILLING_RDS_PASSWORD=.*$|DOGU_BILLING_RDS_PASSWORD=${{secrets.DEV_DOGU_BILLING_RDS_PASSWORD }}|" ./docker-compose-billing.yml
-          sed -i "s|DOGU_BILLING_RDS_SCHEMA=.*$|DOGU_BILLING_RDS_SCHEMA=${{secrets.DEV_DOGU_BILLING_RDS_SCHEMA }}|" ./docker-compose-billing.yml
-          sed -i "s|DOGU_BILLING_RDS_SSL_CONNECTION=.*$|DOGU_BILLING_RDS_SSL_CONNECTION=${{secrets.DEV_DOGU_BILLING_RDS_SSL_CONNECTION }}|" ./docker-compose-billing.yml
           sed -i "s|DOGU_BILLING_RUN_TYPE=.*$|DOGU_BILLING_RUN_TYPE=development|" ./docker-compose-billing.yml
+          sed -i "s|DOGU_BILLING_DB_URL=.*$|DOGU_BILLING_DB_URL=${{secrets.DEV_DOGU_BILLING_DB_URL }}|" ./docker-compose-billing.yml
+          sed -i "s|DOGU_BILLING_DB_SSL_CONNECTION=.*$|DOGU_BILLING_DB_SSL_CONNECTION=${{secrets.DEV_DOGU_BILLING_DB_SSL_CONNECTION }}|" ./docker-compose-billing.yml
+          sed -i "s|DOGU_CONSOLE_DB_READ_URL=.*$|DOGU_CONSOLE_DB_READ_URL=${{secrets.DEV_DOGU_CONSOLE_DB_READ_URL }}|" ./docker-compose-billing.yml
+          sed -i "s|DOGU_BILLING_NICE_CLIENT_KEY=.*$|DOGU_BILLING_NICE_CLIENT_KEY=${{secrets.DEV_DOGU_BILLING_NICE_CLIENT_KEY }}|" ./docker-compose-billing.yml
+          sed -i "s|DOGU_BILLING_NICE_SECRET_KEY=.*$|DOGU_BILLING_NICE_SECRET_KEY=${{secrets.DEV_DOGU_BILLING_NICE_SECRET_KEY }}|" ./docker-compose-billing.yml
+          sed -i "s|DOGU_EMAIL_ID=.*$|DOGU_EMAIL_ID=${{secrets.DOGU_EMAIL_ID }}|" ./docker-compose-billing.yml
+          sed -i "s|DOGU_EMAIL_PW=.*$|DOGU_EMAIL_PW=${{secrets.DOGU_EMAIL_PW }}|" ./docker-compose-billing.yml
 
       - name: PROD set .env
         if: github.event.inputs.build_type == 'prod'
         run: |
-          sed -i "s|DOGU_BILLING_RDS_HOST=.*$|DOGU_BILLING_RDS_HOST=${{secrets.PROD_DOGU_BILLING_RDS_HOST }}|" ./docker-compose-billing.yml
-          sed -i "s|DOGU_BILLING_RDS_PORT=.*$|DOGU_BILLING_RDS_PORT=${{secrets.PROD_DOGU_BILLING_RDS_PORT }}|" ./docker-compose-billing.yml
-          sed -i "s|DOGU_BILLING_RDS_USERNAME=.*$|DOGU_BILLING_RDS_USERNAME=${{secrets.PROD_DOGU_BILLING_RDS_USERNAME }}|" ./docker-compose-billing.yml
-          sed -i "s|DOGU_BILLING_RDS_PASSWORD=.*$|DOGU_BILLING_RDS_PASSWORD=${{secrets.PROD_DOGU_BILLING_RDS_PASSWORD }}|" ./docker-compose-billing.yml
-          sed -i "s|DOGU_BILLING_RDS_SCHEMA=.*$|DOGU_BILLING_RDS_SCHEMA=${{secrets.PROD_DOGU_BILLING_RDS_SCHEMA }}|" ./docker-compose-billing.yml
-          sed -i "s|DOGU_BILLING_RDS_SSL_CONNECTION=.*$|DOGU_BILLING_RDS_SSL_CONNECTION=${{secrets.PROD_DOGU_BILLING_RDS_SSL_CONNECTION }}|" ./docker-compose-billing.yml
           sed -i "s|DOGU_BILLING_RUN_TYPE=.*$|DOGU_BILLING_RUN_TYPE=production|" ./docker-compose-billing.yml
+          sed -i "s|DOGU_BILLING_DB_URL=.*$|DOGU_BILLING_DB_URL=${{secrets.PROD_DOGU_BILLING_DB_URL }}|" ./docker-compose-billing.yml
+          sed -i "s|DOGU_BILLING_DB_SSL_CONNECTION=.*$|DOGU_BILLING_DB_SSL_CONNECTION=${{secrets.PROD_DOGU_BILLING_DB_SSL_CONNECTION }}|" ./docker-compose-billing.yml
+          sed -i "s|DOGU_CONSOLE_DB_READ_URL=.*$|DOGU_CONSOLE_DB_READ_URL=${{secrets.PROD_DOGU_CONSOLE_DB_READ_URL }}|" ./docker-compose-billing.yml
+          sed -i "s|DOGU_BILLING_NICE_CLIENT_KEY=.*$|DOGU_BILLING_NICE_CLIENT_KEY=${{secrets.PROD_DOGU_BILLING_NICE_CLIENT_KEY }}|" ./docker-compose-billing.yml
+          sed -i "s|DOGU_BILLING_NICE_SECRET_KEY=.*$|DOGU_BILLING_NICE_SECRET_KEY=${{secrets.PROD_DOGU_BILLING_NICE_SECRET_KEY }}|" ./docker-compose-billing.yml
+          sed -i "s|DOGU_EMAIL_ID=.*$|DOGU_EMAIL_ID=${{secrets.DOGU_EMAIL_ID }}|" ./docker-compose-billing.yml
+          sed -i "s|DOGU_EMAIL_PW=.*$|DOGU_EMAIL_PW=${{secrets.DOGU_EMAIL_PW }}|" ./docker-compose-billing.yml
 
       - name: run
         run: |

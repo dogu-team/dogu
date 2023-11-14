@@ -45,7 +45,7 @@ interface Props {
 }
 
 const AccountPage: NextPageWithLayout<Props> = ({ user }) => {
-  const [me, updateMe] = useAuthStore((state) => [state.me, state.updateAuthStore]);
+  const [me, updateMe] = useAuthStore((state) => [state.me, state.updateMe]);
   const [editingMe, setEditingMe] = useState<UserBase>();
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState<number | null>(null);
@@ -131,6 +131,7 @@ const AccountPage: NextPageWithLayout<Props> = ({ user }) => {
         }
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [user],
   );
 
@@ -147,6 +148,7 @@ const AccountPage: NextPageWithLayout<Props> = ({ user }) => {
         sendErrorNotification(t('account:deleteAccountConfirmFailureMessage', { reason: getErrorMessageFromAxios(e) }));
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   const getToken = useCallback(async () => {
@@ -264,7 +266,7 @@ const AccountPage: NextPageWithLayout<Props> = ({ user }) => {
 
 AccountPage.getLayout = (page) => {
   return (
-    <ConsoleBasicLayout user={page.props.user}>
+    <ConsoleBasicLayout user={page.props.user} license={null}>
       {page}
       <Footer />
     </ConsoleBasicLayout>

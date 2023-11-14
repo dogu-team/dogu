@@ -1,4 +1,4 @@
-import { CloudLicenseBase, LiveSessionBase } from '@dogu-private/console';
+import { LiveSessionBase } from '@dogu-private/console';
 import styled from 'styled-components';
 import Head from 'next/head';
 import { Divider } from 'antd';
@@ -29,6 +29,8 @@ import LiveTestingFeedbackModal, {
 } from '../../../../src/components/cloud/LiveTestingFeedbackModal';
 import useModal from '../../../../src/hooks/useModal';
 import LiveTestingSessionCounter from '../../../../src/components/cloud/LiveTestingSessionCounter';
+import LiveTestingFreeTierTopBanner from '../../../../src/components/billing/LiveTestingFreeTierTopBanner';
+import usePromotionStore from '../../../../src/stores/promotion';
 
 const OrganizationLiveTestingPage: NextPageWithLayout<OrganizationServerSideProps> = ({
   user,
@@ -40,12 +42,27 @@ const OrganizationLiveTestingPage: NextPageWithLayout<OrganizationServerSideProp
     swrAuthFetcher,
     { refreshInterval: 10000 },
   );
+  const [updateIsPromotionOpenablePage, updateCurrentPlanType] = usePromotionStore((state) => [
+    state.updateIsPromotionOpenablePage,
+    state.updateCurrentPlanType,
+  ]);
   const [isOpen, openModal, closeModal, payload] = useModal<LiveSessionId>();
   const { t } = useTranslation();
 
   useRefresh(['onRefreshClicked', 'onCloudLiveTestingSessionCreated', 'onCloudLiveTestingSessionClosed'], () =>
     mutate(),
   );
+
+  useEffect(() => {
+    updateIsPromotionOpenablePage(true);
+    updateCurrentPlanType('live-testing');
+
+    return () => {
+      updateIsPromotionOpenablePage(false);
+      updateCurrentPlanType(null);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     const bc = new BroadcastChannel('dogu-live-testing');
@@ -67,7 +84,7 @@ const OrganizationLiveTestingPage: NextPageWithLayout<OrganizationServerSideProp
     return () => {
       bc.close();
     };
-  }, []);
+  }, [openModal]);
 
   if (isLoading) {
     return (
@@ -139,14 +156,13 @@ OrganizationLiveTestingPage.getLayout = (page) => {
       sidebar={<OrganizationSideBar />}
       title={
         <div style={{ marginBottom: '.5rem' }}>
+          <LiveTestingFreeTierTopBanner />
+
           <H4>
             <Trans i18nKey="organization:liveTestingPageTitle" />
           </H4>
           <div style={{ marginTop: '.25rem' }}>
-            <LiveTestingSessionCounter
-              license={page.props.license as CloudLicenseBase}
-              organizationId={page.props.organization.organizationId}
-            />
+            <LiveTestingSessionCounter />
           </div>
         </div>
       }

@@ -13,6 +13,7 @@ const useRefresh = (events: EventName[], refresher: (payload?: unknown) => any) 
     return () => {
       unsub();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 };
 

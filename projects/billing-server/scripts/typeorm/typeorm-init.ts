@@ -7,12 +7,8 @@ import { PostgreSql } from '../utils/pgsql';
 import { exec } from '../utils/utils';
 
 const pgsqlConnectionOptions = {
-  host: config.rds.host,
-  port: config.rds.port,
-  user: config.rds.username,
-  database: config.rds.schema,
-  password: config.rds.password,
-  ssl: config.rds.ssl,
+  connectionString: config.db.billingUrl,
+  ssl: config.db.ssl,
 };
 
 console.log('config', pgsqlConnectionOptions);
@@ -36,10 +32,11 @@ async function checkDbInitialized(): Promise<boolean> {
   return resultValue;
 }
 
-async function runDbMigration(): Promise<void> {
+async function runDbMigration(cwd: string): Promise<void> {
   console.log('Run migrations...');
   await exec(`yarn run typeorm:run`, {
     errorMessage: 'Error: run typeorm migration failed',
+    cwd,
     retry: true,
     retryCount: 3,
     retryInterval: 3000,
@@ -54,6 +51,7 @@ async function runDbMigration(): Promise<void> {
 }
 
 (async (): Promise<void> => {
+  const cwd = process.cwd();
   const workspaceDir = node_package.findRootWorkspace();
   process.chdir(workspaceDir);
   const isInitialized = await checkDbInitialized();
@@ -64,7 +62,7 @@ async function runDbMigration(): Promise<void> {
     await createFakeDbMigrations();
   } else {
     console.log('Database already initaialized');
-    await runDbMigration();
+    await runDbMigration(cwd);
   }
 
   process.exit(0);

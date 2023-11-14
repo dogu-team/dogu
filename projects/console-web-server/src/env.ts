@@ -61,23 +61,10 @@ export class Env {
 
   @IsBoolean()
   @TransformBooleanString()
-  DOGU_RDS_SSL_CONNECTION!: boolean;
+  DOGU_CONSOLE_DB_SSL_CONNECTION!: boolean;
 
   @IsFilledString()
-  DOGU_RDS_HOST!: string;
-
-  @IsNumber()
-  @Type(() => Number)
-  DOGU_RDS_PORT!: number;
-
-  @IsFilledString()
-  DOGU_RDS_USERNAME!: string;
-
-  @IsFilledString()
-  DOGU_RDS_PASSWORD!: string;
-
-  @IsFilledString()
-  DOGU_RDS_SCHEMA!: string;
+  DOGU_CONSOLE_DB_URL!: string;
 
   @IsFilledString()
   DOGU_TIMEZONE: string = process.env.TZ ?? 'local';

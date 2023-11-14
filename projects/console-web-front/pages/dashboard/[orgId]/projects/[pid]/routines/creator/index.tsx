@@ -2,6 +2,7 @@ import styled from 'styled-components';
 import Head from 'next/head';
 import { GetServerSideProps } from 'next';
 import { useEffect } from 'react';
+import { shallow } from 'zustand/shallow';
 
 import { NextPageWithLayout } from 'pages/_app';
 import { getProjectPageServerSideProps, ProjectServerSideProps } from 'src/ssr/project';
@@ -15,10 +16,14 @@ const ProjectRoutineCreatorPage: NextPageWithLayout<ProjectServerSideProps> = ({
   project,
   isGitIntegrated,
 }) => {
-  const store = useGitIntegrationStore();
+  const [isGitIntegratedState, updateGitIntegrationStatus] = useGitIntegrationStore(
+    (state) => [state.isGitIntegrated, state.updateGitIntegrationStatus],
+    shallow,
+  );
 
   useEffect(() => {
-    store.updateGitIntegrationStatus(isGitIntegrated);
+    updateGitIntegrationStatus(isGitIntegrated);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isGitIntegrated]);
 
   return (
@@ -27,7 +32,7 @@ const ProjectRoutineCreatorPage: NextPageWithLayout<ProjectServerSideProps> = ({
         <title>Create routine - {project.name} | Dogu</title>
       </Head>
       <Box>
-        {!store.isGitIntegrated && (
+        {!isGitIntegratedState && (
           <div style={{ marginBottom: '1rem' }}>
             <RoutineGitIntegrationAlert />
           </div>

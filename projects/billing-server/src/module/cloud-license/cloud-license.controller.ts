@@ -1,6 +1,5 @@
-import { CreateCloudLicenseDto } from '@dogu-private/console';
-import { OrganizationId } from '@dogu-private/types';
-import { Body, Controller, Get, Inject, Param, Post } from '@nestjs/common';
+import { CloudLicenseResponse, CreateCloudLicenseDto, FindCloudLicenseDto } from '@dogu-private/console';
+import { Body, Controller, Get, Inject, Post, Query } from '@nestjs/common';
 
 import { CloudLicense } from '../../db/entity/cloud-license.entity';
 import { BillingTokenPermission } from '../auth/guard/billing-token.guard';
@@ -15,13 +14,13 @@ export class CloudLicenseController {
 
   @Post()
   @BillingTokenPermission()
-  async createLicense(@Body() dto: CreateCloudLicenseDto): Promise<CloudLicense> {
-    return await this.cloudLicenseService.createLicense(dto);
+  async createCloudLicense(@Body() dto: CreateCloudLicenseDto): Promise<CloudLicense> {
+    return await this.cloudLicenseService.createCloudLicense(dto);
   }
 
-  @Get(':organizationId')
+  @Get()
   @BillingTokenPermission()
-  async findLicense(@Param('organizationId') organizationId: OrganizationId): Promise<CloudLicense> {
-    return await this.cloudLicenseService.findLicense(organizationId);
+  async findCloudLicense(@Query() dto: FindCloudLicenseDto): Promise<CloudLicenseResponse> {
+    return await this.cloudLicenseService.findCloudLicense(dto);
   }
 }

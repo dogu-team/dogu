@@ -1,8 +1,7 @@
 import { DoguRunType, NodeEnvType } from '@dogu-private/types';
 import { IsFilledString, TransformBooleanString } from '@dogu-tech/common';
 import { loadEnvLazySync } from '@dogu-tech/env-tools';
-import { Type } from 'class-transformer';
-import { IsBoolean, IsIn, IsNumber } from 'class-validator';
+import { IsBoolean, IsIn } from 'class-validator';
 import { logger } from './module/logger/logger.instance';
 
 export class Env {
@@ -15,26 +14,27 @@ export class Env {
   @IsIn(DoguRunType)
   DOGU_BILLING_RUN_TYPE!: DoguRunType;
 
+  @IsFilledString()
+  DOGU_BILLING_DB_URL!: string;
+
   @IsBoolean()
   @TransformBooleanString()
-  DOGU_BILLING_RDS_SSL_CONNECTION!: boolean;
+  DOGU_BILLING_DB_SSL_CONNECTION!: boolean;
 
   @IsFilledString()
-  DOGU_BILLING_RDS_HOST!: string;
-
-  @IsNumber()
-  @Type(() => Number)
-  DOGU_BILLING_RDS_PORT!: number;
+  DOGU_CONSOLE_DB_READ_URL!: string;
 
   @IsFilledString()
-  DOGU_BILLING_RDS_USERNAME!: string;
+  DOGU_BILLING_NICE_CLIENT_KEY!: string;
 
   @IsFilledString()
-  DOGU_BILLING_RDS_PASSWORD!: string;
+  DOGU_BILLING_NICE_SECRET_KEY!: string;
 
   @IsFilledString()
-  DOGU_BILLING_RDS_SCHEMA!: string;
+  DOGU_EMAIL_ID!: string;
+
+  @IsFilledString()
+  DOGU_EMAIL_PW!: string;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 export const env = loadEnvLazySync(Env, { printable: logger });

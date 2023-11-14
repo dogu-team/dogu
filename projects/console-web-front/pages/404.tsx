@@ -29,7 +29,7 @@ const CustomNotFoundPage: NextPageWithLayout = () => {
 };
 
 CustomNotFoundPage.getLayout = (page) => {
-  return <ConsoleBasicLayout>{page}</ConsoleBasicLayout>;
+  return <ConsoleBasicLayout license={null}>{page}</ConsoleBasicLayout>;
 };
 
 export default CustomNotFoundPage;

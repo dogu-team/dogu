@@ -9,19 +9,22 @@ import { WebSocket } from 'ws';
 import { CloudLicense } from '../../db/entity/cloud-license.entity';
 import { retrySerialize } from '../../db/utils';
 import { BillingTokenService } from '../billing-token/billing-token.service';
+import { DateTimeSimulatorService } from '../date-time-simulator/date-time-simulator.service';
 import { DoguLogger } from '../logger/logger';
 
 @WebSocketGateway({ path: '/cloud-licenses/live-testing' })
 export class CloudLicenseLiveTestingGateway implements OnGatewayConnection {
   constructor(
+    private readonly logger: DoguLogger,
     @InjectDataSource()
     private readonly dataSource: DataSource,
     private readonly billingTokenService: BillingTokenService,
-    private readonly logger: DoguLogger,
+    private readonly dateTimeSimulatorService: DateTimeSimulatorService,
   ) {}
 
   handleConnection(webSocket: WebSocket, incomingMessage: IncomingMessage): void {
-    this.billingTokenService.validateBillingApiTokenFromRequest(incomingMessage).catch((error) => {
+    const now = this.dateTimeSimulatorService.now();
+    this.billingTokenService.validateBillingApiTokenFromRequest(incomingMessage, now).catch((error) => {
       this.logger.error('Failed to validate billing api token', { error: errorify(error) });
       closeWebSocketWithTruncateReason(webSocket, WebSocketCode.Unauthorized, 'Failed to validate billing api token');
     });
@@ -29,7 +32,8 @@ export class CloudLicenseLiveTestingGateway implements OnGatewayConnection {
     webSocket.on('message', (data) => {
       (async (): Promise<void> => {
         const sendMessage = await transformAndValidate(CloudLicenseMessage.LiveTestingSend, JSON.parse(rawToString(data)));
-        const remainingFreeSeconds = await retrySerialize(this.logger, this.dataSource, async (manager) => {
+        const remainingFreeSeconds = await retrySerialize(this.logger, this.dataSource, async (context) => {
+          const { manager } = context;
           const cloudLicense = await manager.getRepository(CloudLicense).findOne({
             where: {
               cloudLicenseId: sendMessage.cloudLicenseId,

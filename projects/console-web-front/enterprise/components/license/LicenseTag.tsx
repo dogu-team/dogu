@@ -1,5 +1,5 @@
 import { ArrowRightOutlined } from '@ant-design/icons';
-import { SelfHostedLicenseBase, UserBase } from '@dogu-private/console';
+import { CloudLicenseResponse, SelfHostedLicenseResponse, UserBase } from '@dogu-private/console';
 import { Tag, Tooltip } from 'antd';
 import useTranslation from 'next-translate/useTranslation';
 
@@ -7,16 +7,17 @@ import { checkCommunityEdition } from '../../utils/license';
 import ProTag from '../common/ProTag';
 
 interface Props {
-  licenseInfo: SelfHostedLicenseBase;
+  licenseInfo: SelfHostedLicenseResponse | CloudLicenseResponse;
   me: UserBase;
 }
 
 const LicenseTag: React.FC<Props> = ({ licenseInfo, me }) => {
-  const isCommunity = checkCommunityEdition(licenseInfo);
   const { t } = useTranslation();
 
   if (process.env.NEXT_PUBLIC_ENV === 'self-hosted') {
-    const info = licenseInfo as SelfHostedLicenseBase;
+    const isCommunity = checkCommunityEdition(licenseInfo as SelfHostedLicenseResponse);
+    const info = licenseInfo as SelfHostedLicenseResponse;
+
     return !isCommunity ? (
       <ProTag
         style={{ marginLeft: '-2rem' }}
@@ -53,7 +54,7 @@ const LicenseTag: React.FC<Props> = ({ licenseInfo, me }) => {
             <p>Community Edition</p>
             <div style={{ marginTop: '.25rem' }}>
               <a href={`${process.env.NEXT_PUBLIC_LANDING_URL}/pricing?type=self-hosted`} target="_blank">
-                {t('license:comparePlans')} <ArrowRightOutlined />
+                {t('billing:comparePlans')} <ArrowRightOutlined />
               </a>
             </div>
           </div>

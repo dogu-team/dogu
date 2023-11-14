@@ -22,6 +22,7 @@ import { getErrorMessageFromAxios } from '../../src/utils/error';
 import { getInvitationServerSideProps } from '../../src/ssr/invitation';
 import SocialSignInForm from '../../src/components/social-signin/SocialSignInForm';
 import Cookies from 'universal-cookie';
+import usePromotionStore from '../../src/stores/promotion';
 
 interface Props {
   email: string;
@@ -32,11 +33,12 @@ interface Props {
 const InviteSignupPage: NextPageWithLayout<Props> = ({ email, token, invitation }) => {
   const router = useRouter();
   const { t } = useTranslation();
+  const resetPromotion = usePromotionStore((state) => state.resetWithOrganizationId);
 
   const handleSignUp = useCallback(
     async (_: string, name: string, password: string, newsletter: boolean) => {
       try {
-        await signUp({
+        const { organizationId } = await signUp({
           email,
           name,
           password,
@@ -44,6 +46,7 @@ const InviteSignupPage: NextPageWithLayout<Props> = ({ email, token, invitation 
           invitationOrganizationId: invitation.organization?.organizationId,
           invitationToken: token,
         });
+        resetPromotion(organizationId);
         router.push(
           `/auth/invite-confirm?email=${email}&organizationId=${invitation.organization?.organizationId}&token=${token}`,
         );

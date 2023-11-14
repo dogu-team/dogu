@@ -39,7 +39,8 @@ const VerifyEmailPage: NextPage<Props> = ({ email, token }) => {
       setLoading(false);
     };
     verify();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [email, token]);
 
   return (
     <>

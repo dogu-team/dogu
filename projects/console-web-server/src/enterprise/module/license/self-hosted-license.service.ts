@@ -16,10 +16,11 @@ import { updateAuthHeaderBySelfHostedLicense } from './common/utils';
 export class SelfHostedLicenseService {
   private readonly api: axios.AxiosInstance;
   private readonly defaultLicense: SelfHostedLicenseBase = {
-    selfHostedLicenseId: 'default',
-    organizationId: 'default',
-    companyName: 'default',
+    selfHostedLicenseId: '00000000-0000-0000-0000-000000000000',
+    organizationId: '00000000-0000-0000-0000-000000000000',
+    billingOrganizationId: '00000000-0000-0000-0000-000000000000',
     licenseKey: COMMUNITY_LICENSE_KEY,
+    category: 'self-hosted',
     openApiEnabled: false,
     doguAgentAutoUpdateEnabled: false,
     maximumEnabledBrowserCount: COMMUNITY_MAX_BROWSER_COUNT,
