@@ -39,6 +39,14 @@ function aes256(data: string): string {
   return encryptedHex;
 }
 
+function resolveGoodsName(goodsName: string): string {
+  if (env.DOGU_BILLING_RUN_TYPE === 'production') {
+    return goodsName;
+  }
+
+  return `[${env.DOGU_BILLING_RUN_TYPE}] ${goodsName}`;
+}
+
 @Injectable()
 export class BillingMethodNiceCaller {
   private readonly client: AxiosInstance;
@@ -227,7 +235,7 @@ export class BillingMethodNiceCaller {
     const orderId = v4();
     const body = {
       amount,
-      goodsName,
+      goodsName: resolveGoodsName(goodsName),
       cardQuota: '0',
       useShopInterest: false,
       orderId,
