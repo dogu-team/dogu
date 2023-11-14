@@ -114,11 +114,11 @@ jobs:
 
       - name: DEV download .env
         if: github.event.inputs.build_type== 'dev'
-        run: env-generator/bin/env-generator-linux gen development billing-server
+        run: nm-space/projects/env-generator/bin/env-generator-linux gen development billing-server
 
       - name: PROD download .env
         if: github.event.inputs.build_type== 'prod'
-        run: env-generator/bin/env-generator-linux gen production billing-server
+        run: nm-space/projects/env-generator/bin/env-generator-linux gen production billing-server
 
       - name: run
         run: |
