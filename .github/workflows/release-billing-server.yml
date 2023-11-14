@@ -84,7 +84,7 @@ jobs:
           path: .
           clean: true
           sparse-checkout: |
-            env-generator/bin/env-generator-linux
+            nm-space/projects/env-generator/bin/env-generator-linux
             docker-compose-billing.yml
 
       - name: DEV Configure AWS credentials
