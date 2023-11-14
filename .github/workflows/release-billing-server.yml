@@ -76,7 +76,6 @@ jobs:
   release-billing-server:
     runs-on: ${{ github.event.inputs.build_type }}-billing-server
     needs: [input-validation, build-billing-server]
-    # needs: [input-validation]
 
     steps:
       - name: Checkout
@@ -85,6 +84,14 @@ jobs:
           path: .
           clean: true
           sparse-checkout: |
+            .pnp.cjs
+            .pnp.loader.mjs
+            .yarnrc.yml
+            .yarn
+            yarn.lock
+            package.json
+            turbo.json
+            env-generator
             docker-compose-billing.yml
 
       - name: DEV Configure AWS credentials
@@ -110,35 +117,24 @@ jobs:
       - name: docker init
         run: docker system prune --volumes -a -f
 
-      - name: DEV set .env
-        if: github.event.inputs.build_type== 'dev'
+      - name: .env init
         run: |
-          sed -i "s|DOGU_BILLING_RUN_TYPE=.*$|DOGU_BILLING_RUN_TYPE=development|" ./docker-compose-billing.yml
-          sed -i "s|DOGU_BILLING_DB_URL=.*$|DOGU_BILLING_DB_URL=${{secrets.DEV_DOGU_BILLING_DB_URL }}|" ./docker-compose-billing.yml
-          sed -i "s|DOGU_BILLING_DB_SSL_CONNECTION=.*$|DOGU_BILLING_DB_SSL_CONNECTION=${{secrets.DEV_DOGU_BILLING_DB_SSL_CONNECTION }}|" ./docker-compose-billing.yml
-          sed -i "s|DOGU_CONSOLE_DB_READ_URL=.*$|DOGU_CONSOLE_DB_READ_URL=${{secrets.DEV_DOGU_CONSOLE_DB_READ_URL }}|" ./docker-compose-billing.yml
-          sed -i "s|DOGU_BILLING_NICE_CLIENT_KEY=.*$|DOGU_BILLING_NICE_CLIENT_KEY=${{secrets.DEV_DOGU_BILLING_NICE_CLIENT_KEY }}|" ./docker-compose-billing.yml
-          sed -i "s|DOGU_BILLING_NICE_SECRET_KEY=.*$|DOGU_BILLING_NICE_SECRET_KEY=${{secrets.DEV_DOGU_BILLING_NICE_SECRET_KEY }}|" ./docker-compose-billing.yml
-          sed -i "s|DOGU_EMAIL_ID=.*$|DOGU_EMAIL_ID=${{secrets.DOGU_EMAIL_ID }}|" ./docker-compose-billing.yml
-          sed -i "s|DOGU_EMAIL_PW=.*$|DOGU_EMAIL_PW=${{secrets.DOGU_EMAIL_PW }}|" ./docker-compose-billing.yml
+          mkdir -p $HOME/.dogu_secret
+          echo ${{ secrets.DOGU_ENV_SERVICE_ACCOUNT_KEY }} > $HOME/.dogu_secret/service-account-key.json
 
-      - name: PROD set .env
-        if: github.event.inputs.build_type == 'prod'
-        run: |
-          sed -i "s|DOGU_BILLING_RUN_TYPE=.*$|DOGU_BILLING_RUN_TYPE=production|" ./docker-compose-billing.yml
-          sed -i "s|DOGU_BILLING_DB_URL=.*$|DOGU_BILLING_DB_URL=${{secrets.PROD_DOGU_BILLING_DB_URL }}|" ./docker-compose-billing.yml
-          sed -i "s|DOGU_BILLING_DB_SSL_CONNECTION=.*$|DOGU_BILLING_DB_SSL_CONNECTION=${{secrets.PROD_DOGU_BILLING_DB_SSL_CONNECTION }}|" ./docker-compose-billing.yml
-          sed -i "s|DOGU_CONSOLE_DB_READ_URL=.*$|DOGU_CONSOLE_DB_READ_URL=${{secrets.PROD_DOGU_CONSOLE_DB_READ_URL }}|" ./docker-compose-billing.yml
-          sed -i "s|DOGU_BILLING_NICE_CLIENT_KEY=.*$|DOGU_BILLING_NICE_CLIENT_KEY=${{secrets.PROD_DOGU_BILLING_NICE_CLIENT_KEY }}|" ./docker-compose-billing.yml
-          sed -i "s|DOGU_BILLING_NICE_SECRET_KEY=.*$|DOGU_BILLING_NICE_SECRET_KEY=${{secrets.PROD_DOGU_BILLING_NICE_SECRET_KEY }}|" ./docker-compose-billing.yml
-          sed -i "s|DOGU_EMAIL_ID=.*$|DOGU_EMAIL_ID=${{secrets.DOGU_EMAIL_ID }}|" ./docker-compose-billing.yml
-          sed -i "s|DOGU_EMAIL_PW=.*$|DOGU_EMAIL_PW=${{secrets.DOGU_EMAIL_PW }}|" ./docker-compose-billing.yml
+      - name: DEV download .env
+        if: github.event.inputs.build_type== 'dev'
+        run: yarn env:gen development billing-server --cwd $(pwd)
+
+      - name: PROD download .env
+        if: github.event.inputs.build_type== 'prod'
+        run: yarn env:gen production billing-server --cwd $(pwd)
 
       - name: run
         run: |
           docker ps -qa | xargs -r docker rm -f
           docker compose -f docker-compose-billing.yml pull ${{ github.event.inputs.build_type }}-billing-server
-          docker compose -f ./docker-compose-billing.yml --verbose up -d ${{ github.event.inputs.build_type }}-billing-server
+          docker compose -f ./docker-compose-billing.yml --verbose --env-file .env.local up -d ${{ github.event.inputs.build_type }}-billing-server
 
   send-slack:
     runs-on: ubuntu-latest

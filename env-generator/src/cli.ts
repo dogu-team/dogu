@@ -13,8 +13,9 @@ program
   .description('Generate dogu environment to current directory/.env.local')
   .argument('<runtype>', 'runtype')
   .argument('<project>', 'ProjectName')
-  .action((runtype, project: string) => {
-    const workdir = process.cwd();
+  .option('-c, --cwd <path>', 'current working directory', process.cwd())
+  .action((runtype, project: string, options: { cwd: string }) => {
+    const workdir = options.cwd;
     process.env.DOGU_RUN_TYPE = runtype;
     const sheets = findIdFromProjectName(project);
     for (const sheet of sheets) {
