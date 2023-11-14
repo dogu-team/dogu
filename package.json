@@ -14,6 +14,7 @@
     "clean": "shx rm -rf node_modules/.cache/turbo && turbo run clean",
     "clean:packages": "turbo run clean --filter='./packages/typescript*/**/*' --concurrency=50%",
     "clean-lock": "rm $(find . | grep yarn.lock) && rm -rf .yarn/cache",
+    "env-generator": "ts-node scripts/env-generator",
     "git:macos:remove-non-remote-branch": "git fetch -p && git branch -vv | awk '/: gone]/{print $1}' | xargs git branch -D",
     "lint": "turbo run lint",
     "mirror:nm": "ts-node scripts/nm-space/mirror",
