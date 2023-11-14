@@ -1,5 +1,4 @@
 import {
-  BillingHistoryProp,
   BillingHistoryTypePurchase,
   BillingHistoryTypeRefund,
   CreatePurchaseSubscriptionDto,
@@ -422,7 +421,9 @@ export class BillingPurchaseService {
           billingHistoryId,
           historyType: In(BillingHistoryTypePurchase),
         },
-        relations: [BillingHistoryProp.billingSubscriptionPlanHistories],
+        relations: {
+          billingSubscriptionPlanHistories: true,
+        },
       });
 
       if (!billingHistory) {
@@ -479,6 +480,7 @@ export class BillingPurchaseService {
           historyType: 'full-refund',
           purchasedBillingSubscriptionPlanHistoryId: planHistory.billingSubscriptionPlanHistoryId,
           refundedAmount: planHistory.purchasedAmount,
+          originPrice: planHistory.originPrice,
         });
 
         await manager.getRepository(BillingSubscriptionPlanHistory).save(newPlanHistory);
