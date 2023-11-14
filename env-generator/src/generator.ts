@@ -208,6 +208,7 @@ export class EnvGenerator {
       let lastError: unknown;
       for (let i = 0; i < 5; i++) {
         try {
+          logger.info(`getDotEnvData. spreadsheetId: ${this.spreadsheetId}, range: ${this.range}, retry: ${i}`);
           const res = await sheets.spreadsheets.values.get({
             spreadsheetId: this.spreadsheetId,
             range: this.range,
