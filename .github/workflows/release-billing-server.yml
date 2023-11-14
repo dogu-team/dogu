@@ -108,10 +108,11 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v1
 
       - name: .env init
-        uses: jsdaniell/create-json@v1.2.2
-        with:
-          name: service-account-key.json
-          json: ${{ secrets.DOGU_ENV_SERVICE_ACCOUNT_KEY }}
+        run: |
+          mkdir -p $HOME/.dogu_secret
+          echo "$DOGU_ENV_SERVICE_ACCOUNT_KEY" > $HOME/.dogu_secret/service-account-key.json
+        env:
+          DOGU_ENV_SERVICE_ACCOUNT_KEY: ${{ secrets.DOGU_ENV_SERVICE_ACCOUNT_KEY }}
 
       - name: DEV download .env
         if: github.event.inputs.build_type== 'dev'
