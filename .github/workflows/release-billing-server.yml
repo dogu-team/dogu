@@ -114,9 +114,6 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
-      - name: docker init
-        run: docker system prune --volumes -a -f
-
       - name: .env init
         run: |
           mkdir -p $HOME/.dogu_secret
@@ -134,6 +131,7 @@ jobs:
       - name: run
         run: |
           docker ps -qa | xargs -r docker rm -f
+          docker system prune --volumes -af
           docker compose -f docker-compose-billing.yml pull ${{ github.event.inputs.build_type }}-billing-server
           docker compose -f ./docker-compose-billing.yml --verbose --env-file .env.local up -d ${{ github.event.inputs.build_type }}-billing-server
 
