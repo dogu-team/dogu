@@ -84,23 +84,8 @@ jobs:
           path: .
           clean: true
           sparse-checkout: |
-            .pnp.cjs
-            .pnp.loader.mjs
-            .yarnrc.yml
-            .yarn
-            yarn.lock
-            package.json
-            turbo.json
-            env-generator
+            env-generator/bin/env-generator-linux
             docker-compose-billing.yml
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '16.20'
-
-      - name: corepack enable
-        run: corepack enable
 
       - name: DEV Configure AWS credentials
         if: github.event.inputs.build_type == 'dev'
@@ -126,15 +111,14 @@ jobs:
         run: |
           mkdir -p $HOME/.dogu_secret
           echo "${{ secrets.DOGU_ENV_SERVICE_ACCOUNT_KEY }}" > $HOME/.dogu_secret/service-account-key.json
-          yarn install
 
       - name: DEV download .env
         if: github.event.inputs.build_type== 'dev'
-        run: yarn env:gen development billing-server --cwd $(pwd)
+        run: env-generator/bin/env-generator-linux gen development billing-server --cwd $(pwd)
 
       - name: PROD download .env
         if: github.event.inputs.build_type== 'prod'
-        run: yarn env:gen production billing-server --cwd $(pwd)
+        run: env-generator/bin/env-generator-linux gen production billing-server --cwd $(pwd)
 
       - name: run
         run: |
