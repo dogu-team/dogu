@@ -108,9 +108,11 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v1
 
       - name: .env init
-        run: |
-          mkdir -p $HOME/.dogu_secret
-          echo "${{ secrets.DOGU_ENV_SERVICE_ACCOUNT_KEY }}" > $HOME/.dogu_secret/service-account-key.json
+        uses: DamianReeves/write-file-action@master
+        with:
+          path: $HOME/.dogu_secret/service-account-key.json
+          contents: ${{ secrets.DOGU_ENV_SERVICE_ACCOUNT_KEY }}
+          write-mode: overwrite
 
       - name: DEV download .env
         if: github.event.inputs.build_type== 'dev'
