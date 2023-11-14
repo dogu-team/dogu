@@ -7,15 +7,6 @@ services:
     pull_policy: always
     ports:
       - '4001:4001'
-    environment:
-      - DOGU_BILLING_RUN_TYPE=
-      - DOGU_BILLING_DB_URL=
-      - DOGU_BILLING_DB_SSL_CONNECTION=
-      - DOGU_CONSOLE_DB_READ_URL=
-      - DOGU_BILLING_NICE_CLIENT_KEY=
-      - DOGU_BILLING_NICE_SECRET_KEY=
-      - DOGU_EMAIL_ID=
-      - DOGU_EMAIL_PW=
 
   prod-billing-server:
     container_name: prod-billing-server
@@ -24,12 +15,3 @@ services:
     restart: always
     ports:
       - '4001:4001'
-    environment:
-      - DOGU_BILLING_RUN_TYPE=
-      - DOGU_BILLING_DB_URL=
-      - DOGU_BILLING_DB_SSL_CONNECTION=
-      - DOGU_CONSOLE_DB_READ_URL=
-      - DOGU_BILLING_NICE_CLIENT_KEY=
-      - DOGU_BILLING_NICE_SECRET_KEY=
-      - DOGU_EMAIL_ID=
-      - DOGU_EMAIL_PW=
