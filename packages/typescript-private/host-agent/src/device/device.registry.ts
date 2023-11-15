@@ -2,8 +2,10 @@ import { Serial } from '@dogu-private/types';
 import { emitEventAsync, Instance } from '@dogu-tech/common';
 import { Injectable } from '@nestjs/common';
 import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
+import { OnHostResolvedEvent } from '../host/host.events';
 import { DeviceResolutionInfo, DeviceWebSocketMap } from '../types';
 import { OnDeviceConnectionSubscriberDisconnectedEvent, OnDeviceDisconnectedEvent, OnDeviceRegisteredEvent, OnDeviceResolvedEvent } from './device.events';
+import { DeviceUpdater } from './device.updater';
 
 export interface DeviceRegistryValue extends DeviceResolutionInfo {
   webSocketMap: DeviceWebSocketMap;
@@ -13,7 +15,10 @@ export interface DeviceRegistryValue extends DeviceResolutionInfo {
 export class DeviceRegistry {
   private readonly _devices = new Map<Serial, DeviceRegistryValue>();
 
-  constructor(private readonly eventEmitter: EventEmitter2) {}
+  constructor(
+    private readonly eventEmitter: EventEmitter2,
+    private readonly deviceUpdater: DeviceUpdater,
+  ) {}
 
   get devices(): Map<Serial, DeviceRegistryValue> {
     return this._devices;
@@ -40,7 +45,7 @@ export class DeviceRegistry {
   }
 
   @OnEvent(OnDeviceDisconnectedEvent.key)
-  async onDeviceDisconnected(value: Instance<typeof OnDeviceDisconnectedEvent.value>): Promise<void> {
+  onDeviceDisconnected(value: Instance<typeof OnDeviceDisconnectedEvent.value>): void {
     const { serial } = value;
     if (!this._devices.has(serial)) {
       throw new Error(`device ${serial} not exists`);
@@ -58,5 +63,12 @@ export class DeviceRegistry {
 
   get(serial: string): DeviceRegistryValue | undefined {
     return this._devices.get(serial);
+  }
+
+  @OnEvent(OnHostResolvedEvent.key)
+  async onHostResolved(value: Instance<typeof OnHostResolvedEvent.value>): Promise<void> {
+    for (const [_, registryValue] of this._devices) {
+      await this.deviceUpdater.updateDevice(registryValue);
+    }
   }
 }

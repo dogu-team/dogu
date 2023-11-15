@@ -11,7 +11,10 @@ import { OnDeviceRegisteredEvent } from './device.events';
 
 @Injectable()
 export class DeviceUpdater {
-  constructor(private readonly consoleClientService: ConsoleClientService, private readonly logger: DoguLogger) {}
+  constructor(
+    private readonly consoleClientService: ConsoleClientService,
+    private readonly logger: DoguLogger,
+  ) {}
 
   @OnEvent(OnDeviceRegisteredEvent.key)
   async onDeviceRegisteredEvent(value: Instance<typeof OnDeviceRegisteredEvent.value>): Promise<void> {
@@ -19,7 +22,7 @@ export class DeviceUpdater {
   }
 
   @Retry({ printable: logger })
-  private async updateDevice(value: Instance<typeof OnDeviceRegisteredEvent.value>): Promise<void> {
+  async updateDevice(value: Instance<typeof OnDeviceRegisteredEvent.value>): Promise<void> {
     const {
       organizationId, //
       deviceId,
