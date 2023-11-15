@@ -17,7 +17,7 @@ interface DeviceDoorState {
 }
 
 const AndroidDeviceCloseThreshold = time({ seconds: 10 });
-const IosDeviceCloseThreshold = time({ seconds: 30 });
+const IosDeviceCloseThreshold = time({ seconds: 50 });
 
 function getDeviceCloseThreshold(platform: Platform): number {
   switch (platform) {
