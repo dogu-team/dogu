@@ -55,6 +55,7 @@ export class IosDriver implements DeviceDriver {
   private constructor(private readonly deviceServerService: DeviceServerService) {}
 
   static async create(deviceServerService: DeviceServerService): Promise<IosDriver> {
+    await IosDriver.restartUsbMuxd();
     await IosDriver.clearIdaClones();
     await XcodeBuild.validateXcodeBuild();
 
@@ -153,5 +154,18 @@ export class IosDriver implements DeviceDriver {
       await fs.promises.rm(idaRunspacesPath, { recursive: true });
     }
     await fs.promises.mkdir(idaRunspacesPath, { recursive: true });
+  }
+
+  // not work
+  private static async restartUsbMuxd(): Promise<void> {
+    logger.info('Restarting usbmuxd');
+    const ret = await ChildProcess.exec('launchctl stop com.apple.usbmuxd', {}).catch(() => {
+      logger.warn('Failed to stop usbmuxd');
+    });
+    logger.info('stop usbmuxd done', { ret });
+    const ret2 = await ChildProcess.exec('launchctl start com.apple.usbmuxd', {}).catch(() => {
+      logger.warn('Failed to start usbmuxd');
+    });
+    logger.info('start usbmuxd done', { ret2 });
   }
 }
