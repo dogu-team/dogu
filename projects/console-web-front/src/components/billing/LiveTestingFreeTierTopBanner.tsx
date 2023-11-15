@@ -36,7 +36,7 @@ const LiveTestingFreeTierTopBanner: React.FC<Props> = () => {
               <Trans
                 i18nKey="billing:liveTestingFreeTierInfoBannerMessage"
                 components={{
-                  time: <>{remainingSeconds / 60}</>,
+                  time: <>{(remainingSeconds / 60).toFixed(0)}</>,
                 }}
               />
             ) : (

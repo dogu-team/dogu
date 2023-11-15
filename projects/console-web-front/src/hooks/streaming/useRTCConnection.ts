@@ -46,16 +46,14 @@ const useRTCConnection = ({ device, pid, isCloudDevice }: Option, sendThrottleMs
   }, [device?.deviceId]);
 
   useEffect(() => {
-    if (peerConnectionRef.current) {
-      const unsub = useEventStore.subscribe(({ eventName }) => {
-        if (eventName === 'onCloudHeartbeatSocketClosed') {
-          setHAConnectionError(new StreamingError(StreamingErrorType.CONNECTION_REFUSED, 'Session has been expired'));
-          cleanUp();
-        }
-      });
+    const unsub = useEventStore.subscribe(({ eventName }) => {
+      if (eventName === 'onCloudHeartbeatSocketClosed') {
+        setHAConnectionError(new StreamingError(StreamingErrorType.CONNECTION_REFUSED, 'Session has been expired'));
+        cleanUp();
+      }
+    });
 
-      return unsub;
-    }
+    return unsub;
   }, [cleanUp]);
 
   useEffect(() => {

@@ -2,7 +2,7 @@ import { WarningTwoTone } from '@ant-design/icons';
 import { GetServerSideProps } from 'next';
 import styled from 'styled-components';
 import { LiveSessionId, LiveSessionState, LiveSessionWsMessage, WS_PING_MESSAGE } from '@dogu-private/types';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Button, Modal } from 'antd';
 import { useRouter } from 'next/router';
 import { shallow } from 'zustand/shallow';
@@ -32,11 +32,13 @@ const CloudLiveTestingStudioPage: NextPageWithLayout<CloudStudioTestingPageProps
   );
   const fireEvent = useEventStore((state) => state.fireEvent, shallow);
   const { t } = useTranslation('device-streaming');
+  const [isEnd, setIsEnd] = useState(false);
 
   useEffect(() => {
     if (cloudHeartbeatSocketRef.current) {
       const handleClose = () => {
         fireEvent('onCloudHeartbeatSocketClosed');
+        setIsEnd(true);
       };
 
       const handleMessage = (event: MessageEvent) => {
@@ -46,6 +48,7 @@ const CloudLiveTestingStudioPage: NextPageWithLayout<CloudStudioTestingPageProps
 
         try {
           const data = JSON.parse(event.data) as LiveSessionWsMessage;
+          console.log(event.data);
           if (data.type === LiveSessionState.CLOSE_WAIT) {
             openModal(data.message);
           } else if (data.type === 'cloud-license-live-testing') {
@@ -96,30 +99,32 @@ const CloudLiveTestingStudioPage: NextPageWithLayout<CloudStudioTestingPageProps
             &nbsp;{t('liveSessionToCloseWaitModalTitle')}
           </>
         }
-        open={isOpen}
+        open={isOpen && !isEnd}
         closable={false}
         footer={
-          <>
-            <LiveTestingCloseSessionButton
-              onClose={() => {
-                closeModal();
-                window.close();
-              }}
-              organizationId={organization.organizationId}
-              sessionId={router.query.sessionId as LiveSessionId}
-            >
-              Close session
-            </LiveTestingCloseSessionButton>
-            <Button
-              type="primary"
-              onClick={() => {
-                fireEvent('onDeviceInput', {});
-                closeModal();
-              }}
-            >
-              Keep using
-            </Button>
-          </>
+          isEnd ? null : (
+            <>
+              <LiveTestingCloseSessionButton
+                onClose={() => {
+                  closeModal();
+                  window.close();
+                }}
+                organizationId={organization.organizationId}
+                sessionId={router.query.sessionId as LiveSessionId}
+              >
+                Close session
+              </LiveTestingCloseSessionButton>
+              <Button
+                type="primary"
+                onClick={() => {
+                  fireEvent('onDeviceInput', {});
+                  closeModal();
+                }}
+              >
+                Keep using
+              </Button>
+            </>
+          )
         }
         destroyOnClose
         centered

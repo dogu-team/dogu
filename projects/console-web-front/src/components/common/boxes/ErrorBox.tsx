@@ -4,9 +4,10 @@ import styled from 'styled-components';
 interface Props {
   title: React.ReactNode;
   desc: React.ReactNode;
+  hideAlert?: boolean;
 }
 
-const ErrorBox = ({ title, desc }: Props) => {
+const ErrorBox = ({ title, desc, hideAlert }: Props) => {
   return (
     <Box>
       <div>
@@ -14,22 +15,24 @@ const ErrorBox = ({ title, desc }: Props) => {
       </div>
       <Title>{title}</Title>
       <Description>{desc}</Description>
-      <Alert>
-        If this error persists, please{' '}
-        <a href="https://join.slack.com/t/dogu-community/shared_invite/zt-1zespy16o-TgYIureSBI6ma6o_nG3gVw">
-          join and get help in Slack Community
-        </a>
-        {process.env.NEXT_PUBLIC_ENV === 'self-hosted' && (
-          <>
-            {' '}
-            or{' '}
-            <a href="https://github.com/dogu-team/dogu-self-hosted/issues" target="_blank">
-              report issue in GitHub
-            </a>
-          </>
-        )}
-        .
-      </Alert>
+      {!hideAlert && (
+        <Alert>
+          If this error persists, please{' '}
+          <a href="https://join.slack.com/t/dogu-community/shared_invite/zt-1zespy16o-TgYIureSBI6ma6o_nG3gVw">
+            join and get help in Slack Community
+          </a>
+          {process.env.NEXT_PUBLIC_ENV === 'self-hosted' && (
+            <>
+              {' '}
+              or{' '}
+              <a href="https://github.com/dogu-team/dogu-self-hosted/issues" target="_blank">
+                report issue in GitHub
+              </a>
+            </>
+          )}
+          .
+        </Alert>
+      )}
     </Box>
   );
 };

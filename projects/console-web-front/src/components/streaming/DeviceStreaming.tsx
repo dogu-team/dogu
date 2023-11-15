@@ -1,5 +1,6 @@
 import { DeviceBase } from '@dogu-private/console';
 import useTranslation from 'next-translate/useTranslation';
+import Link from 'next/link';
 import React, { useState } from 'react';
 import styled from 'styled-components';
 
@@ -52,7 +53,17 @@ const DeviceStreaming = ({ device, children, pid, isCloudDevice, isAdmin }: Prop
     if (error.type === StreamingErrorType.CONNECTION_REFUSED) {
       return (
         <div style={{ flex: 1 }}>
-          <ErrorBox title={'Your session has been expired'} desc={''} />
+          <ErrorBox
+            title={'Your session has been expired'}
+            desc={
+              <p>
+                Your session has been expired due to inactivity or time limit.
+                <br />
+                Please move to <Link href={`/`}>Live Testing</Link> and start a new session.
+              </p>
+            }
+            hideAlert
+          />
         </div>
       );
     }
