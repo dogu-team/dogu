@@ -22,7 +22,7 @@ export class DeviceUpdater {
   }
 
   @Retry({ printable: logger })
-  async updateDevice(value: Instance<typeof OnDeviceRegisteredEvent.value>): Promise<void> {
+  private async updateDevice(value: Instance<typeof OnDeviceRegisteredEvent.value>): Promise<void> {
     const {
       organizationId, //
       deviceId,

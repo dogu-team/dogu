@@ -2,7 +2,6 @@ import { Serial } from '@dogu-private/types';
 import { emitEventAsync, Instance } from '@dogu-tech/common';
 import { Injectable } from '@nestjs/common';
 import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
-import { OnHostResolvedEvent } from '../host/host.events';
 import { DeviceResolutionInfo, DeviceWebSocketMap } from '../types';
 import { OnDeviceConnectionSubscriberDisconnectedEvent, OnDeviceDisconnectedEvent, OnDeviceRegisteredEvent, OnDeviceResolvedEvent } from './device.events';
 import { DeviceUpdater } from './device.updater';
@@ -63,12 +62,5 @@ export class DeviceRegistry {
 
   get(serial: string): DeviceRegistryValue | undefined {
     return this._devices.get(serial);
-  }
-
-  @OnEvent(OnHostResolvedEvent.key)
-  async onHostResolved(value: Instance<typeof OnHostResolvedEvent.value>): Promise<void> {
-    for (const [_, registryValue] of this._devices) {
-      await this.deviceUpdater.updateDevice(registryValue);
-    }
   }
 }
