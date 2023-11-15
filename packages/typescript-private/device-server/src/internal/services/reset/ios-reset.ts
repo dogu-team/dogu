@@ -698,8 +698,7 @@ export class IosResetService {
               isResetHomeDone = true;
             }
 
-            if (process.env.DOGU_DEVICE_RESET_IOS_LOCATION) {
-              // temporaily disable to prevent intermittent
+            {
               await iosDriver.clickSelector(new IosClassChainSelector('**/XCUIElementTypeStaticText[`label == "Reset"`]'));
               await iosDriver.clickSelector(new IosButtonPredicateStringSelector('Reset Location & Privacy', { dismissAlert: false }));
               await iosDriver.clickSelector(new IosButtonPredicateStringSelector('Reset Settings', { dismissAlert: false }));
