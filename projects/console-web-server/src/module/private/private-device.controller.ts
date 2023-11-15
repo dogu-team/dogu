@@ -201,7 +201,7 @@ export class PrivateDeviceController {
     @Param(OrganizationPropCamel.organizationId, IsOrganizationExist) organizationId: OrganizationId,
     @Param(DevicePropCamel.deviceId, IsDeviceExist) deviceId: DeviceId,
     @Param('resultId') resultId: string,
-    @Body() body: any,
+    @Body() body: unknown,
   ): Promise<void> {
     const validated = await transformAndValidate(PushDeviceResultRequestBody, body);
     const { result } = validated;
