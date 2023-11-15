@@ -119,59 +119,57 @@ const OrganizationSideBar = () => {
     //       ],
     //     }
     //   : null,
-    !organization?.shareable && process.env.NEXT_PUBLIC_ENV !== 'self-hosted'
-      ? null
-      : {
-          type: 'group',
-          label: collapsed ? null : 'Test Automation',
-          children: [
-            {
-              key: 'project',
-              icon: collapsed ? (
-                <StyledIconLink
-                  selected={router.asPath === `/dashboard/${orgId}/projects`}
-                  href={`/dashboard/${orgId}/projects`}
-                >
-                  <ProjectOutlined />
-                </StyledIconLink>
-              ) : undefined,
-              label: collapsed ? (
-                t('organization:projectPageTitle')
-              ) : (
-                <SideBarMenu
-                  icon={<ProjectOutlined style={{ fontSize: '1.2rem' }} />}
-                  path={`/dashboard/${orgId}/projects`}
-                  text={t('organization:projectPageTitle')}
-                  accessId={process.env.NEXT_PUBLIC_ENV !== 'production' ? 'side-bar-project' : undefined}
-                />
-              ),
-              style: { borderRadius: '6px' },
-            },
-            {
-              key: 'device-farm',
-              icon: collapsed ? (
-                <StyledIconLink
-                  selected={router.asPath.startsWith(`/dashboard/${orgId}/device-farm`)}
-                  href={`/dashboard/${orgId}/device-farm/hosts`}
-                >
-                  <ClusterOutlined />
-                </StyledIconLink>
-              ) : undefined,
-              label: collapsed ? (
-                t('organization:deviceFarmPageTitle')
-              ) : (
-                <SideBarMenu
-                  icon={<ClusterOutlined style={{ fontSize: '1.2rem' }} />}
-                  path={`/dashboard/${orgId}/device-farm/hosts`}
-                  text={t('organization:deviceFarmPageTitle')}
-                  startWith={`/dashboard/${orgId}/device-farm`}
-                  accessId="side-bar-device-farm"
-                />
-              ),
-              style: { borderRadius: '6px' },
-            },
-          ],
+    {
+      type: 'group',
+      label: collapsed ? null : 'Test Automation',
+      children: [
+        {
+          key: 'project',
+          icon: collapsed ? (
+            <StyledIconLink
+              selected={router.asPath === `/dashboard/${orgId}/projects`}
+              href={`/dashboard/${orgId}/projects`}
+            >
+              <ProjectOutlined />
+            </StyledIconLink>
+          ) : undefined,
+          label: collapsed ? (
+            t('organization:projectPageTitle')
+          ) : (
+            <SideBarMenu
+              icon={<ProjectOutlined style={{ fontSize: '1.2rem' }} />}
+              path={`/dashboard/${orgId}/projects`}
+              text={t('organization:projectPageTitle')}
+              accessId={process.env.NEXT_PUBLIC_ENV !== 'production' ? 'side-bar-project' : undefined}
+            />
+          ),
+          style: { borderRadius: '6px' },
         },
+        {
+          key: 'device-farm',
+          icon: collapsed ? (
+            <StyledIconLink
+              selected={router.asPath.startsWith(`/dashboard/${orgId}/device-farm`)}
+              href={`/dashboard/${orgId}/device-farm/hosts`}
+            >
+              <ClusterOutlined />
+            </StyledIconLink>
+          ) : undefined,
+          label: collapsed ? (
+            t('organization:deviceFarmPageTitle')
+          ) : (
+            <SideBarMenu
+              icon={<ClusterOutlined style={{ fontSize: '1.2rem' }} />}
+              path={`/dashboard/${orgId}/device-farm/hosts`}
+              text={t('organization:deviceFarmPageTitle')}
+              startWith={`/dashboard/${orgId}/device-farm`}
+              accessId="side-bar-device-farm"
+            />
+          ),
+          style: { borderRadius: '6px' },
+        },
+      ],
+    },
     {
       type: 'group',
       label: collapsed ? null : 'Members',
