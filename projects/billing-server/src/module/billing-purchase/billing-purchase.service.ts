@@ -18,6 +18,7 @@ import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource, In } from 'typeorm';
 import { v4 } from 'uuid';
 import { BillingHistory } from '../../db/entity/billing-history.entity';
+import { BillingOrganization } from '../../db/entity/billing-organization.entity';
 import { BillingSubscriptionPlanHistory } from '../../db/entity/billing-subscription-plan-history.entity';
 import { BillingSubscriptionPlanInfo } from '../../db/entity/billing-subscription-plan-info.entity';
 import { retrySerialize } from '../../db/utils';
@@ -498,6 +499,41 @@ export class BillingPurchaseService {
           const now = this.dateTimeSimulatorService.now();
           const unlinked = invalidateSubscriptionPlanInfo(linked, now);
           await manager.getRepository(BillingSubscriptionPlanInfo).save(unlinked);
+        }
+
+        const billingOrganization = await manager.getRepository(BillingOrganization).findOne({
+          where: {
+            billingOrganizationId: billingHistory.billingOrganizationId,
+          },
+          relations: {
+            billingSubscriptionPlanInfos: true,
+          },
+          lock: {
+            mode: 'pessimistic_write',
+          },
+        });
+
+        if (billingOrganization) {
+          const hasMonthlySubscription =
+            (billingOrganization.billingSubscriptionPlanInfos?.filter((info) => info.period === 'monthly').filter((info) => info.state !== 'unsubscribed').length ?? 0) > 0;
+          if (!hasMonthlySubscription) {
+            billingOrganization.subscriptionMonthlyStartedAt = null;
+            billingOrganization.subscriptionMonthlyExpiredAt = null;
+          }
+
+          const hasYearlySubscription =
+            (billingOrganization.billingSubscriptionPlanInfos?.filter((info) => info.period === 'yearly').filter((info) => info.state !== 'unsubscribed').length ?? 0) > 0;
+          if (!hasYearlySubscription) {
+            billingOrganization.subscriptionYearlyStartedAt = null;
+            billingOrganization.subscriptionYearlyExpiredAt = null;
+          }
+
+          if (!hasMonthlySubscription && !hasYearlySubscription) {
+            billingOrganization.graceNextPurchasedAt = null;
+            billingOrganization.graceExpiredAt = null;
+          }
+
+          await manager.getRepository(BillingOrganization).save(billingOrganization);
         }
       }
     });
