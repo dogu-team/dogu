@@ -2,6 +2,7 @@ import { CloudLicenseResponse, SelfHostedLicenseResponse, UserBase } from '@dogu
 import { OrganizationId } from '@dogu-private/types';
 import { GetServerSideProps } from 'next';
 import useTranslation from 'next-translate/useTranslation';
+import Head from 'next/head';
 import styled from 'styled-components';
 
 import {
@@ -32,39 +33,44 @@ const BillingPage: NextPageWithLayout<BillingPageProps> = ({ me, license }) => {
   const paymentMethod = (storedLicense as CloudLicenseResponse | null)?.billingOrganization?.billingMethodNice;
 
   return (
-    <Box>
-      <Content>
-        <TitleWrapper>
-          <ContentTitle>{t('currentPlanText')}</ContentTitle>
-          <div style={{ marginBottom: '.5rem' }}>
-            <UpgradePlanButton groupType={null} type="primary">
-              {t('upgradePlanButtonTitle')}
-            </UpgradePlanButton>
-          </div>
-          <ContentInner>
-            <BillingSubscribedPlanList />
-          </ContentInner>
-        </TitleWrapper>
-      </Content>
-      {!!paymentMethod && (
+    <>
+      <Head>
+        <title>Plans & Pricing | Dogu</title>
+      </Head>
+      <Box>
         <Content>
           <TitleWrapper>
-            <ContentTitle>{t('billingPaymentMethodTitle')}</ContentTitle>
+            <ContentTitle>{t('currentPlanText')}</ContentTitle>
+            <div style={{ marginBottom: '.5rem' }}>
+              <UpgradePlanButton groupType={null} type="primary">
+                {t('upgradePlanButtonTitle')}
+              </UpgradePlanButton>
+            </div>
+            <ContentInner>
+              <BillingSubscribedPlanList />
+            </ContentInner>
+          </TitleWrapper>
+        </Content>
+        {!!paymentMethod && (
+          <Content>
+            <TitleWrapper>
+              <ContentTitle>{t('billingPaymentMethodTitle')}</ContentTitle>
+            </TitleWrapper>
+            <ContentInner>
+              <BillingPaymentMethod method={paymentMethod} organizationId={license.organizationId as OrganizationId} />
+            </ContentInner>
+          </Content>
+        )}
+        <Content>
+          <TitleWrapper>
+            <ContentTitle>{t('billingInvoiceTitle')}</ContentTitle>
           </TitleWrapper>
           <ContentInner>
-            <BillingPaymentMethod method={paymentMethod} organizationId={license.organizationId as OrganizationId} />
+            <BillingHistoryList organizationId={license.organizationId as OrganizationId} />
           </ContentInner>
         </Content>
-      )}
-      <Content>
-        <TitleWrapper>
-          <ContentTitle>{t('billingInvoiceTitle')}</ContentTitle>
-        </TitleWrapper>
-        <ContentInner>
-          <BillingHistoryList organizationId={license.organizationId as OrganizationId} />
-        </ContentInner>
-      </Content>
-    </Box>
+      </Box>
+    </>
   );
 };
 
