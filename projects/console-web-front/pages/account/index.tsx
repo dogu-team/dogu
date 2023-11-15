@@ -2,7 +2,7 @@ import styled from 'styled-components';
 import { Button, Divider, Input } from 'antd';
 import { useCallback, useEffect, useState } from 'react';
 import useTranslation from 'next-translate/useTranslation';
-import { UserBase } from '@dogu-private/console';
+import { CloudLicenseResponse, SelfHostedLicenseResponse, UserBase } from '@dogu-private/console';
 import Head from 'next/head';
 import { AxiosError } from 'axios';
 import { GetServerSideProps, Redirect } from 'next';
@@ -17,7 +17,6 @@ import ProfileImage from 'src/components/ProfileImage';
 import {
   deleteUser,
   getPersonalAccessToken,
-  getUserByIdInServerSide,
   regeneratePersonalAccessToken,
   resetPassword,
   updateProfileImage,
@@ -39,12 +38,14 @@ import useEventStore from '../../src/stores/events';
 import RegenerateTokenButton from '../../src/components/common/RegenerateTokenButton';
 import AccessTokenButton from '../../src/components/common/AccessTokenButton';
 import SettingTitleDivider from '../../src/components/common/SettingTitleDivider';
+import { getLicenseInServerSide } from '../../enterprise/api/license';
 
 interface Props {
   user: UserBase;
+  license: CloudLicenseResponse | SelfHostedLicenseResponse;
 }
 
-const AccountPage: NextPageWithLayout<Props> = ({ user }) => {
+const AccountPage: NextPageWithLayout<Props> = ({ user, license }) => {
   const [me, updateMe] = useAuthStore((state) => [state.me, state.updateMe]);
   const [editingMe, setEditingMe] = useState<UserBase>();
   const [loading, setLoading] = useState(false);
@@ -266,35 +267,29 @@ const AccountPage: NextPageWithLayout<Props> = ({ user }) => {
 
 AccountPage.getLayout = (page) => {
   return (
-    <ConsoleBasicLayout user={page.props.user} license={null}>
+    <ConsoleBasicLayout user={page.props.user} license={page.props.license}>
       {page}
       <Footer />
     </ConsoleBasicLayout>
   );
 };
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
+export const getServerSideProps: GetServerSideProps<Props> = async (context) => {
   try {
-    const [userResult, checkResult] = await Promise.all([
-      getUserByIdInServerSide(context),
-      checkUserVerifiedInServerSide(context),
-    ]);
+    const checkResult = await checkUserVerifiedInServerSide(context);
 
-    if ('redirect' in checkResult) {
-      if (checkResult.redirect) {
-        return {
-          redirect: checkResult.redirect as Redirect,
-        };
-      }
-
+    if (checkResult.redirect) {
       return {
-        redirect: redirectWithLocale(context, '/signin', false),
+        redirect: checkResult.redirect as Redirect,
       };
     }
 
+    const license = await getLicenseInServerSide(context);
+
     return {
       props: {
-        user: userResult,
+        user: checkResult.props.fallback['/registery/check'],
+        license,
       },
     };
   } catch (e) {
