@@ -6,7 +6,7 @@ import { EventEmitter } from 'stream';
 import WebSocket from 'ws';
 import { pathMap } from '../../../path-map';
 import { AdbSerial } from '../../externals/index';
-import { StreamingService } from '../streaming/streaming-service';
+import { PionStreamingService } from '../streaming/pion-streaming-service';
 import { Zombieable, ZombieProps, ZombieQueriable } from '../zombie/zombie-component';
 import { ZombieServiceInstance } from '../zombie/zombie-service';
 import {
@@ -40,7 +40,7 @@ export class AndroidDeviceAgentService implements DeviceAgentService, Zombieable
     private readonly host: string,
     private readonly port: number,
     private readonly devicePort: number,
-    private readonly streamingService: StreamingService,
+    private readonly streamingService: PionStreamingService,
     private readonly logger: SerialPrintable,
   ) {
     this.zombieWaiter = ZombieServiceInstance.addComponent(this);
@@ -207,7 +207,7 @@ export class AndroidDeviceAgentService implements DeviceAgentService, Zombieable
   onDie(reason: string): void {
     if (this.proc) {
       killChildProcess(this.proc).catch((error) => {
-        this.logger.error('AndroidDeviceAgentService killChildProcess', { error });
+        this.logger.error('AndroidDeviceAgentService.onDie killChildProcess', { error });
       });
     }
 

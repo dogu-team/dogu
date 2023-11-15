@@ -47,7 +47,11 @@ export class ZombieService {
               ret.updateCount++;
               await Promise.resolve(ret.component.impl.update?.())
                 .catch((e: Error) => {
-                  zombieLogger.error(`ZombieComponent ${ret.component.impl.name} update failed error:${stringify(e, { compact: true })}`);
+                  zombieLogger.error(`ZombieComponent update failed `, {
+                    name: ret.component.impl.name,
+                    serial: ret.component.impl.serial,
+                    error: stringify(e, { compact: true }),
+                  });
                 })
                 .finally(() => {
                   ret.isUpdating = false;
@@ -60,7 +64,7 @@ export class ZombieService {
           await ret.component
             .tryRevive()
             .catch((e: Error) => {
-              zombieLogger.error(`ZombieComponent ${ret.component.impl.name} revive failed error:${stringify(e, { compact: true })}`);
+              zombieLogger.error(`ZombieComponent revive failed `, { name: ret.component.impl.name, serial: ret.component.impl.serial, error: stringify(e, { compact: true }) });
             })
             .finally(() => {
               ret.isReviving = false;
@@ -74,7 +78,7 @@ export class ZombieService {
       updateCount: 0,
     };
     this.checkers.push(ret);
-    zombieLogger.info(`ZombieService.addComponent ${zombieable.name} added`);
+    zombieLogger.info(`ZombieService.addComponent done`, { name: ret.component.impl.name, serial: ret.component.impl.serial });
     return new ZombieQueriable(ret.component);
   }
 
@@ -84,10 +88,17 @@ export class ZombieService {
     if (target == null) {
       return;
     }
-    zombieLogger.info(`ZombieService.notifyDie ${target.component.impl.name}, ${closeReason} notified`);
-    target.component.onDie(closeReason).catch((e: Error) => {
-      zombieLogger.error(`ZombieComponent ${target.component.impl.name} onDie failed error:${stringify(e, { compact: true })}`);
+    zombieLogger.info(`ZombieService.notifyDie`, {
+      name: target.component.impl.name,
+      serial: target.component.impl.serial,
+      isAlive: target.component.isAlive(),
+      reason: closeReason,
     });
+    if (target.component.isAlive()) {
+      target.component.onDie(closeReason).catch((e: Error) => {
+        zombieLogger.error(`ZombieComponent ${target.component.impl.name} onDie failed error:${stringify(e, { compact: true })}`);
+      });
+    }
   }
   isAlive(zombie: Zombieable): boolean {
     const target = this.checkers.find((checker) => checker.component.impl === zombie);

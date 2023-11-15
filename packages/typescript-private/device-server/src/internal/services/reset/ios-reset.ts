@@ -136,6 +136,8 @@ const BlockAppList: BlockAppInfo[] = [
     uninstall: true,
   },
 ];
+
+const NoRemoveUserApps = ['com.apple.TestFlight'];
 export interface IosResetInfo {
   lastResetTime: number;
 }
@@ -290,6 +292,9 @@ export class IosResetService {
     const installer = new IdeviceInstaller(this.serial, this.logger);
     const userApps = await installer.getUserApps();
     for (const userApp of userApps) {
+      if (NoRemoveUserApps.includes(userApp.bundleId)) {
+        continue;
+      }
       await installer.uninstallApp(userApp.bundleId);
     }
   }

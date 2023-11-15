@@ -33,9 +33,10 @@ import { AppiumContext } from '../../appium/appium.context';
 import { AppiumContextProxy, AppiumRemoteContextRental } from '../../appium/appium.context.proxy';
 import { AppiumDeviceWebDriverHandler } from '../../device-webdriver/appium.device-webdriver.handler';
 import { DeviceWebDriverHandler } from '../../device-webdriver/device-webdriver.common';
+import { env } from '../../env';
 import { GamiumContext } from '../../gamium/gamium.context';
 import { deviceInfoLogger } from '../../logger/logger.instance';
-import { createAndroidLogger, SerialLogger } from '../../logger/serial-logger.instance';
+import { createAndroidLogger, createGdcLogger, SerialLogger } from '../../logger/serial-logger.instance';
 import { AdbSerial, AppiumAdb } from '../externals';
 import { getManifestFromApp } from '../externals/apk/apk-util';
 import { DeviceChannel, DeviceChannelOpenParam, DeviceHealthStatus, DeviceServerService, LogHandler } from '../public/device-channel';
@@ -44,7 +45,7 @@ import { AndroidAdbProfileService, AndroidDisplayProfileService } from '../servi
 import { ProfileServices } from '../services/profile/profile-service';
 import { AndroidResetService } from '../services/reset/android-reset';
 import { AndroidSharedDeviceService } from '../services/shared-device/android-shared-device';
-import { StreamingService } from '../services/streaming/streaming-service';
+import { PionStreamingService } from '../services/streaming/pion-streaming-service';
 import { AndroidSystemInfoService } from '../services/system-info/android-system-info-service';
 import { Zombieable } from '../services/zombie/zombie-component';
 import { ZombieServiceInstance } from '../services/zombie/zombie-service';
@@ -90,7 +91,7 @@ export class AndroidChannel implements DeviceChannel {
     private readonly _systemInfoService: AndroidSystemInfoService,
     private readonly _deviceAgent: AndroidDeviceAgentService,
     private readonly _profilers: ProfileServices,
-    private readonly _streaming: StreamingService,
+    private readonly _streaming: PionStreamingService,
     private _appiumContext: AppiumContextProxy,
     private readonly _appiumDeviceWebDriverHandler: AppiumDeviceWebDriverHandler,
     private readonly _sharedDevice: AndroidSharedDeviceService,
@@ -103,7 +104,7 @@ export class AndroidChannel implements DeviceChannel {
     this.logger.info(`AndroidChannel created: ${this.serial}`);
   }
 
-  public static async create(param: DeviceChannelOpenParam, streaming: StreamingService, deviceServerService: DeviceServerService, appiumAdb: AppiumAdb): Promise<AndroidChannel> {
+  public static async create(param: DeviceChannelOpenParam, deviceServerService: DeviceServerService, appiumAdb: AppiumAdb): Promise<AndroidChannel> {
     ZombieServiceInstance.deleteAllComponentsIfExist((zombieable: Zombieable): boolean => {
       return zombieable.serial === param.serial && zombieable.platform === Platform.PLATFORM_ANDROID;
     }, 'kill previous zombie');
@@ -124,6 +125,8 @@ export class AndroidChannel implements DeviceChannel {
     if (version && semver.lt(version, '8.0.0')) {
       throw new Error(`Android version must be 8 or higher. current version: ${stringify(version)}`);
     }
+
+    const streaming = await PionStreamingService.create(serial, Platform.PLATFORM_ANDROID, env.DOGU_DEVICE_SERVER_PORT, createGdcLogger(serial));
 
     const deviceAgent = new AndroidDeviceAgentService(
       serial,

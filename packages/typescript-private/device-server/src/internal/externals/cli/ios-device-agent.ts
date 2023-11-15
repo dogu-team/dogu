@@ -5,7 +5,7 @@ import { Socket } from 'net';
 import { config } from '../../config';
 import { IosDeviceAgentService } from '../../services/device-agent/ios-device-agent-service';
 import { IosResetService } from '../../services/reset/ios-reset';
-import { StreamingService } from '../../services/streaming/streaming-service';
+import { PionStreamingService } from '../../services/streaming/pion-streaming-service';
 import { Zombieable, ZombieProps, ZombieQueriable } from '../../services/zombie/zombie-component';
 import { ZombieServiceInstance } from '../../services/zombie/zombie-service';
 import { XcodeBuild } from '../index';
@@ -30,7 +30,7 @@ export class IosDeviceAgentProcess {
     webdriverAgentProcess: WebdriverAgentProcess,
     idaWdaDevicePort: number,
     iosDeviceAgentService: IosDeviceAgentService,
-    streamingService: StreamingService,
+    streamingService: PionStreamingService,
     reset: IosResetService,
     private readonly logger: FilledPrintable,
   ) {
@@ -90,7 +90,7 @@ export class IosDeviceAgentProcess {
     webdriverAgentProcess: WebdriverAgentProcess,
     idaWdaDevicePort: number,
     iosDeviceAgentService: IosDeviceAgentService,
-    streamingService: StreamingService,
+    streamingService: PionStreamingService,
     reset: IosResetService,
     logger: FilledPrintable,
   ): Promise<IosDeviceAgentProcess> {
@@ -163,7 +163,7 @@ class ZombieIdaXCTest implements Zombieable {
     private readonly idaWdaDevicePort: number,
     private readonly grpcPort: number,
     private readonly iosDeviceAgentService: IosDeviceAgentService,
-    private readonly streamingService: StreamingService,
+    private readonly streamingService: PionStreamingService,
     private readonly reset: IosResetService,
     private readonly logger: FilledPrintable,
   ) {

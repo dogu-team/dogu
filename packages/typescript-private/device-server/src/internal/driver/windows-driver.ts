@@ -1,22 +1,18 @@
 import { Platform, Serial } from '@dogu-private/types';
 import { errorify } from '@dogu-tech/common';
 import systeminformation from 'systeminformation';
-import { env } from '../../env';
-import { createGdcLogger, logger } from '../../logger/logger.instance';
+import { logger } from '../../logger/logger.instance';
 import { WindowsChannel } from '../channel/windows-channel';
 import { DeviceChannel, DeviceChannelOpenParam, DeviceServerService } from '../public/device-channel';
 import { DeviceDriver, DeviceScanResult } from '../public/device-driver';
-import { PionStreamingService } from '../services/streaming/pion-streaming-service';
-import { StreamingService } from '../services/streaming/streaming-service';
 
 export class WindowsDriver implements DeviceDriver {
   private channelMap = new Map<Serial, WindowsChannel>();
 
-  private constructor(private readonly streamingService: StreamingService, private readonly deviceServerService: DeviceServerService) {}
+  private constructor(private readonly deviceServerService: DeviceServerService) {}
 
   static async create(deviceServerService: DeviceServerService): Promise<WindowsDriver> {
-    const streaming = await PionStreamingService.create(Platform.PLATFORM_WINDOWS, env.DOGU_DEVICE_SERVER_PORT, createGdcLogger(Platform.PLATFORM_WINDOWS));
-    return new WindowsDriver(streaming, deviceServerService);
+    return new WindowsDriver(deviceServerService);
   }
 
   get platform(): Platform {
@@ -30,7 +26,7 @@ export class WindowsDriver implements DeviceDriver {
   }
 
   async openChannel(initParam: DeviceChannelOpenParam): Promise<DeviceChannel> {
-    return await WindowsChannel.create(initParam, this.streamingService, this.deviceServerService);
+    return await WindowsChannel.create(initParam, this.deviceServerService);
   }
 
   async closeChannel(seial: Serial): Promise<void> {
@@ -41,7 +37,6 @@ export class WindowsDriver implements DeviceDriver {
       });
       this.channelMap.delete(seial);
     }
-    await this.streamingService.deviceDisconnected(seial);
   }
 
   async reset(): Promise<void> {

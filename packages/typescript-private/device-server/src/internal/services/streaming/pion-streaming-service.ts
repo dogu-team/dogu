@@ -22,14 +22,13 @@ import { GoDeviceControllerProcess } from '../../externals/cli/go-device-control
 import { GoDeviceControllerGrpcClient } from '../../externals/network/go-device-controller-client';
 import { delay } from '../../util/delay';
 import { getOriginFilePathFromTmp, makeTmpFilePath } from '../../util/files';
-import { StreamingService } from './streaming-service';
 
 type DcGdcDeviceContext = PrivateProtocol.DcGdcDeviceContext;
 type DcGdcStartStreamingParam = PrivateProtocol.DcGdcStartStreamingParam;
 type DcGdcStartStreamingResult = PrivateProtocol.DcGdcStartStreamingResult;
 type DcGdcGetSurfaceStatusResult = PrivateProtocol.DcGdcGetSurfaceStatusResult;
 
-export class PionStreamingService implements StreamingService {
+export class PionStreamingService {
   private constructor(
     private readonly platform: Platform,
     private readonly grpcClient: GoDeviceControllerGrpcClient,
@@ -38,9 +37,9 @@ export class PionStreamingService implements StreamingService {
 
   private port: number | null = null;
 
-  static async create(platform: Platform, deviceServerPort: number, logger: FilledPrintable): Promise<PionStreamingService> {
-    const gdc = await GoDeviceControllerProcess.create(platform, deviceServerPort, logger);
-    const gdcClient = await GoDeviceControllerGrpcClient.create(platform, gdc, `127.0.0.1:${gdc.port}`, 60);
+  static async create(serial: Serial, platform: Platform, deviceServerPort: number, logger: FilledPrintable): Promise<PionStreamingService> {
+    const gdc = await GoDeviceControllerProcess.create(serial, platform, deviceServerPort, logger);
+    const gdcClient = await GoDeviceControllerGrpcClient.create(serial, platform, gdc, `127.0.0.1:${gdc.port}`, 60);
     const ret = new PionStreamingService(platform, gdcClient, logger);
     return ret;
   }
@@ -151,10 +150,6 @@ export class PionStreamingService implements StreamingService {
 
   async deviceConnected(serial: Serial, context: DcGdcDeviceContext): Promise<void> {
     await this.grpcClient.deviceConnected(serial, context);
-  }
-
-  async deviceDisconnected(serial: Serial): Promise<void> {
-    await this.grpcClient.deviceDisconnected(serial);
   }
 
   async getSurfaceStatus(serial: string): Promise<PrivateProtocol.DcGdcGetSurfaceStatusResult> {

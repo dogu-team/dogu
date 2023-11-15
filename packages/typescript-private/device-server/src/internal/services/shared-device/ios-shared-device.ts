@@ -1,12 +1,9 @@
 import { Platform, Serial } from '@dogu-private/types';
 import { delay, FilledPrintable, usingAsnyc } from '@dogu-tech/common';
-import { CheckTimer, HostPaths } from '@dogu-tech/node';
-import fs from 'fs';
+import { CheckTimer } from '@dogu-tech/node';
 import { AppiumContextImpl } from '../../../appium/appium.context';
-import { DeviceHostResignAppFileService } from '../../../device-host/device-host.resign-app-file';
 import { env } from '../../../env';
 import { config } from '../../config';
-import { IdeviceInstaller } from '../../externals/cli/ideviceinstaller';
 import { WebdriverAgentProcess } from '../../externals/cli/webdriver-agent-process';
 import { IosAccessibilitiySelector, IosWebDriver, IosWebDriverInfo } from '../../externals/webdriver/ios-webdriver';
 import { IosResetService } from '../reset/ios-reset';
@@ -17,17 +14,6 @@ interface PreinstallAppInfo {
   packageName: string;
   filePath: () => string;
 }
-
-const ChromeAppInfo: PreinstallAppInfo = {
-  packageName: 'com.google.chrome.ios',
-  filePath: () => HostPaths.external.preInstall.chrome.ipa(),
-};
-const TestFlightAppInfo: PreinstallAppInfo = {
-  packageName: 'com.apple.TestFlight',
-  filePath: () => HostPaths.external.preInstall.testflight.ipa(),
-};
-// const PreinstallApps: PreinstallAppInfo[] = [ChromeAppInfo, TestFlightAppInfo];
-const PreinstallApps: PreinstallAppInfo[] = []; // disable preinstall before fix relogin requested issue
 
 export class IosSharedDeviceService implements Zombieable {
   public name = 'IosSharedDeviceService';
@@ -79,7 +65,6 @@ export class IosSharedDeviceService implements Zombieable {
 
     const iosDriver = new IosWebDriver(driver, wda, iosWebDriverInfo, logger);
     await this.checkSetup(`IosResetService.setup.checkEnglish`, this.checkEnglish(iosDriver));
-    await this.checkSetup(`IosResetService.setup.preinstallApps`, this.preInstallApps());
     await this.checkSetup(`IosResetService.setup.mute`, this.mute());
 
     await this.reset.makeDirty();
@@ -96,21 +81,6 @@ export class IosSharedDeviceService implements Zombieable {
   }
 
   onDie(reason: string): void {}
-
-  static async resignPreinstallApps(resignService: DeviceHostResignAppFileService): Promise<void> {
-    if (!env.DOGU_DEVICE_IS_SHAREABLE) {
-      return;
-    }
-    for (const preinstall of PreinstallApps) {
-      if (!fs.existsSync(preinstall.filePath())) {
-        continue;
-      }
-      const resignResult = await resignService.queueResign({ filePath: preinstall.filePath() });
-      if (resignResult.result !== 'success') {
-        throw new Error(`IosDriver.create Failed to resign ${preinstall.packageName}.`);
-      }
-    }
-  }
 
   private async checkEnglish(iosDriver: IosWebDriver): Promise<void> {
     await usingAsnyc(
@@ -130,17 +100,6 @@ export class IosSharedDeviceService implements Zombieable {
         }
       },
     );
-  }
-
-  private async preInstallApps(): Promise<void> {
-    const installer = new IdeviceInstaller(this.serial, this.printable);
-    for (const app of PreinstallApps) {
-      if (!fs.existsSync(app.filePath())) {
-        this.printable.warn(`AndroidSharedDeviceService.preInstallApps. file not exists.`, { app });
-        continue;
-      }
-      await installer.installApp(app.filePath());
-    }
   }
 
   private async mute(): Promise<void> {

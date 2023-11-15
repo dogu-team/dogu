@@ -1,4 +1,4 @@
-import { Platform } from '@dogu-private/types';
+import { Platform, Serial } from '@dogu-private/types';
 import { errorify, FilledPrintable, Printable, stringify } from '@dogu-tech/common';
 import { ChildProcess, killChildProcess } from '@dogu-tech/node';
 import child_process from 'child_process';
@@ -13,8 +13,10 @@ import { getFreePort } from '../../util/net';
 export class GoDeviceControllerProcess implements Zombieable {
   private zombieWaiter: ZombieQueriable;
   private proc: child_process.ChildProcess | null = null;
+  public readonly name = 'GoDeviceControllerProcess';
 
   constructor(
+    public readonly serial: Serial,
     public readonly platform: Platform,
     public readonly port: number,
     public readonly deviceServerPort: number,
@@ -23,21 +25,16 @@ export class GoDeviceControllerProcess implements Zombieable {
     this.zombieWaiter = ZombieServiceInstance.addComponent(this);
   }
 
-  static async create(platform: Platform, deviceServerPort: number, logger: FilledPrintable): Promise<GoDeviceControllerProcess> {
+  static async create(serial: Serial, platform: Platform, deviceServerPort: number, logger: FilledPrintable): Promise<GoDeviceControllerProcess> {
     let port = 0;
     if (config.externalGoDeviceController.use) {
       port = config.externalGoDeviceController.port;
     } else {
       port = await getFreePort();
     }
-    const ret = new GoDeviceControllerProcess(platform, port, deviceServerPort, logger);
+    const ret = new GoDeviceControllerProcess(serial, platform, port, deviceServerPort, logger);
     await ret.zombieWaiter.waitUntilAlive();
     return ret;
-  }
-
-  // Zombie
-  get name(): string {
-    return `GoDeviceControllerProcess`;
   }
 
   get props(): ZombieProps {
@@ -45,9 +42,6 @@ export class GoDeviceControllerProcess implements Zombieable {
   }
   get printable(): Printable {
     return this.logger;
-  }
-  get serial(): string {
-    return '';
   }
 
   async revive(): Promise<void> {

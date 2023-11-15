@@ -38,11 +38,13 @@ type DeviceMap = Map<string, DcGdcDeviceContext>;
 const ServiceDefenition = GoDeviceControllerServiceService;
 
 export class GoDeviceControllerGrpcClient extends GrpcClientBase implements Zombieable {
+  public readonly name = 'GoDeviceControllerGrpcClient';
   private zombieWaiter: ZombieQueriable;
   static _deviceMap = new Map<string, DcGdcDeviceContext>(); // When debugging go-device-controller. The entire device list exists globally and is for synchronization..
   _deviceMap = new Map<string, DcGdcDeviceContext>();
 
   constructor(
+    public readonly serial: Serial,
     public readonly platform: Platform,
     public readonly goDeviceController: GoDeviceControllerProcess,
     serverUrl: string,
@@ -58,8 +60,14 @@ export class GoDeviceControllerGrpcClient extends GrpcClientBase implements Zomb
     return this._deviceMap;
   }
 
-  static async create(platform: Platform, goDeviceController: GoDeviceControllerProcess, serverUrl: string, timeoutSeconds: number): Promise<GoDeviceControllerGrpcClient> {
-    const ret = new GoDeviceControllerGrpcClient(platform, goDeviceController, serverUrl, timeoutSeconds);
+  static async create(
+    serial: Serial,
+    platform: Platform,
+    goDeviceController: GoDeviceControllerProcess,
+    serverUrl: string,
+    timeoutSeconds: number,
+  ): Promise<GoDeviceControllerGrpcClient> {
+    const ret = new GoDeviceControllerGrpcClient(serial, platform, goDeviceController, serverUrl, timeoutSeconds);
     await ret.zombieWaiter.waitUntilAlive();
     return ret;
   }
@@ -180,16 +188,11 @@ export class GoDeviceControllerGrpcClient extends GrpcClientBase implements Zomb
   }
 
   // Zombie
-  get name(): string {
-    return `GoDeviceControllerGrpcClient`;
-  }
+
   get props(): ZombieProps {
     return { destServer: this.serverUrl };
   }
 
-  get serial(): string {
-    return '';
-  }
   get printable(): Printable {
     return this.goDeviceController.printable;
   }

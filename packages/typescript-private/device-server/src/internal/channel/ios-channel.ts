@@ -34,7 +34,7 @@ import { DeviceWebDriverHandler } from '../../device-webdriver/device-webdriver.
 import { env } from '../../env';
 import { GamiumContext } from '../../gamium/gamium.context';
 import { deviceInfoLogger } from '../../logger/logger.instance';
-import { createIosLogger } from '../../logger/serial-logger.instance';
+import { createGdcLogger, createIosLogger } from '../../logger/serial-logger.instance';
 import { config } from '../config';
 import { IosDriver } from '../driver/ios-driver';
 import { IdeviceDiagnostics, IdeviceSyslog, MobileDevice } from '../externals';
@@ -49,7 +49,7 @@ import { IosDisplayProfileService, IosProfileService } from '../services/profile
 import { ProfileServices } from '../services/profile/profile-service';
 import { IosResetService } from '../services/reset/ios-reset';
 import { IosSharedDeviceService } from '../services/shared-device/ios-shared-device';
-import { StreamingService } from '../services/streaming/streaming-service';
+import { PionStreamingService } from '../services/streaming/pion-streaming-service';
 import { IosSystemInfoService } from '../services/system-info/ios-system-info-service';
 import { Zombieable } from '../services/zombie/zombie-component';
 import { ZombieServiceInstance } from '../services/zombie/zombie-service';
@@ -78,7 +78,7 @@ export class IosChannel implements DeviceChannel {
     private readonly _serial: Serial,
     private readonly _info: DeviceSystemInfo,
     private readonly _profilers: ProfileServices,
-    private readonly streaming: StreamingService,
+    private readonly streaming: PionStreamingService,
     private webdriverAgentProcess: WebdriverAgentProcess,
     private iosDeviceAgentProcess: IosDeviceAgentProcess,
     private readonly deviceAgent: IosDeviceAgentService,
@@ -113,7 +113,7 @@ export class IosChannel implements DeviceChannel {
     return this._info.isVirtual;
   }
 
-  static async create(param: DeviceChannelOpenParam, streaming: StreamingService, deviceServerService: DeviceServerService): Promise<IosChannel> {
+  static async create(param: DeviceChannelOpenParam, deviceServerService: DeviceServerService): Promise<IosChannel> {
     ZombieServiceInstance.deleteAllComponentsIfExist((zombieable: Zombieable): boolean => {
       return zombieable.serial === param.serial && zombieable.platform === Platform.PLATFORM_IOS;
     }, 'kill previous zombie');
@@ -214,6 +214,7 @@ export class IosChannel implements DeviceChannel {
     const screenForwardPort = await deviceServerService.devicePortService.createOrGetHostPort(serial, 'iOSScreenForward');
     const grpcForwardPort = await deviceServerService.devicePortService.createOrGetHostPort(serial, 'iOSGrpcForward');
     const deviceAgent = new IosDeviceAgentService(serial, screenForwardPort, grpcForwardPort, logger);
+    const streaming = await PionStreamingService.create(serial, Platform.PLATFORM_IOS, env.DOGU_DEVICE_SERVER_PORT, createGdcLogger(serial));
     const iosDeviceAgentProcess = await timer.check(
       'IosChannel.create.IosDeviceAgentProcess.start',
       IosDeviceAgentProcess.start(

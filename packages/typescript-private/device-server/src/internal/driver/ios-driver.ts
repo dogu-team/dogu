@@ -2,14 +2,11 @@ import { Platform, Serial } from '@dogu-private/types';
 import { errorify, loopTime, Milisecond } from '@dogu-tech/common';
 import { ChildProcess, HostPaths } from '@dogu-tech/node';
 import fs from 'fs';
-import { env } from '../../env';
-import { createGdcLogger, logger } from '../../logger/logger.instance';
+import { logger } from '../../logger/logger.instance';
 import { IosChannel } from '../channel/ios-channel';
 import { IdeviceId, SystemProfiler, XcodeBuild, Xctrace } from '../externals';
 import { DeviceChannel, DeviceChannelOpenParam, DeviceServerService } from '../public/device-channel';
 import { DeviceDriver, DeviceScanResult } from '../public/device-driver';
-import { IosSharedDeviceService } from '../services/shared-device/ios-shared-device';
-import { PionStreamingService } from '../services/streaming/pion-streaming-service';
 
 let ScanResultCache: DeviceScanResult[] = [];
 const ScanMethods = ['xctrace', 'idevice-id'];
@@ -55,19 +52,13 @@ export class IosDriver implements DeviceDriver {
   private channelMap = new Map<Serial, IosChannel>();
   public readonly platform = Platform.PLATFORM_IOS;
 
-  private constructor(
-    private readonly streaming: PionStreamingService,
-    private readonly deviceServerService: DeviceServerService,
-  ) {}
+  private constructor(private readonly deviceServerService: DeviceServerService) {}
 
   static async create(deviceServerService: DeviceServerService): Promise<IosDriver> {
-    const { resignService } = deviceServerService;
-    await IosSharedDeviceService.resignPreinstallApps(resignService);
     await IosDriver.clearIdaClones();
     await XcodeBuild.validateXcodeBuild();
 
-    const streaming = await PionStreamingService.create(Platform.PLATFORM_IOS, env.DOGU_DEVICE_SERVER_PORT, createGdcLogger(Platform.PLATFORM_IOS));
-    return new IosDriver(streaming, deviceServerService);
+    return new IosDriver(deviceServerService);
   }
 
   async scanSerials(): Promise<DeviceScanResult[]> {
@@ -75,7 +66,7 @@ export class IosDriver implements DeviceDriver {
   }
 
   async openChannel(initParam: DeviceChannelOpenParam): Promise<DeviceChannel> {
-    const channel = await IosChannel.create(initParam, this.streaming, this.deviceServerService);
+    const channel = await IosChannel.create(initParam, this.deviceServerService);
     this.channelMap.set(initParam.serial, channel);
     return channel;
   }
@@ -88,7 +79,6 @@ export class IosDriver implements DeviceDriver {
       });
       this.channelMap.delete(serial);
     }
-    return await this.streaming.deviceDisconnected(serial);
   }
 
   reset(): void {

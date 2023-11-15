@@ -138,6 +138,14 @@ async function shellIgnoreError(serial: Serial, command: string, option: AdbExec
   return execIgnoreError(`${adbPrefix()} -s ${serial} shell "${command}"`, option);
 }
 
+interface ForwardInfo {
+  serial: Serial;
+  hostProtocol: string;
+  hostValue: string;
+  deviceProtocol: string;
+  deviceValue: string;
+}
+
 interface PackageInfo {
   pid: number;
   uid: number;
@@ -243,6 +251,31 @@ export module Adb {
       return scanInfos;
     });
   }
+
+  export async function listForward(): Promise<ForwardInfo[]> {
+    return await usingAsnyc(new AdbScope('listForward', {}), async () => {
+      const ret = await exec(`${adbPrefix()} forward --list`);
+      const lines = ret.stdout.split(os.EOL);
+      const rv = lines.map((line) => {
+        const splited = line.split(/\s{1,}|\t/);
+        if (splited.length < 3) {
+          return undefined;
+        }
+        const [serial, hostNet, deviceNet] = splited;
+        const hostNetSplited = hostNet.split(':');
+        const deviceNetSplited = deviceNet.split(':');
+        if (hostNetSplited.length < 2 || deviceNetSplited.length < 2) {
+          return undefined;
+        }
+        const hostProtocol = hostNetSplited[0];
+        const hostValue = hostNetSplited[1];
+        const deviceProtocol = deviceNetSplited[0];
+        const deviceValue = deviceNetSplited[1];
+        return { serial, hostProtocol, hostValue, deviceProtocol, deviceValue };
+      });
+      return rv.filter((v) => v !== undefined) as ForwardInfo[];
+    });
+  }
 }
 
 export class AdbSerial {
@@ -290,7 +323,18 @@ export class AdbSerial {
   async unforwardall(): Promise<void> {
     const { serial, printable } = this;
     return await usingAsnyc(new AdbSerialScope('unforwardall', { serial }), async () => {
-      await exec(`${adbPrefix()} -s ${serial} forward --remove-all`);
+      const forwardList = await Adb.listForward();
+      for (const forward of forwardList) {
+        if (forward.serial !== serial) {
+          continue;
+        }
+        const value = parseInt(forward.hostValue);
+        if (isNaN(value)) {
+          continue;
+        }
+
+        await this.unforward(value, { ignore: true });
+      }
     });
   }
 

@@ -6,6 +6,10 @@ export function createAndroidLogger(serial: Serial): SerialLogger {
   return new SerialLogger(serial, LoggerFactory.createLazy(`${serial}_android`, { withFileTransports: true }));
 }
 
+export function createGdcLogger(serial: Serial): SerialLogger {
+  return new SerialLogger(serial, LoggerFactory.createLazy(`${serial}_gdc`, { withFileTransports: true }));
+}
+
 export function createAdbSerialLogger(serial: Serial): SerialLogger {
   return new SerialLogger(serial, LoggerFactory.createLazy(`${serial}_adb`, { withFileTransports: true }));
 }
@@ -15,7 +19,10 @@ export function createIosLogger(serial: Serial): SerialLogger {
 }
 
 export class SerialLogger implements SerialPrintable {
-  constructor(public readonly serial: Serial, readonly logger: FilledPrintable) {}
+  constructor(
+    public readonly serial: Serial,
+    readonly logger: FilledPrintable,
+  ) {}
 
   error(message: unknown, details?: Record<string, unknown>): void {
     this.logger.error(message, details);

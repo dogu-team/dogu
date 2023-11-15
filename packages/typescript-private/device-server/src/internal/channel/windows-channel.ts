@@ -23,15 +23,17 @@ import systeminformation from 'systeminformation';
 import { AppiumRemoteContextRental } from '../../appium/appium.context.proxy';
 import { DeviceWebDriverHandler } from '../../device-webdriver/device-webdriver.common';
 import { SeleniumDeviceWebDriverHandler } from '../../device-webdriver/selenium.device-webdriver.handler';
+import { env } from '../../env';
 import { GamiumContext } from '../../gamium/gamium.context';
 import { deviceInfoLogger, logger } from '../../logger/logger.instance';
+import { createGdcLogger } from '../../logger/serial-logger.instance';
 import { DesktopCapturer } from '../externals/index';
 import { DeviceChannel, DeviceChannelOpenParam, DeviceHealthStatus, DeviceServerService, LogHandler } from '../public/device-channel';
 import { DeviceAgentService } from '../services/device-agent/device-agent-service';
 import { NullDeviceAgentService } from '../services/device-agent/null-device-agent-service';
 import { DesktopProfileService } from '../services/profile/desktop-profiler';
 import { ProfileService } from '../services/profile/profile-service';
-import { StreamingService } from '../services/streaming/streaming-service';
+import { PionStreamingService } from '../services/streaming/pion-streaming-service';
 import { parseRecord } from '../util/parse';
 
 type DeviceControl = PrivateProtocol.DeviceControl;
@@ -43,7 +45,7 @@ export class WindowsChannel implements DeviceChannel {
     private readonly _serial: Serial,
     private readonly _info: DeviceSystemInfo,
     private readonly _profile: ProfileService,
-    private readonly _streaming: StreamingService,
+    private readonly _streaming: PionStreamingService,
     private readonly _deviceAgent: DeviceAgentService,
     private readonly _seleniumDeviceWebDriverHandler: SeleniumDeviceWebDriverHandler,
     readonly browserInstallations: BrowserInstallation[],
@@ -68,7 +70,7 @@ export class WindowsChannel implements DeviceChannel {
   get isVirtual(): boolean {
     return this._info.isVirtual;
   }
-  static async create(param: DeviceChannelOpenParam, streaming: StreamingService, deviceServerService: DeviceServerService): Promise<DeviceChannel> {
+  static async create(param: DeviceChannelOpenParam, deviceServerService: DeviceServerService): Promise<DeviceChannel> {
     const platform = Platform.PLATFORM_WINDOWS;
     const deviceAgent = new NullDeviceAgentService();
 
@@ -84,6 +86,7 @@ export class WindowsChannel implements DeviceChannel {
       cpu: await timer.check('cpu', systeminformation.cpu()),
     };
     deviceInfoLogger.info('WindowsChannel.create', { info });
+    const streaming = await PionStreamingService.create(param.serial, Platform.PLATFORM_WINDOWS, env.DOGU_DEVICE_SERVER_PORT, createGdcLogger(param.serial));
     await streaming.deviceConnected(param.serial, {
       serial: param.serial,
       platform,

@@ -3,10 +3,13 @@ import { stringify, stringifyShort } from '@dogu-tech/common';
 import { ZombieChecker } from './zombie-service';
 
 export class ZombieLog {
-  constructor(public readonly str: string, public childs: ZombieLog[] = []) {}
+  constructor(
+    public readonly str: string,
+    public childs: ZombieLog[] = [],
+  ) {}
 
   toString(depth: number): string {
-    const prefix = `${' '.repeat(depth)}${0 < depth ? '└' : ''}`;
+    const prefix = `${' '.repeat(depth)}${0 < depth ? '└ ' : ''}`;
     if (this.childs.length === 0) {
       return prefix + this.str;
     }
@@ -44,7 +47,7 @@ export function makeLogs(checkers: ZombieChecker[]): string {
       ...checker.component.impl.props,
       lastError: stringifyShort(checker.component.lastError?.message ?? ''),
     };
-    const logs = `${alive}${checker.component.impl.name} [${commonProp}]` + ` ${stringify(propDict, { compact: true, breakLength: 1000 })}`;
+    const logs = `${alive} ${checker.component.impl.name} [${commonProp}]` + ` ${stringify(propDict, { compact: true, breakLength: 1000 })}`;
     platformZombieSerialLog.childs.push(new ZombieLog(logs));
   }
 
