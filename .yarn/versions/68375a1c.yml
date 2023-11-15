@@ -1,0 +1,11 @@
+undecided:
+  - dogu
+  - android-device-agent
+  - android-io.appium.settings-builder
+  - billing-server
+  - console-web-front
+  - console-web-server
+  - dogu-agent
+  - host-agent
+  - nexus-initializer
+  - test-executor

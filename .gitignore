@@ -113,3 +113,6 @@ test-results
 build-info
 build-temp
 .turbo
+
+# for custom migration
+*migration*.sql
