@@ -81,7 +81,7 @@ actor TouchControlPlayer: IControlPlayer {
     }
     var duration = up.control.timeStamp - down.control.timeStamp
     if duration < 100 {
-      duration = 0
+      duration = 5
     }
     try await actionPerformer!.performW3CActions([
       [

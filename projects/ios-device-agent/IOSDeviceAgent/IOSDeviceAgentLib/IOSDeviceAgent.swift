@@ -25,7 +25,8 @@ public final class IOSDeviceAgent {
 
   public func run() {
     runInternal()
-    WebDriverAgentLibUtils.run()
+    let runLoop = RunLoop.main
+    while true && runLoop.run(mode: .default, before: .distantFuture) { }
   }
 
   @MainActor

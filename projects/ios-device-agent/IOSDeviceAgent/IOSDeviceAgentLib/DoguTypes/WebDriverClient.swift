@@ -83,20 +83,12 @@ public actor WebDriverClient {
   }
 
   public func status() async throws {
-    _ = try await request(method: .get, pathQuery: "/status", body: .empty)
   }
 
-  public func setSessionIfNotSet() async throws {
-    if sessionID.isEmpty {
-      sessionID = try await newSession()
-    }
-  }
-  
   @MainActor
   public func getSession() async throws -> FBSession {
-    try await setSessionIfNotSet()
     guard let session = FBSession.active() else {
-      throw Error.sessionNotFound
+      return FBSession.initWith(nil)
     }
     return session
   }
@@ -107,37 +99,6 @@ public actor WebDriverClient {
     return session.activeApplication
   }
 
-  private func newSession() async throws -> String {
-    let data = try await request(
-      method: .post, pathQuery: "/session",
-      body: .dict([
-        "capabilities": [:]
-      ]))
-    let parsed = try parseWebDriverResponse(data: data)
-    return try parseSessionId(response: parsed)
-  }
-
-  public func performActions(_ actions: [String: Any]) async throws {
-    try await performActions(.dict(actions))
-  }
-
-  public func performActions(_ actions: Data) async throws {
-    try await performActions(.data(actions))
-  }
-
-  public func performActions(_ actions: String) async throws {
-    try await performActions(.string(actions))
-  }
-
-  private func performActions(_ body: HttpRequestBody) async throws {
-    print("performActions: \(body)")
-    try await setSessionIfNotSet()
-    _ = try await request(
-      method: .post,
-      pathQuery: "/session/\(sessionID)/actions",
-      body: body
-    )
-  }
 
   @MainActor
   public func homescreen() async throws {
@@ -149,27 +110,4 @@ public actor WebDriverClient {
     try XCUIDevice.shared.fb_pressButton(button, forDuration: 10)
   }
 
-  private func request(method: HttpMethod, pathQuery: String, body: HttpRequestBody, timeout: TimeInterval = WebDriverConstants.defaultTimeout) async throws -> Data {
-    let url = "\(self.url)\(pathQuery)"
-    var request = URLRequest(url: try url.url())
-    request.httpMethod = method.rawValue
-    request.timeoutInterval = timeout
-    request.httpBody = try makeBody(body)
-
-    var responseData: Data = Data()
-    var cancellables: Set<AnyCancellable> = []
-    let _: Void = try await withCheckedThrowingContinuation { continuation in
-      URLSession.shared.dataTaskPublisher(for: request)
-        .tryMap(castHTTPResponse)
-        .tryMap(validateResponseCode)
-        .map(takeOnlyData)
-        .sink(
-          receiveCompletion: completeWithContinuation(continuation),
-          receiveValue: {
-            responseData = $0
-          }
-        ).store(in: &cancellables)
-    }
-    return responseData
-  }
 }
