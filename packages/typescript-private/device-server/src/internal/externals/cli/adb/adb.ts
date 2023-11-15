@@ -1180,7 +1180,6 @@ export class AdbSerial {
   //#endregion
 
   //#region reset
-  ResetDangerousPackagePrefixes = ['com.sec.', 'com.samsung.', 'com.skt.', 'com.knox.', 'com.android.', 'com.google.'];
   NotDangerousPackagePrefixes = [
     'com.android.bluetooth',
     'com.android.calllogbackup',
@@ -1198,6 +1197,7 @@ export class AdbSerial {
     'com.android.phone',
     'com.android.providers',
     'com.android.settings',
+    'com.android.settings.intelligence',
     'com.android.server.telecom',
     'com.android.traceur',
     'com.android.vending',

@@ -114,8 +114,8 @@ export class XCTestRunContext {
       this.logger.debug?.(`stderr pid: ${this.pid}, data: ${String(data)}`);
     });
     proc.on('close', (code, signal) => {
-      this.logger.verbose(`closed pid: ${this.pid}, with code: ${stringify(code)}, signal: ${stringify(signal)}`);
-      this.logger.verbose(`xcodebuild closed with logs: ${this.history}`);
+      this.logger.info(`closed pid: ${this.pid}, with code: ${stringify(code)}, signal: ${stringify(signal)}`);
+      this.logger.info(`xcodebuild closed with logs: ${this.history}`);
       this.logger.error(`xcodebuild closed with with code: ${stringify(code)}, signal: ${stringify(signal)}`);
       this.isAlive = false;
       redirectContext.stop = true;
