@@ -4,12 +4,12 @@ import { v4 } from 'uuid';
 
 import { BillingSubscriptionPlanInfo } from '../../db/entity/billing-subscription-plan-info.entity';
 import { CloudLicense } from '../../db/entity/cloud-license.entity';
-import { RetrySerializeContext } from '../../db/utils';
+import { RetryTransactionContext } from '../../db/retry-transaction';
 import { createBillingOrganization } from '../billing-organization/billing-organization.serializables';
 import { BillingSubscriptionPlanInfoCommonModule } from '../common/plan-info-common.module';
 import { applyCloudLicense } from './cloud-license.utils';
 
-export async function createCloudLicense(context: RetrySerializeContext, dto: CreateCloudLicenseDto): Promise<CloudLicense> {
+export async function createCloudLicense(context: RetryTransactionContext, dto: CreateCloudLicenseDto): Promise<CloudLicense> {
   const { manager } = context;
   const { organizationId } = dto;
   const found = await manager.getRepository(CloudLicense).findOne({ where: { organizationId } });
@@ -28,7 +28,7 @@ export async function createCloudLicense(context: RetrySerializeContext, dto: Cr
   return saved;
 }
 
-export async function findCloudLicense(context: RetrySerializeContext, dto: FindCloudLicenseDto): Promise<CloudLicenseResponse> {
+export async function findCloudLicense(context: RetryTransactionContext, dto: FindCloudLicenseDto): Promise<CloudLicenseResponse> {
   const { manager } = context;
   const { organizationId } = dto;
   const license = await manager.getRepository(CloudLicense).findOne({
@@ -62,7 +62,7 @@ export interface UpdateCloudLicenseOptions {
 
 export type UpdateCloudLicenseResult = BillingResult<CloudLicense>;
 
-export async function updateCloudLicense(context: RetrySerializeContext, options: UpdateCloudLicenseOptions): Promise<UpdateCloudLicenseResult> {
+export async function updateCloudLicense(context: RetryTransactionContext, options: UpdateCloudLicenseOptions): Promise<UpdateCloudLicenseResult> {
   const { manager } = context;
   const { billingOrganizationId, planInfos } = options;
   const cloudLicense = await manager.getRepository(CloudLicense).findOne({

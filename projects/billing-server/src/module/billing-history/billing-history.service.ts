@@ -5,18 +5,22 @@ import { DataSource } from 'typeorm';
 import { BillingHistory } from '../../db/entity/billing-history.entity';
 import { BillingOrganization } from '../../db/entity/billing-organization.entity';
 import { BillingSubscriptionPlanHistory } from '../../db/entity/billing-subscription-plan-history.entity';
-import { retrySerialize } from '../../db/utils';
+import { RetryTransaction } from '../../db/retry-transaction';
 import { DoguLogger } from '../logger/logger';
 
 @Injectable()
 export class BillingHistoryService {
+  private readonly retryTransaction: RetryTransaction;
+
   constructor(
     private readonly logger: DoguLogger,
     @InjectDataSource() private readonly dataSource: DataSource,
-  ) {}
+  ) {
+    this.retryTransaction = new RetryTransaction(this.logger, this.dataSource);
+  }
 
   async getHistories(dto: GetBillingHistoriesDto): Promise<PageBase<BillingHistory>> {
-    return await retrySerialize(this.logger, this.dataSource, async (context) => {
+    return await this.retryTransaction.serializable(async (context) => {
       const { manager } = context;
       const { organizationId, page, offset } = dto;
       const [histories, totalCount] = await manager

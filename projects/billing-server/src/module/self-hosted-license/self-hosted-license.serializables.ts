@@ -4,12 +4,12 @@ import { ConflictException, NotFoundException } from '@nestjs/common';
 import { v4 } from 'uuid';
 
 import { SelfHostedLicense } from '../../db/entity/self-hosted-license.entity';
-import { RetrySerializeContext } from '../../db/utils';
+import { RetryTransactionContext } from '../../db/retry-transaction';
 import { createBillingOrganization } from '../billing-organization/billing-organization.serializables';
 import { LicenseKeyService } from '../common/license-key.service';
 import { FindSelfHostedLicenseQueryDto } from './self-hosted-license.dto';
 
-export async function findSelfHostedLicense(context: RetrySerializeContext, dto: FindSelfHostedLicenseQueryDto): Promise<SelfHostedLicenseResponse> {
+export async function findSelfHostedLicense(context: RetryTransactionContext, dto: FindSelfHostedLicenseQueryDto): Promise<SelfHostedLicenseResponse> {
   const { manager } = context;
   const { organizationId, licenseKey } = dto;
   const license = await manager.getRepository(SelfHostedLicense).createQueryBuilder(SelfHostedLicense.name).where({ organizationId, licenseKey }).getOne();
@@ -41,7 +41,7 @@ export async function findSelfHostedLicense(context: RetrySerializeContext, dto:
   return response;
 }
 
-export async function createSelfHostedLicense(context: RetrySerializeContext, dto: CreateSelfHostedLicenseDto, now: Date): Promise<SelfHostedLicense> {
+export async function createSelfHostedLicense(context: RetryTransactionContext, dto: CreateSelfHostedLicenseDto, now: Date): Promise<SelfHostedLicense> {
   const { manager } = context;
   const { organizationId, expiredAt } = dto;
   const existingLicense = await manager.getRepository(SelfHostedLicense).findOne({ where: { organizationId } });

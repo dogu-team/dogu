@@ -6,9 +6,9 @@ import { BillingMethodNice } from '../../db/entity/billing-method-nice.entity';
 import { BillingOrganizationUsedBillingCoupon } from '../../db/entity/billing-organization-used-billing-coupon.entity';
 import { BillingOrganization } from '../../db/entity/billing-organization.entity';
 import { BillingSubscriptionPlanInfo } from '../../db/entity/billing-subscription-plan-info.entity';
-import { RetrySerializeContext } from '../../db/utils';
+import { RetryTransactionContext } from '../../db/retry-transaction';
 
-export async function findBillingOrganizationWithSubscriptionPlans(context: RetrySerializeContext, dto: FindBillingOrganizationDto): Promise<BillingOrganization | null> {
+export async function findBillingOrganizationWithSubscriptionPlans(context: RetryTransactionContext, dto: FindBillingOrganizationDto): Promise<BillingOrganization | null> {
   const { manager } = context;
   const { organizationId } = dto;
   return await manager
@@ -20,7 +20,7 @@ export async function findBillingOrganizationWithSubscriptionPlans(context: Retr
     .getOne();
 }
 
-export async function findBillingOrganizationWithMethod(context: RetrySerializeContext, dto: FindBillingOrganizationDto): Promise<BillingOrganization | null> {
+export async function findBillingOrganizationWithMethod(context: RetryTransactionContext, dto: FindBillingOrganizationDto): Promise<BillingOrganization | null> {
   const { manager } = context;
   const { organizationId } = dto;
   return await manager
@@ -31,7 +31,10 @@ export async function findBillingOrganizationWithMethod(context: RetrySerializeC
     .getOne();
 }
 
-export async function findBillingOrganizationWithMethodAndSubscriptionPlans(context: RetrySerializeContext, dto: FindBillingOrganizationDto): Promise<BillingOrganization | null> {
+export async function findBillingOrganizationWithMethodAndSubscriptionPlans(
+  context: RetryTransactionContext,
+  dto: FindBillingOrganizationDto,
+): Promise<BillingOrganization | null> {
   const { manager } = context;
   const { organizationId } = dto;
   return await manager
@@ -44,7 +47,7 @@ export async function findBillingOrganizationWithMethodAndSubscriptionPlans(cont
     .getOne();
 }
 
-export async function createBillingOrganization(context: RetrySerializeContext, dto: CreateBillingOrganizationDto): Promise<BillingOrganization> {
+export async function createBillingOrganization(context: RetryTransactionContext, dto: CreateBillingOrganizationDto): Promise<BillingOrganization> {
   const { manager } = context;
   const { organizationId, category } = dto;
   const found = await manager.getRepository(BillingOrganization).findOne({ where: { organizationId } });
@@ -66,7 +69,7 @@ export interface RegisterUsedCouponOptions {
   billingCouponId: string;
 }
 
-export async function registerUsedCoupon(context: RetrySerializeContext, options: RegisterUsedCouponOptions): Promise<void> {
+export async function registerUsedCoupon(context: RetryTransactionContext, options: RegisterUsedCouponOptions): Promise<void> {
   const { manager } = context;
   const { billingOrganizationId, billingCouponId } = options;
   const created = manager.getRepository(BillingOrganizationUsedBillingCoupon).create({

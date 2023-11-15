@@ -13,7 +13,7 @@ import { BillingMethodNice } from '../../db/entity/billing-method-nice.entity';
 import { BillingOrganization, BillingOrganizationTableName } from '../../db/entity/billing-organization.entity';
 import { BillingSubscriptionPlanHistory } from '../../db/entity/billing-subscription-plan-history.entity';
 import { BillingSubscriptionPlanInfo } from '../../db/entity/billing-subscription-plan-info.entity';
-import { getClient, retrySerialize } from '../../db/utils';
+import { getClient, RetryTransaction } from '../../db/retry-transaction';
 import { env } from '../../env';
 import { BillingMethodNiceCaller } from '../billing-method/billing-method-nice.caller';
 import { invalidateBillingOrganization } from '../billing-organization/billing-organization.utils';
@@ -29,6 +29,7 @@ import { DoguLogger } from '../logger/logger';
 @Injectable()
 export class BillingUpdaterService implements OnModuleInit, OnModuleDestroy {
   private closeRequested = false;
+  private readonly retryTransaction: RetryTransaction;
 
   constructor(
     private readonly logger: DoguLogger,
@@ -36,7 +37,9 @@ export class BillingUpdaterService implements OnModuleInit, OnModuleDestroy {
     private readonly dataSource: DataSource,
     private readonly billingMethodNiceCaller: BillingMethodNiceCaller,
     private readonly dateTimeSimulatorService: DateTimeSimulatorService,
-  ) {}
+  ) {
+    this.retryTransaction = new RetryTransaction(this.logger, this.dataSource);
+  }
 
   onModuleInit(): void {
     this.run()
@@ -81,7 +84,7 @@ export class BillingUpdaterService implements OnModuleInit, OnModuleDestroy {
   }
 
   private async update(billingOrganizationId: string): Promise<void> {
-    await retrySerialize(this.logger, this.dataSource, async (context) => {
+    await this.retryTransaction.serializable(async (context) => {
       const { manager, registerOnAfterRollback } = context;
       const now = this.dateTimeSimulatorService.now();
       const billingOrganization = await manager

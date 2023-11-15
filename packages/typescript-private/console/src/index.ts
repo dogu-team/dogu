@@ -137,4 +137,5 @@ export * from './util/page-source';
 export * from './util/page-source/types';
 export * from './util/record';
 export * from './util/remote';
+export * from './util/retry-transaction';
 export * from './util/yaml-manager';

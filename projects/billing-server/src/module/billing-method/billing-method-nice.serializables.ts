@@ -11,7 +11,7 @@ import { errorify } from '@dogu-tech/common';
 import { v4 } from 'uuid';
 import { BillingMethodNice } from '../../db/entity/billing-method-nice.entity';
 import { BillingOrganization } from '../../db/entity/billing-organization.entity';
-import { RetrySerializeContext } from '../../db/utils';
+import { RetryTransactionContext } from '../../db/retry-transaction';
 import { BillingMethodNiceCaller } from './billing-method-nice.caller';
 
 export interface CreateOrUpdateMethodNiceOptions {
@@ -22,7 +22,7 @@ export interface CreateOrUpdateMethodNiceOptions {
 
 export type CreateOrUpdateMethodNiceResult = BillingResult<BillingMethodNice, { niceResultCode: string | null }>;
 
-export async function createOrUpdateMethodNice(context: RetrySerializeContext, options: CreateOrUpdateMethodNiceOptions): Promise<CreateOrUpdateMethodNiceResult> {
+export async function createOrUpdateMethodNice(context: RetryTransactionContext, options: CreateOrUpdateMethodNiceOptions): Promise<CreateOrUpdateMethodNiceResult> {
   const { logger, manager, registerOnAfterRollback } = context;
   const { billingMethodNiceCaller, dto, now } = options;
   const { billingOrganizationId, subscribeRegist } = dto;
@@ -101,7 +101,7 @@ export interface CreateNicePurchaseOptions {
 export type CreateNicePurchaseResult = BillingResult<NiceSubscribePaymentsResponse, { niceResultCode: string | null }>;
 
 export async function createPurchase(
-  context: RetrySerializeContext,
+  context: RetryTransactionContext,
   billingMethodNiceCaller: BillingMethodNiceCaller,
   options: CreateNicePurchaseOptions,
 ): Promise<CreateNicePurchaseResult> {
@@ -172,7 +172,7 @@ export interface UpdateBillingMethodOptions {
   now: Date;
 }
 
-export async function updateBillingMethod(context: RetrySerializeContext, options: UpdateBillingMethodOptions): Promise<UpdateBillingMethodResponse> {
+export async function updateBillingMethod(context: RetryTransactionContext, options: UpdateBillingMethodOptions): Promise<UpdateBillingMethodResponse> {
   const { manager } = context;
   const { billingMethodNiceCaller, dto, now } = options;
   const { registerCard } = dto;

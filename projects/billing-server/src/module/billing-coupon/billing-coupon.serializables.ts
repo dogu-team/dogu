@@ -19,7 +19,7 @@ import { v4 } from 'uuid';
 import { BillingCoupon } from '../../db/entity/billing-coupon.entity';
 import { BillingOrganizationUsedBillingCoupon } from '../../db/entity/billing-organization-used-billing-coupon.entity';
 import { BillingOrganization } from '../../db/entity/billing-organization.entity';
-import { RetrySerializeContext } from '../../db/utils';
+import { RetryTransactionContext } from '../../db/retry-transaction';
 import { registerUsedCoupon } from '../billing-organization/billing-organization.serializables';
 import { findCloudLicense } from '../cloud-license/cloud-license.serializables';
 import { ResolveCouponResultSuccess } from './billing-coupon.utils';
@@ -30,7 +30,7 @@ export interface ValidateCouponOptions extends ValidateBillingCouponDto {
 
 export type ValidateCouponResult = BillingResult<BillingCoupon>;
 
-export async function validateCoupon(context: RetrySerializeContext, options: ValidateCouponOptions): Promise<ValidateCouponResult> {
+export async function validateCoupon(context: RetryTransactionContext, options: ValidateCouponOptions): Promise<ValidateCouponResult> {
   const { manager } = context;
   const { organizationId, code, period, subscriptionPlanType, now } = options;
   const findWhereOption: FindOptionsWhere<BillingCoupon> =
@@ -135,7 +135,7 @@ export interface GetAvailableBillingCouponsOptions extends GetAvailableBillingCo
   now: Date;
 }
 
-export async function getAvailableCoupons(context: RetrySerializeContext, options: GetAvailableBillingCouponsOptions): Promise<BillingPromotionCouponResponse[]> {
+export async function getAvailableCoupons(context: RetryTransactionContext, options: GetAvailableBillingCouponsOptions): Promise<BillingPromotionCouponResponse[]> {
   const { manager } = context;
   const { organizationId, type, subscriptionPlanType, category, now } = options;
 
@@ -199,7 +199,7 @@ export interface FindAvailablePromotionCouponOptions {
   now: Date;
 }
 
-export async function findAvailablePromotionCoupon(context: RetrySerializeContext, options: FindAvailablePromotionCouponOptions): Promise<BillingCoupon | null> {
+export async function findAvailablePromotionCoupon(context: RetryTransactionContext, options: FindAvailablePromotionCouponOptions): Promise<BillingCoupon | null> {
   const { manager } = context;
   const { billingOrganizationId, subscriptionPlanType, now } = options;
   const coupon = await manager
@@ -227,7 +227,7 @@ export async function findAvailablePromotionCoupon(context: RetrySerializeContex
   return coupon;
 }
 
-export async function createBillingCoupon(context: RetrySerializeContext, dto: CreateBillingCouponDto): Promise<BillingCoupon> {
+export async function createBillingCoupon(context: RetryTransactionContext, dto: CreateBillingCouponDto): Promise<BillingCoupon> {
   const { manager } = context;
   const { code, type, monthlyApplyCount, monthlyDiscountPercent, yearlyApplyCount, yearlyDiscountPercent, remainingAvailableCount, subscriptionPlanType } = dto;
 
@@ -253,7 +253,7 @@ export async function createBillingCoupon(context: RetrySerializeContext, dto: C
 }
 
 export interface ParseCouponOptions {
-  context: RetrySerializeContext;
+  context: RetryTransactionContext;
   organizationId: string;
   couponCode: string | undefined;
   period: BillingPeriod;
@@ -298,7 +298,7 @@ export interface UseCouponResult {
   coupon: BillingCoupon | null;
 }
 
-export async function useCoupon(context: RetrySerializeContext, options: UseCouponOptions): Promise<UseCouponResult> {
+export async function useCoupon(context: RetryTransactionContext, options: UseCouponOptions): Promise<UseCouponResult> {
   const { manager } = context;
   const { couponResult, billingOrganizationId } = options;
   const { coupon, type } = couponResult;

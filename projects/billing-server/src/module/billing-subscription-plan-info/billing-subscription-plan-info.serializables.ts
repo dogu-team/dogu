@@ -1,7 +1,7 @@
 import { BillingResult, BillingSubscriptionPlanData } from '@dogu-private/console';
 import { v4 } from 'uuid';
 import { BillingSubscriptionPlanInfo } from '../../db/entity/billing-subscription-plan-info.entity';
-import { RetrySerializeContext } from '../../db/utils';
+import { RetryTransactionContext } from '../../db/retry-transaction';
 import { UseCouponResult } from '../billing-coupon/billing-coupon.serializables';
 
 export interface NewAndApplySubscriptionPlanInfoOptions {
@@ -15,7 +15,7 @@ export interface NewAndApplySubscriptionPlanInfoOptions {
 
 export type NewAndApplySubscriptionPlanInfoResult = BillingResult<BillingSubscriptionPlanInfo>;
 
-export function newAndApplySubscriptionPlanInfo(context: RetrySerializeContext, options: NewAndApplySubscriptionPlanInfoOptions): NewAndApplySubscriptionPlanInfoResult {
+export function newAndApplySubscriptionPlanInfo(context: RetryTransactionContext, options: NewAndApplySubscriptionPlanInfoOptions): NewAndApplySubscriptionPlanInfoResult {
   const { manager } = context;
   const { billingOrganizationId, subscriptionPlanInfos, planData, discountedAmount, billingSubscriptionPlanSourceId, useCouponResult } = options;
   const { currency, period, type, category, option, originPrice } = planData;

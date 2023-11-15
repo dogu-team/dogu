@@ -4,7 +4,7 @@ import { InjectDataSource } from '@nestjs/typeorm';
 import { DateTime } from 'luxon';
 import { DataSource } from 'typeorm';
 import { DateTimeSimulator, DateTimeSimulatorProp, DateTimeSimulatorTableName } from '../../db/entity/date-time-simulator.entity';
-import { getClient } from '../../db/utils';
+import { getClient } from '../../db/retry-transaction';
 import { DoguLogger } from '../logger/logger';
 
 const EventChannelName = 'date_time_simulator_change_event';

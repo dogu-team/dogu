@@ -21,7 +21,7 @@ import { BillingHistory } from '../../db/entity/billing-history.entity';
 import { BillingOrganization } from '../../db/entity/billing-organization.entity';
 import { BillingSubscriptionPlanHistory } from '../../db/entity/billing-subscription-plan-history.entity';
 import { BillingSubscriptionPlanInfo } from '../../db/entity/billing-subscription-plan-info.entity';
-import { retrySerialize } from '../../db/utils';
+import { RetryTransaction } from '../../db/retry-transaction';
 import { BillingMethodNiceCaller } from '../billing-method/billing-method-nice.caller';
 import { createOrUpdateMethodNice } from '../billing-method/billing-method-nice.serializables';
 import { findBillingOrganizationWithMethodAndSubscriptionPlans, findBillingOrganizationWithSubscriptionPlans } from '../billing-organization/billing-organization.serializables';
@@ -33,6 +33,8 @@ import { processNextPurchaseSubscription, processNowPurchaseSubscription, proces
 
 @Injectable()
 export class BillingPurchaseService {
+  private readonly retryTransaction: RetryTransaction;
+
   constructor(
     private readonly logger: DoguLogger,
     @InjectDataSource()
@@ -40,10 +42,12 @@ export class BillingPurchaseService {
     private readonly billingMethodNiceCaller: BillingMethodNiceCaller,
     private readonly consoleService: ConsoleService,
     private readonly dateTimeSimulatorService: DateTimeSimulatorService,
-  ) {}
+  ) {
+    this.retryTransaction = new RetryTransaction(this.logger, this.dataSource);
+  }
 
   async getSubscriptionPreview(dto: GetBillingSubscriptionPreviewDto): Promise<GetBillingSubscriptionPreviewResponse> {
-    return await retrySerialize(this.logger, this.dataSource, async (context) => {
+    return await this.retryTransaction.serializable(async (context) => {
       const now = this.dateTimeSimulatorService.now();
       const billingOrganization = await findBillingOrganizationWithSubscriptionPlans(context, dto);
       if (!billingOrganization) {
@@ -71,7 +75,7 @@ export class BillingPurchaseService {
   }
 
   async createPurchaseSubscription(dto: CreatePurchaseSubscriptionDto): Promise<CreatePurchaseSubscriptionResponse> {
-    return await retrySerialize(this.logger, this.dataSource, async (context) => {
+    return await this.retryTransaction.serializable(async (context) => {
       const { setTriggerRollbackBeforeReturn } = context;
       const now = this.dateTimeSimulatorService.now();
       const billingOrganization = await findBillingOrganizationWithMethodAndSubscriptionPlans(context, dto);
@@ -177,7 +181,7 @@ export class BillingPurchaseService {
   }
 
   async createPurchaseSubscriptionWithNewCard(dto: CreatePurchaseSubscriptionWithNewCardDto): Promise<CreatePurchaseSubscriptionWithNewCardResponse> {
-    return await retrySerialize(this.logger, this.dataSource, async (context) => {
+    return await this.retryTransaction.serializable(async (context) => {
       const { setTriggerRollbackBeforeReturn } = context;
       const { registerCard } = dto;
       const now = this.dateTimeSimulatorService.now();
@@ -304,7 +308,7 @@ export class BillingPurchaseService {
   }
 
   async refundSubscriptionPlan(dto: RefundSubscriptionPlanDto): Promise<void> {
-    return await retrySerialize(this.logger, this.dataSource, async (context) => {
+    return await this.retryTransaction.serializable(async (context) => {
       const { manager } = context;
       const { billingSubscriptionPlanHistoryId } = dto;
       const planHistory = await manager.getRepository(BillingSubscriptionPlanHistory).findOne({
@@ -414,7 +418,7 @@ export class BillingPurchaseService {
   }
 
   async refundFull(dto: RefundFullDto): Promise<void> {
-    return await retrySerialize(this.logger, this.dataSource, async (context) => {
+    return await this.retryTransaction.serializable(async (context) => {
       const { manager } = context;
       const { billingHistoryId } = dto;
       const billingHistory = await manager.getRepository(BillingHistory).findOne({

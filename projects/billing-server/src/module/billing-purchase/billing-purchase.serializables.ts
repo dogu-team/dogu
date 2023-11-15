@@ -19,7 +19,7 @@ import { BillingSubscriptionPlanInfo } from '../../db/entity/billing-subscriptio
 import { BillingSubscriptionPlanSource } from '../../db/entity/billing-subscription-plan-source.entity';
 import { CloudLicense } from '../../db/entity/cloud-license.entity';
 import { SelfHostedLicense } from '../../db/entity/self-hosted-license.entity';
-import { RetrySerializeContext } from '../../db/utils';
+import { RetryTransactionContext } from '../../db/retry-transaction';
 import { findAvailablePromotionCoupon, parseCoupon, useCoupon } from '../billing-coupon/billing-coupon.serializables';
 import { ResolveCouponResultSuccess } from '../billing-coupon/billing-coupon.utils';
 import { BillingMethodNiceCaller } from '../billing-method/billing-method-nice.caller';
@@ -55,7 +55,7 @@ export interface ProcessPurchaseSubscriptionPreviewResultValue {
 }
 
 export async function processPurchaseSubscriptionPreview(
-  context: RetrySerializeContext,
+  context: RetryTransactionContext,
   options: ProcessPurchaseSubscriptionPreviewOptions,
 ): Promise<BillingResult<ProcessPurchaseSubscriptionPreviewResultValue>> {
   const { billingOrganization, dto, now } = options;
@@ -148,7 +148,7 @@ export interface ProcessNowPurchaseSubscriptionResponse extends CreatePurchaseSu
 }
 
 export async function processNowPurchaseSubscription(
-  context: RetrySerializeContext,
+  context: RetryTransactionContext,
   billingMethodNiceCaller: BillingMethodNiceCaller,
   options: ProcessNowPurchaseSubscriptionOptions,
 ): Promise<ProcessNowPurchaseSubscriptionResponse> {
@@ -323,7 +323,7 @@ export interface ProcessNextPurchaseSubscriptionOptions {
 }
 
 export async function processNextPurchaseSubscription(
-  context: RetrySerializeContext,
+  context: RetryTransactionContext,
   options: ProcessNextPurchaseSubscriptionOptions,
 ): Promise<BillingResult<BillingSubscriptionPlanInfoResponse>> {
   const { manager } = context;

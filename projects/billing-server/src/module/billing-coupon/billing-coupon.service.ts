@@ -10,21 +10,25 @@ import { Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { BillingCoupon } from '../../db/entity/billing-coupon.entity';
-import { retrySerialize } from '../../db/utils';
+import { RetryTransaction } from '../../db/retry-transaction';
 import { DateTimeSimulatorService } from '../date-time-simulator/date-time-simulator.service';
 import { DoguLogger } from '../logger/logger';
 import { createBillingCoupon, getAvailableCoupons, validateCoupon } from './billing-coupon.serializables';
 
 @Injectable()
 export class BillingCouponService {
+  private readonly retryTransaction: RetryTransaction;
+
   constructor(
     private readonly logger: DoguLogger,
     @InjectDataSource() private readonly dataSource: DataSource,
     private readonly dateTimeSimulatorService: DateTimeSimulatorService,
-  ) {}
+  ) {
+    this.retryTransaction = new RetryTransaction(this.logger, this.dataSource);
+  }
 
   async validateCoupon(dto: ValidateBillingCouponDto): Promise<ValidateBillingCouponResponse> {
-    return await retrySerialize(this.logger, this.dataSource, async (context) => {
+    return await this.retryTransaction.serializable(async (context) => {
       const now = this.dateTimeSimulatorService.now();
       const result = await validateCoupon(context, {
         ...dto,
@@ -47,7 +51,7 @@ export class BillingCouponService {
   }
 
   async getAvailableCoupons(dto: GetAvailableBillingCouponsDto): Promise<BillingPromotionCouponResponse[]> {
-    return await retrySerialize(this.logger, this.dataSource, async (context) => {
+    return await this.retryTransaction.serializable(async (context) => {
       const now = this.dateTimeSimulatorService.now();
       return await getAvailableCoupons(context, {
         ...dto,
@@ -57,7 +61,7 @@ export class BillingCouponService {
   }
 
   async createBillingCoupon(dto: CreateBillingCouponDto): Promise<BillingCoupon> {
-    return await retrySerialize(this.logger, this.dataSource, async (context) => {
+    return await this.retryTransaction.serializable(async (context) => {
       return await createBillingCoupon(context, dto);
     });
   }

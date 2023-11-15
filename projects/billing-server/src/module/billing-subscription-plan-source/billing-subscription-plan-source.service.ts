@@ -4,19 +4,23 @@ import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { BillingOrganization } from '../../db/entity/billing-organization.entity';
 import { BillingSubscriptionPlanSource } from '../../db/entity/billing-subscription-plan-source.entity';
-import { retrySerialize } from '../../db/utils';
+import { RetryTransaction } from '../../db/retry-transaction';
 import { DoguLogger } from '../logger/logger';
 
 @Injectable()
 export class BillingSubscriptionPlanSourceService {
+  private readonly retryTransaction: RetryTransaction;
+
   constructor(
     private readonly logger: DoguLogger,
     @InjectDataSource()
     private readonly dataSource: DataSource,
-  ) {}
+  ) {
+    this.retryTransaction = new RetryTransaction(this.logger, this.dataSource);
+  }
 
   async findBillingSubscriptionPlanSources(dto: FindBillingSubscriptionPlanSourcesDto): Promise<BillingSubscriptionPlanSource[]> {
-    return await retrySerialize(this.logger, this.dataSource, async (context) => {
+    return await this.retryTransaction.serializable(async (context) => {
       const { manager } = context;
       return await manager
         .getRepository(BillingSubscriptionPlanSource)

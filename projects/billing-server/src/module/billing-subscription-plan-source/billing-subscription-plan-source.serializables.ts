@@ -13,7 +13,7 @@ import {
 } from '@dogu-private/console';
 import _ from 'lodash';
 import { BillingSubscriptionPlanSource } from '../../db/entity/billing-subscription-plan-source.entity';
-import { RetrySerializeContext } from '../../db/utils';
+import { RetryTransactionContext } from '../../db/retry-transaction';
 
 export interface ParseSubscriptionPlanDataOptions {
   billingOrganizationId: string;
@@ -31,7 +31,7 @@ export interface ParseSubscriptionPlanDataResultValue {
 
 export type ParseSubscriptionPlanDataResult = BillingResult<ParseSubscriptionPlanDataResultValue>;
 
-export async function parseSubscriptionPlanData(context: RetrySerializeContext, options: ParseSubscriptionPlanDataOptions): Promise<ParseSubscriptionPlanDataResult> {
+export async function parseSubscriptionPlanData(context: RetryTransactionContext, options: ParseSubscriptionPlanDataOptions): Promise<ParseSubscriptionPlanDataResult> {
   const { billingOrganizationId, type, category, option, currency, period } = options;
   const { manager } = context;
   const planSource = await manager.getRepository(BillingSubscriptionPlanSource).findOne({

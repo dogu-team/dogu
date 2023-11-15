@@ -9,25 +9,27 @@ import {
   WriteDeviceRunTimeInfosRequestBody,
 } from '@dogu-private/console-host-agent';
 import { FindDeviceBySerialQuery, UpdateDeviceRequestBody } from '@dogu-private/console-host-agent/src/http-specs/private-device';
-import { DeviceId, DEVICE_DISPLAY_ERROR_MAX_LENGTH, findDeviceModelNameByModelId, LiveSessionState, OrganizationId } from '@dogu-private/types';
+import { DeviceId, DEVICE_DISPLAY_ERROR_MAX_LENGTH, findDeviceModelNameByModelId, OrganizationId } from '@dogu-private/types';
 import { errorify, Instance, transformAndValidate } from '@dogu-tech/common';
 import { Body, ConflictException, Controller, Get, NotFoundException, Param, Patch, Post, Query } from '@nestjs/common';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Not, Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { Device, DEVICE_DEFAULT_MAX_PARALLEL_JOBS_IF_IS_HOST } from '../../db/entity/device.entity';
-import { LiveSession } from '../../db/entity/live-session.entity';
+import { RetryTransaction } from '../../db/retry-transaction';
 import { HOST_ACTION_TYPE } from '../auth/auth.types';
 import { HostPermission } from '../auth/decorators';
 import { DeviceMessageQueue } from '../device-message/device-message.queue';
 import { InfluxDbDeviceService } from '../influxdb/influxdb-device.service';
-import { LiveSessionService } from '../live-session/live-session.service';
 import { DoguLogger } from '../logger/logger';
+import { DeviceCommandService } from '../organization/device/device-command.service';
 import { DeviceStatusService } from '../organization/device/device-status.service';
 import { IsDeviceExist } from '../organization/device/device.decorators';
 import { IsOrganizationExist } from '../organization/organization.decorators';
 
 @Controller(PrivateDevice.controller.path)
 export class PrivateDeviceController {
+  private readonly retryTransaction: RetryTransaction;
+
   constructor(
     @InjectRepository(Device) private readonly deviceRepository: Repository<Device>,
     private readonly deviceMessageQueue: DeviceMessageQueue,
@@ -35,9 +37,10 @@ export class PrivateDeviceController {
     private readonly dataSource: DataSource,
     private readonly influxDbDeviceService: InfluxDbDeviceService,
     private readonly logger: DoguLogger,
-    private readonly deviceStatusService: DeviceStatusService,
-    private readonly liveSessionService: LiveSessionService,
-  ) {}
+    private readonly deviceCommandService: DeviceCommandService,
+  ) {
+    this.retryTransaction = new RetryTransaction(logger, dataSource);
+  }
 
   @Get(PrivateDevice.findDeviceBySerial.path)
   @HostPermission(HOST_ACTION_TYPE.CREATE_DEVICE_API)
@@ -110,56 +113,60 @@ export class PrivateDeviceController {
     @Param(DevicePropCamel.deviceId, IsDeviceExist) deviceId: DeviceId,
     @Body() body: UpdateDeviceRequestBody,
   ): Promise<void> {
-    const exist = await this.deviceRepository.exist({ where: { deviceId } });
-    if (!exist) {
-      throw new NotFoundException({
-        message: 'Device not found',
-        organizationId,
-        deviceId,
-      });
-    }
-
-    const closedLiveSessions: LiveSession[] = [];
     const { serial, hostId, version, model, manufacturer, isVirtual, resolutionWidth, resolutionHeight, browserInstallations, memory } = body;
-    await this.dataSource.transaction(async (manager) => {
-      await manager.getRepository(Device).update(
-        { deviceId },
-        {
-          serial,
-          hostId,
-          version,
-          model,
-          manufacturer,
-          isVirtual,
-          resolutionWidth,
-          resolutionHeight,
-          memory,
-          usageState: DeviceUsageState.AVAILABLE,
-        },
-      );
+
+    const { needReset } = await this.retryTransaction.serializable(async (context) => {
+      const { manager } = context;
+      const device = await manager.getRepository(Device).findOne({
+        where: { deviceId },
+        lock: { mode: 'pessimistic_write' },
+      });
+
+      if (!device) {
+        throw new NotFoundException({
+          message: 'Device not found',
+          organizationId,
+          deviceId,
+        });
+      }
+
+      const needReset = device.usageState === DeviceUsageState.IN_USE;
+      if (needReset) {
+        device.usageState = DeviceUsageState.PREPARING;
+        await manager.save(device);
+        return {
+          needReset,
+        };
+      }
+
+      device.serial = serial;
+      device.hostId = hostId;
+      device.version = version;
+      device.model = model;
+      device.manufacturer = manufacturer;
+      device.isVirtual = isVirtual;
+      device.resolutionWidth = resolutionWidth;
+      device.resolutionHeight = resolutionHeight;
+      device.memory = memory;
+      device.usageState = DeviceUsageState.AVAILABLE;
+      await manager.save(device);
+
       await DeviceStatusService.updateDeviceBrowserInstallations(manager, deviceId, browserInstallations);
       await DeviceStatusService.updateDeviceRunners(manager, deviceId);
-
-      const liveSessions = await manager.getRepository(LiveSession).find({
-        where: {
-          deviceId,
-          state: Not(LiveSessionState.CLOSED),
-        },
-      });
-
-      if (liveSessions.length > 0) {
-        const toCloseLiveSessions = liveSessions.map((liveSession) => LiveSessionService.updateLiveSessionToClosed(liveSession));
-        const savedLiveSessions = await manager.getRepository(LiveSession).save(toCloseLiveSessions);
-        closedLiveSessions.push(...savedLiveSessions);
-      }
+      return {
+        needReset,
+      };
     });
 
-    for (const closedSession of closedLiveSessions) {
-      try {
-        await this.liveSessionService.publishCloseEvent(closedSession.liveSessionId, 'closed!');
-      } catch (error) {
-        this.logger.error(`PrivateDeviceController.updateDevice. publishCloseEvent failed`, { closedSession, error: errorify(error) });
-      }
+    if (needReset) {
+      this.deviceCommandService.reset(organizationId, deviceId, serial).catch((error) => {
+        this.logger.error('LiveSessionService.close.reset error', {
+          error: errorify(error),
+          organizationId,
+          deviceId,
+          serial,
+        });
+      });
     }
   }
 

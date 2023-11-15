@@ -5,21 +5,25 @@ import { DataSource } from 'typeorm';
 
 import { BillingOrganization } from '../../db/entity/billing-organization.entity';
 import { BillingSubscriptionPlanInfo } from '../../db/entity/billing-subscription-plan-info.entity';
-import { retrySerialize } from '../../db/utils';
+import { RetryTransaction } from '../../db/retry-transaction';
 import { BillingSubscriptionPlanInfoCommonModule } from '../common/plan-info-common.module';
 import { DoguLogger } from '../logger/logger';
 import { clearChangeRequested } from './billing-subscription-plan-info.utils';
 
 @Injectable()
 export class BillingSubscriptionPlanInfoService {
+  private readonly retryTransaction: RetryTransaction;
+
   constructor(
     private readonly logger: DoguLogger,
     @InjectDataSource()
     private readonly dataSource: DataSource,
-  ) {}
+  ) {
+    this.retryTransaction = new RetryTransaction(this.logger, this.dataSource);
+  }
 
   async getBillingSubscriptionPlanInfo(billingSubscriptionPlanInfoId: string): Promise<BillingSubscriptionPlanInfo> {
-    return await retrySerialize(this.logger, this.dataSource, async (context) => {
+    return await this.retryTransaction.serializable(async (context) => {
       const { manager } = context;
       const found = await manager.getRepository(BillingSubscriptionPlanInfo).findOne({
         where: { billingSubscriptionPlanInfoId },
@@ -32,7 +36,7 @@ export class BillingSubscriptionPlanInfoService {
   }
 
   async cancelUnsubscribe(billingSubscriptionPlanInfoId: string, dto: UpdateBillingSubscriptionPlanInfoStateDto): Promise<BillingSubscriptionPlanInfoResponse> {
-    return await retrySerialize(this.logger, this.dataSource, async (context) => {
+    return await this.retryTransaction.serializable(async (context) => {
       const { manager } = context;
       const { organizationId } = dto;
       const billingOrganization = await manager.getRepository(BillingOrganization).findOne({
@@ -68,7 +72,7 @@ export class BillingSubscriptionPlanInfoService {
   }
 
   async cancelChangeOptionOrPeriod(billingSubscriptionPlanInfoId: string, dto: UpdateBillingSubscriptionPlanInfoStateDto): Promise<BillingSubscriptionPlanInfoResponse> {
-    return await retrySerialize(this.logger, this.dataSource, async (context) => {
+    return await this.retryTransaction.serializable(async (context) => {
       const { manager } = context;
       const { organizationId } = dto;
       const billingOrganization = await manager.getRepository(BillingOrganization).findOne({
@@ -103,7 +107,7 @@ export class BillingSubscriptionPlanInfoService {
   }
 
   async unsubscribe(billingSubscriptionPlanInfoId: string, dto: UpdateBillingSubscriptionPlanInfoStateDto): Promise<BillingSubscriptionPlanInfoResponse> {
-    return await retrySerialize(this.logger, this.dataSource, async (context) => {
+    return await this.retryTransaction.serializable(async (context) => {
       const { manager } = context;
       const { organizationId } = dto;
       const billingOrganization = await manager.getRepository(BillingOrganization).findOne({
