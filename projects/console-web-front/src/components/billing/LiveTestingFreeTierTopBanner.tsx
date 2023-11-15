@@ -8,7 +8,6 @@ import useAuthStore from '../../stores/auth';
 import useLicenseStore from '../../stores/license';
 import { hasAdminPermission } from '../../utils/auth';
 import { isLiveTestingFreePlan } from '../../utils/billing';
-import { stringifyDurationAsTimer } from '../../utils/date';
 import UpgradePlanButton from './UpgradePlanButton';
 
 interface Props {}
@@ -33,12 +32,16 @@ const LiveTestingFreeTierTopBanner: React.FC<Props> = () => {
         showIcon
         message={
           <p>
-            <Trans
-              i18nKey="billing:liveTestingFreeTierInfoBannerMessage"
-              components={{
-                time: <>{remainingSeconds / 60}</>,
-              }}
-            />
+            {remainingSeconds > 0 ? (
+              <Trans
+                i18nKey="billing:liveTestingFreeTierInfoBannerMessage"
+                components={{
+                  time: <>{remainingSeconds / 60}</>,
+                }}
+              />
+            ) : (
+              t('liveTestingFreeTierInfoBannerExpiredMessage')
+            )}
           </p>
         }
         action={

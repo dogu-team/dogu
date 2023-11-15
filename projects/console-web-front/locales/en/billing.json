@@ -120,6 +120,7 @@
   "billingInvoiceTitle": "Invoices",
 
   "liveTestingFreeTierInfoBannerMessage": "You are using the free plan. Live testing is available for <time></time> min.",
+  "liveTestingFreeTierInfoBannerExpiredMessage": "There's no time left for live testing. Please upgrade your plan!",
   "liveTestingPlanGroupTitle": "Live testing",
   "liveTestingPlanTitle": "Live testing",
   "liveTestingOptionSingular": "{{option}} parallel session",

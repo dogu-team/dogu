@@ -4,7 +4,6 @@ import useTranslation from 'next-translate/useTranslation';
 import {
   BookOutlined,
   ClusterOutlined,
-  CreditCardOutlined,
   ProjectOutlined,
   SettingOutlined,
   TeamOutlined,
@@ -15,7 +14,6 @@ import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { RiExternalLinkLine } from 'react-icons/ri';
 import { HiOutlineDevicePhoneMobile } from 'react-icons/hi2';
-import { MdOutlineWeb } from 'react-icons/md';
 
 import { scrollbarStyle } from '../../styles/common';
 import useCollapsibleSidebar from '../../stores/collapsible-sidebar';
