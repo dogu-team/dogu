@@ -260,125 +260,123 @@ export class BillingUpdaterService implements OnModuleInit, OnModuleDestroy {
       const purchaseAmountInfos = purchasePlanInfos.map((planInfo) => calculatePurchaseAmountAndApplyCouponCount(planInfo));
       const totalPurchaseAmount = purchaseAmountInfos.reduce((acc, cur) => acc + cur.purchaseAmount, 0);
 
-      if (totalPurchaseAmount > 0) {
-        const paymentsResult = await this.billingMethodNiceCaller.subscribePayments({
-          bid,
-          amount: totalPurchaseAmount,
-          goodsName: BillingGoodsName,
-        });
+      const paymentsResult = await this.billingMethodNiceCaller.subscribePayments({
+        bid,
+        amount: totalPurchaseAmount,
+        goodsName: BillingGoodsName,
+      });
 
-        if (!paymentsResult.ok) {
-          if (isMonthlyGraceNextPurchased || isYearlyGraceNextPurchased) {
-            if (!billingOrganization.graceNextPurchasedAt) {
-              throw new Error('graceNextPurchasedAt must not be null');
-            }
-
-            billingOrganization.graceNextPurchasedAt = DateTime.fromJSDate(billingOrganization.graceNextPurchasedAt).plus({ days: 1 }).toJSDate();
+      if (!paymentsResult.ok) {
+        if (isMonthlyGraceNextPurchased || isYearlyGraceNextPurchased) {
+          if (!billingOrganization.graceNextPurchasedAt) {
+            throw new Error('graceNextPurchasedAt must not be null');
           }
 
-          if (isMonthlyExpired) {
-            if (!billingOrganization.subscriptionMonthlyExpiredAt) {
-              throw new Error('subscriptionMonthlyExpiredAt must not be null');
-            }
-
-            billingOrganization.graceNextPurchasedAt = DateTime.fromJSDate(billingOrganization.subscriptionMonthlyExpiredAt).plus({ days: 1 }).toJSDate();
-            billingOrganization.graceExpiredAt = DateTime.fromJSDate(billingOrganization.subscriptionMonthlyExpiredAt).plus({ days: BillingGracePeriodDays }).toJSDate();
-          }
-
-          if (isYearlyExpired) {
-            if (!billingOrganization.subscriptionYearlyExpiredAt) {
-              throw new Error('subscriptionYearlyExpiredAt must not be null');
-            }
-
-            billingOrganization.graceNextPurchasedAt = DateTime.fromJSDate(billingOrganization.subscriptionYearlyExpiredAt).plus({ days: 1 }).toJSDate();
-            billingOrganization.graceExpiredAt = DateTime.fromJSDate(billingOrganization.subscriptionYearlyExpiredAt).plus({ days: BillingGracePeriodDays }).toJSDate();
-          }
-
-          await manager.save(billingOrganization);
-          this.logger.error('BillingUpdaterService.update paymentsResult is not ok. grace updated', { billingOrganizationId, now, paymentsResult: stringify(paymentsResult) });
-          return;
+          billingOrganization.graceNextPurchasedAt = DateTime.fromJSDate(billingOrganization.graceNextPurchasedAt).plus({ days: 1 }).toJSDate();
         }
 
-        registerOnAfterRollback(async (error) => {
-          await this.billingMethodNiceCaller.paymentsCancel({
-            tid: paymentsResult.value.tid,
-            reason: error.message,
-          });
-        });
-
-        const createdHistory = manager.getRepository(BillingHistory).create({
-          billingHistoryId: v4(),
-          billingOrganizationId: billingOrganization.billingOrganizationId,
-          purchasedAmount: totalPurchaseAmount,
-          currency: billingOrganization.currency,
-          goodsName: BillingGoodsName,
-          method: 'nice',
-          niceSubscribePaymentsResponse: paymentsResult.value as unknown as Record<string, unknown>,
-          niceTid: paymentsResult.value.tid,
-          niceOrderId: paymentsResult.value.orderId,
-          historyType: 'periodic-purchase',
-          cardCode: billingMethodNice.cardCode,
-          cardName: billingMethodNice.cardName,
-          cardNumberLast4Digits: billingMethodNice.cardNumberLast4Digits,
-          cardExpirationYear: billingMethodNice.expirationYear,
-          cardExpirationMonth: billingMethodNice.expirationMonth,
-        });
-        const savedHistory = await manager.save(createdHistory);
-
-        const planHistories = purchaseAmountInfos.map((purchaseAmountInfo) => {
-          const { planInfo } = purchaseAmountInfo;
-          let startedAt: Date | null = null;
-          let expiredAt: Date | null = null;
-          switch (planInfo.period) {
-            case 'monthly': {
-              startedAt = subscriptionMonthlyStartedAt;
-              expiredAt = subscriptionMonthlyExpiredAt;
-              break;
-            }
-            case 'yearly': {
-              startedAt = subscriptionYearlyStartedAt;
-              expiredAt = subscriptionYearlyExpiredAt;
-              break;
-            }
-            default: {
-              assertUnreachable(planInfo.period);
-            }
+        if (isMonthlyExpired) {
+          if (!billingOrganization.subscriptionMonthlyExpiredAt) {
+            throw new Error('subscriptionMonthlyExpiredAt must not be null');
           }
 
-          if (!startedAt || !expiredAt) {
-            throw new Error('startedAt or expiredAt must not be null');
+          billingOrganization.graceNextPurchasedAt = DateTime.fromJSDate(billingOrganization.subscriptionMonthlyExpiredAt).plus({ days: 1 }).toJSDate();
+          billingOrganization.graceExpiredAt = DateTime.fromJSDate(billingOrganization.subscriptionMonthlyExpiredAt).plus({ days: BillingGracePeriodDays }).toJSDate();
+        }
+
+        if (isYearlyExpired) {
+          if (!billingOrganization.subscriptionYearlyExpiredAt) {
+            throw new Error('subscriptionYearlyExpiredAt must not be null');
           }
 
-          if (!billingOrganization.currency) {
-            throw new Error('currency must not be null');
-          }
+          billingOrganization.graceNextPurchasedAt = DateTime.fromJSDate(billingOrganization.subscriptionYearlyExpiredAt).plus({ days: 1 }).toJSDate();
+          billingOrganization.graceExpiredAt = DateTime.fromJSDate(billingOrganization.subscriptionYearlyExpiredAt).plus({ days: BillingGracePeriodDays }).toJSDate();
+        }
 
-          const planHistory = manager.getRepository(BillingSubscriptionPlanHistory).create({
-            billingSubscriptionPlanHistoryId: v4(),
-            billingOrganizationId: billingOrganization.billingOrganizationId,
-            billingHistoryId: savedHistory.billingHistoryId,
-            billingCouponId: planInfo.billingCouponId,
-            billingSubscriptionPlanSourceId: planInfo.billingSubscriptionPlanSourceId,
-            discountedAmount: purchaseAmountInfo.discountedAmount,
-            purchasedAmount: purchaseAmountInfo.purchaseAmount,
-            startedAt,
-            expiredAt,
-            category: billingOrganization.category,
-            type: planInfo.type,
-            option: planInfo.option,
-            currency: billingOrganization.currency,
-            period: planInfo.period,
-            originPrice: planInfo.originPrice,
-            historyType: 'periodic-purchase',
-          });
-          return planHistory;
-        });
-        await manager.save(planHistories);
-
-        // apply grace
-        billingOrganization.graceExpiredAt = null;
-        billingOrganization.graceNextPurchasedAt = null;
+        await manager.save(billingOrganization);
+        this.logger.error('BillingUpdaterService.update paymentsResult is not ok. grace updated', { billingOrganizationId, now, paymentsResult: stringify(paymentsResult) });
+        return;
       }
+
+      registerOnAfterRollback(async (error) => {
+        await this.billingMethodNiceCaller.paymentsCancel({
+          tid: paymentsResult.value.tid,
+          reason: error.message,
+        });
+      });
+
+      const createdHistory = manager.getRepository(BillingHistory).create({
+        billingHistoryId: v4(),
+        billingOrganizationId: billingOrganization.billingOrganizationId,
+        purchasedAmount: totalPurchaseAmount,
+        currency: billingOrganization.currency,
+        goodsName: BillingGoodsName,
+        method: 'nice',
+        niceSubscribePaymentsResponse: paymentsResult.value as unknown as Record<string, unknown>,
+        niceTid: paymentsResult.value.tid,
+        niceOrderId: paymentsResult.value.orderId,
+        historyType: 'periodic-purchase',
+        cardCode: billingMethodNice.cardCode,
+        cardName: billingMethodNice.cardName,
+        cardNumberLast4Digits: billingMethodNice.cardNumberLast4Digits,
+        cardExpirationYear: billingMethodNice.expirationYear,
+        cardExpirationMonth: billingMethodNice.expirationMonth,
+      });
+      const savedHistory = await manager.save(createdHistory);
+
+      const planHistories = purchaseAmountInfos.map((purchaseAmountInfo) => {
+        const { planInfo } = purchaseAmountInfo;
+        let startedAt: Date | null = null;
+        let expiredAt: Date | null = null;
+        switch (planInfo.period) {
+          case 'monthly': {
+            startedAt = subscriptionMonthlyStartedAt;
+            expiredAt = subscriptionMonthlyExpiredAt;
+            break;
+          }
+          case 'yearly': {
+            startedAt = subscriptionYearlyStartedAt;
+            expiredAt = subscriptionYearlyExpiredAt;
+            break;
+          }
+          default: {
+            assertUnreachable(planInfo.period);
+          }
+        }
+
+        if (!startedAt || !expiredAt) {
+          throw new Error('startedAt or expiredAt must not be null');
+        }
+
+        if (!billingOrganization.currency) {
+          throw new Error('currency must not be null');
+        }
+
+        const planHistory = manager.getRepository(BillingSubscriptionPlanHistory).create({
+          billingSubscriptionPlanHistoryId: v4(),
+          billingOrganizationId: billingOrganization.billingOrganizationId,
+          billingHistoryId: savedHistory.billingHistoryId,
+          billingCouponId: planInfo.billingCouponId,
+          billingSubscriptionPlanSourceId: planInfo.billingSubscriptionPlanSourceId,
+          discountedAmount: purchaseAmountInfo.discountedAmount,
+          purchasedAmount: purchaseAmountInfo.purchaseAmount,
+          startedAt,
+          expiredAt,
+          category: billingOrganization.category,
+          type: planInfo.type,
+          option: planInfo.option,
+          currency: billingOrganization.currency,
+          period: planInfo.period,
+          originPrice: planInfo.originPrice,
+          historyType: 'periodic-purchase',
+        });
+        return planHistory;
+      });
+      await manager.save(planHistories);
+
+      // apply grace
+      billingOrganization.graceExpiredAt = null;
+      billingOrganization.graceNextPurchasedAt = null;
 
       // update
       billingOrganization.subscriptionMonthlyStartedAt = subscriptionMonthlyStartedAt;

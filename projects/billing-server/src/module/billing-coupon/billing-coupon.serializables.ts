@@ -37,12 +37,10 @@ export async function validateCoupon(context: RetryTransactionContext, options: 
     period === 'monthly'
       ? {
           code,
-          monthlyApplyCount: Not(IsNull()),
           monthlyDiscountPercent: Not(IsNull()),
         }
       : {
           code,
-          yearlyApplyCount: Not(IsNull()),
           yearlyDiscountPercent: Not(IsNull()),
         };
   const billingCoupon = await manager.getRepository(BillingCoupon).findOne({ where: findWhereOption });
