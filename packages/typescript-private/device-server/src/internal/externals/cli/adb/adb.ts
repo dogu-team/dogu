@@ -447,7 +447,7 @@ export class AdbSerial {
 
   installAppArgsInternal(apkPath: string): { command: string; args: string[] } {
     const { serial } = this;
-    return { command: adbBinary(), args: ['-P', DOGU_ADB_SERVER_PORT.toString(), '-s', serial, 'install', '-r', '-d', '-t', '-g', apkPath] };
+    return { command: adbBinary(), args: ['-P', DOGU_ADB_SERVER_PORT.toString(), '-s', serial, 'install', '-r', '-d', '-t', '-g', `"${apkPath}"`] };
   }
 
   async installApp(apkPath: string): Promise<child_process.ChildProcess> {
@@ -509,13 +509,12 @@ export class AdbSerial {
     const { serial, printable } = this;
     return await usingAsnyc(new AdbSerialScope('installAppWithReturningStdoutStderr', { serial, apkPath }), async () => {
       const { command, args } = this.installAppArgsInternal(apkPath);
-      printable.verbose?.('installAppWithReturningStdoutStderr start', { command: `${command} ${args.join(' ')}` });
+      const mergedCommand = `${command} ${args.join(' ')}`;
+      printable.verbose?.('installAppWithReturningStdoutStderr start', { command: mergedCommand });
       const rv = await new Promise<ChildProcess.ExecResult>((resolve, reject) => {
-        execFile(
-          command,
-          args,
+        child_process.exec(
+          mergedCommand,
           {
-            windowsVerbatimArguments: true,
             timeout,
           },
           (error, stdout, stderr) => {
