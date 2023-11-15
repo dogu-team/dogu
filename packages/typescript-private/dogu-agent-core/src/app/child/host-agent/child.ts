@@ -67,6 +67,7 @@ export class HostAgentChild implements Child {
 
     this._child = openChild(hostAgentKey, hostAgentMainScriptPath, options, this.listener);
     this._child.on('close', (exitCode, signal) => {
+      this.logger.error('HostAgentChild close critical error!!', { exitCode, signal });
       this._child = undefined;
       const childCode = new ChildCode(Code.CODE_HOST_AGENT_SUCCESS_BEGIN);
       childCode.code(exitCode, signal);

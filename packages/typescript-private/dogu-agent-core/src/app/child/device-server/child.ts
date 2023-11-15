@@ -87,6 +87,8 @@ export class DeviceServerChild implements Child {
       this._lastError.message = stripped;
     });
     this._child.on('close', (code, signal) => {
+      this.logger.error('DeviceServerChild close critical error!!', { code, signal });
+
       this.eventEmitter.emit('close');
       if (code !== null) {
         if (code === 0) {

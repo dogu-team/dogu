@@ -30,7 +30,10 @@ export function openChild(key: ChildKey, module: string, options: FilledChildOpt
     childLogger.error('child process error', { key, error });
   });
   child.on('close', (code, signal) => {
-    childLogger.info('child process exited', { key, code, signal });
+    for (let i = 0; i < 10; i++) {
+      childLogger.error('child process exited critical error!!', { key, code, signal });
+    }
+
     listener.onClose(key, code, signal);
   });
   child.on('message', (message, sendHandle) => {

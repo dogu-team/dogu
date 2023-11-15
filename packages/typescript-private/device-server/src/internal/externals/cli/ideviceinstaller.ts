@@ -86,7 +86,11 @@ export class IdeviceInstaller {
             if (line.startsWith('CFBundleIdentifier')) {
               return;
             }
-            let [bundieId, version, displayName] = line.split(', ');
+            let [bundieId, version, displayName] = line.split(', ') as (string | undefined)[];
+            if (!bundieId || !version || !displayName) {
+              logger.error(`IdeviceInstallerImpl.listUserApps invalid line ${line}`);
+              continue;
+            }
             bundieId = bundieId.replace(/^"/, '').replace(/"$/, '');
             version = version.replace(/^"/, '').replace(/"$/, '');
             displayName = displayName.replace(/^"/, '').replace(/"$/, '');
