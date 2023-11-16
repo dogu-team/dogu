@@ -1,16 +1,17 @@
 import 'reflect-metadata';
 
 import { ChildError, PlatformAbility } from '@dogu-private/dost-children';
+import { handleLoggerCreateWithSentry, initSentry, SentryAllExceptionsFilter } from '@dogu-private/nestjs-common';
 import { Code, DOGU_PROTOCOL_VERSION } from '@dogu-private/types';
 import { errorify } from '@dogu-tech/common';
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { WsAdapter } from '@nestjs/platform-ws';
+import * as Sentry from '@sentry/node';
 import { WinstonModule } from 'nest-winston';
-
 import { AppModule } from './app/app.module';
 import { env } from './env';
-import { adbLogger, logger } from './logger/logger.instance';
+import { adbLogger, deviceInfoLogger, logger, zombieLogger } from './logger/logger.instance';
 import { openPathMap } from './path-map';
 import { addProcessEventHandler } from './process-event';
 export { onErrorToExit } from './child-utils';
@@ -21,6 +22,16 @@ export async function bootstrap(): Promise<void> {
 
   logger.addFileTransports();
   adbLogger.addFileTransports();
+  initSentry(env.DOGU_USE_SENTRY, {
+    dsn: 'https://93661171f4fb3283dffbfcb199a01c4b@o4505097685565440.ingest.sentry.io/4506234379304960',
+    integrations: [new Sentry.Integrations.Http({ tracing: true }), ...Sentry.autoDiscoverNodePerformanceMonitoringIntegrations()],
+    environment: env.DOGU_RUN_TYPE,
+    maxBreadcrumbs: 10000,
+  });
+  handleLoggerCreateWithSentry(env.DOGU_USE_SENTRY, logger);
+  handleLoggerCreateWithSentry(env.DOGU_USE_SENTRY, zombieLogger);
+  handleLoggerCreateWithSentry(env.DOGU_USE_SENTRY, adbLogger);
+  handleLoggerCreateWithSentry(env.DOGU_USE_SENTRY, deviceInfoLogger);
   /**
    * @note load env lazy
    */
@@ -40,6 +51,7 @@ export async function bootstrap(): Promise<void> {
   app
     .useWebSocketAdapter(new WsAdapter(app))
     .useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }))
+    .useGlobalFilters(new SentryAllExceptionsFilter(env.DOGU_USE_SENTRY, app.getHttpAdapter()))
     .enableCors({
       origin: true,
       preflightContinue: false,
@@ -48,6 +60,7 @@ export async function bootstrap(): Promise<void> {
       optionsSuccessStatus: 200,
       allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
     });
+
   try {
     await app.listen(env.DOGU_DEVICE_SERVER_PORT);
   } catch (error) {

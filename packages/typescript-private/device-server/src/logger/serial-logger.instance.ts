@@ -1,21 +1,31 @@
+import { handleLoggerCreateWithSentry } from '@dogu-private/nestjs-common';
 import { Serial, SerialPrintable } from '@dogu-private/types';
 import { FilledPrintable } from '@dogu-tech/common';
 import { LoggerFactory } from '@dogu-tech/node';
+import { env } from '../env';
 
 export function createAndroidLogger(serial: Serial): SerialLogger {
-  return new SerialLogger(serial, LoggerFactory.createLazy(`${serial}_android`, { withFileTransports: true }));
+  const logger = LoggerFactory.createLazy(`${serial}_android`, { withFileTransports: true });
+  handleLoggerCreateWithSentry(env.DOGU_USE_SENTRY, logger);
+  return new SerialLogger(serial, logger);
 }
 
 export function createGdcLogger(serial: Serial): SerialLogger {
-  return new SerialLogger(serial, LoggerFactory.createLazy(`${serial}_gdc`, { withFileTransports: true }));
+  const logger = LoggerFactory.createLazy(`${serial}_gdc`, { withFileTransports: true });
+  handleLoggerCreateWithSentry(env.DOGU_USE_SENTRY, logger);
+  return new SerialLogger(serial, logger);
 }
 
 export function createAdbSerialLogger(serial: Serial): SerialLogger {
-  return new SerialLogger(serial, LoggerFactory.createLazy(`${serial}_adb`, { withFileTransports: true }));
+  const logger = LoggerFactory.createLazy(`${serial}_adb`, { withFileTransports: true });
+  handleLoggerCreateWithSentry(env.DOGU_USE_SENTRY, logger);
+  return new SerialLogger(serial, logger);
 }
 
 export function createIosLogger(serial: Serial): SerialLogger {
-  return new SerialLogger(serial, LoggerFactory.createLazy(`${serial}_ios`, { withFileTransports: true }));
+  const logger = LoggerFactory.createLazy(`${serial}_ios`, { withFileTransports: true });
+  handleLoggerCreateWithSentry(env.DOGU_USE_SENTRY, logger);
+  return new SerialLogger(serial, logger);
 }
 
 export class SerialLogger implements SerialPrintable {

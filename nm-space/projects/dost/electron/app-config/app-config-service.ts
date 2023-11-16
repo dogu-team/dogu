@@ -10,19 +10,19 @@ import { ConfigsPath } from '../path-map';
 export class AppConfigService {
   static instance: AppConfigService;
 
-  static async open(): Promise<void> {
+  static open(): void {
     const dotenvSearchPaths: string[] = [];
     if (isDev) {
       dotenvSearchPaths.push(process.cwd());
     }
     dotenvSearchPaths.push(path.resolve(process.resourcesPath, 'dotenv'));
 
-    const impl = await new AppConfigLoader({
+    const impl = new AppConfigLoader({
       appName: app.name,
       configsPath: ConfigsPath,
       dotenvSearchPaths,
       logger,
-    }).load();
+    }).loadSync();
 
     AppConfigService.instance = new AppConfigService(impl);
     const { instance } = AppConfigService;

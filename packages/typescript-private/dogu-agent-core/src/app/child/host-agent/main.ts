@@ -13,6 +13,5 @@ process.on('uncaughtException', (error, origin) => {
 console.info('host-agent env', { env: process.env });
 
 bootstrap().catch((error) => {
-  console.error('Unexpected error', { error: errorify(error) });
-  onErrorToExit(error);
+  throw errorify(error);
 });

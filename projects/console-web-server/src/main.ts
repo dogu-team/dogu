@@ -1,5 +1,6 @@
 import 'reflect-metadata';
 
+import { handleLoggerCreateWithSentry, initSentry } from '@dogu-private/nestjs-common';
 import { stringify } from '@dogu-tech/common';
 import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import { HttpAdapterHost, NestFactory, Reflector } from '@nestjs/core';
@@ -12,7 +13,7 @@ import { env } from './env';
 import { AllExceptionsFilter } from './filter/exception.filter';
 import { AppModule } from './module/app/app.module';
 import { logger } from './module/logger/logger.instance';
-import { isSentryEnabled, SentryBreadCrumbTrasponrt } from './utils/sentry';
+import { isSentryEnabled } from './utils/sentry';
 import { PatternBasedWsAdapter } from './ws/common/pattern-based-ws-adaptor';
 
 process.on('unhandledRejection', (reason, promise) => {
@@ -22,25 +23,21 @@ process.on('uncaughtException', (error, origin) => {
   logger.error('Uncaught Exception thrown:', { error: stringify(error), origin: stringify(origin) });
 });
 
-if (isSentryEnabled()) {
-  Sentry.init({
-    dsn: 'https://b57ff386286740dfb9ab8e84b0f886cb@o4505097685565440.ingest.sentry.io/4505101334413312',
-    integrations: [new Sentry.Integrations.Http({ tracing: true }), new Sentry.Integrations.Postgres(), ...Sentry.autoDiscoverNodePerformanceMonitoringIntegrations()],
-    environment: env.DOGU_RUN_TYPE,
-    maxBreadcrumbs: 10000,
-    tracesSampleRate: 0.2,
-  });
-}
+initSentry(isSentryEnabled(), {
+  dsn: 'https://b57ff386286740dfb9ab8e84b0f886cb@o4505097685565440.ingest.sentry.io/4505101334413312',
+  integrations: [new Sentry.Integrations.Http({ tracing: true }), new Sentry.Integrations.Postgres(), ...Sentry.autoDiscoverNodePerformanceMonitoringIntegrations()],
+  environment: env.DOGU_RUN_TYPE,
+  maxBreadcrumbs: 10000,
+  tracesSampleRate: 0.2,
+});
 
 async function bootstrap(): Promise<void> {
   if (env.DOGU_USE_FILE_LOG === 1) {
     logger.addFileTransports();
   }
-  const winstonLogger = logger.winstonLogger();
-  if (isSentryEnabled()) {
-    winstonLogger.add(new SentryBreadCrumbTrasponrt());
-  }
+  handleLoggerCreateWithSentry(isSentryEnabled(), logger);
 
+  const winstonLogger = logger.winstonLogger();
   const app = await NestFactory.create(AppModule, {
     logger: WinstonModule.createLogger({
       instance: winstonLogger,

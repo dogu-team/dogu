@@ -55,4 +55,8 @@ export class DeviceServerEnv extends PreloadDeviceServerEnv {
 
   @IsString()
   DOGU_WIFI_PASSWORD = '';
+
+  @IsBoolean()
+  @TransformBooleanString()
+  DOGU_USE_SENTRY = false;
 }

@@ -1,5 +1,4 @@
-import { ChildListener, ChildService as Impl, ChildServiceFactory, DeviceServerChild, HostAgentChild } from '@dogu-private/dogu-agent-core/app';
-import * as Sentry from '@sentry/electron/main';
+import { ChildService as Impl, ChildServiceFactory, DeviceServerChild, HostAgentChild } from '@dogu-private/dogu-agent-core/app';
 import { ipcMain } from 'electron';
 import { childClientKey, ChildTree, HostAgentConnectionStatus, Key } from '../../src/shares/child';
 import { AppConfigService } from '../app-config/app-config-service';
@@ -12,47 +11,19 @@ export class ChildService {
   static instance: ChildService;
 
   static open(appConfigService: AppConfigService, featureConfigService: FeatureConfigService, externalService: ExternalService) {
-    const listener: ChildListener = {
-      onStdout: (key, data) => {
-        if (featureConfigService.get('useSentry')) {
-          Sentry.addBreadcrumb({
-            type: 'default',
-            category: key as string,
-            message: data,
-            level: 'info',
-          });
-        }
-      },
-      onStderr: (key, data) => {
-        if (featureConfigService.get('useSentry')) {
-          Sentry.addBreadcrumb({
-            type: 'default',
-            category: key as string,
-            message: data,
-            level: 'error',
-          });
-        }
-      },
-      onClose: (key, code, signal) => {
-        if (code !== 0) {
-          if (featureConfigService.get('useSentry')) {
-            Sentry.addBreadcrumb({
-              type: 'default',
-              category: key as string,
-              message: `child process(${key}) exited with code ${code} and signal ${signal}`,
-              level: 'fatal',
-            });
-          }
-        }
-      },
+    const listener = {
+      onStdout: () => {},
+      onStderr: () => {},
+      onClose: () => {},
     };
 
     const impl = new ChildServiceFactory({
       appConfigService: appConfigService.impl,
+      featureConfigService: featureConfigService.impl,
       externalService: externalService.impl,
       logsPath: LogsPath,
       logger: logger,
-      listener,
+      listener: listener,
     }).create();
 
     ChildService.instance = new ChildService(impl);

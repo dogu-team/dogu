@@ -24,10 +24,12 @@
     "@nestjs/core": "9.2.1",
     "@nestjs/platform-ws": "9.2.1",
     "@nestjs/websockets": "9.2.1",
+    "@sentry/node": "7.48.0",
     "class-transformer": "0.5.1",
     "class-validator": "0.14.0",
     "reflect-metadata": "0.1.13",
     "rxjs": "7.5.6",
+    "winston-transport": "4.6.0",
     "ws": "8.13.0"
   },
   "devDependencies": {

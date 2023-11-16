@@ -9,6 +9,7 @@ import path from 'path';
 import { deviceServerKey } from '../../../shares/child';
 import { AppConfigService } from '../../app-config/service';
 import { ExternalService } from '../../external/service';
+import { FeatureConfigService } from '../../index';
 import { getLogLevel, stripAnsi } from '../../log-utils';
 import { checkProjectEqual } from '../../settings/ios-device-agent-project';
 import { closeChild, openChild } from '../lifecycle';
@@ -19,6 +20,7 @@ const deviceServerMainScriptPath = path.resolve(__dirname, 'main.js');
 export class DeviceServerChild implements Child {
   constructor(
     private readonly appConfigService: AppConfigService,
+    private readonly featureConfigService: FeatureConfigService,
     private readonly externalService: ExternalService,
     private readonly logsPath: string,
     private readonly listener: ChildListener,
@@ -40,6 +42,7 @@ export class DeviceServerChild implements Child {
     const DOGU_LINUX_DEVICE_SERIAL = appConfigService.getOrDefault<string>('DOGU_LINUX_DEVICE_SERIAL', '');
     const DOGU_WIFI_SSID = appConfigService.getOrDefault<string>('DOGU_WIFI_SSID', '');
     const DOGU_WIFI_PASSWORD = appConfigService.getOrDefault<string>('DOGU_WIFI_PASSWORD', '');
+    const DOGU_USE_SENTRY = this.featureConfigService.get('useSentry');
 
     if (!isValidDoguRunType(DOGU_RUN_TYPE)) {
       throw new Error(`Invalid DOGU_RUN_TYPE: ${DOGU_RUN_TYPE}`);
@@ -73,6 +76,7 @@ export class DeviceServerChild implements Child {
           DOGU_LINUX_DEVICE_SERIAL,
           DOGU_WIFI_SSID,
           DOGU_WIFI_PASSWORD,
+          DOGU_USE_SENTRY: DOGU_USE_SENTRY ? 'true' : 'false',
         },
       },
       childLogger: this.logger,

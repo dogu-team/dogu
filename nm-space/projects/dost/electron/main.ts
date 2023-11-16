@@ -48,6 +48,12 @@ app.on('second-instance', () => {
   WindowService.open();
 });
 
+AppConfigService.open();
+FeatureConfigService.open(AppConfigService.instance);
+if (FeatureConfigService.instance.get('useSentry')) {
+  Sentry.init({ dsn: SentyDSNUrl, maxBreadcrumbs: 10000, environment: isDev ? 'development' : 'production' });
+}
+
 app.whenReady().then(async () => {
   logger.addFileTransports(LogsPath);
   rendererLogger.addFileTransports(LogsPath);
@@ -74,11 +80,7 @@ app.whenReady().then(async () => {
   await ServicesOpenStatusService.instance.openServices(async () => {
     RendererLogService.open();
     ThemeService.open();
-    await AppConfigService.open();
-    await FeatureConfigService.open(AppConfigService.instance);
-    if (FeatureConfigService.instance.get('useSentry')) {
-      Sentry.init({ dsn: SentyDSNUrl, maxBreadcrumbs: 10000, environment: isDev ? 'development' : 'production' });
-    }
+
     await DotEnvConfigService.open(AppConfigService.instance);
     SettingsService.open(DotEnvConfigService.instance);
     TrayService.open(SettingsService.instance);

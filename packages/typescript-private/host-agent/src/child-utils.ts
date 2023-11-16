@@ -18,8 +18,12 @@ function codeToExitCode(code: Code): number {
   return childCode.exitCode(code);
 }
 
-export function onErrorToExit(error: unknown): never {
+const ExitWaitTimeForCrashReport = 1000;
+
+export function onErrorToExit(error: unknown): void {
   const code = errorToCode(error);
   const exitCode = codeToExitCode(code);
-  process.exit(exitCode);
+  setTimeout(() => {
+    process.exit(exitCode);
+  }, ExitWaitTimeForCrashReport);
 }

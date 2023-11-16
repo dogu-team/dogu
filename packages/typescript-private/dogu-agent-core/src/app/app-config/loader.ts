@@ -13,21 +13,24 @@ function resolveAppName(appName: string): string {
   return appName.toLowerCase().replaceAll(' ', '-');
 }
 
-async function clearConfigsIfInvalid(dotenvMerger: DotenvMerger, configsPath: string, appName: string, logger: Logger): Promise<void> {
+function clearConfigsIfInvalid(dotenvMerger: DotenvMerger, configsPath: string, appName: string, logger: Logger): void {
   const doguRunTypeKey = 'DOGU_RUN_TYPE';
   const appNameResolved = resolveAppName(appName);
   const appConfigFilePath = path.resolve(configsPath, `${appNameResolved}.${AppConfigFileExtension}`);
-  const stat = await fs.promises.stat(appConfigFilePath).catch(() => null);
+  let stat = null;
+  try {
+    stat = fs.statSync(appConfigFilePath);
+  } catch (e) {}
   if (stat && stat.isFile()) {
-    const appConfigContent = await fs.promises.readFile(appConfigFilePath, { encoding: 'utf8' });
+    const appConfigContent = fs.readFileSync(appConfigFilePath, { encoding: 'utf8' });
     const appConfigParsed = JSON.parse(appConfigContent) as { DOGU_RUN_TYPE?: string };
     const appConfigDoguRunType = _.get(appConfigParsed, doguRunTypeKey);
-    const dotenvDoguRunType = await dotenvMerger.find(doguRunTypeKey, logger);
+    const dotenvDoguRunType = dotenvMerger.find(doguRunTypeKey, logger);
     if (appConfigDoguRunType && dotenvDoguRunType && appConfigDoguRunType !== dotenvDoguRunType) {
-      await fs.promises.rm(configsPath, { recursive: true, force: true });
+      fs.rmSync(configsPath, { recursive: true, force: true });
     }
   }
-  await fs.promises.mkdir(configsPath, { recursive: true });
+  fs.mkdirSync(configsPath, { recursive: true });
 }
 
 export interface AppConfigLoaderOptions extends DotEnvMergerOptions, Omit<AppConfigServiceOptions, 'client'> {
@@ -39,12 +42,12 @@ export interface AppConfigLoaderOptions extends DotEnvMergerOptions, Omit<AppCon
 export class AppConfigLoader {
   constructor(private readonly options: AppConfigLoaderOptions) {}
 
-  async load(): Promise<AppConfigService> {
+  loadSync(): AppConfigService {
     const { options } = this;
     const { appName, configsPath, logger } = this.options;
 
     const dotenvMerger = new DotenvMerger(options);
-    await clearConfigsIfInvalid(dotenvMerger, configsPath, appName, logger);
+    clearConfigsIfInvalid(dotenvMerger, configsPath, appName, logger);
 
     const appNameResolved = resolveAppName(appName);
     const client = new Conf<AppConfigSchema>({
@@ -66,7 +69,7 @@ export class AppConfigLoader {
       ...options,
       client,
     });
-    await dotenvMerger.merge(service, logger);
+    dotenvMerger.merge(service, logger);
     return service;
   }
 }

@@ -1,4 +1,4 @@
-import { loadFeatureConfig, Logger } from '@dogu-tech/node';
+import { loadFeatureConfigSync, Logger } from '@dogu-tech/node';
 import fs from 'fs';
 import path from 'path';
 import { FeatureTable } from '../../shares/feature-config';
@@ -15,21 +15,20 @@ export interface FeatureConfigLoaderOptions {
 export class FeatureConfigLoader {
   constructor(private readonly options: FeatureConfigLoaderOptions) {}
 
-  async load(): Promise<FeatureConfigService> {
+  loadSync(): FeatureConfigService {
     const { appConfigService, logger } = this.options;
     logger.verbose('feature config load');
+    let isDirectory = false;
+    try {
+      isDirectory = fs.statSync(featureSearchPath).isDirectory();
+    } catch (e) {}
 
-    if (
-      !(await fs.promises
-        .stat(featureSearchPath)
-        .then((stat) => stat.isDirectory())
-        .catch(() => false))
-    ) {
+    if (!isDirectory) {
       throw new Error(`Feature config directory not found: ${featureSearchPath}`);
     }
 
     const runType = appConfigService.get<string>('DOGU_RUN_TYPE');
-    const featureConfig = await loadFeatureConfig<FeatureTable>(runType, logger, featureSearchPath);
+    const featureConfig = loadFeatureConfigSync<FeatureTable>(runType, logger, featureSearchPath);
     const service = new FeatureConfigService({
       featureConfig,
     });

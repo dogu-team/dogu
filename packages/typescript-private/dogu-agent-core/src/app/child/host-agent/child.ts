@@ -9,6 +9,7 @@ import http from 'http';
 import path from 'path';
 import { hostAgentKey } from '../../../shares/child';
 import { AppConfigService } from '../../app-config/service';
+import { FeatureConfigService } from '../../index';
 import { getLogLevel } from '../../log-utils';
 import { closeChild, openChild } from '../lifecycle';
 import { Child, ChildLastError, ChildListener, fillChildOptions, HostAgentConnectionStatus } from '../types';
@@ -18,6 +19,7 @@ const hostAgentMainScriptPath = path.resolve(__dirname, 'main.js');
 export class HostAgentChild implements Child {
   constructor(
     private readonly appConfigService: AppConfigService,
+    private readonly featureConfigService: FeatureConfigService,
     private readonly logsPath: string,
     private readonly listener: ChildListener,
     private readonly logger: Printable,
@@ -35,6 +37,7 @@ export class HostAgentChild implements Child {
     const DOGU_API_BASE_URL = appConfigService.get<string>('DOGU_API_BASE_URL');
     const DOGU_DEVICE_SERVER_HOST_PORT = appConfigService.get<string>('DOGU_DEVICE_SERVER_HOST_PORT');
     const DOGU_HOST_AGENT_PORT = appConfigService.get<number>('DOGU_HOST_AGENT_PORT');
+    const DOGU_USE_SENTRY = this.featureConfigService.get('useSentry');
     if (!isValidDoguRunType(DOGU_RUN_TYPE)) {
       throw new Error(`Invalid DOGU_RUN_TYPE: ${DOGU_RUN_TYPE}`);
     }
@@ -60,6 +63,7 @@ export class HostAgentChild implements Child {
           DOGU_HOST_AGENT_PORT: `${DOGU_HOST_AGENT_PORT}`,
           DOGU_LOG_LEVEL,
           DOGU_ROOT_PID,
+          DOGU_USE_SENTRY: DOGU_USE_SENTRY ? 'true' : 'false',
         },
       },
       childLogger: this.logger,

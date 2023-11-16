@@ -17,12 +17,12 @@ export async function run(url: string, token: string, linuxDeviceSerial: string)
   const logsPath = HostPaths.logsPath(HostPaths.doguHomePath);
   const thirdPartyPathMap = HostPaths.thirdParty.pathMap();
 
-  const appConfigService = await new AppConfigLoader({
+  const appConfigService = new AppConfigLoader({
     configsPath,
     logger,
     appName,
     dotenvSearchPaths: [process.cwd()],
-  }).load();
+  }).loadSync();
   appConfigService.set('DOGU_API_BASE_URL', url);
   appConfigService.set('DOGU_HOST_TOKEN', token);
   appConfigService.set('DOGU_DEVICE_PLATFORM_ENABLED', 'windows,macos,linux');
@@ -30,10 +30,10 @@ export async function run(url: string, token: string, linuxDeviceSerial: string)
     appConfigService.set('DOGU_LINUX_DEVICE_SERIAL', linuxDeviceSerial);
   }
 
-  const featureConfigService = await new FeatureConfigLoader({
+  const featureConfigService = new FeatureConfigLoader({
     appConfigService,
     logger,
-  }).load();
+  }).loadSync();
 
   const dotenvConfigService = await new DotenvConfigLoader({
     appConfigService,
@@ -88,6 +88,7 @@ export async function run(url: string, token: string, linuxDeviceSerial: string)
   };
   const childService = new ChildServiceFactory({
     appConfigService,
+    featureConfigService,
     externalService,
     logsPath,
     logger,

@@ -1,7 +1,7 @@
 import { DoguRunType, NodeEnvType } from '@dogu-private/types';
-import { IsFilledString } from '@dogu-tech/common';
+import { IsFilledString, TransformBooleanString } from '@dogu-tech/common';
 import { Type } from 'class-transformer';
-import { IsIn, IsNumber, IsOptional } from 'class-validator';
+import { IsBoolean, IsIn, IsNumber, IsOptional } from 'class-validator';
 
 export class PreloadHostAgentEnv {
   @IsIn(NodeEnvType)
@@ -32,4 +32,8 @@ export class HostAgentEnv extends PreloadHostAgentEnv {
   @IsNumber()
   @Type(() => Number)
   DOGU_ROOT_PID?: number;
+
+  @IsBoolean()
+  @TransformBooleanString()
+  DOGU_USE_SENTRY = false;
 }
