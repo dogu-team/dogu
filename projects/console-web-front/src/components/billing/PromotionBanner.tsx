@@ -13,6 +13,7 @@ import useSWR from 'swr';
 import { shallow } from 'zustand/shallow';
 
 import { swrAuthFetcher } from '../../api';
+import { usePromotionCouponSWR } from '../../api/billing';
 import { planDescriptionInfoMap } from '../../resources/plan';
 import useLicenseStore from '../../stores/license';
 import usePromotionStore from '../../stores/promotion';
@@ -73,47 +74,27 @@ const PromotionBanner: React.FC = () => {
     state.promotionCloseMap,
     state.savePromotionCloseTime,
   ]);
-  const license = useLicenseStore((state) => state.license);
-  const dto: Omit<GetAvailableBillingCouponsDto, 'type'> = {
-    organizationId: license?.organizationId ?? '',
+  const dto: Omit<GetAvailableBillingCouponsDto, 'type' | 'organizationId'> = {
     category: process.env.NEXT_PUBLIC_ENV === 'self-hosted' ? 'self-hosted' : 'cloud',
     subscriptionPlanType: currentPlanType ?? undefined,
   };
-  const { data } = useSWR<CallBillingApiResponse<BillingPromotionCouponResponse[]>>(
-    isPromotionOpenablePage && `/billing/promotions?${buildQueryPraramsByObject(dto, { removeFalsy: true })}`,
-    swrAuthFetcher,
-    { revalidateOnFocus: false },
-  );
+  const { data } = usePromotionCouponSWR(isPromotionOpenablePage, dto);
   const { t } = useTranslation('billing');
-  const hasUsingPlan = !!license?.billingOrganization.billingSubscriptionPlanInfos.find(
-    (info) => info.type === currentPlanType && info.state !== 'unsubscribed',
-  );
 
-  if (!isPromotionOpenablePage) {
+  if (!currentPlanType || !data.length) {
     return null;
   }
 
-  if (data?.errorMessage || !data?.body?.length) {
-    return null;
-  }
-
-  if (!currentPlanType) {
-    return null;
-  }
-
-  if (hasUsingPlan) {
-    return null;
-  }
+  const promotion = data[0];
 
   const isVisible =
     !promotionCloseMap[currentPlanType] ||
-    new Date(data.body[0].createdAt).getTime() > new Date(promotionCloseMap[currentPlanType]!).getTime();
+    new Date(promotion.createdAt).getTime() > new Date(promotionCloseMap[currentPlanType]!).getTime();
 
   if (!isVisible) {
     return null;
   }
 
-  const promotion = data.body[0];
   const planDescription = planDescriptionInfoMap[currentPlanType];
   const planGroupType = Object.keys(BillingPlanGroupMap).find((key) =>
     BillingPlanGroupMap[key as BillingSubscriptionGroupType].includes(currentPlanType),

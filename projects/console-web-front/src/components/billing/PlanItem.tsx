@@ -1,10 +1,16 @@
-import { CheckOutlined } from '@ant-design/icons';
-import { BillingPeriod, BillingSubscriptionPlanOptionInfo, BillingSubscriptionPlanType } from '@dogu-private/console';
+import { CheckOutlined, LoadingOutlined } from '@ant-design/icons';
+import {
+  BillingPeriod,
+  BillingPromotionCouponResponse,
+  BillingSubscriptionPlanOptionInfo,
+  BillingSubscriptionPlanType,
+} from '@dogu-private/console';
 import { Button, Divider, Select, SelectProps } from 'antd';
 import useTranslation from 'next-translate/useTranslation';
 import { useState } from 'react';
 import styled from 'styled-components';
 import { shallow } from 'zustand/shallow';
+import { usePromotionCouponSWR } from '../../api/billing';
 
 import { PlanDescriptionInfo } from '../../resources/plan';
 import useBillingPlanPurchaseStore from '../../stores/billing-plan-purchase';
@@ -27,6 +33,10 @@ const PlanItem: React.FC<Props> = ({ planType, planInfo, descriptionInfo }) => {
     shallow,
   );
   const updateSelectedPlan = useBillingPlanPurchaseStore((state) => state.updateSelectedPlan);
+  const { data, isLoading } = usePromotionCouponSWR(true, {
+    subscriptionPlanType: planType,
+    category: planInfo.category,
+  });
   const { t } = useTranslation('billing');
 
   const usingPlans = license ? getSubscriptionPlansFromLicense(license, [planType]) : [];
@@ -95,6 +105,23 @@ const PlanItem: React.FC<Props> = ({ planType, planInfo, descriptionInfo }) => {
     }
   };
 
+  if (isLoading) {
+    return (
+      <Box style={{ height: '500px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <LoadingOutlined />
+      </Box>
+    );
+  }
+
+  const promotionCoupon: BillingPromotionCouponResponse | undefined = data?.[0];
+  const toFixed = (value: number): number => parseFloat(value.toFixed(2));
+  const couponFactor = promotionCoupon ? toFixed(1 - (promotionCoupon.monthlyDiscountPercent ?? 0) / 100) : 1;
+  const isDiscounted = couponFactor < 1;
+
+  const monthlyPrice = isDiscounted
+    ? planInfo.optionMap[Number(selectedValue)].KRW.monthly * couponFactor
+    : planInfo.optionMap[Number(selectedValue)].KRW.monthly;
+
   return (
     <Box>
       <div>
@@ -105,13 +132,22 @@ const PlanItem: React.FC<Props> = ({ planType, planInfo, descriptionInfo }) => {
           <Content>Contact us</Content>
         ) : (
           <Content>
+            {isDiscounted && (
+              <p style={{ color: '#888', textDecoration: 'line-through' }}>
+                {getLocaleFormattedPrice(
+                  'ko',
+                  'KRW',
+                  isAnnual
+                    ? planInfo.optionMap[Number(selectedValue)].KRW.yearly / 12
+                    : planInfo.optionMap[Number(selectedValue)].KRW.monthly,
+                )}
+              </p>
+            )}
             <PricingPrice>
               {getLocaleFormattedPrice(
                 'ko',
                 'KRW',
-                isAnnual
-                  ? planInfo.optionMap[Number(selectedValue)].KRW.yearly / 12
-                  : planInfo.optionMap[Number(selectedValue)].KRW.monthly,
+                isAnnual ? planInfo.optionMap[Number(selectedValue)].KRW.yearly / 12 : monthlyPrice,
               )}
             </PricingPrice>
             <PricingPeriod>

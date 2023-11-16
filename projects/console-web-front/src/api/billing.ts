@@ -13,8 +13,10 @@ import {
   ValidateBillingCouponDto,
   ValidateBillingCouponResponse,
 } from '@dogu-private/console';
+import useSWR, { KeyedMutator } from 'swr';
 
-import api from '.';
+import api, { swrAuthFetcher } from '.';
+import useLicenseStore from '../stores/license';
 import { buildQueryPraramsByObject } from '../utils/query';
 
 export const validateBillingCoupon = async (
@@ -92,4 +94,50 @@ export const cancelChangePlanOptionOrPeriod = async (
     dto,
   );
   return data;
+};
+
+export const usePromotionCouponSWR = (
+  needFetch: boolean,
+  dto: Omit<GetAvailableBillingCouponsDto, 'type' | 'organizationId'>,
+): {
+  data: BillingPromotionCouponResponse[];
+  mutate: KeyedMutator<CallBillingApiResponse<BillingPromotionCouponResponse[]>>;
+  isLoading: boolean;
+} => {
+  const license = useLicenseStore((state) => state.license);
+  const { data, mutate, error, isLoading } = useSWR<CallBillingApiResponse<BillingPromotionCouponResponse[]>>(
+    needFetch &&
+      `/billing/promotions?${buildQueryPraramsByObject(
+        { ...dto, organizationId: license?.organizationId },
+        { removeFalsy: true },
+      )}`,
+    swrAuthFetcher,
+    { revalidateOnFocus: false },
+  );
+
+  const hasUsingPlan = !!license?.billingOrganization.billingSubscriptionPlanInfos.find(
+    (info) => info.type === dto.subscriptionPlanType && info.state !== 'unsubscribed',
+  );
+
+  if (!needFetch) {
+    return { data: [], mutate, isLoading };
+  }
+
+  if (data?.errorMessage || !data?.body?.length) {
+    return { data: [], mutate, isLoading };
+  }
+
+  if (!dto.subscriptionPlanType) {
+    return { data: [], mutate, isLoading };
+  }
+
+  if (hasUsingPlan) {
+    return { data: [], mutate, isLoading };
+  }
+
+  if (error) {
+    return { data: [], mutate, isLoading };
+  }
+
+  return { data: data.body, mutate, isLoading };
 };
