@@ -1,6 +1,6 @@
 import { PlatformAbility } from '@dogu-private/dost-children';
 import { GeoLocation, PrivateProtocol, Serial } from '@dogu-private/types';
-import { delay, errorify, FilledPrintable, IDisposableAsync, IDisposableSync, Printable, Retry, stringify, using, usingAsnyc } from '@dogu-tech/common';
+import { delay, errorify, FilledPrintable, IDisposableAsync, IDisposableSync, Printable, retry, Retry, stringify, using, usingAsnyc } from '@dogu-tech/common';
 import { ChildProcess, HostPaths } from '@dogu-tech/node';
 import child_process, { execFile, ExecFileOptionsWithStringEncoding, spawn } from 'child_process';
 import fs from 'fs';
@@ -999,29 +999,31 @@ export class AdbSerial {
 
   async getDisplaySize(): Promise<{ width: number; height: number }> {
     const { serial, printable } = this;
-    return await usingAsnyc(new AdbSerialScope('getDisplaySize', { serial }), async () => {
-      const result = await shellIgnoreError(serial, 'wm size', { printable });
-      // get adb shell wm output
-      // Physical size: 1080x1920
-      // Override size: 1080x1920
-      const regex = /(\d+)x(\d+)/g;
-      const matched = result.stdout.match(regex);
-      if (matched === null) {
-        return { width: 0, height: 0 };
-      }
-      const matchInfo = matched[0];
-      if (matchInfo === undefined) {
-        return { width: 0, height: 0 };
-      }
-      const [width, height] = matchInfo.split('x').map((v) => parseInt(v, 10));
-      if (width === undefined) {
-        return { width: 0, height: 0 };
-      }
-      if (height === undefined) {
-        return { width: 0, height: 0 };
-      }
-      const rv = { width, height };
-      return rv;
+    return await retry(async () => {
+      return await usingAsnyc(new AdbSerialScope('getDisplaySize', { serial }), async () => {
+        const result = await shell(serial, 'wm size');
+        // get adb shell wm output
+        // Physical size: 1080x1920
+        // Override size: 1080x1920
+        const regex = /(\d+)x(\d+)/g;
+        const matched = result.stdout.match(regex);
+        if (matched === null) {
+          return { width: 0, height: 0 };
+        }
+        const matchInfo = matched[0];
+        if (matchInfo === undefined) {
+          return { width: 0, height: 0 };
+        }
+        const [width, height] = matchInfo.split('x').map((v) => parseInt(v, 10));
+        if (width === undefined) {
+          return { width: 0, height: 0 };
+        }
+        if (height === undefined) {
+          return { width: 0, height: 0 };
+        }
+        const rv = { width, height };
+        return rv;
+      });
     });
   }
 
