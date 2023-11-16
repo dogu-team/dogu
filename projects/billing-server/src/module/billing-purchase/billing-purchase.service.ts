@@ -29,6 +29,7 @@ import { invalidateSubscriptionPlanInfo } from '../billing-subscription-plan-inf
 import { ConsoleService } from '../console/console.service';
 import { DateTimeSimulatorService } from '../date-time-simulator/date-time-simulator.service';
 import { DoguLogger } from '../logger/logger';
+import { SlackService } from '../slack/slack.service';
 import { processNextPurchaseSubscription, processNowPurchaseSubscription, processPurchaseSubscriptionPreview } from './billing-purchase.serializables';
 
 @Injectable()
@@ -41,6 +42,7 @@ export class BillingPurchaseService {
     private readonly dataSource: DataSource,
     private readonly billingMethodNiceCaller: BillingMethodNiceCaller,
     private readonly consoleService: ConsoleService,
+    private readonly slackService: SlackService,
     private readonly dateTimeSimulatorService: DateTimeSimulatorService,
   ) {
     this.retryTransaction = new RetryTransaction(this.logger, this.dataSource);
@@ -152,6 +154,19 @@ export class BillingPurchaseService {
 
       if (!processNowResult.ok) {
         setTriggerRollbackBeforeReturn();
+        this.slackService
+          .sendPurchaseSlackMessage({
+            organizationId: dto.organizationId,
+            isSucceeded: false,
+            purchasedAt: processNowResult.planHistory?.createdAt ?? new Date(),
+            plans: [
+              {
+                option: processNowResult.plan?.option ?? dto.option,
+                type: processNowResult.plan?.type ?? dto.type,
+              },
+            ],
+          })
+          .catch((err) => this.logger.error(`Failed to send slack. organizationId: ${dto.organizationId}`));
         return {
           ok: false,
           resultCode: processNowResult.resultCode,
@@ -161,7 +176,24 @@ export class BillingPurchaseService {
         };
       }
 
+      // success
       if (processNowResult.planHistory && processNowResult.plan) {
+        this.slackService
+          .sendPurchaseSlackMessage({
+            organizationId: dto.organizationId,
+            historyId: processNowResult.planHistory.billingHistoryId,
+            isSucceeded: true,
+            amount: processNowResult.planHistory.purchasedAmount ?? 0,
+            currency: processNowResult.planHistory.currency,
+            purchasedAt: processNowResult.planHistory.createdAt,
+            plans: [
+              {
+                option: processNowResult.plan.option,
+                type: processNowResult.plan.type,
+              },
+            ],
+          })
+          .catch((err) => this.logger.error(`Failed to send slack. organizationId: ${dto.organizationId}`));
         this.consoleService
           .sendSubscriptionSuccessEmailToOwner(dto.organizationId, {
             planHistory: processNowResult.planHistory,
@@ -277,6 +309,19 @@ export class BillingPurchaseService {
 
       if (!processNowResult.ok) {
         setTriggerRollbackBeforeReturn();
+        this.slackService
+          .sendPurchaseSlackMessage({
+            organizationId: dto.organizationId,
+            isSucceeded: false,
+            purchasedAt: processNowResult.planHistory?.createdAt ?? new Date(),
+            plans: [
+              {
+                option: processNowResult.plan?.option ?? dto.option,
+                type: processNowResult.plan?.type ?? dto.type,
+              },
+            ],
+          })
+          .catch((err) => this.logger.error(`Failed to send slack. organizationId: ${dto.organizationId}`));
         return {
           ok: false,
           resultCode: processNowResult.resultCode,
@@ -287,6 +332,7 @@ export class BillingPurchaseService {
         };
       }
 
+      // success
       if (processNowResult.planHistory && processNowResult.plan) {
         this.consoleService
           .sendSubscriptionSuccessEmailToOwner(dto.organizationId, {
@@ -294,6 +340,22 @@ export class BillingPurchaseService {
             plan: processNowResult.plan,
           })
           .catch((err) => this.logger.error(`Failed to send email to organization owner: organizationId: ${dto.organizationId}`));
+        this.slackService
+          .sendPurchaseSlackMessage({
+            isSucceeded: true,
+            organizationId: dto.organizationId,
+            amount: processNowResult.planHistory.purchasedAmount ?? 0,
+            currency: processNowResult.planHistory.currency,
+            purchasedAt: processNowResult.planHistory.createdAt,
+            historyId: processNowResult.planHistory.billingHistoryId,
+            plans: [
+              {
+                option: processNowResult.plan.option,
+                type: processNowResult.plan.type,
+              },
+            ],
+          })
+          .catch((err) => this.logger.error(`Failed to send slack. organizationId: ${dto.organizationId}`));
       }
 
       return {

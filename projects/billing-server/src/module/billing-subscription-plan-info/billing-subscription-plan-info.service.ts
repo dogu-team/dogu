@@ -8,6 +8,7 @@ import { BillingSubscriptionPlanInfo } from '../../db/entity/billing-subscriptio
 import { RetryTransaction } from '../../db/retry-transaction';
 import { BillingSubscriptionPlanInfoCommonModule } from '../common/plan-info-common.module';
 import { DoguLogger } from '../logger/logger';
+import { SlackService } from '../slack/slack.service';
 import { clearChangeRequested } from './billing-subscription-plan-info.utils';
 
 @Injectable()
@@ -18,6 +19,7 @@ export class BillingSubscriptionPlanInfoService {
     private readonly logger: DoguLogger,
     @InjectDataSource()
     private readonly dataSource: DataSource,
+    private readonly slackService: SlackService,
   ) {
     this.retryTransaction = new RetryTransaction(this.logger, this.dataSource);
   }
@@ -137,7 +139,18 @@ export class BillingSubscriptionPlanInfoService {
       clearChangeRequested(found);
 
       const saved = await manager.getRepository(BillingSubscriptionPlanInfo).save(found);
-      return BillingSubscriptionPlanInfoCommonModule.createPlanInfoResponse(billingOrganization, saved);
+      const rv = BillingSubscriptionPlanInfoCommonModule.createPlanInfoResponse(billingOrganization, saved);
+
+      this.slackService
+        .sendUnsubscribeSlackMessage({
+          organizationId,
+          plan: {
+            option: rv.option,
+            type: rv.type,
+          },
+        })
+        .catch((e) => this.logger.error(`planInfoService. Failed to send unsubscribe slack message`));
+      return rv;
     });
   }
 }

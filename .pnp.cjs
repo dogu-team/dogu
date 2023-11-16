@@ -13070,6 +13070,24 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["@slack/web-api", [\
+        ["npm:6.10.0", {\
+          "packageLocation": "./.yarn/cache/@slack-web-api-npm-6.10.0-a5377899bb-7904f5d28f.zip/node_modules/@slack/web-api/",\
+          "packageDependencies": [\
+            ["@slack/web-api", "npm:6.10.0"],\
+            ["@slack/logger", "npm:3.0.0"],\
+            ["@slack/types", "npm:2.9.0"],\
+            ["@types/is-stream", "npm:1.1.0"],\
+            ["@types/node", "npm:18.15.13"],\
+            ["axios", "npm:1.6.0"],\
+            ["eventemitter3", "npm:3.1.2"],\
+            ["form-data", "npm:2.5.1"],\
+            ["is-electron", "npm:2.2.2"],\
+            ["is-stream", "npm:1.1.0"],\
+            ["p-queue", "npm:6.6.2"],\
+            ["p-retry", "npm:4.6.2"]\
+          ],\
+          "linkType": "HARD"\
+        }],\
         ["npm:6.9.0", {\
           "packageLocation": "./.yarn/cache/@slack-web-api-npm-6.9.0-7bf8c9addf-534518ac57.zip/node_modules/@slack/web-api/",\
           "packageDependencies": [\
@@ -18999,6 +19017,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@nestjs/platform-ws", "virtual:5d989e67e8ca83aa0556255791fdcac55623c9ccb3281b72bd3861d249df0961376ab2c76ee45bf4750178857c5c30bac3bb628af955e16567e426f9e366b233#npm:10.2.7"],\
             ["@nestjs/typeorm", "virtual:5d989e67e8ca83aa0556255791fdcac55623c9ccb3281b72bd3861d249df0961376ab2c76ee45bf4750178857c5c30bac3bb628af955e16567e426f9e366b233#npm:10.0.0"],\
             ["@nestjs/websockets", "virtual:5d989e67e8ca83aa0556255791fdcac55623c9ccb3281b72bd3861d249df0961376ab2c76ee45bf4750178857c5c30bac3bb628af955e16567e426f9e366b233#npm:10.2.7"],\
+            ["@slack/web-api", "npm:6.10.0"],\
             ["@types/express", "npm:4.17.20"],\
             ["@types/lodash", "npm:4.14.200"],\
             ["@types/luxon", "npm:3.3.3"],\

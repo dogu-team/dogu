@@ -39,6 +39,7 @@
     "@nestjs/platform-ws": "10.2.7",
     "@nestjs/typeorm": "10.0.0",
     "@nestjs/websockets": "10.2.7",
+    "@slack/web-api": "^6.10.0",
     "aws-sdk": "2.1481.0",
     "axios": "1.5.1",
     "class-transformer": "0.5.1",

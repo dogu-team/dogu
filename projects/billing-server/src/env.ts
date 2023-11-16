@@ -35,6 +35,9 @@ export class Env {
 
   @IsFilledString()
   DOGU_EMAIL_PW!: string;
+
+  @IsFilledString()
+  DOGU_SLACK_BOT_TOKEN!: string;
 }
 
 export const env = loadEnvLazySync(Env, { printable: logger });
