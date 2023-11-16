@@ -9,7 +9,7 @@ import { DeviceChannel, DeviceChannelOpenParam, DeviceServerService } from '../p
 import { DeviceDriver, DeviceScanResult } from '../public/device-driver';
 
 let ScanResultCache: DeviceScanResult[] = [];
-const ScanMethods = ['xctrace', 'idevice-id'];
+const ScanMethods = ['idevice-id'];
 type ScanMethod = (typeof ScanMethods)[number];
 interface IosScanner {
   get method(): ScanMethod;
@@ -47,7 +47,7 @@ const IosIdeviceIdScanner: IosScanner = {
   },
 };
 
-const IosScanners = [IosXctraceScanner, IosIdeviceIdScanner];
+const IosScanners = [IosIdeviceIdScanner];
 export class IosDriver implements DeviceDriver {
   private channelMap = new Map<Serial, IosChannel>();
   public readonly platform = Platform.PLATFORM_IOS;

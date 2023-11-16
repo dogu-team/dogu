@@ -299,7 +299,7 @@ export class AppiumContextImpl implements AppiumContext {
       this.printable.error('killProcessOnPort failed', { error: errorify(e) });
     });
     const port = this.options.serverPort;
-    const args = ['appium', '--log-no-colors', '--port', `${port}`, '--session-override', '--log-level', 'debug'];
+    const args = ['appium', '--log-no-colors', '--port', `${port}`, '--session-override', '--log-level', 'debug', '--allow-insecure=adb_shell'];
     const command = `${pnpmPath} ${args.join(' ')}`;
     this.printable.info('server starting', { command, cwd: appiumPath, env: serverEnv });
     const process = await new Promise<ChildProcessWithoutNullStreams>((resolve, reject) => {

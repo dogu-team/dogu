@@ -347,7 +347,38 @@ export class BrowserManager {
         }
         break;
       case 'ios':
-        throw new Error('Not implemented');
+        switch (browserName) {
+          case 'chrome': {
+            const requestedBrowserVersion = mappedBrowserVersion === 'latest' ? await this.chrome.getLatestVersion() : mappedBrowserVersion;
+            return {
+              browserName,
+              browserPlatform,
+              browserVersion: requestedBrowserVersion,
+              browserMajorVersion: chromeVersionUtils.parse(requestedBrowserVersion).major,
+              browserPackageName: '',
+            };
+          }
+          case 'safari':
+          case 'safaritp': {
+            return {
+              browserName,
+              browserPlatform,
+              browserVersion: 'latest',
+              browserMajorVersion: 0,
+              browserPackageName: '',
+            };
+          }
+          case 'edge':
+          case 'firefox':
+          case 'firefox-devedition':
+          case 'iexplorer':
+          case 'samsung-internet':
+            throw new Error('Not implemented');
+          default: {
+            assertUnreachable(browserName);
+          }
+        }
+        break;
       default:
         assertUnreachable(browserPlatform);
     }
@@ -620,7 +651,7 @@ export class BrowserManager {
       case 'android':
         return this.findBrowserInstallationsForAndroid({ browserName, browserPlatform, deviceSerial });
       case 'ios':
-        throw new Error('Not implemented');
+        return { browserInstallations: [] };
       default:
         assertUnreachable(browserPlatform);
     }
