@@ -73,14 +73,17 @@ actor TouchControlPlayer: IControlPlayer {
     let endPosition = try Transform.controlSpaceToScreenSpace(controlSpacePosition: up.control.position, screenSize: screenSize)
     let now = Date().unixTimeMilliseconds
     if down.control.timeStamp > now {
+      self.notifyTimeMismatch(downUp: downUp)
       return
     }
     let latencyMs = now - down.control.timeStamp
     if 3000 < latencyMs {
+      self.notifyTimeMismatch(downUp: downUp)
       return
     }
 
     if down.control.timeStamp > up.control.timeStamp {
+      self.notifyTimeMismatch(downUp: downUp)
       return
     }
     var duration = up.control.timeStamp - down.control.timeStamp
@@ -130,6 +133,15 @@ actor TouchControlPlayer: IControlPlayer {
     var result = Inner_Types_CfGdcDaControlResult()
     result.error = Outer_ErrorResult.with {
       $0.message = "The input is blocked by the system."
+    }
+    downUp.down.result.set(result: result)
+    downUp.up.result.set(result: result)
+  }
+  
+  private func notifyTimeMismatch(downUp: DownUp) {
+    var result = Inner_Types_CfGdcDaControlResult()
+    result.error = Outer_ErrorResult.with {
+      $0.message = "Time mismatch."
     }
     downUp.down.result.set(result: result)
     downUp.up.result.set(result: result)

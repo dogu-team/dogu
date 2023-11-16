@@ -57,10 +57,12 @@ actor ScrollControlPlayer: IControlPlayer {
     
     let now = Date().unixTimeMilliseconds
     if control.control.timeStamp > now {
+      self.notifyTimeMismatch(controlResult: control.result)
       return
     }
     let latencyMs = now - control.control.timeStamp
-    if 900 < latencyMs {
+    if 600 < latencyMs {
+      self.notifyTimeMismatch(controlResult: control.result)
       return
     }
 
@@ -100,5 +102,13 @@ actor ScrollControlPlayer: IControlPlayer {
     let deltaTime = Date().unixTimeMilliseconds - beginTime
     lastPlayTime = control.control.timeStamp + deltaTime
     control.result.set(result: result)
+  }
+  
+  private func notifyTimeMismatch(controlResult: ControlResult) {
+    var result = Inner_Types_CfGdcDaControlResult()
+    result.error = Outer_ErrorResult.with {
+      $0.message = "Time mismatch."
+    }
+    controlResult.set(result: result)
   }
 }

@@ -76,7 +76,6 @@ const useDeviceInput = (deviceRTCCaller: DeviceRTCCaller | undefined, platform: 
         },
         buttons: mapMouseEventButtonToDeviceControlButtons(event.button),
         repeat: isDoubleClicked ? 2 : 0,
-        timeStamp: Date.now(),
       };
 
       try {
@@ -124,7 +123,6 @@ const useDeviceInput = (deviceRTCCaller: DeviceRTCCaller | undefined, platform: 
           screenWidth: Math.trunc(event.currentTarget.clientWidth),
           screenHeight: Math.trunc(event.currentTarget.clientHeight),
         },
-        timeStamp: Date.now(),
       };
 
       try {
@@ -159,7 +157,6 @@ const useDeviceInput = (deviceRTCCaller: DeviceRTCCaller | undefined, platform: 
           text: await navigator.clipboard.readText(),
           keycode: mapWebKeyboardToDeviceKeyboard(event),
           key: event.key,
-          timeStamp: Date.now(),
         };
 
         try {
@@ -183,7 +180,6 @@ const useDeviceInput = (deviceRTCCaller: DeviceRTCCaller | undefined, platform: 
         type: DeviceControlType.DEVICE_CONTROL_TYPE_AOS_INJECT_KEYCODE,
         keycode: mapWebKeyboardToDeviceKeyboard(event),
         key: event.key,
-        timeStamp: Date.now(),
       };
 
       const result = await deviceRTCCaller.call('cfGdcDaControlParam', 'cfGdcDaControlResult', {
@@ -219,7 +215,6 @@ const useDeviceInput = (deviceRTCCaller: DeviceRTCCaller | undefined, platform: 
           action: DeviceControlAction.DEVICE_CONTROL_ACTION_AOS_KEYEVENT_ACTION_DOWN_UNSPECIFIED,
           type: DeviceControlType.DEVICE_CONTROL_TYPE_AOS_INJECT_KEYCODE,
           keycode: mapToolbarMenuToDeviceKeyboard(menu),
-          timeStamp: Date.now(),
         });
       }
       if (upMenus.includes(menu)) {
@@ -228,7 +223,6 @@ const useDeviceInput = (deviceRTCCaller: DeviceRTCCaller | undefined, platform: 
           action: DeviceControlAction.DEVICE_CONTROL_ACTION_AOS_KEYEVENT_ACTION_UP,
           type: DeviceControlType.DEVICE_CONTROL_TYPE_AOS_INJECT_KEYCODE,
           keycode: mapToolbarMenuToDeviceKeyboard(menu),
-          timeStamp: Date.now(),
         });
       } else {
         controls.push({
@@ -236,7 +230,6 @@ const useDeviceInput = (deviceRTCCaller: DeviceRTCCaller | undefined, platform: 
           action: DeviceControlAction.DEVICE_CONTROL_ACTION_AOS_KEYEVENT_ACTION_DOWN_UNSPECIFIED,
           type: DeviceControlType.DEVICE_CONTROL_TYPE_AOS_INJECT_KEYCODE,
           keycode: mapToolbarMenuToDeviceKeyboard(menu),
-          timeStamp: Date.now(),
         });
       }
 
@@ -287,7 +280,6 @@ const useDeviceInput = (deviceRTCCaller: DeviceRTCCaller | undefined, platform: 
         action,
         type: DeviceControlType.DEVICE_CONTROL_TYPE_AOS_INJECT_KEYCODE,
         keycode,
-        timeStamp: Date.now(),
       };
 
       try {
@@ -471,7 +463,6 @@ const useDeviceInput = (deviceRTCCaller: DeviceRTCCaller | undefined, platform: 
         const c: DeviceControl = {
           ...input.DefaultDeviceControl(),
           type: DeviceControlType.DEVICE_CONTROL_TYPE_DESKTOP_ONSCREEN_FOCUSED,
-          timeStamp: Date.now(),
         };
 
         const result = await deviceRTCCaller.call('cfGdcDaControlParam', 'cfGdcDaControlResult', {
@@ -504,7 +495,6 @@ const useDeviceInput = (deviceRTCCaller: DeviceRTCCaller | undefined, platform: 
         const c: DeviceControl = {
           ...input.DefaultDeviceControl(),
           type: DeviceControlType.DEVICE_CONTROL_TYPE_DESKTOP_ONSCREEN_UNFOCUSED,
-          timeStamp: Date.now(),
         };
 
         const result = await deviceRTCCaller.call('cfGdcDaControlParam', 'cfGdcDaControlResult', {
