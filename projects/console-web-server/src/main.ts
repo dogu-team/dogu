@@ -47,7 +47,7 @@ async function bootstrap(): Promise<void> {
     }),
   });
   const httpAdapterHost = app.get(HttpAdapterHost);
-  const httpServer: Server = httpAdapterHost.httpAdapter.getHttpServer();
+  const httpServer: Server = httpAdapterHost.httpAdapter.getHttpServer() as Server;
   // ref: https://ivorycirrus.github.io/TIL/aws-alb-502-bad-gateway/
   httpServer.keepAliveTimeout = 65000;
   httpServer.headersTimeout = 65000;
