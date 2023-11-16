@@ -48,11 +48,13 @@ struct PatternControl {
   var patternKey: String
   var control: Inner_Types_DeviceControl
   var result: ControlResult
+  var receiveTime: UInt64
 
   init(patternKey: String, control: Inner_Types_DeviceControl, result: ControlResult) {
     self.patternKey = patternKey
     self.control = control
     self.result = result
+    self.receiveTime = Date().unixTimeMilliseconds
   }
 
   func discardNotify() {

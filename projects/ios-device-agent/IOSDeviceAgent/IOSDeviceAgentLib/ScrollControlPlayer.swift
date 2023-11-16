@@ -57,11 +57,11 @@ actor ScrollControlPlayer: IControlPlayer {
     let endPosition = CGPoint(x: beginPosition.x, y: beginPosition.y + CGFloat(vScrollSign) * screenSize.height * 0.2)
     
     let now = Date().unixTimeMilliseconds
-    if control.control.timeStamp > now {
+    if control.receiveTime > now {
       self.notifyTimeMismatch(now:now, control: control)
       return
     }
-    let latencyMs = now - control.control.timeStamp
+    let latencyMs = now - control.receiveTime
     if 900 < latencyMs {
       self.notifyTimeMismatch(now:now, control: control)
       return
@@ -108,7 +108,7 @@ actor ScrollControlPlayer: IControlPlayer {
   private func notifyTimeMismatch(now: UInt64, control: Control) {
     var result = Inner_Types_CfGdcDaControlResult()
     result.error = Outer_ErrorResult.with {
-      $0.message = "Time mismatch. now: \(now), control: \(control.control.timeStamp)"
+      $0.message = "Time mismatch. now: \(now), controlTime: \(control.control.timeStamp), controlRecv: \(control.receiveTime)"
     }
     control.result.set(result: result)
   }

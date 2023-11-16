@@ -72,11 +72,11 @@ actor TouchControlPlayer: IControlPlayer {
 
     let endPosition = try Transform.controlSpaceToScreenSpace(controlSpacePosition: up.control.position, screenSize: screenSize)
     let now = Date().unixTimeMilliseconds
-    if down.control.timeStamp > now {
+    if down.receiveTime > now {
       self.notifyTimeMismatch(now:now, downUp: downUp)
       return
     }
-    let latencyMs = now - down.control.timeStamp
+    let latencyMs = now - down.receiveTime
     if 3000 < latencyMs {
       self.notifyTimeMismatch(now:now, downUp: downUp)
       return
@@ -88,7 +88,7 @@ actor TouchControlPlayer: IControlPlayer {
     }
     var duration = up.control.timeStamp - down.control.timeStamp
     if duration < 100 {
-      duration = 15
+      duration = 5
     }
     try await actionPerformer!.performW3CActions([
       [
@@ -141,7 +141,7 @@ actor TouchControlPlayer: IControlPlayer {
   private func notifyTimeMismatch(now: UInt64, downUp: DownUp) {
     var result = Inner_Types_CfGdcDaControlResult()
     result.error = Outer_ErrorResult.with {
-      $0.message = "Time mismatch. now:\(now), down:\(downUp.down.control.timeStamp), up:\(downUp.up.control.timeStamp)"
+      $0.message = "Time mismatch. now:\(now), downTime:\(downUp.down.control.timeStamp), downRecv:\(downUp.down.receiveTime),  upTime:\(downUp.up.control.timeStamp), upRecv:\(downUp.up.receiveTime)"
     }
     downUp.down.result.set(result: result)
     downUp.up.result.set(result: result)

@@ -54,28 +54,9 @@ actor ControlSessionListener: IControlSessionListener {
       break
     case .dcGdcDaControlParam(let param):
       let controlResult = ControlResult(seq: abstractParam.seq, session: session)
-      let control = Inner_Types_DeviceControl.with {
-        $0.type = param.control.type
-        $0.text = param.control.text
-        $0.metaState = param.control.metaState
-        $0.action = param.control.action
-        $0.keycode = param.control.keycode
-        $0.buttons = param.control.buttons
-        $0.pointerID = param.control.pointerID
-        $0.pressure = param.control.pressure
-        $0.position = param.control.position
-        $0.hScroll = param.control.hScroll
-        $0.vScroll = param.control.vScroll
-        $0.copyKey = param.control.copyKey
-        $0.paste = param.control.paste
-        $0.repeat = param.control.repeat
-        $0.sequence = param.control.sequence
-        $0.key = param.control.key
-        $0.timeStamp = Date().unixTimeMilliseconds
-      }
       Task.catchable(
         {
-          try await self.controlProcessor.push(control: control, result: controlResult)
+          try await self.controlProcessor.push(control: param.control, result: controlResult)
         },
         catch: {
           Log.shared.debug("ControlSessionListener.onParam failed to push control: \(param.control), \($0.localizedDescription)")
