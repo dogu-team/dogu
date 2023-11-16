@@ -17,7 +17,10 @@ export class DeviceConnectionSubscriber {
   private hostConnectionInfo: HostConnectionInfo | null = null;
   private client: WebSocket | null = null;
 
-  constructor(private readonly eventEmitter: EventEmitter2, private readonly logger: DoguLogger) {}
+  constructor(
+    private readonly eventEmitter: EventEmitter2,
+    private readonly logger: DoguLogger,
+  ) {}
 
   get doReconnect(): boolean {
     return this.hostConnectionInfo !== null;
@@ -84,7 +87,7 @@ export class DeviceConnectionSubscriber {
 
   private async onMessage(data: string): Promise<void> {
     const deviceConnectionInfo = await transformAndValidate(DeviceConnectionSubscribe.receiveMessage, JSON.parse(data));
-    this.logger.debug('DeviceConnectionStateSubscriber received message', { deviceConnectionInfo });
+    this.logger.info('DeviceConnectionStateSubscriber received message', { deviceConnectionInfo });
     const { state } = deviceConnectionInfo;
     switch (state) {
       case DeviceConnectionState.DEVICE_CONNECTION_STATE_CONNECTED:
@@ -109,6 +112,7 @@ export class DeviceConnectionSubscriber {
       throw new Error('host is not connected');
     }
     const { organizationId, hostId } = this.hostConnectionInfo;
+    this.logger.info('Event OnDeviceConnectedEvent fired', { deviceConnectionInfo });
     await validateAndEmitEventAsync(this.eventEmitter, OnDeviceConnectedEvent, {
       ...deviceConnectionInfo,
       organizationId,
@@ -118,6 +122,7 @@ export class DeviceConnectionSubscriber {
 
   private async emitOnDeviceDisconnected(deviceConnectionInfo: Instance<typeof DeviceConnectionSubscribe.receiveMessage>): Promise<void> {
     const { serial } = deviceConnectionInfo;
+    this.logger.info('Event emitOnDeviceDisconnected fired', { serial });
     await validateAndEmitEventAsync(this.eventEmitter, OnDeviceDisconnectedEvent, {
       serial,
     });

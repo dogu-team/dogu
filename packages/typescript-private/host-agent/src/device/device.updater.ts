@@ -55,6 +55,7 @@ export class DeviceUpdater {
       memory,
       browserInstallations,
     };
+    this.logger.info('DeviceUpdater.updateDevice request start', { value });
     const bodyValidated = await transformAndValidate(PrivateDevice.updateDevice.requestBody, body);
     await this.consoleClientService.client
       .patch(path, bodyValidated, {

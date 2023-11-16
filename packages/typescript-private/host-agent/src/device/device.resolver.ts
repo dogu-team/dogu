@@ -18,7 +18,11 @@ export class DeviceResolver {
   private hostResolutionInfo: HostResolutionInfo | null = null;
   private readonly creationMutex = new AsyncLock();
 
-  constructor(private readonly consoleClientService: ConsoleClientService, private readonly eventEmitter: EventEmitter2, private readonly logger: DoguLogger) {}
+  constructor(
+    private readonly consoleClientService: ConsoleClientService,
+    private readonly eventEmitter: EventEmitter2,
+    private readonly logger: DoguLogger,
+  ) {}
 
   @OnEvent(OnHostResolvedEvent.key)
   onHostResolved(value: Instance<typeof OnHostResolvedEvent.value>): void {
@@ -54,6 +58,7 @@ export class DeviceResolver {
     const organizationWorkspacePath = HostPaths.organizationWorkspacePath(rootWorkspace, organizationId);
     const deviceWorkspacePath = HostPaths.deviceWorkspacePath(organizationWorkspacePath, deviceId);
     await fs.promises.mkdir(deviceWorkspacePath, { recursive: true });
+    this.logger.info('Event OnDeviceResolvedEvent fired', { value });
     await validateAndEmitEventAsync(this.eventEmitter, OnDeviceResolvedEvent, {
       ...value,
       deviceId,
