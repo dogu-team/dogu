@@ -253,6 +253,10 @@ export class RegisteryService {
       const accessToken = this.authJwtService.makeUserAccessToken(user.userId);
       const refreshToken = await this.authService.createRefreshToken(manager, user.userId);
 
+      if (FeatureConfig.get('licenseModule') === 'cloud') {
+        await this.cloudLicenseService.createLicense({ organizationId: organization.organizationId });
+      }
+
       const rv: RegisteryWithOrganizationIdResult = {
         accessToken: accessToken,
         refreshToken: refreshToken,

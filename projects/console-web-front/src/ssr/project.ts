@@ -30,7 +30,7 @@ export const getProjectPageServerSideProps: GetServerSideProps<ProjectServerSide
       return checkResult;
     }
 
-    if (checkResult.props.fallback['/registery/check'].isTutorialCompleted === 0) {
+    if (checkResult.props.user.isTutorialCompleted === 0) {
       return {
         redirect: redirectWithLocale(context, `/dashboard/${context.query.orgId}/get-started`, false),
       };
@@ -48,7 +48,7 @@ export const getProjectPageServerSideProps: GetServerSideProps<ProjectServerSide
         organization,
         project,
         license,
-        user: checkResult.props.fallback['/registery/check'],
+        user: checkResult.props.user,
         isGitIntegrated: !!scm,
       },
     };

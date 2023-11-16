@@ -96,7 +96,7 @@ export const getServerSideProps: GetServerSideProps<BillingPageProps> = async (c
 
     return {
       props: {
-        me: result.props.fallback['/registery/check'],
+        me: result.props.user,
         license,
       },
     };

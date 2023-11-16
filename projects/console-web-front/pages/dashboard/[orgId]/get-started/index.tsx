@@ -86,7 +86,7 @@ export const getServerSideProps: GetServerSideProps<OrganizationServerSideProps>
       props: {
         organization,
         license,
-        user: checkResult.props.fallback['/registery/check'],
+        user: checkResult.props.user,
       },
     };
   } catch (e) {

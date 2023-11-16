@@ -21,7 +21,7 @@ export const getOrganizationPageServerSideProps: GetServerSideProps<Organization
       return checkResult;
     }
 
-    if (checkResult.props.fallback['/registery/check'].isTutorialCompleted === 0) {
+    if (checkResult.props.user.isTutorialCompleted === 0) {
       return {
         redirect: redirectWithLocale(context, `/dashboard/${context.query.orgId}/get-started`, false),
       };
@@ -36,7 +36,7 @@ export const getOrganizationPageServerSideProps: GetServerSideProps<Organization
       props: {
         organization,
         license,
-        user: checkResult.props.fallback['/registery/check'],
+        user: checkResult.props.user,
       },
     };
   } catch (e) {

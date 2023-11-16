@@ -53,9 +53,7 @@ export const checkUserVerifiedInServerSide = async (context: GetServerSidePropsC
 
       return {
         props: {
-          fallback: {
-            '/registery/check': response.data,
-          },
+          user: response.data,
         },
       };
     } catch (e) {

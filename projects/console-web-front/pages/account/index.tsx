@@ -288,7 +288,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (context) => 
 
     return {
       props: {
-        user: checkResult.props.fallback['/registery/check'],
+        user: checkResult.props.user,
         license,
       },
     };
