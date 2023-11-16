@@ -16,8 +16,13 @@ interface DeviceDoorState {
   error: Error | null;
 }
 
+/*
+ * Caution,
+ * If this value is too small, the device will be closed and reopened frequently.
+ * If this value is too long, the device will not be reopened even if it is restarted.
+ */
 const AndroidDeviceCloseThreshold = time({ seconds: 10 });
-const IosDeviceCloseThreshold = time({ seconds: 50 });
+const IosDeviceCloseThreshold = time({ seconds: 11 });
 
 function getDeviceCloseThreshold(platform: Platform): number {
   switch (platform) {
