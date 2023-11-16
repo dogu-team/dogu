@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "device-server",
-  "version": "2.6.3",
+  "version": "2.6.5",
   "license": "SEE LICENSE IN https://github.com/dogu-team/dogu/blob/main/LICENSE.md",
   "author": "Dogu Technologies",
   "main": "./build/src/index.js",
