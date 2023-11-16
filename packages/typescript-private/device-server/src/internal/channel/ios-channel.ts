@@ -522,6 +522,8 @@ export class IosChannel implements DeviceChannel {
   async reset(): Promise<void> {
     const { logger, webdriverAgentProcess } = this;
     await this.deviceAgent.send('dcIdaSwitchInputBlockParam', 'dcIdaSwitchInputBlockResult', { isBlock: false });
+    this.iosDeviceAgentProcess.delete();
+    ZombieServiceInstance.deleteComponent(this.deviceAgent);
     const appiumContextImpl = await checkTime(`IosChannel.reset.waitUntilBuiltin`, this._appiumContext.waitUntilBuiltin(), { logger });
     await checkTime(`IosChannel.reset.reset`, this._reset.reset(appiumContextImpl, webdriverAgentProcess), { logger });
   }

@@ -127,10 +127,14 @@ export class ZombieService {
       return false;
     }
     target.component.onDie(closeReason).catch((e: Error) => {
-      zombieLogger.error(`ZombieComponent ${target.component.impl.name} onDie failed error:${stringify(e, { compact: true })}`);
+      zombieLogger.error(`ZombieService onDie failed`, { name: target.component.impl.name, serial: target.component.impl.serial, error: stringify(e, { compact: true }) });
     });
     target.component.onComponentDeleted().catch((e: Error) => {
-      zombieLogger.error(`ZombieComponent ${target.component.impl.name} onComponentDeleted failed error:${stringify(e, { compact: true })}`);
+      zombieLogger.error(`ZombieService onComponentDeleted failed`, {
+        name: target.component.impl.name,
+        serial: target.component.impl.serial,
+        error: stringify(e, { compact: true }),
+      });
     });
 
     const index = this.checkers.indexOf(target);
@@ -138,6 +142,7 @@ export class ZombieService {
       return false;
     }
     this.checkers.splice(index, 1);
+    zombieLogger.info(`ZombieService.deleteComponent done`, { name: target.component.impl.name, serial: target.component.impl.serial });
     return true;
   }
 }
