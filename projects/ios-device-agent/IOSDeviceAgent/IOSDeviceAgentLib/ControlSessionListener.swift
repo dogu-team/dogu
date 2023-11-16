@@ -75,7 +75,7 @@ actor ControlSessionListener: IControlSessionListener {
       }
       Task.catchable(
         {
-          try await self.controlProcessor.push(control: param.control, result: controlResult)
+          try await self.controlProcessor.push(control: control, result: controlResult)
         },
         catch: {
           Log.shared.debug("ControlSessionListener.onParam failed to push control: \(param.control), \($0.localizedDescription)")

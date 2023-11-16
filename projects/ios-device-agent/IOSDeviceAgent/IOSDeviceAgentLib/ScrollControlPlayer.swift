@@ -2,6 +2,7 @@ import Combine
 
 actor ScrollControlPlayer: IControlPlayer {
   typealias Broker = ScrollControlBroker
+  typealias Control = PatternControl
 
   enum Error: Swift.Error {
 
@@ -57,12 +58,12 @@ actor ScrollControlPlayer: IControlPlayer {
     
     let now = Date().unixTimeMilliseconds
     if control.control.timeStamp > now {
-      self.notifyTimeMismatch(controlResult: control.result)
+      self.notifyTimeMismatch(now:now, control: control)
       return
     }
     let latencyMs = now - control.control.timeStamp
-    if 600 < latencyMs {
-      self.notifyTimeMismatch(controlResult: control.result)
+    if 900 < latencyMs {
+      self.notifyTimeMismatch(now:now, control: control)
       return
     }
 
@@ -104,11 +105,11 @@ actor ScrollControlPlayer: IControlPlayer {
     control.result.set(result: result)
   }
   
-  private func notifyTimeMismatch(controlResult: ControlResult) {
+  private func notifyTimeMismatch(now: UInt64, control: Control) {
     var result = Inner_Types_CfGdcDaControlResult()
     result.error = Outer_ErrorResult.with {
-      $0.message = "Time mismatch."
+      $0.message = "Time mismatch. now: \(now), control: \(control.control.timeStamp)"
     }
-    controlResult.set(result: result)
+    control.result.set(result: result)
   }
 }
