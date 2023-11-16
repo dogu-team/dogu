@@ -143,6 +143,12 @@ const OrganizationSideBar = () => {
           ),
           style: { borderRadius: '6px' },
         },
+      ],
+    },
+    {
+      type: 'group',
+      label: collapsed ? null : 'Self Device',
+      children: [
         {
           key: 'device-farm',
           icon: collapsed ? (
