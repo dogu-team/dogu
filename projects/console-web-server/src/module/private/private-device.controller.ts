@@ -145,8 +145,12 @@ export class PrivateDeviceController {
       device.model = model;
       device.manufacturer = manufacturer;
       device.isVirtual = isVirtual;
-      device.resolutionWidth = resolutionWidth;
-      device.resolutionHeight = resolutionHeight;
+      if (resolutionWidth !== 0) {
+        device.resolutionWidth = resolutionWidth;
+      }
+      if (resolutionHeight !== 0) {
+        device.resolutionHeight = resolutionHeight;
+      }
       device.memory = memory;
       device.usageState = DeviceUsageState.AVAILABLE;
       await manager.save(device);
