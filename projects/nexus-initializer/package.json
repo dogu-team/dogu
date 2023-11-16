@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "nexus-initializer",
-  "version": "2.6.5",
+  "version": "2.6.7",
   "license": "SEE LICENSE IN https://github.com/dogu-team/dogu/blob/main/LICENSE.md",
   "author": "Dogu Technologies",
   "type": "module",
