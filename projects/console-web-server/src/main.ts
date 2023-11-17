@@ -62,7 +62,6 @@ async function bootstrap(): Promise<void> {
 
   expressApp.use(Sentry.Handlers.requestHandler());
   expressApp.use(Sentry.Handlers.tracingHandler());
-  expressApp.use(Sentry.Handlers.errorHandler());
 
   app
     .use(cookieParser())
