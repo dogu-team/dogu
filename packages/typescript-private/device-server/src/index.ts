@@ -24,7 +24,7 @@ export async function bootstrap(): Promise<void> {
   adbLogger.addFileTransports();
   initSentry(env.DOGU_USE_SENTRY, {
     dsn: 'https://93661171f4fb3283dffbfcb199a01c4b@o4505097685565440.ingest.sentry.io/4506234379304960',
-    integrations: [new Sentry.Integrations.Http({ tracing: true }), ...Sentry.autoDiscoverNodePerformanceMonitoringIntegrations()],
+    integrations: [...Sentry.autoDiscoverNodePerformanceMonitoringIntegrations(), new Sentry.Integrations.Http({ tracing: true })],
     environment: env.DOGU_RUN_TYPE,
     maxBreadcrumbs: 10000,
   });

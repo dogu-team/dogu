@@ -6,7 +6,7 @@ import * as Sentry from '@sentry/nextjs';
 
     // We recommend adjusting this value in production, or using tracesSampler
     // for finer control
-    tracesSampleRate: 1.0,
+    tracesSampleRate: 0.1,
     environment: process.env.NEXT_PUBLIC_ENV,
 
     // ...
