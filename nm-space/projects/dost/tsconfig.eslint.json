@@ -1,0 +1,13 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true
+  },
+
+  /**
+   * @note does not include recursive globs
+   */
+  "include": [
+    ".eslintrc.cjs",
+  ]
+}

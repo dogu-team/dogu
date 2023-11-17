@@ -17,7 +17,7 @@ const Splash = () => {
   useEffect(() => {
     const checkServicesOpened = async () => {
       try {
-        const isServicesOpened = await ipc.servicesOpenStatusClient.isServicesOpened();
+        const isServicesOpened = await ipc.appStatusClient.isServicesOpened();
         if (isServicesOpened) {
           setIsServicesOpened(isServicesOpened);
         } else {

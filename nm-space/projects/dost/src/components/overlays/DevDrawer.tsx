@@ -19,6 +19,7 @@ import { ipc } from '../../utils/window';
 import { ChildTree } from '../../shares/child';
 import DevChildProcessTree from './DevChildProcessTree';
 import DevAppConfigs from './DevAppConfigs';
+import { stringify } from '@dogu-tech/common';
 
 interface DevDrawerProps {
   isOpen: boolean;
@@ -41,9 +42,14 @@ function DevDrawer(props: DevDrawerProps) {
   const [updateDate, setUpdateDate] = useState<Date>();
   const { isOpen: isOpenChildProc, onOpen: onOpenChildProc, onClose: onCloseChildProc } = useDisclosure();
   const { isOpen: isOpenAppConfig, onOpen: onOpenAppConfig, onClose: onCloseAppConfig } = useDisclosure();
+  const [isServicesOpened, setIsServicesOpened] = useState(false);
 
   const timer = useRef<NodeJS.Timeout | null>(null);
   useEffect(() => {
+    if (!isServicesOpened) {
+      return;
+    }
+
     const checkState = async () => {
       const isHAActive = await ipc.childClient.isActive('host-agent');
       setIsHAActive(isHAActive);
@@ -57,6 +63,23 @@ function DevDrawer(props: DevDrawerProps) {
     return () => {
       clearInterval(timer.current ?? undefined);
     };
+  }, [isServicesOpened]);
+
+  const checkServicesOpened = () => {
+    (async () => {
+      const isServicesOpened = await ipc.appStatusClient.isServicesOpened();
+      if (isServicesOpened) {
+        setIsServicesOpened(isServicesOpened);
+      } else {
+        setTimeout(checkServicesOpened, 1000);
+      }
+    })().catch((e) => {
+      ipc.rendererLogger.error(`Error while checking services opened in InvalidAppLocation: ${stringify(e)}`);
+    });
+  };
+
+  useEffect(() => {
+    checkServicesOpened();
   }, []);
 
   return (

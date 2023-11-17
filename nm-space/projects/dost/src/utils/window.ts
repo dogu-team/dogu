@@ -14,5 +14,11 @@ export const offFocus = (callback: () => Promise<void> | void): void => {
 };
 
 window.onfocus = () => {
-  focusCallbacks.forEach(async (callback) => await callback());
+  focusCallbacks.forEach((callback) => {
+    (async () => {
+      await callback();
+    })().catch((e) => {
+      console.error('onfocus error', e);
+    });
+  });
 };

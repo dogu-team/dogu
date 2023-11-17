@@ -23,11 +23,23 @@ import IosSettings from './pages/iOSSettings';
 import { SentyDSNUrl } from './shares/constants';
 import OpenSourceSoftwareNotice from './pages/OpenSourceSoftwareNotice';
 import MacOSSettings from './pages/MacOSSettings';
+import InvalidAppLocation from './pages/InvalidAppLocation';
 
 function App() {
   const { setEnvironment } = useEnvironmentStore();
   const setHAConnectionStatus = useHostAgentConnectionStatusStore((state) => state.setStatus);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    (async () => {
+      const isAppLocationValid = await ipc.appStatusClient.isAppLocationValid();
+      if (!isAppLocationValid) {
+        navigate('/invalid-app-location');
+      }
+    })().catch((e) => {
+      ipc.rendererLogger.error(`Error while getting app location in App: ${stringify(e)}`);
+    });
+  }, []);
 
   useEffect(() => {
     (async () => {
@@ -77,7 +89,7 @@ function App() {
   useEffect(() => {
     const getHAConnectionStatus = async () => {
       try {
-        if (!(await ipc.servicesOpenStatusClient.isServicesOpened())) {
+        if (!(await ipc.appStatusClient.isServicesOpened())) {
           return;
         }
 
@@ -119,6 +131,7 @@ function App() {
       <Route path="/settings" element={<Settings />} />
       <Route path="/doctor" element={<Doctor />} />
       <Route path="/open-source-software-notice" element={<OpenSourceSoftwareNotice />} />
+      <Route path="/invalid-app-location" element={<InvalidAppLocation />} />
       <Route
         path="*"
         element={

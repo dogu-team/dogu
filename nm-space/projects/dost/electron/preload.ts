@@ -1,6 +1,7 @@
 import { DotenvConfigKey, DownloadProgress, ExternalKey, FeatureKey, ValidationCheckOption } from '@dogu-private/dogu-agent-core/shares';
 import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
 import { appConfigClientKey } from '../src/shares/app-config';
+import { appStatusClientKey } from '../src/shares/app-status';
 import { childCallbackKey, childClientKey, ChildTree, HostAgentConnectionStatus, Key } from '../src/shares/child';
 import { deviceLookupClientKey } from '../src/shares/device-lookup';
 import { dotenvConfigClientKey } from '../src/shares/dotenv-config';
@@ -8,7 +9,6 @@ import { IElectronIpc } from '../src/shares/electron-ipc';
 import { externalCallbackKey, externalKey } from '../src/shares/external';
 import { featureConfigClientKey } from '../src/shares/feature-config';
 import { rendererLoggerKey, stdLogCallbackKey } from '../src/shares/log';
-import { servicesOpenStatusClientKey } from '../src/shares/services-open-status';
 import { ILoginItemSettingsOptions, ISettings, MediaType, settingsClientKey } from '../src/shares/settings';
 import { themeClientKey } from '../src/shares/theme';
 import { updaterClientKey } from '../src/shares/updater';
@@ -150,6 +150,7 @@ expose('deviceLookupClient', {
   getSubscribeMessages: () => ipcRenderer.invoke(deviceLookupClientKey.getSubscribeMessages),
 });
 
-expose('servicesOpenStatusClient', {
-  isServicesOpened: () => ipcRenderer.invoke(servicesOpenStatusClientKey.isServicesOpened),
+expose('appStatusClient', {
+  isAppLocationValid: () => ipcRenderer.invoke(appStatusClientKey.isAppLocationValid),
+  isServicesOpened: () => ipcRenderer.invoke(appStatusClientKey.isServicesOpened),
 });

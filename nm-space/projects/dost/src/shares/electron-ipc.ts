@@ -1,11 +1,11 @@
 import { IAppConfigClient } from './app-config';
+import { IAppStatusClient } from './app-status';
 import { IChildCallback, IChildClient } from './child';
 import { IDeviceLookupClient } from './device-lookup';
 import { IDotenvConfigClient } from './dotenv-config';
 import { IExternalCallback, IExternalClient } from './external';
 import { IFeatureConfigClient } from './feature-config';
 import { ILogger, IStdLogCallback } from './log';
-import { IServicesOpenStatusClient } from './services-open-status';
 import { ISettingsClient } from './settings';
 import { IThemeClient } from './theme';
 import { IUpdaterClient } from './updater';
@@ -26,7 +26,7 @@ export interface IElectronIpc {
   windowClient: IWindowClient;
   featureConfigClient: IFeatureConfigClient;
   deviceLookupClient: IDeviceLookupClient;
-  servicesOpenStatusClient: IServicesOpenStatusClient;
+  appStatusClient: IAppStatusClient;
 }
 
 type PropertiesOfWeek<T> = { [K in Extract<keyof T, string>]: string };
