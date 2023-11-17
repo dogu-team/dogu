@@ -1,7 +1,5 @@
 import { stringify } from '@dogu-tech/common';
 import { Logger } from '@dogu-tech/node';
-import { ArgumentsHost, Catch, HttpServer } from '@nestjs/common';
-import { BaseExceptionFilter } from '@nestjs/core';
 import * as Sentry from '@sentry/node';
 import Transport from 'winston-transport';
 
@@ -36,22 +34,19 @@ export class SentryBreadCrumbTrasponrt extends Transport {
   }
 }
 
-@Catch()
-export class SentryAllExceptionsFilter extends BaseExceptionFilter {
+export class SentryExceptionLimiter {
   constructor(
     private useSentry: boolean,
-    applicationRef?: HttpServer,
     private sendRatio: number = 0.2,
-  ) {
-    super(applicationRef);
-  }
-  override catch(exception: unknown, host: ArgumentsHost): void {
-    if (this.useSentry) {
-      const rand = Math.random();
-      if (rand < this.sendRatio) {
-        Sentry.captureException(exception);
-      }
+  ) {}
+
+  sendException(exception: unknown): void {
+    if (!this.useSentry) {
+      return;
     }
-    super.catch(exception, host);
+    const rand = Math.random();
+    if (rand < this.sendRatio) {
+      Sentry.captureException(exception);
+    }
   }
 }

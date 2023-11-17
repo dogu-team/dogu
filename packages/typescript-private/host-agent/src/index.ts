@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 
 import { ChildError } from '@dogu-private/dost-children';
-import { handleLoggerCreateWithSentry, initSentry, SentryAllExceptionsFilter } from '@dogu-private/nestjs-common';
+import { handleLoggerCreateWithSentry, initSentry } from '@dogu-private/nestjs-common';
 import { Code } from '@dogu-private/types';
 import { errorify } from '@dogu-tech/common';
 import { NestFactory } from '@nestjs/core';
@@ -12,6 +12,7 @@ import http from 'http';
 import { WinstonModule } from 'nest-winston';
 import { AppModule } from './app/app.module';
 import { env } from './env';
+import { AllExceptionsFilter } from './filter/exception.filter';
 import { logger } from './logger/logger.instance';
 import { MessageMicroService } from './message/message.microservice';
 import { MessagePuller } from './message/message.puller';
@@ -44,7 +45,7 @@ export async function bootstrap(): Promise<void> {
     strategy: messageMicroService,
     logger: winstonModuleLogger,
   });
-  app.useGlobalFilters(new SentryAllExceptionsFilter(env.DOGU_USE_SENTRY, app.getHttpAdapter()));
+  app.useGlobalFilters(new AllExceptionsFilter(app.getHttpAdapter()));
 
   const messagePuller = app.get(MessagePuller);
 

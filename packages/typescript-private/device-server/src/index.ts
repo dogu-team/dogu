@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 
 import { ChildError, PlatformAbility } from '@dogu-private/dost-children';
-import { handleLoggerCreateWithSentry, initSentry, SentryAllExceptionsFilter } from '@dogu-private/nestjs-common';
+import { handleLoggerCreateWithSentry, initSentry } from '@dogu-private/nestjs-common';
 import { Code, DOGU_PROTOCOL_VERSION } from '@dogu-private/types';
 import { errorify } from '@dogu-tech/common';
 import { ValidationPipe } from '@nestjs/common';
@@ -11,6 +11,7 @@ import * as Sentry from '@sentry/node';
 import { WinstonModule } from 'nest-winston';
 import { AppModule } from './app/app.module';
 import { env } from './env';
+import { AllExceptionsFilter } from './filter/exception.filter';
 import { adbLogger, deviceInfoLogger, logger, zombieLogger } from './logger/logger.instance';
 import { openPathMap } from './path-map';
 import { addProcessEventHandler } from './process-event';
@@ -51,7 +52,7 @@ export async function bootstrap(): Promise<void> {
   app
     .useWebSocketAdapter(new WsAdapter(app))
     .useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }))
-    .useGlobalFilters(new SentryAllExceptionsFilter(env.DOGU_USE_SENTRY, app.getHttpAdapter()))
+    .useGlobalFilters(new AllExceptionsFilter(app.getHttpAdapter()))
     .enableCors({
       origin: true,
       preflightContinue: false,

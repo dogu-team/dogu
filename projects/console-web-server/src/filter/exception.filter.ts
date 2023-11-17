@@ -1,6 +1,6 @@
+import { SentryExceptionLimiter } from '@dogu-private/nestjs-common';
 import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus } from '@nestjs/common';
 import { HttpAdapterHost } from '@nestjs/core';
-import * as Sentry from '@sentry/node';
 import { Request, Response } from 'express';
 import { logger } from '../module/logger/logger.instance';
 import { isSentryEnabled } from '../utils/sentry';
@@ -8,13 +8,12 @@ import { isSentryEnabled } from '../utils/sentry';
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
   private logger = logger;
+  private sentryExceptionLimiter = new SentryExceptionLimiter(isSentryEnabled(), 0.1);
 
   constructor(private readonly httpAdapterHost: HttpAdapterHost) {}
 
-  catch(exception: any, host: ArgumentsHost) {
-    if (isSentryEnabled()) {
-      Sentry.captureException(exception);
-    }
+  catch(exception: unknown, host: ArgumentsHost): void {
+    this.sentryExceptionLimiter.sendException(exception);
 
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
