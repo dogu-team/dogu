@@ -119,6 +119,7 @@
       "react-app/jest"
     ]
   },
+  "packageManager": "yarn@3.3.1",
   "productName": "Dogu-Agent",
   "url": "https://github.com/dogu-team/dogu"
 }
