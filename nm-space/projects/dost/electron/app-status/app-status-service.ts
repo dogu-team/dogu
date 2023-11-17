@@ -37,7 +37,6 @@ export class AppStatusService {
       return false;
     }
 
-    return false;
-    // return true;
+    return true;
   }
 }
