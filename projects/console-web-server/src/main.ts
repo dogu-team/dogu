@@ -62,6 +62,7 @@ async function bootstrap(): Promise<void> {
 
   expressApp.use(Sentry.Handlers.requestHandler());
   expressApp.use(Sentry.Handlers.tracingHandler());
+  expressApp.use(Sentry.Handlers.errorHandler());
 
   app
     .use(cookieParser())
@@ -79,7 +80,6 @@ async function bootstrap(): Promise<void> {
       optionsSuccessStatus: 200,
       allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
     });
-  expressApp.use(Sentry.Handlers.errorHandler());
 
   await app.listen(env.DOGU_CONSOLE_WEB_SERVER_PORT);
   logger.info(`ready - started server on ${env.DOGU_CONSOLE_WEB_SERVER_PORT}`);
