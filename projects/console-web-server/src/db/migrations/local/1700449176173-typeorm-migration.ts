@@ -5,7 +5,7 @@ export class TypeormMigration1700449176173 implements MigrationInterface {
   name = 'TypeormMigration1700449176173';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(`ALTER TABLE "user" ADD "unique_email" character varying(100) NOT NULL`);
+    await queryRunner.query(`ALTER TABLE "user" ADD "unique_email" character varying(100)`);
     await queryRunner.query(`ALTER TABLE "user" ADD CONSTRAINT "UQ_6bbdd0876d5b5a1bd3b79971602" UNIQUE ("unique_email")`);
 
     const users = await queryRunner.manager.getRepository(User).find();
