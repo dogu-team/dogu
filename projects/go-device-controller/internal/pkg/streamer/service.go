@@ -78,6 +78,14 @@ func (s *GoDeviceControllerService) Call(ctx context.Context, param *params.DcGd
 			},
 		}
 		return ret, nil
+	case *params.DcGdcParam_DcGdcRefreshSessionParam:
+		result := s.refreshSession(a)
+		ret := &params.DcGdcResult{
+			Value: &params.DcGdcResult_DcGdcRefreshSessionResult{
+				DcGdcRefreshSessionResult: &result,
+			},
+		}
+		return ret, nil
 	}
 
 	return nil, status.Errorf(codes.Internal, "unkown type %v", param.Value)
@@ -193,6 +201,10 @@ func (s *GoDeviceControllerService) stopRecording(a *params.DcGdcParam_DcGdcStop
 
 func (s *GoDeviceControllerService) getSurfaceStatus(a *params.DcGdcParam_DcGdcGetSurfaceStatusParam) types.DcGdcGetSurfaceStatusResult {
 	return s.devices.GetSurfaceStatus(a.DcGdcGetSurfaceStatusParam)
+}
+
+func (s *GoDeviceControllerService) refreshSession(a *params.DcGdcParam_DcGdcRefreshSessionParam) types.DcGdcRefreshSessionResult {
+	return s.devices.RefreshSession(a.DcGdcRefreshSessionParam)
 }
 
 func (s *GoDeviceControllerService) cleanUpStreamer() {

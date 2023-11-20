@@ -160,6 +160,11 @@ function DefaultPackageInfo(): PackageInfo {
   };
 }
 
+interface DisplayDeviceInfo {
+  width: number;
+  height: number;
+}
+
 export interface FocusedAppInfo {
   displayId: number;
   packageName: string;
@@ -1013,32 +1018,85 @@ export class AdbSerial {
     });
   }
 
-  async getDisplaySize(): Promise<{ width: number; height: number }> {
+  async getCurrentDisplaySize(): Promise<{ physical: { width: number; height: number }; override: { width: number; height: number } }> {
     const { serial, printable } = this;
     return await retry(async () => {
-      return await usingAsnyc(new AdbSerialScope('getDisplaySize', { serial }), async () => {
+      return await usingAsnyc(new AdbSerialScope('getCurrentDisplaySize', { serial }), async () => {
         const result = await shell(serial, 'wm size');
         // get adb shell wm output
         // Physical size: 1080x1920
         // Override size: 1080x1920
         const regex = /(\d+)x(\d+)/g;
+        const ret = { physical: { width: 0, height: 0 }, override: { width: 0, height: 0 } };
         const matched = result.stdout.match(regex);
         if (matched === null) {
-          return { width: 0, height: 0 };
+          return ret;
         }
         const matchInfo = matched[0];
         if (matchInfo === undefined) {
-          return { width: 0, height: 0 };
+          return ret;
         }
         const [width, height] = matchInfo.split('x').map((v) => parseInt(v, 10));
         if (width === undefined) {
-          return { width: 0, height: 0 };
+          return ret;
         }
         if (height === undefined) {
-          return { width: 0, height: 0 };
+          return ret;
         }
-        const rv = { width, height };
-        return rv;
+        ret.physical.width = width;
+        ret.physical.height = height;
+        if (1 < matched.length) {
+          const matchInfo = matched[1];
+          if (matchInfo) {
+            const [width, height] = matchInfo.split('x').map((v) => parseInt(v, 10));
+            if (width === undefined) {
+              return ret;
+            }
+            if (height === undefined) {
+              return ret;
+            }
+            ret.override.width = width;
+            ret.override.height = height;
+          }
+        }
+
+        return ret;
+      });
+    });
+  }
+
+  async setDisplaySize(option: { width: number; height: number }): Promise<void> {
+    const { serial } = this;
+    return await usingAsnyc(new AdbSerialScope('setDisplaySize', { serial, option }), async () => {
+      await shell(serial, `wm size ${option.width}x${option.height}`);
+    });
+  }
+
+  async resetDisplaySize(): Promise<void> {
+    const { serial } = this;
+    return await usingAsnyc(new AdbSerialScope('resetDisplaySize', { serial }), async () => {
+      await shell(serial, `wm size reset`);
+    });
+  }
+
+  async getDeviceDisplays(): Promise<DisplayDeviceInfo[]> {
+    const { serial } = this;
+    return await retry(async () => {
+      return await usingAsnyc(new AdbSerialScope('getDeviceDisplays', { serial }), async () => {
+        const result = await shell(serial, 'dumpsys display | grep DisplayDeviceInfo');
+        const ret: DisplayDeviceInfo[] = [];
+        const lines = result.stdout.split(os.EOL);
+        for (const line of lines) {
+          const regex = /DisplayDeviceInfo{.+width=(?<width>\d+), height=(?<height>\d+)/g;
+          const match = regex.exec(line);
+          if (match && match.groups) {
+            const width = parseInt(match.groups.width);
+            const height = parseInt(match.groups.height);
+            ret.push({ width, height });
+            continue;
+          }
+        }
+        return ret;
       });
     });
   }

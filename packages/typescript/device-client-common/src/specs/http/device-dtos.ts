@@ -1,5 +1,5 @@
 import { IsFilledString } from '@dogu-tech/common';
-import { DeviceSystemInfo, ErrorDevice, GeoLocationDto, LocalDeviceDetectToken, LocaleCodeDto, Platform, PlatformSerial, Serial } from '@dogu-tech/types';
+import { DeviceFoldStatus, DeviceSystemInfo, ErrorDevice, GeoLocationDto, LocalDeviceDetectToken, LocaleCodeDto, Platform, PlatformSerial, Serial } from '@dogu-tech/types';
 import { Type } from 'class-transformer';
 import { IsArray, IsBoolean, IsIn, IsNumber, IsObject, IsOptional, IsString, ValidateNested } from 'class-validator';
 
@@ -284,4 +284,12 @@ export class GetDeviceGeoLocationResponse {
 export class GetDeviceScreenshotResponse {
   @IsFilledString()
   base64!: string;
+}
+
+export class GetDeviceFoldStatusResponse implements DeviceFoldStatus {
+  @IsBoolean()
+  isFoldable!: boolean;
+
+  @IsBoolean()
+  isFolded!: boolean;
 }

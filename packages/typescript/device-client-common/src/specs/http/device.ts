@@ -1,5 +1,5 @@
 import { ControllerSpec, DefaultPathProvider } from '@dogu-tech/common';
-import { GeoLocationDto, LocaleCodeDto, Serial } from '@dogu-tech/types';
+import { DeviceFoldRequestDto, GeoLocationDto, LocaleCodeDto, Serial } from '@dogu-tech/types';
 import { DeviceConfigDto } from '../../validations/types/device-configs';
 import { DeviceNotFoundErrorDetails, DeviceServerResponseDto } from '../../validations/types/responses';
 import { DeviceServerControllerMethodSpec } from '../types';
@@ -7,6 +7,7 @@ import {
   CreateLocalDeviceDetectTokenRequest,
   GetAppiumCapabilitiesResponse,
   GetAppiumContextInfoResponse,
+  GetDeviceFoldStatusResponse,
   GetDeviceGeoLocationResponse,
   GetDeviceLocaleResponse,
   GetDevicePlatformSerialsResponse,
@@ -191,6 +192,31 @@ export const Device = {
     },
     responseBody: DeviceServerResponseDto,
     responseBodyData: GetDeviceScreenshotResponse,
+    responseBodyError: DeviceNotFoundErrorDetails,
+  }),
+
+  getFoldStatus: new DeviceServerControllerMethodSpec({
+    controllerSpec: DeviceController,
+    method: 'GET',
+    path: '/:serial/screen/fold',
+    pathProvider: class {
+      constructor(readonly serial: Serial) {}
+    },
+    responseBody: DeviceServerResponseDto<GetDeviceFoldStatusResponse>,
+    responseBodyData: GetDeviceFoldStatusResponse,
+    responseBodyError: DeviceNotFoundErrorDetails,
+  }),
+
+  fold: new DeviceServerControllerMethodSpec({
+    controllerSpec: DeviceController,
+    method: 'POST',
+    path: '/:serial/screen/fold',
+    pathProvider: class {
+      constructor(readonly serial: Serial) {}
+    },
+    requestBody: DeviceFoldRequestDto,
+    responseBody: DeviceServerResponseDto<GetDeviceFoldStatusResponse>,
+    responseBodyData: GetDeviceFoldStatusResponse,
     responseBodyError: DeviceNotFoundErrorDetails,
   }),
 };

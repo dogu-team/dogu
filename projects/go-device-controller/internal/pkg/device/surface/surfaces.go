@@ -87,6 +87,15 @@ func (ss *Surfaces) GetStatus(surfaceType SurfaceType, screenId ScreenId, pid Pi
 	return nil
 }
 
+func (ss *Surfaces) ForceReconnect() {
+	ss.surfacesMutex.RLock()
+	defer ss.surfacesMutex.RUnlock()
+
+	for _, surface := range ss.surfaceList {
+		surface.ForceReconnect()
+	}
+}
+
 func (ss *Surfaces) Profiles() []SurfaceProfile {
 	ss.surfacesMutex.RLock()
 	defer ss.surfacesMutex.RUnlock()

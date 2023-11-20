@@ -1,4 +1,4 @@
-import { Code, GeoLocationDto, LocaleCodeDto, Platform, platformTypeFromPlatform, Serial } from '@dogu-private/types';
+import { Code, DeviceFoldRequestDto, GeoLocationDto, LocaleCodeDto, Platform, platformTypeFromPlatform, Serial } from '@dogu-private/types';
 import { Instance } from '@dogu-tech/common';
 import { CreateLocalDeviceDetectTokenRequest, Device, DeviceConfigDto } from '@dogu-tech/device-client-common';
 import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
@@ -313,6 +313,41 @@ export class DeviceController {
         data: {
           base64,
         },
+      },
+    };
+  }
+
+  @Get(Device.getFoldStatus.path)
+  async getFoldStatus(@Param('serial') serial: Serial): Promise<Instance<typeof Device.getFoldStatus.responseBody>> {
+    const device = this.scanService.findChannel(serial);
+    if (device === null) {
+      return deviceNotFoundError(serial);
+    }
+
+    const status = await device.getFoldStatus();
+    return {
+      value: {
+        $case: 'data',
+        data: {
+          isFoldable: status.isFoldable,
+          isFolded: status.isFolded,
+        },
+      },
+    };
+  }
+
+  @Post(Device.fold.path)
+  async fold(@Param('serial') serial: Serial, @Body() requestDto: DeviceFoldRequestDto): Promise<Instance<typeof Device.fold.responseBody>> {
+    const device = this.scanService.findChannel(serial);
+    if (device === null) {
+      return deviceNotFoundError(serial);
+    }
+    await device.fold(requestDto.fold);
+    const status = await device.getFoldStatus();
+    return {
+      value: {
+        $case: 'data',
+        data: status,
       },
     };
   }

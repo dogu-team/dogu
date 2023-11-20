@@ -13,7 +13,7 @@ import (
 type macosDevice struct {
 	context            *types.DcGdcDeviceContext
 	surfaces           surface.Surfaces
-	datachannelDemuxer datachannel.DatachannelDemuxer
+	datachannelDemuxer datachannel.ControlDatachannelDemuxer
 }
 
 var _md device = &macosDevice{}
@@ -51,6 +51,10 @@ func (d *macosDevice) Surfaces() *surface.Surfaces {
 
 func (d *macosDevice) OnDataChannel(ctx *structs.DatachannelContext) error {
 	return d.datachannelDemuxer.OnDataChannel(ctx)
+}
+
+func (d *macosDevice) ReconnectControlSession() error {
+	return d.datachannelDemuxer.Reconnect()
 }
 
 func (d *macosDevice) OnMessageFromPeer(data []byte) error {

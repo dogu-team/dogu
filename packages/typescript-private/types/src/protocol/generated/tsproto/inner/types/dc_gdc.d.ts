@@ -52,6 +52,14 @@ export interface DcGdcGetSurfaceStatusResult {
     isPlaying: boolean;
     lastFrameDeltaMillisec: number;
 }
+export interface DcGdcRefreshSessionParam {
+    serial: string;
+    reconnectScreen?: boolean | undefined;
+    reconnectInput?: boolean | undefined;
+}
+export interface DcGdcRefreshSessionResult {
+    error: ErrorResult | undefined;
+}
 export declare const DcGdcDeviceContext: {
     encode(message: DcGdcDeviceContext, writer?: _m0.Writer): _m0.Writer;
     decode(input: _m0.Reader | Uint8Array, length?: number): DcGdcDeviceContext;
@@ -648,4 +656,50 @@ export declare const DcGdcGetSurfaceStatusResult: {
         isPlaying?: boolean | undefined;
         lastFrameDeltaMillisec?: number | undefined;
     } & { [K in Exclude<keyof I, keyof DcGdcGetSurfaceStatusResult>]: never; }>(object: I): DcGdcGetSurfaceStatusResult;
+};
+export declare const DcGdcRefreshSessionParam: {
+    encode(message: DcGdcRefreshSessionParam, writer?: _m0.Writer): _m0.Writer;
+    decode(input: _m0.Reader | Uint8Array, length?: number): DcGdcRefreshSessionParam;
+    fromJSON(object: any): DcGdcRefreshSessionParam;
+    toJSON(message: DcGdcRefreshSessionParam): unknown;
+    fromPartial<I extends {
+        serial?: string | undefined;
+        reconnectScreen?: boolean | undefined;
+        reconnectInput?: boolean | undefined;
+    } & {
+        serial?: string | undefined;
+        reconnectScreen?: boolean | undefined;
+        reconnectInput?: boolean | undefined;
+    } & { [K in Exclude<keyof I, keyof DcGdcRefreshSessionParam>]: never; }>(object: I): DcGdcRefreshSessionParam;
+};
+export declare const DcGdcRefreshSessionResult: {
+    encode(message: DcGdcRefreshSessionResult, writer?: _m0.Writer): _m0.Writer;
+    decode(input: _m0.Reader | Uint8Array, length?: number): DcGdcRefreshSessionResult;
+    fromJSON(object: any): DcGdcRefreshSessionResult;
+    toJSON(message: DcGdcRefreshSessionResult): unknown;
+    fromPartial<I extends {
+        error?: {
+            code?: import("../../outer/errors").Code | undefined;
+            message?: string | undefined;
+            details?: {
+                [x: string]: any;
+            } | undefined;
+        } | undefined;
+    } & {
+        error?: ({
+            code?: import("../../outer/errors").Code | undefined;
+            message?: string | undefined;
+            details?: {
+                [x: string]: any;
+            } | undefined;
+        } & {
+            code?: import("../../outer/errors").Code | undefined;
+            message?: string | undefined;
+            details?: ({
+                [x: string]: any;
+            } & {
+                [x: string]: any;
+            } & { [K in Exclude<keyof I["error"]["details"], string | number>]: never; }) | undefined;
+        } & { [K_1 in Exclude<keyof I["error"], keyof ErrorResult>]: never; }) | undefined;
+    } & { [K_2 in Exclude<keyof I, "error">]: never; }>(object: I): DcGdcRefreshSessionResult;
 };

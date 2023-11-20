@@ -13,7 +13,7 @@ import (
 type linuxDevice struct {
 	context            *types.DcGdcDeviceContext
 	surfaces           surface.Surfaces
-	datachannelDemuxer datachannel.DatachannelDemuxer
+	datachannelDemuxer datachannel.ControlDatachannelDemuxer
 }
 
 var _ld device = &linuxDevice{}
@@ -51,6 +51,10 @@ func (d *linuxDevice) Surfaces() *surface.Surfaces {
 
 func (d *linuxDevice) OnDataChannel(ctx *structs.DatachannelContext) error {
 	return d.datachannelDemuxer.OnDataChannel(ctx)
+}
+
+func (d *linuxDevice) ReconnectControlSession() error {
+	return d.datachannelDemuxer.Reconnect()
 }
 
 func (d *linuxDevice) OnMessageFromPeer(data []byte) error {

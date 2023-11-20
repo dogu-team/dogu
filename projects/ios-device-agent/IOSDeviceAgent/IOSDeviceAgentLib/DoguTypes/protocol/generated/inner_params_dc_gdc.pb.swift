@@ -59,6 +59,14 @@ public struct Inner_Params_DcGdcParam {
     set {value = .dcGdcGetSurfaceStatusParam(newValue)}
   }
 
+  public var dcGdcRefreshSessionParam: Inner_Types_DcGdcRefreshSessionParam {
+    get {
+      if case .dcGdcRefreshSessionParam(let v)? = value {return v}
+      return Inner_Types_DcGdcRefreshSessionParam()
+    }
+    set {value = .dcGdcRefreshSessionParam(newValue)}
+  }
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public enum OneOf_Value: Equatable {
@@ -66,6 +74,7 @@ public struct Inner_Params_DcGdcParam {
     case dcGdcStartScreenRecordParam(Inner_Types_DcGdcStartScreenRecordParam)
     case dcGdcStopScreenRecordParam(Inner_Types_DcGdcStopScreenRecordParam)
     case dcGdcGetSurfaceStatusParam(Inner_Types_DcGdcGetSurfaceStatusParam)
+    case dcGdcRefreshSessionParam(Inner_Types_DcGdcRefreshSessionParam)
 
   #if !swift(>=4.1)
     public static func ==(lhs: Inner_Params_DcGdcParam.OneOf_Value, rhs: Inner_Params_DcGdcParam.OneOf_Value) -> Bool {
@@ -87,6 +96,10 @@ public struct Inner_Params_DcGdcParam {
       }()
       case (.dcGdcGetSurfaceStatusParam, .dcGdcGetSurfaceStatusParam): return {
         guard case .dcGdcGetSurfaceStatusParam(let l) = lhs, case .dcGdcGetSurfaceStatusParam(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.dcGdcRefreshSessionParam, .dcGdcRefreshSessionParam): return {
+        guard case .dcGdcRefreshSessionParam(let l) = lhs, case .dcGdcRefreshSessionParam(let r) = rhs else { preconditionFailure() }
         return l == r
       }()
       default: return false
@@ -137,6 +150,14 @@ public struct Inner_Params_DcGdcResult {
     set {value = .dcGdcGetSurfaceStatusResult(newValue)}
   }
 
+  public var dcGdcRefreshSessionResult: Inner_Types_DcGdcRefreshSessionResult {
+    get {
+      if case .dcGdcRefreshSessionResult(let v)? = value {return v}
+      return Inner_Types_DcGdcRefreshSessionResult()
+    }
+    set {value = .dcGdcRefreshSessionResult(newValue)}
+  }
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public enum OneOf_Value: Equatable {
@@ -144,6 +165,7 @@ public struct Inner_Params_DcGdcResult {
     case dcGdcStartScreenRecordResult(Inner_Types_DcGdcStartScreenRecordResult)
     case dcGdcStopScreenRecordResult(Inner_Types_DcGdcStopScreenRecordResult)
     case dcGdcGetSurfaceStatusResult(Inner_Types_DcGdcGetSurfaceStatusResult)
+    case dcGdcRefreshSessionResult(Inner_Types_DcGdcRefreshSessionResult)
 
   #if !swift(>=4.1)
     public static func ==(lhs: Inner_Params_DcGdcResult.OneOf_Value, rhs: Inner_Params_DcGdcResult.OneOf_Value) -> Bool {
@@ -165,6 +187,10 @@ public struct Inner_Params_DcGdcResult {
       }()
       case (.dcGdcGetSurfaceStatusResult, .dcGdcGetSurfaceStatusResult): return {
         guard case .dcGdcGetSurfaceStatusResult(let l) = lhs, case .dcGdcGetSurfaceStatusResult(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.dcGdcRefreshSessionResult, .dcGdcRefreshSessionResult): return {
+        guard case .dcGdcRefreshSessionResult(let l) = lhs, case .dcGdcRefreshSessionResult(let r) = rhs else { preconditionFailure() }
         return l == r
       }()
       default: return false
@@ -194,6 +220,7 @@ extension Inner_Params_DcGdcParam: SwiftProtobuf.Message, SwiftProtobuf._Message
     13: .standard(proto: "dc_gdc_start_screen_record_param"),
     14: .standard(proto: "dc_gdc_stop_screen_record_param"),
     15: .standard(proto: "dc_gdc_get_surface_status_param"),
+    16: .standard(proto: "dc_gdc_refresh_session_param"),
   ]
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -254,6 +281,19 @@ extension Inner_Params_DcGdcParam: SwiftProtobuf.Message, SwiftProtobuf._Message
           self.value = .dcGdcGetSurfaceStatusParam(v)
         }
       }()
+      case 16: try {
+        var v: Inner_Types_DcGdcRefreshSessionParam?
+        var hadOneofValue = false
+        if let current = self.value {
+          hadOneofValue = true
+          if case .dcGdcRefreshSessionParam(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.value = .dcGdcRefreshSessionParam(v)
+        }
+      }()
       default: break
       }
     }
@@ -281,6 +321,10 @@ extension Inner_Params_DcGdcParam: SwiftProtobuf.Message, SwiftProtobuf._Message
       guard case .dcGdcGetSurfaceStatusParam(let v)? = self.value else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 15)
     }()
+    case .dcGdcRefreshSessionParam?: try {
+      guard case .dcGdcRefreshSessionParam(let v)? = self.value else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 16)
+    }()
     case nil: break
     }
     try unknownFields.traverse(visitor: &visitor)
@@ -300,6 +344,7 @@ extension Inner_Params_DcGdcResult: SwiftProtobuf.Message, SwiftProtobuf._Messag
     13: .standard(proto: "dc_gdc_start_screen_record_result"),
     14: .standard(proto: "dc_gdc_stop_screen_record_result"),
     15: .standard(proto: "dc_gdc_get_surface_status_result"),
+    16: .standard(proto: "dc_gdc_refresh_session_result"),
   ]
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -360,6 +405,19 @@ extension Inner_Params_DcGdcResult: SwiftProtobuf.Message, SwiftProtobuf._Messag
           self.value = .dcGdcGetSurfaceStatusResult(v)
         }
       }()
+      case 16: try {
+        var v: Inner_Types_DcGdcRefreshSessionResult?
+        var hadOneofValue = false
+        if let current = self.value {
+          hadOneofValue = true
+          if case .dcGdcRefreshSessionResult(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.value = .dcGdcRefreshSessionResult(v)
+        }
+      }()
       default: break
       }
     }
@@ -386,6 +444,10 @@ extension Inner_Params_DcGdcResult: SwiftProtobuf.Message, SwiftProtobuf._Messag
     case .dcGdcGetSurfaceStatusResult?: try {
       guard case .dcGdcGetSurfaceStatusResult(let v)? = self.value else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 15)
+    }()
+    case .dcGdcRefreshSessionResult?: try {
+      guard case .dcGdcRefreshSessionResult(let v)? = self.value else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 16)
     }()
     case nil: break
     }

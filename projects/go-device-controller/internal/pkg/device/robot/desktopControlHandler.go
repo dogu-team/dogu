@@ -65,6 +65,11 @@ func (h *DesktopControlHandler) OnOpen() error {
 	return nil
 }
 
+func (h *DesktopControlHandler) Reconnect() error {
+	clearAllMetaKeys(&h.keyBonding)
+	return nil
+}
+
 func (h *DesktopControlHandler) SetSendFunc(sendFunc func(*params.CfGdcDaResult, error)) {
 	h.sendFunc = sendFunc
 }

@@ -12,12 +12,13 @@ import (
 
 type DatachannelHandler interface {
 	OnOpen() error
+	Reconnect() error
 	SetSendFunc(func(*params.CfGdcDaResult, error))
 	OnEachParam(*params.CfGdcDaParam) bool
 	OnParamList(*params.CfGdcDaParamList) bool
 }
 
-type DatachannelDemuxer struct {
+type ControlDatachannelDemuxer struct {
 	handlers            []DatachannelHandler
 	ctx                 *structs.DatachannelContext
 	callbackOnEachParam bool
@@ -25,7 +26,7 @@ type DatachannelDemuxer struct {
 	resultChan chan *params.CfGdcDaResult
 }
 
-func NewDatachannelDemuxer(demux *DatachannelDemuxer,
+func NewDatachannelDemuxer(demux *ControlDatachannelDemuxer,
 	handlers []DatachannelHandler, callbackOnEachParam bool,
 ) {
 	demux.handlers = handlers
@@ -37,15 +38,30 @@ func NewDatachannelDemuxer(demux *DatachannelDemuxer,
 	go demux.sendLoop()
 }
 
-func (demux *DatachannelDemuxer) OnDataChannel(ctx *structs.DatachannelContext) error {
+func (demux *ControlDatachannelDemuxer) OnDataChannel(ctx *structs.DatachannelContext) error {
 	demux.ctx = ctx
+	var err error = nil
 	for _, handler := range demux.handlers {
-		handler.OnOpen()
+		errTemp := handler.OnOpen()
+		if errTemp != nil {
+			err = errTemp
+		}
 	}
-	return nil
+	return err
 }
 
-func (demux *DatachannelDemuxer) OnMessage(data []byte) error {
+func (demux *ControlDatachannelDemuxer) Reconnect() error {
+	var err error = nil
+	for _, handler := range demux.handlers {
+		errTemp := handler.Reconnect()
+		if errTemp != nil {
+			err = errTemp
+		}
+	}
+	return err
+}
+
+func (demux *ControlDatachannelDemuxer) OnMessage(data []byte) error {
 	var err error
 
 	paramList := &params.CfGdcDaParamList{}
@@ -77,7 +93,7 @@ func (demux *DatachannelDemuxer) OnMessage(data []byte) error {
 	return nil
 }
 
-func (demux *DatachannelDemuxer) sendResult(result *params.CfGdcDaResult, err error) {
+func (demux *ControlDatachannelDemuxer) sendResult(result *params.CfGdcDaResult, err error) {
 	if demux.ctx == nil {
 		log.Inst.Error("DatachannelDemuxer.sendResult demux.ctx is nil")
 		return
@@ -89,7 +105,7 @@ func (demux *DatachannelDemuxer) sendResult(result *params.CfGdcDaResult, err er
 	demux.resultChan <- result
 }
 
-func (demux *DatachannelDemuxer) sendLoop() {
+func (demux *ControlDatachannelDemuxer) sendLoop() {
 	log.Inst.Info("DatachannelDemuxer.run")
 
 	resultList := &params.CfGdcDaResultList{}

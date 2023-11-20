@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.DcGdcGetSurfaceStatusResult = exports.DcGdcGetSurfaceStatusParam = exports.DcGdcStopScreenRecordResult = exports.DcGdcStopScreenRecordParam = exports.DcGdcStartScreenRecordResult = exports.DcGdcStartScreenRecordParam = exports.DcGdcStopStreamingResult = exports.DcGdcStopStreamingParam = exports.DcGdcStartStreamingResult = exports.DcGdcStartStreamingParam = exports.DcGdcUpdateDeviceListResult = exports.DcGdcUpdateDeviceListParam = exports.DcGdcDeviceContext = void 0;
+exports.DcGdcRefreshSessionResult = exports.DcGdcRefreshSessionParam = exports.DcGdcGetSurfaceStatusResult = exports.DcGdcGetSurfaceStatusParam = exports.DcGdcStopScreenRecordResult = exports.DcGdcStopScreenRecordParam = exports.DcGdcStartScreenRecordResult = exports.DcGdcStartScreenRecordParam = exports.DcGdcStopStreamingResult = exports.DcGdcStopStreamingParam = exports.DcGdcStartStreamingResult = exports.DcGdcStartStreamingParam = exports.DcGdcUpdateDeviceListResult = exports.DcGdcUpdateDeviceListParam = exports.DcGdcDeviceContext = void 0;
 /* eslint-disable */
 const minimal_1 = __importDefault(require("protobufjs/minimal"));
 const errors_1 = require("../../outer/errors");
@@ -651,6 +651,108 @@ exports.DcGdcGetSurfaceStatusResult = {
         message.hasSurface = object.hasSurface ?? false;
         message.isPlaying = object.isPlaying ?? false;
         message.lastFrameDeltaMillisec = object.lastFrameDeltaMillisec ?? 0;
+        return message;
+    },
+};
+function createBaseDcGdcRefreshSessionParam() {
+    return { serial: '', reconnectScreen: undefined, reconnectInput: undefined };
+}
+exports.DcGdcRefreshSessionParam = {
+    encode(message, writer = minimal_1.default.Writer.create()) {
+        if (message.serial !== '') {
+            writer.uint32(10).string(message.serial);
+        }
+        if (message.reconnectScreen !== undefined) {
+            writer.uint32(16).bool(message.reconnectScreen);
+        }
+        if (message.reconnectInput !== undefined) {
+            writer.uint32(24).bool(message.reconnectInput);
+        }
+        return writer;
+    },
+    decode(input, length) {
+        const reader = input instanceof minimal_1.default.Reader ? input : new minimal_1.default.Reader(input);
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = createBaseDcGdcRefreshSessionParam();
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                case 1:
+                    message.serial = reader.string();
+                    break;
+                case 2:
+                    message.reconnectScreen = reader.bool();
+                    break;
+                case 3:
+                    message.reconnectInput = reader.bool();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+            }
+        }
+        return message;
+    },
+    fromJSON(object) {
+        return {
+            serial: isSet(object.serial) ? String(object.serial) : '',
+            reconnectScreen: isSet(object.reconnectScreen) ? Boolean(object.reconnectScreen) : undefined,
+            reconnectInput: isSet(object.reconnectInput) ? Boolean(object.reconnectInput) : undefined,
+        };
+    },
+    toJSON(message) {
+        const obj = {};
+        message.serial !== undefined && (obj.serial = message.serial);
+        message.reconnectScreen !== undefined && (obj.reconnectScreen = message.reconnectScreen);
+        message.reconnectInput !== undefined && (obj.reconnectInput = message.reconnectInput);
+        return obj;
+    },
+    fromPartial(object) {
+        const message = createBaseDcGdcRefreshSessionParam();
+        message.serial = object.serial ?? '';
+        message.reconnectScreen = object.reconnectScreen ?? undefined;
+        message.reconnectInput = object.reconnectInput ?? undefined;
+        return message;
+    },
+};
+function createBaseDcGdcRefreshSessionResult() {
+    return { error: undefined };
+}
+exports.DcGdcRefreshSessionResult = {
+    encode(message, writer = minimal_1.default.Writer.create()) {
+        if (message.error !== undefined) {
+            errors_1.ErrorResult.encode(message.error, writer.uint32(10).fork()).ldelim();
+        }
+        return writer;
+    },
+    decode(input, length) {
+        const reader = input instanceof minimal_1.default.Reader ? input : new minimal_1.default.Reader(input);
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = createBaseDcGdcRefreshSessionResult();
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                case 1:
+                    message.error = errors_1.ErrorResult.decode(reader, reader.uint32());
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+            }
+        }
+        return message;
+    },
+    fromJSON(object) {
+        return { error: isSet(object.error) ? errors_1.ErrorResult.fromJSON(object.error) : undefined };
+    },
+    toJSON(message) {
+        const obj = {};
+        message.error !== undefined && (obj.error = message.error ? errors_1.ErrorResult.toJSON(message.error) : undefined);
+        return obj;
+    },
+    fromPartial(object) {
+        const message = createBaseDcGdcRefreshSessionResult();
+        message.error = object.error !== undefined && object.error !== null ? errors_1.ErrorResult.fromPartial(object.error) : undefined;
         return message;
     },
 };

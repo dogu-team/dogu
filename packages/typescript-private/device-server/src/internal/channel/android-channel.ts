@@ -2,6 +2,7 @@ import {
   createLocaleCode,
   DefaultScreenCaptureOption,
   DeviceAlert,
+  DeviceFoldStatus,
   DeviceSystemInfo,
   DeviceWindowInfo,
   ErrorResult,
@@ -278,6 +279,43 @@ export class AndroidChannel implements DeviceChannel {
   async turnScreen(isOn: boolean): Promise<void> {
     if (isOn) await this.adb.turnOnScreen();
     else await this.adb.turnOffScreen();
+  }
+
+  async getFoldStatus(): Promise<DeviceFoldStatus> {
+    const isFoldable = 1 < this.info.graphics.displays.length;
+    if (!isFoldable) {
+      return {
+        isFoldable: false,
+        isFolded: false,
+      };
+    }
+    const smallestDisplaySize = this.info.graphics.displays.reduce((acc, display) => {
+      if (display.resolutionX < acc.resolutionX) {
+        return display;
+      }
+      return acc;
+    });
+    const currentDisplaySize = await this.adb.getCurrentDisplaySize();
+    return {
+      isFoldable: true,
+      isFolded: currentDisplaySize.override.width === smallestDisplaySize.resolutionX && currentDisplaySize.override.height === smallestDisplaySize.resolutionY,
+    };
+  }
+
+  async fold(fold: boolean): Promise<void> {
+    if (fold) {
+      const smallestDisplay = this.info.graphics.displays.reduce((acc, display) => {
+        if (display.resolutionX < acc.resolutionX) {
+          return display;
+        }
+        return acc;
+      });
+      await this.adb.setDisplaySize({ width: smallestDisplay.resolutionX, height: smallestDisplay.resolutionY });
+      await this._streaming.refreshSession(this.serial);
+      return;
+    }
+    await this.adb.resetDisplaySize();
+    await this._streaming.refreshSession(this.serial);
   }
 
   async reboot(): Promise<void> {

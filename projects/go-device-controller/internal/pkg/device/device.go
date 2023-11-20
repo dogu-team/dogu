@@ -18,6 +18,7 @@ type device interface {
 
 	// datachannel
 	OnDataChannel(ctx *structs.DatachannelContext) error
+	ReconnectControlSession() error
 	OnMessageFromPeer(data []byte) error
 }
 

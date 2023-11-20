@@ -12,7 +12,7 @@ import (
 type aosDevice struct {
 	context            *types.DcGdcDeviceContext
 	surfaces           surface.Surfaces
-	datachannelDemuxer datachannel.DatachannelDemuxer
+	datachannelDemuxer datachannel.ControlDatachannelDemuxer
 }
 
 var _ad device = &aosDevice{}
@@ -53,6 +53,10 @@ func (d *aosDevice) Surfaces() *surface.Surfaces {
 
 func (d *aosDevice) OnDataChannel(ctx *structs.DatachannelContext) error {
 	return d.datachannelDemuxer.OnDataChannel(ctx)
+}
+
+func (d *aosDevice) ReconnectControlSession() error {
+	return d.datachannelDemuxer.Reconnect()
 }
 
 func (d *aosDevice) OnMessageFromPeer(data []byte) error {

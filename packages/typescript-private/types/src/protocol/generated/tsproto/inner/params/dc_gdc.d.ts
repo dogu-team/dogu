@@ -1,5 +1,5 @@
 import _m0 from 'protobufjs/minimal';
-import { DcGdcGetSurfaceStatusParam, DcGdcGetSurfaceStatusResult, DcGdcStartScreenRecordParam, DcGdcStartScreenRecordResult, DcGdcStopScreenRecordParam, DcGdcStopScreenRecordResult, DcGdcUpdateDeviceListParam, DcGdcUpdateDeviceListResult } from '../types/dc_gdc';
+import { DcGdcGetSurfaceStatusParam, DcGdcGetSurfaceStatusResult, DcGdcRefreshSessionParam, DcGdcRefreshSessionResult, DcGdcStartScreenRecordParam, DcGdcStartScreenRecordResult, DcGdcStopScreenRecordParam, DcGdcStopScreenRecordResult, DcGdcUpdateDeviceListParam, DcGdcUpdateDeviceListResult } from '../types/dc_gdc';
 export interface DcGdcParam {
     value?: {
         $case: 'dcGdcUpdateDevicelistParam';
@@ -13,6 +13,9 @@ export interface DcGdcParam {
     } | {
         $case: 'dcGdcGetSurfaceStatusParam';
         dcGdcGetSurfaceStatusParam: DcGdcGetSurfaceStatusParam;
+    } | {
+        $case: 'dcGdcRefreshSessionParam';
+        dcGdcRefreshSessionParam: DcGdcRefreshSessionParam;
     };
 }
 export interface DcGdcResult {
@@ -28,6 +31,9 @@ export interface DcGdcResult {
     } | {
         $case: 'dcGdcGetSurfaceStatusResult';
         dcGdcGetSurfaceStatusResult: DcGdcGetSurfaceStatusResult;
+    } | {
+        $case: 'dcGdcRefreshSessionResult';
+        dcGdcRefreshSessionResult: DcGdcRefreshSessionResult;
     };
 }
 export declare const DcGdcParam: {
@@ -84,6 +90,14 @@ export declare const DcGdcParam: {
             } | undefined;
         } & {
             $case: "dcGdcGetSurfaceStatusParam";
+        }) | ({
+            dcGdcRefreshSessionParam?: {
+                serial?: string | undefined;
+                reconnectScreen?: boolean | undefined;
+                reconnectInput?: boolean | undefined;
+            } | undefined;
+        } & {
+            $case: "dcGdcRefreshSessionParam";
         }) | undefined;
     } & {
         value?: ({
@@ -253,8 +267,27 @@ export declare const DcGdcParam: {
                 pid?: number | undefined;
             } & { [K_10 in Exclude<keyof I["value"]["dcGdcGetSurfaceStatusParam"], keyof DcGdcGetSurfaceStatusParam>]: never; }) | undefined;
             $case: "dcGdcGetSurfaceStatusParam";
-        } & { [K_11 in Exclude<keyof I["value"], "$case" | "dcGdcGetSurfaceStatusParam">]: never; }) | undefined;
-    } & { [K_12 in Exclude<keyof I, "value">]: never; }>(object: I): DcGdcParam;
+        } & { [K_11 in Exclude<keyof I["value"], "$case" | "dcGdcGetSurfaceStatusParam">]: never; }) | ({
+            dcGdcRefreshSessionParam?: {
+                serial?: string | undefined;
+                reconnectScreen?: boolean | undefined;
+                reconnectInput?: boolean | undefined;
+            } | undefined;
+        } & {
+            $case: "dcGdcRefreshSessionParam";
+        } & {
+            dcGdcRefreshSessionParam?: ({
+                serial?: string | undefined;
+                reconnectScreen?: boolean | undefined;
+                reconnectInput?: boolean | undefined;
+            } & {
+                serial?: string | undefined;
+                reconnectScreen?: boolean | undefined;
+                reconnectInput?: boolean | undefined;
+            } & { [K_12 in Exclude<keyof I["value"]["dcGdcRefreshSessionParam"], keyof DcGdcRefreshSessionParam>]: never; }) | undefined;
+            $case: "dcGdcRefreshSessionParam";
+        } & { [K_13 in Exclude<keyof I["value"], "$case" | "dcGdcRefreshSessionParam">]: never; }) | undefined;
+    } & { [K_14 in Exclude<keyof I, "value">]: never; }>(object: I): DcGdcParam;
 };
 export declare const DcGdcResult: {
     encode(message: DcGdcResult, writer?: _m0.Writer): _m0.Writer;
@@ -299,6 +332,18 @@ export declare const DcGdcResult: {
             } | undefined;
         } & {
             $case: "dcGdcGetSurfaceStatusResult";
+        }) | ({
+            dcGdcRefreshSessionResult?: {
+                error?: {
+                    code?: import("../../index").Code | undefined;
+                    message?: string | undefined;
+                    details?: {
+                        [x: string]: any;
+                    } | undefined;
+                } | undefined;
+            } | undefined;
+        } & {
+            $case: "dcGdcRefreshSessionResult";
         }) | undefined;
     } & {
         value?: ({
@@ -408,6 +453,45 @@ export declare const DcGdcResult: {
                 lastFrameDeltaMillisec?: number | undefined;
             } & { [K_10 in Exclude<keyof I["value"]["dcGdcGetSurfaceStatusResult"], keyof DcGdcGetSurfaceStatusResult>]: never; }) | undefined;
             $case: "dcGdcGetSurfaceStatusResult";
-        } & { [K_11 in Exclude<keyof I["value"], "$case" | "dcGdcGetSurfaceStatusResult">]: never; }) | undefined;
-    } & { [K_12 in Exclude<keyof I, "value">]: never; }>(object: I): DcGdcResult;
+        } & { [K_11 in Exclude<keyof I["value"], "$case" | "dcGdcGetSurfaceStatusResult">]: never; }) | ({
+            dcGdcRefreshSessionResult?: {
+                error?: {
+                    code?: import("../../index").Code | undefined;
+                    message?: string | undefined;
+                    details?: {
+                        [x: string]: any;
+                    } | undefined;
+                } | undefined;
+            } | undefined;
+        } & {
+            $case: "dcGdcRefreshSessionResult";
+        } & {
+            dcGdcRefreshSessionResult?: ({
+                error?: {
+                    code?: import("../../index").Code | undefined;
+                    message?: string | undefined;
+                    details?: {
+                        [x: string]: any;
+                    } | undefined;
+                } | undefined;
+            } & {
+                error?: ({
+                    code?: import("../../index").Code | undefined;
+                    message?: string | undefined;
+                    details?: {
+                        [x: string]: any;
+                    } | undefined;
+                } & {
+                    code?: import("../../index").Code | undefined;
+                    message?: string | undefined;
+                    details?: ({
+                        [x: string]: any;
+                    } & {
+                        [x: string]: any;
+                    } & { [K_12 in Exclude<keyof I["value"]["dcGdcRefreshSessionResult"]["error"]["details"], string | number>]: never; }) | undefined;
+                } & { [K_13 in Exclude<keyof I["value"]["dcGdcRefreshSessionResult"]["error"], keyof import("../../index").ErrorResult>]: never; }) | undefined;
+            } & { [K_14 in Exclude<keyof I["value"]["dcGdcRefreshSessionResult"], "error">]: never; }) | undefined;
+            $case: "dcGdcRefreshSessionResult";
+        } & { [K_15 in Exclude<keyof I["value"], "$case" | "dcGdcRefreshSessionResult">]: never; }) | undefined;
+    } & { [K_16 in Exclude<keyof I, "value">]: never; }>(object: I): DcGdcResult;
 };

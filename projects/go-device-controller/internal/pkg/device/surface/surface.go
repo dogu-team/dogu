@@ -114,6 +114,15 @@ func (s *Surface) AddListener(listener SurfaceListener) {
 	log.Inst.Info("surface.addListener done", zap.String("serial", s.serial), zap.Int("id", listener.GetId()), zap.String("type", listener.GetSurfaceListenerType().String()), zap.Int("listenerCount", len(s.listeners)))
 }
 
+func (s *Surface) ForceReconnect() {
+	log.Inst.Info("surface.ForceReconnect", zap.String("serial", s.serial), zap.Int("listenerCount", len(s.listeners)))
+
+	s.msgChan <- SurfaceMessage{time: time.Now(), msgType: Close, err: errors.Errorf("ForceReconnect")}
+	s.msgChan <- SurfaceMessage{time: time.Now(), msgType: Reconnect}
+
+	log.Inst.Info("surface.ForceReconnect done", zap.String("serial", s.serial), zap.Int("listenerCount", len(s.listeners)))
+}
+
 // remove listener
 func (s *Surface) RemoveListener(listener SurfaceListener) bool {
 	s.listenerMutex.Lock()

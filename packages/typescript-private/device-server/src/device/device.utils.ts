@@ -1,7 +1,7 @@
 import { Code, Serial } from '@dogu-private/types';
 import { DeviceServerResponseDto } from '@dogu-tech/device-client-common';
 
-export function deviceNotFoundError(serial: Serial): DeviceServerResponseDto {
+export function deviceNotFoundError<T extends object = object>(serial: Serial): DeviceServerResponseDto<T> {
   return {
     value: {
       $case: 'error',

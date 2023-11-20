@@ -9,7 +9,10 @@ export class AndroidSystemInfoService {
     const isVirtual = deviceProp.ro_build_characteristics === 'emulator';
     const procCpuInfos = await adb.getProcCpuInfo();
     const procMemInfo = await adb.getProcMemInfo();
-    const displaySize = await adb.getDisplaySize();
+    const displays = (await adb.getDeviceDisplays()).sort((a, b) => {
+      return a.width * a.height - b.width * b.height;
+    });
+
     const dfInfos = (await adb.getDfInfo())
       .filter((x) => x.Mounted.startsWith('/data') || x.Mounted.startsWith('/storage'))
       .map((x) => {
@@ -78,17 +81,17 @@ export class AndroidSystemInfoService {
       },
       graphics: {
         controllers: [],
-        displays: [
-          {
+        displays: displays.map((x) => {
+          return {
             vendor: '',
             vendorId: '',
             model: '',
             deviceName: '',
             displayId: '',
-            resolutionX: displaySize.width,
-            resolutionY: displaySize.height,
-          },
-        ],
+            resolutionX: x.width,
+            resolutionY: x.height,
+          };
+        }),
       },
       net: [],
       memLayout: [

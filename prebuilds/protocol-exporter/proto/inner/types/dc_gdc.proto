@@ -73,3 +73,13 @@ message DcGdcGetSurfaceStatusResult {
   bool is_playing = 2;
   uint32 last_frame_delta_millisec = 3;
 }
+
+message DcGdcRefreshSessionParam {
+  string serial = 1;
+  optional bool reconnect_screen = 2;
+  optional bool reconnect_input = 3;
+}
+
+message DcGdcRefreshSessionResult {
+  outer.ErrorResult error = 1;
+}

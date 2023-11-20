@@ -13,7 +13,7 @@ import (
 type windowsDevice struct {
 	context            *types.DcGdcDeviceContext
 	surfaces           surface.Surfaces
-	datachannelDemuxer datachannel.DatachannelDemuxer
+	datachannelDemuxer datachannel.ControlDatachannelDemuxer
 }
 
 var _wd device = &windowsDevice{}
@@ -50,6 +50,10 @@ func (d *windowsDevice) Surfaces() *surface.Surfaces {
 
 func (d *windowsDevice) OnDataChannel(ctx *structs.DatachannelContext) error {
 	return d.datachannelDemuxer.OnDataChannel(ctx)
+}
+
+func (d *windowsDevice) ReconnectControlSession() error {
+	return d.datachannelDemuxer.Reconnect()
 }
 
 func (d *windowsDevice) OnMessageFromPeer(data []byte) error {

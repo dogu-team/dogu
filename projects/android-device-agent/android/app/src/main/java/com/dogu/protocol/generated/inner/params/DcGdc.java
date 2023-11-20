@@ -56,6 +56,17 @@ public final class DcGdc {
      */
     com.dogu.protocol.generated.inner.types.DcGdc.DcGdcGetSurfaceStatusParam getDcGdcGetSurfaceStatusParam();
 
+    /**
+     * <code>.inner.types.DcGdcRefreshSessionParam dc_gdc_refresh_session_param = 16;</code>
+     * @return Whether the dcGdcRefreshSessionParam field is set.
+     */
+    boolean hasDcGdcRefreshSessionParam();
+    /**
+     * <code>.inner.types.DcGdcRefreshSessionParam dc_gdc_refresh_session_param = 16;</code>
+     * @return The dcGdcRefreshSessionParam.
+     */
+    com.dogu.protocol.generated.inner.types.DcGdc.DcGdcRefreshSessionParam getDcGdcRefreshSessionParam();
+
     public com.dogu.protocol.generated.inner.params.DcGdc.DcGdcParam.ValueCase getValueCase();
   }
   /**
@@ -75,6 +86,7 @@ public final class DcGdc {
       DC_GDC_START_SCREEN_RECORD_PARAM(13),
       DC_GDC_STOP_SCREEN_RECORD_PARAM(14),
       DC_GDC_GET_SURFACE_STATUS_PARAM(15),
+      DC_GDC_REFRESH_SESSION_PARAM(16),
       VALUE_NOT_SET(0);
       private final int value;
       private ValueCase(int value) {
@@ -94,6 +106,7 @@ public final class DcGdc {
           case 13: return DC_GDC_START_SCREEN_RECORD_PARAM;
           case 14: return DC_GDC_STOP_SCREEN_RECORD_PARAM;
           case 15: return DC_GDC_GET_SURFACE_STATUS_PARAM;
+          case 16: return DC_GDC_REFRESH_SESSION_PARAM;
           case 0: return VALUE_NOT_SET;
           default: return null;
         }
@@ -310,6 +323,56 @@ public final class DcGdc {
      */
     private void clearDcGdcGetSurfaceStatusParam() {
       if (valueCase_ == 15) {
+        valueCase_ = 0;
+        value_ = null;
+      }
+    }
+
+    public static final int DC_GDC_REFRESH_SESSION_PARAM_FIELD_NUMBER = 16;
+    /**
+     * <code>.inner.types.DcGdcRefreshSessionParam dc_gdc_refresh_session_param = 16;</code>
+     */
+    @java.lang.Override
+    public boolean hasDcGdcRefreshSessionParam() {
+      return valueCase_ == 16;
+    }
+    /**
+     * <code>.inner.types.DcGdcRefreshSessionParam dc_gdc_refresh_session_param = 16;</code>
+     */
+    @java.lang.Override
+    public com.dogu.protocol.generated.inner.types.DcGdc.DcGdcRefreshSessionParam getDcGdcRefreshSessionParam() {
+      if (valueCase_ == 16) {
+         return (com.dogu.protocol.generated.inner.types.DcGdc.DcGdcRefreshSessionParam) value_;
+      }
+      return com.dogu.protocol.generated.inner.types.DcGdc.DcGdcRefreshSessionParam.getDefaultInstance();
+    }
+    /**
+     * <code>.inner.types.DcGdcRefreshSessionParam dc_gdc_refresh_session_param = 16;</code>
+     */
+    private void setDcGdcRefreshSessionParam(com.dogu.protocol.generated.inner.types.DcGdc.DcGdcRefreshSessionParam value) {
+      value.getClass();
+  value_ = value;
+      valueCase_ = 16;
+    }
+    /**
+     * <code>.inner.types.DcGdcRefreshSessionParam dc_gdc_refresh_session_param = 16;</code>
+     */
+    private void mergeDcGdcRefreshSessionParam(com.dogu.protocol.generated.inner.types.DcGdc.DcGdcRefreshSessionParam value) {
+      value.getClass();
+  if (valueCase_ == 16 &&
+          value_ != com.dogu.protocol.generated.inner.types.DcGdc.DcGdcRefreshSessionParam.getDefaultInstance()) {
+        value_ = com.dogu.protocol.generated.inner.types.DcGdc.DcGdcRefreshSessionParam.newBuilder((com.dogu.protocol.generated.inner.types.DcGdc.DcGdcRefreshSessionParam) value_)
+            .mergeFrom(value).buildPartial();
+      } else {
+        value_ = value;
+      }
+      valueCase_ = 16;
+    }
+    /**
+     * <code>.inner.types.DcGdcRefreshSessionParam dc_gdc_refresh_session_param = 16;</code>
+     */
+    private void clearDcGdcRefreshSessionParam() {
+      if (valueCase_ == 16) {
         valueCase_ = 0;
         value_ = null;
       }
@@ -614,6 +677,54 @@ public final class DcGdc {
         return this;
       }
 
+      /**
+       * <code>.inner.types.DcGdcRefreshSessionParam dc_gdc_refresh_session_param = 16;</code>
+       */
+      @java.lang.Override
+      public boolean hasDcGdcRefreshSessionParam() {
+        return instance.hasDcGdcRefreshSessionParam();
+      }
+      /**
+       * <code>.inner.types.DcGdcRefreshSessionParam dc_gdc_refresh_session_param = 16;</code>
+       */
+      @java.lang.Override
+      public com.dogu.protocol.generated.inner.types.DcGdc.DcGdcRefreshSessionParam getDcGdcRefreshSessionParam() {
+        return instance.getDcGdcRefreshSessionParam();
+      }
+      /**
+       * <code>.inner.types.DcGdcRefreshSessionParam dc_gdc_refresh_session_param = 16;</code>
+       */
+      public Builder setDcGdcRefreshSessionParam(com.dogu.protocol.generated.inner.types.DcGdc.DcGdcRefreshSessionParam value) {
+        copyOnWrite();
+        instance.setDcGdcRefreshSessionParam(value);
+        return this;
+      }
+      /**
+       * <code>.inner.types.DcGdcRefreshSessionParam dc_gdc_refresh_session_param = 16;</code>
+       */
+      public Builder setDcGdcRefreshSessionParam(
+          com.dogu.protocol.generated.inner.types.DcGdc.DcGdcRefreshSessionParam.Builder builderForValue) {
+        copyOnWrite();
+        instance.setDcGdcRefreshSessionParam(builderForValue.build());
+        return this;
+      }
+      /**
+       * <code>.inner.types.DcGdcRefreshSessionParam dc_gdc_refresh_session_param = 16;</code>
+       */
+      public Builder mergeDcGdcRefreshSessionParam(com.dogu.protocol.generated.inner.types.DcGdc.DcGdcRefreshSessionParam value) {
+        copyOnWrite();
+        instance.mergeDcGdcRefreshSessionParam(value);
+        return this;
+      }
+      /**
+       * <code>.inner.types.DcGdcRefreshSessionParam dc_gdc_refresh_session_param = 16;</code>
+       */
+      public Builder clearDcGdcRefreshSessionParam() {
+        copyOnWrite();
+        instance.clearDcGdcRefreshSessionParam();
+        return this;
+      }
+
       // @@protoc_insertion_point(builder_scope:inner.params.DcGdcParam)
     }
     @java.lang.Override
@@ -636,10 +747,11 @@ public final class DcGdc {
               com.dogu.protocol.generated.inner.types.DcGdc.DcGdcStartScreenRecordParam.class,
               com.dogu.protocol.generated.inner.types.DcGdc.DcGdcStopScreenRecordParam.class,
               com.dogu.protocol.generated.inner.types.DcGdc.DcGdcGetSurfaceStatusParam.class,
+              com.dogu.protocol.generated.inner.types.DcGdc.DcGdcRefreshSessionParam.class,
             };
             java.lang.String info =
-                "\u0000\u0004\u0001\u0000\n\u000f\u0004\u0000\u0000\u0000\n<\u0000\r<\u0000\u000e" +
-                "<\u0000\u000f<\u0000";
+                "\u0000\u0005\u0001\u0000\n\u0010\u0005\u0000\u0000\u0000\n<\u0000\r<\u0000\u000e" +
+                "<\u0000\u000f<\u0000\u0010<\u0000";
             return newMessageInfo(DEFAULT_INSTANCE, info, objects);
         }
         // fall through
@@ -742,6 +854,17 @@ public final class DcGdc {
      */
     com.dogu.protocol.generated.inner.types.DcGdc.DcGdcGetSurfaceStatusResult getDcGdcGetSurfaceStatusResult();
 
+    /**
+     * <code>.inner.types.DcGdcRefreshSessionResult dc_gdc_refresh_session_result = 16;</code>
+     * @return Whether the dcGdcRefreshSessionResult field is set.
+     */
+    boolean hasDcGdcRefreshSessionResult();
+    /**
+     * <code>.inner.types.DcGdcRefreshSessionResult dc_gdc_refresh_session_result = 16;</code>
+     * @return The dcGdcRefreshSessionResult.
+     */
+    com.dogu.protocol.generated.inner.types.DcGdc.DcGdcRefreshSessionResult getDcGdcRefreshSessionResult();
+
     public com.dogu.protocol.generated.inner.params.DcGdc.DcGdcResult.ValueCase getValueCase();
   }
   /**
@@ -761,6 +884,7 @@ public final class DcGdc {
       DC_GDC_START_SCREEN_RECORD_RESULT(13),
       DC_GDC_STOP_SCREEN_RECORD_RESULT(14),
       DC_GDC_GET_SURFACE_STATUS_RESULT(15),
+      DC_GDC_REFRESH_SESSION_RESULT(16),
       VALUE_NOT_SET(0);
       private final int value;
       private ValueCase(int value) {
@@ -780,6 +904,7 @@ public final class DcGdc {
           case 13: return DC_GDC_START_SCREEN_RECORD_RESULT;
           case 14: return DC_GDC_STOP_SCREEN_RECORD_RESULT;
           case 15: return DC_GDC_GET_SURFACE_STATUS_RESULT;
+          case 16: return DC_GDC_REFRESH_SESSION_RESULT;
           case 0: return VALUE_NOT_SET;
           default: return null;
         }
@@ -996,6 +1121,56 @@ public final class DcGdc {
      */
     private void clearDcGdcGetSurfaceStatusResult() {
       if (valueCase_ == 15) {
+        valueCase_ = 0;
+        value_ = null;
+      }
+    }
+
+    public static final int DC_GDC_REFRESH_SESSION_RESULT_FIELD_NUMBER = 16;
+    /**
+     * <code>.inner.types.DcGdcRefreshSessionResult dc_gdc_refresh_session_result = 16;</code>
+     */
+    @java.lang.Override
+    public boolean hasDcGdcRefreshSessionResult() {
+      return valueCase_ == 16;
+    }
+    /**
+     * <code>.inner.types.DcGdcRefreshSessionResult dc_gdc_refresh_session_result = 16;</code>
+     */
+    @java.lang.Override
+    public com.dogu.protocol.generated.inner.types.DcGdc.DcGdcRefreshSessionResult getDcGdcRefreshSessionResult() {
+      if (valueCase_ == 16) {
+         return (com.dogu.protocol.generated.inner.types.DcGdc.DcGdcRefreshSessionResult) value_;
+      }
+      return com.dogu.protocol.generated.inner.types.DcGdc.DcGdcRefreshSessionResult.getDefaultInstance();
+    }
+    /**
+     * <code>.inner.types.DcGdcRefreshSessionResult dc_gdc_refresh_session_result = 16;</code>
+     */
+    private void setDcGdcRefreshSessionResult(com.dogu.protocol.generated.inner.types.DcGdc.DcGdcRefreshSessionResult value) {
+      value.getClass();
+  value_ = value;
+      valueCase_ = 16;
+    }
+    /**
+     * <code>.inner.types.DcGdcRefreshSessionResult dc_gdc_refresh_session_result = 16;</code>
+     */
+    private void mergeDcGdcRefreshSessionResult(com.dogu.protocol.generated.inner.types.DcGdc.DcGdcRefreshSessionResult value) {
+      value.getClass();
+  if (valueCase_ == 16 &&
+          value_ != com.dogu.protocol.generated.inner.types.DcGdc.DcGdcRefreshSessionResult.getDefaultInstance()) {
+        value_ = com.dogu.protocol.generated.inner.types.DcGdc.DcGdcRefreshSessionResult.newBuilder((com.dogu.protocol.generated.inner.types.DcGdc.DcGdcRefreshSessionResult) value_)
+            .mergeFrom(value).buildPartial();
+      } else {
+        value_ = value;
+      }
+      valueCase_ = 16;
+    }
+    /**
+     * <code>.inner.types.DcGdcRefreshSessionResult dc_gdc_refresh_session_result = 16;</code>
+     */
+    private void clearDcGdcRefreshSessionResult() {
+      if (valueCase_ == 16) {
         valueCase_ = 0;
         value_ = null;
       }
@@ -1300,6 +1475,54 @@ public final class DcGdc {
         return this;
       }
 
+      /**
+       * <code>.inner.types.DcGdcRefreshSessionResult dc_gdc_refresh_session_result = 16;</code>
+       */
+      @java.lang.Override
+      public boolean hasDcGdcRefreshSessionResult() {
+        return instance.hasDcGdcRefreshSessionResult();
+      }
+      /**
+       * <code>.inner.types.DcGdcRefreshSessionResult dc_gdc_refresh_session_result = 16;</code>
+       */
+      @java.lang.Override
+      public com.dogu.protocol.generated.inner.types.DcGdc.DcGdcRefreshSessionResult getDcGdcRefreshSessionResult() {
+        return instance.getDcGdcRefreshSessionResult();
+      }
+      /**
+       * <code>.inner.types.DcGdcRefreshSessionResult dc_gdc_refresh_session_result = 16;</code>
+       */
+      public Builder setDcGdcRefreshSessionResult(com.dogu.protocol.generated.inner.types.DcGdc.DcGdcRefreshSessionResult value) {
+        copyOnWrite();
+        instance.setDcGdcRefreshSessionResult(value);
+        return this;
+      }
+      /**
+       * <code>.inner.types.DcGdcRefreshSessionResult dc_gdc_refresh_session_result = 16;</code>
+       */
+      public Builder setDcGdcRefreshSessionResult(
+          com.dogu.protocol.generated.inner.types.DcGdc.DcGdcRefreshSessionResult.Builder builderForValue) {
+        copyOnWrite();
+        instance.setDcGdcRefreshSessionResult(builderForValue.build());
+        return this;
+      }
+      /**
+       * <code>.inner.types.DcGdcRefreshSessionResult dc_gdc_refresh_session_result = 16;</code>
+       */
+      public Builder mergeDcGdcRefreshSessionResult(com.dogu.protocol.generated.inner.types.DcGdc.DcGdcRefreshSessionResult value) {
+        copyOnWrite();
+        instance.mergeDcGdcRefreshSessionResult(value);
+        return this;
+      }
+      /**
+       * <code>.inner.types.DcGdcRefreshSessionResult dc_gdc_refresh_session_result = 16;</code>
+       */
+      public Builder clearDcGdcRefreshSessionResult() {
+        copyOnWrite();
+        instance.clearDcGdcRefreshSessionResult();
+        return this;
+      }
+
       // @@protoc_insertion_point(builder_scope:inner.params.DcGdcResult)
     }
     @java.lang.Override
@@ -1322,10 +1545,11 @@ public final class DcGdc {
               com.dogu.protocol.generated.inner.types.DcGdc.DcGdcStartScreenRecordResult.class,
               com.dogu.protocol.generated.inner.types.DcGdc.DcGdcStopScreenRecordResult.class,
               com.dogu.protocol.generated.inner.types.DcGdc.DcGdcGetSurfaceStatusResult.class,
+              com.dogu.protocol.generated.inner.types.DcGdc.DcGdcRefreshSessionResult.class,
             };
             java.lang.String info =
-                "\u0000\u0004\u0001\u0000\n\u000f\u0004\u0000\u0000\u0000\n<\u0000\r<\u0000\u000e" +
-                "<\u0000\u000f<\u0000";
+                "\u0000\u0005\u0001\u0000\n\u0010\u0005\u0000\u0000\u0000\n<\u0000\r<\u0000\u000e" +
+                "<\u0000\u000f<\u0000\u0010<\u0000";
             return newMessageInfo(DEFAULT_INSTANCE, info, objects);
         }
         // fall through

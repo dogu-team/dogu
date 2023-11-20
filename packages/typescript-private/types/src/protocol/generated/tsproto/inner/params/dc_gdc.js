@@ -24,6 +24,9 @@ exports.DcGdcParam = {
         if (message.value?.$case === 'dcGdcGetSurfaceStatusParam') {
             dc_gdc_1.DcGdcGetSurfaceStatusParam.encode(message.value.dcGdcGetSurfaceStatusParam, writer.uint32(122).fork()).ldelim();
         }
+        if (message.value?.$case === 'dcGdcRefreshSessionParam') {
+            dc_gdc_1.DcGdcRefreshSessionParam.encode(message.value.dcGdcRefreshSessionParam, writer.uint32(130).fork()).ldelim();
+        }
         return writer;
     },
     decode(input, length) {
@@ -57,6 +60,12 @@ exports.DcGdcParam = {
                         dcGdcGetSurfaceStatusParam: dc_gdc_1.DcGdcGetSurfaceStatusParam.decode(reader, reader.uint32()),
                     };
                     break;
+                case 16:
+                    message.value = {
+                        $case: 'dcGdcRefreshSessionParam',
+                        dcGdcRefreshSessionParam: dc_gdc_1.DcGdcRefreshSessionParam.decode(reader, reader.uint32()),
+                    };
+                    break;
                 default:
                     reader.skipType(tag & 7);
                     break;
@@ -86,7 +95,12 @@ exports.DcGdcParam = {
                                 $case: 'dcGdcGetSurfaceStatusParam',
                                 dcGdcGetSurfaceStatusParam: dc_gdc_1.DcGdcGetSurfaceStatusParam.fromJSON(object.dcGdcGetSurfaceStatusParam),
                             }
-                            : undefined,
+                            : isSet(object.dcGdcRefreshSessionParam)
+                                ? {
+                                    $case: 'dcGdcRefreshSessionParam',
+                                    dcGdcRefreshSessionParam: dc_gdc_1.DcGdcRefreshSessionParam.fromJSON(object.dcGdcRefreshSessionParam),
+                                }
+                                : undefined,
         };
     },
     toJSON(message) {
@@ -99,6 +113,8 @@ exports.DcGdcParam = {
             (obj.dcGdcStopScreenRecordParam = message.value?.dcGdcStopScreenRecordParam ? dc_gdc_1.DcGdcStopScreenRecordParam.toJSON(message.value?.dcGdcStopScreenRecordParam) : undefined);
         message.value?.$case === 'dcGdcGetSurfaceStatusParam' &&
             (obj.dcGdcGetSurfaceStatusParam = message.value?.dcGdcGetSurfaceStatusParam ? dc_gdc_1.DcGdcGetSurfaceStatusParam.toJSON(message.value?.dcGdcGetSurfaceStatusParam) : undefined);
+        message.value?.$case === 'dcGdcRefreshSessionParam' &&
+            (obj.dcGdcRefreshSessionParam = message.value?.dcGdcRefreshSessionParam ? dc_gdc_1.DcGdcRefreshSessionParam.toJSON(message.value?.dcGdcRefreshSessionParam) : undefined);
         return obj;
     },
     fromPartial(object) {
@@ -127,6 +143,12 @@ exports.DcGdcParam = {
                 dcGdcGetSurfaceStatusParam: dc_gdc_1.DcGdcGetSurfaceStatusParam.fromPartial(object.value.dcGdcGetSurfaceStatusParam),
             };
         }
+        if (object.value?.$case === 'dcGdcRefreshSessionParam' && object.value?.dcGdcRefreshSessionParam !== undefined && object.value?.dcGdcRefreshSessionParam !== null) {
+            message.value = {
+                $case: 'dcGdcRefreshSessionParam',
+                dcGdcRefreshSessionParam: dc_gdc_1.DcGdcRefreshSessionParam.fromPartial(object.value.dcGdcRefreshSessionParam),
+            };
+        }
         return message;
     },
 };
@@ -146,6 +168,9 @@ exports.DcGdcResult = {
         }
         if (message.value?.$case === 'dcGdcGetSurfaceStatusResult') {
             dc_gdc_1.DcGdcGetSurfaceStatusResult.encode(message.value.dcGdcGetSurfaceStatusResult, writer.uint32(122).fork()).ldelim();
+        }
+        if (message.value?.$case === 'dcGdcRefreshSessionResult') {
+            dc_gdc_1.DcGdcRefreshSessionResult.encode(message.value.dcGdcRefreshSessionResult, writer.uint32(130).fork()).ldelim();
         }
         return writer;
     },
@@ -180,6 +205,12 @@ exports.DcGdcResult = {
                         dcGdcGetSurfaceStatusResult: dc_gdc_1.DcGdcGetSurfaceStatusResult.decode(reader, reader.uint32()),
                     };
                     break;
+                case 16:
+                    message.value = {
+                        $case: 'dcGdcRefreshSessionResult',
+                        dcGdcRefreshSessionResult: dc_gdc_1.DcGdcRefreshSessionResult.decode(reader, reader.uint32()),
+                    };
+                    break;
                 default:
                     reader.skipType(tag & 7);
                     break;
@@ -209,7 +240,12 @@ exports.DcGdcResult = {
                                 $case: 'dcGdcGetSurfaceStatusResult',
                                 dcGdcGetSurfaceStatusResult: dc_gdc_1.DcGdcGetSurfaceStatusResult.fromJSON(object.dcGdcGetSurfaceStatusResult),
                             }
-                            : undefined,
+                            : isSet(object.dcGdcRefreshSessionResult)
+                                ? {
+                                    $case: 'dcGdcRefreshSessionResult',
+                                    dcGdcRefreshSessionResult: dc_gdc_1.DcGdcRefreshSessionResult.fromJSON(object.dcGdcRefreshSessionResult),
+                                }
+                                : undefined,
         };
     },
     toJSON(message) {
@@ -224,6 +260,8 @@ exports.DcGdcResult = {
             (obj.dcGdcStopScreenRecordResult = message.value?.dcGdcStopScreenRecordResult ? dc_gdc_1.DcGdcStopScreenRecordResult.toJSON(message.value?.dcGdcStopScreenRecordResult) : undefined);
         message.value?.$case === 'dcGdcGetSurfaceStatusResult' &&
             (obj.dcGdcGetSurfaceStatusResult = message.value?.dcGdcGetSurfaceStatusResult ? dc_gdc_1.DcGdcGetSurfaceStatusResult.toJSON(message.value?.dcGdcGetSurfaceStatusResult) : undefined);
+        message.value?.$case === 'dcGdcRefreshSessionResult' &&
+            (obj.dcGdcRefreshSessionResult = message.value?.dcGdcRefreshSessionResult ? dc_gdc_1.DcGdcRefreshSessionResult.toJSON(message.value?.dcGdcRefreshSessionResult) : undefined);
         return obj;
     },
     fromPartial(object) {
@@ -250,6 +288,12 @@ exports.DcGdcResult = {
             message.value = {
                 $case: 'dcGdcGetSurfaceStatusResult',
                 dcGdcGetSurfaceStatusResult: dc_gdc_1.DcGdcGetSurfaceStatusResult.fromPartial(object.value.dcGdcGetSurfaceStatusResult),
+            };
+        }
+        if (object.value?.$case === 'dcGdcRefreshSessionResult' && object.value?.dcGdcRefreshSessionResult !== undefined && object.value?.dcGdcRefreshSessionResult !== null) {
+            message.value = {
+                $case: 'dcGdcRefreshSessionResult',
+                dcGdcRefreshSessionResult: dc_gdc_1.DcGdcRefreshSessionResult.fromPartial(object.value.dcGdcRefreshSessionResult),
             };
         }
         return message;

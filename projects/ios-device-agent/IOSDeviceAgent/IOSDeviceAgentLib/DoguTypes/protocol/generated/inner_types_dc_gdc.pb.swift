@@ -258,6 +258,60 @@ public struct Inner_Types_DcGdcGetSurfaceStatusResult {
   public init() {}
 }
 
+public struct Inner_Types_DcGdcRefreshSessionParam {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var serial: String = String()
+
+  public var reconnectScreen: Bool {
+    get {return _reconnectScreen ?? false}
+    set {_reconnectScreen = newValue}
+  }
+  /// Returns true if `reconnectScreen` has been explicitly set.
+  public var hasReconnectScreen: Bool {return self._reconnectScreen != nil}
+  /// Clears the value of `reconnectScreen`. Subsequent reads from it will return its default value.
+  public mutating func clearReconnectScreen() {self._reconnectScreen = nil}
+
+  public var reconnectInput: Bool {
+    get {return _reconnectInput ?? false}
+    set {_reconnectInput = newValue}
+  }
+  /// Returns true if `reconnectInput` has been explicitly set.
+  public var hasReconnectInput: Bool {return self._reconnectInput != nil}
+  /// Clears the value of `reconnectInput`. Subsequent reads from it will return its default value.
+  public mutating func clearReconnectInput() {self._reconnectInput = nil}
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+
+  fileprivate var _reconnectScreen: Bool? = nil
+  fileprivate var _reconnectInput: Bool? = nil
+}
+
+public struct Inner_Types_DcGdcRefreshSessionResult {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var error: Outer_ErrorResult {
+    get {return _error ?? Outer_ErrorResult()}
+    set {_error = newValue}
+  }
+  /// Returns true if `error` has been explicitly set.
+  public var hasError: Bool {return self._error != nil}
+  /// Clears the value of `error`. Subsequent reads from it will return its default value.
+  public mutating func clearError() {self._error = nil}
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+
+  fileprivate var _error: Outer_ErrorResult? = nil
+}
+
 #if swift(>=5.5) && canImport(_Concurrency)
 extension Inner_Types_DcGdcDeviceContext: @unchecked Sendable {}
 extension Inner_Types_DcGdcUpdateDeviceListParam: @unchecked Sendable {}
@@ -272,6 +326,8 @@ extension Inner_Types_DcGdcStopScreenRecordParam: @unchecked Sendable {}
 extension Inner_Types_DcGdcStopScreenRecordResult: @unchecked Sendable {}
 extension Inner_Types_DcGdcGetSurfaceStatusParam: @unchecked Sendable {}
 extension Inner_Types_DcGdcGetSurfaceStatusResult: @unchecked Sendable {}
+extension Inner_Types_DcGdcRefreshSessionParam: @unchecked Sendable {}
+extension Inner_Types_DcGdcRefreshSessionResult: @unchecked Sendable {}
 #endif  // swift(>=5.5) && canImport(_Concurrency)
 
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
@@ -759,6 +815,90 @@ extension Inner_Types_DcGdcGetSurfaceStatusResult: SwiftProtobuf.Message, SwiftP
     if lhs.hasSurface_p != rhs.hasSurface_p {return false}
     if lhs.isPlaying != rhs.isPlaying {return false}
     if lhs.lastFrameDeltaMillisec != rhs.lastFrameDeltaMillisec {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Inner_Types_DcGdcRefreshSessionParam: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".DcGdcRefreshSessionParam"
+  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "serial"),
+    2: .standard(proto: "reconnect_screen"),
+    3: .standard(proto: "reconnect_input"),
+  ]
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self.serial) }()
+      case 2: try { try decoder.decodeSingularBoolField(value: &self._reconnectScreen) }()
+      case 3: try { try decoder.decodeSingularBoolField(value: &self._reconnectInput) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    if !self.serial.isEmpty {
+      try visitor.visitSingularStringField(value: self.serial, fieldNumber: 1)
+    }
+    try { if let v = self._reconnectScreen {
+      try visitor.visitSingularBoolField(value: v, fieldNumber: 2)
+    } }()
+    try { if let v = self._reconnectInput {
+      try visitor.visitSingularBoolField(value: v, fieldNumber: 3)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Inner_Types_DcGdcRefreshSessionParam, rhs: Inner_Types_DcGdcRefreshSessionParam) -> Bool {
+    if lhs.serial != rhs.serial {return false}
+    if lhs._reconnectScreen != rhs._reconnectScreen {return false}
+    if lhs._reconnectInput != rhs._reconnectInput {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Inner_Types_DcGdcRefreshSessionResult: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".DcGdcRefreshSessionResult"
+  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "error"),
+  ]
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularMessageField(value: &self._error) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._error {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Inner_Types_DcGdcRefreshSessionResult, rhs: Inner_Types_DcGdcRefreshSessionResult) -> Bool {
+    if lhs._error != rhs._error {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

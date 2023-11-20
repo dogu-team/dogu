@@ -1,6 +1,7 @@
 import {
   CodeUtil,
   DeviceAlert,
+  DeviceFoldStatus,
   DeviceSystemInfo,
   DeviceWindowInfo,
   ErrorResult,
@@ -394,6 +395,14 @@ export class IosChannel implements DeviceChannel {
   }
 
   turnScreen(isOn: boolean): void {
+    throw new Error('Method not implemented.');
+  }
+
+  getFoldStatus(): DeviceFoldStatus {
+    throw new Error('Method not implemented.');
+  }
+
+  fold(fold: boolean): void {
     throw new Error('Method not implemented.');
   }
 

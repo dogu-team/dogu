@@ -13,6 +13,7 @@ message DcGdcParam {
     types.DcGdcStartScreenRecordParam dc_gdc_start_screen_record_param = 13;
     types.DcGdcStopScreenRecordParam dc_gdc_stop_screen_record_param = 14;
     types.DcGdcGetSurfaceStatusParam dc_gdc_get_surface_status_param = 15;
+    types.DcGdcRefreshSessionParam dc_gdc_refresh_session_param = 16;
   }
 }
 
@@ -22,5 +23,6 @@ message DcGdcResult {
     types.DcGdcStartScreenRecordResult dc_gdc_start_screen_record_result = 13;
     types.DcGdcStopScreenRecordResult dc_gdc_stop_screen_record_result = 14;
     types.DcGdcGetSurfaceStatusResult dc_gdc_get_surface_status_result = 15;
+    types.DcGdcRefreshSessionResult dc_gdc_refresh_session_result = 16;
   }
 }

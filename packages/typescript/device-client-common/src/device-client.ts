@@ -1,5 +1,5 @@
 import { Class, Closable, errorify, Instance, Log, stringify, transformAndValidate, WebSocketSpec } from '@dogu-tech/common';
-import { DeviceAlert, DeviceSystemInfo, FilledRuntimeInfo, GeoLocation, LocaleCode, PlatformSerial, Serial } from '@dogu-tech/types';
+import { DeviceAlert, DeviceFoldStatus, DeviceSystemInfo, FilledRuntimeInfo, GeoLocation, LocaleCode, PlatformSerial, Serial } from '@dogu-tech/types';
 import { DeviceAlertSubscribe } from '.';
 import { DeviceClientOptions, DeviceCloser, DeviceService, DeviceWebSocket } from './bases';
 import { DeviceHttpClient } from './device-http-client';
@@ -77,6 +77,15 @@ export class DeviceClient extends DeviceHttpClient implements DeviceInterface {
 
   async setGeoLocation(serial: Serial, location: GeoLocation): Promise<void> {
     await this.httpRequest(Device.setGeoLocation, new Device.setGeoLocation.pathProvider(serial), undefined, location);
+  }
+
+  async getFoldStatus(serial: Serial): Promise<DeviceFoldStatus> {
+    const response = await this.httpRequest(Device.getFoldStatus, new Device.getFoldStatus.pathProvider(serial));
+    return response;
+  }
+
+  async fold(serial: Serial, fold: boolean): Promise<void> {
+    await this.httpRequest(Device.fold, new Device.fold.pathProvider(serial), undefined, { fold });
   }
 
   async screenshot(serial: Serial): Promise<string> {

@@ -175,6 +175,31 @@ func (ds *Devices) GetSurfaceStatus(a *types.DcGdcGetSurfaceStatusParam) types.D
 	}
 }
 
+func (ds *Devices) RefreshSession(a *types.DcGdcRefreshSessionParam) types.DcGdcRefreshSessionResult {
+	device := ds.findDevice(a.GetSerial())
+	if nil == device {
+		log.Inst.Error("Devices.RefreshSession device not found", zap.String("serial", a.GetSerial()))
+		return types.DcGdcRefreshSessionResult{
+			Error: &outer.ErrorResult{
+				Code:    outer.Code_CODE_DEVICE_NOTFOUND,
+				Message: "device not found",
+			},
+		}
+	}
+	if a.GetReconnectScreen() {
+		surfaces := device.Surfaces()
+		surfaces.ForceReconnect()
+	}
+
+	if a.GetReconnectInput() {
+		device.ReconnectControlSession()
+	}
+
+	return types.DcGdcRefreshSessionResult{
+		Error: gotypes.Success,
+	}
+}
+
 func (ds *Devices) OnDataChannel(serial string, ctx *structs.DatachannelContext) error {
 	device := ds.findDevice(serial)
 	if nil == device {

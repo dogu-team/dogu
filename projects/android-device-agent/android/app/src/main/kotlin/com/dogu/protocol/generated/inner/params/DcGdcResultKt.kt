@@ -117,6 +117,30 @@ object DcGdcResultKt {
     fun hasDcGdcGetSurfaceStatusResult(): kotlin.Boolean {
       return _builder.hasDcGdcGetSurfaceStatusResult()
     }
+
+    /**
+     * <code>.inner.types.DcGdcRefreshSessionResult dc_gdc_refresh_session_result = 16;</code>
+     */
+    var dcGdcRefreshSessionResult: com.dogu.protocol.generated.inner.types.DcGdc.DcGdcRefreshSessionResult
+      @JvmName("getDcGdcRefreshSessionResult")
+      get() = _builder.getDcGdcRefreshSessionResult()
+      @JvmName("setDcGdcRefreshSessionResult")
+      set(value) {
+        _builder.setDcGdcRefreshSessionResult(value)
+      }
+    /**
+     * <code>.inner.types.DcGdcRefreshSessionResult dc_gdc_refresh_session_result = 16;</code>
+     */
+    fun clearDcGdcRefreshSessionResult() {
+      _builder.clearDcGdcRefreshSessionResult()
+    }
+    /**
+     * <code>.inner.types.DcGdcRefreshSessionResult dc_gdc_refresh_session_result = 16;</code>
+     * @return Whether the dcGdcRefreshSessionResult field is set.
+     */
+    fun hasDcGdcRefreshSessionResult(): kotlin.Boolean {
+      return _builder.hasDcGdcRefreshSessionResult()
+    }
     val valueCase: com.dogu.protocol.generated.inner.params.DcGdc.DcGdcResult.ValueCase
       @JvmName("getValueCase")
       get() = _builder.getValueCase()
@@ -141,4 +165,7 @@ val com.dogu.protocol.generated.inner.params.DcGdc.DcGdcResultOrBuilder.dcGdcSto
 
 val com.dogu.protocol.generated.inner.params.DcGdc.DcGdcResultOrBuilder.dcGdcGetSurfaceStatusResultOrNull: com.dogu.protocol.generated.inner.types.DcGdc.DcGdcGetSurfaceStatusResult?
   get() = if (hasDcGdcGetSurfaceStatusResult()) getDcGdcGetSurfaceStatusResult() else null
+
+val com.dogu.protocol.generated.inner.params.DcGdc.DcGdcResultOrBuilder.dcGdcRefreshSessionResultOrNull: com.dogu.protocol.generated.inner.types.DcGdc.DcGdcRefreshSessionResult?
+  get() = if (hasDcGdcRefreshSessionResult()) getDcGdcRefreshSessionResult() else null
 

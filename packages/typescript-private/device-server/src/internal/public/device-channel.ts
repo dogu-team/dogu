@@ -1,5 +1,6 @@
 import {
   DeviceAlert,
+  DeviceFoldStatus,
   DeviceSystemInfo,
   DeviceWindowInfo,
   ErrorResult,
@@ -69,6 +70,8 @@ export interface DeviceChannel {
   startRecord(option: ScreenRecordOption): PromiseOrValue<ErrorResult>;
   stopRecord(filePath: string): PromiseOrValue<ErrorResult>;
   turnScreen(isOn: boolean): PromiseOrValue<void>;
+  getFoldStatus(): PromiseOrValue<DeviceFoldStatus>;
+  fold(fold: boolean): PromiseOrValue<void>;
 
   // control
   control(control: DeviceControl): PromiseOrValue<void>;

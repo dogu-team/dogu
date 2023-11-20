@@ -155,6 +155,10 @@ export class PionStreamingService {
   async getSurfaceStatus(serial: string): Promise<PrivateProtocol.DcGdcGetSurfaceStatusResult> {
     return await this.grpcClient.call('dcGdcGetSurfaceStatusParam', 'dcGdcGetSurfaceStatusResult', { serial: serial });
   }
+
+  async refreshSession(serial: string): Promise<PrivateProtocol.DcGdcRefreshSessionResult> {
+    return await this.grpcClient.call('dcGdcRefreshSessionParam', 'dcGdcRefreshSessionResult', { serial: serial, reconnectScreen: true, reconnectInput: true });
+  }
 }
 
 async function postProcessRecord(filePath: string, logger: FilledPrintable): Promise<void> {

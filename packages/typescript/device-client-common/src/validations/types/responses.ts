@@ -9,19 +9,18 @@ export class DeviceServerResponseError extends Caseable<'error'> {
   error!: ErrorResultDto;
 }
 
-export class DeviceServerResponseData extends Caseable<'data'> {
+export class DeviceServerResponseData<T extends object = object> extends Caseable<'data'> {
   @IsOptionalObject()
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  data!: Record<string, any> | undefined;
+  data!: T | undefined;
 }
 
 const DeviceServerResponseValue = [DeviceServerResponseError, DeviceServerResponseData] as const;
-export type DeviceServerResponseValue = InstanceType<(typeof DeviceServerResponseValue)[number]>;
+export type DeviceServerResponseValue<T extends object = object> = DeviceServerResponseError | DeviceServerResponseData<T>;
 
-export class DeviceServerResponseDto implements DeviceServerResponse {
+export class DeviceServerResponseDto<T extends object = object> implements DeviceServerResponse {
   @ValidateNested()
   @TransformByCase(DeviceServerResponseValue)
-  value!: DeviceServerResponseValue;
+  value!: DeviceServerResponseValue<T>;
 }
 
 export class DeviceServerResponseFactory {

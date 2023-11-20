@@ -36,6 +36,11 @@ func (h *AosControlHandler) OnOpen() error {
 	return nil
 }
 
+func (h *AosControlHandler) Reconnect() error {
+	h.deviceAgentRelayer.Close() // force reconnect
+	return nil
+}
+
 func (h *AosControlHandler) SetSendFunc(sendFunc func(*params.CfGdcDaResult, error)) {
 	h.sendFunc = sendFunc
 }

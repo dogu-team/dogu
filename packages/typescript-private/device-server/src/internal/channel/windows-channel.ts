@@ -1,6 +1,7 @@
 import {
   DefaultDeviceSystemInfo,
   DeviceAlert,
+  DeviceFoldStatus,
   DeviceSystemInfo,
   DeviceWindowInfo,
   ErrorResult,
@@ -146,6 +147,14 @@ export class WindowsChannel implements DeviceChannel {
 
   async turnScreen(isOn: boolean): Promise<void> {
     return await Promise.resolve(undefined);
+  }
+
+  getFoldStatus(): DeviceFoldStatus {
+    throw new Error('Method not implemented.');
+  }
+
+  fold(fold: boolean): void {
+    throw new Error('Method not implemented.');
   }
 
   async killOnPort(port: number): Promise<void> {

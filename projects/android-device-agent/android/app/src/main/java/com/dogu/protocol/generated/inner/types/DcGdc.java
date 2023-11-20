@@ -4675,6 +4675,752 @@ public final class DcGdc {
     }
   }
 
+  public interface DcGdcRefreshSessionParamOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:inner.types.DcGdcRefreshSessionParam)
+      com.google.protobuf.MessageLiteOrBuilder {
+
+    /**
+     * <code>string serial = 1;</code>
+     * @return The serial.
+     */
+    java.lang.String getSerial();
+    /**
+     * <code>string serial = 1;</code>
+     * @return The bytes for serial.
+     */
+    com.google.protobuf.ByteString
+        getSerialBytes();
+
+    /**
+     * <code>optional bool reconnect_screen = 2;</code>
+     * @return Whether the reconnectScreen field is set.
+     */
+    boolean hasReconnectScreen();
+    /**
+     * <code>optional bool reconnect_screen = 2;</code>
+     * @return The reconnectScreen.
+     */
+    boolean getReconnectScreen();
+
+    /**
+     * <code>optional bool reconnect_input = 3;</code>
+     * @return Whether the reconnectInput field is set.
+     */
+    boolean hasReconnectInput();
+    /**
+     * <code>optional bool reconnect_input = 3;</code>
+     * @return The reconnectInput.
+     */
+    boolean getReconnectInput();
+  }
+  /**
+   * Protobuf type {@code inner.types.DcGdcRefreshSessionParam}
+   */
+  public  static final class DcGdcRefreshSessionParam extends
+      com.google.protobuf.GeneratedMessageLite<
+          DcGdcRefreshSessionParam, DcGdcRefreshSessionParam.Builder> implements
+      // @@protoc_insertion_point(message_implements:inner.types.DcGdcRefreshSessionParam)
+      DcGdcRefreshSessionParamOrBuilder {
+    private DcGdcRefreshSessionParam() {
+      serial_ = "";
+    }
+    private int bitField0_;
+    public static final int SERIAL_FIELD_NUMBER = 1;
+    private java.lang.String serial_;
+    /**
+     * <code>string serial = 1;</code>
+     * @return The serial.
+     */
+    @java.lang.Override
+    public java.lang.String getSerial() {
+      return serial_;
+    }
+    /**
+     * <code>string serial = 1;</code>
+     * @return The bytes for serial.
+     */
+    @java.lang.Override
+    public com.google.protobuf.ByteString
+        getSerialBytes() {
+      return com.google.protobuf.ByteString.copyFromUtf8(serial_);
+    }
+    /**
+     * <code>string serial = 1;</code>
+     * @param value The serial to set.
+     */
+    private void setSerial(
+        java.lang.String value) {
+      java.lang.Class<?> valueClass = value.getClass();
+  
+      serial_ = value;
+    }
+    /**
+     * <code>string serial = 1;</code>
+     */
+    private void clearSerial() {
+      
+      serial_ = getDefaultInstance().getSerial();
+    }
+    /**
+     * <code>string serial = 1;</code>
+     * @param value The bytes for serial to set.
+     */
+    private void setSerialBytes(
+        com.google.protobuf.ByteString value) {
+      checkByteStringIsUtf8(value);
+      serial_ = value.toStringUtf8();
+      
+    }
+
+    public static final int RECONNECT_SCREEN_FIELD_NUMBER = 2;
+    private boolean reconnectScreen_;
+    /**
+     * <code>optional bool reconnect_screen = 2;</code>
+     * @return Whether the reconnectScreen field is set.
+     */
+    @java.lang.Override
+    public boolean hasReconnectScreen() {
+      return ((bitField0_ & 0x00000001) != 0);
+    }
+    /**
+     * <code>optional bool reconnect_screen = 2;</code>
+     * @return The reconnectScreen.
+     */
+    @java.lang.Override
+    public boolean getReconnectScreen() {
+      return reconnectScreen_;
+    }
+    /**
+     * <code>optional bool reconnect_screen = 2;</code>
+     * @param value The reconnectScreen to set.
+     */
+    private void setReconnectScreen(boolean value) {
+      bitField0_ |= 0x00000001;
+      reconnectScreen_ = value;
+    }
+    /**
+     * <code>optional bool reconnect_screen = 2;</code>
+     */
+    private void clearReconnectScreen() {
+      bitField0_ = (bitField0_ & ~0x00000001);
+      reconnectScreen_ = false;
+    }
+
+    public static final int RECONNECT_INPUT_FIELD_NUMBER = 3;
+    private boolean reconnectInput_;
+    /**
+     * <code>optional bool reconnect_input = 3;</code>
+     * @return Whether the reconnectInput field is set.
+     */
+    @java.lang.Override
+    public boolean hasReconnectInput() {
+      return ((bitField0_ & 0x00000002) != 0);
+    }
+    /**
+     * <code>optional bool reconnect_input = 3;</code>
+     * @return The reconnectInput.
+     */
+    @java.lang.Override
+    public boolean getReconnectInput() {
+      return reconnectInput_;
+    }
+    /**
+     * <code>optional bool reconnect_input = 3;</code>
+     * @param value The reconnectInput to set.
+     */
+    private void setReconnectInput(boolean value) {
+      bitField0_ |= 0x00000002;
+      reconnectInput_ = value;
+    }
+    /**
+     * <code>optional bool reconnect_input = 3;</code>
+     */
+    private void clearReconnectInput() {
+      bitField0_ = (bitField0_ & ~0x00000002);
+      reconnectInput_ = false;
+    }
+
+    public static com.dogu.protocol.generated.inner.types.DcGdc.DcGdcRefreshSessionParam parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcGdc.DcGdcRefreshSessionParam parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data, extensionRegistry);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcGdc.DcGdcRefreshSessionParam parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcGdc.DcGdcRefreshSessionParam parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data, extensionRegistry);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcGdc.DcGdcRefreshSessionParam parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcGdc.DcGdcRefreshSessionParam parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data, extensionRegistry);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcGdc.DcGdcRefreshSessionParam parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, input);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcGdc.DcGdcRefreshSessionParam parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, input, extensionRegistry);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcGdc.DcGdcRefreshSessionParam parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return parseDelimitedFrom(DEFAULT_INSTANCE, input);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcGdc.DcGdcRefreshSessionParam parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return parseDelimitedFrom(DEFAULT_INSTANCE, input, extensionRegistry);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcGdc.DcGdcRefreshSessionParam parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, input);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcGdc.DcGdcRefreshSessionParam parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, input, extensionRegistry);
+    }
+
+    public static Builder newBuilder() {
+      return (Builder) DEFAULT_INSTANCE.createBuilder();
+    }
+    public static Builder newBuilder(com.dogu.protocol.generated.inner.types.DcGdc.DcGdcRefreshSessionParam prototype) {
+      return (Builder) DEFAULT_INSTANCE.createBuilder(prototype);
+    }
+
+    /**
+     * Protobuf type {@code inner.types.DcGdcRefreshSessionParam}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageLite.Builder<
+          com.dogu.protocol.generated.inner.types.DcGdc.DcGdcRefreshSessionParam, Builder> implements
+        // @@protoc_insertion_point(builder_implements:inner.types.DcGdcRefreshSessionParam)
+        com.dogu.protocol.generated.inner.types.DcGdc.DcGdcRefreshSessionParamOrBuilder {
+      // Construct using com.dogu.protocol.generated.inner.types.DcGdc.DcGdcRefreshSessionParam.newBuilder()
+      private Builder() {
+        super(DEFAULT_INSTANCE);
+      }
+
+
+      /**
+       * <code>string serial = 1;</code>
+       * @return The serial.
+       */
+      @java.lang.Override
+      public java.lang.String getSerial() {
+        return instance.getSerial();
+      }
+      /**
+       * <code>string serial = 1;</code>
+       * @return The bytes for serial.
+       */
+      @java.lang.Override
+      public com.google.protobuf.ByteString
+          getSerialBytes() {
+        return instance.getSerialBytes();
+      }
+      /**
+       * <code>string serial = 1;</code>
+       * @param value The serial to set.
+       * @return This builder for chaining.
+       */
+      public Builder setSerial(
+          java.lang.String value) {
+        copyOnWrite();
+        instance.setSerial(value);
+        return this;
+      }
+      /**
+       * <code>string serial = 1;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearSerial() {
+        copyOnWrite();
+        instance.clearSerial();
+        return this;
+      }
+      /**
+       * <code>string serial = 1;</code>
+       * @param value The bytes for serial to set.
+       * @return This builder for chaining.
+       */
+      public Builder setSerialBytes(
+          com.google.protobuf.ByteString value) {
+        copyOnWrite();
+        instance.setSerialBytes(value);
+        return this;
+      }
+
+      /**
+       * <code>optional bool reconnect_screen = 2;</code>
+       * @return Whether the reconnectScreen field is set.
+       */
+      @java.lang.Override
+      public boolean hasReconnectScreen() {
+        return instance.hasReconnectScreen();
+      }
+      /**
+       * <code>optional bool reconnect_screen = 2;</code>
+       * @return The reconnectScreen.
+       */
+      @java.lang.Override
+      public boolean getReconnectScreen() {
+        return instance.getReconnectScreen();
+      }
+      /**
+       * <code>optional bool reconnect_screen = 2;</code>
+       * @param value The reconnectScreen to set.
+       * @return This builder for chaining.
+       */
+      public Builder setReconnectScreen(boolean value) {
+        copyOnWrite();
+        instance.setReconnectScreen(value);
+        return this;
+      }
+      /**
+       * <code>optional bool reconnect_screen = 2;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearReconnectScreen() {
+        copyOnWrite();
+        instance.clearReconnectScreen();
+        return this;
+      }
+
+      /**
+       * <code>optional bool reconnect_input = 3;</code>
+       * @return Whether the reconnectInput field is set.
+       */
+      @java.lang.Override
+      public boolean hasReconnectInput() {
+        return instance.hasReconnectInput();
+      }
+      /**
+       * <code>optional bool reconnect_input = 3;</code>
+       * @return The reconnectInput.
+       */
+      @java.lang.Override
+      public boolean getReconnectInput() {
+        return instance.getReconnectInput();
+      }
+      /**
+       * <code>optional bool reconnect_input = 3;</code>
+       * @param value The reconnectInput to set.
+       * @return This builder for chaining.
+       */
+      public Builder setReconnectInput(boolean value) {
+        copyOnWrite();
+        instance.setReconnectInput(value);
+        return this;
+      }
+      /**
+       * <code>optional bool reconnect_input = 3;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearReconnectInput() {
+        copyOnWrite();
+        instance.clearReconnectInput();
+        return this;
+      }
+
+      // @@protoc_insertion_point(builder_scope:inner.types.DcGdcRefreshSessionParam)
+    }
+    @java.lang.Override
+    @java.lang.SuppressWarnings({"unchecked", "fallthrough"})
+    protected final java.lang.Object dynamicMethod(
+        com.google.protobuf.GeneratedMessageLite.MethodToInvoke method,
+        java.lang.Object arg0, java.lang.Object arg1) {
+      switch (method) {
+        case NEW_MUTABLE_INSTANCE: {
+          return new com.dogu.protocol.generated.inner.types.DcGdc.DcGdcRefreshSessionParam();
+        }
+        case NEW_BUILDER: {
+          return new Builder();
+        }
+        case BUILD_MESSAGE_INFO: {
+            java.lang.Object[] objects = new java.lang.Object[] {
+              "bitField0_",
+              "serial_",
+              "reconnectScreen_",
+              "reconnectInput_",
+            };
+            java.lang.String info =
+                "\u0000\u0003\u0000\u0001\u0001\u0003\u0003\u0000\u0000\u0000\u0001\u0208\u0002\u1007" +
+                "\u0000\u0003\u1007\u0001";
+            return newMessageInfo(DEFAULT_INSTANCE, info, objects);
+        }
+        // fall through
+        case GET_DEFAULT_INSTANCE: {
+          return DEFAULT_INSTANCE;
+        }
+        case GET_PARSER: {
+          com.google.protobuf.Parser<com.dogu.protocol.generated.inner.types.DcGdc.DcGdcRefreshSessionParam> parser = PARSER;
+          if (parser == null) {
+            synchronized (com.dogu.protocol.generated.inner.types.DcGdc.DcGdcRefreshSessionParam.class) {
+              parser = PARSER;
+              if (parser == null) {
+                parser =
+                    new DefaultInstanceBasedParser<com.dogu.protocol.generated.inner.types.DcGdc.DcGdcRefreshSessionParam>(
+                        DEFAULT_INSTANCE);
+                PARSER = parser;
+              }
+            }
+          }
+          return parser;
+      }
+      case GET_MEMOIZED_IS_INITIALIZED: {
+        return (byte) 1;
+      }
+      case SET_MEMOIZED_IS_INITIALIZED: {
+        return null;
+      }
+      }
+      throw new UnsupportedOperationException();
+    }
+
+
+    // @@protoc_insertion_point(class_scope:inner.types.DcGdcRefreshSessionParam)
+    private static final com.dogu.protocol.generated.inner.types.DcGdc.DcGdcRefreshSessionParam DEFAULT_INSTANCE;
+    static {
+      DcGdcRefreshSessionParam defaultInstance = new DcGdcRefreshSessionParam();
+      // New instances are implicitly immutable so no need to make
+      // immutable.
+      DEFAULT_INSTANCE = defaultInstance;
+      com.google.protobuf.GeneratedMessageLite.registerDefaultInstance(
+        DcGdcRefreshSessionParam.class, defaultInstance);
+    }
+
+    public static com.dogu.protocol.generated.inner.types.DcGdc.DcGdcRefreshSessionParam getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static volatile com.google.protobuf.Parser<DcGdcRefreshSessionParam> PARSER;
+
+    public static com.google.protobuf.Parser<DcGdcRefreshSessionParam> parser() {
+      return DEFAULT_INSTANCE.getParserForType();
+    }
+  }
+
+  public interface DcGdcRefreshSessionResultOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:inner.types.DcGdcRefreshSessionResult)
+      com.google.protobuf.MessageLiteOrBuilder {
+
+    /**
+     * <code>.outer.ErrorResult error = 1;</code>
+     * @return Whether the error field is set.
+     */
+    boolean hasError();
+    /**
+     * <code>.outer.ErrorResult error = 1;</code>
+     * @return The error.
+     */
+    com.dogu.protocol.generated.outer.Errors.ErrorResult getError();
+  }
+  /**
+   * Protobuf type {@code inner.types.DcGdcRefreshSessionResult}
+   */
+  public  static final class DcGdcRefreshSessionResult extends
+      com.google.protobuf.GeneratedMessageLite<
+          DcGdcRefreshSessionResult, DcGdcRefreshSessionResult.Builder> implements
+      // @@protoc_insertion_point(message_implements:inner.types.DcGdcRefreshSessionResult)
+      DcGdcRefreshSessionResultOrBuilder {
+    private DcGdcRefreshSessionResult() {
+    }
+    public static final int ERROR_FIELD_NUMBER = 1;
+    private com.dogu.protocol.generated.outer.Errors.ErrorResult error_;
+    /**
+     * <code>.outer.ErrorResult error = 1;</code>
+     */
+    @java.lang.Override
+    public boolean hasError() {
+      return error_ != null;
+    }
+    /**
+     * <code>.outer.ErrorResult error = 1;</code>
+     */
+    @java.lang.Override
+    public com.dogu.protocol.generated.outer.Errors.ErrorResult getError() {
+      return error_ == null ? com.dogu.protocol.generated.outer.Errors.ErrorResult.getDefaultInstance() : error_;
+    }
+    /**
+     * <code>.outer.ErrorResult error = 1;</code>
+     */
+    private void setError(com.dogu.protocol.generated.outer.Errors.ErrorResult value) {
+      value.getClass();
+  error_ = value;
+      
+      }
+    /**
+     * <code>.outer.ErrorResult error = 1;</code>
+     */
+    @java.lang.SuppressWarnings({"ReferenceEquality"})
+    private void mergeError(com.dogu.protocol.generated.outer.Errors.ErrorResult value) {
+      value.getClass();
+  if (error_ != null &&
+          error_ != com.dogu.protocol.generated.outer.Errors.ErrorResult.getDefaultInstance()) {
+        error_ =
+          com.dogu.protocol.generated.outer.Errors.ErrorResult.newBuilder(error_).mergeFrom(value).buildPartial();
+      } else {
+        error_ = value;
+      }
+      
+    }
+    /**
+     * <code>.outer.ErrorResult error = 1;</code>
+     */
+    private void clearError() {  error_ = null;
+      
+    }
+
+    public static com.dogu.protocol.generated.inner.types.DcGdc.DcGdcRefreshSessionResult parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcGdc.DcGdcRefreshSessionResult parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data, extensionRegistry);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcGdc.DcGdcRefreshSessionResult parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcGdc.DcGdcRefreshSessionResult parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data, extensionRegistry);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcGdc.DcGdcRefreshSessionResult parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcGdc.DcGdcRefreshSessionResult parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data, extensionRegistry);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcGdc.DcGdcRefreshSessionResult parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, input);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcGdc.DcGdcRefreshSessionResult parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, input, extensionRegistry);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcGdc.DcGdcRefreshSessionResult parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return parseDelimitedFrom(DEFAULT_INSTANCE, input);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcGdc.DcGdcRefreshSessionResult parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return parseDelimitedFrom(DEFAULT_INSTANCE, input, extensionRegistry);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcGdc.DcGdcRefreshSessionResult parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, input);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcGdc.DcGdcRefreshSessionResult parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, input, extensionRegistry);
+    }
+
+    public static Builder newBuilder() {
+      return (Builder) DEFAULT_INSTANCE.createBuilder();
+    }
+    public static Builder newBuilder(com.dogu.protocol.generated.inner.types.DcGdc.DcGdcRefreshSessionResult prototype) {
+      return (Builder) DEFAULT_INSTANCE.createBuilder(prototype);
+    }
+
+    /**
+     * Protobuf type {@code inner.types.DcGdcRefreshSessionResult}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageLite.Builder<
+          com.dogu.protocol.generated.inner.types.DcGdc.DcGdcRefreshSessionResult, Builder> implements
+        // @@protoc_insertion_point(builder_implements:inner.types.DcGdcRefreshSessionResult)
+        com.dogu.protocol.generated.inner.types.DcGdc.DcGdcRefreshSessionResultOrBuilder {
+      // Construct using com.dogu.protocol.generated.inner.types.DcGdc.DcGdcRefreshSessionResult.newBuilder()
+      private Builder() {
+        super(DEFAULT_INSTANCE);
+      }
+
+
+      /**
+       * <code>.outer.ErrorResult error = 1;</code>
+       */
+      @java.lang.Override
+      public boolean hasError() {
+        return instance.hasError();
+      }
+      /**
+       * <code>.outer.ErrorResult error = 1;</code>
+       */
+      @java.lang.Override
+      public com.dogu.protocol.generated.outer.Errors.ErrorResult getError() {
+        return instance.getError();
+      }
+      /**
+       * <code>.outer.ErrorResult error = 1;</code>
+       */
+      public Builder setError(com.dogu.protocol.generated.outer.Errors.ErrorResult value) {
+        copyOnWrite();
+        instance.setError(value);
+        return this;
+        }
+      /**
+       * <code>.outer.ErrorResult error = 1;</code>
+       */
+      public Builder setError(
+          com.dogu.protocol.generated.outer.Errors.ErrorResult.Builder builderForValue) {
+        copyOnWrite();
+        instance.setError(builderForValue.build());
+        return this;
+      }
+      /**
+       * <code>.outer.ErrorResult error = 1;</code>
+       */
+      public Builder mergeError(com.dogu.protocol.generated.outer.Errors.ErrorResult value) {
+        copyOnWrite();
+        instance.mergeError(value);
+        return this;
+      }
+      /**
+       * <code>.outer.ErrorResult error = 1;</code>
+       */
+      public Builder clearError() {  copyOnWrite();
+        instance.clearError();
+        return this;
+      }
+
+      // @@protoc_insertion_point(builder_scope:inner.types.DcGdcRefreshSessionResult)
+    }
+    @java.lang.Override
+    @java.lang.SuppressWarnings({"unchecked", "fallthrough"})
+    protected final java.lang.Object dynamicMethod(
+        com.google.protobuf.GeneratedMessageLite.MethodToInvoke method,
+        java.lang.Object arg0, java.lang.Object arg1) {
+      switch (method) {
+        case NEW_MUTABLE_INSTANCE: {
+          return new com.dogu.protocol.generated.inner.types.DcGdc.DcGdcRefreshSessionResult();
+        }
+        case NEW_BUILDER: {
+          return new Builder();
+        }
+        case BUILD_MESSAGE_INFO: {
+            java.lang.Object[] objects = new java.lang.Object[] {
+              "error_",
+            };
+            java.lang.String info =
+                "\u0000\u0001\u0000\u0000\u0001\u0001\u0001\u0000\u0000\u0000\u0001\t";
+            return newMessageInfo(DEFAULT_INSTANCE, info, objects);
+        }
+        // fall through
+        case GET_DEFAULT_INSTANCE: {
+          return DEFAULT_INSTANCE;
+        }
+        case GET_PARSER: {
+          com.google.protobuf.Parser<com.dogu.protocol.generated.inner.types.DcGdc.DcGdcRefreshSessionResult> parser = PARSER;
+          if (parser == null) {
+            synchronized (com.dogu.protocol.generated.inner.types.DcGdc.DcGdcRefreshSessionResult.class) {
+              parser = PARSER;
+              if (parser == null) {
+                parser =
+                    new DefaultInstanceBasedParser<com.dogu.protocol.generated.inner.types.DcGdc.DcGdcRefreshSessionResult>(
+                        DEFAULT_INSTANCE);
+                PARSER = parser;
+              }
+            }
+          }
+          return parser;
+      }
+      case GET_MEMOIZED_IS_INITIALIZED: {
+        return (byte) 1;
+      }
+      case SET_MEMOIZED_IS_INITIALIZED: {
+        return null;
+      }
+      }
+      throw new UnsupportedOperationException();
+    }
+
+
+    // @@protoc_insertion_point(class_scope:inner.types.DcGdcRefreshSessionResult)
+    private static final com.dogu.protocol.generated.inner.types.DcGdc.DcGdcRefreshSessionResult DEFAULT_INSTANCE;
+    static {
+      DcGdcRefreshSessionResult defaultInstance = new DcGdcRefreshSessionResult();
+      // New instances are implicitly immutable so no need to make
+      // immutable.
+      DEFAULT_INSTANCE = defaultInstance;
+      com.google.protobuf.GeneratedMessageLite.registerDefaultInstance(
+        DcGdcRefreshSessionResult.class, defaultInstance);
+    }
+
+    public static com.dogu.protocol.generated.inner.types.DcGdc.DcGdcRefreshSessionResult getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static volatile com.google.protobuf.Parser<DcGdcRefreshSessionResult> PARSER;
+
+    public static com.google.protobuf.Parser<DcGdcRefreshSessionResult> parser() {
+      return DEFAULT_INSTANCE.getParserForType();
+    }
+  }
+
 
   static {
   }

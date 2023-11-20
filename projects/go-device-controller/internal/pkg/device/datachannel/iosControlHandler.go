@@ -42,6 +42,10 @@ func (h *IosControlHandler) OnOpen() error {
 	return nil
 }
 
+func (h *IosControlHandler) Reconnect() error {
+	return nil
+}
+
 func (h *IosControlHandler) SetSendFunc(sendFunc func(*params.CfGdcDaResult, error)) {
 	h.sendFunc = sendFunc
 }
