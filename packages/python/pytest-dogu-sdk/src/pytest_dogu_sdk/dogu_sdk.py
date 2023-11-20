@@ -17,6 +17,7 @@ class DoguSdk:
         routine_dest_reporter = RoutineDestReporterFactory(self.config).create()
         self._handlers: List[PyTestHandler] = [routine_dest_reporter]
 
+        self.client = None
         if self._pytest_config.hook.pytest_dogu_create_client:
             result = self._pytest_config.hook.pytest_dogu_create_client()
             if result:
