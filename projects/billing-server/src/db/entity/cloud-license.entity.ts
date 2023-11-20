@@ -20,7 +20,7 @@ export class CloudLicense implements CloudLicenseBase {
   @Column({ type: 'enum', enum: BillingCategory })
   category!: BillingCategory;
 
-  @Column({ type: 'integer', default: 100 * 60 })
+  @Column({ type: 'integer', default: 60 * 60 })
   liveTestingRemainingFreeSeconds!: number;
 
   @Column({ type: 'integer', default: DefaultLiveTestingParallelCount })
