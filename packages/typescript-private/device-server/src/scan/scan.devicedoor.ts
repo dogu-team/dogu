@@ -22,7 +22,7 @@ interface DeviceDoorState {
  * If this value is too long, the device will not be reopened even if it is restarted.
  */
 const AndroidDeviceCloseThreshold = time({ seconds: 10 });
-const IosDeviceCloseThreshold = time({ seconds: 11 });
+const IosDeviceCloseThreshold = time({ seconds: 7 });
 
 function getDeviceCloseThreshold(platform: Platform): number {
   switch (platform) {
