@@ -18,17 +18,19 @@ class DoguSdk:
         self._handlers: List[PyTestHandler] = [routine_dest_reporter]
 
         if self._pytest_config.hook.pytest_dogu_create_client:
-            (client,) = self._pytest_config.hook.pytest_dogu_create_client()
-            self.client: Optional[DoguClient] = client
-            client_impl = self.client.on_setup(self.config)
-            if not client_impl:
-                raise Exception("dogu client is not initialized on setup")
-            self.client.impl = client_impl        
-            remote_dest_reporter = RemoteDestReporterFactory(
-                self.config,
-                self.client,
-            ).create()
-            self._handlers.append(remote_dest_reporter)
+            result = self._pytest_config.hook.pytest_dogu_create_client()
+            if result:
+                (client, _) = result
+                self.client: Optional[DoguClient] = client
+                client_impl = self.client.on_setup(self.config)
+                if not client_impl:
+                    raise Exception("dogu client is not initialized on setup")
+                self.client.impl = client_impl        
+                remote_dest_reporter = RemoteDestReporterFactory(
+                    self.config,
+                    self.client,
+                ).create()
+                self._handlers.append(remote_dest_reporter)
 
     def on_teardown(self) -> None:
         if self.client:
