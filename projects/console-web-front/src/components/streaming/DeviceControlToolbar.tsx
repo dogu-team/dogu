@@ -30,7 +30,7 @@ const FoldButton: React.FC = () => {
 
       try {
         const rv = await deviceService.deviceClientRef.current?.getFoldStatus(device.serial);
-        setIsFolded(rv?.isFoldable ?? false);
+        setIsFolded(rv?.isFolded ?? false);
         setIsFoldable(rv?.isFoldable ?? false);
       } catch (e) {
         console.debug('Failed to get fold state', e);
