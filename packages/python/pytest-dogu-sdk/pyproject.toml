@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pytest-dogu-sdk"
-version = "1.0.3"
+version = "1.0.4"
 description = "pytest plugin for the Dogu"
 readme = "README.md"
 packages = [{include = "pytest_dogu_sdk", from = "src"}]
