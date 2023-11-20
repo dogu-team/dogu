@@ -12,6 +12,9 @@ val cfGdcDaProtoHandlers: Map<CfGdcDa.CfGdcDaParam.ValueCase, ICfGdcDaProtoAPIHa
 )
 
 suspend fun DefaultWebSocketServerSession.routeCfGdcDaProto(appContext: AppContext): Unit {
+    for (handler in cfGdcDaProtoHandlers.values) {
+        handler.onOpen(appContext)
+    }
 
     for (frame in incoming) {
         frame as? Frame.Binary ?: continue

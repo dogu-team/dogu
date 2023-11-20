@@ -13,6 +13,8 @@ class ControlAPIHandler() : ICfGdcDaProtoAPIHandler, IDcDaProtoAPIHandler {
     var device: Device? = null
     var controller: Controller? = null
     override fun onOpen(appContext: AppContext) {
+        Logger.v("ControlAPIHandler.onOpen")
+
         device = Device(appContext.options);
         controller = Controller(device!!, false, true)
     }

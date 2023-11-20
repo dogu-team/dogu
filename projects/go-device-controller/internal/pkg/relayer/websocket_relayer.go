@@ -64,8 +64,14 @@ func (r *WebsocketRelayer) startRecvLoop() {
 		}
 
 		r.onRecvMessage(bytes)
-		// todo(yow) close goroutine when signaled
 	}
+}
+
+func (r *WebsocketRelayer) Close() {
+	if nil != r.conn {
+		r.conn.Close()
+	}
+	r.conn = nil
 }
 
 func reconnect(getUrlFunc func() string, retryCount int, sleepSec int) (*websocket.Conn, *http.Response, error) {
