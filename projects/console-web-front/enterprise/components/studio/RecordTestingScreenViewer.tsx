@@ -172,10 +172,12 @@ const RecordTestingScreenViewer = ({ project, caseId, stepId }: Props) => {
 export default RecordTestingScreenViewer;
 
 const VideoWrapper = styled.div`
+  display: flex;
   position: relative;
   flex: 1;
   width: 100%;
   height: 100%;
+  align-items: center;
 `;
 
 const ScreenLoadingWrapper = styled.div`

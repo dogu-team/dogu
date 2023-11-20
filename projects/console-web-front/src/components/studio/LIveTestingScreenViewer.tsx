@@ -88,4 +88,6 @@ export default LiveTestingScreenViewer;
 const VideoWrapper = styled.div`
   flex: 1;
   width: 100%;
+  display: flex;
+  align-items: center;
 `;

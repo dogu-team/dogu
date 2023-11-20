@@ -50,20 +50,44 @@ const StreamingVideo = ({
   readonly,
 }: Props) => {
   const { videoRef, loading, deviceScreenshotBase64, isCloudDevice } = useDeviceStreamingContext();
-  const [videoSize, setVideoSize] = useState<VideoSize>({ width: 0, height: 0 });
+  const [videoOriginSize, setVideoOriginSize] = useState<VideoSize>({ width: 0, height: 0 });
   const boxRef = useRef<HTMLDivElement>(null);
+  const [boxSize, setBoxSize] = useState<{ width: number; height: number }>(() => {
+    if (boxRef.current) {
+      return { width: boxRef.current.clientWidth, height: boxRef.current.clientHeight };
+    }
+
+    return { width: 0, height: 0 };
+  });
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const cursorRef = useRef<HTMLDivElement>(null);
 
+  useEffect(() => {
+    const handleResizeWindow = (e: UIEvent) => {
+      if (boxRef.current) {
+        setBoxSize({ width: boxRef.current.clientWidth, height: boxRef.current.clientHeight });
+      }
+    };
+
+    // initialize width, height
+    setBoxSize({ width: boxRef.current?.clientWidth ?? 0, height: boxRef.current?.clientHeight ?? 0 });
+
+    window.addEventListener('resize', handleResizeWindow);
+
+    return () => {
+      window.removeEventListener('resize', handleResizeWindow);
+    };
+  }, []);
+
   // if ratio > 1, width > height
-  const videoRatio = videoSize.height > 0 ? videoSize.width / videoSize.height : 0;
+  const videoRatio = videoOriginSize.height > 0 ? videoOriginSize.width / videoOriginSize.height : 0;
 
   useEffect(() => {
     const ref = videoRef as React.MutableRefObject<HTMLVideoElement>;
 
     const handleResize = (event: UIEvent) => {
       if (ref.current) {
-        setVideoSize({ width: ref.current.videoWidth, height: ref.current.videoHeight });
+        setVideoOriginSize({ width: ref.current.videoWidth, height: ref.current.videoHeight });
         onResize?.(event);
       }
     };
@@ -114,6 +138,12 @@ const StreamingVideo = ({
 
   const focusInputForKeyboardEvent = () => inputRef.current?.focus({ preventScroll: true });
 
+  const getVideoWidth = () => {
+    return boxSize.width && boxSize.height
+      ? Math.min(videoOriginSize.width * (boxSize.height / videoOriginSize.height), boxSize.width)
+      : undefined;
+  };
+
   return (
     <VideoWrapper ref={boxRef} style={style}>
       {loading && (
@@ -140,13 +170,7 @@ const StreamingVideo = ({
         </LoadingBox>
       )}
 
-      <InputWrapper
-        canDisplay={!loading}
-        ratio={videoRatio}
-        videoWidth={
-          videoRef?.current ? videoSize.width * (videoRef.current.offsetHeight / videoSize.height) : undefined
-        }
-      >
+      <InputWrapper canDisplay={!loading} ratio={videoRatio} videoWidth={getVideoWidth()}>
         <StyledVideo
           ref={videoRef}
           id={videoId}
@@ -187,40 +211,40 @@ const StreamingVideo = ({
             onWheel={(e) => {
               e.currentTarget.scrollTop = 1000;
               e.stopPropagation();
-              onWheel?.(e, videoSize);
+              onWheel?.(e, videoOriginSize);
             }}
             onMouseDown={(e) => {
               e.preventDefault();
               // e.stopPropagation();
-              onMouseDown?.(e, videoSize);
+              onMouseDown?.(e, videoOriginSize);
             }}
             onMouseUp={(e) => {
               e.preventDefault();
               // e.stopPropagation();
-              onMouseUp?.(e, videoSize);
+              onMouseUp?.(e, videoOriginSize);
             }}
             onMouseMove={(e) => {
               e.preventDefault();
               // e.stopPropagation();
-              onMouseMove?.(e, videoSize);
+              onMouseMove?.(e, videoOriginSize);
               focusInputForKeyboardEvent();
             }}
             onMouseLeave={(e) => {
               e.preventDefault();
               // e.stopPropagation();
-              onMouseLeave?.(e, videoSize);
+              onMouseLeave?.(e, videoOriginSize);
               focusInputForKeyboardEvent();
             }}
             onDoubleClick={(e) => {
               e.preventDefault();
               // e.stopPropagation();
-              onDoubleClick?.(e, videoSize);
+              onDoubleClick?.(e, videoOriginSize);
               focusInputForKeyboardEvent();
             }}
             onClick={(e) => {
               e.preventDefault();
               // e.stopPropagation();
-              onClick?.(e, videoSize);
+              onClick?.(e, videoOriginSize);
               focusInputForKeyboardEvent();
             }}
             onFocus={(e) => {
@@ -247,10 +271,12 @@ export default React.memo(StreamingVideo);
 
 const VideoWrapper = styled.div`
   display: flex;
-  height: 100%;
+  height: 90%;
   justify-content: center;
-  align-items: flex-start;
+  align-items: center;
   flex: 1;
+  min-width: 400px;
+  min-height: 400px;
 `;
 
 const InputWrapper = styled.div<{ canDisplay: boolean; ratio: number; videoWidth?: number }>`

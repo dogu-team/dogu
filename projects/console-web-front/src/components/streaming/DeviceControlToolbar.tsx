@@ -1,86 +1,73 @@
 import styled from 'styled-components';
-import {
-  DownloadOutlined,
-  HomeOutlined,
-  MenuOutlined,
-  RightOutlined,
-  RollbackOutlined,
-  SettingOutlined,
-} from '@ant-design/icons';
-import React from 'react';
+import { DownloadOutlined, HomeOutlined, MenuOutlined, RollbackOutlined, SettingOutlined } from '@ant-design/icons';
+import React, { useEffect, useState } from 'react';
 import { Platform } from '@dogu-private/types';
-import { Divider, Tooltip } from 'antd';
-import { MdGpsFixed } from 'react-icons/md';
+import { Divider } from 'antd';
+import { MdGpsFixed, MdOutlineDevicesFold } from 'react-icons/md';
 import { HiLanguage } from 'react-icons/hi2';
+import { RiBookOpenLine } from 'react-icons/ri';
 
 import { DeviceToolBarMenu } from 'src/utils/streaming/streaming';
 import useDeviceStreamingContext from '../../hooks/streaming/useDeviceStreamingContext';
 import useDeviceInput from '../../hooks/streaming/useDeviceInput';
-import { flexRowBaseStyle, flexRowSpaceBetweenStyle } from '../../styles/box';
 import ApplicationUploader from './ApplicationUploader';
 import DeviceHelperButtonGroup from './DeviceHelperButtonGroup';
 import DeviceLanguageChanger from './DeviceLanguageChanger';
 import DeviceLocationChanger from './DeviceLocationChanger';
+import ToolbarButton from './ToolbarButton';
 
-interface ToolbarButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'children'> {
-  workingPlatforms?: Platform[];
-  icon: React.ReactNode;
-  text: React.ReactNode;
-  content?: React.ReactNode;
-  destroyTooltipOnHide?: boolean;
-  tooltipTitle?: React.ReactNode;
-  tooltipStyle?: React.CSSProperties;
-}
+const FoldButton: React.FC = () => {
+  const { deviceService, device } = useDeviceStreamingContext();
+  const [isFolded, setIsFolded] = useState(false);
+  const [isFoldable, setIsFoldable] = useState(false);
 
-const ToolbarButton = ({
-  workingPlatforms,
-  icon,
-  text,
-  content,
-  destroyTooltipOnHide,
-  tooltipStyle,
-  tooltipTitle,
-  ...props
-}: ToolbarButtonProps) => {
-  const { device } = useDeviceStreamingContext();
-  const tooltipRef = React.useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    (async () => {
+      if (!device?.serial || !deviceService) {
+        return;
+      }
 
-  if (!device || (workingPlatforms && !workingPlatforms.includes(device.platform))) {
+      try {
+        const rv = await deviceService.deviceClientRef.current?.getFoldStatus(device.serial);
+        setIsFolded(rv?.isFoldable ?? false);
+        setIsFoldable(rv?.isFoldable ?? false);
+      } catch (e) {
+        console.debug('Failed to get fold state', e);
+      }
+    })();
+  }, [device?.serial, deviceService]);
+
+  if (!device || !deviceService || !isFoldable) {
     return null;
   }
 
+  const handleFold = async () => {
+    try {
+      await deviceService.deviceClientRef.current?.fold(device.serial, true);
+      setIsFolded(true);
+    } catch (e) {
+      console.debug('Fold failed', e);
+    }
+  };
+
+  const handleUnfold = async () => {
+    try {
+      await deviceService.deviceClientRef.current?.fold(device.serial, false);
+      setIsFolded(false);
+    } catch (e) {
+      console.debug('Unfold failed', e);
+    }
+  };
+
   return (
-    <Tooltip
-      trigger="click"
-      ref={tooltipRef}
-      open={!!content ? undefined : false}
-      placement="rightTop"
-      title={
-        <div style={{ color: '#000' }}>
-          <p style={{ fontSize: '.8rem', fontWeight: '600', marginBottom: '.25rem', lineHeight: '1.5' }}>
-            {tooltipTitle}
-          </p>
-          {content}
-        </div>
-      }
-      color="#fff"
-      destroyTooltipOnHide={destroyTooltipOnHide}
-      overlayInnerStyle={tooltipStyle}
-    >
-      <StyledToolbarButton tabIndex={-1} {...props}>
-        <SpaceBetween>
-          <FlexBox style={{ marginRight: '.5rem' }}>
-            <FlexBox style={{ marginRight: '.5rem' }}>{icon}</FlexBox>
-            <p>{text}</p>
-          </FlexBox>
-          {!!content && (
-            <FlexBox>
-              <RightOutlined />
-            </FlexBox>
-          )}
-        </SpaceBetween>
-      </StyledToolbarButton>
-    </Tooltip>
+    <ToolbarButton
+      workingPlatforms={[Platform.PLATFORM_ANDROID]}
+      icon={isFolded ? <RiBookOpenLine /> : <MdOutlineDevicesFold />}
+      text={isFolded ? 'Unfold' : 'Fold'}
+      onClick={isFolded ? handleUnfold : handleFold}
+      destroyTooltipOnHide
+      tooltipTitle="Fold & Unfold"
+    />
   );
 };
 
@@ -111,16 +98,14 @@ const DeviceControlToolbar: React.FC<Props> = () => {
         }
       />
 
-      {isCloudDevice && (
-        <ToolbarButton
-          workingPlatforms={[Platform.PLATFORM_ANDROID]}
-          icon={<HiLanguage />}
-          text="Language"
-          content={<DeviceLanguageChanger />}
-          destroyTooltipOnHide
-          tooltipTitle="Change device language"
-        />
-      )}
+      <ToolbarButton
+        workingPlatforms={[Platform.PLATFORM_ANDROID]}
+        icon={<HiLanguage />}
+        text="Language"
+        content={<DeviceLanguageChanger />}
+        destroyTooltipOnHide
+        tooltipTitle="Change device language"
+      />
 
       {isCloudDevice && (
         <ToolbarButton
@@ -135,6 +120,8 @@ const DeviceControlToolbar: React.FC<Props> = () => {
       )}
 
       <Divider style={{ margin: '.8rem 0' }} />
+
+      <FoldButton />
 
       <ToolbarButton
         workingPlatforms={[Platform.PLATFORM_ANDROID]}
@@ -190,31 +177,4 @@ const Title = styled.span`
   font-size: 0.8rem;
   font-weight: 700;
   line-height: 1.5;
-`;
-
-const StyledToolbarButton = styled.button`
-  display: flex;
-  width: 100%;
-  height: 3rem;
-  padding: 0 1rem;
-  background-color: #fff;
-  align-items: center;
-
-  &:hover {
-    background-color: ${(props) => props.theme.colors.gray2};
-  }
-
-  p {
-    font-size: 0.9rem;
-    line-height: 1.5;
-  }
-`;
-
-const FlexBox = styled.div`
-  ${flexRowBaseStyle}
-`;
-
-const SpaceBetween = styled.div`
-  width: 100%;
-  ${flexRowSpaceBetweenStyle}
 `;
