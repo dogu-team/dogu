@@ -1,4 +1,5 @@
-from dogu.device import *
+from dogu.device.device_client import DeviceClient
+from dogu.device.device_host_client import DeviceHostClient
 
 
 def test_connect():

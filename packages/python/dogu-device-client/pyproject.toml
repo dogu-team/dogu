@@ -1,10 +1,10 @@
 [tool.poetry]
 name = "dogu-device-client"
-version = "0.0.6-rc.1"
-description = "dogutech's device client to control devices"
+version = "1.0.0"
+description = "Dogu's device client to control devices"
 authors = ["Dogu Technologies"]
 readme = "README.md"
-packages = [{include = "dogu"}]
+packages = [{ include = "dogu" }]
 
 [tool.poetry.dependencies]
 python = "^3.9"
