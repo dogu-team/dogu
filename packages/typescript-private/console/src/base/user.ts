@@ -43,6 +43,7 @@ export interface UserRelationTraits {
 export interface UserBaseTraits {
   userId: UserId;
   email: string;
+  uniqueEmail: string;
   password?: string | null;
   name: string;
   profileImageUrl: string | null;

@@ -51,6 +51,9 @@ export class User extends BaseEntity implements UserBase {
   @Column({ type: 'character varying', name: UserPropSnake.email, length: USER_EMAIL_MAX_LENGTH, unique: true, nullable: false })
   email!: string;
 
+  @Column({ type: 'character varying', name: UserPropSnake.unique_email, length: USER_EMAIL_MAX_LENGTH, unique: true, nullable: false })
+  uniqueEmail!: string;
+
   @Exclude()
   @Column({ type: 'character varying', name: UserPropSnake.password, length: USER_HASHED_PASSWORD_MAX_LENGTH, nullable: true })
   password!: string | null;

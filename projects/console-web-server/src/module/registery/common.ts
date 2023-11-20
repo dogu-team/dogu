@@ -1,12 +1,23 @@
 import { SNS_TYPE, TokenId, UserId, UserSnsId, USER_VERIFICATION_STATUS } from '@dogu-private/types';
+import { ConflictException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { EntityManager } from 'typeorm';
+
 import { UserAndVerificationToken } from '../../db/entity/relations/user-and-verification-token.entity';
 import { UserEmailPreference } from '../../db/entity/user-email-preference.entity';
 import { UserSns } from '../../db/entity/user-sns.entity';
 import { User } from '../../db/entity/user.entity';
 import { FeatureConfig } from '../../feature.config';
 import { TokenService } from '../token/token.service';
+
+export function createUniqueEmail(email: string): string {
+  // remove dot and plus from email
+  const [local, domain] = email.split('@');
+  const localWithoutDot = local.replace(/\./g, '');
+  const localWithoutPlus = localWithoutDot.split('+')[0];
+  const uniqueEmail = `${localWithoutPlus}@${domain}`;
+  return uniqueEmail;
+}
 
 export async function createUser(manager: EntityManager, email: string, password: string | null, name: string) {
   let savePassword;
@@ -30,9 +41,21 @@ export async function createUser(manager: EntityManager, email: string, password
   }
 
   const isTutorialCompleted = FeatureConfig.get('licenseModule') === 'cloud' ? 1 : 0;
+  const uniqueEmail = createUniqueEmail(email);
+
+  const sameUniqueEmailUser = await manager.getRepository(User).findOne({
+    where: {
+      uniqueEmail,
+    },
+  });
+
+  if (sameUniqueEmailUser) {
+    throw new ConflictException('User with same email already exists');
+  }
 
   const userData = manager.getRepository(User).create({
     email,
+    uniqueEmail,
     name,
     password: savePassword,
     isRoot: isRootUser,
