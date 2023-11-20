@@ -84,6 +84,7 @@ class Device(private val options: Options) {
 
         val contentRect: Rect = screenInfo.contentRect
         val point: Point = devicePosition.getPoint()
+        Logger.i("getPhysicalPoint: $point, $clientVideoSize, $contentRect")
         val convertedX: Int =
             contentRect.left + point.x * contentRect.width() / clientVideoSize.width
         val convertedY: Int =

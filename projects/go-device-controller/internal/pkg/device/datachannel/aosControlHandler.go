@@ -11,26 +11,39 @@ import (
 )
 
 type AosControlHandler struct {
-	sendFunc           func(*params.CfGdcDaResult, error)
-	deviceAgentRelayer relayer.WebsocketRelayer
+	sendFunc              func(*params.CfGdcDaResult, error)
+	deviceAgentRelayer    relayer.WebsocketRelayer
+	serial                string
+	getDeviceAgentUrlFunc func() string
 }
 
 var _ach DatachannelHandler = &AosControlHandler{}
 
 func NewAosControlHandler(serial string, getDeviceAgentUrlFunc func() string) *AosControlHandler {
-	ach := AosControlHandler{}
-	relayer.NewWebsocketRelayer(&ach.deviceAgentRelayer, serial, getDeviceAgentUrlFunc, func(bytes []byte) {
+	h := AosControlHandler{}
+	h.serial = serial
+	h.getDeviceAgentUrlFunc = getDeviceAgentUrlFunc
+	relayer.NewWebsocketRelayer(&h.deviceAgentRelayer, h.serial, h.getDeviceAgentUrlFunc, func(bytes []byte) {
 		result := &params.CfGdcDaResult{}
 		if err := proto.Unmarshal(bytes, result); err != nil {
 			log.Inst.Error("AosControlHandler.onEach proto.Unmarshal error", zap.Error(err))
 			return
 		}
-		ach.sendFunc(result, nil)
+		h.sendFunc(result, nil)
 	})
-	return &ach
+
+	return &h
 }
 
 func (h *AosControlHandler) OnOpen() error {
+	relayer.NewWebsocketRelayer(&h.deviceAgentRelayer, h.serial, h.getDeviceAgentUrlFunc, func(bytes []byte) {
+		result := &params.CfGdcDaResult{}
+		if err := proto.Unmarshal(bytes, result); err != nil {
+			log.Inst.Error("AosControlHandler.onEach proto.Unmarshal error", zap.Error(err))
+			return
+		}
+		h.sendFunc(result, nil)
+	})
 	return nil
 }
 
