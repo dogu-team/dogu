@@ -167,10 +167,8 @@ export class AndroidChannel implements DeviceChannel {
     });
     const appiumContextImpl = await appiumContextProxy.waitUntilBuiltin();
     const reset = new AndroidResetService(serial, logger);
-    const sharedDevice = new AndroidSharedDeviceService(serial, appiumAdb, await adb.getProps(), systemInfo, appiumContextImpl, reset, deviceAgent, logger);
-    await sharedDevice.setup();
-    await sharedDevice.wait();
 
+    const sharedDevice = new AndroidSharedDeviceService(serial, appiumAdb, await adb.getProps(), systemInfo, appiumContextImpl, reset, deviceAgent, logger);
     const deviceChannel = new AndroidChannel(
       serial,
       serialUnique,
@@ -188,6 +186,9 @@ export class AndroidChannel implements DeviceChannel {
       logger,
       findAllBrowserInstallationsResult.browserInstallations,
     );
+
+    await sharedDevice.setup(deviceChannel);
+    await sharedDevice.wait();
 
     await streaming.deviceConnected(serial, {
       serial,

@@ -5,6 +5,7 @@ import child_process from 'child_process';
 import fs from 'fs';
 import { AppiumContextImpl } from '../../../appium/appium.context';
 import { env } from '../../../env';
+import { AndroidChannel } from '../../channel/android-channel';
 import { AdbSerial, AndroidPropInfo, AppiumAdb, isHarnessEnabled } from '../../externals/index';
 import { AndroidWebDriver } from '../../externals/webdriver/android-webdriver';
 import { AndroidDeviceAgentService } from '../device-agent/android-device-agent-service';
@@ -304,7 +305,7 @@ export class AndroidSharedDeviceService implements Zombieable {
     };
   }
 
-  async setup(): Promise<void> {
+  async setup(channel: AndroidChannel): Promise<void> {
     if (!env.DOGU_DEVICE_IS_SHAREABLE) {
       return;
     }
@@ -331,6 +332,10 @@ export class AndroidSharedDeviceService implements Zombieable {
 
     await this.checkSetup(`AndroidSharedDeviceService.setup.setGboardAsDefaultKeyboard`, this.setGboardAsDefaultKeyboard()).catch((e) => {
       this.printable.error(`AndroidSharedDeviceService.revive.setGboardAsDefaultKeyboard failed.`, { serial, error: errorify(e) });
+    });
+
+    await this.checkSetup(`AndroidSharedDeviceService.setup.unfold`, this.unfold(channel)).catch((e) => {
+      this.printable.error(`AndroidSharedDeviceService.revive.unfold failed.`, { serial, error: errorify(e) });
     });
 
     await this.checkSetup(`AndroidSharedDeviceService.setup.mute`, this.mute()).catch((e) => {
@@ -492,6 +497,17 @@ export class AndroidSharedDeviceService implements Zombieable {
     const imeId = `${targetIme.packageName}/${targetIme.service}`;
     await this.appiumAdb.enableIME(imeId);
     await this.appiumAdb.setIME(imeId);
+  }
+
+  private async unfold(channel: AndroidChannel): Promise<void> {
+    const foldStatus = await channel.getFoldStatus();
+    if (!foldStatus.isFoldable) {
+      return;
+    }
+    if (!foldStatus.isFolded) {
+      return;
+    }
+    await channel.fold(false);
   }
 
   private async mute(): Promise<void> {

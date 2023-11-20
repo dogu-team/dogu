@@ -471,8 +471,10 @@ export class AdbSerial {
   @Retry({ retryCount: 3, retryInterval: 300 })
   async disableBluetooth(): Promise<void> {
     const { serial } = this;
-    return await usingAsnyc(new AdbSerialScope('disableBluetooth', { serial }), async () => {
-      await shell(serial, `cmd bluetooth_manager disable`);
+    return retry(async () => {
+      return await usingAsnyc(new AdbSerialScope('disableBluetooth', { serial }), async () => {
+        await shell(serial, `cmd bluetooth_manager disable`);
+      });
     });
   }
   //#endregion
