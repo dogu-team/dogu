@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 from pytest import Config, Item, Session, TestReport, hookimpl
 
 from .remote_dest_reporter import RemoteDestReporterFactory
@@ -14,28 +14,28 @@ class DoguSdk:
         self._pytest_config = pytest_config
         self.config = DoguConfigFactory().create()
 
-        (client,) = self._pytest_config.hook.pytest_dogu_create_client()
-        self.client: DoguClient = client
-        client_impl = self.client.on_setup(self.config)
-        if not client_impl:
-            raise Exception("dogu client is not initialized on setup")
-        self.client.impl = client_impl
+        routine_dest_reporter = RoutineDestReporterFactory(self.config).create()
+        self._handlers: List[PyTestHandler] = [routine_dest_reporter]
 
-        self._routine_dest_reporter = RoutineDestReporterFactory(self.config).create()
-        self._remote_dest_reporter = RemoteDestReporterFactory(
-            self.config,
-            self.client,
-        ).create()
-        self._handlers: List[PyTestHandler] = [
-            self._routine_dest_reporter,
-            self._remote_dest_reporter,
-        ]
+        if self._pytest_config.hook.pytest_dogu_create_client:
+            (client,) = self._pytest_config.hook.pytest_dogu_create_client()
+            self.client: Optional[DoguClient] = client
+            client_impl = self.client.on_setup(self.config)
+            if not client_impl:
+                raise Exception("dogu client is not initialized on setup")
+            self.client.impl = client_impl        
+            remote_dest_reporter = RemoteDestReporterFactory(
+                self.config,
+                self.client,
+            ).create()
+            self._handlers.append(remote_dest_reporter)
 
     def on_teardown(self) -> None:
-        try:
-            self.client.on_teardown()
-        except Exception as exception:
-            print(f"[dogu] failed on dogu client.on_teardown: {exception}")
+        if self.client:
+            try:
+                self.client.on_teardown()
+            except Exception as exception:
+                print(f"[dogu] failed on dogu client.on_teardown: {exception}")
 
     @hookimpl(trylast=True)
     def pytest_collection_modifyitems(

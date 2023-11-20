@@ -45,18 +45,18 @@ class DoguConfig:
 
     @property
     def api_base_url(self) -> str:
-        api_base_url = os.environ.get("DOGU_API_BASE_URL", self._config["apiBaseUrl"])
+        api_base_url = os.environ.get("DOGU_API_BASE_URL", self._config.get("apiBaseUrl", ""))
         if api_base_url.endswith("/"):
             return api_base_url[:-1]
         return api_base_url
 
     @property
     def organization_id(self) -> str:
-        return os.environ.get("DOGU_ORGANIZATION_ID", self._config["organizationId"])
+        return os.environ.get("DOGU_ORGANIZATION_ID", self._config.get("organizationId", ""))
 
     @property
     def project_id(self) -> str:
-        return os.environ.get("DOGU_PROJECT_ID", self._config["projectId"])
+        return os.environ.get("DOGU_PROJECT_ID", self._config.get("projectId", ""))
 
     @property
     def token(self) -> str:
