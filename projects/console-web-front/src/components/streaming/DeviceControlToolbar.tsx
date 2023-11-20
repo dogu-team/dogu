@@ -20,6 +20,7 @@ const FoldButton: React.FC = () => {
   const { deviceService, device } = useDeviceStreamingContext();
   const [isFolded, setIsFolded] = useState(false);
   const [isFoldable, setIsFoldable] = useState(false);
+  const [isLoading, setLoading] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -42,21 +43,25 @@ const FoldButton: React.FC = () => {
   }
 
   const handleFold = async () => {
+    setLoading(true);
     try {
       await deviceService.deviceClientRef.current?.fold(device.serial, true);
       setIsFolded(true);
     } catch (e) {
       console.debug('Fold failed', e);
     }
+    setLoading(false);
   };
 
   const handleUnfold = async () => {
+    setLoading(true);
     try {
       await deviceService.deviceClientRef.current?.fold(device.serial, false);
       setIsFolded(false);
     } catch (e) {
       console.debug('Unfold failed', e);
     }
+    setLoading(false);
   };
 
   return (
@@ -67,6 +72,7 @@ const FoldButton: React.FC = () => {
       onClick={isFolded ? handleUnfold : handleFold}
       destroyTooltipOnHide
       tooltipTitle="Fold & Unfold"
+      disabled={isLoading}
     />
   );
 };
