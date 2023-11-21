@@ -9,6 +9,7 @@ import { DeviceConnectionSubscribeReceiveMessage } from '@dogu-tech/device-clien
 import { ipc } from '../../utils/window';
 import BorderBox from '../layouts/BorderBox';
 import DevicePlatformIcon from './DevicePlatformIcon';
+import { deviceLookupClientKey } from '../../shares/device-lookup';
 
 function getConnectedDeviceByPlatform(messages: DeviceConnectionSubscribeReceiveMessage[]): { platform: Platform; count: number }[] {
   const platforms: { platform: Platform; count: number }[] = [];
@@ -98,14 +99,10 @@ const ConnectedDeviceList = () => {
                         <DevicePlatformIcon platform={platformTypeFromPlatform(device.platform)} />
                       </Text>
                     </Tooltip>
-                    <Text fontSize="small">{findDeviceModelNameByModelId(device.model) ?? device.model}</Text>
-                    {device.state === DeviceConnectionState.DEVICE_CONNECTION_STATE_CONNECTED ? (
-                      <Button colorScheme="teal" variant="link" fontSize="10px" fontWeight="light" textColor="CaptionText" onClick={() => onClipboardCopy(device.serial)}>
-                        ({device.serial})
-                      </Button>
-                    ) : (
-                      <Text fontSize="small">{device.serial}</Text>
-                    )}
+                    <Text fontSize="small">{device.model.length > 0 ? findDeviceModelNameByModelId(device.model) ?? device.model : device.serial}</Text>
+                    <Button colorScheme="teal" variant="link" fontSize="10px" fontWeight="light" textColor="CaptionText" onClick={() => onClipboardCopy(device.serial)}>
+                      ({device.serial})
+                    </Button>
                   </HStack>
                   {0 < device.errorMessage.length && (
                     <UnorderedList>

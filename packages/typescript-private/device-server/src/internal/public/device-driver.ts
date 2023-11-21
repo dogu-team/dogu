@@ -9,13 +9,13 @@ export const DeviceScanStatus = [
 export type DeviceScanStatus = (typeof DeviceScanStatus)[number];
 export interface DeviceScanResultOnline {
   serial: Serial;
-  name: string;
+  model: string;
   status: 'online';
 }
 
 export interface DeviceScanResultUnstable {
   serial: Serial;
-  name: string;
+  model: string;
   status: 'unstable';
   description: string;
 }

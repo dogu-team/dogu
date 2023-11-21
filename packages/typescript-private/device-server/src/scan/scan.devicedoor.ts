@@ -48,6 +48,7 @@ export class DeviceDoor {
   constructor(
     public readonly driver: DeviceDriver,
     public serial: Serial,
+    public model: string,
     private readonly callback: DeviceDoorEvent,
   ) {
     this.process().catch((error) => {
@@ -92,7 +93,7 @@ export class DeviceDoor {
       try {
         this._state = { type: 'opening', error: null };
         logger.info(`DeviceDoor.processInternal initChannel serial:${this.serial}`);
-        await this.callback.onOpening({ platform: platformTypeFromPlatform(this.driver.platform), serial: this.serial });
+        await this.callback.onOpening({ platform: platformTypeFromPlatform(this.driver.platform), serial: this.serial, model: this.model });
         this.channel = await this.driver.openChannel({
           serial: this.serial,
         });
@@ -108,6 +109,7 @@ export class DeviceDoor {
         await this.callback.onError({
           platform: platformTypeFromPlatform(this.driver.platform),
           serial: this.serial,
+          model: this.model,
           error,
         });
       }
@@ -152,13 +154,13 @@ export class DeviceDoors {
 
   constructor(private readonly callback: DeviceDoorEvent) {}
 
-  openIfNotActive(driver: DeviceDriver, serial: Serial): void {
+  openIfNotActive(driver: DeviceDriver, serial: Serial, model: string): void {
     this.cleanupClosedDoor();
 
     const platform = driver.platform;
     const door = this._doors.find((door) => door.driver.platform === platform && door.serial === serial);
     if (!door) {
-      const newDoor = new DeviceDoor(driver, serial, this.callback);
+      const newDoor = new DeviceDoor(driver, serial, model, this.callback);
       this._doors.push(newDoor);
       newDoor.openIfNotActive();
       return;
@@ -189,6 +191,7 @@ export class DeviceDoors {
         return {
           platform: platformTypeFromPlatform(door.driver.platform),
           serial: door.serial,
+          model: door.model,
         };
       });
   }
@@ -201,6 +204,7 @@ export class DeviceDoors {
       return {
         platform: platformTypeFromPlatform(door.driver.platform),
         serial: door.serial,
+        model: door.model,
       };
     });
   }
@@ -212,6 +216,7 @@ export class DeviceDoors {
         return {
           platform: platformTypeFromPlatform(door.driver.platform),
           serial: door.serial,
+          model: door.model,
           error: door.state().error ?? new Error('Unknown error'),
         };
       });

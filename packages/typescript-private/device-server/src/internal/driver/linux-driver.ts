@@ -18,9 +18,9 @@ export class LinuxDriver implements DeviceDriver {
   }
 
   async scanSerials(): Promise<DeviceScanResult[]> {
-    const hostname = (await systeminformation.osInfo()).hostname;
     const serial = await this.resolveSerial();
-    return [{ serial, status: 'online', name: hostname }];
+    const model = (await systeminformation.system()).model;
+    return [{ serial, status: 'online', model }];
   }
 
   private async resolveSerial(): Promise<Serial> {

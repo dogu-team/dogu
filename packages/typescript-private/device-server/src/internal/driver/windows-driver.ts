@@ -20,9 +20,9 @@ export class WindowsDriver implements DeviceDriver {
   }
 
   async scanSerials(): Promise<DeviceScanResult[]> {
-    const hostname = (await systeminformation.osInfo()).hostname;
     const uuid = await systeminformation.uuid();
-    return [{ serial: uuid.os, status: 'online', name: hostname }];
+    const model = (await systeminformation.system()).model;
+    return [{ serial: uuid.os, status: 'online', model }];
   }
 
   async openChannel(initParam: DeviceChannelOpenParam): Promise<DeviceChannel> {

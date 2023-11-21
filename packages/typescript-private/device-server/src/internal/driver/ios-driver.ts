@@ -4,13 +4,15 @@ import { ChildProcess, HostPaths } from '@dogu-tech/node';
 import fs from 'fs';
 import { logger } from '../../logger/logger.instance';
 import { IosChannel } from '../channel/ios-channel';
-import { IdeviceId, SystemProfiler, XcodeBuild, Xctrace } from '../externals';
+import { IdeviceId, MobileDevice, SystemProfiler, XcodeBuild, Xctrace } from '../externals';
 import { DeviceChannel, DeviceChannelOpenParam, DeviceServerService } from '../public/device-channel';
 import { DeviceDriver, DeviceScanResult } from '../public/device-driver';
 
 let ScanResultCache: DeviceScanResult[] = [];
 const ScanMethods = ['idevice-id'];
 type ScanMethod = (typeof ScanMethods)[number];
+
+const SerialToModelCache = new Map<Serial, string>();
 interface IosScanner {
   get method(): ScanMethod;
   get descriptionWhenNotExist(): string;
@@ -132,16 +134,22 @@ export class IosDriver implements DeviceDriver {
 
       const serialsSystemProfiler = await SystemProfiler.usbDataTypeToSerials(option);
       if (!serialsSystemProfiler.includes(serial)) {
-        ret.push({ serial, name: serial, status: 'unstable', description: 'Device usb connection is unstable. Please check the usb connection.' });
+        ret.push({
+          serial,
+          model: '',
+          status: 'unstable',
+          description: 'Device usb connection is unstable. Please check the usb connection.',
+        });
         continue;
       }
       if (notfoundMethods.length === 0) {
-        ret.push({ serial, name: serial, status: 'online' });
+        const model = await MobileDevice.getProductType(serial, logger).catch(() => '');
+        ret.push({ serial, model: await IosDriver.cacheAndGetModel(serial), status: 'online' });
         continue;
       }
       const notfountMethod = notfoundMethods[0];
       const description = IosScanners.find((scanner) => scanner.method === notfountMethod)?.descriptionWhenNotExist;
-      ret.push({ serial, name: serial, status: 'unstable', description: description ?? 'unknown' });
+      ret.push({ serial, model: '', status: 'unstable', description: description ?? 'unknown' });
     }
     ScanResultCache = ret;
 
@@ -167,5 +175,18 @@ export class IosDriver implements DeviceDriver {
       logger.warn('Failed to start usbmuxd');
     });
     logger.info('start usbmuxd done', { ret2 });
+  }
+
+  private static async cacheAndGetModel(serial: Serial): Promise<string> {
+    const cached = SerialToModelCache.get(serial);
+    if (cached) {
+      return cached;
+    }
+    const model = await MobileDevice.getProductType(serial, logger).catch(() => '');
+    if (0 === model.length) {
+      return '';
+    }
+    SerialToModelCache.set(serial, model);
+    return model;
   }
 }
