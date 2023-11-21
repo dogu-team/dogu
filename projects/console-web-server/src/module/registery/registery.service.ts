@@ -216,6 +216,10 @@ export class RegisteryService {
     const user = await this.dataSource.getRepository(User).findOne({ where: { email }, withDeleted: true, relations: [UserPropCamel.userAndVerificationToken] });
 
     if (user) {
+      if (user.deletedAt !== null) {
+        throw new HttpException(`Cannot sign in with this email : ${email}`, HttpStatus.CONFLICT);
+      }
+
       if (false === this.isSupportThirdPartySignin(snsType)) {
         throw new HttpException(`This email is already in used : ${email}`, HttpStatus.CONFLICT);
       }
