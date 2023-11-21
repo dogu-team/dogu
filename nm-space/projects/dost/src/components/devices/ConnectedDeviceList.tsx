@@ -1,17 +1,34 @@
+import { CheckIcon, NotAllowedIcon } from '@chakra-ui/icons';
+import { Button, CircularProgress, HStack, List, ListItem, Spacer, Spinner, Text, Tooltip, UnorderedList, useToast } from '@chakra-ui/react';
+import { DeviceConnectionState, findDeviceModelNameByModelId, Platform, platformTypeFromPlatform } from '@dogu-private/types';
+import { stringify } from '@dogu-tech/common';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { DeviceConnectionState, DeviceSystemInfo, findDeviceModelNameByModelId, PlatformType, platformTypeFromPlatform, Serial } from '@dogu-private/types';
-import { Button, CircularProgress, color, HStack, List, ListItem, Spinner, Text, Tooltip, UnorderedList, useToast } from '@chakra-ui/react';
-import { CheckIcon, NotAllowedIcon, SpinnerIcon } from '@chakra-ui/icons';
-import { stringify } from '@dogu-tech/common';
 
-import BorderBox from '../layouts/BorderBox';
-import { ipc } from '../../utils/window';
-import DevicePlatformIcon from './DevicePlatformIcon';
 import { DeviceConnectionSubscribeReceiveMessage } from '@dogu-tech/device-client-common';
+import { ipc } from '../../utils/window';
+import BorderBox from '../layouts/BorderBox';
+import DevicePlatformIcon from './DevicePlatformIcon';
+
+function getConnectedDeviceByPlatform(messages: DeviceConnectionSubscribeReceiveMessage[]): { platform: Platform; count: number }[] {
+  const platforms: { platform: Platform; count: number }[] = [];
+  for (const message of messages) {
+    if (message.state !== DeviceConnectionState.DEVICE_CONNECTION_STATE_CONNECTED) continue;
+    const platform = message.platform;
+    const index = platforms.findIndex((p) => p.platform === platform);
+    if (index === -1) {
+      platforms.push({ platform, count: 1 });
+    } else {
+      platforms[index].count++;
+    }
+  }
+
+  return platforms;
+}
 
 const ConnectedDeviceList = () => {
   const [deviceStatuses, setDeviceStatuses] = useState<DeviceConnectionSubscribeReceiveMessage[]>([]);
+  const connectedDeviceByPlatforms = deviceStatuses.length > 5 ? getConnectedDeviceByPlatform(deviceStatuses) : [];
   const toast = useToast();
   const onClipboardCopy = (text: string) => {
     ipc.settingsClient.writeTextToClipboard(text);
@@ -52,6 +69,18 @@ const ConnectedDeviceList = () => {
         </div>
       ) : (
         <BorderBox>
+          <HStack w="100%" justifyContent="end">
+            <Spacer />
+            {connectedDeviceByPlatforms &&
+              connectedDeviceByPlatforms.map((device) => (
+                <HStack key={device.platform}>
+                  <Text fontSize="xs">
+                    <DevicePlatformIcon platform={platformTypeFromPlatform(device.platform)} />
+                  </Text>
+                  <Text fontSize="xs">{device.count}</Text>
+                </HStack>
+              ))}
+          </HStack>
           <List spacing={3}>
             {deviceStatuses &&
               deviceStatuses.map((device) => (
@@ -64,7 +93,7 @@ const ConnectedDeviceList = () => {
                     ) : (
                       <CheckIcon color="green.500" />
                     )}
-                    <Tooltip label={device.platform} aria-label="platform" placement="top">
+                    <Tooltip label={platformTypeFromPlatform(device.platform)} aria-label="platform" placement="top">
                       <Text fontSize="large">
                         <DevicePlatformIcon platform={platformTypeFromPlatform(device.platform)} />
                       </Text>
