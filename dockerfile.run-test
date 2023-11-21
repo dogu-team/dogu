@@ -1,0 +1,56 @@
+# FROM --platform=linux/amd64 ubuntu:22.04
+FROM ubuntu:22.04
+
+ARG DEBIAN_FRONTEND=noninteractive
+ARG NODE_VERSION=16.20.2
+ARG PYTHON_VERSION=3.9.17
+
+SHELL ["/bin/bash", "-c"]
+ENV SHELL=/bin/bash
+
+RUN echo "deb-src http://archive.ubuntu.com/ubuntu/ jammy main" >> /etc/apt/sources.list && \
+    apt-get update && \
+    apt-get build-dep -y python3 && \
+    apt-get install -y \
+    pkg-config \
+    curl \
+    git \
+    build-essential \
+    zlib1g-dev \
+    libffi-dev \
+    libssl-dev \
+    libbz2-dev \
+    libreadline-dev \
+    libsqlite3-dev \
+    liblzma-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# install node
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash
+ENV PATH="/root/.nvm/versions/node/v${NODE_VERSION}/bin:${PATH}"
+
+RUN source ~/.nvm/nvm.sh && \
+    nvm install ${NODE_VERSION} && \
+    corepack enable
+
+# install python
+RUN curl https://pyenv.run | bash
+ENV PATH="/root/.pyenv/shims:${PATH}"
+
+ARG PYENV_EXE=/root/.pyenv/bin/pyenv
+RUN ${PYENV_EXE} install ${PYTHON_VERSION} && \
+    ${PYENV_EXE} global ${PYTHON_VERSION}
+
+# install dogu docker run dependencies
+WORKDIR /dogu
+COPY .dogu-workspace ./.dogu-workspace
+COPY .yarnrc.yml yarn.lock .pnp.cjs .pnp.loader.mjs package.json tsconfig.json ./
+COPY .yarn ./.yarn
+COPY turbo.json ./turbo.json
+COPY packages/typescript ./packages/typescript
+COPY packages/typescript-dev-private/publish-package ./packages/typescript-dev-private/publish-package
+COPY dogu-actions ./dogu-actions
+
+RUN yarn run newbie:cicd && \
+    yarn run build && \
+    yarn run build:actions

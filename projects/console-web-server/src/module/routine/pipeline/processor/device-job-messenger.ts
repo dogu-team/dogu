@@ -10,7 +10,10 @@ import { DoguLogger } from '../../../logger/logger';
 
 @Injectable()
 export class DeviceJobMessenger {
-  constructor(private readonly deviceMessageRelayer: DeviceMessageRelayer, private readonly logger: DoguLogger) {}
+  constructor(
+    private readonly deviceMessageRelayer: DeviceMessageRelayer,
+    private readonly logger: DoguLogger,
+  ) {}
 
   async sendRunDeviceJob(organizationId: OrganizationId, deviceId: DeviceId, deviceJob: RoutineDeviceJob): Promise<void> {
     const {
@@ -116,7 +119,7 @@ export class DeviceJobMessenger {
     const { uses, run, with: with_ } = step;
     if (uses !== null) {
       return {
-        kind: 'Action',
+        kind: 'DockerAction',
         actionId: uses,
         inputs: with_ ?? {},
       };

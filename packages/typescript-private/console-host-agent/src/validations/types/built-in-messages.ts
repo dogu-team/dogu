@@ -35,6 +35,17 @@ export class Action extends Kindable<'Action'> {
 }
 
 @OneOf()
+export class DockerAction extends Kindable<'DockerAction'> {
+  static override kind = 'DockerAction';
+
+  @IsFilledString()
+  actionId!: string;
+
+  @IsObject()
+  inputs!: Record<string, unknown>;
+}
+
+@OneOf()
 export class HttpProxyRequest extends Kindable<'HttpProxyRequest'> {
   static override kind = 'HttpProxyRequest';
 
@@ -248,7 +259,7 @@ export class ResponseResult extends Kindable<'ResponseResult'> {
   value!: ResponseResultValue;
 }
 
-const RunStepValue = [Run, Action] as const;
+const RunStepValue = [Run, Action, DockerAction] as const;
 export type RunStepValue = Instance<(typeof RunStepValue)[number]>;
 
 @OneOf()

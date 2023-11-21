@@ -153,10 +153,6 @@ export class DeviceJobStepProcessor {
     }
     this.logger.info(`Step ${routineStepId} started event emitted`);
 
-    const deviceServerHostPort = env.DOGU_DEVICE_SERVER_HOST_PORT.split(':');
-    if (deviceServerHostPort.length !== 2) {
-      throw new Error('DOGU_DEVICE_SERVER_HOST_PORT must be in format host:port');
-    }
     const { nodeBin, gitLibexecGitCore } = pathMap.common;
     const organizationWorkspacePath = HostPaths.organizationWorkspacePath(rootWorkspacePath, organizationId);
     await fs.promises.mkdir(organizationWorkspacePath, { recursive: true });
@@ -174,7 +170,7 @@ export class DeviceJobStepProcessor {
       DOGU_DEVICE_PLATFORM: platformTypeFromPlatform(platform),
       DOGU_DEVICE_SERIAL: serial,
       DOGU_DEVICE_ID: deviceId,
-      DOGU_DEVICE_SERVER_PORT: deviceServerHostPort[1],
+      DOGU_DEVICE_SERVER_URL: `http://${env.DOGU_DEVICE_SERVER_HOST_PORT}`,
       DOGU_DEVICE_JOB_ID: `${routineDeviceJobId}`,
       DOGU_DEVICE_WORKSPACE_PATH: deviceWorkspacePath,
       DOGU_ROUTINE_WORKSPACE_PATH: doguRoutineWorkspacePath,

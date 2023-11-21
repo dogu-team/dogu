@@ -8,7 +8,7 @@ type DoguEnvDependencies = Pick<
   StepContextEnv,
   | 'DOGU_DEVICE_SERIAL' //
   | 'DOGU_DEVICE_PLATFORM'
-  | 'DOGU_DEVICE_SERVER_PORT'
+  | 'DOGU_DEVICE_SERVER_URL'
   | 'DOGU_LOG_LEVEL'
 >;
 
@@ -45,14 +45,14 @@ export class DoguOptions {
   devicePlatform?: PlatformType;
 
   /**
-   * @default 5001
-   * @requires process.env.DOGU_DEVICE_SERVER_PORT
+   * @default http://127.0.0.1:5001
+   * @requires process.env.DOGU_DEVICE_SERVER_URL
    * @description Device server port.
    * The port number of the device server to be used.
    */
   @IsNumber()
-  @FromProcessEnv<DoguEnv>('DOGU_DEVICE_SERVER_PORT', { transform: Number })
-  deviceServerPort?: number;
+  @FromProcessEnv<DoguEnv>('DOGU_DEVICE_SERVER_URL')
+  deviceServerUrl?: string;
 
   /**
    * @default info
@@ -96,7 +96,7 @@ export function fillDoguOptions(options?: DoguOptions): Required<DoguOptions> {
     {
       deviceSerial: '',
       devicePlatform: 'unspecified',
-      deviceServerPort: 5001,
+      deviceServerUrl: 'http://127.0.0.1:5001',
       logLevel: 'info',
       appPath: '',
       uninstallApp: false,

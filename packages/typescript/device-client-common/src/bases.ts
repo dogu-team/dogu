@@ -10,7 +10,7 @@ import {
   WebSocketOpenEvent,
 } from '@dogu-tech/types';
 import { Type } from 'class-transformer';
-import { IsNumber, IsObject } from 'class-validator';
+import { IsNumber, IsObject, IsString } from 'class-validator';
 
 export interface DeviceWebSocketListener {
   onOpen?(ev: WebSocketOpenEvent): void;
@@ -26,11 +26,10 @@ export interface DeviceWebSocket {
 
 export class DeviceClientOptions {
   /**
-   * @default 0
+   * @default 'http://127.0.0.1:5001'
    */
-  @IsNumber()
-  @Type(() => Number)
-  port?: number;
+  @IsString()
+  deviceServerUrl?: string;
 
   /**
    * @default ConsoleLogger.instance
@@ -51,7 +50,7 @@ export function fillDeviceClientOptions(options?: DeviceClientOptions): Required
   return fillOptionsSync(
     DeviceClientOptions,
     {
-      port: 0,
+      deviceServerUrl: 'http://127.0.0.1:5001',
       printable: ConsoleLogger.instance,
       timeout: 60000,
     },

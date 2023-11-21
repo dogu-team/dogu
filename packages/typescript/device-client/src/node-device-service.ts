@@ -1,5 +1,6 @@
 import { closeWebSocketWithTruncateReason, FilledPrintable, PrefixLogger, Printable, setAxiosErrorFilterToIntercepter, stringify } from '@dogu-tech/common';
 import { DeviceClientOptions, DeviceServerResponseDto, DeviceService, DeviceWebSocket, DeviceWebSocketListener } from '@dogu-tech/device-client-common';
+import { parseHttpUrl, parseWsUrlFromHttpUrl } from '@dogu-tech/node';
 import { Headers, HeaderValue, HttpRequest, HttpResponse, WebSocketConnection } from '@dogu-tech/types';
 import axios from 'axios';
 import { WebSocket } from 'ws';
@@ -38,11 +39,11 @@ export class NodeDeviceService implements DeviceService {
   }
 
   async httpRequest(request: HttpRequest, options: Required<DeviceClientOptions>): Promise<HttpResponse> {
-    const { port, timeout, printable } = options;
+    const { deviceServerUrl, timeout, printable } = options;
     const logger = new PrefixLogger(printable, '[NodeDeviceService.httpRequest]');
     const { method, path, query } = request;
     const headersParsed = Object.fromEntries(request.headers?.values.map((value) => [value.key, value.value]) || []);
-    let bodyParsed: any | undefined = undefined;
+    let bodyParsed: unknown = undefined;
     if (!request.body) {
       bodyParsed = undefined;
     } else {
@@ -65,7 +66,9 @@ export class NodeDeviceService implements DeviceService {
         bodyParsed = JSON.parse(stringValueParsed);
       }
     }
-    const url = `http://127.0.0.1:${port}${path}`;
+    const urlObj = parseHttpUrl(deviceServerUrl);
+    const { hostname, port, protocol } = urlObj;
+    const url = `${protocol}//${hostname}:${port}${path}`;
     const headers = headersParsed;
     const params = query;
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -110,10 +113,12 @@ export class NodeDeviceService implements DeviceService {
   }
 
   connectWebSocket(connection: WebSocketConnection, options: Required<DeviceClientOptions>, listener?: DeviceWebSocketListener): DeviceWebSocket {
-    const { port, printable } = options;
+    const { deviceServerUrl, printable } = options;
     const logger = new PrefixLogger(printable, '[NodeDeviceService.connectWebSocket]');
     const { path } = connection;
-    const url = `ws://127.0.0.1:${port}${path}`;
+    const urlObj = parseWsUrlFromHttpUrl(deviceServerUrl);
+    const { hostname, port, protocol } = urlObj;
+    const url = `${protocol}//${hostname}:${port}${path}`;
     const webSocket = new WebSocket(url);
     webSocket.on('open', () => {
       logger.verbose('open', { url });

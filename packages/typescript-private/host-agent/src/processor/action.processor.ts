@@ -1,5 +1,5 @@
 import { Action, ErrorResult } from '@dogu-private/console-host-agent';
-import { ActionContextEnv } from '@dogu-private/types';
+import { ActionContextEnv, CodeUtil } from '@dogu-private/types';
 import { ActionConfigLoader } from '@dogu-tech/action-kit';
 import { ChildProcess, EnvironmentVariableReplacementProvider, GitCommand, GitCommandBuilder, HostPaths, isGitRepositoryPath, isSameRemoteOriginUrl } from '@dogu-tech/node';
 import { Injectable } from '@nestjs/common';
@@ -34,7 +34,11 @@ function getActionTagByRunType(runType: string): string {
 
 @Injectable()
 export class ActionProcessor {
-  constructor(private readonly deviceClientService: DeviceClientService, private readonly logger: DoguLogger, private readonly commandProcessRegistry: CommandProcessRegistry) {}
+  constructor(
+    private readonly deviceClientService: DeviceClientService,
+    private readonly logger: DoguLogger,
+    private readonly commandProcessRegistry: CommandProcessRegistry,
+  ) {}
 
   async action(action: Action, context: MessageContext): Promise<ErrorResult> {
     const { info, environmentVariableReplacer } = context;
@@ -53,15 +57,21 @@ export class ActionProcessor {
     } else if (!actionGitPath) {
       throw new Error('Unexpected prepare error');
     }
+    const env = this.resolveEnv(context, inputs);
+    return this.parseConfigAndRun(context, actionGitPath, env, yarnPath);
+  }
+
+  resolveEnv(context: MessageContext, inputs: Record<string, unknown>): Record<string, string | undefined> {
+    const { environmentVariableReplacer } = context;
     const actionContextEnv: ActionContextEnv = {
       DOGU_ACTION_INPUTS: JSON.stringify(inputs),
     };
     environmentVariableReplacer.stackProvider.push(new EnvironmentVariableReplacementProvider(actionContextEnv));
     const env = environmentVariableReplacer.stackProvider.export();
-    return this.parseConfigAndRun(context, actionGitPath, env, yarnPath);
+    return env;
   }
 
-  private async resolveWorkspacePath(context: MessageContext): Promise<string> {
+  async resolveWorkspacePath(context: MessageContext): Promise<string> {
     if (context instanceof StepMessageContext) {
       const { deviceRunnerId } = context;
       const deviceRunnerWorkspacePath = HostPaths.deviceRunnerWorkspacePath(HostPaths.doguHomePath, deviceRunnerId);
@@ -126,7 +136,7 @@ export class ActionProcessor {
         url,
       });
       const errorResult = await this.runGitCommand(cloneCommand, context);
-      if (errorResult.value.code !== 0) {
+      if (CodeUtil.isNotSuccess(errorResult.value.code)) {
         return { error: errorResult };
       }
     }
@@ -140,7 +150,7 @@ export class ActionProcessor {
         url,
       });
       const errorResult = await this.runGitCommand(cloneCommand, context);
-      if (errorResult.value.code !== 0) {
+      if (CodeUtil.isNotSuccess(errorResult.value.code)) {
         return { error: errorResult };
       }
     }
@@ -149,7 +159,7 @@ export class ActionProcessor {
       this.logger.info('action git reset', { actionGitPath });
       const gitCommand = await gitCommandBuilder.reset();
       const errorResult = await this.runGitCommand(gitCommand, context);
-      if (errorResult.value.code !== 0) {
+      if (CodeUtil.isNotSuccess(errorResult.value.code)) {
         return { error: errorResult };
       }
     }
@@ -158,7 +168,7 @@ export class ActionProcessor {
       this.logger.info('action git clean', { actionGitPath });
       const gitCommand = await gitCommandBuilder.clean();
       const errorResult = await this.runGitCommand(gitCommand, context);
-      if (errorResult.value.code !== 0) {
+      if (CodeUtil.isNotSuccess(errorResult.value.code)) {
         return { error: errorResult };
       }
     }
@@ -167,7 +177,7 @@ export class ActionProcessor {
       this.logger.info('action git fetch', { actionGitPath });
       const gitCommand = await gitCommandBuilder.fetch();
       const errorResult = await this.runGitCommand(gitCommand, context);
-      if (errorResult.value.code !== 0) {
+      if (CodeUtil.isNotSuccess(errorResult.value.code)) {
         return { error: errorResult };
       }
     }
@@ -178,7 +188,7 @@ export class ActionProcessor {
         tag,
       });
       const errorResult = await this.runGitCommand(gitCommand, context);
-      if (errorResult.value.code !== 0) {
+      if (CodeUtil.isNotSuccess(errorResult.value.code)) {
         return { error: errorResult };
       }
     }
@@ -199,7 +209,7 @@ export class ActionProcessor {
     }
     this.logger.verbose('action yarn install...', { actionGitPath });
     const installResult = await this.commandProcessRegistry.command(yarnPath, ['install'], { cwd: actionGitPath }, context);
-    if (installResult.value.code !== 0) {
+    if (CodeUtil.isNotSuccess(installResult.value.code)) {
       return installResult;
     }
     this.logger.verbose('action yarn up...', { actionGitPath });
@@ -217,7 +227,7 @@ export class ActionProcessor {
     for (const doguDependency of doguDependencies) {
       this.logger.verbose('action yarn up dogu dependency...', { actionGitPath, doguDependency });
       const upResult = await this.commandProcessRegistry.command(yarnPath, ['up', '-R', doguDependency], { cwd: actionGitPath }, context);
-      if (upResult.value.code !== 0) {
+      if (CodeUtil.isNotSuccess(upResult.value.code)) {
         return upResult;
       }
     }
@@ -238,7 +248,7 @@ export class ActionProcessor {
       throw new Error('Unexpected fetch git error');
     }
     const errorResult = await this.updateYarn(context, actionGitPath, yarnPath);
-    if (errorResult.value.code !== 0) {
+    if (CodeUtil.isNotSuccess(errorResult.value.code)) {
       return { error: errorResult };
     } else {
       return { actionGitPath };

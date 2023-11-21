@@ -19,14 +19,8 @@ export class DeviceClientService implements OnModuleInit {
   }
 
   onModuleInit(): void {
-    const hostPort = env.DOGU_DEVICE_SERVER_HOST_PORT;
-    const hostAndPort = hostPort.split(':');
-    if (hostAndPort.length !== 2) {
-      throw new Error(`Invalid host and port: ${hostPort}`);
-    }
-    this.logger.info('hello');
     const factory = new DeviceClientsFactory({
-      port: Number(hostAndPort[1]),
+      deviceServerUrl: `http://${env.DOGU_DEVICE_SERVER_HOST_PORT}`,
       printable: {
         warn: this.logger.warn.bind(this.logger),
         debug: this.logger.debug.bind(this.logger),

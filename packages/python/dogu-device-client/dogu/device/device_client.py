@@ -40,10 +40,12 @@ class GetAppiumContextInfoResponse:
 
 
 class DeviceClient:
-    def __init__(self, host: str, port: int, timeout: int):
-        self.host = host
-        self.port = port
-        self._host_and_port = f"{self.host}:{self.port}"
+    def __init__(self, device_server_url: str, timeout: int):
+        self.device_server_url = (
+            device_server_url
+            if device_server_url[-1] != "/"
+            else device_server_url[:-1]
+        )
         self.timeout = timeout
         self._logger = create_logger(__name__)
 
@@ -90,7 +92,7 @@ class DeviceClient:
         )
 
     def get_appium_capabilities(self, serial: str) -> Any:
-        full_path = f"http://{self._host_and_port}/devices/{serial}/appium-capabilities"
+        full_path = f"{self.device_server_url}/devices/{serial}/appium-capabilities"
         res = requests.get(full_path, timeout=self.timeout)
         res.raise_for_status()
         device_res = DeviceHttpResponse(res)
@@ -101,7 +103,10 @@ class DeviceClient:
         return device_res.data_dict()["capabilities"]
 
     def __subscribe(self, path: str, try_count: int = 5) -> ClientConnection:
-        full_path = f"ws://{self._host_and_port}{path}"
+        ws_url = self.device_server_url.replace("http://", "ws://").replace(
+            "https://", "wss://"
+        )
+        full_path = f"{ws_url}{path}"
 
         last_error = None
         for i in range(try_count):
