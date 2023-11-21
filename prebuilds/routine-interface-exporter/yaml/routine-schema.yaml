@@ -58,6 +58,12 @@ definitions:
             patternProperties:
               ^[a-z]+$:
                 type: string
+      deviceVersion:
+        anyOf:
+          - type: number
+          - type: string
+      deviceModel:
+        type: string
       runs-on:
         anyOf:
           - type: object
@@ -80,7 +86,6 @@ definitions:
         items:
           '$ref': '#/definitions/Step'
     required:
-      - runs-on
       - steps
   Step:
     title: StepSchema

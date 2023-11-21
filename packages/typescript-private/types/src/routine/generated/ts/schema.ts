@@ -50,7 +50,9 @@ export interface JobSchema {
          */
         [k: string]: string;
       };
-  'runs-on':
+  deviceVersion?: number | string;
+  deviceModel?: string;
+  'runs-on'?:
     | {
         group: string | string[];
       }

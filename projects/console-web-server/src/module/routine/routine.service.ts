@@ -16,7 +16,8 @@ export class RoutineService {
     @Inject(YamlLoaderService)
     private readonly yamlLoaderService: YamlLoaderService,
   ) {}
-  private async getRoutineNameFromYAML(yamlContent: string): Promise<string> {
+
+  private getRoutineNameFromYAML(yamlContent: string): string {
     const routineSchema: RoutineSchema = this.yamlLoaderService.routineYamlToObject(yamlContent);
     const name = routineSchema.name;
     return name;
@@ -34,7 +35,7 @@ export class RoutineService {
 
   async createRoutine(userPayload: UserPayload, organizationId: OrganizationId, projectId: ProjectId, file: Express.Multer.File): Promise<RoutineBase> {
     const content = file.buffer.toString();
-    const name = await this.getRoutineNameFromYAML(content);
+    const name = this.getRoutineNameFromYAML(content);
 
     if (!name) {
       throw new BadRequestException('Routine name is required');
@@ -45,9 +46,9 @@ export class RoutineService {
       throw new ConflictException(`Routine "${name}" already exists.`);
     }
 
-    const routine = await this.dataSource.transaction(async (transactionEntityManager) => {
-      const result = transactionEntityManager.create(Routine, { name, projectId });
-      const routine = await transactionEntityManager.save(Routine, result);
+    const routine = await this.dataSource.transaction(async (manager) => {
+      const result = manager.create(Routine, { name, projectId });
+      const routine = await manager.save(Routine, result);
 
       await this.projectFileService.uploadRoutine(file, organizationId, projectId, routine.routineId, routine.name);
       return routine;
@@ -79,7 +80,7 @@ jobs:
         with:
           script: test/samples/dogurpgsample.test.ts`;
 
-    const name = await this.getRoutineNameFromYAML(content);
+    const name = this.getRoutineNameFromYAML(content);
     const buffer = Buffer.from(content);
 
     if (!name) {
@@ -141,7 +142,7 @@ jobs:
     }
 
     const content = file.buffer.toString();
-    const name = await this.getRoutineNameFromYAML(content);
+    const name = this.getRoutineNameFromYAML(content);
 
     const isChangedFileName = name !== routine.name;
     if (isChangedFileName) {
