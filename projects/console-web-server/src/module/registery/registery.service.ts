@@ -61,6 +61,7 @@ export class RegisteryService {
 
     const userInDB = await this.dataSource.getRepository(User).findOne({
       where: { email },
+      withDeleted: true,
     });
 
     if (userInDB) {
@@ -212,7 +213,7 @@ export class RegisteryService {
 
   async signUpWithThirdParty(oauthPayload: OAuthPayLoad): Promise<RegisteryWithOrganizationIdResult> {
     const { email, userSnsId, snsType, name } = oauthPayload;
-    const user = await this.dataSource.getRepository(User).findOne({ where: { email }, relations: [UserPropCamel.userAndVerificationToken] });
+    const user = await this.dataSource.getRepository(User).findOne({ where: { email }, withDeleted: true, relations: [UserPropCamel.userAndVerificationToken] });
 
     if (user) {
       if (false === this.isSupportThirdPartySignin(snsType)) {
