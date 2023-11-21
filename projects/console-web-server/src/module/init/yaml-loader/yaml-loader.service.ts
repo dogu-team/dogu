@@ -68,6 +68,12 @@ export class YamlLoaderService {
       .map(({ jobName, steps }) => {
         const errors = steps
           .map((step, index) => {
+            if (FeatureConfig.get('licenseModule') === 'cloud') {
+              if (step.run) {
+                return new Error(`run is not allowed on step. job [${jobName}], step [${index + 1}]`);
+              }
+            }
+
             if (step.uses && step.run) {
               return new Error(`Choose one of uses or run. job [${jobName}], step [${index + 1}]`);
             }

@@ -5,6 +5,7 @@ import { Injectable } from '@nestjs/common';
 
 import { RoutineDeviceJob } from '../../../../db/entity/device-job.entity';
 import { RoutineStep } from '../../../../db/entity/step.entity';
+import { FeatureConfig } from '../../../../feature.config';
 import { DeviceMessageRelayer } from '../../../device-message/device-message.relayer';
 import { DoguLogger } from '../../../logger/logger';
 
@@ -130,6 +131,14 @@ export class DeviceJobMessenger {
   private stepToRunStepValue(step: RoutineStep): RunStepValue {
     const { uses, run, with: with_ } = step;
     if (uses !== null) {
+      if (FeatureConfig.get('licenseModule') === 'self-hosted') {
+        return {
+          kind: 'Action',
+          actionId: uses,
+          inputs: with_ ?? {},
+        };
+      }
+
       return {
         kind: 'DockerAction',
         actionId: uses,
