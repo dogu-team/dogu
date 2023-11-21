@@ -10,6 +10,7 @@ import { OAuthPayLoad, OrganizationId, SNS_TYPE, UserId, USER_INVITATION_STATUS,
 import { BadRequestException, HttpException, HttpStatus, Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { InjectDataSource } from '@nestjs/typeorm';
+import axios from 'axios';
 import * as bcrypt from 'bcrypt';
 import { DateTime } from 'luxon';
 import { DataSource, EntityManager } from 'typeorm';
@@ -58,6 +59,17 @@ export class RegisteryService {
     // create Org Owner
     const { password, name, newsletter, invitationOrganizationId, invitationToken } = createUserDto;
     const email = createUserDto.email.toLowerCase();
+
+    const domain = email.split('@')[1];
+    try {
+      // check email domain is valid
+      const rv = await axios.get(`http://${domain}`);
+      if (rv.status !== 200 || rv.statusText !== 'OK') {
+        throw new HttpException(`Unsupported email domain : ${domain}. If this error persist, please contact us.`, HttpStatus.BAD_REQUEST);
+      }
+    } catch (e) {
+      throw new HttpException(`Unsupported email domain : ${domain}. If this error persist, please contact us.`, HttpStatus.BAD_REQUEST);
+    }
 
     const userInDB = await this.dataSource.getRepository(User).findOne({
       where: { email },
