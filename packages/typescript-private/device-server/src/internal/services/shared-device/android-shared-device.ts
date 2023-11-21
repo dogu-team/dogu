@@ -166,6 +166,13 @@ const BlockAppList: BlockAppInfo[] = [
     packageName: 'com.iplum.android',
     runtime: true,
   },
+  {
+    vender: 'unknown',
+    category: 'scam',
+    keyword: 'com.whatsapp',
+    packageName: 'com.whatsapp',
+    runtime: true,
+  },
   //#endregion
 
   /*
