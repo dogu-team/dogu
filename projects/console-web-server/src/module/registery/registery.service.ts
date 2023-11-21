@@ -18,6 +18,7 @@ import { DataSource, EntityManager } from 'typeorm';
 import { Organization, OrganizationAndUserAndOrganizationRole, Token, User, UserEmailPreference } from '../../db/entity/index';
 import { UserAndVerificationToken } from '../../db/entity/relations/user-and-verification-token.entity';
 import { UserSns } from '../../db/entity/user-sns.entity';
+import { WhitelistDomain } from '../../db/entity/whitelist-domain.entity';
 import { CloudLicenseService } from '../../enterprise/module/license/cloud-license.service';
 import { FeatureConfig } from '../../feature.config';
 import { EmailService } from '../../module/email/email.service';
@@ -61,14 +62,20 @@ export class RegisteryService {
     const email = createUserDto.email.toLowerCase();
 
     const domain = email.split('@')[1];
-    try {
-      // check email domain is valid
-      const rv = await axios.get(`http://${domain}`);
-      if (rv.status !== 200 || rv.statusText !== 'OK') {
+    const whitelist = await this.dataSource.getRepository(WhitelistDomain).findOne({
+      where: { domain },
+    });
+
+    if (!whitelist) {
+      try {
+        // check email domain is valid
+        const rv = await axios.get(`http://${domain}`);
+        if (rv.status !== 200 || rv.statusText !== 'OK') {
+          throw new HttpException(`Unsupported email domain : ${domain}. If this error persist, please contact us.`, HttpStatus.BAD_REQUEST);
+        }
+      } catch (e) {
         throw new HttpException(`Unsupported email domain : ${domain}. If this error persist, please contact us.`, HttpStatus.BAD_REQUEST);
       }
-    } catch (e) {
-      throw new HttpException(`Unsupported email domain : ${domain}. If this error persist, please contact us.`, HttpStatus.BAD_REQUEST);
     }
 
     const userInDB = await this.dataSource.getRepository(User).findOne({

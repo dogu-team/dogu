@@ -23,6 +23,7 @@ import { getInvitationServerSideProps } from '../../src/ssr/invitation';
 import SocialSignInForm from '../../src/components/social-signin/SocialSignInForm';
 import Cookies from 'universal-cookie';
 import usePromotionStore from '../../src/stores/promotion';
+import LiveChat from '../../src/components/external/livechat';
 
 interface Props {
   email: string;
@@ -114,7 +115,14 @@ const InviteSignupPage: NextPageWithLayout<Props> = ({ email, token, invitation 
 };
 
 InviteSignupPage.getLayout = function (page) {
-  return <SmallBoxCenteredLayout>{page}</SmallBoxCenteredLayout>;
+  return (
+    <SmallBoxCenteredLayout>
+      <>
+        {page}
+        <LiveChat />
+      </>
+    </SmallBoxCenteredLayout>
+  );
 };
 
 export const getServerSideProps: GetServerSideProps = getInvitationServerSideProps;

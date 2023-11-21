@@ -11,6 +11,7 @@ import SmallBoxCenteredLayout from 'src/components/layouts/SmallBoxCenterLayout'
 import SocialSignInForm from 'src/components/social-signin/SocialSignInForm';
 import { redirectWithLocale } from 'src/ssr/locale';
 import { hasRootUser } from '../../src/api/feature';
+import LiveChat from '../../src/components/external/livechat';
 
 const LoginPage: NextPageWithLayout = () => {
   const { t } = useTranslation();
@@ -40,7 +41,14 @@ const LoginPage: NextPageWithLayout = () => {
 };
 
 LoginPage.getLayout = function (page) {
-  return <SmallBoxCenteredLayout titleI18nKey="registery:signInPageTitle">{page}</SmallBoxCenteredLayout>;
+  return (
+    <SmallBoxCenteredLayout titleI18nKey="registery:signInPageTitle">
+      <>
+        {page}
+        <LiveChat />
+      </>
+    </SmallBoxCenteredLayout>
+  );
 };
 
 export const getServerSideProps: GetServerSideProps = async (context) => {

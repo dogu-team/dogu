@@ -21,6 +21,7 @@ import SocialSignInForm from '../../src/components/social-signin/SocialSignInFor
 import { redirectWithLocale } from '../../src/ssr/locale';
 import { hasRootUser } from '../../src/api/feature';
 import usePromotionStore from '../../src/stores/promotion';
+import LiveChat from '../../src/components/external/livechat';
 
 interface Props {
   shouldSetupRoot: boolean;
@@ -81,7 +82,10 @@ SignUpPage.getLayout = function (page) {
     <SmallBoxCenteredLayout
       titleI18nKey={page.props.shouldSetupRoot ? 'registery:signUpRootPageTitle' : 'registery:signUpPageTitle'}
     >
-      {page}
+      <>
+        {page}
+        <LiveChat />
+      </>
     </SmallBoxCenteredLayout>
   );
 };
