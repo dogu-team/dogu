@@ -38,6 +38,17 @@ export class IosClassChainSelector implements IosSelector {
   }
 }
 
+export class IosButtonClassChainStringSelector implements IosSelector {
+  constructor(
+    private selector: string,
+    public option: IosSelectorOption = DefaultIosSelectorOption(),
+  ) {}
+
+  build(): string {
+    return new IosClassChainSelector('**/XCUIElementTypeButton[`label == "' + this.selector + '"`]', this.option).build();
+  }
+}
+
 export class IosPredicateStringSelector implements IosSelector {
   constructor(
     private selector: string,
@@ -73,7 +84,18 @@ export class IosWebDriverInfo {
     if (!this.isIpad) {
       return false;
     }
+    return this.isOverIos14;
+  }
+
+  get isOverIos14(): boolean {
     if (semver.lt(this.osVersion, '14.0.0')) {
+      return false;
+    }
+    return true;
+  }
+
+  get isOverIos17(): boolean {
+    if (semver.lt(this.osVersion, '17.0.0')) {
       return false;
     }
     return true;
@@ -104,6 +126,7 @@ export class IosWebDriver {
       async () => {
         await wda.launchApp(bundleId);
         for await (const _ of loopTime({ period: AppSwitchLoopPeriod, expire: { seconds: 5 } })) {
+          await wda.dismissAlert();
           const apps = await wda.getActiveAppList();
           const some = apps.some((app) => app.bundleId === bundleId);
           if (some) {
