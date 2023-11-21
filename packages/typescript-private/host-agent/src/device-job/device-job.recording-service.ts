@@ -12,7 +12,7 @@ import { env } from '../env';
 import { DoguLogger } from '../logger/logger';
 
 export interface DeviceJobRecordParam {
-  organizationId: OrganizationId;
+  executorOrganizationId: OrganizationId;
   routineDeviceJobId: RoutineDeviceJobId;
   serial: Serial;
   pid?: number;
@@ -26,7 +26,7 @@ export class DeviceJobRecordingService {
   ) {}
 
   connectAndUploadRecordWs(value: DeviceJobRecordParam, filePath: string, listener: { onClose: (ws: WebSocket) => void }): WebSocket {
-    const { organizationId, routineDeviceJobId, serial, pid } = value;
+    const { executorOrganizationId, routineDeviceJobId, serial, pid } = value;
     const webSocket = new WebSocket(`ws://${env.DOGU_DEVICE_SERVER_HOST_PORT}${DeviceRecording.path}`);
     webSocket.addEventListener('open', () => {
       this.logger.info('startRecording open', {
@@ -64,7 +64,7 @@ export class DeviceJobRecordingService {
             throw new Error(`startRecording: file not found. ${filePath}`);
           }
 
-          uploadDeviceRecording(this.consoleClientService, organizationId, routineDeviceJobId, filePath).catch((error) => {
+          uploadDeviceRecording(this.consoleClientService, executorOrganizationId, routineDeviceJobId, filePath).catch((error) => {
             this.logger.error('uploadDeviceRecording failed', { error: errorify(error) });
           });
         } catch (error) {

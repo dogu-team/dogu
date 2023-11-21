@@ -23,10 +23,10 @@ export class DeviceJobHeartbeater {
     try {
       const { contexts } = this.deviceJobContextRegistry;
       for (const [key, context] of contexts) {
-        const { organizationId, routineDeviceJobId } = context;
-        this.updateDeviceJobHeartbeatNow(organizationId, routineDeviceJobId).catch((error) => {
+        const { executorOrganizationId, routineDeviceJobId } = context;
+        this.updateDeviceJobHeartbeatNow(executorOrganizationId, routineDeviceJobId).catch((error) => {
           this.logger.error('DeviceJob heartbeat failed', {
-            organizationId,
+            executorOrganizationId,
             routineDeviceJobId,
             timestamp: new Date(),
             error: stringifyError(error),

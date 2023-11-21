@@ -7,7 +7,7 @@ import { StepRegistryKeySource } from '../step/step.types';
 
 export class OnStepEventValueBase implements StepRegistryKeySource {
   @IsUUID()
-  organizationId!: OrganizationId;
+  executorOrganizationId!: OrganizationId;
 
   @IsFilledString()
   serial!: Serial;

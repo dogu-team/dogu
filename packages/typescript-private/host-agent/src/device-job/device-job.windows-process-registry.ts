@@ -65,15 +65,15 @@ export class DeviceJobWindowsProcessRegistry {
     if (!this.hostResolutionInfo) {
       throw new Error('onDeviceJobStarted: hostResolutionInfo not found');
     }
-    const { organizationId, routineDeviceJobId, platform, record, browserName, recordDeviceRunnerPath } = value;
+    const { executorOrganizationId, routineDeviceJobId, platform, record, browserName, recordDeviceRunnerPath } = value;
 
     if (!browserName) {
       this.logger.info(`startRecording: DeviceJobRecordingWindowProcessRegistry doesn't handle when browserName is null`, { routineDeviceJobId, browserName });
       return;
     }
-    const key = this.createKey(organizationId, routineDeviceJobId);
+    const key = this.createKey(executorOrganizationId, routineDeviceJobId);
 
-    this.quitSafari(browserName, organizationId, routineDeviceJobId);
+    this.quitSafari(browserName, executorOrganizationId, routineDeviceJobId);
 
     this.deviceJobInfos.set(key, { browserName, platform, recordDeviceRunnerPath, record: !!record });
   }
@@ -84,16 +84,16 @@ export class DeviceJobWindowsProcessRegistry {
       throw new Error('OnStepProcessStarted: hostResolutionInfo not found');
     }
 
-    const { organizationId, routineDeviceJobId, serial, pid } = value;
-    const key = this.createKey(organizationId, routineDeviceJobId);
+    const { executorOrganizationId, routineDeviceJobId, serial, pid } = value;
+    const key = this.createKey(executorOrganizationId, routineDeviceJobId);
 
     if (!pid) {
-      this.logger.warn('OnStepProcessStarted: pid is null', { organizationId, routineDeviceJobId });
+      this.logger.warn('OnStepProcessStarted: pid is null', { executorOrganizationId, routineDeviceJobId });
       return;
     }
     const deviceJobInfo = this.deviceJobInfos.get(key);
     if (!deviceJobInfo) {
-      this.logger.warn('OnStepProcessStarted: deviceJobInfo not found', { organizationId, routineDeviceJobId });
+      this.logger.warn('OnStepProcessStarted: deviceJobInfo not found', { executorOrganizationId, routineDeviceJobId });
       return;
     }
 
@@ -110,7 +110,7 @@ export class DeviceJobWindowsProcessRegistry {
         onMessage: (result) => {
           closeWebSocketWithTruncateReason(newFindWindowsWebSocket, 1000, 'Find device windows done');
           const window: WindowInfo = { pid: result.pid };
-          this.updateDeviceJobWindow(organizationId, routineDeviceJobId, window).catch((error) => {
+          this.updateDeviceJobWindow(executorOrganizationId, routineDeviceJobId, window).catch((error) => {
             this.logger.error('Failed to update deviceJob window', { error: errorify(error) });
           });
           if (!deviceJobInfo.record) {
@@ -144,14 +144,14 @@ export class DeviceJobWindowsProcessRegistry {
 
   @OnEvent(OnDeviceJobCancelRequestedEvent.key)
   onDeviceJobCancelRequested(value: Instance<typeof OnDeviceJobCancelRequestedEvent.value>): void {
-    const { organizationId, routineDeviceJobId } = value;
-    this.closeKey('onDeviceJobCancelRequested', organizationId, routineDeviceJobId);
+    const { executorOrganizationId, routineDeviceJobId } = value;
+    this.closeKey('onDeviceJobCancelRequested', executorOrganizationId, routineDeviceJobId);
   }
 
   @OnEvent(OnDeviceJobPostProcessCompletedEvent.key)
   onDeviceJobPostProcessCompleted(value: Instance<typeof OnDeviceJobPostProcessCompletedEvent.value>): void {
-    const { organizationId, routineDeviceJobId } = value;
-    this.closeKey('onDeviceJobCompleted', organizationId, routineDeviceJobId);
+    const { executorOrganizationId, routineDeviceJobId } = value;
+    this.closeKey('onDeviceJobCompleted', executorOrganizationId, routineDeviceJobId);
   }
 
   private createKey(organizationId: OrganizationId, routineDeviceJobId: RoutineDeviceJobId): string {

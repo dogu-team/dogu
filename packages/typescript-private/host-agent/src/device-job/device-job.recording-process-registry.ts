@@ -12,7 +12,7 @@ import { DeviceJobRecordingService } from './device-job.recording-service';
 
 interface DeviceRecordingInfo {
   webSocket: WebSocket;
-  organizationId: OrganizationId;
+  executorOrganizationId: OrganizationId;
   routineDeviceJobId: RoutineDeviceJobId;
   serial: Serial;
   filePath: string;
@@ -48,16 +48,16 @@ export class DeviceJobRecordingProcessRegistry {
     if (!this.hostResolutionInfo) {
       throw new Error('onDeviceJobStarted: hostResolutionInfo not found');
     }
-    const { organizationId, routineDeviceJobId, serial, platform, record, browserName, recordDeviceRunnerPath } = value;
+    const { executorOrganizationId, routineDeviceJobId, serial, platform, record, browserName, recordDeviceRunnerPath } = value;
     if (!record) {
-      this.logger.info('startRecording: record is false', { organizationId, routineDeviceJobId });
+      this.logger.info('startRecording: record is false', { executorOrganizationId, routineDeviceJobId });
       return;
     }
     if (browserName) {
       this.logger.info(`startRecording: DeviceJobRecordingProcessRegistry doesn't handle when browserName is not null`, { routineDeviceJobId, browserName });
       return;
     }
-    const key = this.createKey(organizationId, routineDeviceJobId);
+    const key = this.createKey(executorOrganizationId, routineDeviceJobId);
 
     const fileName = toISOStringWithTimezone(new Date(), '-');
     const filePath = path.resolve(recordDeviceRunnerPath, `${fileName}${getRecordExt(platform)}`);
@@ -71,19 +71,19 @@ export class DeviceJobRecordingProcessRegistry {
       throw new Error(`device recording already exists: ${key}`);
     }
 
-    this.webSockets.set(key, { webSocket, serial, organizationId, routineDeviceJobId, filePath });
+    this.webSockets.set(key, { webSocket, serial, executorOrganizationId, routineDeviceJobId, filePath });
   }
   @OnEvent(OnDeviceJobCancelRequestedEvent.key)
   onDeviceJobCancelRequested(value: Instance<typeof OnDeviceJobCancelRequestedEvent.value>): void {
-    const { organizationId, routineDeviceJobId, record } = value;
+    const { executorOrganizationId, routineDeviceJobId, record } = value;
     if (!record) {
-      this.logger.info('onDeviceJobCancelRequested: record is false', { organizationId, routineDeviceJobId });
+      this.logger.info('onDeviceJobCancelRequested: record is false', { executorOrganizationId, routineDeviceJobId });
       return;
     }
-    const key = this.createKey(organizationId, routineDeviceJobId);
+    const key = this.createKey(executorOrganizationId, routineDeviceJobId);
     const deviceRecordingInfo = this.webSockets.get(key);
     if (!deviceRecordingInfo) {
-      this.logger.warn('onDeviceJobCancelRequested: deviceRecordingInfo not found', { organizationId, routineDeviceJobId });
+      this.logger.warn('onDeviceJobCancelRequested: deviceRecordingInfo not found', { executorOrganizationId, routineDeviceJobId });
       return;
     }
     const { webSocket } = deviceRecordingInfo;
@@ -92,15 +92,15 @@ export class DeviceJobRecordingProcessRegistry {
 
   @OnEvent(OnDeviceJobPostProcessCompletedEvent.key)
   onDeviceJobPostProcessCompleted(value: Instance<typeof OnDeviceJobPostProcessCompletedEvent.value>): void {
-    const { organizationId, routineDeviceJobId, record } = value;
+    const { executorOrganizationId, routineDeviceJobId, record } = value;
     if (!record) {
-      this.logger.info('onDeviceJobCompleted: record is false', { organizationId, routineDeviceJobId });
+      this.logger.info('onDeviceJobCompleted: record is false', { executorOrganizationId, routineDeviceJobId });
       return;
     }
-    const key = this.createKey(organizationId, routineDeviceJobId);
+    const key = this.createKey(executorOrganizationId, routineDeviceJobId);
     const deviceRecordingInfo = this.webSockets.get(key);
     if (!deviceRecordingInfo) {
-      this.logger.warn('onDeviceJobCompleted: deviceRecordingInfo not found', { organizationId, routineDeviceJobId });
+      this.logger.warn('onDeviceJobCompleted: deviceRecordingInfo not found', { executorOrganizationId, routineDeviceJobId });
       return;
     }
     const { webSocket } = deviceRecordingInfo;

@@ -32,9 +32,9 @@ export class DeviceJobStepProcessor {
   ) {}
 
   async onRunDeviceJob(param: RunDeviceJob, context: MessageContext): Promise<void> {
-    const { routineDeviceJobId, record, runSteps, deviceRunnerId, browserName } = param;
+    const { routineDeviceJobId, executorOrganizationId, record, runSteps, deviceRunnerId, browserName } = param;
     const { info, router } = context;
-    const { organizationId, deviceId, serial, recordWorkspacePath, platform } = info;
+    const { serial, recordWorkspacePath, platform } = info;
     const recordDeviceRunnerPath = HostPaths.recordDeviceRunnerPath(recordWorkspacePath, deviceRunnerId);
     await fs.promises.mkdir(recordDeviceRunnerPath, { recursive: true });
     this.logger.info(`DeviceJob ${routineDeviceJobId} started on device ${serial}`);
@@ -42,7 +42,7 @@ export class DeviceJobStepProcessor {
 
     try {
       await validateAndEmitEventAsync(this.eventEmitter, OnDeviceJobPrePocessStartedEvent, {
-        organizationId,
+        executorOrganizationId,
         routineDeviceJobId,
         localStartedAt: deviceJobLocalStartedAt,
       });
@@ -51,7 +51,7 @@ export class DeviceJobStepProcessor {
     }
 
     await validateAndEmitEventAsync(this.eventEmitter, OnDeviceJobStartedEvent, {
-      organizationId,
+      executorOrganizationId,
       routineDeviceJobId,
       recordDeviceRunnerPath,
       record,
@@ -65,7 +65,7 @@ export class DeviceJobStepProcessor {
     this.logger.info(`DeviceJob ${routineDeviceJobId} started event emitted on device ${serial}`);
     try {
       for (const runStep of runSteps) {
-        if (this.deviceJobContextRegistry.cancelRequested(organizationId, routineDeviceJobId)) {
+        if (this.deviceJobContextRegistry.cancelRequested(executorOrganizationId, routineDeviceJobId)) {
           this.logger.info(`DeviceJob ${routineDeviceJobId} canceled on device ${serial}`);
           break;
         }
@@ -86,7 +86,7 @@ export class DeviceJobStepProcessor {
     this.logger.info(`DeviceJob ${routineDeviceJobId} completed on device ${serial}`);
     try {
       await validateAndEmitEventAsync(this.eventEmitter, OnDeviceJobCompletedEvent, {
-        organizationId,
+        executorOrganizationId,
         routineDeviceJobId,
         record,
         localStartedAt: deviceJobLocalStartedAt,
@@ -99,13 +99,11 @@ export class DeviceJobStepProcessor {
   }
 
   async onCancelDeviceJob(param: CancelDeviceJob, context: MessageContext): Promise<void> {
-    const { routineDeviceJobId, record } = param;
-    const { info } = context;
-    const { organizationId, deviceId } = info;
+    const { routineDeviceJobId, executorOrganizationId, record } = param;
     this.logger.info(`DeviceJob ${routineDeviceJobId} cancel requested`);
     try {
       await validateAndEmitEventAsync(this.eventEmitter, OnDeviceJobCancelRequestedEvent, {
-        organizationId,
+        executorOrganizationId,
         routineDeviceJobId,
         record,
       });
@@ -138,7 +136,7 @@ export class DeviceJobStepProcessor {
     this.logger.info(`Step ${routineStepId} started`);
     try {
       await validateAndEmitEventAsync(this.eventEmitter, OnStepStartedEvent, {
-        organizationId: executorOrganizationId,
+        executorOrganizationId,
         serial,
         routineDeviceJobId,
         routineStepId,
@@ -203,7 +201,7 @@ export class DeviceJobStepProcessor {
       {
         onProcessStarted: (pid): void => {
           const value: Instance<typeof OnStepProcessStartedEvent.value> = {
-            organizationId: executorOrganizationId,
+            executorOrganizationId,
             serial,
             routineStepId,
             routineDeviceJobId,
@@ -216,7 +214,7 @@ export class DeviceJobStepProcessor {
         },
         onLog: (log): void => {
           const value: Instance<typeof OnDeviceJobLoggedEvent.value> = {
-            organizationId: executorOrganizationId,
+            executorOrganizationId,
             routineDeviceJobId,
             log: { ...log, type: DEVICE_JOB_LOG_TYPE.USER_PROJECT, routineStepId },
           };
@@ -240,7 +238,7 @@ export class DeviceJobStepProcessor {
         },
         onCancelerCreated: (canceler): void => {
           const value: Instance<typeof OnStepInProgressEvent.value> = {
-            organizationId: executorOrganizationId,
+            executorOrganizationId,
             serial,
             routineStepId,
             routineDeviceJobId,
@@ -278,7 +276,7 @@ export class DeviceJobStepProcessor {
     try {
       await delay(10); // padding for log missing. (If last log time and step complete time is same )
       await validateAndEmitEventAsync(this.eventEmitter, OnStepCompletedEvent, {
-        organizationId: executorOrganizationId,
+        executorOrganizationId,
         serial,
         routineDeviceJobId,
         routineStepId,

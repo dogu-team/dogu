@@ -18,14 +18,14 @@ export class DeviceJobUpdater {
 
   @OnEvent(OnDeviceJobPostProcessCompletedEvent.key)
   async onDeviceJobPostProcessCompleted(value: Instance<typeof OnDeviceJobPostProcessCompletedEvent.value>): Promise<void> {
-    const { organizationId, routineDeviceJobId, deviceJobStatusInfo, stepStatusInfos } = value;
-    await this.updateDeviceJobStatus(organizationId, routineDeviceJobId, deviceJobStatusInfo, stepStatusInfos);
+    const { executorOrganizationId, routineDeviceJobId, deviceJobStatusInfo, stepStatusInfos } = value;
+    await this.updateDeviceJobStatus(executorOrganizationId, routineDeviceJobId, deviceJobStatusInfo, stepStatusInfos);
   }
 
   @OnEvent(OnDeviceJobPrePocessStartedEvent.key)
   async OnDeviceJobPrePocessStarted(value: Instance<typeof OnDeviceJobPrePocessStartedEvent.value>): Promise<void> {
-    const { organizationId, routineDeviceJobId, localStartedAt } = value;
-    await this.updateDeviceJobLocalStartedAt(organizationId, routineDeviceJobId, localStartedAt);
+    const { executorOrganizationId, routineDeviceJobId, localStartedAt } = value;
+    await this.updateDeviceJobLocalStartedAt(executorOrganizationId, routineDeviceJobId, localStartedAt);
   }
 
   @Retry({ printable: logger })

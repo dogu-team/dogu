@@ -43,7 +43,7 @@ export class DeviceJobLogger {
 
   @OnEvent(OnDeviceJobLoggedEvent.key)
   onDeviceJobLoggedEvent(value: Instance<typeof OnDeviceJobLoggedEvent.value>): void {
-    const key = this.createKey(value.organizationId, value.routineDeviceJobId);
+    const key = this.createKey(value.executorOrganizationId, value.routineDeviceJobId);
     const buffer = this.buffers.get(key);
     if (buffer === undefined) {
       this.buffers.set(key, [value.log]);

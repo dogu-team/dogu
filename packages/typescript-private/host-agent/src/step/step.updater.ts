@@ -18,14 +18,14 @@ export class StepUpdater {
 
   @OnEvent(OnStepStartedEvent.key)
   async onStepInProgressEvent(value: Instance<typeof OnStepStartedEvent.value>): Promise<void> {
-    const { organizationId, routineStepId, localTimeStamp } = value;
-    await this.updateStepStatus(organizationId, routineStepId, PIPELINE_STATUS.IN_PROGRESS, localTimeStamp);
+    const { executorOrganizationId, routineStepId, localTimeStamp } = value;
+    await this.updateStepStatus(executorOrganizationId, routineStepId, PIPELINE_STATUS.IN_PROGRESS, localTimeStamp);
   }
 
   @OnEvent(OnStepCompletedEvent.key)
   async onStepCompleted(value: Instance<typeof OnStepCompletedEvent.value>): Promise<void> {
-    const { organizationId, routineStepId, stepStatus, localTimeStamp } = value;
-    await this.updateStepStatus(organizationId, routineStepId, stepStatus, localTimeStamp);
+    const { executorOrganizationId, routineStepId, stepStatus, localTimeStamp } = value;
+    await this.updateStepStatus(executorOrganizationId, routineStepId, stepStatus, localTimeStamp);
   }
 
   @Retry({ printable: logger })

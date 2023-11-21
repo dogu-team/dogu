@@ -1,4 +1,12 @@
-import { DevicePropCamel, RoutineDeviceJobPropCamel, RoutineDeviceJobPropSnake, RoutineJobPropCamel, RoutinePipelinePropSnake, RoutineStepPropCamel } from '@dogu-private/console';
+import {
+  DevicePropCamel,
+  RoutineDeviceJobPropCamel,
+  RoutineDeviceJobPropSnake,
+  RoutineJobPropCamel,
+  RoutinePipelinePropCamel,
+  RoutinePipelinePropSnake,
+  RoutineStepPropCamel,
+} from '@dogu-private/console';
 import { PIPELINE_STATUS } from '@dogu-private/types';
 import { errorify } from '@dogu-tech/common';
 import { Inject, Injectable } from '@nestjs/common';
@@ -185,7 +193,8 @@ export class DeviceJobUpdater {
       .innerJoinAndSelect(`deviceJob.${RoutineDeviceJobPropCamel.routineJob}`, 'job')
       .innerJoinAndSelect(`deviceJob.${RoutineDeviceJobPropCamel.device}`, 'device')
       .innerJoinAndSelect(`job.${RoutineJobPropCamel.routinePipeline}`, 'pipeline')
-      .where(`pipeline.${RoutinePipelinePropSnake.status} = :pipelineStatus`, { pipelineStatus: PIPELINE_STATUS.CANCEL_REQUESTED })
+      .innerJoinAndSelect(`pipeline.${RoutinePipelinePropCamel.project}`, 'project')
+      .where(`pipeline.${RoutinePipelinePropCamel.status} = :pipelineStatus`, { pipelineStatus: PIPELINE_STATUS.CANCEL_REQUESTED })
       .andWhere(
         new Brackets((qb) => {
           qb.where(`deviceJob.${RoutineDeviceJobPropSnake.heartbeat} IS NOT NULL`);
@@ -209,8 +218,28 @@ export class DeviceJobUpdater {
       this.logger.info(`cancel_requested device-job heartbeat is alive. cancel request to HA. deviceJobId: ${deviceJobId}`);
       await this.deviceJobRunner.setStatus(this.dataSource.manager, deviceJob, PIPELINE_STATUS.CANCEL_REQUESTED, new Date());
 
+      const { routineJob } = deviceJob;
+      if (!routineJob) {
+        this.logger.error(`routineJob is null. deviceJobId: ${deviceJobId}`);
+        continue;
+      }
+
+      const { routinePipeline } = routineJob;
+      if (!routinePipeline) {
+        this.logger.error(`routinePipeline is null. deviceJobId: ${deviceJobId}`);
+        continue;
+      }
+
+      const { project } = routinePipeline;
+      if (!project) {
+        this.logger.error(`project is null. deviceJobId: ${deviceJobId}`);
+        continue;
+      }
+
+      const { organizationId: executorOrganizationId } = project;
+
       try {
-        await this.deviceJobRunner.sendCancelDeviceJob(device.organizationId, deviceId, deviceJob);
+        await this.deviceJobRunner.sendCancelDeviceJob(device.organizationId, deviceId, executorOrganizationId, deviceJob);
       } catch (error) {
         this.logger.error(`sendCancelDeviceJob error. deviceJobId: ${deviceJobId}, error: ${util.inspect(error)}`);
       }

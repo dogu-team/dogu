@@ -325,6 +325,9 @@ export class RunDeviceJob extends Kindable<'RunDeviceJob'> implements Pick<Routi
   routineDeviceJobId!: RoutineDeviceJobId;
 
   @IsUUID()
+  executorOrganizationId!: OrganizationId;
+
+  @IsUUID()
   deviceRunnerId!: DeviceRunnerId;
 
   @IsIn([0, 1])
@@ -358,6 +361,9 @@ export class RunDeviceJob extends Kindable<'RunDeviceJob'> implements Pick<Routi
 @OneOf()
 export class CancelDeviceJob extends Kindable<'CancelDeviceJob'> {
   static override kind = 'CancelDeviceJob';
+
+  @IsUUID()
+  executorOrganizationId!: OrganizationId;
 
   @IsNumber()
   routineDeviceJobId!: RoutineDeviceJobId;

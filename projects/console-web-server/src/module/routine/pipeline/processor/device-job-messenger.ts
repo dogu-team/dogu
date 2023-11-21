@@ -64,6 +64,7 @@ export class DeviceJobMessenger {
       kind: 'EventParam',
       value: {
         kind: 'RunDeviceJob',
+        executorOrganizationId,
         routineDeviceJobId,
         deviceRunnerId,
         record,
@@ -78,12 +79,13 @@ export class DeviceJobMessenger {
     parseEventResult(result);
   }
 
-  async sendCancelDeviceJob(organizationId: OrganizationId, deviceId: DeviceId, deviceJob: RoutineDeviceJob): Promise<void> {
+  async sendCancelDeviceJob(organizationId: OrganizationId, deviceId: DeviceId, executorOrganizationId: OrganizationId, deviceJob: RoutineDeviceJob): Promise<void> {
     const { routineDeviceJobId, record } = deviceJob;
     const result = await this.deviceMessageRelayer.sendParam(organizationId, deviceId, {
       kind: 'EventParam',
       value: {
         kind: 'CancelDeviceJob',
+        executorOrganizationId,
         routineDeviceJobId,
         record,
       },

@@ -7,7 +7,7 @@ import { DeviceJobRegistryKeySource } from '../device-job/device-job.types';
 
 export class OnDeviceJobEventValueBase implements DeviceJobRegistryKeySource {
   @IsUUID()
-  organizationId!: OrganizationId;
+  executorOrganizationId!: OrganizationId;
 
   @IsNumber()
   routineDeviceJobId!: RoutineDeviceJobId;

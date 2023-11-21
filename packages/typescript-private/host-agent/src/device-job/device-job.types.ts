@@ -1,6 +1,6 @@
 import { OrganizationId, RoutineDeviceJobId } from '@dogu-private/types';
 
 export interface DeviceJobRegistryKeySource {
-  organizationId: OrganizationId;
+  executorOrganizationId: OrganizationId;
   routineDeviceJobId: RoutineDeviceJobId;
 }

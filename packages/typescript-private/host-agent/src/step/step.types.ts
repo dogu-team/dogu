@@ -5,7 +5,7 @@ import { MessageCanceler, MessageContext, StepMessageEventHandler } from '../mes
 import { MessageInfo, Resolve } from '../types';
 
 export interface StepRegistryKeySource {
-  organizationId: OrganizationId;
+  executorOrganizationId: OrganizationId;
   routineStepId: RoutineStepId;
 }
 export type StepRegistryKey = string;

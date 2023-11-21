@@ -11,7 +11,7 @@ import { DoguLogger } from '../logger/logger';
 
 interface DeviceLogInfo {
   webSocket: WebSocket;
-  organizationId: OrganizationId;
+  executorOrganizationId: OrganizationId;
   routineDeviceJobId: RoutineDeviceJobId;
   serial: Serial;
 }
@@ -36,14 +36,14 @@ export class DeviceJobLogProcessRegistry {
 
   @OnEvent(OnDeviceJobStartedEvent.key)
   onDeviceJobStarted(value: Instance<typeof OnDeviceJobStartedEvent.value>): void {
-    const { organizationId, routineDeviceJobId, serial } = value;
+    const { executorOrganizationId, routineDeviceJobId, serial } = value;
     const webSocket = new WebSocket(`ws://${env.DOGU_DEVICE_SERVER_HOST_PORT}${DeviceLogSubscribe.path}`);
-    const key = this.createKey(organizationId, routineDeviceJobId);
+    const key = this.createKey(executorOrganizationId, routineDeviceJobId);
 
     if (this.webSockets.has(key)) {
       throw new Error(`device log already exists: ${key}`);
     }
-    this.webSockets.set(key, { webSocket, serial, organizationId, routineDeviceJobId });
+    this.webSockets.set(key, { webSocket, serial, executorOrganizationId, routineDeviceJobId });
 
     webSocket.addEventListener('open', () => {
       this.logger.info('startDeviceLogSubscribe open');
@@ -66,7 +66,7 @@ export class DeviceJobLogProcessRegistry {
     webSocket.addEventListener('close', (ev) => {
       const deviceLogInfo = this.webSockets.get(key);
       if (!deviceLogInfo) {
-        this.logger.warn('startDeviceLogSubscribe close: deviceLogInfo not found', { organizationId, routineDeviceJobId });
+        this.logger.warn('startDeviceLogSubscribe close: deviceLogInfo not found', { executorOrganizationId, routineDeviceJobId });
         return;
       }
       this.webSockets.delete(key);
@@ -78,7 +78,7 @@ export class DeviceJobLogProcessRegistry {
       transformAndValidate(DeviceLogSubscribe.receiveMessage, JSON.parse(data.toString()))
         .then(async (message) => {
           await validateAndEmitEventAsync(this.eventEmitter, OnDeviceJobLoggedEvent, {
-            organizationId,
+            executorOrganizationId,
             routineDeviceJobId,
             log: {
               ...message,
@@ -94,16 +94,16 @@ export class DeviceJobLogProcessRegistry {
 
   @OnEvent(OnDeviceJobCancelRequestedEvent.key)
   onDeviceJobCancelRequested(value: Instance<typeof OnDeviceJobCancelRequestedEvent.value>): void {
-    const { organizationId, routineDeviceJobId } = value;
-    const key = this.createKey(organizationId, routineDeviceJobId);
+    const { executorOrganizationId, routineDeviceJobId } = value;
+    const key = this.createKey(executorOrganizationId, routineDeviceJobId);
     const deviceLogInfo = this.webSockets.get(key);
     if (!deviceLogInfo) {
-      this.logger.warn('onDeviceJobCancelRequested: deviceLogInfo not found', { organizationId, routineDeviceJobId });
+      this.logger.warn('onDeviceJobCancelRequested: deviceLogInfo not found', { executorOrganizationId, routineDeviceJobId });
       return;
     }
     const { webSocket } = deviceLogInfo;
     if (webSocket.readyState === WebSocket.CLOSING || webSocket.readyState === WebSocket.CLOSED) {
-      this.logger.warn('onDeviceJobCancelRequested: webSocket is already closing or closed', { organizationId, routineDeviceJobId });
+      this.logger.warn('onDeviceJobCancelRequested: webSocket is already closing or closed', { executorOrganizationId, routineDeviceJobId });
       return;
     }
     closeWebSocketWithTruncateReason(webSocket, 1001, 'Cancel requested');
@@ -111,11 +111,11 @@ export class DeviceJobLogProcessRegistry {
 
   @OnEvent(OnDeviceJobPostProcessCompletedEvent.key)
   onDeviceJobPostProcessCompleted(value: Instance<typeof OnDeviceJobPostProcessCompletedEvent.value>): void {
-    const { organizationId, routineDeviceJobId } = value;
-    const key = this.createKey(organizationId, routineDeviceJobId);
+    const { executorOrganizationId, routineDeviceJobId } = value;
+    const key = this.createKey(executorOrganizationId, routineDeviceJobId);
     const deviceLogInfo = this.webSockets.get(key);
     if (!deviceLogInfo) {
-      this.logger.warn('onDeviceJobCompleted: deviceLogInfo not found', { organizationId, routineDeviceJobId });
+      this.logger.warn('onDeviceJobCompleted: deviceLogInfo not found', { executorOrganizationId, routineDeviceJobId });
       return;
     }
     const { webSocket } = deviceLogInfo;

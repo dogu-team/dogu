@@ -31,9 +31,9 @@ export class DeviceJobRunner {
     await this.deviceJobMessanger.sendRunDeviceJob(organizationId, deviceId, deviceJob);
   }
 
-  async sendCancelDeviceJob(organizationId: OrganizationId, deviceId: DeviceId, deviceJob: RoutineDeviceJob): Promise<void> {
+  async sendCancelDeviceJob(organizationId: OrganizationId, deviceId: DeviceId, executorOrganizationId: OrganizationId, deviceJob: RoutineDeviceJob): Promise<void> {
     this.logger.info(`DeviceJob [${deviceJob.routineDeviceJobId}] send run request to device [${deviceId}]`);
-    await this.deviceJobMessanger.sendCancelDeviceJob(organizationId, deviceId, deviceJob);
+    await this.deviceJobMessanger.sendCancelDeviceJob(organizationId, deviceId, executorOrganizationId, deviceJob);
   }
 
   async complete(deviceJob: RoutineDeviceJob, event: UpdateDeviceJobStatusRequestBody): Promise<void> {
