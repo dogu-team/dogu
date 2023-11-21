@@ -30,8 +30,8 @@ const UserId = 0;
  * runtime: Filter logcat messages with "START u0" and If message contains app.keyword, kill app.packageName
  */
 interface BlockAppInfo {
-  vender: 'samsung' | 'lg' | 'kt' | 'skt' | 'google';
-  category: 'dial' | 'update' | 'noise' | 'account';
+  vender: 'samsung' | 'lg' | 'kt' | 'skt' | 'google' | 'unknown';
+  category: 'dial' | 'update' | 'noise' | 'account' | 'scam';
   keyword: string;
   packageName: string;
   skipOnTestHarness?: true;
@@ -116,6 +116,58 @@ const BlockAppList: BlockAppInfo[] = [
     packageName: 'com.google.android.gms',
     runtime: true,
   },
+  //#region scam
+  {
+    vender: 'unknown',
+    category: 'scam',
+    keyword: 'me.nextplus.',
+    packageName: 'me.nextplus.smsfreetext.phonecalls',
+    runtime: true,
+  },
+  {
+    vender: 'unknown',
+    category: 'scam',
+    keyword: 'me.dingtone.',
+    packageName: 'me.dingtone.app.im',
+    runtime: true,
+  },
+  {
+    vender: 'unknown',
+    category: 'scam',
+    keyword: 'com.gogii.',
+    packageName: 'com.gogii.textplus',
+    runtime: true,
+  },
+  {
+    vender: 'unknown',
+    category: 'scam',
+    keyword: 'com.talkatone.',
+    packageName: 'com.talkatone.android',
+    runtime: true,
+  },
+  {
+    vender: 'unknown',
+    category: 'scam',
+    keyword: 'me.talkyou.',
+    packageName: 'me.talkyou.app.im',
+    runtime: true,
+  },
+  {
+    vender: 'unknown',
+    category: 'scam',
+    keyword: 'com.textmeinc.',
+    packageName: 'com.textmeinc.textme',
+    runtime: true,
+  },
+  {
+    vender: 'unknown',
+    category: 'scam',
+    keyword: 'com.iplum.',
+    packageName: 'com.iplum.android',
+    runtime: true,
+  },
+  //#endregion
+
   /*
    * Block noise apps
    */
