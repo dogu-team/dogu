@@ -149,9 +149,9 @@ export class ScanService implements OnModuleInit {
         const { serial, serialUnique, platform, info, isVirtual, browserInstallations } = channel;
         const { system, version, graphics } = info;
         const { model, manufacturer } = system;
-        const display = graphics.displays.at(0);
-        const resolutionWidth = display?.resolutionX ?? 0;
-        const resolutionHeight = display?.resolutionY ?? 0;
+        const biggestDisplay = graphics.displays.reduce((a, b) => (a.resolutionX * a.resolutionY < b.resolutionX * b.resolutionY ? b : a), { resolutionX: 0, resolutionY: 0 });
+        const resolutionWidth = biggestDisplay?.resolutionX ?? 0;
+        const resolutionHeight = biggestDisplay?.resolutionY ?? 0;
         const memory = `${info.memLayout.at(0)?.size ?? 0}`;
         const message: Instance<typeof DeviceConnectionSubscribe.receiveMessage> = {
           serial,

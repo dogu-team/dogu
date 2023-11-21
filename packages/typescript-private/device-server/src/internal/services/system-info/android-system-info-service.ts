@@ -10,7 +10,7 @@ export class AndroidSystemInfoService {
     const procCpuInfos = await adb.getProcCpuInfo();
     const procMemInfo = await adb.getProcMemInfo();
     const displays = (await adb.getDeviceDisplays()).sort((a, b) => {
-      return a.width * a.height - b.width * b.height;
+      return b.width * b.height - a.width * a.height;
     });
 
     const dfInfos = (await adb.getDfInfo())

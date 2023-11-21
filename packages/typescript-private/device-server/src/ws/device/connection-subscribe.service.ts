@@ -21,7 +21,11 @@ export class DeviceConnectionSubscribeService
   extends WebSocketGatewayBase<null, typeof DeviceConnectionSubscribe.sendMessage, typeof DeviceConnectionSubscribe.receiveMessage>
   implements OnWebSocketClose<null>
 {
-  constructor(private readonly eventEmitter: EventEmitter2, private readonly logger: DoguLogger, private readonly browserManagerService: BrowserManagerService) {
+  constructor(
+    private readonly eventEmitter: EventEmitter2,
+    private readonly logger: DoguLogger,
+    private readonly browserManagerService: BrowserManagerService,
+  ) {
     super(DeviceConnectionSubscribe, logger);
   }
 
@@ -62,9 +66,9 @@ export class DeviceConnectionSubscribeService
       const { serial, serialUnique, platform, info, isVirtual, browserInstallations } = channel;
       const { system, version, graphics } = info;
       const { model, manufacturer } = system;
-      const display = graphics.displays.at(0);
-      const resolutionWidth = display?.resolutionX ?? 0;
-      const resolutionHeight = display?.resolutionY ?? 0;
+      const biggestDisplay = graphics.displays.reduce((a, b) => (a.resolutionX * a.resolutionY < b.resolutionX * b.resolutionY ? b : a), { resolutionX: 0, resolutionY: 0 });
+      const resolutionWidth = biggestDisplay?.resolutionX ?? 0;
+      const resolutionHeight = biggestDisplay?.resolutionY ?? 0;
       const memory = `${info.memLayout.at(0)?.size ?? 0}`;
 
       const message: Instance<typeof DeviceConnectionSubscribe.receiveMessage> = {
