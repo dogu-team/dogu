@@ -1,4 +1,4 @@
-import { DeviceId, DEVICE_JOB_LOG_TYPE, OrganizationId, RoutineDeviceJobId, Serial } from '@dogu-private/types';
+import { DEVICE_JOB_LOG_TYPE, OrganizationId, RoutineDeviceJobId, Serial } from '@dogu-private/types';
 import { closeWebSocketWithTruncateReason, Instance, stringify, transformAndValidate, validateAndEmitEventAsync } from '@dogu-tech/common';
 import { DeviceLogSubscribe } from '@dogu-tech/device-client';
 import { Injectable } from '@nestjs/common';
@@ -12,7 +12,6 @@ import { DoguLogger } from '../logger/logger';
 interface DeviceLogInfo {
   webSocket: WebSocket;
   organizationId: OrganizationId;
-  deviceId: DeviceId;
   routineDeviceJobId: RoutineDeviceJobId;
   serial: Serial;
 }
@@ -21,7 +20,10 @@ interface DeviceLogInfo {
 export class DeviceJobLogProcessRegistry {
   private readonly webSockets = new Map<string, DeviceLogInfo>();
 
-  constructor(private readonly logger: DoguLogger, private readonly eventEmitter: EventEmitter2) {}
+  constructor(
+    private readonly logger: DoguLogger,
+    private readonly eventEmitter: EventEmitter2,
+  ) {}
 
   @OnEvent(OnHostDisconnectedEvent.key)
   onHostDisconnected(value: Instance<typeof OnHostDisconnectedEvent.value>): void {
@@ -34,14 +36,14 @@ export class DeviceJobLogProcessRegistry {
 
   @OnEvent(OnDeviceJobStartedEvent.key)
   onDeviceJobStarted(value: Instance<typeof OnDeviceJobStartedEvent.value>): void {
-    const { organizationId, deviceId, routineDeviceJobId, serial } = value;
+    const { organizationId, routineDeviceJobId, serial } = value;
     const webSocket = new WebSocket(`ws://${env.DOGU_DEVICE_SERVER_HOST_PORT}${DeviceLogSubscribe.path}`);
-    const key = this.createKey(organizationId, deviceId, routineDeviceJobId);
+    const key = this.createKey(organizationId, routineDeviceJobId);
 
     if (this.webSockets.has(key)) {
       throw new Error(`device log already exists: ${key}`);
     }
-    this.webSockets.set(key, { webSocket, serial, organizationId, deviceId, routineDeviceJobId });
+    this.webSockets.set(key, { webSocket, serial, organizationId, routineDeviceJobId });
 
     webSocket.addEventListener('open', () => {
       this.logger.info('startDeviceLogSubscribe open');
@@ -64,7 +66,7 @@ export class DeviceJobLogProcessRegistry {
     webSocket.addEventListener('close', (ev) => {
       const deviceLogInfo = this.webSockets.get(key);
       if (!deviceLogInfo) {
-        this.logger.warn('startDeviceLogSubscribe close: deviceLogInfo not found', { organizationId, deviceId, routineDeviceJobId });
+        this.logger.warn('startDeviceLogSubscribe close: deviceLogInfo not found', { organizationId, routineDeviceJobId });
         return;
       }
       this.webSockets.delete(key);
@@ -72,11 +74,11 @@ export class DeviceJobLogProcessRegistry {
     });
     webSocket.addEventListener('message', (ev) => {
       const { data } = ev;
+      // eslint-disable-next-line @typescript-eslint/no-base-to-string
       transformAndValidate(DeviceLogSubscribe.receiveMessage, JSON.parse(data.toString()))
         .then(async (message) => {
           await validateAndEmitEventAsync(this.eventEmitter, OnDeviceJobLoggedEvent, {
             organizationId,
-            deviceId,
             routineDeviceJobId,
             log: {
               ...message,
@@ -92,16 +94,16 @@ export class DeviceJobLogProcessRegistry {
 
   @OnEvent(OnDeviceJobCancelRequestedEvent.key)
   onDeviceJobCancelRequested(value: Instance<typeof OnDeviceJobCancelRequestedEvent.value>): void {
-    const { organizationId, deviceId, routineDeviceJobId } = value;
-    const key = this.createKey(organizationId, deviceId, routineDeviceJobId);
+    const { organizationId, routineDeviceJobId } = value;
+    const key = this.createKey(organizationId, routineDeviceJobId);
     const deviceLogInfo = this.webSockets.get(key);
     if (!deviceLogInfo) {
-      this.logger.warn('onDeviceJobCancelRequested: deviceLogInfo not found', { organizationId, deviceId, routineDeviceJobId });
+      this.logger.warn('onDeviceJobCancelRequested: deviceLogInfo not found', { organizationId, routineDeviceJobId });
       return;
     }
     const { webSocket } = deviceLogInfo;
     if (webSocket.readyState === WebSocket.CLOSING || webSocket.readyState === WebSocket.CLOSED) {
-      this.logger.warn('onDeviceJobCancelRequested: webSocket is already closing or closed', { organizationId, deviceId, routineDeviceJobId });
+      this.logger.warn('onDeviceJobCancelRequested: webSocket is already closing or closed', { organizationId, routineDeviceJobId });
       return;
     }
     closeWebSocketWithTruncateReason(webSocket, 1001, 'Cancel requested');
@@ -109,18 +111,18 @@ export class DeviceJobLogProcessRegistry {
 
   @OnEvent(OnDeviceJobPostProcessCompletedEvent.key)
   onDeviceJobPostProcessCompleted(value: Instance<typeof OnDeviceJobPostProcessCompletedEvent.value>): void {
-    const { organizationId, deviceId, routineDeviceJobId } = value;
-    const key = this.createKey(organizationId, deviceId, routineDeviceJobId);
+    const { organizationId, routineDeviceJobId } = value;
+    const key = this.createKey(organizationId, routineDeviceJobId);
     const deviceLogInfo = this.webSockets.get(key);
     if (!deviceLogInfo) {
-      this.logger.warn('onDeviceJobCompleted: deviceLogInfo not found', { organizationId, deviceId, routineDeviceJobId });
+      this.logger.warn('onDeviceJobCompleted: deviceLogInfo not found', { organizationId, routineDeviceJobId });
       return;
     }
     const { webSocket } = deviceLogInfo;
     closeWebSocketWithTruncateReason(webSocket, 1001, 'Completed');
   }
 
-  private createKey(organizationId: OrganizationId, deviceId: DeviceId, routineDeviceJobId: RoutineDeviceJobId): string {
-    return `${organizationId}:${deviceId}:${routineDeviceJobId}`;
+  private createKey(organizationId: OrganizationId, routineDeviceJobId: RoutineDeviceJobId): string {
+    return `${organizationId}:${routineDeviceJobId}`;
   }
 }

@@ -1,5 +1,5 @@
 import { PrivateDeviceJob } from '@dogu-private/console-host-agent';
-import { createConsoleApiAuthHeader, DeviceId, OrganizationId, RoutineDeviceJobId, Serial } from '@dogu-private/types';
+import { createConsoleApiAuthHeader, OrganizationId, RoutineDeviceJobId, Serial } from '@dogu-private/types';
 import { closeWebSocketWithTruncateReason, DefaultHttpOptions, errorify, Instance, loop } from '@dogu-tech/common';
 import { DeviceFindWindows, DeviceRecording } from '@dogu-tech/device-client';
 import { Injectable } from '@nestjs/common';
@@ -13,7 +13,6 @@ import { DoguLogger } from '../logger/logger';
 
 export interface DeviceJobRecordParam {
   organizationId: OrganizationId;
-  deviceId: DeviceId;
   routineDeviceJobId: RoutineDeviceJobId;
   serial: Serial;
   pid?: number;
@@ -21,10 +20,13 @@ export interface DeviceJobRecordParam {
 
 @Injectable()
 export class DeviceJobRecordingService {
-  constructor(private readonly logger: DoguLogger, private readonly consoleClientService: ConsoleClientService) {}
+  constructor(
+    private readonly logger: DoguLogger,
+    private readonly consoleClientService: ConsoleClientService,
+  ) {}
 
   connectAndUploadRecordWs(value: DeviceJobRecordParam, filePath: string, listener: { onClose: (ws: WebSocket) => void }): WebSocket {
-    const { organizationId, deviceId, routineDeviceJobId, serial, pid } = value;
+    const { organizationId, routineDeviceJobId, serial, pid } = value;
     const webSocket = new WebSocket(`ws://${env.DOGU_DEVICE_SERVER_HOST_PORT}${DeviceRecording.path}`);
     webSocket.addEventListener('open', () => {
       this.logger.info('startRecording open', {
@@ -62,7 +64,7 @@ export class DeviceJobRecordingService {
             throw new Error(`startRecording: file not found. ${filePath}`);
           }
 
-          uploadDeviceRecording(this.consoleClientService, organizationId, deviceId, routineDeviceJobId, filePath).catch((error) => {
+          uploadDeviceRecording(this.consoleClientService, organizationId, routineDeviceJobId, filePath).catch((error) => {
             this.logger.error('uploadDeviceRecording failed', { error: errorify(error) });
           });
         } catch (error) {
@@ -107,6 +109,7 @@ export class DeviceJobRecordingService {
     webSocket.addEventListener('message', (ev) => {
       const { data } = ev;
       this.logger.info('startRecording message', { data });
+      // eslint-disable-next-line @typescript-eslint/no-base-to-string
       const result = JSON.parse(data.toString('utf-8')) as Instance<typeof DeviceFindWindows.receiveMessage>;
       listener.onMessage(result);
     });
@@ -117,7 +120,6 @@ export class DeviceJobRecordingService {
 async function uploadDeviceRecording(
   consoleClientService: ConsoleClientService,
   organizationId: OrganizationId,
-  deviceId: DeviceId,
   routineDeviceJobId: RoutineDeviceJobId,
   filePath: string,
 ): Promise<void> {
@@ -128,7 +130,7 @@ async function uploadDeviceRecording(
   const fileName = path.basename(filePath);
   const form = new FormData();
   form.append('record', buffer, fileName);
-  const pathProvider = new PrivateDeviceJob.uploadDeviceJobRecord.pathProvider(organizationId, deviceId, routineDeviceJobId);
+  const pathProvider = new PrivateDeviceJob.uploadDeviceJobRecord.pathProvider(organizationId, routineDeviceJobId);
   const urlPath = PrivateDeviceJob.uploadDeviceJobRecord.resolvePath(pathProvider);
   await consoleClientService.client.post(urlPath, form, {
     headers: {

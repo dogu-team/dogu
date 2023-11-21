@@ -17,7 +17,7 @@ export class PublicDestController {
   ) {}
 
   @Post(PublicDest.createDest.path)
-  @HostPermission(HOST_ACTION_TYPE.DEVICE_API)
+  @HostPermission(HOST_ACTION_TYPE.HOST_API)
   async createDest(
     @Param(OrganizationPropCamel.organizationId) organizationId: OrganizationId, //
     @Body() body: CreateDestRequestBody,
@@ -27,18 +27,9 @@ export class PublicDestController {
   }
 
   @Patch(PublicDest.updateDestState.path)
-  @HostPermission(HOST_ACTION_TYPE.DEVICE_API)
-  async updateDestState(@Param(DestPropCamel.destId) destId: DestId, @Body() body: UpdateDestStatusRequestBody): Promise<void> {
+  @HostPermission(HOST_ACTION_TYPE.HOST_API)
+  updateDestState(@Param(DestPropCamel.destId) destId: DestId, @Body() body: UpdateDestStatusRequestBody): void {
     const updateEvent: UpdateDestStateEvent = new UpdateDestStateEvent(destId, body);
     this.updateDestStateQueue.enqueue(updateEvent);
-
-    // const dest = await this.dataSource.getRepository(Dest).findOne({ where: { destId } });
-    // if (!dest) {
-    //   throw new NotFoundException({
-    //     message: 'Dest not found',
-    //     destId,
-    //   });
-    // }
-    // await this.destRunner.update(dest, body.destStatus, body.localTimeStamp);
   }
 }

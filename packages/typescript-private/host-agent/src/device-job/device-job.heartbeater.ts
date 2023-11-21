@@ -1,5 +1,5 @@
 import { PrivateDeviceJob } from '@dogu-private/console-host-agent';
-import { createConsoleApiAuthHeader, DeviceId, OrganizationId, RoutineDeviceJobId } from '@dogu-private/types';
+import { createConsoleApiAuthHeader, OrganizationId, RoutineDeviceJobId } from '@dogu-private/types';
 import { DefaultHttpOptions, errorify, Retry, stringifyError } from '@dogu-tech/common';
 import { Injectable } from '@nestjs/common';
 import { Interval } from '@nestjs/schedule';
@@ -23,11 +23,10 @@ export class DeviceJobHeartbeater {
     try {
       const { contexts } = this.deviceJobContextRegistry;
       for (const [key, context] of contexts) {
-        const { organizationId, deviceId, routineDeviceJobId } = context;
-        this.updateDeviceJobHeartbeatNow(organizationId, deviceId, routineDeviceJobId).catch((error) => {
+        const { organizationId, routineDeviceJobId } = context;
+        this.updateDeviceJobHeartbeatNow(organizationId, routineDeviceJobId).catch((error) => {
           this.logger.error('DeviceJob heartbeat failed', {
             organizationId,
-            deviceId,
             routineDeviceJobId,
             timestamp: new Date(),
             error: stringifyError(error),
@@ -42,13 +41,13 @@ export class DeviceJobHeartbeater {
   }
 
   @Retry({ printable: logger })
-  private async updateDeviceJobHeartbeatNow(organizationId: OrganizationId, deviceId: DeviceId, routineDeviceJobId: RoutineDeviceJobId): Promise<void> {
-    const pathProvider = new PrivateDeviceJob.updateDeviceJobHeartbeatNow.pathProvider(organizationId, deviceId, routineDeviceJobId);
+  private async updateDeviceJobHeartbeatNow(organizationId: OrganizationId, routineDeviceJobId: RoutineDeviceJobId): Promise<void> {
+    const pathProvider = new PrivateDeviceJob.updateDeviceJobHeartbeatNow.pathProvider(organizationId, routineDeviceJobId);
     const path = PrivateDeviceJob.updateDeviceJobHeartbeatNow.resolvePath(pathProvider);
     await this.consoleClientService.client.patch(path, null, {
       ...createConsoleApiAuthHeader(env.DOGU_HOST_TOKEN),
       timeout: DefaultHttpOptions.request.timeout,
     });
-    this.logger.debug('DeviceJob heartbeat updated', { organizationId, deviceId, routineDeviceJobId, timestamp: new Date() });
+    this.logger.debug('DeviceJob heartbeat updated', { organizationId, routineDeviceJobId, timestamp: new Date() });
   }
 }

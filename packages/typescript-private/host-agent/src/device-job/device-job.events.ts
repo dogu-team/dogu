@@ -1,5 +1,5 @@
 import { DeviceJobStatusInfo, StepStatusInfo } from '@dogu-private/console-host-agent';
-import { BrowserName, DeviceId, DeviceJobLog, OrganizationId, Platform, RoutineDeviceJobId, Serial } from '@dogu-private/types';
+import { BrowserName, DeviceJobLog, OrganizationId, Platform, RoutineDeviceJobId, Serial } from '@dogu-private/types';
 import { createEventDefinition, IsFilledString } from '@dogu-tech/common';
 import { Type } from 'class-transformer';
 import { IsArray, IsDate, IsEnum, IsIn, IsNumber, IsOptional, IsUUID, ValidateNested } from 'class-validator';
@@ -8,9 +8,6 @@ import { DeviceJobRegistryKeySource } from '../device-job/device-job.types';
 export class OnDeviceJobEventValueBase implements DeviceJobRegistryKeySource {
   @IsUUID()
   organizationId!: OrganizationId;
-
-  @IsUUID()
-  deviceId!: DeviceId;
 
   @IsNumber()
   routineDeviceJobId!: RoutineDeviceJobId;

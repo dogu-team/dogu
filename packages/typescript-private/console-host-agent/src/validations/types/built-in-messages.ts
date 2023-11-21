@@ -267,10 +267,13 @@ export class RunStep extends Kindable<'RunStep'> implements Pick<RoutineStep, 'r
   static override kind = 'RunStep';
 
   @IsUUID()
-  organizationId!: OrganizationId;
+  deviceOwnerOrganizationId!: OrganizationId;
 
   @IsUUID()
-  projectId!: ProjectId;
+  executorOrganizationId!: OrganizationId;
+
+  @IsUUID()
+  executorProjectId!: ProjectId;
 
   @IsUUID()
   deviceId!: DeviceId;

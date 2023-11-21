@@ -1,4 +1,4 @@
-import { DeviceId, DeviceRunnerId, OrganizationId, RoutineStepId } from '@dogu-private/types';
+import { DeviceRunnerId, OrganizationId, RoutineStepId } from '@dogu-private/types';
 import { StackEnvironmentVariableReplacer } from '@dogu-tech/node';
 import { MessageRouter } from '../message/message.router';
 import { MessageCanceler, MessageContext, StepMessageEventHandler } from '../message/message.types';
@@ -6,7 +6,6 @@ import { MessageInfo, Resolve } from '../types';
 
 export interface StepRegistryKeySource {
   organizationId: OrganizationId;
-  deviceId: DeviceId;
   routineStepId: RoutineStepId;
 }
 export type StepRegistryKey = string;

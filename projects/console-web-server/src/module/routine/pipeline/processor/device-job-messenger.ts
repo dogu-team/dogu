@@ -49,9 +49,17 @@ export class DeviceJobMessenger {
     if (!pipeline) {
       throw new Error(`Pipeline not found: ${stringify(deviceJob)}`);
     }
-    const { projectId } = pipeline;
+    const { projectId, project } = pipeline;
+    if (!project) {
+      throw new Error(`Project not found: ${stringify(deviceJob)}`);
+    }
+
+    const executorOrganizationId = project.organizationId;
+    const executorProjectId = projectId;
     const runSteps =
-      steps?.map((step) => this.stepToRunStep(organizationId, deviceId, projectId, deviceRunnerId, step, appVersion, appPackageName, browserName, browserVersion)) ?? [];
+      steps?.map((step) =>
+        this.stepToRunStep(organizationId, executorOrganizationId, executorProjectId, deviceId, deviceRunnerId, step, appVersion, appPackageName, browserName, browserVersion),
+      ) ?? [];
     const result = await this.deviceMessageRelayer.sendParam(organizationId, deviceId, {
       kind: 'EventParam',
       value: {
@@ -84,9 +92,10 @@ export class DeviceJobMessenger {
   }
 
   private stepToRunStep(
-    organizationId: OrganizationId,
+    deviceOwnerOrganizationId: OrganizationId,
+    executorOrganizationId: OrganizationId,
+    executorProjectId: ProjectId,
     deviceId: DeviceId,
-    projectId: ProjectId,
     deviceRunnerId: DeviceRunnerId,
     step: RoutineStep,
     appVersion?: string,
@@ -98,8 +107,9 @@ export class DeviceJobMessenger {
     const runStepValue = this.stepToRunStepValue(step);
     return {
       kind: 'RunStep',
-      organizationId,
-      projectId,
+      deviceOwnerOrganizationId,
+      executorOrganizationId,
+      executorProjectId,
       deviceId,
       deviceRunnerId,
       routineDeviceJobId: deviceJobId,
