@@ -70,7 +70,7 @@ export class RegisteryService {
       try {
         // check email domain is valid
         const rv = await axios.get(`http://${domain}`);
-        if (rv.status !== 200 || rv.statusText !== 'OK') {
+        if (rv.status !== 200) {
           throw new HttpException(`Unsupported email domain : ${domain}. If this error persist, please contact us.`, HttpStatus.BAD_REQUEST);
         }
       } catch (e) {
