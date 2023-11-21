@@ -1,5 +1,6 @@
 import { DevicePropCamel, HostPropCamel, ProjectPropCamel, ProjectPropSnake } from '@dogu-private/console';
 import { DeviceId, HostId, HostPayload, OrganizationId, ProjectId } from '@dogu-private/types';
+import { assertUnreachable } from '@dogu-tech/common';
 import { ExecutionContext, HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { Request } from 'express';
@@ -71,9 +72,8 @@ export class AuthHostService {
         return rv;
       }
       default:
-        const _exhaustiveCheck: never = type;
+        assertUnreachable(type);
     }
-    return { hostId };
   }
 
   private async validateHostToken(hostToken: string): Promise<Host> {
