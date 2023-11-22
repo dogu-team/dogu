@@ -51,11 +51,13 @@ export default class MyDocument extends Document {
             rel="stylesheet"
           />
           <Script
+            key="gtag-script"
             async
             src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_DOGU_GA_ID}`}
             strategy="beforeInteractive"
           />
           <Script
+            key="gtag-script-2"
             id="gtag"
             async
             strategy="beforeInteractive"

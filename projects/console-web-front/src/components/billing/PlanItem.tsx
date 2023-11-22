@@ -19,6 +19,7 @@ import useBillingPlanPurchaseStore from '../../stores/billing-plan-purchase';
 import useLicenseStore from '../../stores/license';
 import { getSubscriptionPlansFromLicense } from '../../utils/billing';
 import { getLocaleFormattedPrice } from '../../utils/locale';
+import usePaddle from '../../hooks/usePaddle';
 
 interface Props {
   planType: BillingSubscriptionPlanType;
@@ -41,6 +42,7 @@ const PlanItem: React.FC<Props> = ({ planType, planInfo, descriptionInfo }) => {
   });
   const router = useRouter();
   const { t } = useTranslation('billing');
+  const paddleRef = usePaddle();
 
   const currency: BillingCurrency = router.locale === 'ko' ? 'KRW' : 'USD';
   const usingPlans = license ? getSubscriptionPlansFromLicense(license, [planType]) : [];
@@ -98,14 +100,34 @@ const PlanItem: React.FC<Props> = ({ planType, planInfo, descriptionInfo }) => {
   const { text: buttonText, disabled: buttonDisabled, shouldGoAnnual } = getButtonState();
 
   const handleClickButton = () => {
-    updateSelectedPlan({
-      type: planType,
-      option: Number(selectedValue) ?? 0,
-      category: planInfo.category,
-    });
-    if (shouldGoAnnual) {
-      // annual plan is not available for now
-      // updateIsAnnual(true);
+    if (router.locale === 'ko') {
+      updateSelectedPlan({
+        type: planType,
+        option: Number(selectedValue) ?? 0,
+        category: planInfo.category,
+      });
+      if (shouldGoAnnual) {
+        // annual plan is not available for now
+        // updateIsAnnual(true);
+      }
+    } else {
+      try {
+        paddleRef.current?.Checkout.open({
+          settings: {
+            displayMode: 'overlay',
+          },
+          items: [
+            {
+              priceId: 'pri_01hfvk6zfp2acv83jy0krtfazx',
+            },
+          ],
+          customer: {
+            email: 'hunhoekim@gmail.com',
+          },
+        });
+      } catch (e) {
+        console.error(e);
+      }
     }
   };
 
@@ -121,8 +143,11 @@ const PlanItem: React.FC<Props> = ({ planType, planInfo, descriptionInfo }) => {
   const toFixed = (value: number): number => parseFloat(value.toFixed(2));
   const couponFactor = promotionCoupon ? toFixed(1 - (promotionCoupon.monthlyDiscountPercent ?? 0) / 100) : 1;
   const isDiscounted = couponFactor < 1;
+  const isContactUs = selectedValue === CONTACT_US_OPTION_KEY;
 
-  const monthlyPrice = isDiscounted
+  const monthlyPrice = isContactUs
+    ? 0
+    : isDiscounted
     ? planInfo.optionMap[Number(selectedValue)][currency].monthly * couponFactor
     : planInfo.optionMap[Number(selectedValue)][currency].monthly;
 
@@ -132,7 +157,7 @@ const PlanItem: React.FC<Props> = ({ planType, planInfo, descriptionInfo }) => {
         <div>
           <PricingTitle>{t(descriptionInfo.titleI18nKey)}</PricingTitle>
         </div>
-        {selectedValue === CONTACT_US_OPTION_KEY ? (
+        {isContactUs ? (
           <Content>Contact us</Content>
         ) : (
           <Content>

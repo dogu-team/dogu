@@ -11818,6 +11818,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
+      ["@paddle/paddle-js", [\
+        ["npm:0.5.1", {\
+          "packageLocation": "./.yarn/cache/@paddle-paddle-js-npm-0.5.1-26b8bb7f9d-91285f092f.zip/node_modules/@paddle/paddle-js/",\
+          "packageDependencies": [\
+            ["@paddle/paddle-js", "npm:0.5.1"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
       ["@pkgjs/parseargs", [\
         ["npm:0.11.0", {\
           "packageLocation": "./.yarn/cache/@pkgjs-parseargs-npm-0.11.0-cd2a3fe948-6ad6a00fc4.zip/node_modules/@pkgjs/parseargs/",\
@@ -20805,6 +20814,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@dogu-tech/node", "workspace:packages/typescript/node"],\
             ["@emotion/is-prop-valid", "npm:1.2.0"],\
             ["@monaco-editor/react", "virtual:28b444ca65aca9f6532815a467e94245056189ac01976539aa2f4fb241137b45c9697a2074b54444c9d1c779b8e60e1a1140c79b811d2daaa176852048e428eb#npm:4.5.0-beta.0"],\
+            ["@paddle/paddle-js", "npm:0.5.1"],\
             ["@react-google-maps/api", "virtual:28b444ca65aca9f6532815a467e94245056189ac01976539aa2f4fb241137b45c9697a2074b54444c9d1c779b8e60e1a1140c79b811d2daaa176852048e428eb#npm:2.19.2"],\
             ["@sentry/nextjs", "virtual:28b444ca65aca9f6532815a467e94245056189ac01976539aa2f4fb241137b45c9697a2074b54444c9d1c779b8e60e1a1140c79b811d2daaa176852048e428eb#npm:7.50.0"],\
             ["@slack/web-api", "npm:6.9.0"],\

@@ -27,6 +27,7 @@
     "@dogu-tech/node": "workspace:^",
     "@emotion/is-prop-valid": "1.2.0",
     "@monaco-editor/react": "4.5.0-beta.0",
+    "@paddle/paddle-js": "^0.5.1",
     "@react-google-maps/api": "^2.19.2",
     "@sentry/nextjs": "7.50.0",
     "@slack/web-api": "^6.9.0",

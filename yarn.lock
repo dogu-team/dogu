@@ -6240,6 +6240,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@paddle/paddle-js@npm:^0.5.1":
+  version: 0.5.1
+  resolution: "@paddle/paddle-js@npm:0.5.1"
+  checksum: 91285f092f8adf51f773c34ace03b13430455070ad733f3a6e0f6bf04368bbc08322cf8d04c7092260f60972cbe012ecbf042be2974a3df6f413b9a03ab943ff
+  languageName: node
+  linkType: hard
+
 "@pkgjs/parseargs@npm:^0.11.0":
   version: 0.11.0
   resolution: "@pkgjs/parseargs@npm:0.11.0"
@@ -13481,6 +13488,7 @@ __metadata:
     "@dogu-tech/node": "workspace:^"
     "@emotion/is-prop-valid": 1.2.0
     "@monaco-editor/react": 4.5.0-beta.0
+    "@paddle/paddle-js": ^0.5.1
     "@react-google-maps/api": ^2.19.2
     "@sentry/nextjs": 7.50.0
     "@slack/web-api": ^6.9.0
