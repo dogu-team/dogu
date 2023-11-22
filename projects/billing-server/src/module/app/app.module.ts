@@ -14,6 +14,8 @@ import { CloudLicenseModule } from '../cloud-license/cloud-license.module';
 import { ConsoleModule } from '../console/console.module';
 import { DateTimeSimulatorModule } from '../date-time-simulator/date-time-simulator.module';
 import { LoggerModule } from '../logger/logger.module';
+import { NiceModule } from '../nice/nice.module';
+import { PaddleModule } from '../paddle/paddle.module';
 import { SelfHostedLicenseModule } from '../self-hosted-license/self-hosted-license.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -35,6 +37,8 @@ import { AppService } from './app.service';
     BillingUpdaterModule,
     ConsoleModule,
     DateTimeSimulatorModule,
+    PaddleModule,
+    NiceModule,
   ],
   controllers: [AppController],
   providers: [AppService],

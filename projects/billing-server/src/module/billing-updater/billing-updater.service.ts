@@ -15,7 +15,6 @@ import { BillingSubscriptionPlanHistory } from '../../db/entity/billing-subscrip
 import { BillingSubscriptionPlanInfo } from '../../db/entity/billing-subscription-plan-info.entity';
 import { getClient, RetryTransaction } from '../../db/retry-transaction';
 import { env } from '../../env';
-import { BillingMethodNiceCaller } from '../billing-method/billing-method-nice.caller';
 import { invalidateBillingOrganization } from '../billing-organization/billing-organization.utils';
 import {
   applySubscriptionPlanInfoState,
@@ -25,6 +24,7 @@ import {
 import { updateCloudLicense } from '../cloud-license/cloud-license.serializables';
 import { DateTimeSimulatorService } from '../date-time-simulator/date-time-simulator.service';
 import { DoguLogger } from '../logger/logger';
+import { NiceCaller } from '../nice/nice.caller';
 
 @Injectable()
 export class BillingUpdaterService implements OnModuleInit, OnModuleDestroy {
@@ -35,7 +35,7 @@ export class BillingUpdaterService implements OnModuleInit, OnModuleDestroy {
     private readonly logger: DoguLogger,
     @InjectDataSource()
     private readonly dataSource: DataSource,
-    private readonly billingMethodNiceCaller: BillingMethodNiceCaller,
+    private readonly niceCaller: NiceCaller,
     private readonly dateTimeSimulatorService: DateTimeSimulatorService,
   ) {
     this.retryTransaction = new RetryTransaction(this.logger, this.dataSource);
@@ -260,7 +260,7 @@ export class BillingUpdaterService implements OnModuleInit, OnModuleDestroy {
       const purchaseAmountInfos = purchasePlanInfos.map((planInfo) => calculatePurchaseAmountAndApplyCouponCount(planInfo));
       const totalPurchaseAmount = purchaseAmountInfos.reduce((acc, cur) => acc + cur.purchaseAmount, 0);
 
-      const paymentsResult = await this.billingMethodNiceCaller.subscribePayments({
+      const paymentsResult = await this.niceCaller.subscribePayments({
         bid,
         amount: totalPurchaseAmount,
         goodsName: BillingGoodsName,
@@ -299,7 +299,7 @@ export class BillingUpdaterService implements OnModuleInit, OnModuleDestroy {
       }
 
       registerOnAfterRollback(async (error) => {
-        await this.billingMethodNiceCaller.paymentsCancel({
+        await this.niceCaller.paymentsCancel({
           tid: paymentsResult.value.tid,
           reason: error.message,
         });

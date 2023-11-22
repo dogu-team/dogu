@@ -22,12 +22,12 @@ import { SelfHostedLicense } from '../../db/entity/self-hosted-license.entity';
 import { RetryTransactionContext } from '../../db/retry-transaction';
 import { findAvailablePromotionCoupon, parseCoupon, useCoupon } from '../billing-coupon/billing-coupon.serializables';
 import { ResolveCouponResultSuccess } from '../billing-coupon/billing-coupon.utils';
-import { BillingMethodNiceCaller } from '../billing-method/billing-method-nice.caller';
 import { createPurchase } from '../billing-method/billing-method-nice.serializables';
 import { newAndApplySubscriptionPlanInfo } from '../billing-subscription-plan-info/billing-subscription-plan-info.serializables';
 import { parseSubscriptionPlanData } from '../billing-subscription-plan-source/billing-subscription-plan-source.serializables';
 import { updateCloudLicense } from '../cloud-license/cloud-license.serializables';
 import { BillingSubscriptionPlanInfoCommonModule } from '../common/plan-info-common.module';
+import { NiceCaller } from '../nice/nice.caller';
 import {
   CalculatePurchaseSubscriptionDateTimesResultSuccess,
   getPurchaseSubscriptionDateTimes,
@@ -149,7 +149,7 @@ export interface ProcessNowPurchaseSubscriptionResponse extends CreatePurchaseSu
 
 export async function processNowPurchaseSubscription(
   context: RetryTransactionContext,
-  billingMethodNiceCaller: BillingMethodNiceCaller,
+  niceCaller: NiceCaller,
   options: ProcessNowPurchaseSubscriptionOptions,
 ): Promise<ProcessNowPurchaseSubscriptionResponse> {
   const { manager } = context;
@@ -169,7 +169,7 @@ export async function processNowPurchaseSubscription(
     };
   }
 
-  const createPurchaseResult = await createPurchase(context, billingMethodNiceCaller, {
+  const createPurchaseResult = await createPurchase(context, niceCaller, {
     billingMethodNiceId: billingMethodNice.billingMethodNiceId,
     goodsName: BillingGoodsName,
     amount: totalPrice,

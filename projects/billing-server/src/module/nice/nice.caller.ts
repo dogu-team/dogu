@@ -48,17 +48,18 @@ function resolveGoodsName(goodsName: string): string {
 }
 
 @Injectable()
-export class BillingMethodNiceCaller {
+export class NiceCaller {
   private readonly client: AxiosInstance;
+
   constructor(private readonly logger: DoguLogger) {
     const baseUrl = NiceBaseUrl;
 
     if (!FeatureConfig.get('sandbox')) {
-      this.logger.warn('BillingMethodNiceCaller is NOT running in sandbox mode!!!', {
+      this.logger.warn('NiceCaller is NOT running in sandbox mode!!!', {
         url: baseUrl,
       });
     } else {
-      this.logger.warn('BillingMethodNiceCaller is running in sandbox mode.', {
+      this.logger.warn('NiceCaller is running in sandbox mode.', {
         url: baseUrl,
       });
     }
@@ -71,7 +72,7 @@ export class BillingMethodNiceCaller {
       },
     });
     setAxiosErrorFilterToIntercepter(this.client);
-    this.logger.info(`BillingMethodNiceCaller initialized with ${baseUrl}`);
+    this.logger.info(`NiceCaller initialized with ${baseUrl}`);
   }
 
   /**

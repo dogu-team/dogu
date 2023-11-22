@@ -22,13 +22,13 @@ import { BillingOrganization } from '../../db/entity/billing-organization.entity
 import { BillingSubscriptionPlanHistory } from '../../db/entity/billing-subscription-plan-history.entity';
 import { BillingSubscriptionPlanInfo } from '../../db/entity/billing-subscription-plan-info.entity';
 import { RetryTransaction } from '../../db/retry-transaction';
-import { BillingMethodNiceCaller } from '../billing-method/billing-method-nice.caller';
 import { createOrUpdateMethodNice } from '../billing-method/billing-method-nice.serializables';
 import { findBillingOrganizationWithMethodAndSubscriptionPlans, findBillingOrganizationWithSubscriptionPlans } from '../billing-organization/billing-organization.serializables';
 import { invalidateSubscriptionPlanInfo } from '../billing-subscription-plan-info/billing-subscription-plan-info.utils';
 import { ConsoleService } from '../console/console.service';
 import { DateTimeSimulatorService } from '../date-time-simulator/date-time-simulator.service';
 import { DoguLogger } from '../logger/logger';
+import { NiceCaller } from '../nice/nice.caller';
 import { SlackService } from '../slack/slack.service';
 import { processNextPurchaseSubscription, processNowPurchaseSubscription, processPurchaseSubscriptionPreview } from './billing-purchase.serializables';
 
@@ -40,7 +40,7 @@ export class BillingPurchaseService {
     private readonly logger: DoguLogger,
     @InjectDataSource()
     private readonly dataSource: DataSource,
-    private readonly billingMethodNiceCaller: BillingMethodNiceCaller,
+    private readonly niceCaller: NiceCaller,
     private readonly consoleService: ConsoleService,
     private readonly slackService: SlackService,
     private readonly dateTimeSimulatorService: DateTimeSimulatorService,
@@ -146,7 +146,7 @@ export class BillingPurchaseService {
         };
       }
 
-      const processNowResult = await processNowPurchaseSubscription(context, this.billingMethodNiceCaller, {
+      const processNowResult = await processNowPurchaseSubscription(context, this.niceCaller, {
         billingMethodNice,
         billingOrganization,
         ...processPreviewResult.value,
@@ -248,7 +248,7 @@ export class BillingPurchaseService {
       const { needPurchase } = processPreviewResult.value;
 
       const niceResult = await createOrUpdateMethodNice(context, {
-        billingMethodNiceCaller: this.billingMethodNiceCaller,
+        niceCaller: this.niceCaller,
         dto: {
           billingOrganizationId,
           subscribeRegist: {
@@ -301,7 +301,7 @@ export class BillingPurchaseService {
       }
 
       billingOrganization.billingMethodNice = billingMethodNice;
-      const processNowResult = await processNowPurchaseSubscription(context, this.billingMethodNiceCaller, {
+      const processNowResult = await processNowPurchaseSubscription(context, this.niceCaller, {
         billingMethodNice,
         billingOrganization,
         ...processPreviewResult.value,
@@ -431,7 +431,7 @@ export class BillingPurchaseService {
       }
 
       const cancelReason = `dogu refund subscription plan: ${billingSubscriptionPlanHistoryId}`;
-      const cancelResult = await this.billingMethodNiceCaller.paymentsCancel({
+      const cancelResult = await this.niceCaller.paymentsCancel({
         tid: niceTid,
         reason: cancelReason,
         cancelAmt: purchasedAmount,
@@ -507,7 +507,7 @@ export class BillingPurchaseService {
       }
 
       const cancelReason = `dogu refund full: ${billingHistoryId}`;
-      const cancelResult = await this.billingMethodNiceCaller.paymentsCancel({
+      const cancelResult = await this.niceCaller.paymentsCancel({
         tid: niceTid,
         reason: cancelReason,
       });
