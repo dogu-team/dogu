@@ -1,5 +1,6 @@
 import { CheckOutlined, LoadingOutlined } from '@ant-design/icons';
 import {
+  BillingCurrency,
   BillingPeriod,
   BillingPromotionCouponResponse,
   BillingSubscriptionPlanOptionInfo,
@@ -7,11 +8,12 @@ import {
 } from '@dogu-private/console';
 import { Button, Divider, Select, SelectProps } from 'antd';
 import useTranslation from 'next-translate/useTranslation';
+import { useRouter } from 'next/router';
 import { useState } from 'react';
 import styled from 'styled-components';
 import { shallow } from 'zustand/shallow';
-import { usePromotionCouponSWR } from '../../api/billing';
 
+import { usePromotionCouponSWR } from '../../api/billing';
 import { PlanDescriptionInfo } from '../../resources/plan';
 import useBillingPlanPurchaseStore from '../../stores/billing-plan-purchase';
 import useLicenseStore from '../../stores/license';
@@ -37,8 +39,10 @@ const PlanItem: React.FC<Props> = ({ planType, planInfo, descriptionInfo }) => {
     subscriptionPlanType: planType,
     category: planInfo.category,
   });
+  const router = useRouter();
   const { t } = useTranslation('billing');
 
+  const currency: BillingCurrency = router.locale === 'ko' ? 'KRW' : 'USD';
   const usingPlans = license ? getSubscriptionPlansFromLicense(license, [planType]) : [];
   const baseOptions: SelectProps<string | number>['options'] = Object.keys(planInfo.optionMap).map((optionKey) => {
     return {
@@ -119,8 +123,8 @@ const PlanItem: React.FC<Props> = ({ planType, planInfo, descriptionInfo }) => {
   const isDiscounted = couponFactor < 1;
 
   const monthlyPrice = isDiscounted
-    ? planInfo.optionMap[Number(selectedValue)].KRW.monthly * couponFactor
-    : planInfo.optionMap[Number(selectedValue)].KRW.monthly;
+    ? planInfo.optionMap[Number(selectedValue)][currency].monthly * couponFactor
+    : planInfo.optionMap[Number(selectedValue)][currency].monthly;
 
   return (
     <Box>
@@ -135,19 +139,19 @@ const PlanItem: React.FC<Props> = ({ planType, planInfo, descriptionInfo }) => {
             {isDiscounted && (
               <p style={{ color: '#888', textDecoration: 'line-through' }}>
                 {getLocaleFormattedPrice(
-                  'ko',
-                  'KRW',
+                  router.locale,
+                  currency,
                   isAnnual
-                    ? planInfo.optionMap[Number(selectedValue)].KRW.yearly / 12
-                    : planInfo.optionMap[Number(selectedValue)].KRW.monthly,
+                    ? planInfo.optionMap[Number(selectedValue)][currency].yearly / 12
+                    : planInfo.optionMap[Number(selectedValue)][currency].monthly,
                 )}
               </p>
             )}
             <PricingPrice>
               {getLocaleFormattedPrice(
-                'ko',
-                'KRW',
-                isAnnual ? planInfo.optionMap[Number(selectedValue)].KRW.yearly / 12 : monthlyPrice,
+                router.locale,
+                currency,
+                isAnnual ? planInfo.optionMap[Number(selectedValue)][currency].yearly / 12 : monthlyPrice,
               )}
             </PricingPrice>
             <PricingPeriod>
