@@ -66,7 +66,7 @@ const BillingPaymentMethod: React.FC<Props> = ({ method, organizationId }) => {
           ...license,
           billingOrganization: {
             ...license.billingOrganization,
-            billingMethodNice: rv.body.method,
+            billingMethodNice: rv.body.value,
           },
         });
       }
