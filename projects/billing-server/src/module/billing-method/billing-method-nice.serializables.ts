@@ -209,7 +209,6 @@ export async function updateBillingMethod(context: RetryTransactionContext, opti
 
   return {
     ok: true,
-    resultCode: resultCode('ok'),
-    method: createOrUpdateMethodNiceResult.value,
+    value: createOrUpdateMethodNiceResult.value,
   };
 }

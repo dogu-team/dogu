@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import * as crypto from 'crypto';
 import { DoguLogger } from '../logger/logger';
+import { Paddle } from './paddle.types';
 
 /**
  * TODO: move to env
@@ -14,7 +15,7 @@ const paddleNotificationKey = 'pdl_ntfset_01hfvf6np93stpzgg99tzqh67f_vP5ukftxMEH
 export class PaddleNotificationService {
   constructor(private readonly logger: DoguLogger) {}
 
-  async onNotification(paddleSignature: string, body: unknown): Promise<void> {
+  async onNotification(paddleSignature: string, body: unknown): Promise<unknown> {
     if (!paddleSignature) {
       this.logger.error('Paddle-Signature header is missing');
       throw new BadRequestException('Paddle-Signature header is missing');
@@ -50,7 +51,15 @@ export class PaddleNotificationService {
       throw new BadRequestException('Paddle-Signature header is invalid');
     }
 
-    await Promise.resolve();
-    this.logger.info('Paddle hook received', { body });
+    this.logger.info('Paddle notification received', { body });
+
+    const event = body as Paddle.Event;
+    if (event.event_type === 'transaction.completed') {
+      return await this.onTransactionCompleted(event);
+    }
+  }
+
+  private async onTransactionCompleted(event: Paddle.Event): Promise<void> {
+    // TODO: write billing history
   }
 }

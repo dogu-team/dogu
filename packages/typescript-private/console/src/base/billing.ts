@@ -7,6 +7,48 @@ export type BillingCategory = (typeof BillingCategory)[number];
 export const BillingCurrency = ['KRW', 'USD'] as const;
 export type BillingCurrency = (typeof BillingCurrency)[number];
 
+export class BillingUsdAmount {
+  static fromDollars(dollars: number): BillingUsdAmount {
+    const cents = dollars * BillingUsdAmount.DollarsToCents;
+    const centsFloored = Math.floor(cents);
+    return new BillingUsdAmount(centsFloored);
+  }
+
+  static fromCents(cents: number): BillingUsdAmount {
+    const centsFloored = Math.floor(cents);
+    return new BillingUsdAmount(centsFloored);
+  }
+
+  private static readonly DollarsToCents = 100;
+
+  private constructor(readonly centsFloored: number) {}
+
+  /**
+   * @example '29.00'
+   */
+  toDollarsString(): string {
+    const dollars = this.centsFloored / BillingUsdAmount.DollarsToCents;
+    const fixed = dollars.toFixed(2);
+    return fixed;
+  }
+
+  /**
+   * @example 29.00
+   */
+  toDollars(): number {
+    const dollarsString = this.toDollarsString();
+    const numbered = parseFloat(dollarsString);
+    return numbered;
+  }
+
+  /**
+   * @example 2900
+   */
+  toCents(): number {
+    return this.centsFloored;
+  }
+}
+
 export const BillingPeriod = ['monthly', 'yearly'] as const;
 export type BillingPeriod = (typeof BillingPeriod)[number];
 
@@ -15,6 +57,7 @@ export type BillingSubscriptionPlanPriceMap = Record<BillingCurrency, BillingSub
 
 export interface BillingSubscriptionPlanOptionInfo {
   category: BillingCategory;
+  name: string;
   optionMap: Record<number, BillingSubscriptionPlanPriceMap>;
 }
 
@@ -31,6 +74,7 @@ export const BillingPlanGroupMap: Record<BillingSubscriptionGroupType, BillingSu
 export const BillingSubscriptionPlanMap: Record<BillingSubscriptionPlanType, BillingSubscriptionPlanOptionInfo> = {
   'live-testing': {
     category: 'cloud',
+    name: 'Live Testing',
     optionMap: {
       1: {
         KRW: {
@@ -303,7 +347,7 @@ export class CallBillingApiDto {
   // version!: number;
 }
 
-export interface CallBillingApiResponse<B> {
+export interface CallBillingApiResponse<B = Record<string, unknown>> {
   status?: number;
   body?: B;
   errorMessage?: string;
@@ -318,7 +362,7 @@ export interface BillingSubscriptionPlanData {
   originPrice: number;
 }
 
-export const BillingMethod = ['nice'] as const;
+export const BillingMethod = ['nice', 'paddle'] as const;
 export type BillingMethod = (typeof BillingMethod)[number];
 
 /**

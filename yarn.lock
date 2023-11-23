@@ -8794,7 +8794,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/pg-cursor@npm:^2":
+"@types/pg-cursor@npm:2":
   version: 2.7.2
   resolution: "@types/pg-cursor@npm:2.7.2"
   dependencies:
@@ -11885,7 +11885,7 @@ __metadata:
     "@types/nodemailer": 6
     "@types/passport": 1.0.14
     "@types/pg": 8
-    "@types/pg-cursor": ^2
+    "@types/pg-cursor": 2
     "@types/shelljs": 0.8.14
     "@types/uuid": 9.0.6
     "@types/ws": 8

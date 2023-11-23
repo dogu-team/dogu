@@ -7,6 +7,8 @@ import {
   CreatePurchaseSubscriptionWithNewCardResponse,
   getBillingMethodNicePublic,
   GetBillingSubscriptionPreviewDto,
+  GetBillingSubscriptionPreviewPaddleDto,
+  GetBillingSubscriptionPreviewPaddleResponse,
   GetBillingSubscriptionPreviewResponse,
   RefundFullDto,
   RefundSubscriptionPlanDto,
@@ -23,12 +25,15 @@ import { BillingSubscriptionPlanHistory } from '../../db/entity/billing-subscrip
 import { BillingSubscriptionPlanInfo } from '../../db/entity/billing-subscription-plan-info.entity';
 import { RetryTransaction } from '../../db/retry-transaction';
 import { createOrUpdateMethodNice } from '../billing-method/billing-method-nice.serializables';
+import { BillingMethodPaddleService } from '../billing-method/billing-method-paddle.service';
 import { findBillingOrganizationWithMethodAndSubscriptionPlans, findBillingOrganizationWithSubscriptionPlans } from '../billing-organization/billing-organization.serializables';
+import { BillingOrganizationService } from '../billing-organization/billing-organization.service';
 import { invalidateSubscriptionPlanInfo } from '../billing-subscription-plan-info/billing-subscription-plan-info.utils';
 import { ConsoleService } from '../console/console.service';
 import { DateTimeSimulatorService } from '../date-time-simulator/date-time-simulator.service';
 import { DoguLogger } from '../logger/logger';
 import { NiceCaller } from '../nice/nice.caller';
+import { PaddleService } from '../paddle/paddle.service';
 import { SlackService } from '../slack/slack.service';
 import { processNextPurchaseSubscription, processNowPurchaseSubscription, processPurchaseSubscriptionPreview } from './billing-purchase.serializables';
 
@@ -44,6 +49,9 @@ export class BillingPurchaseService {
     private readonly consoleService: ConsoleService,
     private readonly slackService: SlackService,
     private readonly dateTimeSimulatorService: DateTimeSimulatorService,
+    private readonly billingOrganizationService: BillingOrganizationService,
+    private readonly billingMethodPaddleService: BillingMethodPaddleService,
+    private readonly paddleService: PaddleService,
   ) {
     this.retryTransaction = new RetryTransaction(this.logger, this.dataSource);
   }
@@ -603,5 +611,62 @@ export class BillingPurchaseService {
         }
       }
     });
+  }
+
+  async getSubscriptionPreviewPaddle(dto: GetBillingSubscriptionPreviewPaddleDto): Promise<GetBillingSubscriptionPreviewPaddleResponse> {
+    const { organizationId, type, option, category, period, currency, email } = dto;
+    const result = await this.billingMethodPaddleService.createOrUpdate({ organizationId, email });
+    if (!result.ok) {
+      return result;
+    }
+
+    const customerId = result.value.customerId;
+    if (!customerId) {
+      return {
+        ok: false,
+        resultCode: resultCode('method-paddle-customer-id-not-found', {
+          organizationId,
+        }),
+      };
+    }
+
+    const billingOrganization = await this.billingOrganizationService.findOrganizationWithMethod({ organizationId });
+    if (!billingOrganization) {
+      return {
+        ok: false,
+        resultCode: resultCode('organization-not-found', {
+          organizationId,
+        }),
+      };
+    }
+
+    if (!billingOrganization.billingMethodPaddle) {
+      return {
+        ok: false,
+        resultCode: resultCode('organization-method-paddle-not-found', {
+          organizationId,
+        }),
+      };
+    }
+
+    const priceResult = await this.paddleService.findPrice({
+      category,
+      subscriptionPlanType: type,
+      option,
+      period,
+      currency,
+      organizationId,
+    });
+    if (!priceResult.ok) {
+      return priceResult;
+    }
+
+    return {
+      ok: true,
+      value: {
+        customerId,
+        priceId: priceResult.value.priceId,
+      },
+    };
   }
 }

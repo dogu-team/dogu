@@ -111,8 +111,8 @@ export class BillingController {
     @Param('billingSubscriptionPlanInfoId') billingSubscriptionPlanInfoId: string,
     @Body() body: object,
     @Query() query: object,
-  ): Promise<CallBillingApiResponse<Page<BillingHistoryBase>>> {
-    return await this.billingCaller.callBillingApi<Page<BillingHistoryBase>>({
+  ): Promise<CallBillingApiResponse> {
+    return await this.billingCaller.callBillingApi({
       method: 'PATCH',
       path: `billing/subscription-plan-infos/${billingSubscriptionPlanInfoId}/cancel-unsubscribe`,
       query,
@@ -126,8 +126,8 @@ export class BillingController {
     @Param('billingSubscriptionPlanInfoId') billingSubscriptionPlanInfoId: string,
     @Body() body: object,
     @Query() query: object,
-  ): Promise<CallBillingApiResponse<Page<BillingHistoryBase>>> {
-    return await this.billingCaller.callBillingApi<Page<BillingHistoryBase>>({
+  ): Promise<CallBillingApiResponse> {
+    return await this.billingCaller.callBillingApi({
       method: 'PATCH',
       path: `billing/subscription-plan-infos/${billingSubscriptionPlanInfoId}/cancel-change-option-or-period`,
       query,
@@ -137,16 +137,22 @@ export class BillingController {
 
   @Patch('/subscription-plan-infos/:billingSubscriptionPlanInfoId/unsubscribe')
   @OrganizationPermission(ORGANIZATION_ROLE.ADMIN)
-  async unsubscribe(
-    @Param('billingSubscriptionPlanInfoId') billingSubscriptionPlanInfoId: string,
-    @Body() body: object,
-    @Query() query: object,
-  ): Promise<CallBillingApiResponse<Page<BillingHistoryBase>>> {
-    return await this.billingCaller.callBillingApi<Page<BillingHistoryBase>>({
+  async unsubscribe(@Param('billingSubscriptionPlanInfoId') billingSubscriptionPlanInfoId: string, @Body() body: object, @Query() query: object): Promise<CallBillingApiResponse> {
+    return await this.billingCaller.callBillingApi({
       method: 'PATCH',
       path: `billing/subscription-plan-infos/${billingSubscriptionPlanInfoId}/unsubscribe`,
       query,
       body,
+    });
+  }
+
+  @Get('/purchase/preview/paddle')
+  @OrganizationPermission(ORGANIZATION_ROLE.ADMIN)
+  async getSubscriptionPreviewPaddle(@Query() query: object): Promise<CallBillingApiResponse> {
+    return await this.billingCaller.callBillingApi({
+      method: 'GET',
+      path: 'billing/purchase/preview/paddle',
+      query,
     });
   }
 }

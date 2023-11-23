@@ -1,7 +1,8 @@
 import { propertiesOf } from '@dogu-tech/common';
 import { Type } from 'class-transformer';
 import { IsIn, IsUUID, ValidateNested } from 'class-validator';
-import { BillingCategory, BillingCurrency } from './billing';
+import { BillingMethodPaddleBase } from '..';
+import { BillingCategory, BillingCurrency, BillingMethod } from './billing';
 import { BillingMethodNiceBase } from './billing-method-nice';
 import { RegisterCardDto } from './billing-purchase';
 import { BillingSubscriptionPlanInfoBase, BillingSubscriptionPlanInfoResponse } from './billing-subscription-plan-info';
@@ -18,12 +19,14 @@ export interface BillingOrganizationBase {
   subscriptionMonthlyExpiredAt: Date | null;
   graceExpiredAt: Date | null;
   graceNextPurchasedAt: Date | null;
+  billingMethod: BillingMethod | null;
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date | null;
   billingSubscriptionPlanInfos?: BillingSubscriptionPlanInfoBase[];
   billingSubscriptionPlanSources?: BillingSubscriptionPlanSourceBase[];
   billingMethodNice?: BillingMethodNiceBase;
+  billingMethodPaddle?: BillingMethodPaddleBase;
 }
 
 export const BillingOrganizationProp = propertiesOf<BillingOrganizationBase>();

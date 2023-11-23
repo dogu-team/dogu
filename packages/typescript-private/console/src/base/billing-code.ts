@@ -12,6 +12,7 @@ export const BillingResultCodeMap = {
   'organization-subscription-yearly-started-at-not-found': 105,
   'organization-subscription-yearly-expired-at-not-found': 106,
   'organization-subscription-plan-infos-not-found': 107,
+  'organization-method-paddle-not-found': 108,
 
   // coupon
   'coupon-not-found': 200,
@@ -54,6 +55,18 @@ export const BillingResultCodeMap = {
   'method-nice-status-not-paid': 609,
   'method-nice-status-not-canceled-or-partial-cancelled': 610,
   'method-nice-not-found': 611,
+
+  // method paddle
+  'method-paddle-list-events-failed': 700,
+  'method-paddle-get-customer-failed': 701,
+  'method-paddle-create-customer-failed': 702,
+  'method-paddle-customer-id-not-found': 703,
+  'method-paddle-update-customer-failed': 704,
+  'method-paddle-list-products-failed': 705,
+  'method-paddle-create-product-failed': 706,
+  'method-paddle-create-price-failed': 707,
+  'method-paddle-price-id-not-found': 708,
+  'method-paddle-price-not-found': 709,
 };
 
 export type BillingReason = keyof typeof BillingResultCodeMap;
@@ -83,6 +96,10 @@ export interface BillingResultSuccess<Value> {
   value: Value;
 }
 
-export type BillingResult<Value, FailureExtras extends object = object, SuccessExtras extends object = object> =
+export type BillingResult<
+  Value,
+  FailureExtras extends Record<string, unknown> = Record<string, unknown>,
+  SuccessExtras extends Record<string, unknown> = Record<string, unknown>,
+> =
   | (BillingResultFailure & FailureExtras) //
   | (BillingResultSuccess<Value> & SuccessExtras);

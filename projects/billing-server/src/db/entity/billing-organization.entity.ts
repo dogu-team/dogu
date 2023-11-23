@@ -1,7 +1,8 @@
-import { BillingCategory, BillingCurrency, BillingOrganizationBase } from '@dogu-private/console';
+import { BillingCategory, BillingCurrency, BillingMethod, BillingOrganizationBase } from '@dogu-private/console';
 import { Column, Entity, OneToMany, OneToOne, PrimaryColumn } from 'typeorm';
 import { CreatedAt, DateColumn, DeletedAt, UpdatedAt } from '../decorators';
 import { BillingMethodNice } from './billing-method-nice.entity';
+import { BillingMethodPaddle } from './billing-method-paddle.entity';
 import { BillingSubscriptionPlanHistory } from './billing-subscription-plan-history.entity';
 import { BillingSubscriptionPlanInfo } from './billing-subscription-plan-info.entity';
 import { BillingSubscriptionPlanSource } from './billing-subscription-plan-source.entity';
@@ -40,6 +41,9 @@ export class BillingOrganization implements BillingOrganizationBase {
   @DateColumn({ nullable: true })
   graceNextPurchasedAt!: Date | null;
 
+  @Column({ type: 'enum', enum: BillingMethod, nullable: true })
+  billingMethod!: BillingMethod | null;
+
   @CreatedAt()
   createdAt!: Date;
 
@@ -60,4 +64,7 @@ export class BillingOrganization implements BillingOrganizationBase {
 
   @OneToOne(() => BillingMethodNice, (billingMethodNice) => billingMethodNice.billingOrganization)
   billingMethodNice?: BillingMethodNice;
+
+  @OneToOne(() => BillingMethodPaddle, (billingMethodPaddle) => billingMethodPaddle.billingOrganization)
+  billingMethodPaddle?: BillingMethodPaddle;
 }

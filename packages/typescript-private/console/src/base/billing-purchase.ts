@@ -3,7 +3,7 @@ import { Type } from 'class-transformer';
 import { buildMessage, IsIn, IsNumber, IsOptional, IsString, IsUUID, Length, ValidateBy, ValidateNested } from 'class-validator';
 
 import { BillingCategory, BillingCurrency, BillingPeriod, BillingSubscriptionPlanData, BillingSubscriptionPlanType } from './billing';
-import { BillingResultCode } from './billing-code';
+import { BillingResult, BillingResultCode } from './billing-code';
 import { BillingCouponBase } from './billing-coupon';
 import { BillingMethodNicePublic } from './billing-method-nice';
 import { BillingSubscriptionPlanInfoResponse } from './billing-subscription-plan-info';
@@ -80,6 +80,20 @@ export interface GetBillingSubscriptionPreviewResponseSuccess {
 }
 
 export type GetBillingSubscriptionPreviewResponse = GetBillingSubscriptionPreviewResponseFailure | GetBillingSubscriptionPreviewResponseSuccess;
+
+/**
+ * @note FIXME: This is a temporary DTO for Paddle.
+ */
+export class GetBillingSubscriptionPreviewPaddleDto extends GetBillingSubscriptionPreviewDto {
+  @IsString()
+  @Type(() => decodeURI)
+  email!: string;
+}
+
+export type GetBillingSubscriptionPreviewPaddleResponse = BillingResult<{
+  customerId: string;
+  priceId: string;
+}>;
 
 export class CreatePurchaseSubscriptionDto extends GetBillingSubscriptionPreviewDto {}
 

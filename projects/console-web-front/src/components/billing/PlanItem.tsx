@@ -20,6 +20,8 @@ import useLicenseStore from '../../stores/license';
 import { getSubscriptionPlansFromLicense } from '../../utils/billing';
 import { getLocaleFormattedPrice } from '../../utils/locale';
 import usePaddle from '../../hooks/usePaddle';
+import useAuthStore from '../../stores/auth';
+import api from '../../api';
 
 interface Props {
   planType: BillingSubscriptionPlanType;
@@ -31,6 +33,7 @@ const CONTACT_US_OPTION_KEY = 'contact-us';
 
 const PlanItem: React.FC<Props> = ({ planType, planInfo, descriptionInfo }) => {
   const license = useLicenseStore((state) => state.license);
+  const me = useAuthStore((state) => state.me);
   const [isAnnual, updateIsAnnual] = useBillingPlanPurchaseStore(
     (state) => [state.isAnnual, state.updateIsAnnual],
     shallow,
@@ -111,20 +114,40 @@ const PlanItem: React.FC<Props> = ({ planType, planInfo, descriptionInfo }) => {
         // updateIsAnnual(true);
       }
     } else {
+      if (!license || !me) {
+        return;
+      }
+
       try {
-        paddleRef.current?.Checkout.open({
-          settings: {
-            displayMode: 'overlay',
-          },
-          items: [
-            {
-              priceId: 'pri_01hfvk6zfp2acv83jy0krtfazx',
+        api
+          .get('/billing/purchase/preview/paddle', {
+            params: {
+              organizationId: license.organizationId,
+              category: planInfo.category,
+              type: planType,
+              option: Number(selectedValue),
+              currency,
+              period: isAnnual ? 'yearly' : 'monthly',
+              email: me.email,
             },
-          ],
-          customer: {
-            email: 'hunhoekim@gmail.com',
-          },
-        });
+          })
+          .then((res) => {
+            console.log(res.data);
+            paddleRef.current?.Checkout.open({
+              settings: {
+                allowLogout: false,
+                displayMode: 'overlay',
+              },
+              items: [
+                {
+                  priceId: res.data.body.value.priceId,
+                },
+              ],
+              customer: {
+                id: res.data.body.value.customerId,
+              },
+            });
+          });
       } catch (e) {
         console.error(e);
       }

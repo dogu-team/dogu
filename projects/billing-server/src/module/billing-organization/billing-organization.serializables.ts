@@ -3,6 +3,7 @@ import { ConflictException } from '@nestjs/common';
 import { v4 } from 'uuid';
 import { BillingCoupon } from '../../db/entity/billing-coupon.entity';
 import { BillingMethodNice } from '../../db/entity/billing-method-nice.entity';
+import { BillingMethodPaddle } from '../../db/entity/billing-method-paddle.entity';
 import { BillingOrganizationUsedBillingCoupon } from '../../db/entity/billing-organization-used-billing-coupon.entity';
 import { BillingOrganization } from '../../db/entity/billing-organization.entity';
 import { BillingSubscriptionPlanInfo } from '../../db/entity/billing-subscription-plan-info.entity';
@@ -27,6 +28,7 @@ export async function findBillingOrganizationWithMethod(context: RetryTransactio
     .getRepository(BillingOrganization)
     .createQueryBuilder(BillingOrganization.name)
     .leftJoinAndSelect(`${BillingOrganization.name}.${BillingOrganizationProp.billingMethodNice}`, BillingMethodNice.name)
+    .leftJoinAndSelect(`${BillingOrganization.name}.${BillingOrganizationProp.billingMethodPaddle}`, BillingMethodPaddle.name)
     .where({ organizationId })
     .getOne();
 }
@@ -41,6 +43,7 @@ export async function findBillingOrganizationWithMethodAndSubscriptionPlans(
     .getRepository(BillingOrganization)
     .createQueryBuilder(BillingOrganization.name)
     .leftJoinAndSelect(`${BillingOrganization.name}.${BillingOrganizationProp.billingMethodNice}`, BillingMethodNice.name)
+    .leftJoinAndSelect(`${BillingOrganization.name}.${BillingOrganizationProp.billingMethodPaddle}`, BillingMethodPaddle.name)
     .leftJoinAndSelect(`${BillingOrganization.name}.${BillingOrganizationProp.billingSubscriptionPlanInfos}`, BillingSubscriptionPlanInfo.name)
     .leftJoinAndSelect(`${BillingSubscriptionPlanInfo.name}.${BillingSubscriptionPlanInfoProp.billingCoupon}`, BillingCoupon.name)
     .where({ organizationId })

@@ -12,7 +12,7 @@ const usePaddle = (): { paddleRef: MutableRefObject<Paddle | undefined>; loading
       setLoading(true);
       initializePaddle({
         environment: 'sandbox',
-        token: 'test_aa81223aa0421da888a01e4f13c',
+        token: 'test_34410b5690f361ec275f1cb58bf',
         debug: true,
         eventCallback: (data) => {
           console.log('eventCallback', data);
@@ -20,7 +20,7 @@ const usePaddle = (): { paddleRef: MutableRefObject<Paddle | undefined>; loading
       })
         .then((paddle) => {
           if (paddle) {
-            paddle.Environment.set('sandbox');
+            console.log(paddle);
             paddleRef.current = paddle;
           }
           setLoading(false);

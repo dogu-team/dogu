@@ -4,6 +4,8 @@ import {
   CreatePurchaseSubscriptionWithNewCardDto,
   CreatePurchaseSubscriptionWithNewCardResponse,
   GetBillingSubscriptionPreviewDto,
+  GetBillingSubscriptionPreviewPaddleDto,
+  GetBillingSubscriptionPreviewPaddleResponse,
   GetBillingSubscriptionPreviewResponse,
   RefundFullDto,
   RefundSubscriptionPlanDto,
@@ -44,5 +46,11 @@ export class BillingPurchaseController {
   @BillingTokenPermission()
   async refundFull(@Body() dto: RefundFullDto): Promise<void> {
     return await this.billingPurchaseService.refundFull(dto);
+  }
+
+  @Get('/preview/paddle')
+  @BillingTokenPermission()
+  async getSubscriptionPreviewPaddle(@Query() dto: GetBillingSubscriptionPreviewPaddleDto): Promise<GetBillingSubscriptionPreviewPaddleResponse> {
+    return await this.billingPurchaseService.getSubscriptionPreviewPaddle(dto);
   }
 }

@@ -26,7 +26,7 @@ export class BillingCaller {
     }
   }
 
-  async callBillingApi<B>(dto: CallBillingApiDto): Promise<CallBillingApiResponse<B>> {
+  async callBillingApi<B = Record<string, unknown>>(dto: CallBillingApiDto): Promise<CallBillingApiResponse<B>> {
     const { method, path, query, body } = dto;
     try {
       const response = await this.api.request<B>({
