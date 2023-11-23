@@ -13,6 +13,7 @@ import { MessageModule } from '../message/message.module';
 import { ProcessorModule } from '../processor/processor.module';
 import { StatusModule } from '../status/status.module';
 import { StepModule } from '../step/step.module';
+import { WsModule } from '../ws/ws.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { StepModule } from '../step/step.module';
     DeviceJobModule,
     ProcessorModule,
     StatusModule,
+    WsModule,
   ],
 })
 export class AppModule {}

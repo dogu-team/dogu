@@ -88,6 +88,8 @@ export class HostAgentChild implements Child {
       maxContentLength: 50 * 1000 * 1000,
     });
     setAxiosErrorFilterToIntercepter(this._client);
+
+    this.authService.subscribe('127.0.0.1', DOGU_HOST_AGENT_PORT);
   }
 
   openable(): boolean {

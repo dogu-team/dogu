@@ -29,13 +29,12 @@ export class DeviceAuthSubscribeService
 
   onWebSocketClose(webSocket: WebSocket, event: WebSocket.CloseEvent, valueAccessor: WebSocketRegistryValueAccessor<Value>): void {}
 
-  @Interval(5000)
+  @Interval(6000)
   refresh(): void {
     try {
       this.webSockets.forEach((value, webSocket) => {
         const { validated } = value;
         if (!validated) {
-          closeWebSocketWithTruncateReason(webSocket, 1001, 'invalid token');
           return;
         }
         const receiveMessage: Instance<typeof DeviceAuthSubscribe.receiveMessage> = {

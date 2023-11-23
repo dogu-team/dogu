@@ -1,22 +1,22 @@
 import { DeviceAdminToken } from '@dogu-private/types';
-import { Instance, IsFilledString, Kindable, TransformByKind, WebSocketSpec } from '@dogu-tech/common';
+import { Instance, Kindable, TransformByKind, WebSocketSpec } from '@dogu-tech/common';
 import { ValidateNested } from 'class-validator';
 
 //#region send
 export class DeviceAuthSubscribeSendMessageValidateValue extends Kindable<'DeviceAuthSubscribeSendMessageValidateValue'> {
   static override kind = 'DeviceAuthSubscribeSendMessageValidateValue';
 
-  @IsFilledString()
+  @ValidateNested()
   currentToken!: DeviceAdminToken;
 }
 
 export class DeviceAuthSubscribeSendMessageOnRefreshedValue extends Kindable<'DeviceAuthSubscribeSendMessageOnRefreshedValue'> {
   static override kind = 'DeviceAuthSubscribeSendMessageOnRefreshedValue';
 
-  @IsFilledString()
+  @ValidateNested()
   beforeToken!: DeviceAdminToken;
 
-  @IsFilledString()
+  @ValidateNested()
   newToken!: DeviceAdminToken;
 }
 
