@@ -6,6 +6,8 @@ import { DataSource, EntityManager, Not } from 'typeorm';
 
 import { OrganizationAndUserAndOrganizationRole } from '../../db/entity/index';
 import { UserAndInvitationToken } from '../../db/entity/relations/user-and-invitation-token.entity';
+import { CloudLicenseService } from '../../enterprise/module/license/cloud-license.service';
+import { FeatureConfig } from '../../feature.config';
 import { castEntity } from '../../types/entity-cast';
 import { ORGANIZATION_ROLE } from '../auth/auth.types';
 import { TokenService } from '../token/token.service';
@@ -16,6 +18,7 @@ export class UserInvitationService {
   constructor(
     @InjectDataSource()
     private readonly dataSource: DataSource,
+    private readonly cloudLicenseService: CloudLicenseService,
   ) {}
 
   async findInvitationWithAllRelations(manager: EntityManager, organizationId: OrganizationId, email: string, withDeleted: boolean): Promise<UserAndInvitationToken | null> {
@@ -49,6 +52,7 @@ export class UserInvitationService {
   async acceptInvitation(userId: UserId, dto: AcceptUserInvitationDto) {
     const { email, organizationId, token } = dto;
     const invitation = await this.findInvitation(email, organizationId, token);
+
     if (!invitation) {
       throw new NotFoundException('Invitation does not exist');
     }
@@ -78,6 +82,17 @@ export class UserInvitationService {
             { organizationId: currentOrgRole.organizationId, userId: member.userId },
             { organizationRoleId: ORGANIZATION_ROLE.OWNER },
           );
+        } else {
+          if (FeatureConfig.get('licenseModule') === 'cloud') {
+            const license = await this.cloudLicenseService.getLicenseInfo(organizationId);
+            const hasUsingPlan = license.billingOrganization?.billingSubscriptionPlanInfos?.some(
+              (plan) => plan.state === 'subscribed' || plan.state === 'change-option-or-period-requested',
+            );
+
+            if (hasUsingPlan) {
+              throw new BadRequestException('Plan subscription is in progress.');
+            }
+          }
         }
       }
 
