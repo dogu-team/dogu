@@ -1,5 +1,15 @@
-import { BillingCategory, BillingCurrency, BillingPeriod, BillingResult, BillingSubscriptionPlanType, BillingUsdAmount, resultCode } from '@dogu-private/console';
-import { setAxiosErrorFilterToIntercepter } from '@dogu-tech/common';
+import {
+  BillingCategory,
+  BillingCurrency,
+  BillingPeriod,
+  BillingReason,
+  BillingResult,
+  BillingSubscriptionPlanType,
+  BillingUsdAmount,
+  resultCode,
+  throwFailure,
+} from '@dogu-private/console';
+import { setAxiosErrorFilterToIntercepter, setAxiosFilterErrorAndLogging } from '@dogu-tech/common';
 import { Injectable } from '@nestjs/common';
 import axios, { AxiosInstance } from 'axios';
 import { FeatureConfig } from '../../feature.config';
@@ -45,6 +55,11 @@ export interface CreateProductOptions {
   name: string;
 }
 
+export interface UpdateProductOptions {
+  productId: string;
+  status: Paddle.Status;
+}
+
 export interface CreatePriceOptions {
   category: BillingCategory;
   subscriptionPlanType: BillingSubscriptionPlanType;
@@ -54,6 +69,31 @@ export interface CreatePriceOptions {
   amount: BillingUsdAmount;
   billingOrganizationId: string;
   productId: string;
+}
+
+export interface UpdatePriceOptions {
+  priceId: string;
+  status: Paddle.Status;
+}
+
+interface CreateFailureOptions {
+  reason: BillingReason;
+  requestId: string | undefined;
+  error: Paddle.Error;
+}
+
+function createFailure<T>(options: CreateFailureOptions): BillingResult<T> {
+  const { reason, requestId, error } = options;
+  return {
+    ok: false,
+    resultCode: resultCode(reason, {
+      requestId,
+      errorType: error.type,
+      errorCode: error.code,
+      errorDetail: error.detail,
+      errorDocumentationUrl: error.documentation_url,
+    }),
+  };
 }
 
 @Injectable()
@@ -80,7 +120,7 @@ export class PaddleCaller {
         Authorization: `Bearer ${PaddleApiKey}`,
       },
     });
-    setAxiosErrorFilterToIntercepter(this.client);
+    setAxiosFilterErrorAndLogging(this.client, this.logger);
     this.logger.info(`PaddleCaller initialized with ${baseUrl}`);
   }
 
@@ -94,7 +134,6 @@ export class PaddleCaller {
       per_page: 50,
       after,
     };
-    this.logger.info('PaddleCaller.listEvents', { path, query });
 
     const response = await this.client.get<Paddle.Response<Paddle.Event[]>>(path, {
       params: query,
@@ -103,23 +142,16 @@ export class PaddleCaller {
     const { request_id, pagination } = meta ?? {};
 
     if (error) {
-      this.logger.error('PaddleCaller.listEvents failed', { path, query, error });
-      return {
-        ok: false,
-        resultCode: resultCode('method-paddle-list-events-failed', {
-          requestId: request_id,
-          errorType: error.type,
-          errorCode: error.code,
-          errorDetail: error.detail,
-          errorDocumentationUrl: error.documentation_url,
-        }),
-      };
+      return createFailure({
+        reason: 'method-paddle-list-events-failed',
+        requestId: request_id,
+        error,
+      });
     }
 
     const events = data ?? [];
     const { next, has_more, estimated_total } = pagination ?? {};
     const nextAfter = new URL(next ?? 'http://localhost').searchParams.get('after');
-    this.logger.info('PaddleCaller.listEvents response', { request_id, has_more, estimated_total, nextAfter });
     return {
       ok: true,
       value: {
@@ -141,14 +173,12 @@ export class PaddleCaller {
         organizationId,
       },
     };
-    this.logger.info('PaddleCaller.createCustomer', { path, body });
 
     const response = await this.client.post<Paddle.Response<Paddle.Customer>>(path, body);
     const { error, data, meta } = response.data;
     const { request_id } = meta ?? {};
 
     if (error) {
-      this.logger.error('PaddleCaller.createCustomer failed', { path, body, error });
       return {
         ok: false,
         resultCode: resultCode('method-paddle-create-customer-failed', {
@@ -162,7 +192,6 @@ export class PaddleCaller {
     }
 
     const customer = data ?? {};
-    this.logger.info('PaddleCaller.createCustomer response', { request_id, customer });
     return {
       ok: true,
       value: customer,
@@ -175,28 +204,20 @@ export class PaddleCaller {
   async getCustomer(options: GetCustomerOptions): Promise<BillingResult<Paddle.Customer>> {
     const { customerId } = options;
     const path = `/customers/${customerId}`;
-    this.logger.info('PaddleCaller.getCustomer', { path });
 
     const response = await this.client.get<Paddle.Response<Paddle.Customer>>(path);
     const { error, data, meta } = response.data;
     const { request_id } = meta ?? {};
 
     if (error) {
-      this.logger.error('PaddleCaller.getCustomer failed', { path, error });
-      return {
-        ok: false,
-        resultCode: resultCode('method-paddle-get-customer-failed', {
-          requestId: request_id,
-          errorType: error.type,
-          errorCode: error.code,
-          errorDetail: error.detail,
-          errorDocumentationUrl: error.documentation_url,
-        }),
-      };
+      return createFailure({
+        reason: 'method-paddle-get-customer-failed',
+        requestId: request_id,
+        error,
+      });
     }
 
     const customer = data ?? {};
-    this.logger.info('PaddleCaller.getCustomer response', { request_id, customer });
     return {
       ok: true,
       value: customer,
@@ -212,28 +233,20 @@ export class PaddleCaller {
     const body = {
       email,
     };
-    this.logger.info('PaddleCaller.updateCustomer', { path, body });
 
     const response = await this.client.patch<Paddle.Response<Paddle.Customer>>(path, body);
     const { error, data, meta } = response.data;
     const { request_id } = meta ?? {};
 
     if (error) {
-      this.logger.error('PaddleCaller.updateCustomer failed', { path, body, error });
-      return {
-        ok: false,
-        resultCode: resultCode('method-paddle-update-customer-failed', {
-          requestId: request_id,
-          errorType: error.type,
-          errorCode: error.code,
-          errorDetail: error.detail,
-          errorDocumentationUrl: error.documentation_url,
-        }),
-      };
+      return createFailure({
+        reason: 'method-paddle-update-customer-failed',
+        requestId: request_id,
+        error,
+      });
     }
 
     const customer = data ?? {};
-    this.logger.info('PaddleCaller.updateCustomer response', { request_id, customer });
     return {
       ok: true,
       value: customer,
@@ -252,7 +265,6 @@ export class PaddleCaller {
       include: 'prices',
       status: 'active',
     };
-    this.logger.info('PaddleCaller.listProducts', { path, query });
 
     const response = await this.client.get<Paddle.Response<Paddle.Product[]>>(path, {
       params: query,
@@ -261,23 +273,16 @@ export class PaddleCaller {
     const { request_id, pagination } = meta ?? {};
 
     if (error) {
-      this.logger.error('PaddleCaller.listProducts failed', { path, query, error });
-      return {
-        ok: false,
-        resultCode: resultCode('method-paddle-list-products-failed', {
-          requestId: request_id,
-          errorType: error.type,
-          errorCode: error.code,
-          errorDetail: error.detail,
-          errorDocumentationUrl: error.documentation_url,
-        }),
-      };
+      return createFailure({
+        reason: 'method-paddle-list-products-failed',
+        requestId: request_id,
+        error,
+      });
     }
 
     const products = data ?? [];
-    const { next, has_more, estimated_total } = pagination ?? {};
+    const { next, has_more } = pagination ?? {};
     const nextAfter = new URL(next ?? 'http://localhost').searchParams.get('after');
-    this.logger.info('PaddleCaller.listProducts response', { request_id, has_more, estimated_total, nextAfter });
     return {
       ok: true,
       value: {
@@ -285,6 +290,27 @@ export class PaddleCaller {
         hasMore: has_more ?? false,
         nextAfter,
       },
+    };
+  }
+
+  async listProductsAll(): Promise<BillingResult<Paddle.ProductWithPrices[]>> {
+    const products: Paddle.ProductWithPrices[] = [];
+    let nextAfter: string | null = null;
+    let hasMore = true;
+    while (hasMore) {
+      const result: BillingResult<ListProductsResult> = await this.listProducts(nextAfter ?? undefined);
+      if (!result.ok) {
+        return result;
+      }
+
+      products.push(...result.value.products);
+      nextAfter = result.value.nextAfter;
+      hasMore = result.value.hasMore;
+    }
+
+    return {
+      ok: true,
+      value: products,
     };
   }
 
@@ -302,28 +328,49 @@ export class PaddleCaller {
         category,
       },
     };
-    this.logger.info('PaddleCaller.createProduct', { path, body });
 
     const response = await this.client.post<Paddle.Response<Paddle.Product>>(path, body);
     const { error, data, meta } = response.data;
     const { request_id } = meta ?? {};
 
     if (error) {
-      this.logger.error('PaddleCaller.createProduct failed', { path, body, error });
-      return {
-        ok: false,
-        resultCode: resultCode('method-paddle-create-product-failed', {
-          requestId: request_id,
-          errorType: error.type,
-          errorCode: error.code,
-          errorDetail: error.detail,
-          errorDocumentationUrl: error.documentation_url,
-        }),
-      };
+      return createFailure({
+        reason: 'method-paddle-create-product-failed',
+        requestId: request_id,
+        error,
+      });
     }
 
     const product = data ?? {};
-    this.logger.info('PaddleCaller.createProduct response', { request_id, product });
+    return {
+      ok: true,
+      value: product,
+    };
+  }
+
+  /**
+   * @see https://developer.paddle.com/api-reference/products/update-product
+   */
+  async updateProduct(options: UpdateProductOptions): Promise<BillingResult<Paddle.Product>> {
+    const { productId, status } = options;
+    const path = `/products/${productId}`;
+    const body = {
+      status,
+    };
+
+    const response = await this.client.patch<Paddle.Response<Paddle.Product>>(path, body);
+    const { error, data, meta } = response.data;
+    const { request_id } = meta ?? {};
+
+    if (error) {
+      return createFailure({
+        reason: 'method-paddle-update-product-failed',
+        requestId: request_id,
+        error,
+      });
+    }
+
+    const product = data ?? {};
     return {
       ok: true,
       value: product,
@@ -362,28 +409,48 @@ export class PaddleCaller {
         billingOrganizationId,
       },
     };
-    this.logger.info('PaddleCaller.createPrice', { path, body });
 
     const response = await this.client.post<Paddle.Response<Paddle.Price>>(path, body);
     const { error, data, meta } = response.data;
     const { request_id } = meta ?? {};
 
     if (error) {
-      this.logger.error('PaddleCaller.createPrice failed', { path, body, error });
-      return {
-        ok: false,
-        resultCode: resultCode('method-paddle-create-price-failed', {
-          requestId: request_id,
-          errorType: error.type,
-          errorCode: error.code,
-          errorDetail: error.detail,
-          errorDocumentationUrl: error.documentation_url,
-        }),
-      };
+      return createFailure({
+        reason: 'method-paddle-create-price-failed',
+        requestId: request_id,
+        error,
+      });
     }
 
     const price = data ?? {};
-    this.logger.info('PaddleCaller.createPrice response', { request_id, price });
+    return {
+      ok: true,
+      value: price,
+    };
+  }
+
+  /**
+   * @see https://developer.paddle.com/api-reference/prices/update-price
+   */
+  async updatePrice(options: UpdatePriceOptions): Promise<BillingResult<Paddle.Price>> {
+    const { priceId, status } = options;
+    const path = `/prices/${priceId}`;
+    const body = {
+      status,
+    };
+
+    const response = await this.client.patch<Paddle.Response<Paddle.Price>>(path, body);
+    const { error, data, meta } = response.data;
+    const { request_id } = meta ?? {};
+    if (error) {
+      return createFailure({
+        reason: 'method-paddle-update-price-failed',
+        requestId: request_id,
+        error,
+      });
+    }
+
+    const price = data ?? {};
     return {
       ok: true,
       value: price,

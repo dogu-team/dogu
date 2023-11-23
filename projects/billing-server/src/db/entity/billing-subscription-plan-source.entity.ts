@@ -10,7 +10,9 @@ import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 import { CreatedAt, DeletedAt, UpdatedAt } from '../decorators';
 import { BillingOrganization } from './billing-organization.entity';
 
-@Entity()
+export const BillingSubscriptionPlanSourceTableName = 'billing_subscription_plan_source';
+
+@Entity(BillingSubscriptionPlanSourceTableName)
 export class BillingSubscriptionPlanSource implements BillingSubscriptionPlanSourceBase {
   @PrimaryColumn('uuid')
   billingSubscriptionPlanSourceId!: string;

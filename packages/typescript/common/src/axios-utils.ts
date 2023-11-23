@@ -1,9 +1,11 @@
 import { AxiosError, AxiosInstance, isAxiosError } from 'axios';
+import { Printable } from './logs';
 import { errorify } from './utilities/functions';
 
 export class FilteredAxiosError extends Error {
   readonly code?: string;
   readonly responseStatus?: number;
+  readonly data?: unknown;
   readonly details?: unknown;
 
   constructor(axiosError: AxiosError) {
@@ -12,6 +14,7 @@ export class FilteredAxiosError extends Error {
     this.name = 'FilteredAxiosError';
     this.code = axiosError.code;
     this.responseStatus = axiosError.response?.status;
+    this.data = axiosError.response?.data;
     this.details = axiosError.toJSON();
   }
 }
@@ -33,4 +36,39 @@ export function setAxiosErrorFilterToIntercepter(axios: AxiosInstance): void {
     const filteredError = parseAxiosError(error);
     return Promise.reject(filteredError);
   });
+}
+
+export function setAxiosFilterErrorAndLogging(instance: AxiosInstance, printable: Printable): void {
+  instance.interceptors.request.use(
+    (request) => {
+      printable.info('axios request', {
+        method: request.method,
+        url: request.url,
+        query: request.params,
+        data: request.data,
+      });
+      return request;
+    },
+    (e) => {
+      const error = parseAxiosError(e);
+      printable.error('axios request error', { error });
+      return Promise.reject(error);
+    },
+  );
+
+  instance.interceptors.response.use(
+    (response) => {
+      printable.info('axios response', {
+        status: response.status,
+        statusText: response.statusText,
+        data: response.data,
+      });
+      return response;
+    },
+    (e) => {
+      const error = parseAxiosError(e);
+      printable.error('axios response error', { error });
+      return Promise.reject(error);
+    },
+  );
 }

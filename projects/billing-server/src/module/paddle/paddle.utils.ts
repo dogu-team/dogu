@@ -3,7 +3,6 @@ import { Paddle } from './paddle.types';
 
 export function matchProduct(logger: DoguLogger, productMatch: Paddle.ProductMatch, product: Paddle.ProductWithPrices): boolean {
   if (product.status !== 'active') {
-    logger.warn(`Product is not active. ${product.id} treating as not matched.`);
     return false;
   }
 
@@ -20,7 +19,6 @@ export function matchProduct(logger: DoguLogger, productMatch: Paddle.ProductMat
 
 export function matchPrice(logger: DoguLogger, priceMatch: Paddle.PriceMatch, price: Paddle.Price): boolean {
   if (price.status !== 'active') {
-    logger.warn(`Price is not active. ${price.id} treating as not matched.`);
     return false;
   }
 

@@ -1,10 +1,11 @@
 import { BillingOrganizationProp, BillingSubscriptionPlanSourceProp, FindBillingSubscriptionPlanSourcesDto } from '@dogu-private/console';
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
+import { Client } from 'pg';
 import { DataSource } from 'typeorm';
 import { BillingOrganization } from '../../db/entity/billing-organization.entity';
-import { BillingSubscriptionPlanSource } from '../../db/entity/billing-subscription-plan-source.entity';
-import { RetryTransaction } from '../../db/retry-transaction';
+import { BillingSubscriptionPlanSource, BillingSubscriptionPlanSourceTableName } from '../../db/entity/billing-subscription-plan-source.entity';
+import { getClient, RetryTransaction, subscribe } from '../../db/retry-transaction';
 import { DoguLogger } from '../logger/logger';
 
 @Injectable()

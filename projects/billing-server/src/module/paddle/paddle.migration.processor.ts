@@ -1,4 +1,4 @@
-import { BillingCurrency, BillingPeriod, BillingResult, BillingSubscriptionPlanMap, BillingSubscriptionPlanType, BillingUsdAmount } from '@dogu-private/console';
+import { BillingCurrency, BillingPeriod, BillingResult, BillingSubscriptionPlanMap, BillingSubscriptionPlanType, BillingUsdAmount, throwFailure } from '@dogu-private/console';
 import { stringify } from '@dogu-tech/common';
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
@@ -10,7 +10,7 @@ import { ListProductsResult, PaddleCaller } from './paddle.caller';
 import { Paddle } from './paddle.types';
 import { matchPrice, matchProduct, matchProductByPrice } from './paddle.utils';
 
-function createProductSourcesFromScript(): Paddle.ProductSource[] {
+function createProductSourcesFromStatic(): Paddle.ProductSource[] {
   const productSources: Paddle.ProductSource[] = [];
   _.entries(BillingSubscriptionPlanMap).forEach(([subscriptionPlanTypeRaw, optionInfo]) => {
     const subscriptionPlanType = subscriptionPlanTypeRaw as BillingSubscriptionPlanType;
@@ -62,15 +62,36 @@ export class PaddleMigrationProcessor implements OnModuleInit {
 
   async onModuleInit(): Promise<void> {
     await this.migrateSubscriptionPlan();
+    await this.migrateCoupon();
   }
 
   async migrateSubscriptionPlan(): Promise<void> {
     const productSources = await this.createProductSources();
-    const products = await this.listProducts();
+    const productsResult = await this.paddleCaller.listProductsAll();
+    if (!productsResult.ok) {
+      throwFailure(productsResult);
+    }
+
+    const products = productsResult.value;
+    const prices = products.flatMap((product) => {
+      if (!product.id) {
+        throw new Error(`Product id is not defined. ${stringify(product)}`);
+      }
+
+      return product.prices ?? [];
+    });
+
+    const matchedProductIds: string[] = [];
+    const matchedPriceIds: string[] = [];
     for (const productSource of productSources) {
       let product = products.find((product) => matchProduct(this.logger, productSource, product));
       if (product) {
-        this.logger.info('Paddle product already exists.', {
+        if (!product.id) {
+          throw new Error(`Product id is not defined. ${stringify(product)}`);
+        }
+
+        matchedProductIds.push(product.id);
+        this.logger.debug('Paddle product already exists.', {
           id: product.id,
           name: product.name,
           subscriptionPlanType: product.custom_data?.subscriptionPlanType,
@@ -83,10 +104,15 @@ export class PaddleMigrationProcessor implements OnModuleInit {
           name: productSource.name,
         });
         if (!result.ok) {
-          throw new Error(`Failed to create product. ${stringify(result)}`);
+          throwFailure(result);
         }
 
         product = result.value;
+        if (!product.id) {
+          throw new Error(`Product id is not defined. ${stringify(product)}`);
+        }
+
+        matchedProductIds.push(product.id);
         this.logger.info('Paddle product created.', {
           id: product.id,
           name: product.name,
@@ -98,7 +124,12 @@ export class PaddleMigrationProcessor implements OnModuleInit {
       for (const priceSource of productSource.prices) {
         const price = product.prices?.find((price) => matchPrice(this.logger, priceSource, price));
         if (price) {
-          this.logger.info('Paddle price already exists.', {
+          if (!price.id) {
+            throw new Error(`Price id is not defined. ${stringify(price)}`);
+          }
+
+          matchedPriceIds.push(price.id);
+          this.logger.debug('Paddle price already exists.', {
             id: price.id,
             option: price.custom_data?.option,
             period: price.custom_data?.period,
@@ -115,7 +146,7 @@ export class PaddleMigrationProcessor implements OnModuleInit {
           throw new Error(`Product id is not defined. ${stringify(product)}`);
         }
 
-        const result = await this.paddleCaller.createPrice({
+        const result: BillingResult<Paddle.Price> = await this.paddleCaller.createPrice({
           productId: product.id,
           option: priceSource.option,
           period: priceSource.period,
@@ -126,32 +157,67 @@ export class PaddleMigrationProcessor implements OnModuleInit {
           billingOrganizationId: 'none',
         });
         if (!result.ok) {
-          throw new Error(`Failed to create price. ${stringify(result)}`);
+          throwFailure(result);
         }
+
+        const created = result.value;
+        if (!created.id) {
+          throw new Error(`Price id is not defined. ${stringify(created)}`);
+        }
+
+        matchedPriceIds.push(created.id);
+        this.logger.info('Paddle price created.', {
+          id: created.id,
+          option: created.custom_data?.option,
+          period: created.custom_data?.period,
+          currency: created.custom_data?.currency,
+          amountInCents: created.custom_data?.amountInCents,
+          category: created.custom_data?.category,
+          subscriptionPlanType: created.custom_data?.subscriptionPlanType,
+          billingOrganizationId: created.custom_data?.billingOrganizationId,
+        });
       }
     }
-  }
 
-  private async listProducts(): Promise<Paddle.ProductWithPrices[]> {
-    const products: Paddle.ProductWithPrices[] = [];
-    let nextAfter: string | null = null;
-    let hasMore = true;
-    while (hasMore) {
-      const result: BillingResult<ListProductsResult> = await this.paddleCaller.listProducts(nextAfter ?? undefined);
+    const unmatchedPriceIds = prices
+      .filter((price) => !matchedPriceIds.includes(price.id ?? ''))
+      .filter((price) => price.status === 'active')
+      .map((price) => price.id ?? '');
+    this.logger.info('Paddle price unmatched.', { unmatchedPriceIds });
+
+    for (const priceId of unmatchedPriceIds) {
+      const result = await this.paddleCaller.updatePrice({
+        priceId,
+        status: 'archived',
+      });
       if (!result.ok) {
-        throw new Error(`Failed to list products. ${stringify(result)}`);
+        throwFailure(result);
       }
 
-      products.push(...result.value.products);
-      nextAfter = result.value.nextAfter;
-      hasMore = result.value.hasMore;
+      this.logger.info('Paddle price archived.', { priceId });
     }
 
-    return products;
+    const unmatchedProductIds = products
+      .filter((product) => !matchedProductIds.includes(product.id ?? ''))
+      .filter((product) => product.status === 'active')
+      .map((product) => product.id ?? '');
+    this.logger.info('Paddle product unmatched.', { unmatchedProductIds });
+
+    for (const productId of unmatchedProductIds) {
+      const result = await this.paddleCaller.updateProduct({
+        productId,
+        status: 'archived',
+      });
+      if (!result.ok) {
+        throwFailure(result);
+      }
+
+      this.logger.info('Paddle product archived.', { productId });
+    }
   }
 
   private async createProductSources(): Promise<Paddle.ProductSource[]> {
-    const productSources = createProductSourcesFromScript();
+    const productSources = createProductSourcesFromStatic();
     const priceSourcesFromDb = await this.createPriceSourcesFromDb();
     for (const priceSource of priceSourcesFromDb) {
       const productSource = productSources.find((productSource) => matchProductByPrice(productSource, priceSource));
@@ -180,4 +246,6 @@ export class PaddleMigrationProcessor implements OnModuleInit {
     });
     return priceSources;
   }
+
+  async migrateCoupon(): Promise<void> {}
 }

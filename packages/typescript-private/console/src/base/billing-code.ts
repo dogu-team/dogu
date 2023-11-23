@@ -1,3 +1,5 @@
+import { stringify } from '@dogu-tech/common';
+
 export const BillingResultCodeMap = {
   // common
   ok: 0,
@@ -67,6 +69,8 @@ export const BillingResultCodeMap = {
   'method-paddle-create-price-failed': 707,
   'method-paddle-price-id-not-found': 708,
   'method-paddle-price-not-found': 709,
+  'method-paddle-update-product-failed': 710,
+  'method-paddle-update-price-failed': 711,
 };
 
 export type BillingReason = keyof typeof BillingResultCodeMap;
@@ -91,15 +95,27 @@ export interface BillingResultFailure {
   resultCode: BillingResultCode;
 }
 
+export type BillingResultFailureWithExtras<Extras extends Record<string, unknown>> = BillingResultFailure & Extras;
+
 export interface BillingResultSuccess<Value> {
   ok: true;
   value: Value;
 }
 
+export type BillingResultSuccessWithExtras<Value, Extras extends Record<string, unknown>> = BillingResultSuccess<Value> & Extras;
+
 export type BillingResult<
   Value,
   FailureExtras extends Record<string, unknown> = Record<string, unknown>,
   SuccessExtras extends Record<string, unknown> = Record<string, unknown>,
-> =
-  | (BillingResultFailure & FailureExtras) //
-  | (BillingResultSuccess<Value> & SuccessExtras);
+> = BillingResultFailureWithExtras<FailureExtras> | BillingResultSuccessWithExtras<Value, SuccessExtras>;
+
+export class BillingResultFailureError<Extras extends Record<string, unknown>> extends Error {
+  constructor(readonly failure: BillingResultFailureWithExtras<Extras>) {
+    super(`BillingResultFailure: ${stringify(failure)}`);
+  }
+}
+
+export function throwFailure<Extras extends Record<string, unknown>>(failure: BillingResultFailureWithExtras<Extras>): never {
+  throw new BillingResultFailureError(failure);
+}

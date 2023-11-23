@@ -2,7 +2,9 @@ import { BillingCouponBase, BillingCouponType, BillingSubscriptionPlanType } fro
 import { Column, Entity, PrimaryColumn } from 'typeorm';
 import { CreatedAt, DateColumn, DeletedAt, UpdatedAt } from '../decorators';
 
-@Entity()
+export const BillingCouponTableName = 'billing_coupon';
+
+@Entity(BillingCouponTableName)
 export class BillingCoupon implements BillingCouponBase {
   @PrimaryColumn('uuid')
   billingCouponId!: string;
