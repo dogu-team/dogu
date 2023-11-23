@@ -42,7 +42,7 @@ const PlanItem: React.FC<Props> = ({ planType, planInfo, descriptionInfo }) => {
   });
   const router = useRouter();
   const { t } = useTranslation('billing');
-  const paddleRef = usePaddle();
+  const { paddleRef, loading: paddleLoading } = usePaddle();
 
   const currency: BillingCurrency = router.locale === 'ko' ? 'KRW' : 'USD';
   const usingPlans = license ? getSubscriptionPlansFromLicense(license, [planType]) : [];
@@ -198,12 +198,18 @@ const PlanItem: React.FC<Props> = ({ planType, planInfo, descriptionInfo }) => {
         <div>
           {selectedValue === CONTACT_US_OPTION_KEY ? (
             <a href="https://dogutech.io/book-demo" target="_blank">
-              <Button type="primary" style={{ width: '100%' }}>
+              <Button type="primary" style={{ width: '100%' }} loading={paddleLoading}>
                 {t('contactUs')}
               </Button>
             </a>
           ) : (
-            <Button type="primary" style={{ width: '100%' }} onClick={handleClickButton} disabled={buttonDisabled}>
+            <Button
+              type="primary"
+              style={{ width: '100%' }}
+              onClick={handleClickButton}
+              disabled={buttonDisabled}
+              loading={paddleLoading}
+            >
               {buttonText}
             </Button>
           )}
