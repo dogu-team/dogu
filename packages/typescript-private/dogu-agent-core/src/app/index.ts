@@ -7,6 +7,7 @@ export * from './child/lifecycle';
 export * from './child/service';
 export * from './child/service-factory';
 export * from './child/types';
+export * from './device-auth/service';
 export * from './dotenv-config/loader';
 export * from './dotenv-config/service';
 export * from './external/service';

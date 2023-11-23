@@ -9,6 +9,7 @@ import http from 'http';
 import path from 'path';
 import { hostAgentKey } from '../../../shares/child';
 import { AppConfigService } from '../../app-config/service';
+import { DeviceAuthService } from '../../device-auth/service';
 import { FeatureConfigService } from '../../index';
 import { getLogLevel } from '../../log-utils';
 import { closeChild, openChild } from '../lifecycle';
@@ -20,6 +21,7 @@ export class HostAgentChild implements Child {
   constructor(
     private readonly appConfigService: AppConfigService,
     private readonly featureConfigService: FeatureConfigService,
+    private readonly authService: DeviceAuthService,
     private readonly logsPath: string,
     private readonly listener: ChildListener,
     private readonly logger: Printable,
@@ -64,6 +66,7 @@ export class HostAgentChild implements Child {
           DOGU_LOG_LEVEL,
           DOGU_ROOT_PID,
           DOGU_USE_SENTRY: DOGU_USE_SENTRY ? 'true' : 'false',
+          DOGU_SECRET_ADMIN_TOKEN: this.authService.adminToken.value,
         },
       },
       childLogger: this.logger,

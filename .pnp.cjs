@@ -7585,12 +7585,14 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@dogu-private/host-agent", "workspace:packages/typescript-private/host-agent"],\
             ["@dogu-private/types", "workspace:packages/typescript-private/types"],\
             ["@dogu-tech/common", "workspace:packages/typescript/common"],\
+            ["@dogu-tech/device-client-common", "workspace:packages/typescript/device-client-common"],\
             ["@dogu-tech/node", "workspace:packages/typescript/node"],\
             ["@dogu-tech/types", "workspace:packages/typescript/types"],\
             ["@jest/globals", "npm:29.6.1"],\
             ["@types/lodash", "npm:4.14.195"],\
             ["@types/node", "npm:18.15.11"],\
             ["@types/shelljs", "npm:0.8.12"],\
+            ["@types/uuid", "npm:9.0.0"],\
             ["axios", "npm:1.3.5"],\
             ["compressing", "npm:1.10.0"],\
             ["conf", "npm:10.2.0"],\
@@ -7605,7 +7607,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["shx", "npm:0.3.4"],\
             ["ts-jest", "virtual:b2489bbc0216283d7687523442dd6b04aeaedb71246257f8a0a0e6ae86307b18dca708146dd0f430b02186348d070ef7e31b7b07c55f7aabad66d13be5ae7e15#npm:29.1.1"],\
             ["ts-node", "virtual:f2635a2fcff48218c189c72f8ec68a58c0c9a493231eeb25fc0d4d97932a237dd3a38bfaa7c8a6d4be36984c08b243589188d7525f771fc6d7018c6cf79aeba1#npm:10.9.1"],\
-            ["typescript", "patch:typescript@npm%3A4.7.4#~builtin<compat/typescript>::version=4.7.4&hash=65a307"]\
+            ["typescript", "patch:typescript@npm%3A4.7.4#~builtin<compat/typescript>::version=4.7.4&hash=65a307"],\
+            ["uuid", "npm:9.0.0"]\
           ],\
           "linkType": "SOFT"\
         }]\
@@ -15480,6 +15483,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["@types/uuid", [\
+        ["npm:9.0.0", {\
+          "packageLocation": "./.yarn/cache/@types-uuid-npm-9.0.0-979023c16f-59ae56d954.zip/node_modules/@types/uuid/",\
+          "packageDependencies": [\
+            ["@types/uuid", "npm:9.0.0"]\
+          ],\
+          "linkType": "HARD"\
+        }],\
         ["npm:9.0.1", {\
           "packageLocation": "./.yarn/cache/@types-uuid-npm-9.0.1-b44e45eb8a-c472b8a77c.zip/node_modules/@types/uuid/",\
           "packageDependencies": [\

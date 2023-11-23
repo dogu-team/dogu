@@ -2,6 +2,7 @@ import {
   AppConfigLoader,
   ChildListener,
   ChildServiceFactory,
+  DeviceAuthService,
   DotenvConfigLoader,
   ExternalServiceFactory,
   FeatureConfigLoader,
@@ -86,10 +87,12 @@ export async function run(url: string, token: string, linuxDeviceSerial: string)
       /* noop */
     },
   };
+  const authService = new DeviceAuthService();
   const childService = new ChildServiceFactory({
     appConfigService,
     featureConfigService,
     externalService,
+    authService,
     logsPath,
     logger,
     listener: childListener,

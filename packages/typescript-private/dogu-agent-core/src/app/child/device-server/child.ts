@@ -8,6 +8,7 @@ import EventEmitter from 'events';
 import path from 'path';
 import { deviceServerKey } from '../../../shares/child';
 import { AppConfigService } from '../../app-config/service';
+import { DeviceAuthService } from '../../device-auth/service';
 import { ExternalService } from '../../external/service';
 import { FeatureConfigService } from '../../index';
 import { getLogLevel, stripAnsi } from '../../log-utils';
@@ -22,6 +23,7 @@ export class DeviceServerChild implements Child {
     private readonly appConfigService: AppConfigService,
     private readonly featureConfigService: FeatureConfigService,
     private readonly externalService: ExternalService,
+    private readonly authService: DeviceAuthService,
     private readonly logsPath: string,
     private readonly listener: ChildListener,
     private readonly logger: Printable,
@@ -77,6 +79,7 @@ export class DeviceServerChild implements Child {
           DOGU_WIFI_SSID,
           DOGU_WIFI_PASSWORD,
           DOGU_USE_SENTRY: DOGU_USE_SENTRY ? 'true' : 'false',
+          DOGU_SECRET_ADMIN_TOKEN: this.authService.adminToken.value,
         },
       },
       childLogger: this.logger,
