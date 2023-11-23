@@ -79,7 +79,7 @@ export class DeviceServerChild implements Child {
           DOGU_WIFI_SSID,
           DOGU_WIFI_PASSWORD,
           DOGU_USE_SENTRY: DOGU_USE_SENTRY ? 'true' : 'false',
-          DOGU_SECRET_ADMIN_TOKEN: this.authService.adminToken.value,
+          DOGU_SECRET_INITIAL_ADMIN_TOKEN: this.authService.adminToken.value,
         },
       },
       childLogger: this.logger,

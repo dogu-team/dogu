@@ -31,7 +31,6 @@
     "@dogu-private/host-agent": "workspace:^",
     "@dogu-private/types": "workspace:^",
     "@dogu-tech/common": "workspace:^",
-    "@dogu-tech/device-client-common": "workspace:^",
     "@dogu-tech/node": "workspace:^",
     "@dogu-tech/types": "workspace:^",
     "axios": "1.3.5",

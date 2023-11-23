@@ -1,6 +1,5 @@
 import 'reflect-metadata';
 
-export * from './auth/token';
 export * from './bases';
 export * from './device-client';
 export * from './device-host-client';

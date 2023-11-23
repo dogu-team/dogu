@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ConsoleClientModule } from '../console-client/console-client.module';
+import { DeviceAuthModule } from '../device-auth/device-auth.module';
 import { DeviceClientModule } from '../device-client/device-client.module';
 import { DeviceJobModule } from '../device-job/device-job.module';
 import { DeviceModule } from '../device/device.module';
@@ -19,6 +20,7 @@ import { StepModule } from '../step/step.module';
     ScheduleModule.forRoot(),
     ConsoleClientModule,
     HostModule,
+    DeviceAuthModule,
     DeviceClientModule,
     DeviceModule,
     MessageModule,
