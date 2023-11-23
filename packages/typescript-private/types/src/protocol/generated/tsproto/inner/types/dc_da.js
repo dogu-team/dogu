@@ -3,9 +3,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.DcDaControlReturn = exports.DcDaControlParam = exports.DcDaApplyStreamingOptionReturn = exports.DcDaApplyStreamingOptionParam = exports.DcDaQueryProfileReturn = exports.DcDaQueryProfileParam = exports.DcDaConnectionReturn = exports.DcDaConnectionParam = void 0;
+exports.DcDaSetFoldableStateReturn = exports.DcDaSetFoldableStateParam = exports.DcDaGetFoldableStateReturn = exports.DcDaGetFoldableStateParam = exports.DcDaControlReturn = exports.DcDaControlParam = exports.DcDaApplyStreamingOptionReturn = exports.DcDaApplyStreamingOptionParam = exports.DcDaQueryProfileReturn = exports.DcDaQueryProfileParam = exports.DcDaConnectionReturn = exports.DcDaConnectionParam = void 0;
 /* eslint-disable */
 const minimal_1 = __importDefault(require("protobufjs/minimal"));
+const errors_1 = require("../../outer/errors");
 const profile_method_1 = require("../../outer/profile/profile_method");
 const runtime_info_1 = require("../../outer/profile/runtime_info");
 const streaming_1 = require("../../outer/streaming/streaming");
@@ -329,6 +330,197 @@ exports.DcDaControlReturn = {
     },
     fromPartial(_) {
         const message = createBaseDcDaControlReturn();
+        return message;
+    },
+};
+function createBaseDcDaGetFoldableStateParam() {
+    return {};
+}
+exports.DcDaGetFoldableStateParam = {
+    encode(_, writer = minimal_1.default.Writer.create()) {
+        return writer;
+    },
+    decode(input, length) {
+        const reader = input instanceof minimal_1.default.Reader ? input : new minimal_1.default.Reader(input);
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = createBaseDcDaGetFoldableStateParam();
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+            }
+        }
+        return message;
+    },
+    fromJSON(_) {
+        return {};
+    },
+    toJSON(_) {
+        const obj = {};
+        return obj;
+    },
+    fromPartial(_) {
+        const message = createBaseDcDaGetFoldableStateParam();
+        return message;
+    },
+};
+function createBaseDcDaGetFoldableStateReturn() {
+    return { isFoldable: false, currentState: 0, supportedStates: [] };
+}
+exports.DcDaGetFoldableStateReturn = {
+    encode(message, writer = minimal_1.default.Writer.create()) {
+        if (message.isFoldable === true) {
+            writer.uint32(8).bool(message.isFoldable);
+        }
+        if (message.currentState !== 0) {
+            writer.uint32(16).uint32(message.currentState);
+        }
+        writer.uint32(26).fork();
+        for (const v of message.supportedStates) {
+            writer.uint32(v);
+        }
+        writer.ldelim();
+        return writer;
+    },
+    decode(input, length) {
+        const reader = input instanceof minimal_1.default.Reader ? input : new minimal_1.default.Reader(input);
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = createBaseDcDaGetFoldableStateReturn();
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                case 1:
+                    message.isFoldable = reader.bool();
+                    break;
+                case 2:
+                    message.currentState = reader.uint32();
+                    break;
+                case 3:
+                    if ((tag & 7) === 2) {
+                        const end2 = reader.uint32() + reader.pos;
+                        while (reader.pos < end2) {
+                            message.supportedStates.push(reader.uint32());
+                        }
+                    }
+                    else {
+                        message.supportedStates.push(reader.uint32());
+                    }
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+            }
+        }
+        return message;
+    },
+    fromJSON(object) {
+        return {
+            isFoldable: isSet(object.isFoldable) ? Boolean(object.isFoldable) : false,
+            currentState: isSet(object.currentState) ? Number(object.currentState) : 0,
+            supportedStates: Array.isArray(object?.supportedStates) ? object.supportedStates.map((e) => Number(e)) : [],
+        };
+    },
+    toJSON(message) {
+        const obj = {};
+        message.isFoldable !== undefined && (obj.isFoldable = message.isFoldable);
+        message.currentState !== undefined && (obj.currentState = Math.round(message.currentState));
+        if (message.supportedStates) {
+            obj.supportedStates = message.supportedStates.map((e) => Math.round(e));
+        }
+        else {
+            obj.supportedStates = [];
+        }
+        return obj;
+    },
+    fromPartial(object) {
+        const message = createBaseDcDaGetFoldableStateReturn();
+        message.isFoldable = object.isFoldable ?? false;
+        message.currentState = object.currentState ?? 0;
+        message.supportedStates = object.supportedStates?.map((e) => e) || [];
+        return message;
+    },
+};
+function createBaseDcDaSetFoldableStateParam() {
+    return { state: 0 };
+}
+exports.DcDaSetFoldableStateParam = {
+    encode(message, writer = minimal_1.default.Writer.create()) {
+        if (message.state !== 0) {
+            writer.uint32(8).uint32(message.state);
+        }
+        return writer;
+    },
+    decode(input, length) {
+        const reader = input instanceof minimal_1.default.Reader ? input : new minimal_1.default.Reader(input);
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = createBaseDcDaSetFoldableStateParam();
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                case 1:
+                    message.state = reader.uint32();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+            }
+        }
+        return message;
+    },
+    fromJSON(object) {
+        return { state: isSet(object.state) ? Number(object.state) : 0 };
+    },
+    toJSON(message) {
+        const obj = {};
+        message.state !== undefined && (obj.state = Math.round(message.state));
+        return obj;
+    },
+    fromPartial(object) {
+        const message = createBaseDcDaSetFoldableStateParam();
+        message.state = object.state ?? 0;
+        return message;
+    },
+};
+function createBaseDcDaSetFoldableStateReturn() {
+    return { error: undefined };
+}
+exports.DcDaSetFoldableStateReturn = {
+    encode(message, writer = minimal_1.default.Writer.create()) {
+        if (message.error !== undefined) {
+            errors_1.ErrorResult.encode(message.error, writer.uint32(10).fork()).ldelim();
+        }
+        return writer;
+    },
+    decode(input, length) {
+        const reader = input instanceof minimal_1.default.Reader ? input : new minimal_1.default.Reader(input);
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = createBaseDcDaSetFoldableStateReturn();
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                case 1:
+                    message.error = errors_1.ErrorResult.decode(reader, reader.uint32());
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+            }
+        }
+        return message;
+    },
+    fromJSON(object) {
+        return { error: isSet(object.error) ? errors_1.ErrorResult.fromJSON(object.error) : undefined };
+    },
+    toJSON(message) {
+        const obj = {};
+        message.error !== undefined && (obj.error = message.error ? errors_1.ErrorResult.toJSON(message.error) : undefined);
+        return obj;
+    },
+    fromPartial(object) {
+        const message = createBaseDcDaSetFoldableStateReturn();
+        message.error = object.error !== undefined && object.error !== null ? errors_1.ErrorResult.fromPartial(object.error) : undefined;
         return message;
     },
 };

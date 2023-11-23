@@ -1,6 +1,7 @@
 package com.dogu.deviceagent.reflect
 
 import android.annotation.SuppressLint
+import android.os.Binder
 import android.os.IBinder
 import android.os.IInterface
 import com.dogu.deviceagent.Logger
@@ -40,6 +41,22 @@ class ServiceManager {
                     }
                     displayManager
                 } catch (e: Exception) {
+                    throw AssertionError(e)
+                }
+            }
+            return field
+        }
+    var deviceStateManager: DeviceStateManager? = null
+        get() {
+            if (field == null) {
+                field = try {
+                    Logger.v("dssssss get 1")
+
+                    val service = getService("device_state", "android.hardware.devicestate.IDeviceStateManager")
+                    val obj = ReflectObject("android.hardware.devicestate.IDeviceStateManager", service)
+                    DeviceStateManager(obj)
+                } catch (e: Exception) {
+                    Logger.v("dssssss get 5 $e")
                     throw AssertionError(e)
                 }
             }
@@ -120,6 +137,14 @@ class ServiceManager {
                 IBinder::class.java
             )
             asInterfaceMethod.invoke(null, binder) as IInterface
+        } catch (e: Exception) {
+            throw AssertionError(e)
+        }
+    }
+
+    private fun getServiceBinder(service: String): IBinder {
+        return try {
+            getServiceMethod!!.invoke(null, service) as IBinder
         } catch (e: Exception) {
             throw AssertionError(e)
         }

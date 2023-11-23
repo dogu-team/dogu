@@ -1,4 +1,5 @@
 import _m0 from 'protobufjs/minimal';
+import { ErrorResult } from '../../outer/errors';
 import { ProfileMethod } from '../../outer/profile/profile_method';
 import { RuntimeInfo } from '../../outer/profile/runtime_info';
 import { StreamingOption } from '../../outer/streaming/streaming';
@@ -24,6 +25,20 @@ export interface DcDaControlParam {
     control: DeviceControl | undefined;
 }
 export interface DcDaControlReturn {
+}
+export interface DcDaGetFoldableStateParam {
+}
+export interface DcDaGetFoldableStateReturn {
+    isFoldable: boolean;
+    currentState: number;
+    supportedStates: number[];
+}
+export interface DcDaSetFoldableStateParam {
+    /** It's different by device. but normally smaller is closed */
+    state: number;
+}
+export interface DcDaSetFoldableStateReturn {
+    error: ErrorResult | undefined;
 }
 export declare const DcDaConnectionParam: {
     encode(message: DcDaConnectionParam, writer?: _m0.Writer): _m0.Writer;
@@ -767,4 +782,68 @@ export declare const DcDaControlReturn: {
     fromJSON(_: any): DcDaControlReturn;
     toJSON(_: DcDaControlReturn): unknown;
     fromPartial<I extends {} & {} & { [K in Exclude<keyof I, never>]: never; }>(_: I): DcDaControlReturn;
+};
+export declare const DcDaGetFoldableStateParam: {
+    encode(_: DcDaGetFoldableStateParam, writer?: _m0.Writer): _m0.Writer;
+    decode(input: _m0.Reader | Uint8Array, length?: number): DcDaGetFoldableStateParam;
+    fromJSON(_: any): DcDaGetFoldableStateParam;
+    toJSON(_: DcDaGetFoldableStateParam): unknown;
+    fromPartial<I extends {} & {} & { [K in Exclude<keyof I, never>]: never; }>(_: I): DcDaGetFoldableStateParam;
+};
+export declare const DcDaGetFoldableStateReturn: {
+    encode(message: DcDaGetFoldableStateReturn, writer?: _m0.Writer): _m0.Writer;
+    decode(input: _m0.Reader | Uint8Array, length?: number): DcDaGetFoldableStateReturn;
+    fromJSON(object: any): DcDaGetFoldableStateReturn;
+    toJSON(message: DcDaGetFoldableStateReturn): unknown;
+    fromPartial<I extends {
+        isFoldable?: boolean | undefined;
+        currentState?: number | undefined;
+        supportedStates?: number[] | undefined;
+    } & {
+        isFoldable?: boolean | undefined;
+        currentState?: number | undefined;
+        supportedStates?: (number[] & number[] & { [K in Exclude<keyof I["supportedStates"], keyof number[]>]: never; }) | undefined;
+    } & { [K_1 in Exclude<keyof I, keyof DcDaGetFoldableStateReturn>]: never; }>(object: I): DcDaGetFoldableStateReturn;
+};
+export declare const DcDaSetFoldableStateParam: {
+    encode(message: DcDaSetFoldableStateParam, writer?: _m0.Writer): _m0.Writer;
+    decode(input: _m0.Reader | Uint8Array, length?: number): DcDaSetFoldableStateParam;
+    fromJSON(object: any): DcDaSetFoldableStateParam;
+    toJSON(message: DcDaSetFoldableStateParam): unknown;
+    fromPartial<I extends {
+        state?: number | undefined;
+    } & {
+        state?: number | undefined;
+    } & { [K in Exclude<keyof I, "state">]: never; }>(object: I): DcDaSetFoldableStateParam;
+};
+export declare const DcDaSetFoldableStateReturn: {
+    encode(message: DcDaSetFoldableStateReturn, writer?: _m0.Writer): _m0.Writer;
+    decode(input: _m0.Reader | Uint8Array, length?: number): DcDaSetFoldableStateReturn;
+    fromJSON(object: any): DcDaSetFoldableStateReturn;
+    toJSON(message: DcDaSetFoldableStateReturn): unknown;
+    fromPartial<I extends {
+        error?: {
+            code?: import("../../outer/errors").Code | undefined;
+            message?: string | undefined;
+            details?: {
+                [x: string]: any;
+            } | undefined;
+        } | undefined;
+    } & {
+        error?: ({
+            code?: import("../../outer/errors").Code | undefined;
+            message?: string | undefined;
+            details?: {
+                [x: string]: any;
+            } | undefined;
+        } & {
+            code?: import("../../outer/errors").Code | undefined;
+            message?: string | undefined;
+            details?: ({
+                [x: string]: any;
+            } & {
+                [x: string]: any;
+            } & { [K in Exclude<keyof I["error"]["details"], string | number>]: never; }) | undefined;
+        } & { [K_1 in Exclude<keyof I["error"], keyof ErrorResult>]: never; }) | undefined;
+    } & { [K_2 in Exclude<keyof I, "error">]: never; }>(object: I): DcDaSetFoldableStateReturn;
 };

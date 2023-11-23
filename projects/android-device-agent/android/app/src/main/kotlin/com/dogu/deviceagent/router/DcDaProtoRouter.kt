@@ -1,5 +1,6 @@
 package com.dogu.deviceagent
 
+import androidx.core.R
 import com.dogu.deviceagent.protoapi.*
 import com.dogu.protocol.generated.inner.params.DcDa
 import io.ktor.server.websocket.*
@@ -12,6 +13,8 @@ val dcDaProtoHandlers: Map<DcDa.DcDaParam.ValueCase, IDcDaProtoAPIHandler> = map
     DcDa.DcDaParam.ValueCase.DC_DA_QUERY_PROFILE_PARAM to QueryProfileAPIHandler(),
     DcDa.DcDaParam.ValueCase.DC_DA_APPLY_STREAMING_OPTION_PARAM to ApplyStreamingOptionAPIHandler(),
     DcDa.DcDaParam.ValueCase.DC_DA_CONTROL_PARAM to ControlAPIHandler(),
+    DcDa.DcDaParam.ValueCase.DC_DA_GET_FOLDABLE_STATE_PARAM to GetFoldableStateAPIHandler(),
+    DcDa.DcDaParam.ValueCase.DC_DA_SET_FOLDABLE_STATE_PARAM to SetFoldableStateAPIHandler(),
 )
 
 suspend fun DefaultWebSocketServerSession.routeDcDaProto(appContext: AppContext): Unit {
