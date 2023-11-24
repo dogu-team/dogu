@@ -17,7 +17,11 @@ import { CommandProcessRegistry } from './command.process-registry';
 export class UpdateProcessor {
   private lock = new AsyncLock({ timeout: 5000 });
 
-  constructor(private readonly commandProcessRegistry: CommandProcessRegistry, private readonly deviceClientService: DeviceClientService, private readonly logger: DoguLogger) {}
+  constructor(
+    private readonly commandProcessRegistry: CommandProcessRegistry,
+    private readonly deviceClientService: DeviceClientService,
+    private readonly logger: DoguLogger,
+  ) {}
 
   async update(msg: { url: string; fileSize: number }): Promise<ErrorResult> {
     try {
@@ -34,15 +38,15 @@ export class UpdateProcessor {
           }
 
           this.logger.info(`UpdateProcessor.update. detach shell ${downloadPath}`);
-          const child = await this.detachShell(msg.url, msg.fileSize, downloadPath);
+          const updateShChild = await this.detachShell(msg.url, msg.fileSize, downloadPath);
 
           // quit app
           setTimeout(async () => {
             const pid = env.DOGU_ROOT_PID ?? process.pid;
             this.logger.info(`UpdateProcessor.update. quit app pid: ${pid}`);
-            const pids = child.pid ? [...(await getChildProcessIds(child.pid, this.logger)), child.pid] : [];
-            killProcessIgnore(pid, pids, this.logger);
-          }, 2000);
+            const ignorePids = updateShChild.pid ? [...(await getChildProcessIds(updateShChild.pid, this.logger)), updateShChild.pid] : [];
+            killProcessIgnore(pid, ignorePids, this.logger);
+          }, 1500);
         })
         .catch((e) => {
           const error = errorify(e);
