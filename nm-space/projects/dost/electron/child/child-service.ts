@@ -16,7 +16,7 @@ export class ChildService {
       onStderr: () => {},
       onClose: () => {},
     };
-    const authService = new DeviceAuthService();
+    const authService = new DeviceAuthService(logger);
 
     const impl = new ChildServiceFactory({
       appConfigService: appConfigService.impl,

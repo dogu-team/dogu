@@ -7585,6 +7585,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@dogu-private/host-agent", "workspace:packages/typescript-private/host-agent"],\
             ["@dogu-private/types", "workspace:packages/typescript-private/types"],\
             ["@dogu-tech/common", "workspace:packages/typescript/common"],\
+            ["@dogu-tech/device-client-common", "workspace:packages/typescript/device-client-common"],\
             ["@dogu-tech/node", "workspace:packages/typescript/node"],\
             ["@dogu-tech/types", "workspace:packages/typescript/types"],\
             ["@jest/globals", "npm:29.6.1"],\
@@ -7622,7 +7623,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@dogu-private/types", "workspace:packages/typescript-private/types"],\
             ["@dogu-tech/common", "workspace:packages/typescript/common"],\
             ["@dogu-tech/node", "workspace:packages/typescript/node"],\
-            ["@dogu-tech/types", "workspace:packages/typescript/types"],\
             ["@types/node", "npm:18.15.11"],\
             ["class-transformer", "npm:0.5.1"],\
             ["class-validator", "npm:0.14.0"],\

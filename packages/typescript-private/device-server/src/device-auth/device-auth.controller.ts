@@ -16,7 +16,7 @@ export class DeviceAuthController {
     if (request.beforeToken.value !== this.authService.adminToken.value) {
       throw new Error('Invalid token');
     }
-    this.authService.refreshAdminToken(request.netToken.value);
+    this.authService.refreshAdminToken(request.newToken.value);
     return {
       value: {
         $case: 'data',

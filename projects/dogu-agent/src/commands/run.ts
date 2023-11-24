@@ -87,7 +87,7 @@ export async function run(url: string, token: string, linuxDeviceSerial: string)
       /* noop */
     },
   };
-  const authService = new DeviceAuthService();
+  const authService = new DeviceAuthService(logger);
   const childService = new ChildServiceFactory({
     appConfigService,
     featureConfigService,

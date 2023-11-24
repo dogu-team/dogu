@@ -114,6 +114,7 @@ export class DeviceServerChild implements Child {
         }
       }
     });
+    this.authService.onDeviceServerStart('127.0.0.1', DOGU_DEVICE_SERVER_PORT);
   }
 
   async openable(): Promise<boolean> {

@@ -5,6 +5,7 @@ import { AppiumModule } from '../appium/appium.module';
 import { BootstrapModule } from '../bootstrap/bootstrap.module';
 import { BrowserManagerModule } from '../browser-manager/browser-manager.module';
 import { ConfigModule } from '../config/config.module';
+import { DeviceAuthModule } from '../device-auth/device-auth.module';
 import { DeviceHostModule } from '../device-host/device-host.module';
 import { DeviceInspectorModule } from '../device-inspector/device-inspector.module';
 import { DevicePortModule } from '../device-port/device-port.module';
@@ -32,6 +33,7 @@ import { AppService } from './app.service';
     UpdateTriggerModule,
     WsModule,
     DeviceModule,
+    DeviceAuthModule,
     LoggerModule,
     DeviceHostModule,
     BootstrapModule,
