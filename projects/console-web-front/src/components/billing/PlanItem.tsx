@@ -138,14 +138,15 @@ const PlanItem: React.FC<Props> = ({ planType, planInfo, descriptionInfo }) => {
                 allowLogout: false,
                 displayMode: 'overlay',
               },
-              items: [
-                {
-                  priceId: res.data.body.value.priceId,
-                },
-              ],
-              customer: {
-                id: res.data.body.value.customerId,
-              },
+              transactionId: 'txn_01hg07m4fqxn8j4p44axw2d28m',
+              // items: [v
+              //   {
+              //     priceId: res.data.body.value.priceId,
+              //   },
+              // ],
+              // customer: {
+              //   id: res.data.body.value.customerId,
+              // },
             });
           });
       } catch (e) {
@@ -171,8 +172,8 @@ const PlanItem: React.FC<Props> = ({ planType, planInfo, descriptionInfo }) => {
   const monthlyPrice = isContactUs
     ? 0
     : isDiscounted
-    ? planInfo.optionMap[Number(selectedValue)][currency].monthly * couponFactor
-    : planInfo.optionMap[Number(selectedValue)][currency].monthly;
+    ? planInfo.optionMap[Number(selectedValue)][currency].monthly.originPrice * couponFactor
+    : planInfo.optionMap[Number(selectedValue)][currency].monthly.originPrice;
 
   return (
     <Box>
@@ -190,8 +191,8 @@ const PlanItem: React.FC<Props> = ({ planType, planInfo, descriptionInfo }) => {
                   router.locale,
                   currency,
                   isAnnual
-                    ? planInfo.optionMap[Number(selectedValue)][currency].yearly / 12
-                    : planInfo.optionMap[Number(selectedValue)][currency].monthly,
+                    ? planInfo.optionMap[Number(selectedValue)][currency].yearly.originPrice / 12
+                    : planInfo.optionMap[Number(selectedValue)][currency].monthly.originPrice,
                 )}
               </p>
             )}
@@ -199,7 +200,7 @@ const PlanItem: React.FC<Props> = ({ planType, planInfo, descriptionInfo }) => {
               {getLocaleFormattedPrice(
                 router.locale,
                 currency,
-                isAnnual ? planInfo.optionMap[Number(selectedValue)][currency].yearly / 12 : monthlyPrice,
+                isAnnual ? planInfo.optionMap[Number(selectedValue)][currency].yearly.originPrice / 12 : monthlyPrice,
               )}
             </PricingPrice>
             <PricingPeriod>

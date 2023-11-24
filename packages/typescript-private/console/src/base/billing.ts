@@ -52,7 +52,11 @@ export class BillingUsdAmount {
 export const BillingPeriod = ['monthly', 'yearly'] as const;
 export type BillingPeriod = (typeof BillingPeriod)[number];
 
-export type BillingSubscriptionPlanPrice = Record<BillingPeriod, number>;
+export type BillingSubscriptionPlanPriceSource = {
+  originPrice: number;
+  id: number;
+};
+export type BillingSubscriptionPlanPrice = Record<BillingPeriod, BillingSubscriptionPlanPriceSource>;
 export type BillingSubscriptionPlanPriceMap = Record<BillingCurrency, BillingSubscriptionPlanPrice>;
 
 export interface BillingSubscriptionPlanOptionInfo {
@@ -78,252 +82,252 @@ export const BillingSubscriptionPlanMap: Record<BillingSubscriptionPlanType, Bil
     optionMap: {
       1: {
         KRW: {
-          monthly: 39000,
-          yearly: 31000 * 12,
+          monthly: { originPrice: 39000, id: 1 },
+          yearly: { originPrice: 31000 * 12, id: 2 },
         },
         USD: {
-          monthly: 29,
-          yearly: 23 * 12,
+          monthly: { originPrice: 29, id: 3 },
+          yearly: { originPrice: 23 * 12, id: 4 },
         },
       },
       2: {
         KRW: {
-          monthly: 78000,
-          yearly: 62000 * 12,
+          monthly: { originPrice: 78000, id: 5 },
+          yearly: { originPrice: 62000 * 12, id: 6 },
         },
         USD: {
-          monthly: 58,
-          yearly: 46 * 12,
+          monthly: { originPrice: 58, id: 7 },
+          yearly: { originPrice: 46 * 12, id: 8 },
         },
       },
       3: {
         KRW: {
-          monthly: 117000,
-          yearly: 93000 * 12,
+          monthly: { originPrice: 117000, id: 9 },
+          yearly: { originPrice: 93000 * 12, id: 10 },
         },
         USD: {
-          monthly: 87,
-          yearly: 69 * 12,
+          monthly: { originPrice: 87, id: 11 },
+          yearly: { originPrice: 69 * 12, id: 12 },
         },
       },
       4: {
         KRW: {
-          monthly: 156000,
-          yearly: 124000 * 12,
+          monthly: { originPrice: 156000, id: 13 },
+          yearly: { originPrice: 124000 * 12, id: 14 },
         },
         USD: {
-          monthly: 116,
-          yearly: 92 * 12,
+          monthly: { originPrice: 116, id: 15 },
+          yearly: { originPrice: 92 * 12, id: 16 },
         },
       },
       5: {
         KRW: {
-          monthly: 195000,
-          yearly: 155000 * 12,
+          monthly: { originPrice: 195000, id: 17 },
+          yearly: { originPrice: 155000 * 12, id: 18 },
         },
         USD: {
-          monthly: 145,
-          yearly: 115 * 12,
+          monthly: { originPrice: 145, id: 19 },
+          yearly: { originPrice: 115 * 12, id: 20 },
         },
       },
       6: {
         KRW: {
-          monthly: 234000,
-          yearly: 186000 * 12,
+          monthly: { originPrice: 234000, id: 21 },
+          yearly: { originPrice: 186000 * 12, id: 22 },
         },
         USD: {
-          monthly: 174,
-          yearly: 138 * 12,
+          monthly: { originPrice: 174, id: 23 },
+          yearly: { originPrice: 138 * 12, id: 24 },
         },
       },
       7: {
         KRW: {
-          monthly: 273000,
-          yearly: 217000 * 12,
+          monthly: { originPrice: 273000, id: 25 },
+          yearly: { originPrice: 217000 * 12, id: 26 },
         },
         USD: {
-          monthly: 203,
-          yearly: 161 * 12,
+          monthly: { originPrice: 203, id: 27 },
+          yearly: { originPrice: 161 * 12, id: 28 },
         },
       },
       8: {
         KRW: {
-          monthly: 312000,
-          yearly: 248000 * 12,
+          monthly: { originPrice: 312000, id: 29 },
+          yearly: { originPrice: 248000 * 12, id: 30 },
         },
         USD: {
-          monthly: 232,
-          yearly: 184 * 12,
+          monthly: { originPrice: 232, id: 31 },
+          yearly: { originPrice: 184 * 12, id: 32 },
         },
       },
       9: {
         KRW: {
-          monthly: 351000,
-          yearly: 279000 * 12,
+          monthly: { originPrice: 351000, id: 33 },
+          yearly: { originPrice: 279000 * 12, id: 34 },
         },
         USD: {
-          monthly: 261,
-          yearly: 207 * 12,
+          monthly: { originPrice: 261, id: 35 },
+          yearly: { originPrice: 207 * 12, id: 36 },
         },
       },
       10: {
         KRW: {
-          monthly: 390000,
-          yearly: 310000 * 12,
+          monthly: { originPrice: 390000, id: 37 },
+          yearly: { originPrice: 310000 * 12, id: 38 },
         },
         USD: {
-          monthly: 290,
-          yearly: 230 * 12,
+          monthly: { originPrice: 290, id: 39 },
+          yearly: { originPrice: 230 * 12, id: 40 },
         },
       },
       11: {
         KRW: {
-          monthly: 429000,
-          yearly: 341000 * 12,
+          monthly: { originPrice: 429000, id: 41 },
+          yearly: { originPrice: 341000 * 12, id: 42 },
         },
         USD: {
-          monthly: 319,
-          yearly: 253 * 12,
+          monthly: { originPrice: 319, id: 43 },
+          yearly: { originPrice: 253 * 12, id: 44 },
         },
       },
       12: {
         KRW: {
-          monthly: 468000,
-          yearly: 372000 * 12,
+          monthly: { originPrice: 468000, id: 45 },
+          yearly: { originPrice: 372000 * 12, id: 46 },
         },
         USD: {
-          monthly: 348,
-          yearly: 276 * 12,
+          monthly: { originPrice: 348, id: 47 },
+          yearly: { originPrice: 276 * 12, id: 48 },
         },
       },
       13: {
         KRW: {
-          monthly: 507000,
-          yearly: 403000 * 12,
+          monthly: { originPrice: 507000, id: 49 },
+          yearly: { originPrice: 403000 * 12, id: 50 },
         },
         USD: {
-          monthly: 377,
-          yearly: 299 * 12,
+          monthly: { originPrice: 377, id: 51 },
+          yearly: { originPrice: 299 * 12, id: 52 },
         },
       },
       14: {
         KRW: {
-          monthly: 546000,
-          yearly: 434000 * 12,
+          monthly: { originPrice: 546000, id: 53 },
+          yearly: { originPrice: 434000 * 12, id: 54 },
         },
         USD: {
-          monthly: 406,
-          yearly: 322 * 12,
+          monthly: { originPrice: 406, id: 55 },
+          yearly: { originPrice: 322 * 12, id: 56 },
         },
       },
       15: {
         KRW: {
-          monthly: 585000,
-          yearly: 465000 * 12,
+          monthly: { originPrice: 585000, id: 57 },
+          yearly: { originPrice: 465000 * 12, id: 58 },
         },
         USD: {
-          monthly: 435,
-          yearly: 345 * 12,
+          monthly: { originPrice: 435, id: 59 },
+          yearly: { originPrice: 345 * 12, id: 60 },
         },
       },
       16: {
         KRW: {
-          monthly: 624000,
-          yearly: 496000 * 12,
+          monthly: { originPrice: 624000, id: 61 },
+          yearly: { originPrice: 496000 * 12, id: 62 },
         },
         USD: {
-          monthly: 464,
-          yearly: 368 * 12,
+          monthly: { originPrice: 464, id: 63 },
+          yearly: { originPrice: 368 * 12, id: 64 },
         },
       },
       17: {
         KRW: {
-          monthly: 663000,
-          yearly: 527000 * 12,
+          monthly: { originPrice: 663000, id: 65 },
+          yearly: { originPrice: 527000 * 12, id: 66 },
         },
         USD: {
-          monthly: 493,
-          yearly: 391 * 12,
+          monthly: { originPrice: 493, id: 67 },
+          yearly: { originPrice: 391 * 12, id: 68 },
         },
       },
       18: {
         KRW: {
-          monthly: 702000,
-          yearly: 558000 * 12,
+          monthly: { originPrice: 702000, id: 69 },
+          yearly: { originPrice: 558000 * 12, id: 70 },
         },
         USD: {
-          monthly: 522,
-          yearly: 414 * 12,
+          monthly: { originPrice: 522, id: 71 },
+          yearly: { originPrice: 414 * 12, id: 72 },
         },
       },
       19: {
         KRW: {
-          monthly: 741000,
-          yearly: 589000 * 12,
+          monthly: { originPrice: 741000, id: 73 },
+          yearly: { originPrice: 589000 * 12, id: 74 },
         },
         USD: {
-          monthly: 551,
-          yearly: 437 * 12,
+          monthly: { originPrice: 551, id: 75 },
+          yearly: { originPrice: 437 * 12, id: 76 },
         },
       },
       20: {
         KRW: {
-          monthly: 780000,
-          yearly: 620000 * 12,
+          monthly: { originPrice: 780000, id: 77 },
+          yearly: { originPrice: 620000 * 12, id: 78 },
         },
         USD: {
-          monthly: 580,
-          yearly: 460 * 12,
+          monthly: { originPrice: 580, id: 79 },
+          yearly: { originPrice: 460 * 12, id: 80 },
         },
       },
       21: {
         KRW: {
-          monthly: 819000,
-          yearly: 651000 * 12,
+          monthly: { originPrice: 819000, id: 81 },
+          yearly: { originPrice: 651000 * 12, id: 82 },
         },
         USD: {
-          monthly: 609,
-          yearly: 483 * 12,
+          monthly: { originPrice: 609, id: 83 },
+          yearly: { originPrice: 483 * 12, id: 84 },
         },
       },
       22: {
         KRW: {
-          monthly: 858000,
-          yearly: 682000 * 12,
+          monthly: { originPrice: 858000, id: 85 },
+          yearly: { originPrice: 682000 * 12, id: 86 },
         },
         USD: {
-          monthly: 638,
-          yearly: 506 * 12,
+          monthly: { originPrice: 638, id: 87 },
+          yearly: { originPrice: 506 * 12, id: 88 },
         },
       },
       23: {
         KRW: {
-          monthly: 897000,
-          yearly: 713000 * 12,
+          monthly: { originPrice: 897000, id: 89 },
+          yearly: { originPrice: 713000 * 12, id: 90 },
         },
         USD: {
-          monthly: 667,
-          yearly: 529 * 12,
+          monthly: { originPrice: 667, id: 91 },
+          yearly: { originPrice: 529 * 12, id: 92 },
         },
       },
       24: {
         KRW: {
-          monthly: 936000,
-          yearly: 744000 * 12,
+          monthly: { originPrice: 936000, id: 93 },
+          yearly: { originPrice: 744000 * 12, id: 94 },
         },
         USD: {
-          monthly: 696,
-          yearly: 552 * 12,
+          monthly: { originPrice: 696, id: 95 },
+          yearly: { originPrice: 552 * 12, id: 96 },
         },
       },
       25: {
         KRW: {
-          monthly: 975000,
-          yearly: 775000 * 12,
+          monthly: { originPrice: 975000, id: 97 },
+          yearly: { originPrice: 775000 * 12, id: 98 },
         },
         USD: {
-          monthly: 725,
-          yearly: 575 * 12,
+          monthly: { originPrice: 725, id: 99 },
+          yearly: { originPrice: 575 * 12, id: 100 },
         },
       },
     },

@@ -6,7 +6,7 @@ import _ from 'lodash';
 import { DataSource } from 'typeorm';
 import { BillingSubscriptionPlanSource } from '../../db/entity/billing-subscription-plan-source.entity';
 import { DoguLogger } from '../logger/logger';
-import { ListProductsResult, PaddleCaller } from './paddle.caller';
+import { PaddleCaller } from './paddle.caller';
 import { Paddle } from './paddle.types';
 import { matchPrice, matchProduct, matchProductByPrice } from './paddle.utils';
 
@@ -24,9 +24,10 @@ function createProductSourcesFromStatic(): Paddle.ProductSource[] {
           return;
         }
 
-        _.entries(priceInfo).forEach(([periodRaw, dollars]) => {
+        _.entries(priceInfo).forEach(([periodRaw, priceSource]) => {
           const period = periodRaw as BillingPeriod;
-          const amount = BillingUsdAmount.fromDollars(dollars);
+          const { originPrice } = priceSource;
+          const amount = BillingUsdAmount.fromDollars(originPrice);
           prices.push({
             category,
             subscriptionPlanType,

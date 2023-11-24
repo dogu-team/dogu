@@ -362,10 +362,10 @@ const BillingCalculatedPreview: React.FC<Props> = ({}) => {
                         responseSubscriptionPlan.currency,
                         (BillingSubscriptionPlanMap[responseSubscriptionPlan.type].optionMap[
                           responseSubscriptionPlan.option
-                        ][responseSubscriptionPlan.currency].monthly -
+                        ][responseSubscriptionPlan.currency].monthly.originPrice -
                           BillingSubscriptionPlanMap[responseSubscriptionPlan.type].optionMap[
                             responseSubscriptionPlan.option
-                          ][responseSubscriptionPlan.currency].yearly /
+                          ][responseSubscriptionPlan.currency].yearly.originPrice /
                             12) *
                           12,
                       )}

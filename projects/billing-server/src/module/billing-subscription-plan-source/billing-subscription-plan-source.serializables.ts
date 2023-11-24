@@ -8,6 +8,7 @@ import {
   BillingSubscriptionPlanOptionInfo,
   BillingSubscriptionPlanPrice,
   BillingSubscriptionPlanPriceMap,
+  BillingSubscriptionPlanPriceSource,
   BillingSubscriptionPlanType,
   resultCode,
 } from '@dogu-private/console';
@@ -94,14 +95,15 @@ export async function parseSubscriptionPlanData(context: RetryTransactionContext
     };
   }
 
-  const originPrice = _.get(billingSubscriptionPlanPrice, period) as number | undefined;
-  if (originPrice === undefined) {
+  const planPriceSource = _.get(billingSubscriptionPlanPrice, period) as BillingSubscriptionPlanPriceSource | undefined;
+  if (!planPriceSource) {
     return {
       ok: false,
-      resultCode: resultCode('subscription-plan-period-not-found'),
+      resultCode: resultCode('subscription-plan-price-source-not-found'),
     };
   }
 
+  const originPrice = planPriceSource.originPrice;
   return {
     ok: true,
     value: {

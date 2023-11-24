@@ -37,6 +37,7 @@ export const BillingResultCodeMap = {
   'subscription-plan-currency-not-matched': 306,
   'subscription-plan-duplicated': 307,
   'subscription-plan-unsubscribed': 308,
+  'subscription-plan-price-source-not-found': 309,
 
   // cloud license
   'cloud-license-not-found': 400,
