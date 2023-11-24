@@ -57,7 +57,7 @@ export class DeviceAuthSubscribeService
     switch (value.kind) {
       case 'DeviceAuthSubscribeSendMessageValidateValue':
         {
-          if (value.currentToken.value !== authService.adminToken.value) {
+          if (!authService.validate(value.currentToken.value)) {
             closeWebSocketWithTruncateReason(webSocket, 1001, 'invalid token');
             return;
           }
@@ -74,7 +74,7 @@ export class DeviceAuthSubscribeService
             closeWebSocketWithTruncateReason(webSocket, 1001, 'invalid token');
             return;
           }
-          if (value.beforeToken.value !== authService.adminToken.value) {
+          if (!authService.validate(value.beforeToken.value)) {
             closeWebSocketWithTruncateReason(webSocket, 1001, 'invalid token');
             return;
           }

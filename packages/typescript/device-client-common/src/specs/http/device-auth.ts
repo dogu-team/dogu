@@ -1,5 +1,5 @@
 import { ControllerSpec, DefaultPathProvider } from '@dogu-tech/common';
-import { DeviceAdminToken } from '@dogu-tech/types';
+import { DeviceAdminToken, DeviceTemporaryToken } from '@dogu-tech/types';
 import { Type } from 'class-transformer';
 import { ValidateNested } from 'class-validator';
 import { DeviceServerResponseDto } from '../..';
@@ -17,6 +17,30 @@ export class RefreshAdminTokenRequestBody {
 
 export class RefreshAdminTokenReponseBodyData {}
 
+export class CreateTokenRequestBody {
+  @ValidateNested()
+  @Type(() => DeviceAdminToken)
+  adminToken!: DeviceAdminToken;
+}
+
+export class CreateTokenReponseBodyData {
+  @ValidateNested()
+  @Type(() => DeviceTemporaryToken)
+  token!: DeviceTemporaryToken;
+}
+
+export class DeleteTokenRequestBody {
+  @ValidateNested()
+  @Type(() => DeviceAdminToken)
+  adminToken!: DeviceAdminToken;
+
+  @ValidateNested()
+  @Type(() => DeviceTemporaryToken)
+  token!: DeviceTemporaryToken;
+}
+
+export class DeleteTokenReponseBodyData {}
+
 const DeviceAuthController = new ControllerSpec({ path: '/device-auth' });
 export const DeviceAuth = {
   controller: DeviceAuthController,
@@ -24,10 +48,30 @@ export const DeviceAuth = {
   refreshAdminToken: new DeviceServerControllerMethodSpec({
     controllerSpec: DeviceAuthController,
     method: 'POST',
-    path: '/refresh',
+    path: '/admin-token',
     pathProvider: DefaultPathProvider,
     requestBody: RefreshAdminTokenRequestBody,
     responseBody: DeviceServerResponseDto<RefreshAdminTokenReponseBodyData>,
     responseBodyData: RefreshAdminTokenReponseBodyData,
+  }),
+
+  createToken: new DeviceServerControllerMethodSpec({
+    controllerSpec: DeviceAuthController,
+    method: 'POST',
+    path: '/token',
+    pathProvider: DefaultPathProvider,
+    requestBody: CreateTokenRequestBody,
+    responseBody: DeviceServerResponseDto<CreateTokenReponseBodyData>,
+    responseBodyData: CreateTokenReponseBodyData,
+  }),
+
+  deleteToken: new DeviceServerControllerMethodSpec({
+    controllerSpec: DeviceAuthController,
+    method: 'DELETE',
+    path: '/token',
+    pathProvider: DefaultPathProvider,
+    requestBody: DeleteTokenRequestBody,
+    responseBody: DeviceServerResponseDto<DeleteTokenReponseBodyData>,
+    responseBodyData: DeleteTokenReponseBodyData,
   }),
 };

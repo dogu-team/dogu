@@ -1,21 +1,36 @@
-import { DeviceAdminToken } from '@dogu-private/types';
+import { DeviceAdminToken, DeviceTemporaryToken } from '@dogu-private/types';
 import { Injectable } from '@nestjs/common';
+import { v4 as uuidv4 } from 'uuid';
 import { env } from '../env';
 import { DoguLogger } from '../logger/logger';
 
 @Injectable()
 export class DeviceAuthService {
-  private _adminToken: DeviceAdminToken;
+  private adminToken: DeviceAdminToken;
+  private temporaryTokens: DeviceTemporaryToken[] = [];
 
   constructor(private readonly logger: DoguLogger) {
-    this._adminToken = new DeviceAdminToken(env.DOGU_SECRET_INITIAL_ADMIN_TOKEN);
+    this.adminToken = new DeviceAdminToken(env.DOGU_SECRET_INITIAL_ADMIN_TOKEN);
   }
 
-  get adminToken(): DeviceAdminToken {
-    return this._adminToken;
+  validateAdmin(value: string): boolean {
+    if (value !== this.adminToken.value) {
+      return false;
+    }
+    return true;
   }
 
   refreshAdminToken(value: string): void {
-    this._adminToken = new DeviceAdminToken(value);
+    this.adminToken = new DeviceAdminToken(value);
+  }
+
+  generateTemporaryToken(): DeviceTemporaryToken {
+    const token = new DeviceTemporaryToken(uuidv4());
+    this.temporaryTokens.push(token);
+    return token;
+  }
+
+  deleteTemporaryToken(token: DeviceTemporaryToken): void {
+    this.temporaryTokens = this.temporaryTokens.filter((t) => t.value !== token.value);
   }
 }
