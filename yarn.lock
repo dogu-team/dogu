@@ -3165,6 +3165,7 @@ __metadata:
     "@dogu-private/types": "workspace:^"
     "@dogu-tech/common": "workspace:^"
     "@dogu-tech/node": "workspace:^"
+    "@dogu-tech/types": "workspace:^"
     "@types/node": 18.15.11
     class-transformer: 0.5.1
     class-validator: 0.14.0

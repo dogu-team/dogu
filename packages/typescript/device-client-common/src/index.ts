@@ -6,6 +6,7 @@ export * from './device-host-client';
 export * from './device-http-client';
 export * from './interface';
 export * from './specs/http/device';
+export * from './specs/http/device-auth';
 export * from './specs/http/device-dtos';
 export * from './specs/http/device-host';
 export * from './specs/http/device-inspector';
