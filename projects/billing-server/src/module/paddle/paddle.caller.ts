@@ -1,15 +1,5 @@
-import {
-  BillingCategory,
-  BillingCurrency,
-  BillingPeriod,
-  BillingReason,
-  BillingResult,
-  BillingSubscriptionPlanType,
-  BillingUsdAmount,
-  resultCode,
-  throwFailure,
-} from '@dogu-private/console';
-import { setAxiosErrorFilterToIntercepter, setAxiosFilterErrorAndLogging } from '@dogu-tech/common';
+import { BillingCategory, BillingCurrency, BillingPeriod, BillingReason, BillingResult, BillingSubscriptionPlanType, BillingUsdAmount, resultCode } from '@dogu-private/console';
+import { setAxiosFilterErrorAndLogging } from '@dogu-tech/common';
 import { Injectable } from '@nestjs/common';
 import axios, { AxiosInstance } from 'axios';
 import { FeatureConfig } from '../../feature.config';
@@ -57,7 +47,8 @@ export interface CreateProductOptions {
 
 export interface UpdateProductOptions {
   productId: string;
-  status: Paddle.Status;
+  name?: string;
+  status?: Paddle.Status;
 }
 
 export interface CreatePriceOptions {
@@ -120,7 +111,7 @@ export class PaddleCaller {
         Authorization: `Bearer ${PaddleApiKey}`,
       },
     });
-    setAxiosFilterErrorAndLogging(this.client, this.logger);
+    setAxiosFilterErrorAndLogging(PaddleCaller.name, this.client, this.logger);
     this.logger.info(`PaddleCaller initialized with ${baseUrl}`);
   }
 
@@ -260,7 +251,7 @@ export class PaddleCaller {
     const path = '/products';
     const query = {
       order_by: 'id[ASC]',
-      per_page: 50,
+      per_page: 10,
       after,
       include: 'prices',
       status: 'active',

@@ -32,16 +32,16 @@ export function isFilteredAxiosError(value: unknown): value is FilteredAxiosErro
 }
 
 export function setAxiosErrorFilterToIntercepter(axios: AxiosInstance): void {
-  axios.interceptors.response.use(undefined, (error) => {
+  axios.interceptors.response.use(undefined, async (error) => {
     const filteredError = parseAxiosError(error);
     return Promise.reject(filteredError);
   });
 }
 
-export function setAxiosFilterErrorAndLogging(instance: AxiosInstance, printable: Printable): void {
+export function setAxiosFilterErrorAndLogging(name: string, instance: AxiosInstance, printable: Printable): void {
   instance.interceptors.request.use(
     (request) => {
-      printable.info('axios request', {
+      printable.info(`${name} request`, {
         method: request.method,
         url: request.url,
         query: request.params,
@@ -49,25 +49,25 @@ export function setAxiosFilterErrorAndLogging(instance: AxiosInstance, printable
       });
       return request;
     },
-    (e) => {
+    async (e) => {
       const error = parseAxiosError(e);
-      printable.error('axios request error', { error });
+      printable.error(`${name} request error`, { error });
       return Promise.reject(error);
     },
   );
 
   instance.interceptors.response.use(
     (response) => {
-      printable.info('axios response', {
+      printable.info(`${name} response`, {
         status: response.status,
         statusText: response.statusText,
         data: response.data,
       });
       return response;
     },
-    (e) => {
+    async (e) => {
       const error = parseAxiosError(e);
-      printable.error('axios response error', { error });
+      printable.error(`${name} response error`, { error });
       return Promise.reject(error);
     },
   );

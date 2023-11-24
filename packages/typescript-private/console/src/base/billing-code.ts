@@ -120,3 +120,13 @@ export class BillingResultFailureError<Extras extends Record<string, unknown>> e
 export function throwFailure<Extras extends Record<string, unknown>>(failure: BillingResultFailureWithExtras<Extras>): never {
   throw new BillingResultFailureError(failure);
 }
+
+export function unwrap<Value, FailureExtras extends Record<string, unknown> = Record<string, unknown>, SuccessExtras extends Record<string, unknown> = Record<string, unknown>>(
+  result: BillingResult<Value, FailureExtras, SuccessExtras>,
+): Value {
+  if (!result.ok) {
+    throwFailure(result);
+  }
+
+  return result.value;
+}

@@ -3,9 +3,11 @@ import { IsIn } from 'class-validator';
 
 export const BillingCategory = ['cloud', 'self-hosted'] as const;
 export type BillingCategory = (typeof BillingCategory)[number];
+export const isBillingCategory = (value: unknown): value is BillingCategory => BillingCategory.includes(value as BillingCategory);
 
 export const BillingCurrency = ['KRW', 'USD'] as const;
 export type BillingCurrency = (typeof BillingCurrency)[number];
+export const isBillingCurrency = (value: unknown): value is BillingCurrency => BillingCurrency.includes(value as BillingCurrency);
 
 export class BillingUsdAmount {
   static fromDollars(dollars: number): BillingUsdAmount {
@@ -51,6 +53,7 @@ export class BillingUsdAmount {
 
 export const BillingPeriod = ['monthly', 'yearly'] as const;
 export type BillingPeriod = (typeof BillingPeriod)[number];
+export const isBillingPeriod = (value: unknown): value is BillingPeriod => BillingPeriod.includes(value as BillingPeriod);
 
 export type BillingSubscriptionPlanPriceSource = {
   originPrice: number;
@@ -67,9 +70,12 @@ export interface BillingSubscriptionPlanOptionInfo {
 
 export const BillingSubscriptionGroupType = ['live-testing-group'] as const;
 export type BillingSubscriptionGroupType = (typeof BillingSubscriptionGroupType)[number];
+export const isBillingSubscriptionGroupType = (value: unknown): value is BillingSubscriptionGroupType =>
+  BillingSubscriptionGroupType.includes(value as BillingSubscriptionGroupType);
 
 export const BillingSubscriptionPlanType = ['live-testing'] as const;
 export type BillingSubscriptionPlanType = (typeof BillingSubscriptionPlanType)[number];
+export const isBillingSubscriptionPlanType = (value: unknown): value is BillingSubscriptionPlanType => BillingSubscriptionPlanType.includes(value as BillingSubscriptionPlanType);
 
 export const BillingPlanGroupMap: Record<BillingSubscriptionGroupType, BillingSubscriptionPlanType[]> = {
   'live-testing-group': ['live-testing'],
@@ -346,9 +352,6 @@ export class CallBillingApiDto {
 
   @IsOptionalObject()
   body?: object;
-
-  // @IsNumber()
-  // version!: number;
 }
 
 export interface CallBillingApiResponse<B = Record<string, unknown>> {
@@ -368,6 +371,7 @@ export interface BillingSubscriptionPlanData {
 
 export const BillingMethod = ['nice', 'paddle'] as const;
 export type BillingMethod = (typeof BillingMethod)[number];
+export const isBillingMethod = (value: unknown): value is BillingMethod => BillingMethod.includes(value as BillingMethod);
 
 /**
  * @description If the payment fails at the expiration time, retry 3 times.
@@ -376,5 +380,6 @@ export const BillingGracePeriodDays = 4;
 
 export const BillingLicenseStatus = ['not-expired', 'within-grace-period', 'expired'] as const;
 export type BillingLicenseStatus = (typeof BillingLicenseStatus)[number];
+export const isBillingLicenseStatus = (value: unknown): value is BillingLicenseStatus => BillingLicenseStatus.includes(value as BillingLicenseStatus);
 
 export const BillingGoodsName = 'Dogu Platform Subscription';

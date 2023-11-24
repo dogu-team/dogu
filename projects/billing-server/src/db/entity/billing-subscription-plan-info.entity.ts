@@ -39,8 +39,8 @@ export class BillingSubscriptionPlanInfo implements BillingSubscriptionPlanInfoB
   @Column({ type: 'uuid' })
   billingOrganizationId!: string;
 
-  @Column({ type: 'uuid', nullable: true })
-  billingSubscriptionPlanSourceId!: string | null;
+  @Column({ type: 'integer', nullable: true })
+  billingSubscriptionPlanSourceId!: number | null;
 
   @Column({ type: 'uuid', nullable: true })
   billingCouponId!: string | null;

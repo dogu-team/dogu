@@ -1,23 +1,23 @@
 import { DoguLogger } from '../logger/logger';
 import { Paddle } from './paddle.types';
 
-export function matchProduct(logger: DoguLogger, productMatch: Paddle.ProductMatch, product: Paddle.ProductWithPrices): boolean {
+export function matchProduct(match: Paddle.ProductMatch, product: Paddle.ProductWithPrices): boolean {
   if (product.status !== 'active') {
     return false;
   }
 
-  if (productMatch.subscriptionPlanType !== product.custom_data?.subscriptionPlanType) {
+  if (match.subscriptionPlanType !== product.custom_data?.subscriptionPlanType) {
     return false;
   }
 
-  if (productMatch.category !== product.custom_data?.category) {
+  if (match.category !== product.custom_data?.category) {
     return false;
   }
 
   return true;
 }
 
-export function matchPrice(logger: DoguLogger, priceMatch: Paddle.PriceMatch, price: Paddle.Price): boolean {
+export function matchPrice(priceMatch: Paddle.PriceMatch, price: Paddle.Price): boolean {
   if (price.status !== 'active') {
     return false;
   }

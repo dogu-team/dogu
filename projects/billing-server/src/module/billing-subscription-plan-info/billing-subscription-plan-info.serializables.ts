@@ -10,7 +10,7 @@ export interface NewAndApplySubscriptionPlanInfoOptions {
   planData: BillingSubscriptionPlanData;
   discountedAmount: number;
   useCouponResult: UseCouponResult;
-  billingSubscriptionPlanSourceId: string | null;
+  billingSubscriptionPlanSourceId: number | null;
 }
 
 export type NewAndApplySubscriptionPlanInfoResult = BillingResult<BillingSubscriptionPlanInfo>;

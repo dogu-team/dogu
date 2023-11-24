@@ -14,14 +14,17 @@ export const BillingSubscriptionPlanSourceTableName = 'billing_subscription_plan
 
 @Entity(BillingSubscriptionPlanSourceTableName)
 export class BillingSubscriptionPlanSource implements BillingSubscriptionPlanSourceBase {
-  @PrimaryColumn('uuid')
-  billingSubscriptionPlanSourceId!: string;
+  @PrimaryColumn({ type: 'integer' })
+  billingSubscriptionPlanSourceId!: number;
 
   @Column({ type: 'enum', enum: BillingCategory })
   category!: BillingCategory;
 
   @Column({ type: 'enum', enum: BillingSubscriptionPlanType })
   type!: BillingSubscriptionPlanType;
+
+  @Column({ type: 'text' })
+  name!: string;
 
   @Column({ type: 'integer' })
   option!: number;
@@ -35,8 +38,8 @@ export class BillingSubscriptionPlanSource implements BillingSubscriptionPlanSou
   @Column({ type: 'double precision' })
   originPrice!: number;
 
-  @Column({ type: 'uuid' })
-  billingOrganizationId!: string;
+  @Column({ type: 'uuid', nullable: true })
+  billingOrganizationId!: string | null;
 
   @CreatedAt()
   createdAt!: Date;

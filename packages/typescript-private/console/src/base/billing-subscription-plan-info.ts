@@ -20,7 +20,7 @@ export interface BillingSubscriptionPlanInfoBase extends BillingSubscriptionPlan
   couponRemainingApplyCount: number | null;
   couponApplied: boolean;
   discountedAmount: number;
-  billingSubscriptionPlanSourceId: string | null;
+  billingSubscriptionPlanSourceId: number | null;
   changeRequestedPeriod: BillingPeriod | null;
   changeRequestedOption: number | null;
   changeRequestedOriginPrice: number | null;

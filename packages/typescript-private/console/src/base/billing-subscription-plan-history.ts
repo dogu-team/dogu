@@ -7,7 +7,7 @@ import { BillingSubscriptionPlanSourceBase } from './billing-subscription-plan-s
 
 export interface BillingSubscriptionPlanHistoryData extends BillingSubscriptionPlanData {
   billingCouponId: string | null;
-  billingSubscriptionPlanSourceId: string | null;
+  billingSubscriptionPlanSourceId: number | null;
   discountedAmount: number | null;
   purchasedAmount: number | null;
   startedAt: Date | null;

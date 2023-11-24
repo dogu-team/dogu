@@ -4,8 +4,9 @@ import { BillingSubscriptionPlanData } from './billing';
 import { BillingOrganizationBase } from './billing-organization';
 
 export interface BillingSubscriptionPlanSourceBase extends BillingSubscriptionPlanData {
-  billingSubscriptionPlanSourceId: string;
-  billingOrganizationId: string;
+  billingSubscriptionPlanSourceId: number;
+  name: string;
+  billingOrganizationId: string | null;
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date | null;

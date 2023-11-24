@@ -14,6 +14,7 @@ import { BillingUpdaterModule } from '../billing-updater/billing-updater.module'
 import { CloudLicenseModule } from '../cloud-license/cloud-license.module';
 import { ConsoleModule } from '../console/console.module';
 import { DateTimeSimulatorModule } from '../date-time-simulator/date-time-simulator.module';
+import { LeaderModule } from '../leader/leader.module';
 import { LoggerModule } from '../logger/logger.module';
 import { NiceModule } from '../nice/nice.module';
 import { PaddleModule } from '../paddle/paddle.module';
@@ -41,6 +42,7 @@ import { AppService } from './app.service';
     PaddleModule,
     NiceModule,
     BillingSubscriptionPlanSourceModule,
+    LeaderModule,
   ],
   controllers: [AppController],
   providers: [AppService],

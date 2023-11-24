@@ -28,8 +28,8 @@ export class BillingSubscriptionPlanHistory implements BillingSubscriptionPlanHi
   @Column({ type: 'uuid', nullable: true })
   billingCouponId!: string | null;
 
-  @Column({ type: 'uuid', nullable: true })
-  billingSubscriptionPlanSourceId!: string | null;
+  @Column({ type: 'integer', nullable: true })
+  billingSubscriptionPlanSourceId!: number | null;
 
   @Column({ type: 'double precision', nullable: true })
   discountedAmount!: number | null;

@@ -1,7 +1,7 @@
-import { BillingCategory, BillingCurrency, BillingPeriod, BillingSubscriptionPlanType, BillingUsdAmount } from '@dogu-private/console';
+import { BillingCategory, BillingCurrency, BillingPeriod, BillingSubscriptionPlanType } from '@dogu-private/console';
 
 export namespace Paddle {
-  const Status = ['active', 'archived'] as const;
+  export const Status = ['active', 'archived'] as const;
   export type Status = (typeof Status)[number];
 
   export interface Meta {
@@ -40,7 +40,13 @@ export namespace Paddle {
     name?: string | null;
     email?: string | null;
     status?: Status;
-    custom_data?: Record<string, unknown> | null;
+    custom_data?:
+      | ({
+          organizationId?: string;
+          ownerUserId?: string;
+          billingOrganizationId?: string;
+        } & Record<string, unknown>)
+      | null;
     locale?: string;
     created_at?: string;
     updated_at?: string;
@@ -95,7 +101,7 @@ export namespace Paddle {
     custom_data?:
       | ({
           category?: BillingCategory;
-          subscriptionPlanType?: BillingSubscriptionPlanType;
+          type?: BillingSubscriptionPlanType;
           option?: string;
           period?: BillingPeriod;
           currency?: BillingCurrency;
@@ -109,28 +115,21 @@ export namespace Paddle {
     prices?: Price[];
   }
 
-  export interface PriceFind {
+  export interface PriceMatch {
+    billingSubscriptionPlanSourceId: number;
+  }
+
+  export interface PriceOrigin extends PriceMatch {
     category: BillingCategory;
-    subscriptionPlanType: BillingSubscriptionPlanType;
-    option: string;
-    period: BillingPeriod;
-    currency: BillingCurrency;
-    billingOrganizationId: string;
+    type: BillingSubscriptionPlanType;
   }
-
-  export interface PriceMatch extends PriceFind {
-    amount: BillingUsdAmount;
-  }
-
-  export type PriceSource = PriceMatch;
 
   export interface ProductMatch {
-    subscriptionPlanType: BillingSubscriptionPlanType;
+    type: BillingSubscriptionPlanType;
     category: BillingCategory;
   }
 
-  export interface ProductSource extends ProductMatch {
+  export interface ProductOrigin extends ProductMatch {
     name: string;
-    prices: PriceSource[];
   }
 }

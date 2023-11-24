@@ -1,6 +1,6 @@
-import { BillingCurrency, BillingPeriod, BillingResult, BillingSubscriptionPlanMap, BillingSubscriptionPlanType, BillingUsdAmount, throwFailure } from '@dogu-private/console';
+import { BillingResult, BillingSubscriptionPlanMap, BillingUsdAmount, isBillingSubscriptionPlanType, throwFailure, unwrap } from '@dogu-private/console';
 import { stringify } from '@dogu-tech/common';
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import _ from 'lodash';
 import { DataSource } from 'typeorm';
@@ -10,50 +10,8 @@ import { PaddleCaller } from './paddle.caller';
 import { Paddle } from './paddle.types';
 import { matchPrice, matchProduct, matchProductByPrice } from './paddle.utils';
 
-function createProductSourcesFromStatic(): Paddle.ProductSource[] {
-  const productSources: Paddle.ProductSource[] = [];
-  _.entries(BillingSubscriptionPlanMap).forEach(([subscriptionPlanTypeRaw, optionInfo]) => {
-    const subscriptionPlanType = subscriptionPlanTypeRaw as BillingSubscriptionPlanType;
-    const { category, name, optionMap } = optionInfo;
-    const prices: Paddle.PriceSource[] = [];
-
-    _.entries(optionMap).forEach(([option, priceMap]) => {
-      _.entries(priceMap).forEach(([currencyRaw, priceInfo]) => {
-        const currency = currencyRaw as BillingCurrency;
-        if (currency === 'KRW') {
-          return;
-        }
-
-        _.entries(priceInfo).forEach(([periodRaw, priceSource]) => {
-          const period = periodRaw as BillingPeriod;
-          const { originPrice } = priceSource;
-          const amount = BillingUsdAmount.fromDollars(originPrice);
-          prices.push({
-            category,
-            subscriptionPlanType,
-            option,
-            period,
-            currency,
-            amount,
-            billingOrganizationId: 'none',
-          });
-        });
-      });
-    });
-
-    productSources.push({
-      subscriptionPlanType,
-      category,
-      name,
-      prices,
-    });
-  });
-
-  return productSources;
-}
-
 @Injectable()
-export class PaddleMigrationProcessor implements OnModuleInit {
+export class PaddleMigrator {
   constructor(
     private readonly logger: DoguLogger,
     @InjectDataSource()
@@ -61,12 +19,93 @@ export class PaddleMigrationProcessor implements OnModuleInit {
     private readonly paddleCaller: PaddleCaller,
   ) {}
 
-  async onModuleInit(): Promise<void> {
-    await this.migrateSubscriptionPlan();
-    await this.migrateCoupon();
+  async migrate(): Promise<void> {
+    await this.migrateProducts();
+    await this.migratePrices();
+    await this.migrateDiscounts();
   }
 
-  async migrateSubscriptionPlan(): Promise<void> {
+  private async migrateProducts(): Promise<void> {
+    const origins: Paddle.ProductOrigin[] = _.entries(BillingSubscriptionPlanMap).map(([type, optionInfo]) => {
+      if (!isBillingSubscriptionPlanType(type)) {
+        throw new Error(`Invalid subscription plan type. ${stringify(type)}`);
+      }
+
+      const { category, name } = optionInfo;
+      return {
+        subscriptionPlanType: type,
+        category,
+        name,
+      };
+    });
+
+    const products = await this.paddleCaller.listProductsAll().then(unwrap);
+    for (const origin of origins) {
+      const product = products.find((product) => matchProduct(origin, product));
+      if (product) {
+        if (!product.id) {
+          throw new Error(`Product id is not defined. ${stringify(product)}`);
+        }
+
+        this.logger.debug('Paddle product matched.', {
+          id: product.id,
+          name: product.name,
+          subscriptionPlanType: product.custom_data?.subscriptionPlanType,
+          category: product.custom_data?.category,
+        });
+
+        if (product.name !== origin.name) {
+          const updated = await this.paddleCaller
+            .updateProduct({
+              productId: product.id,
+              name: origin.name,
+            })
+            .then(unwrap);
+
+          this.logger.info('Paddle product updated.', {
+            id: updated.id,
+            name: updated.name,
+            subscriptionPlanType: updated.custom_data?.subscriptionPlanType,
+            category: updated.custom_data?.category,
+          });
+        }
+
+        continue;
+      }
+
+      const created = await this.paddleCaller
+        .createProduct({
+          subscriptionPlanType: origin.subscriptionPlanType,
+          category: origin.category,
+          name: origin.name,
+        })
+        .then(unwrap);
+
+      if (!created.id) {
+        throw new Error(`Product id is not defined. ${stringify(created)}`);
+      }
+
+      this.logger.info('Paddle product created.', {
+        id: created.id,
+        name: created.name,
+        subscriptionPlanType: created.custom_data?.subscriptionPlanType,
+        category: created.custom_data?.category,
+      });
+    }
+  }
+
+  private async migratePrices(): Promise<void> {
+    const sources = await this.dataSource.getRepository(BillingSubscriptionPlanSource).find({
+      order: {
+        billingSubscriptionPlanSourceId: 'asc',
+      },
+    });
+    const products = await this.paddleCaller.listProductsAll().then(unwrap);
+  }
+
+  private async migrateDiscounts(): Promise<void> {}
+
+  private async migrateSubscriptionPlan(): Promise<void> {
     const productSources = await this.createProductSources();
     const productsResult = await this.paddleCaller.listProductsAll();
     if (!productsResult.ok) {
