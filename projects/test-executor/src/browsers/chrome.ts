@@ -7,6 +7,7 @@
 /* @typescript-eslint/no-unsafe-member-access */
 
 import { Device } from '@dogu-private/device-data';
+import * as cheerio from 'cheerio';
 import { Browser, Builder } from 'selenium-webdriver';
 import chrome from 'selenium-webdriver/chrome';
 import { promisify } from 'util';
@@ -28,7 +29,7 @@ export class Chrome extends BrowserDriver {
     service.enableVerboseLogging();
     service.build();
 
-    options.addArguments('--headless=new');
+    // options.addArguments('--headless=new');
     options.addArguments('--disable-gpu');
     options.addArguments('--disable-dev-shm-usage');
     options.addArguments('--no-sandbox');
@@ -59,6 +60,15 @@ export class Chrome extends BrowserDriver {
     await wait(1000);
     await this.driver.executeScript('window.scrollTo({left: 0, top: 0});');
     await wait(1000);
+  }
+
+  async getUITexts(): Promise<{ xpath: string; text: string }[]> {
+    const pageSource = await this.driver.getPageSource();
+    const $ = cheerio.load(pageSource);
+    const body = $('body')[0];
+
+    const texts = await this.getElementTexts(body);
+    return texts;
   }
 
   async takeScreenshot(): Promise<void> {
