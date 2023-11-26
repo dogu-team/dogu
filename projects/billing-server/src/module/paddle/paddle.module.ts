@@ -8,6 +8,6 @@ import { PaddleService } from './paddle.service';
 @Module({
   controllers: [PaddleController],
   providers: [PaddleNotificationService, PaddleCaller, PaddleMigrator, PaddleService],
-  exports: [PaddleCaller, PaddleService],
+  exports: [PaddleCaller, PaddleService, PaddleMigrator],
 })
 export class PaddleModule {}

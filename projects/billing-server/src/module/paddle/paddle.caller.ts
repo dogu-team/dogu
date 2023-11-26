@@ -1,4 +1,14 @@
-import { BillingCategory, BillingCurrency, BillingPeriod, BillingReason, BillingResult, BillingSubscriptionPlanType, BillingUsdAmount, resultCode } from '@dogu-private/console';
+import {
+  BillingCategory,
+  BillingCouponType,
+  BillingCurrency,
+  BillingPeriod,
+  BillingReason,
+  BillingResult,
+  BillingSubscriptionPlanType,
+  BillingUsdAmount,
+  resultCode,
+} from '@dogu-private/console';
 import { setAxiosFilterErrorAndLogging } from '@dogu-tech/common';
 import { Injectable } from '@nestjs/common';
 import axios, { AxiosInstance } from 'axios';
@@ -40,8 +50,8 @@ export interface ListProductsResult {
 }
 
 export interface CreateProductOptions {
-  subscriptionPlanType: BillingSubscriptionPlanType;
   category: BillingCategory;
+  type: BillingSubscriptionPlanType;
   name: string;
 }
 
@@ -52,25 +62,53 @@ export interface UpdateProductOptions {
 }
 
 export interface CreatePriceOptions {
-  category: BillingCategory;
-  subscriptionPlanType: BillingSubscriptionPlanType;
-  option: string;
-  period: BillingPeriod;
+  billingSubscriptionPlanSourceId: number;
   currency: BillingCurrency;
   amount: BillingUsdAmount;
-  billingOrganizationId: string;
+  period: BillingPeriod;
   productId: string;
 }
 
 export interface UpdatePriceOptions {
-  priceId: string;
-  status: Paddle.Status;
+  id: string;
+  status?: Paddle.Status;
+  billingSubscriptionPlanSourceId: number;
+  currency?: BillingCurrency;
+  amount?: BillingUsdAmount;
+  period?: BillingPeriod;
 }
 
 interface CreateFailureOptions {
   reason: BillingReason;
   requestId: string | undefined;
   error: Paddle.Error;
+}
+
+export interface ListDiscountsResult {
+  discounts: Paddle.Discount[];
+  hasMore: boolean;
+  nextAfter: string | null;
+}
+
+export interface CreateDiscountOptions {
+  code: string;
+  type: BillingCouponType;
+  period: BillingPeriod;
+  discountPercent: number;
+  applyCount: number | null;
+  expiredAt: Date | null;
+  billingCouponId: string;
+}
+
+export interface UpdateDiscountOptions {
+  id: string;
+  code: string;
+  type: BillingCouponType;
+  period: BillingPeriod;
+  discountPercent: number;
+  applyCount: number | null;
+  expiredAt: Date | null;
+  billingCouponId: string;
 }
 
 function createFailure<T>(options: CreateFailureOptions): BillingResult<T> {
@@ -309,14 +347,14 @@ export class PaddleCaller {
    * @see https://developer.paddle.com/api-reference/products/create-product
    */
   async createProduct(options: CreateProductOptions): Promise<BillingResult<Paddle.Product>> {
-    const { subscriptionPlanType, category, name } = options;
+    const { type, category, name } = options;
     const path = '/products';
     const body = {
       name,
       tax_category: 'saas',
       custom_data: {
-        subscriptionPlanType,
         category,
+        type,
       },
     };
 
@@ -372,11 +410,11 @@ export class PaddleCaller {
    * @see https://developer.paddle.com/api-reference/prices/create-price
    */
   async createPrice(options: CreatePriceOptions): Promise<BillingResult<Paddle.Price>> {
-    const { category, subscriptionPlanType, option, period, currency, amount, billingOrganizationId, productId } = options;
+    const { billingSubscriptionPlanSourceId, amount, currency, productId, period } = options;
     const amountInCents = amount.toCents().toString();
     const path = '/prices';
     const body = {
-      description: `${category},${subscriptionPlanType},${option},${period},${currency},${amountInCents},${productId}`,
+      description: `billingSubscriptionPlanSourceId: ${billingSubscriptionPlanSourceId}`,
       product_id: productId,
       unit_price: {
         amount: amountInCents,
@@ -391,13 +429,7 @@ export class PaddleCaller {
         maximum: 1,
       },
       custom_data: {
-        category,
-        subscriptionPlanType,
-        option,
-        period,
-        currency,
-        amountInCents,
-        billingOrganizationId,
+        billingSubscriptionPlanSourceId,
       },
     };
 
@@ -424,10 +456,26 @@ export class PaddleCaller {
    * @see https://developer.paddle.com/api-reference/prices/update-price
    */
   async updatePrice(options: UpdatePriceOptions): Promise<BillingResult<Paddle.Price>> {
-    const { priceId, status } = options;
-    const path = `/prices/${priceId}`;
+    const { id, status, billingSubscriptionPlanSourceId, currency, amount, period } = options;
+    const path = `/prices/${id}`;
     const body = {
+      description: `billingSubscriptionPlanSourceId: ${billingSubscriptionPlanSourceId}`,
       status,
+      unit_price: {
+        amount: amount?.toCents().toString(),
+        currency_code: currency,
+      },
+      billing_cycle: {
+        interval: period === 'monthly' ? 'month' : 'year',
+        frequency: 1,
+      },
+      quantity: {
+        minimum: 1,
+        maximum: 1,
+      },
+      custom_data: {
+        billingSubscriptionPlanSourceId,
+      },
     };
 
     const response = await this.client.patch<Paddle.Response<Paddle.Price>>(path, body);
@@ -445,6 +493,148 @@ export class PaddleCaller {
     return {
       ok: true,
       value: price,
+    };
+  }
+
+  /**
+   * @see https://developer.paddle.com/api-reference/discounts/list-discounts
+   */
+  async listDiscounts(after?: string): Promise<BillingResult<ListDiscountsResult>> {
+    const path = '/discounts';
+    const query = {
+      after,
+      order_by: 'id[ASC]',
+      per_page: 50,
+    };
+
+    const response = await this.client.get<Paddle.Response<Paddle.Discount[]>>(path, {
+      params: query,
+    });
+    const { error, data, meta } = response.data;
+    const { request_id } = meta ?? {};
+
+    if (error) {
+      return createFailure({
+        reason: 'method-paddle-list-discounts-failed',
+        requestId: request_id,
+        error,
+      });
+    }
+
+    const discounts = data ?? [];
+    const { next, has_more } = meta?.pagination ?? {};
+    const nextAfter = new URL(next ?? 'http://localhost').searchParams.get('after');
+    return {
+      ok: true,
+      value: {
+        discounts,
+        hasMore: has_more ?? false,
+        nextAfter,
+      },
+    };
+  }
+
+  async listDiscountsAll(): Promise<BillingResult<Paddle.Discount[]>> {
+    const discounts: Paddle.Discount[] = [];
+    let nextAfter: string | null = null;
+    let hasMore = true;
+    while (hasMore) {
+      const result: BillingResult<ListDiscountsResult> = await this.listDiscounts(nextAfter ?? undefined);
+      if (!result.ok) {
+        return result;
+      }
+
+      discounts.push(...result.value.discounts);
+      nextAfter = result.value.nextAfter;
+      hasMore = result.value.hasMore;
+    }
+
+    return {
+      ok: true,
+      value: discounts,
+    };
+  }
+
+  /**
+   * @see https://developer.paddle.com/api-reference/discounts/create-discount
+   */
+  async createDiscount(options: CreateDiscountOptions): Promise<BillingResult<Paddle.Discount>> {
+    const { code, type, period, discountPercent, applyCount, expiredAt, billingCouponId } = options;
+    const path = '/discounts';
+    const body = {
+      type: 'percentage',
+      description: `code: ${code}, type: ${type}, period: ${period}, discountPercent: ${discountPercent}, applyCount: ${applyCount}, expiredAt: ${
+        expiredAt?.toISOString() ?? null
+      }`,
+      amount: discountPercent.toString(),
+      enabled_for_checkout: true,
+      code,
+      recur: true,
+      maximum_recurring_intervals: applyCount,
+      expires_at: expiredAt?.toISOString() ?? null,
+      custom_data: {
+        billingCouponId,
+        type,
+        period,
+      },
+    };
+
+    const response = await this.client.post<Paddle.Response<Paddle.Discount>>(path, body);
+    const { error, data, meta } = response.data;
+    const { request_id } = meta ?? {};
+
+    if (error) {
+      return createFailure({
+        reason: 'method-paddle-create-discount-failed',
+        requestId: request_id,
+        error,
+      });
+    }
+
+    const discount = data ?? {};
+    return {
+      ok: true,
+      value: discount,
+    };
+  }
+
+  /**
+   * @see https://developer.paddle.com/api-reference/discounts/update-discount
+   */
+  async updateDiscount(options: UpdateDiscountOptions): Promise<BillingResult<Paddle.Discount>> {
+    const { id, code, type, period, discountPercent, applyCount, expiredAt, billingCouponId } = options;
+    const path = `/discounts/${id}`;
+    const body = {
+      type: 'percentage',
+      description: `code: ${code}, type: ${type}, period: ${period}, discountPercent: ${discountPercent}, applyCount: ${applyCount}, expiredAt: ${
+        expiredAt?.toISOString() ?? null
+      }`,
+      amount: discountPercent?.toString(),
+      code,
+      maximum_recurring_intervals: applyCount,
+      expires_at: expiredAt?.toISOString() ?? null,
+      custom_data: {
+        billingCouponId,
+        type,
+        period,
+      },
+    };
+
+    const response = await this.client.patch<Paddle.Response<Paddle.Discount>>(path, body);
+    const { error, data, meta } = response.data;
+    const { request_id } = meta ?? {};
+    if (error) {
+      return createFailure({
+        reason: 'method-paddle-update-discount-failed',
+        requestId: request_id,
+        error,
+      });
+    }
+
+    const discount = data ?? {};
+    return {
+      ok: true,
+      value: discount,
     };
   }
 }

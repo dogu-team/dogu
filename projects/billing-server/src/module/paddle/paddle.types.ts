@@ -1,4 +1,4 @@
-import { BillingCategory, BillingCurrency, BillingPeriod, BillingSubscriptionPlanType } from '@dogu-private/console';
+import { BillingCategory, BillingCouponType, BillingPeriod, BillingSubscriptionPlanType } from '@dogu-private/console';
 
 export namespace Paddle {
   export const Status = ['active', 'archived'] as const;
@@ -60,8 +60,8 @@ export namespace Paddle {
     image_url?: string | null;
     custom_data?:
       | ({
-          subscriptionPlanType?: BillingSubscriptionPlanType;
           category?: BillingCategory;
+          type?: BillingSubscriptionPlanType;
         } & Record<string, unknown>)
       | null;
     status?: Status;
@@ -100,13 +100,7 @@ export namespace Paddle {
     status?: Status;
     custom_data?:
       | ({
-          category?: BillingCategory;
-          type?: BillingSubscriptionPlanType;
-          option?: string;
-          period?: BillingPeriod;
-          currency?: BillingCurrency;
-          amountInCents?: string;
-          billingOrganizationId?: string;
+          billingSubscriptionPlanSourceId?: number;
         } & Record<string, unknown>)
       | null;
   }
@@ -119,17 +113,49 @@ export namespace Paddle {
     billingSubscriptionPlanSourceId: number;
   }
 
-  export interface PriceOrigin extends PriceMatch {
-    category: BillingCategory;
-    type: BillingSubscriptionPlanType;
-  }
-
   export interface ProductMatch {
-    type: BillingSubscriptionPlanType;
     category: BillingCategory;
+    type: BillingSubscriptionPlanType;
   }
 
   export interface ProductOrigin extends ProductMatch {
     name: string;
+  }
+
+  export const DiscountStatus = ['active', 'archived', 'expired', 'used'] as const;
+  export type DiscountStatus = (typeof DiscountStatus)[number];
+
+  export const DiscountType = ['flat', 'flat_per_seat', 'percentage'] as const;
+  export type DiscountType = (typeof DiscountType)[number];
+
+  export interface Discount {
+    id?: string;
+    status?: DiscountStatus;
+    external_id?: string;
+    description?: string;
+    enabled_for_checkout?: boolean;
+    code?: string | null;
+    type?: DiscountType;
+    amount?: string;
+    currency_code?: string | null;
+    recur?: boolean;
+    maximum_recurring_intervals?: number | null;
+    usage_limit?: number | null;
+    restrict_to?: string[] | null;
+    expires_at?: string | null;
+    custom_data?:
+      | ({
+          billingCouponId?: string;
+          type?: BillingCouponType;
+          period?: BillingPeriod;
+        } & Record<string, unknown>)
+      | null;
+    times_used?: number;
+    created_at?: string;
+    updated_at?: string;
+  }
+
+  export interface DiscountMatch {
+    billingCouponId: string;
   }
 }

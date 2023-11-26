@@ -1,12 +1,7 @@
-import { DoguLogger } from '../logger/logger';
 import { Paddle } from './paddle.types';
 
 export function matchProduct(match: Paddle.ProductMatch, product: Paddle.ProductWithPrices): boolean {
-  if (product.status !== 'active') {
-    return false;
-  }
-
-  if (match.subscriptionPlanType !== product.custom_data?.subscriptionPlanType) {
+  if (product.status === 'archived') {
     return false;
   }
 
@@ -14,79 +9,31 @@ export function matchProduct(match: Paddle.ProductMatch, product: Paddle.Product
     return false;
   }
 
-  return true;
-}
-
-export function matchPrice(priceMatch: Paddle.PriceMatch, price: Paddle.Price): boolean {
-  if (price.status !== 'active') {
-    return false;
-  }
-
-  if (priceMatch.option !== price.custom_data?.option) {
-    return false;
-  }
-
-  if (priceMatch.period !== price.custom_data?.period) {
-    return false;
-  }
-
-  if (priceMatch.currency !== price.custom_data?.currency) {
-    return false;
-  }
-
-  if (priceMatch.amount.toCents().toString() !== price.custom_data.amountInCents) {
-    return false;
-  }
-
-  if (priceMatch.category !== price.custom_data?.category) {
-    return false;
-  }
-
-  if (priceMatch.subscriptionPlanType !== price.custom_data?.subscriptionPlanType) {
-    return false;
-  }
-
-  if (priceMatch.billingOrganizationId !== price.custom_data?.billingOrganizationId) {
+  if (match.type !== product.custom_data?.type) {
     return false;
   }
 
   return true;
 }
 
-export function matchProductByPrice(productMatch: Paddle.ProductMatch, priceMatch: Paddle.PriceMatch): boolean {
-  if (productMatch.subscriptionPlanType !== priceMatch.subscriptionPlanType) {
+export function matchPrice(match: Paddle.PriceMatch, price: Paddle.Price): boolean {
+  if (price.status === 'archived') {
     return false;
   }
 
-  if (productMatch.category !== priceMatch.category) {
+  if (match.billingSubscriptionPlanSourceId !== price.custom_data?.billingSubscriptionPlanSourceId) {
     return false;
   }
 
   return true;
 }
 
-export function findPrice(logger: DoguLogger, priceFind: Paddle.PriceFind, price: Paddle.Price): boolean {
-  if (priceFind.option !== price.custom_data?.option) {
+export function matchDiscount(match: Paddle.DiscountMatch, discount: Paddle.Discount): boolean {
+  if (discount.status === 'archived') {
     return false;
   }
 
-  if (priceFind.period !== price.custom_data?.period) {
-    return false;
-  }
-
-  if (priceFind.currency !== price.custom_data?.currency) {
-    return false;
-  }
-
-  if (priceFind.category !== price.custom_data?.category) {
-    return false;
-  }
-
-  if (priceFind.subscriptionPlanType !== price.custom_data?.subscriptionPlanType) {
-    return false;
-  }
-
-  if (priceFind.billingOrganizationId !== price.custom_data?.billingOrganizationId) {
+  if (match.billingCouponId !== discount.custom_data?.billingCouponId) {
     return false;
   }
 

@@ -7,8 +7,6 @@ import {
   CreatePurchaseSubscriptionWithNewCardResponse,
   getBillingMethodNicePublic,
   GetBillingSubscriptionPreviewDto,
-  GetBillingSubscriptionPreviewPaddleDto,
-  GetBillingSubscriptionPreviewPaddleResponse,
   GetBillingSubscriptionPreviewResponse,
   RefundFullDto,
   RefundSubscriptionPlanDto,
@@ -611,62 +609,5 @@ export class BillingPurchaseService {
         }
       }
     });
-  }
-
-  async getSubscriptionPreviewPaddle(dto: GetBillingSubscriptionPreviewPaddleDto): Promise<GetBillingSubscriptionPreviewPaddleResponse> {
-    const { organizationId, type, option, category, period, currency, email } = dto;
-    const result = await this.billingMethodPaddleService.createOrUpdate({ organizationId, email });
-    if (!result.ok) {
-      return result;
-    }
-
-    const customerId = result.value.customerId;
-    if (!customerId) {
-      return {
-        ok: false,
-        resultCode: resultCode('method-paddle-customer-id-not-found', {
-          organizationId,
-        }),
-      };
-    }
-
-    const billingOrganization = await this.billingOrganizationService.findOrganizationWithMethod({ organizationId });
-    if (!billingOrganization) {
-      return {
-        ok: false,
-        resultCode: resultCode('organization-not-found', {
-          organizationId,
-        }),
-      };
-    }
-
-    if (!billingOrganization.billingMethodPaddle) {
-      return {
-        ok: false,
-        resultCode: resultCode('organization-method-paddle-not-found', {
-          organizationId,
-        }),
-      };
-    }
-
-    const priceResult = await this.paddleService.findPrice({
-      category,
-      subscriptionPlanType: type,
-      option,
-      period,
-      currency,
-      organizationId,
-    });
-    if (!priceResult.ok) {
-      return priceResult;
-    }
-
-    return {
-      ok: true,
-      value: {
-        customerId,
-        priceId: priceResult.value.priceId,
-      },
-    };
   }
 }

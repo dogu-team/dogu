@@ -72,6 +72,9 @@ export const BillingResultCodeMap = {
   'method-paddle-price-not-found': 709,
   'method-paddle-update-product-failed': 710,
   'method-paddle-update-price-failed': 711,
+  'method-paddle-list-discounts-failed': 712,
+  'method-paddle-create-discount-failed': 713,
+  'method-paddle-update-discount-failed': 714,
 };
 
 export type BillingReason = keyof typeof BillingResultCodeMap;
