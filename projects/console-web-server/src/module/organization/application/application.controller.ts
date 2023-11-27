@@ -10,7 +10,9 @@ import { applicationFileParser } from '../../../utils/file';
 import { ORGANIZATION_ROLE, PROJECT_ROLE } from '../../auth/auth.types';
 import { OrganizationPermission, ProjectPermission, User } from '../../auth/decorators';
 import { Page } from '../../common/dto/pagination/page';
-import { FindProjectApplicationDto, UploadSampleAppDto } from '../../project/application/dto/application.dto';
+import { PageDto } from '../../common/dto/pagination/page.dto';
+import { UploadSampleAppDto } from '../../project/application/dto/application.dto';
+import { FindOrganizationApplicationByPackageNameDto, FindOrganizationApplicationDto } from './application.dto';
 import { OrganizationApplicationService } from './application.service';
 
 @Controller('organizations/:organizationId/applications')
@@ -23,8 +25,31 @@ export class OrganizationApplicationController {
 
   @Get()
   @OrganizationPermission(ORGANIZATION_ROLE.MEMBER)
-  async findApplications(@Param('organizationId') organizationId: OrganizationId, @Query() dto: FindProjectApplicationDto): Promise<Page<OrganizationApplicationWithIcon>> {
+  async findApplications(@Param('organizationId') organizationId: OrganizationId, @Query() dto: FindOrganizationApplicationDto): Promise<Page<OrganizationApplicationWithIcon>> {
     return await this.applicationService.findApplications(organizationId, dto);
+  }
+
+  @Get('/packages')
+  @OrganizationPermission(ORGANIZATION_ROLE.MEMBER)
+  async findUniquePackageApplications(@Param('organizationId') organizationId: OrganizationId, @Query() dto: PageDto): Promise<Page<OrganizationApplicationWithIcon>> {
+    return await this.applicationService.findUniquePackageApplications(organizationId, dto);
+  }
+
+  @Get('/packages/:packageName')
+  @OrganizationPermission(ORGANIZATION_ROLE.MEMBER)
+  async findApplicationsByPackageName(
+    @Param('organizationId') organizationId: OrganizationId,
+    @Param('packageName') packageName: string,
+    @Query() dto: FindOrganizationApplicationByPackageNameDto,
+  ): Promise<Page<OrganizationApplicationWithIcon>> {
+    return await this.applicationService.findApplicationsByPackageName(organizationId, packageName, dto);
+  }
+
+  @Get('/:applicationId/url')
+  @ProjectPermission(PROJECT_ROLE.READ)
+  async getApplicationUrl(@Param('applicationId') id: string, @Param('organizationId') organizationId: OrganizationId): Promise<string> {
+    const applicationDownloadUrl = await this.applicationService.getApplicationDownladUrl(id, organizationId);
+    return applicationDownloadUrl;
   }
 
   @Put()
@@ -58,6 +83,12 @@ export class OrganizationApplicationController {
 
       await this.applicationService.uploadSampleApk(manager, appFilePath, userPayload.userId, organizationId);
     });
+  }
+
+  @Delete('/packages/:packageName')
+  @ProjectPermission(PROJECT_ROLE.WRITE)
+  async deleteApplicationByPackage(@Param('packageName') packageName: string, @Param('organizationId') organizationId: OrganizationId): Promise<void> {
+    await this.applicationService.deleteApplicationByPackage(organizationId, packageName);
   }
 
   @Delete('/:applicationId')

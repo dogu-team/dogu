@@ -1,6 +1,6 @@
 import { OrganizationApplicationPropCamel, OrganizationApplicationWithIcon } from '@dogu-private/console';
 import { CREATOR_TYPE, OrganizationId, UserId } from '@dogu-private/types';
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import crypto from 'crypto';
 import fs from 'fs';
@@ -12,9 +12,10 @@ import { OrganizationApplication } from '../../../db/entity/organization-applica
 import { Apk } from '../../../sdk/apk';
 import { Ipa } from '../../../sdk/ipa';
 import { Page } from '../../common/dto/pagination/page';
+import { PageDto } from '../../common/dto/pagination/page.dto';
 import { convertExtToOrganizationAppType, organizationAppMeta } from '../../file/organization-app-file';
 import { OrganizationFileService } from '../../file/organization-file.service';
-import { FindProjectApplicationDto } from '../../project/application/dto/application.dto';
+import { FindOrganizationApplicationByPackageNameDto, FindOrganizationApplicationDto } from './application.dto';
 
 @Injectable()
 export class OrganizationApplicationService {
@@ -24,7 +25,7 @@ export class OrganizationApplicationService {
     private readonly organizationFileService: OrganizationFileService,
   ) {}
 
-  async findApplications(organizationId: string, dto: FindProjectApplicationDto): Promise<Page<OrganizationApplicationWithIcon>> {
+  async findApplications(organizationId: string, dto: FindOrganizationApplicationDto): Promise<Page<OrganizationApplicationWithIcon>> {
     const { version, extension, latestOnly, page, offset } = dto;
 
     const [applications, count] = await this.dataSource
@@ -43,6 +44,83 @@ export class OrganizationApplicationService {
     const projectApplicationList = await this.getAppIcons(organizationId, applications);
 
     return new Page(page, offset, count, projectApplicationList);
+  }
+
+  async findUniquePackageApplications(organizationId: string, dto: PageDto): Promise<Page<OrganizationApplicationWithIcon>> {
+    const [applications, count] = await this.dataSource
+      .getRepository(OrganizationApplication)
+      .createQueryBuilder('organizationApplication')
+      .leftJoinAndSelect(`organizationApplication.${OrganizationApplicationPropCamel.creator}`, 'creator')
+      .where({ organizationId })
+      .orderBy(`organizationApplication.${OrganizationApplicationPropCamel.name}`, 'ASC')
+      .addOrderBy(`organizationApplication.${OrganizationApplicationPropCamel.fileExtension}`, 'ASC')
+      .skip(dto.getDBOffset())
+      .take(dto.getDBLimit())
+      .getManyAndCount();
+
+    const latestUploadedAppMap: Map<string, OrganizationApplication> = new Map();
+
+    for (const application of applications) {
+      const key = application.package + application.fileExtension;
+      const latestUploadedApp = latestUploadedAppMap.get(key);
+
+      if (latestUploadedApp) {
+        if (new Date(latestUploadedApp.createdAt).getTime() < new Date(application.createdAt).getTime()) {
+          latestUploadedAppMap.set(key, application);
+        }
+      } else {
+        latestUploadedAppMap.set(key, application);
+      }
+    }
+
+    const appsFromMap = Array.from(latestUploadedAppMap.values());
+    const uniquePackageApps = await this.getAppIcons(organizationId, appsFromMap);
+
+    return new Page(dto.page, dto.offset, count, uniquePackageApps);
+  }
+
+  async findApplicationsByPackageName(
+    organizationId: string,
+    packageName: string,
+    dto: FindOrganizationApplicationByPackageNameDto,
+  ): Promise<Page<OrganizationApplicationWithIcon>> {
+    const { extension } = dto;
+    const [applications, count] = await this.dataSource
+      .getRepository(OrganizationApplication)
+      .createQueryBuilder('organizationApplication')
+      .leftJoinAndSelect(`organizationApplication.${OrganizationApplicationPropCamel.creator}`, 'creator')
+      .where({ organizationId })
+      .andWhere(extension ? `organizationApplication.${OrganizationApplicationPropCamel.fileExtension} = :extension` : '1=1', { extension })
+      .andWhere('organizationApplication.package = :packageName', { packageName })
+      .orderBy('organizationApplication.isLatest', 'DESC')
+      .addOrderBy('organizationApplication.createdAt', 'DESC')
+      .skip(dto.getDBOffset())
+      .take(dto.getDBLimit())
+      .getManyAndCount();
+
+    const projectApplicationList = await this.getAppIcons(organizationId, applications);
+
+    return new Page(dto.page, dto.offset, count, projectApplicationList);
+  }
+
+  async getApplicationDownladUrl(id: string, organizationId: OrganizationId): Promise<string> {
+    const application = await this.dataSource.getRepository(OrganizationApplication).findOne({
+      where: {
+        organizationApplicationId: id,
+        organizationId: organizationId,
+      },
+    });
+
+    if (application === null) {
+      throw new Error(`Application not found: ${id}`);
+    }
+
+    const appFileType = convertExtToOrganizationAppType(application.fileExtension);
+    if (!appFileType) {
+      throw new BadRequestException(`App extension(${application.fileExtension}) is not supported.`);
+    }
+
+    return await this.organizationFileService.getAppDirectory(organizationId, appFileType).getSignedUrl(application.fileName);
   }
 
   async uploadApplication(
@@ -147,6 +225,35 @@ export class OrganizationApplicationService {
 
     await this.uploadApplication(manager, apkFile, creatorUserId, CREATOR_TYPE.USER, organizationId);
     return;
+  }
+
+  async deleteApplicationByPackage(organizationId: OrganizationId, packageName: string): Promise<void> {
+    const applications = await this.dataSource.getRepository(OrganizationApplication).find({
+      where: {
+        organizationId: organizationId,
+        package: packageName,
+      },
+    });
+
+    await this.dataSource.transaction(async (entityManager) => {
+      for (const application of applications) {
+        await entityManager.getRepository(OrganizationApplication).delete({
+          organizationApplicationId: application.organizationApplicationId,
+          organizationId: organizationId,
+        });
+
+        const appFileType = convertExtToOrganizationAppType(application.fileExtension);
+        if (!appFileType) {
+          throw new Error(`extension(${application.fileExtension}) is not supported.`);
+        }
+        const appFileDirectory = this.organizationFileService.getAppDirectory(organizationId, appFileType);
+
+        await appFileDirectory.delete(application.fileName);
+        if (application.iconFileName !== null) {
+          await appFileDirectory.delete(application.iconFileName);
+        }
+      }
+    });
   }
 
   async deleteApplication(id: string, organizationId: OrganizationId): Promise<void> {
