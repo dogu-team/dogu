@@ -17,6 +17,7 @@
     "/admin": ["admin"],
 
     "/dashboard/[orgId]": ["organization"],
+    "/dashboard/[orgId]/apps": ["organization", "organization-app"],
     "/dashboard/[orgId]/get-started": ["organization", "tutorial", "project-app", "device-farm"],
     "/dashboard/[orgId]/projects": ["organization", "project"],
     "/dashboard/[orgId]/members": ["organization", "org-member"],

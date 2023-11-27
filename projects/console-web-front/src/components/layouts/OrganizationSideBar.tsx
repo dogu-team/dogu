@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import useTranslation from 'next-translate/useTranslation';
 import {
+  AppstoreOutlined,
   BookOutlined,
   ClusterOutlined,
   ProjectOutlined,
@@ -125,20 +126,64 @@ const OrganizationSideBar = () => {
           key: 'project',
           icon: collapsed ? (
             <StyledIconLink
-              selected={router.asPath === `/dashboard/${orgId}/projects`}
-              href={`/dashboard/${orgId}/projects`}
+              selected={router.asPath === `/dashboard/${orgId}/web-automation`}
+              href={`/dashboard/${orgId}/web-automation`}
             >
               <ProjectOutlined />
             </StyledIconLink>
           ) : undefined,
           label: collapsed ? (
-            t('organization:projectPageTitle')
+            'Web Automation'
           ) : (
             <SideBarMenu
               icon={<ProjectOutlined style={{ fontSize: '1.2rem' }} />}
-              path={`/dashboard/${orgId}/projects`}
-              text={t('organization:projectPageTitle')}
-              accessId={process.env.NEXT_PUBLIC_ENV !== 'production' ? 'side-bar-project' : undefined}
+              path={`/dashboard/${orgId}/web-automation`}
+              text={'Web Automation'}
+              accessId={'side-bar-web-automation'}
+            />
+          ),
+          style: { borderRadius: '6px' },
+        },
+        {
+          key: 'project',
+          icon: collapsed ? (
+            <StyledIconLink
+              selected={router.asPath === `/dashboard/${orgId}/app-automation`}
+              href={`/dashboard/${orgId}/app-automation`}
+            >
+              <ProjectOutlined />
+            </StyledIconLink>
+          ) : undefined,
+          label: collapsed ? (
+            'App Automation'
+          ) : (
+            <SideBarMenu
+              icon={<ProjectOutlined style={{ fontSize: '1.2rem' }} />}
+              path={`/dashboard/${orgId}/app-automation`}
+              text={'App Automation'}
+              accessId={'side-bar-app-automation'}
+            />
+          ),
+          style: { borderRadius: '6px' },
+        },
+        {
+          key: 'project',
+          icon: collapsed ? (
+            <StyledIconLink
+              selected={router.asPath === `/dashboard/${orgId}/game-automation`}
+              href={`/dashboard/${orgId}/game-automation`}
+            >
+              <ProjectOutlined />
+            </StyledIconLink>
+          ) : undefined,
+          label: collapsed ? (
+            'Game Automation'
+          ) : (
+            <SideBarMenu
+              icon={<ProjectOutlined style={{ fontSize: '1.2rem' }} />}
+              path={`/dashboard/${orgId}/game-automation`}
+              text={'Game Automation'}
+              accessId={'side-bar-game-automation'}
             />
           ),
           style: { borderRadius: '6px' },
@@ -176,7 +221,32 @@ const OrganizationSideBar = () => {
     },
     {
       type: 'group',
-      label: collapsed ? null : 'Members',
+      label: collapsed ? null : 'Storage',
+      children: [
+        {
+          key: 'application',
+          icon: collapsed ? (
+            <StyledIconLink selected={router.asPath === `/dashboard/${orgId}/apps`} href={`/dashboard/${orgId}/apps`}>
+              <AppstoreOutlined />
+            </StyledIconLink>
+          ) : undefined,
+          label: collapsed ? (
+            t('organization:appsPageTitle')
+          ) : (
+            <SideBarMenu
+              icon={<AppstoreOutlined style={{ fontSize: '1.2rem' }} />}
+              path={`/dashboard/${orgId}/apps`}
+              text={t('organization:appsPageTitle')}
+              accessId={process.env.NEXT_PUBLIC_ENV !== 'production' ? 'side-bar-apps' : undefined}
+            />
+          ),
+          style: { borderRadius: '6px' },
+        },
+      ],
+    },
+    {
+      type: 'group',
+      label: collapsed ? null : 'General',
       children: [
         {
           key: 'member',
@@ -224,12 +294,6 @@ const OrganizationSideBar = () => {
           ),
           style: { borderRadius: '6px' },
         },
-      ],
-    },
-    {
-      type: 'group',
-      label: collapsed ? null : 'General',
-      children: [
         {
           key: 'settings',
           icon: collapsed ? (
