@@ -102,6 +102,7 @@ export * from './dto/influxdb/type';
 export * from './dto/job/job.dto';
 export * from './dto/license/license.dto';
 export * from './dto/live-session/live-session.dto';
+export * from './dto/organization-application/organization-application.dto';
 export * from './dto/organization-slack/organization-slack.dto';
 export * from './dto/organization/organization-response.dto';
 export * from './dto/organization/organization.dto';
