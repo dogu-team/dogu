@@ -1,21 +1,22 @@
 import { OrganizationPropCamel } from '@dogu-private/console';
-import { V1Project } from '@dogu-private/console-open-api';
+import { V1Organization } from '@dogu-private/console-open-api';
 import { CREATOR_TYPE, OrganizationId, V1CALLER_TYPE, V1OpenApiPayload } from '@dogu-private/types';
 import { Controller, Inject, Param, Put, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
+
 import { LICENSE_AUTHROIZE, ORGANIZATION_ROLE } from '../../../../../module/auth/auth.types';
 import { LicensePermission, V1OpenApiCaller, V1OpenApiOrganizationPermission } from '../../../../../module/auth/decorators';
 import { applicationFileParser } from '../../../../../utils/file';
 import { V1OrganizationService } from './organization.service';
 
-@Controller(V1Project.controller.path)
+@Controller(V1Organization.controller.path)
 export class V1OrganizationController {
   constructor(
     @Inject(V1OrganizationService)
     private readonly v1OrganizationService: V1OrganizationService, // @InjectDataSource() // private readonly dataSource: DataSource,
   ) {}
 
-  @Put(V1Project.uploadApplicatoin.path)
+  @Put(V1Organization.uploadApplicatoin.path)
   @V1OpenApiOrganizationPermission(ORGANIZATION_ROLE.MEMBER)
   @LicensePermission(LICENSE_AUTHROIZE.OPEN_API)
   @UseInterceptors(FileInterceptor('file'))
@@ -23,7 +24,7 @@ export class V1OrganizationController {
     @UploadedFile(applicationFileParser) file: Express.Multer.File,
     @V1OpenApiCaller() openApiCaller: V1OpenApiPayload,
     @Param(OrganizationPropCamel.organizationId) organizationId: OrganizationId,
-  ) {
+  ): Promise<void> {
     let creatorId = null;
     let creatorType: CREATOR_TYPE;
     switch (openApiCaller.callerType) {

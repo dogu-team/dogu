@@ -6,6 +6,7 @@ import crypto from 'crypto';
 import fs from 'fs';
 import { DataSource, EntityManager } from 'typeorm';
 import { promisify } from 'util';
+import { v4 } from 'uuid';
 
 import { OrganizationApplication } from '../../../db/entity/organization-application.entity';
 import { Apk } from '../../../sdk/apk';
@@ -110,6 +111,7 @@ export class OrganizationApplicationService {
     }
 
     await manager.getRepository(OrganizationApplication).insert({
+      organizationApplicationId: v4(),
       organizationId: organizationId,
       creatorId: creatorUserId,
       creatorType,
