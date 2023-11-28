@@ -118,6 +118,7 @@ export const usePromotionCouponSWR = (
   const license = useLicenseStore((state) => state.license);
   const { data, mutate, error, isLoading } = useSWR<CallBillingApiResponse<BillingPromotionCouponResponse[]>>(
     needFetch &&
+      !!license?.organizationId &&
       `/billing/promotions?${buildQueryPraramsByObject(
         { ...dto, organizationId: license?.organizationId },
         { removeFalsy: true },
