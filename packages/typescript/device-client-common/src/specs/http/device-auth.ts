@@ -8,20 +8,12 @@ import { DeviceServerControllerMethodSpec } from '../types';
 export class RefreshAdminTokenRequestBody {
   @ValidateNested()
   @Type(() => DeviceAdminToken)
-  beforeToken!: DeviceAdminToken;
-
-  @ValidateNested()
-  @Type(() => DeviceAdminToken)
   newToken!: DeviceAdminToken;
 }
 
 export class RefreshAdminTokenReponseBodyData {}
 
-export class CreateTokenRequestBody {
-  @ValidateNested()
-  @Type(() => DeviceAdminToken)
-  adminToken!: DeviceAdminToken;
-}
+export class CreateTokenRequestBody {}
 
 export class CreateTokenReponseBodyData {
   @ValidateNested()
@@ -30,10 +22,6 @@ export class CreateTokenReponseBodyData {
 }
 
 export class DeleteTokenRequestBody {
-  @ValidateNested()
-  @Type(() => DeviceAdminToken)
-  adminToken!: DeviceAdminToken;
-
   @ValidateNested()
   @Type(() => DeviceTemporaryTokenDto)
   token!: DeviceTemporaryTokenDto;

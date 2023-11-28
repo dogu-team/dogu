@@ -46,4 +46,12 @@ export class AuthService {
     }
     return true;
   }
+
+  validateTemporaryTokenExist(token: DeviceTemporaryToken): boolean {
+    const found = this.temporaryTokens.find((t) => t.token.value === token.value);
+    if (!found) {
+      return false;
+    }
+    return true;
+  }
 }

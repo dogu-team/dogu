@@ -4,6 +4,7 @@ import { DeviceAuth } from '@dogu-tech/device-client-common';
 import { Body, Controller, Delete, Param, Post } from '@nestjs/common';
 import { DoguLogger } from '../logger/logger';
 import { AuthService } from './auth.service';
+import { DeviceAdminPermission } from './decorators';
 
 @Controller(DeviceAuth.controller)
 export class AuthController {
@@ -13,10 +14,8 @@ export class AuthController {
   ) {}
 
   @Post(DeviceAuth.refreshAdminToken.path)
+  @DeviceAdminPermission()
   refreshAdminToken(@Body() request: Instance<typeof DeviceAuth.refreshAdminToken.requestBody>): Instance<typeof DeviceAuth.refreshAdminToken.responseBody> {
-    if (!this.authService.validateAdmin(request.beforeToken.value)) {
-      throw new Error('Invalid token');
-    }
     this.authService.refreshAdminToken(request.newToken.value);
     return {
       value: {
@@ -27,10 +26,8 @@ export class AuthController {
   }
 
   @Post(DeviceAuth.createToken.path)
+  @DeviceAdminPermission()
   createToken(@Param('serial') serial: Serial, @Body() request: Instance<typeof DeviceAuth.createToken.requestBody>): Instance<typeof DeviceAuth.createToken.responseBody> {
-    if (!this.authService.validateAdmin(request.adminToken.value)) {
-      throw new Error('Invalid token');
-    }
     const token = this.authService.generateTemporaryToken(serial);
     return {
       value: {
@@ -43,10 +40,8 @@ export class AuthController {
   }
 
   @Delete(DeviceAuth.deleteToken.path)
+  @DeviceAdminPermission()
   deleteToken(@Body() request: Instance<typeof DeviceAuth.deleteToken.requestBody>): Instance<typeof DeviceAuth.deleteToken.responseBody> {
-    if (!this.authService.validateAdmin(request.adminToken.value)) {
-      throw new Error('Invalid token');
-    }
     this.authService.deleteTemporaryToken(request.token);
     return {
       value: {

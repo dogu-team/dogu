@@ -2,15 +2,20 @@ import { Code, ErrorResultDto, isErrorResultError, Serial } from '@dogu-private/
 import { HeaderRecord, Instance, isFilteredAxiosError, stringify } from '@dogu-tech/common';
 import { DeviceWebDriver, RelayRequest, SessionDeletedParam } from '@dogu-tech/device-client-common';
 import { Body, Controller, Delete, Headers, Param, Post } from '@nestjs/common';
+import { DevicePermission } from '../auth/decorators';
 import { deviceNotFoundError } from '../device/device.utils';
 import { DoguLogger } from '../logger/logger';
 import { ScanService } from '../scan/scan.service';
 
 @Controller(DeviceWebDriver.controller)
 export class DeviceWebDriverController {
-  constructor(private readonly scanService: ScanService, private readonly logger: DoguLogger) {}
+  constructor(
+    private readonly scanService: ScanService,
+    private readonly logger: DoguLogger,
+  ) {}
 
   @Post(DeviceWebDriver.relayHttp.path)
+  @DevicePermission()
   async relayHttp(
     @Headers() headers: HeaderRecord,
     @Param('serial') serial: Serial,
@@ -46,6 +51,7 @@ export class DeviceWebDriverController {
   }
 
   @Delete(DeviceWebDriver.sessionDeleted.path)
+  @DevicePermission()
   async sessionDeleted(
     @Headers() headers: HeaderRecord,
     @Param('serial') serial: Serial,

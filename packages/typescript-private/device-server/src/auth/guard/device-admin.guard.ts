@@ -4,7 +4,7 @@ import { DoguLogger } from '../../logger/logger';
 import { AuthService } from '../auth.service';
 
 @Injectable()
-export class DeviceAuthGuard implements CanActivate {
+export class DeviceAdminGuard implements CanActivate {
   constructor(
     @Inject(AuthService)
     private readonly authService: AuthService,
@@ -20,7 +20,6 @@ export class DeviceAuthGuard implements CanActivate {
     }
 
     const token = authField.replace('Custom ', '');
-    const serial = request.params.serial;
-    return this.authService.validateTemporaryToken(serial, { value: token });
+    return this.authService.validateAdmin(token);
   }
 }

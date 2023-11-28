@@ -78,10 +78,11 @@ export class DeviceAuthService {
     }
     const newToken = new DeviceAdminToken(uuidv4());
     const request: Instance<typeof DeviceAuth.refreshAdminToken.requestBody> = {
-      beforeToken,
       newToken,
     };
-    await this._deviceServerClient.post(`${DeviceAuth.controller.path}${DeviceAuth.refreshAdminToken.path}`, request);
+    await this._deviceServerClient.post(`${DeviceAuth.controller.path}${DeviceAuth.refreshAdminToken.path}`, request, {
+      headers: { Authorization: `Custom ${beforeToken.value}` },
+    });
 
     const sendMessage: Instance<typeof DeviceAuthSubscribe.sendMessage> = {
       value: {
