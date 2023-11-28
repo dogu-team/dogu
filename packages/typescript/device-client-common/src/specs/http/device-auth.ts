@@ -1,5 +1,5 @@
 import { ControllerSpec, DefaultPathProvider } from '@dogu-tech/common';
-import { DeviceAdminToken, DeviceTemporaryToken } from '@dogu-tech/types';
+import { DeviceAdminToken, DeviceTemporaryTokenDto, Serial } from '@dogu-tech/types';
 import { Type } from 'class-transformer';
 import { ValidateNested } from 'class-validator';
 import { DeviceServerResponseDto } from '../..';
@@ -25,8 +25,8 @@ export class CreateTokenRequestBody {
 
 export class CreateTokenReponseBodyData {
   @ValidateNested()
-  @Type(() => DeviceTemporaryToken)
-  token!: DeviceTemporaryToken;
+  @Type(() => DeviceTemporaryTokenDto)
+  token!: DeviceTemporaryTokenDto;
 }
 
 export class DeleteTokenRequestBody {
@@ -35,8 +35,8 @@ export class DeleteTokenRequestBody {
   adminToken!: DeviceAdminToken;
 
   @ValidateNested()
-  @Type(() => DeviceTemporaryToken)
-  token!: DeviceTemporaryToken;
+  @Type(() => DeviceTemporaryTokenDto)
+  token!: DeviceTemporaryTokenDto;
 }
 
 export class DeleteTokenReponseBodyData {}
@@ -58,8 +58,10 @@ export const DeviceAuth = {
   createToken: new DeviceServerControllerMethodSpec({
     controllerSpec: DeviceAuthController,
     method: 'POST',
-    path: '/token',
-    pathProvider: DefaultPathProvider,
+    path: '/:serial//token',
+    pathProvider: class {
+      constructor(readonly serial: Serial) {}
+    },
     requestBody: CreateTokenRequestBody,
     responseBody: DeviceServerResponseDto<CreateTokenReponseBodyData>,
     responseBodyData: CreateTokenReponseBodyData,

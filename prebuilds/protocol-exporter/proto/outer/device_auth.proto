@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package outer;
+
+option go_package = "go-device-controller/types/protocol/generated/proto/outer";
+option java_package = "com.dogu.protocol.generated.outer";
+
+message DeviceTemporaryToken {
+  string value = 1;
+}

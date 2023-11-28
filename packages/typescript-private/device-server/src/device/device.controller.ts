@@ -2,6 +2,7 @@ import { Code, DeviceFoldRequestDto, GeoLocationDto, LocaleCodeDto, Platform, pl
 import { Instance } from '@dogu-tech/common';
 import { CreateLocalDeviceDetectTokenRequest, Device, DeviceConfigDto } from '@dogu-tech/device-client-common';
 import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
+import { DevicePermission } from '../auth/decorators';
 import { ConfigService } from '../config/config.service';
 import { toErrorResultDto } from '../device-webdriver/device-webdriver.controller';
 import { AdbSerial } from '../internal/externals/index';
@@ -228,6 +229,7 @@ export class DeviceController {
   }
 
   @Get(Device.getLocale.path)
+  @DevicePermission()
   async getLocale(@Param('serial') serial: Serial): Promise<Instance<typeof Device.getLocale.responseBody>> {
     const channel = this.scanService.findChannel(serial);
     if (channel === null) {
@@ -246,6 +248,7 @@ export class DeviceController {
   }
 
   @Post(Device.setLocale.path)
+  @DevicePermission()
   async setLocale(@Param('serial') serial: Serial, @Body() localeCodeDto: LocaleCodeDto): Promise<Instance<typeof Device.setLocale.responseBody>> {
     const device = this.scanService.findChannel(serial);
     if (device === null) {

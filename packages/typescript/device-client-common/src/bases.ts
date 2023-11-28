@@ -1,6 +1,7 @@
 import { Closable, ConsoleLogger, fillOptionsSync, Printable, PromiseOrValue } from '@dogu-tech/common';
 import {
   DeviceHostUploadFileSendMessage,
+  DeviceTemporaryToken,
   HttpRequest,
   HttpResponse,
   WebSocketCloseEvent,
@@ -45,6 +46,12 @@ export class DeviceClientOptions {
   @IsNumber()
   @Type(() => Number)
   timeout?: number;
+
+  /**
+   * @default empty
+   */
+  @IsObject()
+  token?: DeviceTemporaryToken;
 }
 
 export function fillDeviceClientOptions(options?: DeviceClientOptions): Required<DeviceClientOptions> {
@@ -54,6 +61,7 @@ export function fillDeviceClientOptions(options?: DeviceClientOptions): Required
       port: 0,
       printable: ConsoleLogger.instance,
       timeout: 60000,
+      token: { value: '' },
     },
     options,
   );

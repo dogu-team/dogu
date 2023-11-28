@@ -93,6 +93,30 @@ object StreamingAnswerKt {
     fun hasErrorResult(): kotlin.Boolean {
       return _builder.hasErrorResult()
     }
+
+    /**
+     * <code>.outer.DeviceTemporaryToken device_temporary_token = 4;</code>
+     */
+    var deviceTemporaryToken: com.dogu.protocol.generated.outer.DeviceAuth.DeviceTemporaryToken
+      @JvmName("getDeviceTemporaryToken")
+      get() = _builder.getDeviceTemporaryToken()
+      @JvmName("setDeviceTemporaryToken")
+      set(value) {
+        _builder.setDeviceTemporaryToken(value)
+      }
+    /**
+     * <code>.outer.DeviceTemporaryToken device_temporary_token = 4;</code>
+     */
+    fun clearDeviceTemporaryToken() {
+      _builder.clearDeviceTemporaryToken()
+    }
+    /**
+     * <code>.outer.DeviceTemporaryToken device_temporary_token = 4;</code>
+     * @return Whether the deviceTemporaryToken field is set.
+     */
+    fun hasDeviceTemporaryToken(): kotlin.Boolean {
+      return _builder.hasDeviceTemporaryToken()
+    }
     val valueCase: com.dogu.protocol.generated.outer.streaming.Streaming.StreamingAnswer.ValueCase
       @JvmName("getValueCase")
       get() = _builder.getValueCase()
@@ -114,4 +138,7 @@ val com.dogu.protocol.generated.outer.streaming.Streaming.StreamingAnswerOrBuild
 
 val com.dogu.protocol.generated.outer.streaming.Streaming.StreamingAnswerOrBuilder.errorResultOrNull: com.dogu.protocol.generated.outer.Errors.ErrorResult?
   get() = if (hasErrorResult()) getErrorResult() else null
+
+val com.dogu.protocol.generated.outer.streaming.Streaming.StreamingAnswerOrBuilder.deviceTemporaryTokenOrNull: com.dogu.protocol.generated.outer.DeviceAuth.DeviceTemporaryToken?
+  get() = if (hasDeviceTemporaryToken()) getDeviceTemporaryToken() else null
 

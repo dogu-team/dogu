@@ -1,4 +1,4 @@
-import { PrivateProtocol, WebSocketConnection } from '@dogu-private/types';
+import { DeviceTemporaryToken, PrivateProtocol, WebSocketConnection } from '@dogu-private/types';
 import { DeviceClient, DeviceHostClient } from '@dogu-tech/device-client-common';
 import { RefObject, useEffect, useRef } from 'react';
 import { v4 as uuidv4 } from 'uuid';
@@ -9,14 +9,18 @@ import { createDataChannel } from '../../utils/streaming/web-rtc';
 
 type DataChannelLabel = PrivateProtocol.DataChannelLabel;
 
-const useDeviceClient = (peerConnectionRef: RefObject<RTCPeerConnection | undefined>, sendThrottleMs: number) => {
+const useDeviceClient = (
+  peerConnectionRef: RefObject<RTCPeerConnection | undefined>,
+  deviceToken: DeviceTemporaryToken | undefined,
+  sendThrottleMs: number,
+) => {
   const deviceClientRef = useRef<DeviceClient | undefined>(undefined);
   const deviceHostClientRef = useRef<DeviceHostClient | undefined>(undefined);
   const deviceChannelRef = useRef<RTCDataChannel | undefined>(undefined);
   const deviceInspectorRef = useRef<BrowserDeviceInspector | undefined>(undefined);
 
   useEffect(() => {
-    if (peerConnectionRef.current) {
+    if (peerConnectionRef.current && deviceToken) {
       const deviceHttpDcLabel: DataChannelLabel = {
         name: 'device-http',
         protocol: {
@@ -52,9 +56,9 @@ const useDeviceClient = (peerConnectionRef: RefObject<RTCPeerConnection | undefi
       };
       const deviceService = new BrowserDeviceService(deviceHttpDc, deviceServerWsDcCreator, sendThrottleMs);
 
-      const dc = new DeviceClient(deviceService);
-      const dhc = new DeviceHostClient(deviceService);
-      const di = new BrowserDeviceInspector(deviceService);
+      const dc = new DeviceClient(deviceService, { token: deviceToken });
+      const dhc = new DeviceHostClient(deviceService, { token: deviceToken });
+      const di = new BrowserDeviceInspector(deviceService, { token: deviceToken });
 
       deviceClientRef.current = dc;
       deviceHostClientRef.current = dhc;
@@ -69,7 +73,7 @@ const useDeviceClient = (peerConnectionRef: RefObject<RTCPeerConnection | undefi
       deviceChannelRef.current = undefined;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sendThrottleMs]);
+  }, [sendThrottleMs, deviceToken]);
 
   return {
     deviceClientRef,

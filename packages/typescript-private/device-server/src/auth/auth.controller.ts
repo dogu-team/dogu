@@ -1,13 +1,14 @@
+import { Serial } from '@dogu-private/types';
 import { Instance } from '@dogu-tech/common';
 import { DeviceAuth } from '@dogu-tech/device-client-common';
-import { Body, Controller, Delete, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Param, Post } from '@nestjs/common';
 import { DoguLogger } from '../logger/logger';
-import { DeviceAuthService } from './device-auth.service';
+import { AuthService } from './auth.service';
 
 @Controller(DeviceAuth.controller)
-export class DeviceAuthController {
+export class AuthController {
   constructor(
-    private readonly authService: DeviceAuthService,
+    private readonly authService: AuthService,
     private readonly logger: DoguLogger,
   ) {}
 
@@ -26,11 +27,11 @@ export class DeviceAuthController {
   }
 
   @Post(DeviceAuth.createToken.path)
-  createToken(@Body() request: Instance<typeof DeviceAuth.createToken.requestBody>): Instance<typeof DeviceAuth.createToken.responseBody> {
+  createToken(@Param('serial') serial: Serial, @Body() request: Instance<typeof DeviceAuth.createToken.requestBody>): Instance<typeof DeviceAuth.createToken.responseBody> {
     if (!this.authService.validateAdmin(request.adminToken.value)) {
       throw new Error('Invalid token');
     }
-    const token = this.authService.generateTemporaryToken();
+    const token = this.authService.generateTemporaryToken(serial);
     return {
       value: {
         $case: 'data',
