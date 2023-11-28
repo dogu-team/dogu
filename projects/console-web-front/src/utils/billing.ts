@@ -108,13 +108,5 @@ export const getPaymentMethodFromLicense = (
     return license.billingOrganization.billingMethod;
   }
 
-  if (license.billingOrganization.billingMethodNice) {
-    return 'nice';
-  }
-
-  if (license.billingOrganization.billingMethodPaddle) {
-    return 'paddle';
-  }
-
   return routerLocale === 'ko' ? 'nice' : 'paddle';
 };

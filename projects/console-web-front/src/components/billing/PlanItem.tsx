@@ -111,16 +111,12 @@ const PlanItem: React.FC<Props> = ({ planType, planInfo, descriptionInfo }) => {
   const { text: buttonText, disabled: buttonDisabled, shouldGoAnnual } = getButtonState();
 
   const handleClickButton = async () => {
+    if (!license) {
+      return;
+    }
     const billingPlanSourceId = planInfo.optionMap[Number(selectedValue)][currency][isAnnual ? 'yearly' : 'monthly'].id;
 
-    if (
-      license?.billingOrganization.billingMethod === 'nice' ||
-      !!license?.billingOrganization.billingMethodNice ||
-      (license?.billingOrganization.billingMethod === null &&
-        license?.billingOrganization.billingMethodNice === null &&
-        license?.billingOrganization.billingMethodPaddle === null &&
-        router.locale === 'ko')
-    ) {
+    if (getPaymentMethodFromLicense(router.locale, license) === 'nice') {
       updateSelectedPlan({
         type: planType,
         option: Number(selectedValue) ?? 0,
@@ -147,10 +143,12 @@ const PlanItem: React.FC<Props> = ({ planType, planInfo, descriptionInfo }) => {
           return;
         }
 
+        // TODO: add discount id from precheckout if promotion coupon is available
         paddleRef.current?.Checkout.open({
           settings: {
             allowLogout: false,
             displayMode: 'overlay',
+            successUrl: `${window.location.origin}/billing/success`,
           },
           items: [
             {
