@@ -1,3 +1,4 @@
+import { PROJECT_TYPE } from '@dogu-private/types';
 import styled from 'styled-components';
 import Head from 'next/head';
 
@@ -21,11 +22,11 @@ const GameAutomationPage: NextPageWithLayout<OrganizationServerSideProps> = ({ u
       <TableListView
         top={
           <FlexBox>
-            <CreateProjectButton />
+            <CreateProjectButton projectType={PROJECT_TYPE.GAME} />
             <RefreshButton />
           </FlexBox>
         }
-        table={<ProjectListController organizationId={organization.organizationId} />}
+        table={<ProjectListController organizationId={organization.organizationId} projectType={PROJECT_TYPE.GAME} />}
       />
       <LiveChat
         user={{

@@ -30,7 +30,7 @@ const RoutineSideBar = ({ isGitIntegrated }: Props) => {
           </div>
         </FlexRow>
 
-        <CreateRoutineButton organizationId={orgId} projectId={projectId} />
+        <CreateRoutineButton />
       </TitleWrapper>
       <RoutineWrapper>
         <RoutineListController organizationId={orgId} projectId={projectId} />

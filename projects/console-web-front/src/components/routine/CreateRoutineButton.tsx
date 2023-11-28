@@ -1,10 +1,14 @@
 import { PlusOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 
-const CreateRoutineButton = ({ organizationId, projectId }: { organizationId: string; projectId: string }) => {
+const CreateRoutineButton = () => {
+  const router = useRouter();
+  const creatorPath = router.asPath.replace(/\/routines(.+)?$/, '/routines/creator');
+
   return (
-    <Link href={`/dashboard/${organizationId}/projects/${projectId}/routines/creator`}>
+    <Link href={creatorPath}>
       <Button
         type="primary"
         icon={<PlusOutlined />}

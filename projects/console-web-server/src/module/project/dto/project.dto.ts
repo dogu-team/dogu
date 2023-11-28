@@ -50,6 +50,11 @@ export class FindProjectDto extends PageDto implements FindProjectDtoBase {
   @IsString()
   @IsOptional()
   keyword = '';
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsEnum(PROJECT_TYPE)
+  type?: PROJECT_TYPE;
 }
 
 export class FindProjectDeviceDto extends PageDto implements FindProjectDeviceDtoBase {

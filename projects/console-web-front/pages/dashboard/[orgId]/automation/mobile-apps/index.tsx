@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import Head from 'next/head';
+import { PROJECT_TYPE } from '@dogu-private/types';
 
 import { NextPageWithLayout } from 'pages/_app';
 import ConsoleLayout from 'src/components/layouts/ConsoleLayout';
@@ -21,11 +22,11 @@ const AppAutomationPage: NextPageWithLayout<OrganizationServerSideProps> = ({ us
       <TableListView
         top={
           <FlexBox>
-            <CreateProjectButton />
+            <CreateProjectButton projectType={PROJECT_TYPE.APP} />
             <RefreshButton />
           </FlexBox>
         }
-        table={<ProjectListController organizationId={organization.organizationId} />}
+        table={<ProjectListController organizationId={organization.organizationId} projectType={PROJECT_TYPE.APP} />}
       />
       <LiveChat
         user={{

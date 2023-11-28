@@ -30,11 +30,9 @@ import { HttpException, HttpStatus, Inject, Injectable, NotFoundException } from
 import { InjectDataSource } from '@nestjs/typeorm';
 import { Brackets, DataSource, DeepPartial, EntityManager, Not } from 'typeorm';
 import { v4 } from 'uuid';
-import { Device, Project, RoutinePipeline, Token, User } from '../../db/entity';
+import { Device, Project, RoutinePipeline, Token } from '../../db/entity';
 import { ProjectAccessToken } from '../../db/entity/project-access-token.entity';
 import { EMPTY_PAGE, Page } from '../../module/common/dto/pagination/page';
-import { ORGANIZATION_ROLE } from '../auth/auth.types';
-import { UserPermission } from '../auth/guard/common';
 // import { GitlabService } from '../gitlab/gitlab.service';
 import { DeviceStatusService } from '../organization/device/device-status.service';
 import { TokenService } from '../token/token.service';
@@ -93,6 +91,7 @@ export class ProjectService {
       .leftJoinAndSelect(`projectTeamRole.${ProjectAndTeamAndProjectRolePropCamel.team}`, 'team')
       .where(`project.${ProjectPropSnake.organization_id} = :${ProjectPropCamel.organizationId}`, { organizationId })
       .andWhere(`project.${ProjectPropSnake.name} ILIKE :keyword`, { keyword: `%${dto.keyword}%` })
+      .andWhere(dto.type ? `project.${ProjectPropSnake.type} = :${ProjectPropCamel.type}` : '1=1', { type: dto.type })
       .orderBy(`project.${ProjectPropCamel.updatedAt}`, 'DESC')
       .skip(dto.getDBOffset())
       .take(dto.getDBLimit())
@@ -187,29 +186,29 @@ export class ProjectService {
   }
 
   async findProjectsByOrganizationId(organizationId: OrganizationId, userId: UserId, dto: FindProjectDto): Promise<Page<ProjectResponse>> {
-    const user = await this.dataSource //
-      .getRepository(User)
-      .createQueryBuilder('user')
-      .leftJoinAndSelect(`user.${UserPropCamel.projects}`, 'project')
-      .leftJoinAndSelect(`user.${UserPropCamel.organizationAndUserAndOrganizationRoles}`, 'orgUserRole')
-      .where(`user.${UserPropSnake.user_id} = :${UserPropCamel.userId}`, { userId })
-      .getOne();
-    if (!user) {
-      throw new HttpException(`User not found with id: ${userId}`, HttpStatus.NOT_FOUND);
-    }
+    // const user = await this.dataSource //
+    //   .getRepository(User)
+    //   .createQueryBuilder('user')
+    //   .leftJoinAndSelect(`user.${UserPropCamel.projects}`, 'project')
+    //   .leftJoinAndSelect(`user.${UserPropCamel.organizationAndUserAndOrganizationRoles}`, 'orgUserRole')
+    //   .where(`user.${UserPropSnake.user_id} = :${UserPropCamel.userId}`, { userId })
+    //   .getOne();
+    // if (!user) {
+    //   throw new HttpException(`User not found with id: ${userId}`, HttpStatus.NOT_FOUND);
+    // }
 
-    const orgRole = user.organizationAndUserAndOrganizationRoles?.find((item) => item.organizationId === organizationId);
-    if (!orgRole) {
-      throw new HttpException(`This user is not a member of the organization`, HttpStatus.FORBIDDEN);
-    }
+    // const orgRole = user.organizationAndUserAndOrganizationRoles?.find((item) => item.organizationId === organizationId);
+    // if (!orgRole) {
+    //   throw new HttpException(`This user is not a member of the organization`, HttpStatus.FORBIDDEN);
+    // }
 
-    if (UserPermission.checkOrganizationRolePermission(orgRole.organizationRoleId, ORGANIZATION_ROLE.ADMIN)) {
-      const rv = await this.findProjectsByOrganizationIdByOrganizationAdmin(organizationId, dto);
-      return rv;
-    } else {
-      const rv = await this.findProjectsByOrganizationIdByOrganizationMember(organizationId, userId, dto);
-      return rv;
-    }
+    // if (UserPermission.checkOrganizationRolePermission(orgRole.organizationRoleId, ORGANIZATION_ROLE.ADMIN)) {
+    const rv = await this.findProjectsByOrganizationIdByOrganizationAdmin(organizationId, dto);
+    return rv;
+    // } else {
+    //   const rv = await this.findProjectsByOrganizationIdByOrganizationMember(organizationId, userId, dto);
+    //   return rv;
+    // }
   }
 
   async findProject(organizationId: OrganizationId, projectId: ProjectId): Promise<ProjectResponse> {
@@ -241,7 +240,7 @@ export class ProjectService {
   async createProject(manager: EntityManager, userId: UserId, organizationId: OrganizationId, createProjectDto: CreateProjectDto): Promise<ProjectResponse> {
     const { name, type, description } = createProjectDto;
 
-    const project = await manager.getRepository(Project).findOne({ where: { organizationId, name } });
+    const project = await manager.getRepository(Project).findOne({ where: { organizationId, name, type: createProjectDto.type } });
     if (project) {
       throw new HttpException(`This project name is already used. : teamId: ${organizationId}, proejctName: ${createProjectDto.name}`, HttpStatus.BAD_REQUEST);
     }
