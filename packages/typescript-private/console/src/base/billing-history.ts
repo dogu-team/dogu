@@ -32,6 +32,7 @@ export interface BillingHistoryBase {
   cardNumberLast4Digits: string | null;
   cardExpirationYear: string | null;
   cardExpirationMonth: string | null;
+  paymentType: string | null;
   cancelReason: string | null;
   nicePaymentsCancelResponse: Record<string, unknown> | null;
   purchasedBillingHistoryId: string | null;

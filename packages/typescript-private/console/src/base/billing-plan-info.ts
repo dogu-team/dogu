@@ -27,6 +27,12 @@ export interface BillingPlanInfoBase extends BillingPlanData {
   changeRequestedDiscountedAmount: number | null;
   unsubscribedAt: Date | null;
   state: BillingPlanState;
+  paymentType: string | null;
+  cardCode: string | null;
+  cardName: string | null;
+  cardNumberLast4Digits: string | null;
+  cardExpirationYear: string | null;
+  cardExpirationMonth: string | null;
   billingPlanHistoryId: string | null;
   createdAt: Date;
   updatedAt: Date;

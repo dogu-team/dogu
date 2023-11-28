@@ -67,6 +67,24 @@ export class BillingPlanInfo implements BillingPlanInfoBase {
   @Column({ type: 'uuid', nullable: true })
   billingPlanHistoryId!: string | null;
 
+  @Column({ type: 'character varying', nullable: true })
+  paymentType!: string | null;
+
+  @Column({ type: 'character varying', nullable: true })
+  cardCode!: string | null;
+
+  @Column({ type: 'character varying', nullable: true })
+  cardName!: string | null;
+
+  @Column({ type: 'character varying', nullable: true })
+  cardNumberLast4Digits!: string | null;
+
+  @Column({ type: 'character varying', nullable: true })
+  cardExpirationYear!: string | null;
+
+  @Column({ type: 'character varying', nullable: true })
+  cardExpirationMonth!: string | null;
+
   @CreatedAt()
   createdAt!: Date;
 

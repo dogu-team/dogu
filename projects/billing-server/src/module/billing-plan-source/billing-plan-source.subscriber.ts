@@ -24,7 +24,7 @@ export class BillingPlanSourceSubscriber {
       (async (): Promise<void> => {
         const planSource = message.data as unknown as BillingPlanSource;
         if (message.event === 'created') {
-          const products = await this.paddleCaller.listProductsAll();
+          const products = await this.paddleCaller.listProductsAllAndCache({ refresh: false });
           const product = products.find((product) => matchProduct(planSource, product));
           if (!product) {
             throw new Error(`Product not found for category ${planSource.category} and type ${planSource.type}`);
@@ -43,7 +43,7 @@ export class BillingPlanSourceSubscriber {
           });
           this.logger.info('BillingPlanSourceSubscriber.subscribe.created', { created });
         } else if (message.event === 'updated') {
-          const products = await this.paddleCaller.listProductsAll();
+          const products = await this.paddleCaller.listProductsAllAndCache({ refresh: false });
           const product = products.find((product) => matchProduct(planSource, product));
           if (!product) {
             throw new Error(`Product not found for category ${planSource.category} and type ${planSource.type}`);

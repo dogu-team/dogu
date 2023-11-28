@@ -40,7 +40,7 @@ export class PaddleMigrator {
       };
     });
 
-    const products = await this.paddleCaller.listProductsAll();
+    const products = await this.paddleCaller.listProductsAllAndCache({ refresh: true });
     for (const origin of origins) {
       const product = products.find((product) => matchProduct(origin, product));
       if (product) {
@@ -96,7 +96,7 @@ export class PaddleMigrator {
       },
     });
 
-    const products = await this.paddleCaller.listProductsAll();
+    const products = await this.paddleCaller.listProductsAllAndCache({ refresh: true });
     for (const product of products) {
       const { category, type } = product.custom_data ?? {};
       if (!category) {

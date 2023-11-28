@@ -52,6 +52,9 @@ export class BillingHistory implements BillingHistoryBase {
   cardExpirationMonth!: string | null;
 
   @Column({ type: 'character varying', nullable: true })
+  paymentType!: string | null;
+
+  @Column({ type: 'character varying', nullable: true })
   cancelReason!: string | null;
 
   @Column({ type: 'jsonb', nullable: true })

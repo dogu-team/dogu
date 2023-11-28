@@ -42,6 +42,10 @@ interface ListResult<T> {
 export type ListEventsResult = ListResult<Paddle.Event>;
 export type ListProductsResult = ListResult<Paddle.ProductWithPrices>;
 
+export interface ListProductsAllOptions {
+  refresh: boolean;
+}
+
 export interface CreateProductOptions {
   category: BillingCategory;
   type: BillingPlanType;
@@ -113,6 +117,10 @@ export interface FindSubscriptionOptions {
   billingPlanInfoId: string;
 }
 
+export interface GetSubscriptionOptions {
+  subscriptionId: string;
+}
+
 export interface GetUpdatePaymentMethodTransactionOptions {
   subscriptionId: string;
 }
@@ -159,6 +167,7 @@ function processPaddleListResponse<T>(paddleResponse: Paddle.Response<T[]>, erro
 @Injectable()
 export class PaddleCaller {
   private readonly client: AxiosInstance;
+  private cacheProducts: Paddle.ProductWithPrices[] = [];
 
   constructor(private readonly logger: DoguLogger) {
     const baseUrl = PaddleBaseUrl;
@@ -301,8 +310,19 @@ export class PaddleCaller {
     return items;
   }
 
-  async listProductsAll(): Promise<Paddle.ProductWithPrices[]> {
-    return await this.listAll({}, async (options) => this.listProducts(options));
+  async listProductsAllAndCache(options: ListProductsAllOptions): Promise<Paddle.ProductWithPrices[]> {
+    const { refresh } = options;
+
+    const cache = async (): Promise<void> => {
+      const products = await this.listAll({}, async (options) => this.listProducts(options));
+      this.cacheProducts = products;
+    };
+
+    if (this.cacheProducts.length === 0 || refresh) {
+      await cache();
+    }
+
+    return this.cacheProducts;
   }
 
   /**
@@ -449,7 +469,7 @@ export class PaddleCaller {
   }
 
   async findPrice(options: FindPriceOptions): Promise<Paddle.Price | null> {
-    const products = await this.listProductsAll();
+    const products = await this.listProductsAllAndCache({ refresh: false });
     const prices = products.flatMap((product) => product.prices ?? []);
     const price = prices.find((price) => matchPrice(options, price));
     return price ?? null;
@@ -564,6 +584,24 @@ export class PaddleCaller {
     });
     const subscription = subscriptions.find((subscription) => subscription.custom_data?.billingPlanInfoId === billingPlanInfoId);
     return subscription ?? null;
+  }
+
+  /**
+   * @see https://developer.paddle.com/api-reference/subscriptions/get-subscription
+   */
+  async getSubscription(options: GetSubscriptionOptions): Promise<Paddle.Subscription> {
+    const { subscriptionId } = options;
+    const path = `/subscriptions/${subscriptionId}`;
+
+    const response = await this.client.get<Paddle.Response<Paddle.Subscription>>(path);
+    const { error, data, meta } = response.data;
+    const { request_id } = meta ?? {};
+    if (error) {
+      throw new PaddleError('get subscription failed', request_id, error);
+    }
+
+    const subscription = data ?? {};
+    return subscription;
   }
 
   /**

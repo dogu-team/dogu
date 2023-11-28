@@ -203,7 +203,7 @@ export namespace Paddle {
       update_payment_method?: string | null;
       cancel?: string | null;
     } | null;
-    items: {
+    items?: {
       status?: SubscriptionItemStatus;
       quantity?: number;
       recurring?: boolean;
