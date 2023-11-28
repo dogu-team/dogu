@@ -39,6 +39,7 @@ export * from './base/organization-and-user-and-team';
 export * from './base/organization-application';
 export * from './base/organization-key';
 export * from './base/organization-role';
+export * from './base/organization-scm';
 export * from './base/personal-access-token';
 export * from './base/project';
 export * from './base/project-access-token';

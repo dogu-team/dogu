@@ -5,6 +5,9 @@ import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from
 import { ColumnTemplate } from './decorators';
 import { ProjectScm } from './project-scm.entity';
 
+/**
+ * @deprecated Git integration is moved to organization
+ */
 @Entity(PROJECT_SCM_GITLAB_AUTH_TABLE_NAME)
 export class ProjectScmGitlabAuth extends BaseEntity implements ProjectScmGitlabAuthBase {
   @PrimaryColumn({ type: 'uuid', name: ProjectScmGitlabAuthPropSnake.project_scm_gitlab_auth_id, nullable: false })

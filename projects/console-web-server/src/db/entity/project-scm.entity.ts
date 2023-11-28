@@ -4,6 +4,9 @@ import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from
 import { ColumnTemplate } from './decorators';
 import { Project } from './project.entity';
 
+/**
+ * @deprecated Git integration is moved to organization
+ */
 @Entity(PROJECT_SCM_TABLE_NAME)
 export class ProjectScm extends BaseEntity implements ProjectScmBase {
   @PrimaryColumn({ type: 'uuid', name: ProjectScmBasePropSnake.project_scm_id, nullable: false })
