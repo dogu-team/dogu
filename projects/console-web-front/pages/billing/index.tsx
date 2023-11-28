@@ -12,7 +12,8 @@ import {
   getSelfHostedLicenseInServerSide,
 } from '../../enterprise/api/license';
 import BillingHistoryList from '../../src/components/billing/BillingHistoryList';
-import BillingPaymentMethod from '../../src/components/billing/BillingPaymentMethod';
+import BillingPaymentMethodNice from '../../src/components/billing/BillingPaymentMethodNice';
+import BillingPaymentMethodPaddle from '../../src/components/billing/BillingPaymentMethodPaddle';
 import BillingSubscribedPlanList from '../../src/components/billing/BillingSubscribedPlanList';
 import UpgradePlanButton from '../../src/components/billing/UpgradePlanButton';
 import LiveChat from '../../src/components/external/livechat';
@@ -30,8 +31,6 @@ interface BillingPageProps {
 const BillingPage: NextPageWithLayout<BillingPageProps> = ({ me, license }) => {
   const { t } = useTranslation('billing');
   const storedLicense = useLicenseStore((state) => state.license);
-
-  const paymentMethod = (storedLicense as CloudLicenseResponse | null)?.billingOrganization?.billingMethodNice;
 
   if (!storedLicense) {
     return (
@@ -67,13 +66,23 @@ const BillingPage: NextPageWithLayout<BillingPageProps> = ({ me, license }) => {
             </ContentInner>
           </TitleWrapper>
         </Content>
-        {!!paymentMethod && (
+        {!!license.billingOrganization.billingMethod !== null && (
           <Content>
             <TitleWrapper>
               <ContentTitle>{t('billingPaymentMethodTitle')}</ContentTitle>
             </TitleWrapper>
             <ContentInner>
-              <BillingPaymentMethod method={paymentMethod} organizationId={license.organizationId as OrganizationId} />
+              {license.billingOrganization.billingMethod === 'nice' ? (
+                <BillingPaymentMethodNice
+                  method={license.billingOrganization.billingMethodNice!}
+                  organizationId={license.organizationId as OrganizationId}
+                />
+              ) : (
+                <BillingPaymentMethodPaddle
+                  method={license.billingOrganization.billingMethodPaddle!}
+                  organizationId={license.organizationId as OrganizationId}
+                />
+              )}
             </ContentInner>
           </Content>
         )}

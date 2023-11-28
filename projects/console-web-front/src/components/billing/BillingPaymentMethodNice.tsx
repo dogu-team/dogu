@@ -22,7 +22,7 @@ interface Props {
   organizationId: OrganizationId;
 }
 
-const BillingPaymentMethod: React.FC<Props> = ({ method, organizationId }) => {
+const BillingPaymentMethodNice: React.FC<Props> = ({ method, organizationId }) => {
   const [isOpen, openModal, closeModal] = useModal();
   const [form] = Form.useForm<BillingMethodRegistrationFormValues>();
   const [updateLoading, requestUpdate] = useRequest(updatePaymentMethod);
@@ -123,7 +123,7 @@ const BillingPaymentMethod: React.FC<Props> = ({ method, organizationId }) => {
   );
 };
 
-export default BillingPaymentMethod;
+export default BillingPaymentMethodNice;
 
 const Box = styled.div`
   position: relative;

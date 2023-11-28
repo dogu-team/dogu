@@ -1,23 +1,17 @@
-import { ArrowRightOutlined, CloseOutlined } from '@ant-design/icons';
+import { CloseOutlined } from '@ant-design/icons';
 import {
   BillingPlanGroupMap,
-  BillingPromotionCouponResponse,
   BillingSubscriptionGroupType,
-  CallBillingApiResponse,
   GetAvailableBillingCouponsDto,
 } from '@dogu-private/console';
 import useTranslation from 'next-translate/useTranslation';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import useSWR from 'swr';
 import { shallow } from 'zustand/shallow';
 
-import { swrAuthFetcher } from '../../api';
 import { usePromotionCouponSWR } from '../../api/billing';
 import { planDescriptionInfoMap } from '../../resources/plan';
-import useLicenseStore from '../../stores/license';
 import usePromotionStore from '../../stores/promotion';
-import { buildQueryPraramsByObject } from '../../utils/query';
 import UpgradePlanButton from './UpgradePlanButton';
 
 interface Props {
