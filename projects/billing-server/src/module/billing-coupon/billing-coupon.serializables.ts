@@ -3,9 +3,9 @@ import {
   BillingOrganizationProp,
   BillingOrganizationUsedBillingCouponProp,
   BillingPeriod,
+  BillingPlanType,
   BillingPromotionCouponResponse,
   BillingResult,
-  BillingSubscriptionPlanType,
   CreateBillingCouponDto,
   GetAvailableBillingCouponsDto,
   resultCode,
@@ -13,7 +13,7 @@ import {
 } from '@dogu-private/console';
 import { assertUnreachable } from '@dogu-tech/common';
 import { ConflictException } from '@nestjs/common';
-import { Brackets, FindOptionsWhere, IsNull, MoreThan, Not } from 'typeorm';
+import { Brackets, IsNull, MoreThan, Not } from 'typeorm';
 import { v4 } from 'uuid';
 
 import { BillingCoupon } from '../../db/entity/billing-coupon.entity';
@@ -32,19 +32,8 @@ export type ValidateCouponResult = BillingResult<BillingCoupon>;
 
 export async function validateCoupon(context: RetryTransactionContext, options: ValidateCouponOptions): Promise<ValidateCouponResult> {
   const { manager } = context;
-  const { organizationId, code, period, subscriptionPlanType, now } = options;
-  const findWhereOption: FindOptionsWhere<BillingCoupon> =
-    period === 'monthly'
-      ? {
-          code,
-          monthlyDiscountPercent: Not(IsNull()),
-        }
-      : {
-          code,
-          yearlyDiscountPercent: Not(IsNull()),
-        };
-  const billingCoupon = await manager.getRepository(BillingCoupon).findOne({ where: findWhereOption });
-
+  const { organizationId, code, period, planType, now } = options;
+  const billingCoupon = await manager.getRepository(BillingCoupon).findOne({ where: { code } });
   if (!billingCoupon) {
     return {
       ok: false,
@@ -52,10 +41,17 @@ export async function validateCoupon(context: RetryTransactionContext, options: 
     };
   }
 
-  if (billingCoupon.subscriptionPlanType !== null && billingCoupon.subscriptionPlanType !== subscriptionPlanType) {
+  if (billingCoupon.period !== period) {
     return {
       ok: false,
-      resultCode: resultCode('coupon-subscription-plan-type-not-matched'),
+      resultCode: resultCode('coupon-period-not-matched'),
+    };
+  }
+
+  if (billingCoupon.planType !== null && billingCoupon.planType !== planType) {
+    return {
+      ok: false,
+      resultCode: resultCode('coupon-plan-type-not-matched'),
     };
   }
 
@@ -73,31 +69,17 @@ export async function validateCoupon(context: RetryTransactionContext, options: 
     };
   }
 
-  if (billingCoupon.monthlyDiscountPercent !== null && (0 > billingCoupon.monthlyDiscountPercent || billingCoupon.monthlyDiscountPercent > 100)) {
+  if (billingCoupon.discountPercent < 0 || billingCoupon.discountPercent > 100) {
     return {
       ok: false,
-      resultCode: resultCode('coupon-invalid-monthly-discount-percent'),
+      resultCode: resultCode('coupon-invalid-discount-percent'),
     };
   }
 
-  if (billingCoupon.monthlyDiscountPercent !== null && billingCoupon.monthlyApplyCount === 0) {
+  if (billingCoupon.applyCount !== null && billingCoupon.applyCount <= 0) {
     return {
       ok: false,
-      resultCode: resultCode('coupon-invalid-monthly-apply-count'),
-    };
-  }
-
-  if (billingCoupon.yearlyDiscountPercent !== null && (0 > billingCoupon.yearlyDiscountPercent || billingCoupon.yearlyDiscountPercent > 100)) {
-    return {
-      ok: false,
-      resultCode: resultCode('coupon-invalid-yearly-discount-percent'),
-    };
-  }
-
-  if (billingCoupon.yearlyDiscountPercent !== null && billingCoupon.yearlyApplyCount === 0) {
-    return {
-      ok: false,
-      resultCode: resultCode('coupon-invalid-yearly-apply-count'),
+      resultCode: resultCode('coupon-invalid-apply-count'),
     };
   }
 
@@ -135,7 +117,7 @@ export interface GetAvailableBillingCouponsOptions extends GetAvailableBillingCo
 
 export async function getAvailableCoupons(context: RetryTransactionContext, options: GetAvailableBillingCouponsOptions): Promise<BillingPromotionCouponResponse[]> {
   const { manager } = context;
-  const { organizationId, type, subscriptionPlanType, category, now } = options;
+  const { organizationId, type, planType, category, now } = options;
 
   if (type === 'promotion') {
     if (category === 'cloud') {
@@ -145,8 +127,8 @@ export async function getAvailableCoupons(context: RetryTransactionContext, opti
         return [];
       }
 
-      if (subscriptionPlanType) {
-        const usingPlan = cloudLicense.billingOrganization.billingSubscriptionPlanInfos.find((info) => info.type === subscriptionPlanType && info.state !== 'unsubscribed');
+      if (planType) {
+        const usingPlan = cloudLicense.billingOrganization?.billingPlanInfos?.find((info) => info.type === planType && info.state !== 'unsubscribed');
         if (usingPlan) {
           return [];
         }
@@ -175,17 +157,16 @@ export async function getAvailableCoupons(context: RetryTransactionContext, opti
     })
     .andWhere({ type })
     .andWhere(new Brackets((qb) => qb.where({ expiredAt: IsNull() }).orWhere({ expiredAt: MoreThan(now) })))
-    .andWhere(subscriptionPlanType ? { subscriptionPlanType } : '1=1')
+    .andWhere(planType ? { planType } : '1=1')
     .getMany();
 
   return availableCoupons.map((coupon) => ({
     code: coupon.code,
     type: coupon.type,
-    monthlyDiscountPercent: coupon.monthlyDiscountPercent,
-    monthlyApplyCount: coupon.monthlyApplyCount,
-    yearlyDiscountPercent: coupon.yearlyDiscountPercent,
-    yearlyApplyCount: coupon.yearlyApplyCount,
-    subscriptionPlanType: coupon.subscriptionPlanType,
+    period: coupon.period,
+    discountPercent: coupon.discountPercent,
+    applyCount: coupon.applyCount,
+    planType: coupon.planType,
     createdAt: coupon.createdAt,
     expiredAt: coupon.expiredAt,
   }));
@@ -193,13 +174,13 @@ export async function getAvailableCoupons(context: RetryTransactionContext, opti
 
 export interface FindAvailablePromotionCouponOptions {
   billingOrganizationId: string;
-  subscriptionPlanType: BillingSubscriptionPlanType;
+  planType: BillingPlanType;
   now: Date;
 }
 
 export async function findAvailablePromotionCoupon(context: RetryTransactionContext, options: FindAvailablePromotionCouponOptions): Promise<BillingCoupon | null> {
   const { manager } = context;
-  const { billingOrganizationId, subscriptionPlanType, now } = options;
+  const { billingOrganizationId, planType, now } = options;
   const coupon = await manager
     .getRepository(BillingCoupon)
     .createQueryBuilder(BillingCoupon.name)
@@ -217,7 +198,7 @@ export async function findAvailablePromotionCoupon(context: RetryTransactionCont
         .getQuery();
       return `${BillingCoupon.name}.${BillingCouponProp.billingCouponId} NOT IN ${subQuery}`;
     })
-    .andWhere({ type: 'promotion', subscriptionPlanType })
+    .andWhere({ type: 'promotion', planType })
     .andWhere(new Brackets((qb) => qb.where({ expiredAt: IsNull() }).orWhere({ expiredAt: MoreThan(now) })))
     .andWhere(new Brackets((qb) => qb.where({ remainingAvailableCount: IsNull() }).orWhere({ remainingAvailableCount: Not(0) })))
     .getOne();
@@ -227,10 +208,9 @@ export async function findAvailablePromotionCoupon(context: RetryTransactionCont
 
 export async function createBillingCoupon(context: RetryTransactionContext, dto: CreateBillingCouponDto): Promise<BillingCoupon> {
   const { manager } = context;
-  const { code, type, monthlyApplyCount, monthlyDiscountPercent, yearlyApplyCount, yearlyDiscountPercent, remainingAvailableCount, subscriptionPlanType } = dto;
+  const { code, type, discountPercent, applyCount, remainingAvailableCount, planType, period } = dto;
 
   const exsitCoupon = await manager.getRepository(BillingCoupon).findOne({ where: { code } });
-
   if (exsitCoupon) {
     throw new ConflictException('Coupon already exist');
   }
@@ -239,12 +219,11 @@ export async function createBillingCoupon(context: RetryTransactionContext, dto:
     billingCouponId: v4(),
     code,
     type,
-    monthlyDiscountPercent: monthlyDiscountPercent ?? null,
-    monthlyApplyCount: monthlyApplyCount ?? null,
-    yearlyDiscountPercent: yearlyDiscountPercent ?? null,
-    yearlyApplyCount: yearlyApplyCount ?? null,
+    period,
+    discountPercent,
+    applyCount: applyCount ?? null,
     remainingAvailableCount: remainingAvailableCount ?? null,
-    subscriptionPlanType: subscriptionPlanType ?? null,
+    planType: planType ?? null,
     expiredAt: null,
   });
   return await manager.getRepository(BillingCoupon).save(coupon);
@@ -255,14 +234,14 @@ export interface ParseCouponOptions {
   organizationId: string;
   couponCode: string | undefined;
   period: BillingPeriod;
-  subscriptionPlanType: BillingSubscriptionPlanType;
+  planType: BillingPlanType;
   now: Date;
 }
 
 export type ParseCouponResult = BillingResult<BillingCoupon | null>;
 
 export async function parseCoupon(options: ParseCouponOptions): Promise<ParseCouponResult> {
-  const { context, organizationId, couponCode, period, subscriptionPlanType, now } = options;
+  const { context, organizationId, couponCode, period, planType, now } = options;
   if (couponCode === undefined) {
     return {
       ok: true,
@@ -270,7 +249,7 @@ export async function parseCoupon(options: ParseCouponOptions): Promise<ParseCou
     };
   }
 
-  const validateResult = await validateCoupon(context, { organizationId, code: couponCode, period, subscriptionPlanType, now });
+  const validateResult = await validateCoupon(context, { organizationId, code: couponCode, period, planType, now });
   if (!validateResult.ok) {
     return {
       ok: false,

@@ -1,12 +1,14 @@
 import { CreateSelfHostedLicenseDto, SelfHostedLicenseResponse } from '@dogu-private/console';
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 
 import { SelfHostedLicense } from '../../db/entity/self-hosted-license.entity';
 import { RetryTransaction } from '../../db/retry-transaction';
+import { BillingOrganizationResponseBuilder } from '../common/plan-info-common.module';
 import { DateTimeSimulatorService } from '../date-time-simulator/date-time-simulator.service';
 import { DoguLogger } from '../logger/logger';
+import { PaddleCaller } from '../paddle/paddle.caller';
 import { FindSelfHostedLicenseQueryDto } from './self-hosted-license.dto';
 import { createSelfHostedLicense, findSelfHostedLicense } from './self-hosted-license.serializables';
 
@@ -19,6 +21,7 @@ export class SelfHostedLicenseService {
     @InjectDataSource()
     private readonly dataSource: DataSource,
     private readonly dateTimeSimulatorService: DateTimeSimulatorService,
+    private readonly paddleCaller: PaddleCaller,
   ) {
     this.retryTransaction = new RetryTransaction(this.logger, this.dataSource);
   }
@@ -31,8 +34,17 @@ export class SelfHostedLicenseService {
   }
 
   async findSelfHostedLicense(dto: FindSelfHostedLicenseQueryDto): Promise<SelfHostedLicenseResponse> {
-    return await this.retryTransaction.serializable(async (context) => {
+    const selfHostedLicense = await this.retryTransaction.serializable(async (context) => {
       return await findSelfHostedLicense(context, dto);
     });
+
+    if (!selfHostedLicense.billingOrganization) {
+      throw new InternalServerErrorException(`Self-hosted license does not have a billing organization. organizationId: ${dto.organizationId}`);
+    }
+
+    const builder = new BillingOrganizationResponseBuilder(selfHostedLicense.billingOrganization, []);
+    selfHostedLicense.billingOrganization = builder.build();
+    const selfHostedLicenseResponse = selfHostedLicense as SelfHostedLicenseResponse;
+    return selfHostedLicenseResponse;
   }
 }

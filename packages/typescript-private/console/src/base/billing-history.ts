@@ -4,7 +4,7 @@ import { IsNotEmpty, IsNumber, IsUUID } from 'class-validator';
 import { PageDtoBase } from '../dto/pagination/page.dto';
 import { BillingCurrency, BillingMethod } from './billing';
 import { BillingOrganizationBase } from './billing-organization';
-import { BillingSubscriptionPlanHistoryBase } from './billing-subscription-plan-history';
+import { BillingPlanHistoryBase } from './billing-plan-history';
 
 export const BillingHistoryTypeRefund = ['full-refund', 'partial-refund'] as const;
 export type BillingHistoryTypeRefund = (typeof BillingHistoryTypeRefund)[number];
@@ -40,7 +40,7 @@ export interface BillingHistoryBase {
   updatedAt: Date;
   deletedAt: Date | null;
   billingOrganization?: BillingOrganizationBase;
-  billingSubscriptionPlanHistories?: BillingSubscriptionPlanHistoryBase[];
+  billingPlanHistories?: BillingPlanHistoryBase[];
 }
 
 export const BillingHistoryProp = propertiesOf<BillingHistoryBase>();

@@ -1,4 +1,4 @@
-import { BillingCategory, BillingCouponType, BillingPeriod, BillingSubscriptionPlanType } from '@dogu-private/console';
+import { BillingCategory, BillingCouponType, BillingPeriod, BillingPlanType } from '@dogu-private/console';
 
 export namespace Paddle {
   export const Status = ['active', 'archived'] as const;
@@ -61,7 +61,7 @@ export namespace Paddle {
     custom_data?:
       | ({
           category?: BillingCategory;
-          type?: BillingSubscriptionPlanType;
+          type?: BillingPlanType;
         } & Record<string, unknown>)
       | null;
     status?: Status;
@@ -100,7 +100,7 @@ export namespace Paddle {
     status?: Status;
     custom_data?:
       | ({
-          billingSubscriptionPlanSourceId?: number;
+          billingPlanSourceId?: number;
         } & Record<string, unknown>)
       | null;
   }
@@ -110,12 +110,12 @@ export namespace Paddle {
   }
 
   export interface PriceMatch {
-    billingSubscriptionPlanSourceId: number;
+    billingPlanSourceId: number;
   }
 
   export interface ProductMatch {
     category: BillingCategory;
-    type: BillingSubscriptionPlanType;
+    type: BillingPlanType;
   }
 
   export interface ProductOrigin extends ProductMatch {
@@ -157,5 +157,251 @@ export namespace Paddle {
 
   export interface DiscountMatch {
     billingCouponId: string;
+  }
+
+  export const SubscriptionStatus = ['active', 'canceled', 'past_due', 'paused', 'trialing'] as const;
+  export type SubscriptionStatus = (typeof SubscriptionStatus)[number];
+
+  export const SubscriptionAction = ['cancel', 'pause', 'resume'] as const;
+  export type SubscriptionAction = (typeof SubscriptionAction)[number];
+
+  export const SubscriptionItemStatus = ['active', 'inactive', 'trialing'] as const;
+  export type SubscriptionItemStatus = (typeof SubscriptionItemStatus)[number];
+
+  export interface Subscription {
+    id?: string;
+    status?: SubscriptionStatus;
+    customer_id?: string;
+    address_id?: string;
+    currency_code?: string;
+    created_at?: string;
+    updated_at?: string;
+    started_at?: string | null;
+    first_billed_at?: string | null;
+    next_billed_at?: string | null;
+    paused_at?: string | null;
+    canceled_at?: string | null;
+    discount?: {
+      id?: string;
+      starts_at?: string;
+      ends_at?: string;
+    } | null;
+    current_billing_period?: {
+      starts_at?: string;
+      ends_at?: string;
+    } | null;
+    billing_cycle?: {
+      interval?: string;
+      frequency?: number;
+    };
+    scheduled_change?: {
+      action?: SubscriptionAction;
+      effective_at?: string;
+      resume_at?: string | null;
+    } | null;
+    management_urls?: {
+      update_payment_method?: string | null;
+      cancel?: string | null;
+    } | null;
+    items: {
+      status?: SubscriptionItemStatus;
+      quantity?: number;
+      recurring?: boolean;
+      created_at?: string;
+      updated_at?: string;
+      previously_billed_at?: string | null;
+      next_billed_at?: string | null;
+      trial_dates?: {
+        starts_at?: string;
+        ends_at?: string;
+      } | null;
+      price?: {
+        id?: string;
+        description?: string;
+        product_id?: string;
+        billing_cycle?: {
+          interval?: string;
+          frequency?: number;
+        } | null;
+        trial_period?: {
+          interval?: string;
+          frequency?: number;
+        } | null;
+        tax_mode?: string;
+        unit_price?: {
+          amount?: string;
+          currency_code?: string;
+        };
+      };
+    }[];
+    custom_data?:
+      | ({
+          billingPlanInfoId?: string;
+        } & Record<string, unknown>)
+      | null;
+  }
+
+  export interface Address {
+    id?: string;
+    description?: string | null;
+    first_line?: string | null;
+    second_line?: string | null;
+    city?: string | null;
+    postal_code?: string | null;
+    region?: string | null;
+    country_code?: string | null;
+    custom_data?: Record<string, unknown> | null;
+    status?: Status;
+    created_at?: string;
+    updated_at?: string;
+  }
+
+  export interface Transaction {
+    id?: string;
+    customer_id?: string | null;
+    address_id?: string | null;
+    business_id?: string | null;
+    custom_data?: Record<string, unknown> | null;
+    currency_code?: string;
+    origin?: string;
+    subscription_id?: string | null;
+    invoice_id?: string | null;
+    invoice_number?: string | null;
+    collection_mode?: string;
+    discount_id?: string | null;
+    billing_details?: {
+      enable_checkout?: boolean;
+      purchase_order_number?: string;
+      additional_information?: string;
+      payment_terms?: {
+        interval?: string;
+        frequency?: number;
+      };
+    } | null;
+    billing_period?: {
+      starts_at?: string;
+      ends_at?: string;
+    } | null;
+    items?: {
+      price_id?: string;
+      price?: Price;
+      quantity?: number;
+      proration?: {
+        rate?: string;
+        billing_period?: {
+          starts_at?: string;
+          ends_at?: string;
+        };
+      };
+    }[];
+    details?: {
+      tax_rates_used?: {
+        tax_rate?: string;
+        totals?: {
+          subtotal?: string;
+          discount?: string;
+          tax?: string;
+          total?: string;
+        };
+      }[];
+      totals?: {
+        subtotal?: string;
+        discount?: string;
+        tax?: string;
+        total?: string;
+        credit?: string;
+        balance?: string;
+        grand_total?: string;
+        fee?: string | null;
+        earnings?: string | null;
+        currency_code?: string;
+      };
+      adjusted_totals?: {
+        subtotal?: string;
+        tax?: string;
+        total?: string;
+        grand_total?: string;
+        fee?: string | null;
+        earnings?: string | null;
+        currency_code?: string;
+      } | null;
+      payout_totals?: {
+        subtotal?: string;
+        discount?: string;
+        tax?: string;
+        total?: string;
+        credit?: string;
+        balance?: string;
+        grand_total?: string;
+        fee?: string;
+        earnings?: string;
+        currency_code?: string;
+      } | null;
+      adjusted_payout_totals?: {
+        subtotal?: string;
+        tax?: string;
+        total?: string;
+        fee?: string;
+        chargeback_fee?: {
+          amount?: string;
+          original?: {
+            amount?: string;
+            currency_code?: string;
+          } | null;
+        };
+        earnings?: string;
+      };
+      line_items?: {
+        id?: string;
+        price_id?: string;
+        quantity?: number;
+        proration?: {
+          rate?: string;
+          billing_period?: {
+            starts_at?: string;
+            ends_at?: string;
+          };
+        } | null;
+        tax_rate?: string;
+        unit_totals?: {
+          subtotal?: string;
+          discount?: string;
+          tax?: string;
+          total?: string;
+        };
+        totals: {
+          subtotal?: string;
+          discount?: string;
+          tax?: string;
+          total?: string;
+        };
+        product?: Product;
+      }[];
+    };
+    payments?: {
+      payment_attempt_id?: string;
+      stored_payment_method_id?: string;
+      amount?: string;
+      status?: string;
+      error_code?: string | null;
+      method_details?: {
+        type?: string;
+        card?: {
+          type?: string;
+          last4?: string;
+          expiry_month?: number;
+          expiry_year?: number;
+          cardholder_name?: string;
+        } | null;
+      };
+      created_at?: string;
+      captured_at?: string | null;
+    }[];
+    checkout?: {
+      url?: string | null;
+    } | null;
+    created_at?: string;
+    updated_at?: string;
+    billed_at?: string | null;
   }
 }

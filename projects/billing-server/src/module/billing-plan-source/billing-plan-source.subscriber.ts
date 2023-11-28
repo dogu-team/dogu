@@ -1,16 +1,16 @@
-import { BillingUsdAmount, unwrap } from '@dogu-private/console';
+import { BillingUsdAmount } from '@dogu-private/console';
 import { errorify } from '@dogu-tech/common';
 import { Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
-import { BillingSubscriptionPlanSource, BillingSubscriptionPlanSourceTableName } from '../../db/entity/billing-subscription-plan-source.entity';
+import { BillingPlanSource, BillingPlanSourceTableName } from '../../db/entity/billing-plan-source.entity';
 import { subscribe } from '../../db/retry-transaction';
 import { DoguLogger } from '../logger/logger';
 import { PaddleCaller } from '../paddle/paddle.caller';
 import { matchPrice, matchProduct } from '../paddle/paddle.utils';
 
 @Injectable()
-export class BillingSubscriptionPlanSourceSubscriber {
+export class BillingPlanSourceSubscriber {
   constructor(
     private readonly logger: DoguLogger,
     @InjectDataSource()
@@ -19,12 +19,12 @@ export class BillingSubscriptionPlanSourceSubscriber {
   ) {}
 
   async subscribe(): Promise<void> {
-    await subscribe(this.logger, this.dataSource, BillingSubscriptionPlanSourceTableName, (message) => {
-      this.logger.info('BillingSubscriptionPlanSourceSubscriber.subscribe', { message: JSON.stringify(message) });
+    await subscribe(this.logger, this.dataSource, BillingPlanSourceTableName, (message) => {
+      this.logger.info('BillingPlanSourceSubscriber.subscribe', { message: JSON.stringify(message) });
       (async (): Promise<void> => {
-        const planSource = message.data as unknown as BillingSubscriptionPlanSource;
+        const planSource = message.data as unknown as BillingPlanSource;
         if (message.event === 'created') {
-          const products = await this.paddleCaller.listProductsAll().then(unwrap);
+          const products = await this.paddleCaller.listProductsAll();
           const product = products.find((product) => matchProduct(planSource, product));
           if (!product) {
             throw new Error(`Product not found for category ${planSource.category} and type ${planSource.type}`);
@@ -34,19 +34,16 @@ export class BillingSubscriptionPlanSourceSubscriber {
             throw new Error(`Product id not found for category ${planSource.category} and type ${planSource.type}`);
           }
 
-          const created = await this.paddleCaller
-            .createPrice({
-              productId: product.id,
-              amount: BillingUsdAmount.fromDollars(planSource.originPrice),
-              currency: planSource.currency,
-              period: planSource.period,
-              billingSubscriptionPlanSourceId: planSource.billingSubscriptionPlanSourceId,
-            })
-            .then(unwrap);
-
-          this.logger.info('BillingSubscriptionPlanSourceSubscriber.subscribe.created', { created });
+          const created = await this.paddleCaller.createPrice({
+            productId: product.id,
+            amount: BillingUsdAmount.fromDollars(planSource.originPrice),
+            currency: planSource.currency,
+            period: planSource.period,
+            billingPlanSourceId: planSource.billingPlanSourceId,
+          });
+          this.logger.info('BillingPlanSourceSubscriber.subscribe.created', { created });
         } else if (message.event === 'updated') {
-          const products = await this.paddleCaller.listProductsAll().then(unwrap);
+          const products = await this.paddleCaller.listProductsAll();
           const product = products.find((product) => matchProduct(planSource, product));
           if (!product) {
             throw new Error(`Product not found for category ${planSource.category} and type ${planSource.type}`);
@@ -65,22 +62,19 @@ export class BillingSubscriptionPlanSourceSubscriber {
             throw new Error(`Price id not found for category ${planSource.category} and type ${planSource.type}`);
           }
 
-          const updated = await this.paddleCaller
-            .updatePrice({
-              id: price.id,
-              amount: BillingUsdAmount.fromDollars(planSource.originPrice),
-              currency: planSource.currency,
-              period: planSource.period,
-              billingSubscriptionPlanSourceId: planSource.billingSubscriptionPlanSourceId,
-            })
-            .then(unwrap);
-
-          this.logger.info('BillingSubscriptionPlanSourceSubscriber.subscribe.updated', { updated });
+          const updated = await this.paddleCaller.updatePrice({
+            id: price.id,
+            amount: BillingUsdAmount.fromDollars(planSource.originPrice),
+            currency: planSource.currency,
+            period: planSource.period,
+            billingPlanSourceId: planSource.billingPlanSourceId,
+          });
+          this.logger.info('BillingPlanSourceSubscriber.subscribe.updated', { updated });
         } else {
           throw new Error(`Not supported event ${JSON.stringify(message)}`);
         }
       })().catch((e) => {
-        this.logger.error('BillingSubscriptionPlanSourceSubscriber.subscribe.catch', { error: errorify(e) });
+        this.logger.error('BillingPlanSourceSubscriber.subscribe.catch', { error: errorify(e) });
       });
     });
   }

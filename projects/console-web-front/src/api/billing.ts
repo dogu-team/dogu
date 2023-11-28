@@ -1,14 +1,14 @@
 import {
+  BillingPlanInfoResponse,
   BillingPromotionCouponResponse,
-  BillingSubscriptionPlanInfoResponse,
   CallBillingApiResponse,
-  CreatePurchaseSubscriptionDto,
-  CreatePurchaseSubscriptionResponse,
-  CreatePurchaseSubscriptionWithNewCardDto,
-  CreatePurchaseSubscriptionWithNewCardResponse,
+  CreatePurchaseDto,
+  CreatePurchaseResponse,
+  CreatePurchaseWithNewCardDto,
+  CreatePurchaseWithNewCardResponse,
   GetAvailableBillingCouponsDto,
   UpdateBillingMethodResponse,
-  UpdateBillingSubscriptionPlanInfoStateDto,
+  UpdateBillingPlanInfoStateDto,
   UpdateMethodNiceDto,
   ValidateBillingCouponDto,
   ValidateBillingCouponResponse,
@@ -40,16 +40,16 @@ export const findAvailablePromotions = async (
 };
 
 export const purchasePlanWithExistingCard = async (
-  dto: CreatePurchaseSubscriptionDto,
-): Promise<CallBillingApiResponse<CreatePurchaseSubscriptionResponse>> => {
-  const { data } = await api.post<CallBillingApiResponse<CreatePurchaseSubscriptionResponse>>('/billing/purchase', dto);
+  dto: CreatePurchaseDto,
+): Promise<CallBillingApiResponse<CreatePurchaseResponse>> => {
+  const { data } = await api.post<CallBillingApiResponse<CreatePurchaseResponse>>('/billing/purchase', dto);
   return data;
 };
 
 export const purchasePlanWithNewCard = async (
-  dto: CreatePurchaseSubscriptionWithNewCardDto,
-): Promise<CallBillingApiResponse<CreatePurchaseSubscriptionWithNewCardResponse>> => {
-  const { data } = await api.post<CallBillingApiResponse<CreatePurchaseSubscriptionWithNewCardResponse>>(
+  dto: CreatePurchaseWithNewCardDto,
+): Promise<CallBillingApiResponse<CreatePurchaseWithNewCardResponse>> => {
+  const { data } = await api.post<CallBillingApiResponse<CreatePurchaseWithNewCardResponse>>(
     '/billing/purchase/new-card',
     dto,
   );
@@ -65,10 +65,10 @@ export const updatePaymentMethod = async (
 
 export const unsubscribePlan = async (
   planInfoId: string,
-  dto: UpdateBillingSubscriptionPlanInfoStateDto,
-): Promise<CallBillingApiResponse<BillingSubscriptionPlanInfoResponse>> => {
-  const { data } = await api.patch<CallBillingApiResponse<BillingSubscriptionPlanInfoResponse>>(
-    `/billing/subscription-plan-infos/${planInfoId}/unsubscribe`,
+  dto: UpdateBillingPlanInfoStateDto,
+): Promise<CallBillingApiResponse<BillingPlanInfoResponse>> => {
+  const { data } = await api.patch<CallBillingApiResponse<BillingPlanInfoResponse>>(
+    `/billing/plan-infos/${planInfoId}/unsubscribe`,
     dto,
   );
   return data;
@@ -76,10 +76,10 @@ export const unsubscribePlan = async (
 
 export const cancelUnsubscribePlan = async (
   planInfoId: string,
-  dto: UpdateBillingSubscriptionPlanInfoStateDto,
-): Promise<CallBillingApiResponse<BillingSubscriptionPlanInfoResponse>> => {
-  const { data } = await api.patch<CallBillingApiResponse<BillingSubscriptionPlanInfoResponse>>(
-    `/billing/subscription-plan-infos/${planInfoId}/cancel-unsubscribe`,
+  dto: UpdateBillingPlanInfoStateDto,
+): Promise<CallBillingApiResponse<BillingPlanInfoResponse>> => {
+  const { data } = await api.patch<CallBillingApiResponse<BillingPlanInfoResponse>>(
+    `/billing/plan-infos/${planInfoId}/cancel-unsubscribe`,
     dto,
   );
   return data;
@@ -87,10 +87,10 @@ export const cancelUnsubscribePlan = async (
 
 export const cancelChangePlanOptionOrPeriod = async (
   planInfoId: string,
-  dto: UpdateBillingSubscriptionPlanInfoStateDto,
-): Promise<CallBillingApiResponse<BillingSubscriptionPlanInfoResponse>> => {
-  const { data } = await api.patch<CallBillingApiResponse<BillingSubscriptionPlanInfoResponse>>(
-    `/billing/subscription-plan-infos/${planInfoId}/cancel-change-option-or-period`,
+  dto: UpdateBillingPlanInfoStateDto,
+): Promise<CallBillingApiResponse<BillingPlanInfoResponse>> => {
+  const { data } = await api.patch<CallBillingApiResponse<BillingPlanInfoResponse>>(
+    `/billing/plan-infos/${planInfoId}/cancel-change-option-or-period`,
     dto,
   );
   return data;
@@ -115,8 +115,8 @@ export const usePromotionCouponSWR = (
     { revalidateOnFocus: false },
   );
 
-  const hasUsingPlan = !!license?.billingOrganization.billingSubscriptionPlanInfos.find(
-    (info) => info.type === dto.subscriptionPlanType && info.state !== 'unsubscribed',
+  const hasUsingPlan = !!license?.billingOrganization.billingPlanInfos.find(
+    (info) => info.type === dto.planType && info.state !== 'unsubscribed',
   );
 
   if (!needFetch) {
@@ -127,7 +127,7 @@ export const usePromotionCouponSWR = (
     return { data: [], mutate, isLoading };
   }
 
-  if (!dto.subscriptionPlanType) {
+  if (!dto.planType) {
     return { data: [], mutate, isLoading };
   }
 

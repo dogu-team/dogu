@@ -76,7 +76,7 @@ const PromotionBanner: React.FC = () => {
   ]);
   const dto: Omit<GetAvailableBillingCouponsDto, 'type' | 'organizationId'> = {
     category: process.env.NEXT_PUBLIC_ENV === 'self-hosted' ? 'self-hosted' : 'cloud',
-    subscriptionPlanType: currentPlanType ?? undefined,
+    planType: currentPlanType ?? undefined,
   };
   const { data } = usePromotionCouponSWR(isPromotionOpenablePage, dto);
   const { t } = useTranslation('billing');
@@ -104,13 +104,11 @@ const PromotionBanner: React.FC = () => {
   return (
     <AlertBanner>
       ✨ [{t(planDescription.titleI18nKey)}]{' '}
-      {promotion.monthlyApplyCount !== null
-        ? t(
-            promotion.monthlyApplyCount > 1
-              ? 'promotionBannerMonthPluralMessage'
-              : 'promotionBannerMonthSingularMessage',
-            { month: promotion.monthlyApplyCount, discount: promotion.monthlyDiscountPercent },
-          )
+      {promotion.applyCount !== null
+        ? t(promotion.applyCount > 1 ? 'promotionBannerMonthPluralMessage' : 'promotionBannerMonthSingularMessage', {
+            month: promotion.applyCount,
+            discount: promotion.discountPercent,
+          })
         : ''}
       <StyledButton groupType={planGroupType ?? null}>{t('promotionBannerButtonText')} 🚀</StyledButton>
       {!!expiredAt && <BannerTimer expiredAt={expiredAt} />}

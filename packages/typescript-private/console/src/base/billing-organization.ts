@@ -4,9 +4,9 @@ import { IsIn, IsUUID, ValidateNested } from 'class-validator';
 import { BillingMethodPaddleBase } from '..';
 import { BillingCategory, BillingCurrency, BillingMethod } from './billing';
 import { BillingMethodNiceBase } from './billing-method-nice';
+import { BillingPlanInfoBase, BillingPlanInfoResponse } from './billing-plan-info';
+import { BillingPlanSourceBase } from './billing-plan-source';
 import { RegisterCardDto } from './billing-purchase';
-import { BillingSubscriptionPlanInfoBase, BillingSubscriptionPlanInfoResponse } from './billing-subscription-plan-info';
-import { BillingSubscriptionPlanSourceBase } from './billing-subscription-plan-source';
 
 export interface BillingOrganizationBase {
   billingOrganizationId: string;
@@ -23,8 +23,8 @@ export interface BillingOrganizationBase {
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date | null;
-  billingSubscriptionPlanInfos?: BillingSubscriptionPlanInfoBase[];
-  billingSubscriptionPlanSources?: BillingSubscriptionPlanSourceBase[];
+  billingPlanInfos?: BillingPlanInfoBase[];
+  billingPlanSources?: BillingPlanSourceBase[];
   billingMethodNice?: BillingMethodNiceBase;
   billingMethodPaddle?: BillingMethodPaddleBase;
 }
@@ -57,5 +57,5 @@ export class CreateOrUpdateBillingOrganizationWithNiceDto {
 }
 
 export interface BillingOrganizationResponse extends BillingOrganizationBase {
-  billingSubscriptionPlanInfos: BillingSubscriptionPlanInfoResponse[];
+  billingPlanInfos: BillingPlanInfoResponse[];
 }

@@ -11,8 +11,8 @@ export class BillingMethodPaddle implements BillingMethodPaddleBase {
   @Column({ type: 'uuid', unique: true })
   billingOrganizationId!: string;
 
-  @Column({ type: 'character varying', nullable: true })
-  customerId!: string | null;
+  @Column({ type: 'text' })
+  customerId!: string;
 
   @CreatedAt()
   createdAt!: Date;

@@ -1,4 +1,4 @@
-import { BillingSubscriptionGroupType, BillingSubscriptionPlanType } from '@dogu-private/console';
+import { BillingPlanType, BillingSubscriptionGroupType } from '@dogu-private/console';
 
 export interface PlanDescriptionInfo {
   titleI18nKey: string;
@@ -8,7 +8,7 @@ export interface PlanDescriptionInfo {
 }
 
 export type PlanDescriptionInfoMap = {
-  [key in BillingSubscriptionPlanType]: PlanDescriptionInfo;
+  [key in BillingPlanType]: PlanDescriptionInfo;
 };
 
 export const planDescriptionInfoMap: PlanDescriptionInfoMap = {

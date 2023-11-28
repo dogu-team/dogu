@@ -1,23 +1,15 @@
-import {
-  BillingCategory,
-  BillingCurrency,
-  BillingHistoryType,
-  BillingPeriod,
-  BillingSubscriptionPlanHistoryBase,
-  BillingSubscriptionPlanHistoryProp,
-  BillingSubscriptionPlanType,
-} from '@dogu-private/console';
+import { BillingCategory, BillingCurrency, BillingHistoryType, BillingPeriod, BillingPlanHistoryBase, BillingPlanHistoryProp, BillingPlanType } from '@dogu-private/console';
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 import { CreatedAt, DateColumn, DeletedAt, UpdatedAt } from '../decorators';
 import { BillingCoupon } from './billing-coupon.entity';
 import { BillingHistory } from './billing-history.entity';
 import { BillingOrganization } from './billing-organization.entity';
-import { BillingSubscriptionPlanSource } from './billing-subscription-plan-source.entity';
+import { BillingPlanSource } from './billing-plan-source.entity';
 
 @Entity()
-export class BillingSubscriptionPlanHistory implements BillingSubscriptionPlanHistoryBase {
+export class BillingPlanHistory implements BillingPlanHistoryBase {
   @PrimaryColumn('uuid')
-  billingSubscriptionPlanHistoryId!: string;
+  billingPlanHistoryId!: string;
 
   @Column({ type: 'uuid' })
   billingOrganizationId!: string;
@@ -29,7 +21,7 @@ export class BillingSubscriptionPlanHistory implements BillingSubscriptionPlanHi
   billingCouponId!: string | null;
 
   @Column({ type: 'integer', nullable: true })
-  billingSubscriptionPlanSourceId!: number | null;
+  billingPlanSourceId!: number | null;
 
   @Column({ type: 'double precision', nullable: true })
   discountedAmount!: number | null;
@@ -64,8 +56,8 @@ export class BillingSubscriptionPlanHistory implements BillingSubscriptionPlanHi
   @Column({ type: 'enum', enum: BillingCategory })
   category!: BillingCategory;
 
-  @Column({ type: 'enum', enum: BillingSubscriptionPlanType })
-  type!: BillingSubscriptionPlanType;
+  @Column({ type: 'enum', enum: BillingPlanType })
+  type!: BillingPlanType;
 
   @Column({ type: 'integer' })
   option!: number;
@@ -83,7 +75,7 @@ export class BillingSubscriptionPlanHistory implements BillingSubscriptionPlanHi
   historyType!: BillingHistoryType;
 
   @Column({ type: 'uuid', nullable: true })
-  purchasedBillingSubscriptionPlanHistoryId!: string | null;
+  purchasedBillingPlanHistoryId!: string | null;
 
   @Column({ type: 'double precision', nullable: true })
   refundedAmount!: number | null;
@@ -97,19 +89,19 @@ export class BillingSubscriptionPlanHistory implements BillingSubscriptionPlanHi
   @DeletedAt()
   deletedAt!: Date | null;
 
-  @ManyToOne(() => BillingOrganization, (billingOrganization) => billingOrganization.billingSubscriptionPlanHistories)
-  @JoinColumn({ name: BillingSubscriptionPlanHistoryProp.billingOrganizationId })
+  @ManyToOne(() => BillingOrganization, (billingOrganization) => billingOrganization.billingPlanHistories)
+  @JoinColumn({ name: BillingPlanHistoryProp.billingOrganizationId })
   billingOrganization?: BillingOrganization;
 
   @ManyToOne(() => BillingCoupon)
-  @JoinColumn({ name: BillingSubscriptionPlanHistoryProp.billingCouponId })
+  @JoinColumn({ name: BillingPlanHistoryProp.billingCouponId })
   billingCoupon?: BillingCoupon;
 
-  @ManyToOne(() => BillingSubscriptionPlanSource)
-  @JoinColumn({ name: BillingSubscriptionPlanHistoryProp.billingSubscriptionPlanSourceId })
-  billingSubscriptionPlanSource?: BillingSubscriptionPlanSource;
+  @ManyToOne(() => BillingPlanSource)
+  @JoinColumn({ name: BillingPlanHistoryProp.billingPlanSourceId })
+  billingPlanSource?: BillingPlanSource;
 
-  @ManyToOne(() => BillingHistory, (billingHistory) => billingHistory.billingSubscriptionPlanHistories)
-  @JoinColumn({ name: BillingSubscriptionPlanHistoryProp.billingHistoryId })
+  @ManyToOne(() => BillingHistory, (billingHistory) => billingHistory.billingPlanHistories)
+  @JoinColumn({ name: BillingPlanHistoryProp.billingHistoryId })
   billingHistory?: BillingHistory;
 }

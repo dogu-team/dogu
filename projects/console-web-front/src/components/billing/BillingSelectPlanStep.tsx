@@ -1,4 +1,4 @@
-import { BillingPlanGroupMap, BillingSubscriptionGroupType, BillingSubscriptionPlanMap } from '@dogu-private/console';
+import { BillingPlanGroupMap, BillingSubscriptionGroupType, BillingPlanMap } from '@dogu-private/console';
 import useTranslation from 'next-translate/useTranslation';
 import { Fragment, useState } from 'react';
 import { RiExternalLinkLine } from 'react-icons/ri';
@@ -84,7 +84,7 @@ const BillingSelectPlanStep: React.FC<Props> = ({}) => {
 
         <PlanWrapper style={{ justifyContent: groupType ? 'center' : 'flex-start' }}>
           {planTypes.map((planType) => {
-            const planInfo = BillingSubscriptionPlanMap[planType];
+            const planInfo = BillingPlanMap[planType];
             const descriptionInfo = planDescriptionInfoMap[planType];
             return (
               <PlanItem key={planType} planType={planType} planInfo={planInfo} descriptionInfo={descriptionInfo} />

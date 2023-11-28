@@ -85,9 +85,7 @@ export class UserInvitationService {
         } else {
           if (FeatureConfig.get('licenseModule') === 'cloud') {
             const license = await this.cloudLicenseService.getLicenseInfo(organizationId);
-            const hasUsingPlan = license.billingOrganization?.billingSubscriptionPlanInfos?.some(
-              (plan) => plan.state === 'subscribed' || plan.state === 'change-option-or-period-requested',
-            );
+            const hasUsingPlan = license.billingOrganization?.billingPlanInfos?.some((plan) => plan.state === 'subscribed' || plan.state === 'change-option-or-period-requested');
 
             if (hasUsingPlan) {
               throw new BadRequestException('Plan subscription is in progress.');

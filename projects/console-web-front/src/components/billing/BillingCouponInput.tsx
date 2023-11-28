@@ -54,7 +54,7 @@ const BillingCouponInput: React.FC<Props> = () => {
         organizationId: license.organizationId,
         code: couponInputValue,
         period: isAnnual ? 'yearly' : 'monthly',
-        subscriptionPlanType: selectedPlan.type,
+        planType: selectedPlan.type,
       });
 
       if (rv.errorMessage || !rv.body?.ok) {

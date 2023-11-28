@@ -19,7 +19,7 @@ export function createUniqueEmail(email: string): string {
   return uniqueEmail;
 }
 
-export async function createUser(manager: EntityManager, email: string, password: string | null, name: string) {
+export async function createUser(manager: EntityManager, email: string, password: string | null, name: string): Promise<User> {
   let savePassword;
   if (password) {
     savePassword = await bcrypt.hash(password, 10);
@@ -65,7 +65,7 @@ export async function createUser(manager: EntityManager, email: string, password
   return user;
 }
 
-export async function createSNSUser(manager: EntityManager, userId: UserId, userSnsId: UserSnsId, snsType: SNS_TYPE) {
+export async function createSNSUser(manager: EntityManager, userId: UserId, userSnsId: UserSnsId, snsType: SNS_TYPE): Promise<UserSns> {
   const snsUserData = manager.getRepository(UserSns).create({
     userId,
     userSnsId,
@@ -75,22 +75,13 @@ export async function createSNSUser(manager: EntityManager, userId: UserId, user
   return user;
 }
 
-// export async function createUserGitlab(manager: EntityManager, userId: UserId, gitlabUserCreatedData: GitlabUserCreatedData) {
-//   const createdGitlabUserData = manager.getRepository(UserGitlab).create({
-//     userId,
-//     gitlabUserId: gitlabUserCreatedData.userId,
-//     gitlabToken: gitlabUserCreatedData.impersonationToken,
-//   });
-//   await manager.getRepository(UserGitlab).save(createdGitlabUserData);
-// }
-
-export async function createUserEmailPreference(manager: EntityManager, userId: UserId, newsletter: boolean) {
+export async function createUserEmailPreference(manager: EntityManager, userId: UserId, newsletter: boolean): Promise<void> {
   const token = TokenService.createEmailUnsubscribeToken();
   const userEmailPreference = manager.getRepository(UserEmailPreference).create({ userId, newsletter: newsletter ? 1 : 0, token });
   await manager.getRepository(UserEmailPreference).save(userEmailPreference);
 }
 
-export async function createUserAndVerificationToken(manager: EntityManager, userId: UserId, tokenId: TokenId | null, status: USER_VERIFICATION_STATUS) {
+export async function createUserAndVerificationToken(manager: EntityManager, userId: UserId, tokenId: TokenId | null, status: USER_VERIFICATION_STATUS): Promise<void> {
   const createdUserAndVerificationTokenData = manager.getRepository(UserAndVerificationToken).create({
     userId,
     tokenId,

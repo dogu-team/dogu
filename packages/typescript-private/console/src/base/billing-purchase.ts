@@ -1,45 +1,36 @@
 import { IsFilledString } from '@dogu-tech/common';
 import { Type } from 'class-transformer';
-import { buildMessage, IsIn, IsNumber, IsOptional, IsString, IsUUID, Length, ValidateBy, ValidateNested } from 'class-validator';
+import { buildMessage, IsNumber, IsOptional, IsString, IsUUID, Length, ValidateBy, ValidateNested } from 'class-validator';
 
-import { BillingCategory, BillingCurrency, BillingPeriod, BillingSubscriptionPlanData, BillingSubscriptionPlanType } from './billing';
+import { BillingCategory, BillingCurrency, BillingPeriod, BillingPlanData, BillingPlanType } from './billing';
 import { BillingResultCode } from './billing-code';
 import { BillingCouponBase } from './billing-coupon';
 import { BillingMethodNicePublic } from './billing-method-nice';
-import { BillingSubscriptionPlanInfoResponse } from './billing-subscription-plan-info';
+import { BillingPlanInfoResponse } from './billing-plan-info';
 import { CloudLicenseBase } from './cloud-license';
 import { SelfHostedLicenseBase } from './self-hosted-license';
 
-export class BillingSubscriptionPlanPreviewDto {
-  @IsIn(BillingCategory)
-  category!: BillingCategory;
+export interface BillingPlanPreviewOptions {
+  billingPlanSourceId: number;
+  couponCode?: string;
+}
 
-  @IsIn(BillingSubscriptionPlanType)
-  type!: BillingSubscriptionPlanType;
+export class GetBillingPreviewDto implements BillingPlanPreviewOptions {
+  @IsUUID()
+  organizationId!: string;
 
   @IsNumber()
   @Type(() => Number)
-  option!: number;
-
-  @IsIn(BillingCurrency)
-  currency!: BillingCurrency;
-
-  @IsIn(BillingPeriod)
-  period!: BillingPeriod;
+  billingPlanSourceId!: number;
 
   @IsString()
   @IsOptional()
   couponCode?: string;
 }
 
-export class GetBillingSubscriptionPreviewDto extends BillingSubscriptionPlanPreviewDto {
-  @IsUUID()
-  organizationId!: string;
-}
-
 export interface RemainingPlan {
   category: BillingCategory;
-  type: BillingSubscriptionPlanType;
+  type: BillingPlanType;
   option: number;
   period: BillingPeriod;
   currency: BillingCurrency;
@@ -49,7 +40,7 @@ export interface RemainingPlan {
 
 export interface ElapsedPlan {
   category: BillingCategory;
-  type: BillingSubscriptionPlanType;
+  type: BillingPlanType;
   option: number;
   period: BillingPeriod;
   currency: BillingCurrency;
@@ -61,12 +52,12 @@ export interface CouponPreviewResponse extends BillingCouponBase {
   discountedAmount: number;
 }
 
-export interface GetBillingSubscriptionPreviewResponseFailure {
+export interface GetBillingPreviewResponseFailure {
   ok: false;
   resultCode: BillingResultCode;
 }
 
-export interface GetBillingSubscriptionPreviewResponseSuccess {
+export interface GetBillingPreviewResponseSuccess {
   ok: true;
   resultCode: BillingResultCode;
   totalPrice: number;
@@ -74,19 +65,19 @@ export interface GetBillingSubscriptionPreviewResponseSuccess {
   nextPurchasedAt: Date;
   tax: number;
   coupon: CouponPreviewResponse | null;
-  subscriptionPlan: BillingSubscriptionPlanData;
+  plan: BillingPlanData;
   elapsedPlans: ElapsedPlan[];
   remainingPlans: RemainingPlan[];
 }
 
-export type GetBillingSubscriptionPreviewResponse = GetBillingSubscriptionPreviewResponseFailure | GetBillingSubscriptionPreviewResponseSuccess;
+export type GetBillingPreviewResponse = GetBillingPreviewResponseFailure | GetBillingPreviewResponseSuccess;
 
-export class CreatePurchaseSubscriptionDto extends GetBillingSubscriptionPreviewDto {}
+export class CreatePurchaseDto extends GetBillingPreviewDto {}
 
-export interface CreatePurchaseSubscriptionResponse {
+export interface CreatePurchaseResponse {
   ok: boolean;
   resultCode: BillingResultCode;
-  plan: BillingSubscriptionPlanInfoResponse | null;
+  plan: BillingPlanInfoResponse | null;
   license: CloudLicenseBase | SelfHostedLicenseBase | null;
   niceResultCode: string | null;
 }
@@ -124,27 +115,37 @@ export class RegisterCardDto {
   cardPasswordFirst2Digits!: string;
 }
 
-export class CreatePurchaseSubscriptionWithNewCardDto extends CreatePurchaseSubscriptionDto {
+export class CreatePurchaseWithNewCardDto extends CreatePurchaseDto {
   @ValidateNested()
   @Type(() => RegisterCardDto)
   registerCard!: RegisterCardDto;
 }
 
-export interface CreatePurchaseSubscriptionWithNewCardResponse {
+export interface CreatePurchaseWithNewCardResponse {
   ok: boolean;
   resultCode: BillingResultCode;
-  plan: BillingSubscriptionPlanInfoResponse | null;
+  plan: BillingPlanInfoResponse | null;
   method: BillingMethodNicePublic | null;
   license: CloudLicenseBase | SelfHostedLicenseBase | null;
   niceResultCode: string | null;
 }
 
-export class RefundSubscriptionPlanDto {
+export class RefundPlanDto {
   @IsUUID()
-  billingSubscriptionPlanHistoryId!: string;
+  billingPlanHistoryId!: string;
 }
 
 export class RefundFullDto {
   @IsUUID()
   billingHistoryId!: string;
+}
+
+export class PrecheckoutDto extends GetBillingPreviewDto {}
+
+export interface PrecheckoutResponse {
+  paddle: {
+    customerId: string;
+    priceId: string;
+    discountId: string | null;
+  };
 }

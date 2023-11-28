@@ -65,4 +65,12 @@ export class BillingCouponService {
       return await createBillingCoupon(context, dto);
     });
   }
+
+  async findByCouponCode(couponCode: string): Promise<BillingCoupon | null> {
+    return await this.dataSource.getRepository(BillingCoupon).findOne({
+      where: {
+        code: couponCode,
+      },
+    });
+  }
 }

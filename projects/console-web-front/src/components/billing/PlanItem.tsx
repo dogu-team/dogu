@@ -3,8 +3,8 @@ import {
   BillingCurrency,
   BillingPeriod,
   BillingPromotionCouponResponse,
-  BillingSubscriptionPlanOptionInfo,
-  BillingSubscriptionPlanType,
+  BillingPlanOptionInfo,
+  BillingPlanType,
 } from '@dogu-private/console';
 import { Button, Divider, Select, SelectProps } from 'antd';
 import useTranslation from 'next-translate/useTranslation';
@@ -24,8 +24,8 @@ import useAuthStore from '../../stores/auth';
 import api from '../../api';
 
 interface Props {
-  planType: BillingSubscriptionPlanType;
-  planInfo: BillingSubscriptionPlanOptionInfo;
+  planType: BillingPlanType;
+  planInfo: BillingPlanOptionInfo;
   descriptionInfo: PlanDescriptionInfo;
 }
 
@@ -40,7 +40,7 @@ const PlanItem: React.FC<Props> = ({ planType, planInfo, descriptionInfo }) => {
   );
   const updateSelectedPlan = useBillingPlanPurchaseStore((state) => state.updateSelectedPlan);
   const { data, isLoading } = usePromotionCouponSWR(true, {
-    subscriptionPlanType: planType,
+    planType: planType,
     category: planInfo.category,
   });
   const router = useRouter();
@@ -108,6 +108,7 @@ const PlanItem: React.FC<Props> = ({ planType, planInfo, descriptionInfo }) => {
         type: planType,
         option: Number(selectedValue) ?? 0,
         category: planInfo.category,
+        billingPlanSourceId: planInfo.optionMap[Number(selectedValue)][currency][isAnnual ? 'yearly' : 'monthly'].id,
       });
       if (shouldGoAnnual) {
         // annual plan is not available for now
@@ -120,15 +121,10 @@ const PlanItem: React.FC<Props> = ({ planType, planInfo, descriptionInfo }) => {
 
       try {
         api
-          .get('/billing/purchase/preview/paddle', {
+          .get('/billing/purchase/precheckout', {
             params: {
               organizationId: license.organizationId,
-              category: planInfo.category,
-              type: planType,
-              option: Number(selectedValue),
-              currency,
-              period: isAnnual ? 'yearly' : 'monthly',
-              email: me.email,
+              billingPlanSourceId: 3,
             },
           })
           .then((res) => {
@@ -138,15 +134,15 @@ const PlanItem: React.FC<Props> = ({ planType, planInfo, descriptionInfo }) => {
                 allowLogout: false,
                 displayMode: 'overlay',
               },
-              transactionId: 'txn_01hg07m4fqxn8j4p44axw2d28m',
-              // items: [v
-              //   {
-              //     priceId: res.data.body.value.priceId,
-              //   },
-              // ],
-              // customer: {
-              //   id: res.data.body.value.customerId,
-              // },
+              items: [
+                {
+                  priceId: res.data.body.paddle.priceId,
+                },
+              ],
+              customer: {
+                id: res.data.body.paddle.customerId,
+              },
+              discountId: res.data.body.paddle.discountId,
             });
           });
       } catch (e) {
@@ -165,7 +161,7 @@ const PlanItem: React.FC<Props> = ({ planType, planInfo, descriptionInfo }) => {
 
   const promotionCoupon: BillingPromotionCouponResponse | undefined = data?.[0];
   const toFixed = (value: number): number => parseFloat(value.toFixed(2));
-  const couponFactor = promotionCoupon ? toFixed(1 - (promotionCoupon.monthlyDiscountPercent ?? 0) / 100) : 1;
+  const couponFactor = promotionCoupon ? toFixed(1 - (promotionCoupon.discountPercent ?? 0) / 100) : 1;
   const isDiscounted = couponFactor < 1;
   const isContactUs = selectedValue === CONTACT_US_OPTION_KEY;
 

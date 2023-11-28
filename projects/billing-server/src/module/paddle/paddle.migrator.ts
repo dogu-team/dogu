@@ -1,11 +1,11 @@
-import { BillingSubscriptionPlanMap, BillingUsdAmount, isBillingSubscriptionPlanType, unwrap } from '@dogu-private/console';
+import { BillingPlanMap, BillingUsdAmount, isBillingPlanType } from '@dogu-private/console';
 import { stringify } from '@dogu-tech/common';
 import { Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import _ from 'lodash';
 import { DataSource } from 'typeorm';
 import { BillingCoupon } from '../../db/entity/billing-coupon.entity';
-import { BillingSubscriptionPlanSource } from '../../db/entity/billing-subscription-plan-source.entity';
+import { BillingPlanSource } from '../../db/entity/billing-plan-source.entity';
 import { DoguLogger } from '../logger/logger';
 import { PaddleCaller } from './paddle.caller';
 import { Paddle } from './paddle.types';
@@ -27,8 +27,8 @@ export class PaddleMigrator {
   }
 
   private async migrateProducts(): Promise<void> {
-    const origins: Paddle.ProductOrigin[] = _.entries(BillingSubscriptionPlanMap).map(([type, optionInfo]) => {
-      if (!isBillingSubscriptionPlanType(type)) {
+    const origins: Paddle.ProductOrigin[] = _.entries(BillingPlanMap).map(([type, optionInfo]) => {
+      if (!isBillingPlanType(type)) {
         throw new Error(`Invalid subscription plan type. ${stringify(type)}`);
       }
 
@@ -40,7 +40,7 @@ export class PaddleMigrator {
       };
     });
 
-    const products = await this.paddleCaller.listProductsAll().then(unwrap);
+    const products = await this.paddleCaller.listProductsAll();
     for (const origin of origins) {
       const product = products.find((product) => matchProduct(origin, product));
       if (product) {
@@ -51,22 +51,19 @@ export class PaddleMigrator {
         this.logger.debug('Paddle product matched.', {
           id: product.id,
           name: product.name,
-          subscriptionPlanType: product.custom_data?.subscriptionPlanType,
+          planType: product.custom_data?.planType,
           category: product.custom_data?.category,
         });
 
         if (product.name !== origin.name) {
-          const updated = await this.paddleCaller
-            .updateProduct({
-              productId: product.id,
-              name: origin.name,
-            })
-            .then(unwrap);
-
+          const updated = await this.paddleCaller.updateProduct({
+            productId: product.id,
+            name: origin.name,
+          });
           this.logger.info('Paddle product updated.', {
             id: updated.id,
             name: updated.name,
-            subscriptionPlanType: updated.custom_data?.subscriptionPlanType,
+            planType: updated.custom_data?.planType,
             category: updated.custom_data?.category,
           });
         }
@@ -74,14 +71,11 @@ export class PaddleMigrator {
         continue;
       }
 
-      const created = await this.paddleCaller
-        .createProduct({
-          type: origin.type,
-          category: origin.category,
-          name: origin.name,
-        })
-        .then(unwrap);
-
+      const created = await this.paddleCaller.createProduct({
+        type: origin.type,
+        category: origin.category,
+        name: origin.name,
+      });
       if (!created.id) {
         throw new Error(`Product id is not defined. ${stringify(created)}`);
       }
@@ -89,20 +83,20 @@ export class PaddleMigrator {
       this.logger.info('Paddle product created.', {
         id: created.id,
         name: created.name,
-        subscriptionPlanType: created.custom_data?.subscriptionPlanType,
+        planType: created.custom_data?.planType,
         category: created.custom_data?.category,
       });
     }
   }
 
   private async migratePrices(): Promise<void> {
-    const sources = await this.dataSource.getRepository(BillingSubscriptionPlanSource).find({
+    const sources = await this.dataSource.getRepository(BillingPlanSource).find({
       order: {
-        billingSubscriptionPlanSourceId: 'asc',
+        billingPlanSourceId: 'asc',
       },
     });
 
-    const products = await this.paddleCaller.listProductsAll().then(unwrap);
+    const products = await this.paddleCaller.listProductsAll();
     for (const product of products) {
       const { category, type } = product.custom_data ?? {};
       if (!category) {
@@ -124,16 +118,13 @@ export class PaddleMigrator {
           continue;
         }
 
-        const created = await this.paddleCaller
-          .createPrice({
-            productId: product.id,
-            billingSubscriptionPlanSourceId: filteredSource.billingSubscriptionPlanSourceId,
-            amount: BillingUsdAmount.fromDollars(filteredSource.originPrice),
-            currency: filteredSource.currency,
-            period: filteredSource.period,
-          })
-          .then(unwrap);
-
+        const created = await this.paddleCaller.createPrice({
+          productId: product.id,
+          billingPlanSourceId: filteredSource.billingPlanSourceId,
+          amount: BillingUsdAmount.fromDollars(filteredSource.originPrice),
+          currency: filteredSource.currency,
+          period: filteredSource.period,
+        });
         if (!created.id) {
           throw new Error(`Price id is not defined. ${stringify(created)}`);
         }
@@ -145,7 +136,7 @@ export class PaddleMigrator {
           unitPriceCurrency: created.unit_price?.currency_code,
           billingCycleInterval: created.billing_cycle?.interval,
           billingCycleFrequency: created.billing_cycle?.frequency,
-          billingSubscriptionPlanSourceId: created.custom_data?.billingSubscriptionPlanSourceId,
+          billingPlanSourceId: created.custom_data?.billingPlanSourceId,
         });
       }
     }
@@ -157,72 +148,34 @@ export class PaddleMigrator {
         createdAt: 'asc',
       },
     });
-    const discounts = await this.paddleCaller.listDiscountsAll().then(unwrap);
+    const discounts = await this.paddleCaller.listDiscountsAll();
     for (const coupon of coupons) {
       const discount = discounts.find((discount) => matchDiscount(coupon, discount));
       if (discount) {
         continue;
       }
 
-      if (coupon.monthlyDiscountPercent !== null) {
-        const created = await this.paddleCaller
-          .createDiscount({
-            code: coupon.code,
-            type: coupon.type,
-            period: 'monthly',
-            discountPercent: coupon.monthlyDiscountPercent,
-            applyCount: coupon.monthlyApplyCount,
-            expiredAt: coupon.expiredAt,
-            billingCouponId: coupon.billingCouponId,
-          })
-          .then(unwrap);
+      const created = await this.paddleCaller.createDiscount({
+        code: coupon.code,
+        type: coupon.type,
+        period: 'monthly',
+        discountPercent: coupon.discountPercent,
+        applyCount: coupon.applyCount,
+        expiredAt: coupon.expiredAt,
+        billingCouponId: coupon.billingCouponId,
+      });
 
-        if (!created.id) {
-          throw new Error(`Discount id is not defined. ${stringify(created)}`);
-        }
-
-        this.logger.info('Paddle discount created.', {
-          id: created.id,
-          code: created.code,
-          type: created.type,
-          amount: created.amount,
-          maximum_recurring_intervals: created.maximum_recurring_intervals,
-          expires_at: created.expires_at,
-          billingCouponId: created.custom_data?.billingCouponId,
-          billingCouponType: created.custom_data?.type,
-          period: created.custom_data?.period,
-        });
-      } else if (coupon.yearlyDiscountPercent !== null) {
-        const created = await this.paddleCaller
-          .createDiscount({
-            code: coupon.code,
-            type: coupon.type,
-            period: 'yearly',
-            discountPercent: coupon.yearlyDiscountPercent,
-            applyCount: coupon.yearlyApplyCount,
-            expiredAt: coupon.expiredAt,
-            billingCouponId: coupon.billingCouponId,
-          })
-          .then(unwrap);
-
-        if (!created.id) {
-          throw new Error(`Discount id is not defined. ${stringify(created)}`);
-        }
-
-        this.logger.info('Paddle discount created.', {
-          id: created.id,
-          code: created.code,
-          type: created.type,
-          amount: created.amount,
-          maximum_recurring_intervals: created.maximum_recurring_intervals,
-          expires_at: created.expires_at,
-          billingCouponId: created.custom_data?.billingCouponId,
-          billingCouponType: created.custom_data?.type,
-          period: created.custom_data?.period,
-        });
-      } else {
-        throw new Error(`Invalid coupon. ${stringify(coupon)}`);
-      }
+      this.logger.info('Paddle discount created.', {
+        id: created.id,
+        code: created.code,
+        type: created.type,
+        amount: created.amount,
+        maximum_recurring_intervals: created.maximum_recurring_intervals,
+        expires_at: created.expires_at,
+        billingCouponId: created.custom_data?.billingCouponId,
+        billingCouponType: created.custom_data?.type,
+        period: created.custom_data?.period,
+      });
     }
   }
 }

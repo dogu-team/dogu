@@ -3,11 +3,10 @@ import { PaddleCaller } from './paddle.caller';
 import { PaddleController } from './paddle.controller';
 import { PaddleMigrator } from './paddle.migrator';
 import { PaddleNotificationService } from './paddle.notification.service';
-import { PaddleService } from './paddle.service';
 
 @Module({
   controllers: [PaddleController],
-  providers: [PaddleNotificationService, PaddleCaller, PaddleMigrator, PaddleService],
-  exports: [PaddleCaller, PaddleService, PaddleMigrator],
+  providers: [PaddleNotificationService, PaddleCaller, PaddleMigrator],
+  exports: [PaddleCaller, PaddleMigrator],
 })
 export class PaddleModule {}

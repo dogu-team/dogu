@@ -21,7 +21,7 @@ export function matchPrice(match: Paddle.PriceMatch, price: Paddle.Price): boole
     return false;
   }
 
-  if (match.billingSubscriptionPlanSourceId !== price.custom_data?.billingSubscriptionPlanSourceId) {
+  if (match.billingPlanSourceId !== price.custom_data?.billingPlanSourceId) {
     return false;
   }
 

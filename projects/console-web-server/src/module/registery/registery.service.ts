@@ -131,7 +131,7 @@ export class RegisteryService {
       }
 
       if (FeatureConfig.get('licenseModule') === 'cloud') {
-        await this.cloudLicenseService.createLicense({ organizationId: organization.organizationId });
+        await this.cloudLicenseService.createLicense({ organizationId: organization.organizationId, email: user.email });
       }
 
       // create user email preference
@@ -281,7 +281,7 @@ export class RegisteryService {
       const refreshToken = await this.authService.createRefreshToken(manager, user.userId);
 
       if (FeatureConfig.get('licenseModule') === 'cloud') {
-        await this.cloudLicenseService.createLicense({ organizationId: organization.organizationId });
+        await this.cloudLicenseService.createLicense({ organizationId: organization.organizationId, email: user.email });
       }
 
       const rv: RegisteryWithOrganizationIdResult = {

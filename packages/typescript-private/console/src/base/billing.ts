@@ -55,17 +55,17 @@ export const BillingPeriod = ['monthly', 'yearly'] as const;
 export type BillingPeriod = (typeof BillingPeriod)[number];
 export const isBillingPeriod = (value: unknown): value is BillingPeriod => BillingPeriod.includes(value as BillingPeriod);
 
-export type BillingSubscriptionPlanPriceSource = {
+export type BillingPlanPriceSource = {
   originPrice: number;
   id: number;
 };
-export type BillingSubscriptionPlanPrice = Record<BillingPeriod, BillingSubscriptionPlanPriceSource>;
-export type BillingSubscriptionPlanPriceMap = Record<BillingCurrency, BillingSubscriptionPlanPrice>;
+export type BillingPlanPrice = Record<BillingPeriod, BillingPlanPriceSource>;
+export type BillingPlanPriceMap = Record<BillingCurrency, BillingPlanPrice>;
 
-export interface BillingSubscriptionPlanOptionInfo {
+export interface BillingPlanOptionInfo {
   category: BillingCategory;
   name: string;
-  optionMap: Record<number, BillingSubscriptionPlanPriceMap>;
+  optionMap: Record<number, BillingPlanPriceMap>;
 }
 
 export const BillingSubscriptionGroupType = ['live-testing-group'] as const;
@@ -73,15 +73,15 @@ export type BillingSubscriptionGroupType = (typeof BillingSubscriptionGroupType)
 export const isBillingSubscriptionGroupType = (value: unknown): value is BillingSubscriptionGroupType =>
   BillingSubscriptionGroupType.includes(value as BillingSubscriptionGroupType);
 
-export const BillingSubscriptionPlanType = ['live-testing'] as const;
-export type BillingSubscriptionPlanType = (typeof BillingSubscriptionPlanType)[number];
-export const isBillingSubscriptionPlanType = (value: unknown): value is BillingSubscriptionPlanType => BillingSubscriptionPlanType.includes(value as BillingSubscriptionPlanType);
+export const BillingPlanType = ['live-testing'] as const;
+export type BillingPlanType = (typeof BillingPlanType)[number];
+export const isBillingPlanType = (value: unknown): value is BillingPlanType => BillingPlanType.includes(value as BillingPlanType);
 
-export const BillingPlanGroupMap: Record<BillingSubscriptionGroupType, BillingSubscriptionPlanType[]> = {
+export const BillingPlanGroupMap: Record<BillingSubscriptionGroupType, BillingPlanType[]> = {
   'live-testing-group': ['live-testing'],
 };
 
-export const BillingSubscriptionPlanMap: Record<BillingSubscriptionPlanType, BillingSubscriptionPlanOptionInfo> = {
+export const BillingPlanMap: Record<BillingPlanType, BillingPlanOptionInfo> = {
   'live-testing': {
     category: 'cloud',
     name: 'Live Testing',
@@ -360,9 +360,9 @@ export interface CallBillingApiResponse<B = Record<string, unknown>> {
   errorMessage?: string;
 }
 
-export interface BillingSubscriptionPlanData {
+export interface BillingPlanData {
   category: BillingCategory;
-  type: BillingSubscriptionPlanType;
+  type: BillingPlanType;
   option: number;
   currency: BillingCurrency;
   period: BillingPeriod;

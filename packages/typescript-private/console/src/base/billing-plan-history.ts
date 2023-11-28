@@ -1,13 +1,13 @@
 import { propertiesOf } from '@dogu-tech/common';
-import { BillingPeriod, BillingSubscriptionPlanData } from './billing';
+import { BillingPeriod, BillingPlanData } from './billing';
 import { BillingCouponBase } from './billing-coupon';
 import { BillingHistoryBase, BillingHistoryType } from './billing-history';
 import { BillingOrganizationBase } from './billing-organization';
-import { BillingSubscriptionPlanSourceBase } from './billing-subscription-plan-source';
+import { BillingPlanSourceBase } from './billing-plan-source';
 
-export interface BillingSubscriptionPlanHistoryData extends BillingSubscriptionPlanData {
+export interface BillingPlanHistoryData extends BillingPlanData {
   billingCouponId: string | null;
-  billingSubscriptionPlanSourceId: number | null;
+  billingPlanSourceId: number | null;
   discountedAmount: number | null;
   purchasedAmount: number | null;
   startedAt: Date | null;
@@ -20,20 +20,20 @@ export interface BillingSubscriptionPlanHistoryData extends BillingSubscriptionP
   previousPeriod: BillingPeriod | null;
 }
 
-export interface BillingSubscriptionPlanHistoryBase extends BillingSubscriptionPlanHistoryData {
-  billingSubscriptionPlanHistoryId: string;
+export interface BillingPlanHistoryBase extends BillingPlanHistoryData {
+  billingPlanHistoryId: string;
   billingOrganizationId: string;
   billingHistoryId: string;
   historyType: BillingHistoryType;
-  purchasedBillingSubscriptionPlanHistoryId: string | null;
+  purchasedBillingPlanHistoryId: string | null;
   refundedAmount: number | null;
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date | null;
   billingOrganization?: BillingOrganizationBase;
   billingCoupon?: BillingCouponBase;
-  billingSubscriptionPlanSource?: BillingSubscriptionPlanSourceBase;
+  billingPlanSource?: BillingPlanSourceBase;
   billingHistory?: BillingHistoryBase;
 }
 
-export const BillingSubscriptionPlanHistoryProp = propertiesOf<BillingSubscriptionPlanHistoryBase>();
+export const BillingPlanHistoryProp = propertiesOf<BillingPlanHistoryBase>();

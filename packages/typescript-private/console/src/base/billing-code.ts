@@ -4,7 +4,6 @@ export const BillingResultCodeMap = {
   // common
   ok: 0,
   'unexpected-error': 1,
-  'division-by-zero': 2,
 
   // organization
   'organization-not-found': 100,
@@ -13,7 +12,7 @@ export const BillingResultCodeMap = {
   'organization-subscription-monthly-expired-at-not-found': 103,
   'organization-subscription-yearly-started-at-not-found': 105,
   'organization-subscription-yearly-expired-at-not-found': 106,
-  'organization-subscription-plan-infos-not-found': 107,
+  'organization-plan-infos-not-found': 107,
   'organization-method-paddle-not-found': 108,
 
   // coupon
@@ -21,23 +20,23 @@ export const BillingResultCodeMap = {
   'coupon-expired': 201,
   'coupon-already-used': 202,
   'coupon-all-used': 203,
-  'coupon-invalid-monthly-apply-count': 204,
-  'coupon-invalid-monthly-discount-percent': 205,
-  'coupon-invalid-yearly-apply-count': 206,
-  'coupon-invalid-yearly-discount-percent': 207,
-  'coupon-subscription-plan-type-not-matched': 208,
+  'coupon-invalid-discount-percent': 204,
+  'coupon-plan-type-not-matched': 205,
+  'coupon-period-not-matched': 206,
+  'coupon-invalid-apply-count': 207,
 
-  // subscription plan
-  'subscription-plan-not-found': 300,
-  'subscription-plan-currency-not-found': 301,
-  'subscription-plan-period-not-found': 302,
-  'subscription-plan-type-not-found': 303,
-  'subscription-plan-option-not-found': 304,
-  'subscription-plan-category-not-matched': 305,
-  'subscription-plan-currency-not-matched': 306,
-  'subscription-plan-duplicated': 307,
-  'subscription-plan-unsubscribed': 308,
-  'subscription-plan-price-source-not-found': 309,
+  // plan
+  'plan-not-found': 300,
+  'plan-currency-not-found': 301,
+  'plan-period-not-found': 302,
+  'plan-type-not-found': 303,
+  'plan-option-not-found': 304,
+  'plan-category-not-matched': 305,
+  'plan-currency-not-matched': 306,
+  'plan-duplicated': 307,
+  'plan-unsubscribed': 308,
+  'plan-price-source-not-found': 309,
+  'plan-source-not-found': 310,
 
   // cloud license
   'cloud-license-not-found': 400,
@@ -58,23 +57,6 @@ export const BillingResultCodeMap = {
   'method-nice-status-not-paid': 609,
   'method-nice-status-not-canceled-or-partial-cancelled': 610,
   'method-nice-not-found': 611,
-
-  // method paddle
-  'method-paddle-list-events-failed': 700,
-  'method-paddle-get-customer-failed': 701,
-  'method-paddle-create-customer-failed': 702,
-  'method-paddle-customer-id-not-found': 703,
-  'method-paddle-update-customer-failed': 704,
-  'method-paddle-list-products-failed': 705,
-  'method-paddle-create-product-failed': 706,
-  'method-paddle-create-price-failed': 707,
-  'method-paddle-price-id-not-found': 708,
-  'method-paddle-price-not-found': 709,
-  'method-paddle-update-product-failed': 710,
-  'method-paddle-update-price-failed': 711,
-  'method-paddle-list-discounts-failed': 712,
-  'method-paddle-create-discount-failed': 713,
-  'method-paddle-update-discount-failed': 714,
 };
 
 export type BillingReason = keyof typeof BillingResultCodeMap;

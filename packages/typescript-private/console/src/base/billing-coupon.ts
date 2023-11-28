@@ -2,7 +2,7 @@ import { IsFilledString, propertiesOf } from '@dogu-tech/common';
 import { IsIn, IsNumber, IsOptional, IsUUID } from 'class-validator';
 import { BillingCategory } from '..';
 
-import { BillingPeriod, BillingSubscriptionPlanType } from './billing';
+import { BillingPeriod, BillingPlanType } from './billing';
 import { BillingResultCode } from './billing-code';
 
 export const BillingCouponType = ['basic', 'promotion'] as const;
@@ -16,27 +16,23 @@ export interface BillingCouponBase {
   /**
    * @description Available only for certain subscription plan type. If null, it is available for all subscription plan types.
    */
-  subscriptionPlanType: BillingSubscriptionPlanType | null;
+  planType: BillingPlanType | null;
+
+  period: BillingPeriod;
 
   /**
    * @example 10 10% discount
    */
-  monthlyDiscountPercent: number | null;
+  discountPercent: number;
 
   /**
    * @description null unlimited apply
    */
-  monthlyApplyCount: number | null;
+  applyCount: number | null;
 
   /**
-   * @example 10 10% discount
+   * @description null unlimited available count
    */
-  yearlyDiscountPercent: number | null;
-
-  /**
-   * @description null unlimited apply
-   */
-  yearlyApplyCount: number | null;
   remainingAvailableCount: number | null;
 
   /**
@@ -60,9 +56,9 @@ export class ValidateBillingCouponDto {
   @IsIn(BillingPeriod)
   period!: BillingPeriod;
 
-  @IsIn(BillingSubscriptionPlanType)
+  @IsIn(BillingPlanType)
   @IsOptional()
-  subscriptionPlanType?: BillingSubscriptionPlanType;
+  planType?: BillingPlanType;
 }
 
 export interface ValidateBillingCouponResponse {
@@ -82,8 +78,8 @@ export class GetAvailableBillingCouponsDto {
   category!: BillingCategory;
 
   @IsOptional()
-  @IsIn(BillingSubscriptionPlanType)
-  subscriptionPlanType?: BillingSubscriptionPlanType;
+  @IsIn(BillingPlanType)
+  planType?: BillingPlanType;
 }
 
 export class CreateBillingCouponDto {
@@ -94,31 +90,22 @@ export class CreateBillingCouponDto {
   type!: BillingCouponType;
 
   @IsOptional()
-  @IsIn(BillingSubscriptionPlanType)
-  subscriptionPlanType?: BillingSubscriptionPlanType;
+  @IsIn(BillingPlanType)
+  planType?: BillingPlanType;
 
-  @IsOptional()
-  @IsNumber()
-  monthlyDiscountPercent?: number;
+  @IsIn(BillingPeriod)
+  period!: BillingPeriod;
 
-  @IsOptional()
   @IsNumber()
-  monthlyApplyCount?: number;
+  discountPercent!: number;
 
-  @IsOptional()
   @IsNumber()
-  yearlyDiscountPercent?: number;
+  @IsOptional()
+  applyCount?: number;
 
-  @IsOptional()
   @IsNumber()
-  yearlyApplyCount?: number;
-
   @IsOptional()
-  @IsNumber()
-  remainingAvailableCount!: number;
+  remainingAvailableCount?: number;
 }
 
-export type BillingPromotionCouponResponse = Pick<
-  BillingCouponBase,
-  'code' | 'type' | 'monthlyApplyCount' | 'yearlyApplyCount' | 'monthlyDiscountPercent' | 'yearlyDiscountPercent' | 'subscriptionPlanType' | 'createdAt' | 'expiredAt'
->;
+export type BillingPromotionCouponResponse = Pick<BillingCouponBase, 'code' | 'type' | 'period' | 'applyCount' | 'discountPercent' | 'planType' | 'createdAt' | 'expiredAt'>;

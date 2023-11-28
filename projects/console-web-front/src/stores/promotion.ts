@@ -1,16 +1,16 @@
-import { BillingSubscriptionPlanType } from '@dogu-private/console';
+import { BillingPlanType } from '@dogu-private/console';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
 export interface PromotionStore {
   organizationId: string | null;
-  promotionCloseMap: { [key in BillingSubscriptionPlanType]?: string };
-  currentPlanType: BillingSubscriptionPlanType | null;
+  promotionCloseMap: { [key in BillingPlanType]?: string };
+  currentPlanType: BillingPlanType | null;
   isPromotionOpenablePage: boolean;
-  updateCurrentPlanType: (planType: BillingSubscriptionPlanType | null) => void;
+  updateCurrentPlanType: (planType: BillingPlanType | null) => void;
   updateIsPromotionOpenablePage: (isPromotionOpenablePage: boolean) => void;
   resetWithOrganizationId: (organizationId: string | null) => void;
-  savePromotionCloseTime: (planType: BillingSubscriptionPlanType) => void;
+  savePromotionCloseTime: (planType: BillingPlanType) => void;
 }
 
 const usePromotionStore = create<PromotionStore>()(
@@ -20,7 +20,7 @@ const usePromotionStore = create<PromotionStore>()(
       currentPlanType: null,
       isPromotionOpenablePage: false,
       promotionCloseMap: {},
-      updateCurrentPlanType: (planType: BillingSubscriptionPlanType | null) => {
+      updateCurrentPlanType: (planType: BillingPlanType | null) => {
         set({ currentPlanType: planType });
       },
       updateIsPromotionOpenablePage: (isPromotionOpenablePage: boolean) => {
@@ -29,7 +29,7 @@ const usePromotionStore = create<PromotionStore>()(
       resetWithOrganizationId: (organizationId: string | null) => {
         set({ organizationId, currentPlanType: null, promotionCloseMap: {} });
       },
-      savePromotionCloseTime: (planType: BillingSubscriptionPlanType) => {
+      savePromotionCloseTime: (planType: BillingPlanType) => {
         set((state) => {
           const promotionCloseMap = { ...state.promotionCloseMap };
           promotionCloseMap[planType] = new Date().toISOString();

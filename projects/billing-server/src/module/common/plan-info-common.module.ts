@@ -1,42 +1,90 @@
-import { BillingSubscriptionPlanInfoResponse, BillingSubscriptionPlanType } from '@dogu-private/console';
+import { BillingOrganizationResponse, BillingPlanInfoResponse, BillingPlanType } from '@dogu-private/console';
 import { assertUnreachable } from '@dogu-tech/common';
 import { BillingOrganization } from '../../db/entity/billing-organization.entity';
-import { BillingSubscriptionPlanInfo } from '../../db/entity/billing-subscription-plan-info.entity';
+import { BillingPlanInfo } from '../../db/entity/billing-plan-info.entity';
+import { Paddle } from '../paddle/paddle.types';
 
-export module BillingSubscriptionPlanInfoCommonModule {
-  export function createPlanInfoResponse(billingOrganization: BillingOrganization, planInfo: BillingSubscriptionPlanInfo): BillingSubscriptionPlanInfoResponse {
-    const response = planInfo as BillingSubscriptionPlanInfoResponse;
-    const monthlyExpiredAt = billingOrganization.subscriptionMonthlyExpiredAt ?? null;
-    const yearlyExpiredAt = billingOrganization.subscriptionYearlyExpiredAt ?? null;
+export class BillingPlanInfoResponseBuilder {
+  constructor(
+    private readonly billingOrganization: BillingOrganization,
+    private readonly paddleSubscriptions: Paddle.Subscription[],
+  ) {}
 
+  build(planInfo: BillingPlanInfo): BillingPlanInfoResponse {
+    const { billingOrganization, paddleSubscriptions } = this;
+    const { subscriptionMonthlyExpiredAt, subscriptionYearlyExpiredAt, billingMethod } = billingOrganization;
+    const response = planInfo as BillingPlanInfoResponse;
     if (planInfo.state === 'unsubscribed') {
-      response.monthlyExpiredAt = null;
-      response.yearlyExpiredAt = null;
+      response.expiredAt = null;
     } else {
-      switch (response.period) {
-        case 'monthly': {
-          response.monthlyExpiredAt = monthlyExpiredAt;
+      switch (billingMethod) {
+        case 'nice': {
+          switch (response.period) {
+            case 'monthly': {
+              response.expiredAt = subscriptionMonthlyExpiredAt;
+              break;
+            }
+            case 'yearly': {
+              response.expiredAt = subscriptionYearlyExpiredAt;
+              break;
+            }
+            default: {
+              assertUnreachable(response.period);
+            }
+          }
           break;
         }
-        case 'yearly': {
-          response.yearlyExpiredAt = yearlyExpiredAt;
+        case 'paddle': {
+          const paddleSubscription = paddleSubscriptions.find((subscription) => subscription.custom_data?.billingPlanInfoId === planInfo.billingPlanInfoId);
+          if (!paddleSubscription) {
+            throw new Error(`Paddle subscription not found. billingPlanInfoId: ${planInfo.billingPlanInfoId}`);
+          }
+          if (!paddleSubscription.current_billing_period) {
+            throw new Error(`Paddle subscription currentBillingPeriod not found. billingPlanInfoId: ${planInfo.billingPlanInfoId}`);
+          }
+          if (!paddleSubscription.current_billing_period.ends_at) {
+            throw new Error(`Paddle subscription expiredAt not found. billingPlanInfoId: ${planInfo.billingPlanInfoId}`);
+          }
+          response.expiredAt = new Date(paddleSubscription.current_billing_period.ends_at);
+          break;
+        }
+        case null: {
           break;
         }
         default: {
-          assertUnreachable(response.period);
+          assertUnreachable(billingMethod);
         }
       }
     }
 
     return response;
   }
+}
 
-  export const planTypeDescriptionMap: Record<BillingSubscriptionPlanType, string> = {
+export class BillingOrganizationResponseBuilder {
+  constructor(
+    private readonly billingOrganization: BillingOrganization,
+    private readonly paddleSubscriptions: Paddle.Subscription[],
+  ) {}
+
+  build(): BillingOrganizationResponse {
+    const { billingOrganization, paddleSubscriptions } = this;
+    const planInfoResponseBuilder = new BillingPlanInfoResponseBuilder(billingOrganization, paddleSubscriptions);
+    const billingPlanInfos = billingOrganization.billingPlanInfos ?? [];
+    billingOrganization.billingPlanInfos = billingPlanInfos.map((planInfo) => {
+      return planInfoResponseBuilder.build(planInfo);
+    });
+    return billingOrganization as BillingOrganizationResponse;
+  }
+}
+
+export namespace BillingPlanInfoCommonModule {
+  export const planTypeDescriptionMap: Record<BillingPlanType, string> = {
     'live-testing': 'Live Testing',
   };
 
   export const planOptionDescriptionMap: Record<
-    BillingSubscriptionPlanType,
+    BillingPlanType,
     {
       singular: string;
       plural: string;

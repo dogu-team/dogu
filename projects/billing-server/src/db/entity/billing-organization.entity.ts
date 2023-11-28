@@ -3,9 +3,9 @@ import { Column, Entity, OneToMany, OneToOne, PrimaryColumn } from 'typeorm';
 import { CreatedAt, DateColumn, DeletedAt, UpdatedAt } from '../decorators';
 import { BillingMethodNice } from './billing-method-nice.entity';
 import { BillingMethodPaddle } from './billing-method-paddle.entity';
-import { BillingSubscriptionPlanHistory } from './billing-subscription-plan-history.entity';
-import { BillingSubscriptionPlanInfo } from './billing-subscription-plan-info.entity';
-import { BillingSubscriptionPlanSource } from './billing-subscription-plan-source.entity';
+import { BillingPlanHistory } from './billing-plan-history.entity';
+import { BillingPlanInfo } from './billing-plan-info.entity';
+import { BillingPlanSource } from './billing-plan-source.entity';
 
 export const BillingOrganizationTableName = 'billing_organization';
 
@@ -53,14 +53,14 @@ export class BillingOrganization implements BillingOrganizationBase {
   @DeletedAt()
   deletedAt!: Date | null;
 
-  @OneToMany(() => BillingSubscriptionPlanInfo, (billingSubscriptionPlanInfo) => billingSubscriptionPlanInfo.billingOrganization)
-  billingSubscriptionPlanInfos?: BillingSubscriptionPlanInfo[];
+  @OneToMany(() => BillingPlanInfo, (billingPlanInfo) => billingPlanInfo.billingOrganization)
+  billingPlanInfos?: BillingPlanInfo[];
 
-  @OneToMany(() => BillingSubscriptionPlanSource, (billingSubscriptionPlanSource) => billingSubscriptionPlanSource.billingOrganization)
-  billingSubscriptionPlanSources?: BillingSubscriptionPlanSource[];
+  @OneToMany(() => BillingPlanSource, (billingPlanSource) => billingPlanSource.billingOrganization)
+  billingPlanSources?: BillingPlanSource[];
 
-  @OneToMany(() => BillingSubscriptionPlanHistory, (billingSubscriptionPlanHistory) => billingSubscriptionPlanHistory.billingOrganization)
-  billingSubscriptionPlanHistories?: BillingSubscriptionPlanHistory[];
+  @OneToMany(() => BillingPlanHistory, (billingPlanHistory) => billingPlanHistory.billingOrganization)
+  billingPlanHistories?: BillingPlanHistory[];
 
   @OneToOne(() => BillingMethodNice, (billingMethodNice) => billingMethodNice.billingOrganization)
   billingMethodNice?: BillingMethodNice;

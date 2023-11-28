@@ -1,4 +1,4 @@
-import { BillingOrganizationProp, BillingSubscriptionPlanInfoProp, CreateBillingOrganizationDto, FindBillingOrganizationDto } from '@dogu-private/console';
+import { BillingOrganizationProp, BillingPlanInfoProp, CreateBillingOrganizationDto, FindBillingOrganizationDto } from '@dogu-private/console';
 import { ConflictException } from '@nestjs/common';
 import { v4 } from 'uuid';
 import { BillingCoupon } from '../../db/entity/billing-coupon.entity';
@@ -6,17 +6,17 @@ import { BillingMethodNice } from '../../db/entity/billing-method-nice.entity';
 import { BillingMethodPaddle } from '../../db/entity/billing-method-paddle.entity';
 import { BillingOrganizationUsedBillingCoupon } from '../../db/entity/billing-organization-used-billing-coupon.entity';
 import { BillingOrganization } from '../../db/entity/billing-organization.entity';
-import { BillingSubscriptionPlanInfo } from '../../db/entity/billing-subscription-plan-info.entity';
+import { BillingPlanInfo } from '../../db/entity/billing-plan-info.entity';
 import { RetryTransactionContext } from '../../db/retry-transaction';
 
-export async function findBillingOrganizationWithSubscriptionPlans(context: RetryTransactionContext, dto: FindBillingOrganizationDto): Promise<BillingOrganization | null> {
+export async function findBillingOrganizationWithPlans(context: RetryTransactionContext, dto: FindBillingOrganizationDto): Promise<BillingOrganization | null> {
   const { manager } = context;
   const { organizationId } = dto;
   return await manager
     .getRepository(BillingOrganization)
     .createQueryBuilder(BillingOrganization.name)
-    .leftJoinAndSelect(`${BillingOrganization.name}.${BillingOrganizationProp.billingSubscriptionPlanInfos}`, BillingSubscriptionPlanInfo.name)
-    .leftJoinAndSelect(`${BillingSubscriptionPlanInfo.name}.${BillingSubscriptionPlanInfoProp.billingCoupon}`, BillingCoupon.name)
+    .leftJoinAndSelect(`${BillingOrganization.name}.${BillingOrganizationProp.billingPlanInfos}`, BillingPlanInfo.name)
+    .leftJoinAndSelect(`${BillingPlanInfo.name}.${BillingPlanInfoProp.billingCoupon}`, BillingCoupon.name)
     .where({ organizationId })
     .getOne();
 }
@@ -24,19 +24,16 @@ export async function findBillingOrganizationWithSubscriptionPlans(context: Retr
 export async function findBillingOrganizationWithMethod(context: RetryTransactionContext, dto: FindBillingOrganizationDto): Promise<BillingOrganization | null> {
   const { manager } = context;
   const { organizationId } = dto;
-  return await manager
-    .getRepository(BillingOrganization)
-    .createQueryBuilder(BillingOrganization.name)
-    .leftJoinAndSelect(`${BillingOrganization.name}.${BillingOrganizationProp.billingMethodNice}`, BillingMethodNice.name)
-    .leftJoinAndSelect(`${BillingOrganization.name}.${BillingOrganizationProp.billingMethodPaddle}`, BillingMethodPaddle.name)
-    .where({ organizationId })
-    .getOne();
+  return await manager.getRepository(BillingOrganization).findOne({
+    where: { organizationId },
+    relations: {
+      billingMethodNice: true,
+      billingMethodPaddle: true,
+    },
+  });
 }
 
-export async function findBillingOrganizationWithMethodAndSubscriptionPlans(
-  context: RetryTransactionContext,
-  dto: FindBillingOrganizationDto,
-): Promise<BillingOrganization | null> {
+export async function findBillingOrganizationWithMethodAndPlans(context: RetryTransactionContext, dto: FindBillingOrganizationDto): Promise<BillingOrganization | null> {
   const { manager } = context;
   const { organizationId } = dto;
   return await manager
@@ -44,8 +41,8 @@ export async function findBillingOrganizationWithMethodAndSubscriptionPlans(
     .createQueryBuilder(BillingOrganization.name)
     .leftJoinAndSelect(`${BillingOrganization.name}.${BillingOrganizationProp.billingMethodNice}`, BillingMethodNice.name)
     .leftJoinAndSelect(`${BillingOrganization.name}.${BillingOrganizationProp.billingMethodPaddle}`, BillingMethodPaddle.name)
-    .leftJoinAndSelect(`${BillingOrganization.name}.${BillingOrganizationProp.billingSubscriptionPlanInfos}`, BillingSubscriptionPlanInfo.name)
-    .leftJoinAndSelect(`${BillingSubscriptionPlanInfo.name}.${BillingSubscriptionPlanInfoProp.billingCoupon}`, BillingCoupon.name)
+    .leftJoinAndSelect(`${BillingOrganization.name}.${BillingOrganizationProp.billingPlanInfos}`, BillingPlanInfo.name)
+    .leftJoinAndSelect(`${BillingPlanInfo.name}.${BillingPlanInfoProp.billingCoupon}`, BillingCoupon.name)
     .where({ organizationId })
     .getOne();
 }

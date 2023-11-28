@@ -1,39 +1,44 @@
 import {
   BillingHistoryTypePurchase,
   BillingHistoryTypeRefund,
-  CreatePurchaseSubscriptionDto,
-  CreatePurchaseSubscriptionResponse,
-  CreatePurchaseSubscriptionWithNewCardDto,
-  CreatePurchaseSubscriptionWithNewCardResponse,
+  CreatePurchaseDto,
+  CreatePurchaseResponse,
+  CreatePurchaseWithNewCardDto,
+  CreatePurchaseWithNewCardResponse,
   getBillingMethodNicePublic,
-  GetBillingSubscriptionPreviewDto,
-  GetBillingSubscriptionPreviewResponse,
+  GetBillingPreviewDto,
+  GetBillingPreviewResponse,
+  PrecheckoutDto,
+  PrecheckoutResponse,
   RefundFullDto,
-  RefundSubscriptionPlanDto,
+  RefundPlanDto,
   resultCode,
 } from '@dogu-private/console';
 import { stringify } from '@dogu-tech/common';
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource, In } from 'typeorm';
 import { v4 } from 'uuid';
 import { BillingHistory } from '../../db/entity/billing-history.entity';
 import { BillingOrganization } from '../../db/entity/billing-organization.entity';
-import { BillingSubscriptionPlanHistory } from '../../db/entity/billing-subscription-plan-history.entity';
-import { BillingSubscriptionPlanInfo } from '../../db/entity/billing-subscription-plan-info.entity';
+import { BillingPlanHistory } from '../../db/entity/billing-plan-history.entity';
+import { BillingPlanInfo } from '../../db/entity/billing-plan-info.entity';
 import { RetryTransaction } from '../../db/retry-transaction';
+import { validateCoupon } from '../billing-coupon/billing-coupon.serializables';
+import { BillingCouponService } from '../billing-coupon/billing-coupon.service';
 import { createOrUpdateMethodNice } from '../billing-method/billing-method-nice.serializables';
 import { BillingMethodPaddleService } from '../billing-method/billing-method-paddle.service';
-import { findBillingOrganizationWithMethodAndSubscriptionPlans, findBillingOrganizationWithSubscriptionPlans } from '../billing-organization/billing-organization.serializables';
+import { findBillingOrganizationWithMethodAndPlans, findBillingOrganizationWithPlans } from '../billing-organization/billing-organization.serializables';
 import { BillingOrganizationService } from '../billing-organization/billing-organization.service';
-import { invalidateSubscriptionPlanInfo } from '../billing-subscription-plan-info/billing-subscription-plan-info.utils';
+import { invalidatePlanInfo } from '../billing-plan-info/billing-plan-info.utils';
+import { BillingPlanSourceService } from '../billing-plan-source/billing-plan-source.service';
 import { ConsoleService } from '../console/console.service';
 import { DateTimeSimulatorService } from '../date-time-simulator/date-time-simulator.service';
 import { DoguLogger } from '../logger/logger';
 import { NiceCaller } from '../nice/nice.caller';
-import { PaddleService } from '../paddle/paddle.service';
+import { PaddleCaller } from '../paddle/paddle.caller';
 import { SlackService } from '../slack/slack.service';
-import { processNextPurchaseSubscription, processNowPurchaseSubscription, processPurchaseSubscriptionPreview } from './billing-purchase.serializables';
+import { processNextPurchase, processNowPurchase, processPurchasePreview } from './billing-purchase.serializables';
 
 @Injectable()
 export class BillingPurchaseService {
@@ -49,15 +54,17 @@ export class BillingPurchaseService {
     private readonly dateTimeSimulatorService: DateTimeSimulatorService,
     private readonly billingOrganizationService: BillingOrganizationService,
     private readonly billingMethodPaddleService: BillingMethodPaddleService,
-    private readonly paddleService: PaddleService,
+    private readonly paddleCaller: PaddleCaller,
+    private readonly billingPlanSourceService: BillingPlanSourceService,
+    private readonly billingCouponService: BillingCouponService,
   ) {
     this.retryTransaction = new RetryTransaction(this.logger, this.dataSource);
   }
 
-  async getSubscriptionPreview(dto: GetBillingSubscriptionPreviewDto): Promise<GetBillingSubscriptionPreviewResponse> {
+  async getPreview(dto: GetBillingPreviewDto): Promise<GetBillingPreviewResponse> {
     return await this.retryTransaction.serializable(async (context) => {
       const now = this.dateTimeSimulatorService.now();
-      const billingOrganization = await findBillingOrganizationWithSubscriptionPlans(context, dto);
+      const billingOrganization = await findBillingOrganizationWithPlans(context, dto);
       if (!billingOrganization) {
         return {
           ok: false,
@@ -65,9 +72,9 @@ export class BillingPurchaseService {
         };
       }
 
-      const processPreviewResult = await processPurchaseSubscriptionPreview(context, {
+      const processPreviewResult = await processPurchasePreview(context, {
         billingOrganization,
-        dto,
+        previewOptions: dto,
         now,
       });
       if (!processPreviewResult.ok) {
@@ -82,11 +89,11 @@ export class BillingPurchaseService {
     });
   }
 
-  async createPurchaseSubscription(dto: CreatePurchaseSubscriptionDto): Promise<CreatePurchaseSubscriptionResponse> {
+  async createPurchase(dto: CreatePurchaseDto): Promise<CreatePurchaseResponse> {
     return await this.retryTransaction.serializable(async (context) => {
       const { setTriggerRollbackBeforeReturn } = context;
       const now = this.dateTimeSimulatorService.now();
-      const billingOrganization = await findBillingOrganizationWithMethodAndSubscriptionPlans(context, dto);
+      const billingOrganization = await findBillingOrganizationWithMethodAndPlans(context, dto);
       if (!billingOrganization) {
         return {
           ok: false,
@@ -112,9 +119,9 @@ export class BillingPurchaseService {
         };
       }
 
-      const processPreviewResult = await processPurchaseSubscriptionPreview(context, {
+      const processPreviewResult = await processPurchasePreview(context, {
         billingOrganization,
-        dto,
+        previewOptions: dto,
         now,
       });
       if (!processPreviewResult.ok) {
@@ -127,9 +134,9 @@ export class BillingPurchaseService {
         };
       }
 
-      const { needPurchase } = processPreviewResult.value;
+      const { needPurchase, planSource } = processPreviewResult.value;
       if (!needPurchase) {
-        const processNextResult = await processNextPurchaseSubscription(context, {
+        const processNextResult = await processNextPurchase(context, {
           billingOrganization,
           ...processPreviewResult.value,
         });
@@ -152,7 +159,8 @@ export class BillingPurchaseService {
         };
       }
 
-      const processNowResult = await processNowPurchaseSubscription(context, this.niceCaller, {
+      const processNowResult = await processNowPurchase(context, {
+        niceCaller: this.niceCaller,
         billingMethodNice,
         billingOrganization,
         ...processPreviewResult.value,
@@ -167,8 +175,8 @@ export class BillingPurchaseService {
             purchasedAt: processNowResult.planHistory?.createdAt ?? new Date(),
             plans: [
               {
-                option: processNowResult.plan?.option ?? dto.option,
-                type: processNowResult.plan?.type ?? dto.type,
+                option: processNowResult.plan?.option ?? planSource.option,
+                type: processNowResult.plan?.type ?? planSource.type,
               },
             ],
           })
@@ -218,12 +226,12 @@ export class BillingPurchaseService {
     });
   }
 
-  async createPurchaseSubscriptionWithNewCard(dto: CreatePurchaseSubscriptionWithNewCardDto): Promise<CreatePurchaseSubscriptionWithNewCardResponse> {
+  async createPurchaseWithNewCard(dto: CreatePurchaseWithNewCardDto): Promise<CreatePurchaseWithNewCardResponse> {
     return await this.retryTransaction.serializable(async (context) => {
       const { setTriggerRollbackBeforeReturn } = context;
       const { registerCard } = dto;
       const now = this.dateTimeSimulatorService.now();
-      const billingOrganization = await findBillingOrganizationWithMethodAndSubscriptionPlans(context, dto);
+      const billingOrganization = await findBillingOrganizationWithMethodAndPlans(context, dto);
       if (!billingOrganization) {
         return {
           ok: false,
@@ -236,9 +244,9 @@ export class BillingPurchaseService {
       }
       const { billingOrganizationId } = billingOrganization;
 
-      const processPreviewResult = await processPurchaseSubscriptionPreview(context, {
+      const processPreviewResult = await processPurchasePreview(context, {
         billingOrganization,
-        dto,
+        previewOptions: dto,
         now,
       });
       if (!processPreviewResult.ok) {
@@ -251,7 +259,7 @@ export class BillingPurchaseService {
           niceResultCode: null,
         };
       }
-      const { needPurchase } = processPreviewResult.value;
+      const { needPurchase, planSource } = processPreviewResult.value;
 
       const niceResult = await createOrUpdateMethodNice(context, {
         niceCaller: this.niceCaller,
@@ -280,7 +288,7 @@ export class BillingPurchaseService {
 
       const method = getBillingMethodNicePublic(billingMethodNice);
       if (!needPurchase) {
-        const processNextResult = await processNextPurchaseSubscription(context, {
+        const processNextResult = await processNextPurchase(context, {
           billingOrganization,
           ...processPreviewResult.value,
         });
@@ -307,7 +315,8 @@ export class BillingPurchaseService {
       }
 
       billingOrganization.billingMethodNice = billingMethodNice;
-      const processNowResult = await processNowPurchaseSubscription(context, this.niceCaller, {
+      const processNowResult = await processNowPurchase(context, {
+        niceCaller: this.niceCaller,
         billingMethodNice,
         billingOrganization,
         ...processPreviewResult.value,
@@ -322,8 +331,8 @@ export class BillingPurchaseService {
             purchasedAt: processNowResult.planHistory?.createdAt ?? new Date(),
             plans: [
               {
-                option: processNowResult.plan?.option ?? dto.option,
-                type: processNowResult.plan?.type ?? dto.type,
+                option: processNowResult.plan?.option ?? planSource.option,
+                type: processNowResult.plan?.type ?? planSource.type,
               },
             ],
           })
@@ -375,13 +384,13 @@ export class BillingPurchaseService {
     });
   }
 
-  async refundSubscriptionPlan(dto: RefundSubscriptionPlanDto): Promise<void> {
+  async refundPlan(dto: RefundPlanDto): Promise<void> {
     return await this.retryTransaction.serializable(async (context) => {
       const { manager } = context;
-      const { billingSubscriptionPlanHistoryId } = dto;
-      const planHistory = await manager.getRepository(BillingSubscriptionPlanHistory).findOne({
+      const { billingPlanHistoryId } = dto;
+      const planHistory = await manager.getRepository(BillingPlanHistory).findOne({
         where: {
-          billingSubscriptionPlanHistoryId,
+          billingPlanHistoryId,
           historyType: In(BillingHistoryTypePurchase),
         },
         relations: {
@@ -389,9 +398,9 @@ export class BillingPurchaseService {
         },
       });
 
-      const linked = await manager.getRepository(BillingSubscriptionPlanInfo).findOne({
+      const linked = await manager.getRepository(BillingPlanInfo).findOne({
         where: {
-          billingSubscriptionPlanHistoryId,
+          billingPlanHistoryId,
         },
         lock: {
           mode: 'pessimistic_write',
@@ -399,44 +408,44 @@ export class BillingPurchaseService {
       });
 
       if (!linked) {
-        throw new Error(`expired: ${billingSubscriptionPlanHistoryId}`);
+        throw new Error(`expired: ${billingPlanHistoryId}`);
       }
 
-      const refunded = await manager.getRepository(BillingSubscriptionPlanHistory).findOne({
+      const refunded = await manager.getRepository(BillingPlanHistory).findOne({
         where: {
-          purchasedBillingSubscriptionPlanHistoryId: billingSubscriptionPlanHistoryId,
+          purchasedBillingPlanHistoryId: billingPlanHistoryId,
           historyType: In(BillingHistoryTypeRefund),
         },
       });
 
       if (refunded) {
-        throw new Error(`already refunded: ${billingSubscriptionPlanHistoryId}`);
+        throw new Error(`already refunded: ${billingPlanHistoryId}`);
       }
 
       if (!planHistory) {
-        throw new Error(`plan history not found: ${billingSubscriptionPlanHistoryId}`);
+        throw new Error(`plan history not found: ${billingPlanHistoryId}`);
       }
 
       const { billingHistory } = planHistory;
       if (!billingHistory) {
-        throw new Error(`billing history not found: ${billingSubscriptionPlanHistoryId}`);
+        throw new Error(`billing history not found: ${billingPlanHistoryId}`);
       }
 
       const { niceTid, niceOrderId } = billingHistory;
       if (!niceTid) {
-        throw new Error(`nice tid not found: ${billingSubscriptionPlanHistoryId}`);
+        throw new Error(`nice tid not found: ${billingPlanHistoryId}`);
       }
 
       if (!niceOrderId) {
-        throw new Error(`nice order id not found: ${billingSubscriptionPlanHistoryId}`);
+        throw new Error(`nice order id not found: ${billingPlanHistoryId}`);
       }
 
       const { purchasedAmount } = planHistory;
       if (!purchasedAmount) {
-        throw new Error(`purchased amount not found: ${billingSubscriptionPlanHistoryId}`);
+        throw new Error(`purchased amount not found: ${billingPlanHistoryId}`);
       }
 
-      const cancelReason = `dogu refund subscription plan: ${billingSubscriptionPlanHistoryId}`;
+      const cancelReason = `dogu refund subscription plan: ${billingPlanHistoryId}`;
       const cancelResult = await this.niceCaller.paymentsCancel({
         tid: niceTid,
         reason: cancelReason,
@@ -444,7 +453,7 @@ export class BillingPurchaseService {
       });
 
       if (!cancelResult.ok) {
-        throw new Error(`cancel failed: ${billingSubscriptionPlanHistoryId} ${stringify(cancelResult.resultCode)}`);
+        throw new Error(`cancel failed: ${billingPlanHistoryId} ${stringify(cancelResult.resultCode)}`);
       }
 
       const { value: response } = cancelResult;
@@ -464,8 +473,8 @@ export class BillingPurchaseService {
       });
       const savedNewHistory = await manager.getRepository(BillingHistory).save(newHistory);
 
-      const newPlanHistory = manager.getRepository(BillingSubscriptionPlanHistory).create({
-        billingSubscriptionPlanHistoryId: v4(),
+      const newPlanHistory = manager.getRepository(BillingPlanHistory).create({
+        billingPlanHistoryId: v4(),
         billingOrganizationId: billingHistory.billingOrganizationId,
         billingHistoryId: savedNewHistory.billingHistoryId,
         category: planHistory.category,
@@ -474,14 +483,14 @@ export class BillingPurchaseService {
         currency: planHistory.currency,
         period: planHistory.period,
         historyType: 'partial-refund',
-        purchasedBillingSubscriptionPlanHistoryId: planHistory.billingSubscriptionPlanHistoryId,
+        purchasedBillingPlanHistoryId: planHistory.billingPlanHistoryId,
         refundedAmount: planHistory.purchasedAmount,
       });
-      await manager.getRepository(BillingSubscriptionPlanHistory).save(newPlanHistory);
+      await manager.getRepository(BillingPlanHistory).save(newPlanHistory);
 
       const now = this.dateTimeSimulatorService.now();
-      const unlinked = invalidateSubscriptionPlanInfo(linked, now);
-      await manager.getRepository(BillingSubscriptionPlanInfo).save(unlinked);
+      const unlinked = invalidatePlanInfo(linked, now);
+      await manager.getRepository(BillingPlanInfo).save(unlinked);
     });
   }
 
@@ -495,7 +504,7 @@ export class BillingPurchaseService {
           historyType: In(BillingHistoryTypePurchase),
         },
         relations: {
-          billingSubscriptionPlanHistories: true,
+          billingPlanHistories: true,
         },
       });
 
@@ -539,10 +548,10 @@ export class BillingPurchaseService {
       });
       const savedNewHistory = await manager.getRepository(BillingHistory).save(newHistory);
 
-      const planHistories = billingHistory.billingSubscriptionPlanHistories ?? [];
+      const planHistories = billingHistory.billingPlanHistories ?? [];
       for (const planHistory of planHistories) {
-        const newPlanHistory = manager.getRepository(BillingSubscriptionPlanHistory).create({
-          billingSubscriptionPlanHistoryId: v4(),
+        const newPlanHistory = manager.getRepository(BillingPlanHistory).create({
+          billingPlanHistoryId: v4(),
           billingOrganizationId: billingHistory.billingOrganizationId,
           billingHistoryId: savedNewHistory.billingHistoryId,
           category: planHistory.category,
@@ -551,16 +560,16 @@ export class BillingPurchaseService {
           currency: planHistory.currency,
           period: planHistory.period,
           historyType: 'full-refund',
-          purchasedBillingSubscriptionPlanHistoryId: planHistory.billingSubscriptionPlanHistoryId,
+          purchasedBillingPlanHistoryId: planHistory.billingPlanHistoryId,
           refundedAmount: planHistory.purchasedAmount,
           originPrice: planHistory.originPrice,
         });
 
-        await manager.getRepository(BillingSubscriptionPlanHistory).save(newPlanHistory);
+        await manager.getRepository(BillingPlanHistory).save(newPlanHistory);
 
-        const linked = await manager.getRepository(BillingSubscriptionPlanInfo).findOne({
+        const linked = await manager.getRepository(BillingPlanInfo).findOne({
           where: {
-            billingSubscriptionPlanHistoryId: planHistory.billingSubscriptionPlanHistoryId,
+            billingPlanHistoryId: planHistory.billingPlanHistoryId,
           },
           lock: {
             mode: 'pessimistic_write',
@@ -569,8 +578,8 @@ export class BillingPurchaseService {
 
         if (linked) {
           const now = this.dateTimeSimulatorService.now();
-          const unlinked = invalidateSubscriptionPlanInfo(linked, now);
-          await manager.getRepository(BillingSubscriptionPlanInfo).save(unlinked);
+          const unlinked = invalidatePlanInfo(linked, now);
+          await manager.getRepository(BillingPlanInfo).save(unlinked);
         }
 
         const billingOrganization = await manager.getRepository(BillingOrganization).findOne({
@@ -578,7 +587,7 @@ export class BillingPurchaseService {
             billingOrganizationId: billingHistory.billingOrganizationId,
           },
           relations: {
-            billingSubscriptionPlanInfos: true,
+            billingPlanInfos: true,
           },
           lock: {
             mode: 'pessimistic_write',
@@ -587,14 +596,14 @@ export class BillingPurchaseService {
 
         if (billingOrganization) {
           const hasMonthlySubscription =
-            (billingOrganization.billingSubscriptionPlanInfos?.filter((info) => info.period === 'monthly').filter((info) => info.state !== 'unsubscribed').length ?? 0) > 0;
+            (billingOrganization.billingPlanInfos?.filter((info) => info.period === 'monthly').filter((info) => info.state !== 'unsubscribed').length ?? 0) > 0;
           if (!hasMonthlySubscription) {
             billingOrganization.subscriptionMonthlyStartedAt = null;
             billingOrganization.subscriptionMonthlyExpiredAt = null;
           }
 
           const hasYearlySubscription =
-            (billingOrganization.billingSubscriptionPlanInfos?.filter((info) => info.period === 'yearly').filter((info) => info.state !== 'unsubscribed').length ?? 0) > 0;
+            (billingOrganization.billingPlanInfos?.filter((info) => info.period === 'yearly').filter((info) => info.state !== 'unsubscribed').length ?? 0) > 0;
           if (!hasYearlySubscription) {
             billingOrganization.subscriptionYearlyStartedAt = null;
             billingOrganization.subscriptionYearlyExpiredAt = null;
@@ -609,5 +618,73 @@ export class BillingPurchaseService {
         }
       }
     });
+  }
+
+  async precheckout(dto: PrecheckoutDto): Promise<PrecheckoutResponse> {
+    const { organizationId, billingPlanSourceId, couponCode } = dto;
+    const billingMethodPaddle = await this.billingMethodPaddleService.findByOrganizationId({ organizationId });
+    if (!billingMethodPaddle) {
+      throw new InternalServerErrorException(`method paddle must exist. organizationId: ${organizationId}`);
+    }
+
+    const { customerId } = billingMethodPaddle;
+    const billingPlanSource = await this.billingPlanSourceService.find({
+      billingPlanSourceId,
+    });
+    if (!billingPlanSource) {
+      throw new InternalServerErrorException(`billing subscription plan source must exist. dto: ${stringify(dto)}`);
+    }
+
+    const price = await this.paddleCaller.findPrice(dto);
+    if (!price) {
+      throw new InternalServerErrorException(`price must exist. dto: ${stringify(dto)}`);
+    }
+    const priceId = price.id;
+    if (!priceId) {
+      throw new InternalServerErrorException(`price id must exist. dto: ${stringify(dto)}`);
+    }
+
+    if (couponCode) {
+      const coupon = await this.billingCouponService.findByCouponCode(couponCode);
+      if (!coupon) {
+        throw new NotFoundException(`coupon not found. couponCode: ${couponCode}`);
+      }
+
+      await this.retryTransaction.serializable(async (context) => {
+        await validateCoupon(context, {
+          organizationId,
+          code: couponCode,
+          period: billingPlanSource.period,
+          planType: billingPlanSource.type,
+          now: this.dateTimeSimulatorService.now(),
+        });
+      });
+
+      const discount = await this.paddleCaller.findDiscount({ billingCouponId: coupon.billingCouponId });
+      if (!discount) {
+        throw new InternalServerErrorException(`discount must exist. couponCode: ${couponCode}`);
+      }
+
+      if (!discount.id) {
+        throw new InternalServerErrorException(`discount id must exist. couponCode: ${couponCode}`);
+      }
+
+      const discountId = discount.id;
+      return {
+        paddle: {
+          customerId,
+          priceId,
+          discountId,
+        },
+      };
+    }
+
+    return {
+      paddle: {
+        customerId,
+        priceId,
+        discountId: null,
+      },
+    };
   }
 }

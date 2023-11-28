@@ -1,27 +1,27 @@
-import { BillingResult, BillingSubscriptionPlanData } from '@dogu-private/console';
+import { BillingResult } from '@dogu-private/console';
 import { v4 } from 'uuid';
-import { BillingSubscriptionPlanInfo } from '../../db/entity/billing-subscription-plan-info.entity';
+import { BillingPlanInfo } from '../../db/entity/billing-plan-info.entity';
+import { BillingPlanSource } from '../../db/entity/billing-plan-source.entity';
 import { RetryTransactionContext } from '../../db/retry-transaction';
 import { UseCouponResult } from '../billing-coupon/billing-coupon.serializables';
 
-export interface NewAndApplySubscriptionPlanInfoOptions {
+export interface NewAndApplyPlanInfoOptions {
   billingOrganizationId: string;
-  subscriptionPlanInfos: BillingSubscriptionPlanInfo[];
-  planData: BillingSubscriptionPlanData;
+  planInfos: BillingPlanInfo[];
+  planSource: BillingPlanSource;
   discountedAmount: number;
   useCouponResult: UseCouponResult;
-  billingSubscriptionPlanSourceId: number | null;
 }
 
-export type NewAndApplySubscriptionPlanInfoResult = BillingResult<BillingSubscriptionPlanInfo>;
+export type NewAndApplyPlanInfoResult = BillingResult<BillingPlanInfo>;
 
-export function newAndApplySubscriptionPlanInfo(context: RetryTransactionContext, options: NewAndApplySubscriptionPlanInfoOptions): NewAndApplySubscriptionPlanInfoResult {
+export function newAndApplyPlanInfo(context: RetryTransactionContext, options: NewAndApplyPlanInfoOptions): NewAndApplyPlanInfoResult {
   const { manager } = context;
-  const { billingOrganizationId, subscriptionPlanInfos, planData, discountedAmount, billingSubscriptionPlanSourceId, useCouponResult } = options;
-  const { currency, period, type, category, option, originPrice } = planData;
+  const { billingOrganizationId, planInfos, planSource, discountedAmount, useCouponResult } = options;
+  const { currency, period, type, category, option, originPrice, billingPlanSourceId } = planSource;
   const { billingCouponId, couponRemainingApplyCount, couponApplied, coupon } = useCouponResult;
 
-  const found = subscriptionPlanInfos.find((info) => info.type === type);
+  const found = planInfos.find((info) => info.type === type);
   if (found) {
     found.category = category;
     found.option = option;
@@ -32,7 +32,7 @@ export function newAndApplySubscriptionPlanInfo(context: RetryTransactionContext
     found.billingCouponId = billingCouponId;
     found.couponRemainingApplyCount = couponRemainingApplyCount;
     found.couponApplied = couponApplied;
-    found.billingSubscriptionPlanSourceId = billingSubscriptionPlanSourceId;
+    found.billingPlanSourceId = billingPlanSourceId;
     found.state = 'subscribed';
     found.billingCoupon = coupon ? coupon : found.billingCoupon;
     return {
@@ -41,8 +41,8 @@ export function newAndApplySubscriptionPlanInfo(context: RetryTransactionContext
     };
   }
 
-  const planInfo = manager.getRepository(BillingSubscriptionPlanInfo).create({
-    billingSubscriptionPlanInfoId: v4(),
+  const planInfo = manager.getRepository(BillingPlanInfo).create({
+    billingPlanInfoId: v4(),
     billingOrganizationId,
     category,
     type,
@@ -54,11 +54,11 @@ export function newAndApplySubscriptionPlanInfo(context: RetryTransactionContext
     billingCouponId,
     couponRemainingApplyCount,
     couponApplied,
-    billingSubscriptionPlanSourceId,
+    billingPlanSourceId,
     state: 'subscribed',
     billingCoupon: coupon ? coupon : undefined,
   });
-  subscriptionPlanInfos.push(planInfo);
+  planInfos.push(planInfo);
   return {
     ok: true,
     value: planInfo,

@@ -1,24 +1,15 @@
-import {
-  BillingCategory,
-  BillingCurrency,
-  BillingPeriod,
-  BillingSubscriptionPlanMap,
-  BillingSubscriptionPlanType,
-  isBillingCurrency,
-  isBillingPeriod,
-  isBillingSubscriptionPlanType,
-} from '@dogu-private/console';
+import { BillingCategory, BillingCurrency, BillingPeriod, BillingPlanMap, BillingPlanType, isBillingCurrency, isBillingPeriod, isBillingPlanType } from '@dogu-private/console';
 import { Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import _ from 'lodash';
 import { DataSource } from 'typeorm';
-import { BillingSubscriptionPlanSource } from '../../db/entity/billing-subscription-plan-source.entity';
+import { BillingPlanSource } from '../../db/entity/billing-plan-source.entity';
 import { RetryTransaction } from '../../db/retry-transaction';
 import { DoguLogger } from '../logger/logger';
 
 interface PlanSourceStatic {
   category: BillingCategory;
-  type: BillingSubscriptionPlanType;
+  type: BillingPlanType;
   name: string;
   option: number;
   currency: BillingCurrency;
@@ -27,7 +18,7 @@ interface PlanSourceStatic {
   id: number;
 }
 
-function isPlanSourceStatic(origin: PlanSourceStatic, target: BillingSubscriptionPlanSource): boolean {
+function isPlanSourceStatic(origin: PlanSourceStatic, target: BillingPlanSource): boolean {
   return (
     origin.category === target.category &&
     origin.type === target.type &&
@@ -36,13 +27,13 @@ function isPlanSourceStatic(origin: PlanSourceStatic, target: BillingSubscriptio
     origin.currency === target.currency &&
     origin.period === target.period &&
     origin.originPrice === target.originPrice &&
-    origin.id === target.billingSubscriptionPlanSourceId
+    origin.id === target.billingPlanSourceId
   );
 }
 
 function parsePlanSourceStatic(): PlanSourceStatic[] {
-  const planSources = _.flatMap(BillingSubscriptionPlanMap, (optionInfo, type) => {
-    if (!isBillingSubscriptionPlanType(type)) {
+  const planSources = _.flatMap(BillingPlanMap, (optionInfo, type) => {
+    if (!isBillingPlanType(type)) {
       throw new Error(`Invalid type: ${type}`);
     }
 
@@ -135,7 +126,7 @@ function parsePlanSourceStatic(): PlanSourceStatic[] {
 }
 
 @Injectable()
-export class BillingSubscriptionPlanSourceMigrator {
+export class BillingPlanSourceMigrator {
   private readonly retryTransaction: RetryTransaction;
 
   constructor(
@@ -150,9 +141,9 @@ export class BillingSubscriptionPlanSourceMigrator {
     const planSourceStatic = parsePlanSourceStatic();
     await this.retryTransaction.serializable(async (context) => {
       const { manager } = context;
-      const planSource = await manager.getRepository(BillingSubscriptionPlanSource).find({
+      const planSource = await manager.getRepository(BillingPlanSource).find({
         order: {
-          billingSubscriptionPlanSourceId: 'asc',
+          billingPlanSourceId: 'asc',
         },
       });
 
@@ -165,8 +156,8 @@ export class BillingSubscriptionPlanSourceMigrator {
         }
 
         if (target) {
-          if (target.billingSubscriptionPlanSourceId !== id) {
-            throw new Error(`Invalid id: ${target.billingSubscriptionPlanSourceId} -> ${id}`);
+          if (target.billingPlanSourceId !== id) {
+            throw new Error(`Invalid id: ${target.billingPlanSourceId} -> ${id}`);
           }
         }
 
@@ -206,8 +197,8 @@ export class BillingSubscriptionPlanSourceMigrator {
           throw new Error(`Must origin not be null`);
         }
 
-        const created = manager.getRepository(BillingSubscriptionPlanSource).create({
-          billingSubscriptionPlanSourceId: origin.id,
+        const created = manager.getRepository(BillingPlanSource).create({
+          billingPlanSourceId: origin.id,
           category: origin.category,
           type: origin.type,
           name: origin.name,
@@ -220,7 +211,7 @@ export class BillingSubscriptionPlanSourceMigrator {
         return created;
       });
 
-      await manager.getRepository(BillingSubscriptionPlanSource).save(createds);
+      await manager.getRepository(BillingPlanSource).save(createds);
     });
   }
 }

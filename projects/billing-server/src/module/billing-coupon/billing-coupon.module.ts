@@ -10,6 +10,6 @@ import { BillingCouponService } from './billing-coupon.service';
   imports: [BillingTokenModule, DateTimeSimulatorModule, PaddleModule],
   controllers: [BillingCouponController],
   providers: [BillingCouponService, BillingCouponSubscriber],
-  exports: [BillingCouponSubscriber],
+  exports: [BillingCouponSubscriber, BillingCouponService],
 })
 export class BillingCouponModule {}

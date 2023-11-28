@@ -18,7 +18,7 @@ const BillingHistoryDetail: React.FC<Props> = ({ history }) => {
   const router = useRouter();
   const { t } = useTranslation('billing');
 
-  if (!history.billingSubscriptionPlanHistories) {
+  if (!history.billingPlanHistories) {
     return <ErrorBox title="Something went wrong" desc="No details for invoice" />;
   }
 
@@ -47,11 +47,11 @@ const BillingHistoryDetail: React.FC<Props> = ({ history }) => {
       <Divider style={{ margin: '.5rem 0' }} />
 
       <div>
-        {history.billingSubscriptionPlanHistories.map((planHistory) => {
+        {history.billingPlanHistories.map((planHistory) => {
           const descriptionInfo = planDescriptionInfoMap[planHistory.type];
 
           return (
-            <div key={planHistory.billingSubscriptionPlanHistoryId} style={{ margin: '.25rem 0' }}>
+            <div key={planHistory.billingPlanHistoryId} style={{ margin: '.25rem 0' }}>
               <FlexSpaceBetween>
                 <b style={{ fontWeight: '600' }}>{t(descriptionInfo.titleI18nKey)}</b>
                 <b style={{ fontWeight: '600' }}>

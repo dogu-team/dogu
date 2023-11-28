@@ -135,6 +135,7 @@ export class UserService {
       }
 
       const ownerId = organizationAndUserAndOrganizationRoles.find((orgUserRole) => {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
         return orgUserRole.organizationRoleId === ORGANIZATION_ROLE.OWNER;
       })?.userId;
       if (!ownerId) {
@@ -274,8 +275,9 @@ export class UserService {
     return user;
   }
 
-  private async checkBeforeRemoveUser(user: User): Promise<void> {
+  private checkBeforeRemoveUser(user: User): void {
     // org onwer
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
     const orgUserRole = user.organizationAndUserAndOrganizationRoles?.find((orgUserRole) => orgUserRole.organizationRoleId === ORGANIZATION_ROLE.OWNER);
     if (orgUserRole) {
       throw new HttpException(`Can't remove user because user is owner of organization: ${orgUserRole.organizationId}`, HttpStatus.BAD_REQUEST);
@@ -288,7 +290,7 @@ export class UserService {
     if (!user) {
       throw new HttpException(`User not found`, HttpStatus.NOT_FOUND);
     }
-    await this.checkBeforeRemoveUser(user);
+    this.checkBeforeRemoveUser(user);
 
     await this.dataSource.transaction(async (manager) => {
       await manager.getRepository(User).softRemove(user);
@@ -337,6 +339,7 @@ export class UserService {
     if (!orgUserRole) {
       throw new HttpException(`User not found. user: ${userId}, organization: ${organizationId}`, HttpStatus.NOT_FOUND);
     }
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
     if (orgUserRole.organizationRoleId === ORGANIZATION_ROLE.OWNER) {
       throw new HttpException(`User is owner. user: ${userId}, organization: ${organizationId}`, HttpStatus.BAD_REQUEST);
     }
@@ -364,7 +367,7 @@ export class UserService {
       await entityManager.getRepository(OrganizationAndUserAndOrganizationRole).save(newOrganizationRole);
 
       if (FeatureConfig.get('licenseModule') === 'cloud') {
-        await this.cloudLicenseService.createLicense({ organizationId: newOrg.organizationId });
+        await this.cloudLicenseService.createLicense({ organizationId: newOrg.organizationId, email: user.email });
       }
 
       // invitation

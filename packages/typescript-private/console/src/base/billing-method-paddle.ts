@@ -1,12 +1,12 @@
 import { OrganizationId } from '@dogu-private/types';
 import { IsFilledString, propertiesOf } from '@dogu-tech/common';
-import { IsUUID } from 'class-validator';
+import { IsOptional, IsString, IsUUID } from 'class-validator';
 import { BillingOrganizationBase } from './billing-organization';
 
 export interface BillingMethodPaddleBase {
   billingMethodPaddleId: string;
   billingOrganizationId: string;
-  customerId: string | null;
+  customerId: string;
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date | null;
@@ -15,7 +15,7 @@ export interface BillingMethodPaddleBase {
 
 export const BillingMethodPaddleProp = propertiesOf<BillingMethodPaddleBase>();
 
-export class CreateOrUpdateMethodPaddleDto {
+export class UpdateBillingEmailDto {
   @IsUUID()
   organizationId!: OrganizationId;
 
@@ -23,4 +23,40 @@ export class CreateOrUpdateMethodPaddleDto {
   email!: string;
 }
 
-export class PaddlePriceSourceDto {}
+export class UpdateBillingAddressDto {
+  @IsUUID()
+  organizationId!: OrganizationId;
+
+  @IsString()
+  @IsOptional()
+  firstLine?: string;
+
+  @IsString()
+  @IsOptional()
+  secondLine?: string;
+
+  @IsString()
+  @IsOptional()
+  city?: string;
+
+  @IsString()
+  @IsOptional()
+  postalCode?: string;
+
+  @IsString()
+  @IsOptional()
+  region?: string;
+
+  @IsString()
+  @IsOptional()
+  countryCode?: string;
+}
+
+export interface UpdateBillingAddressResponse {
+  firstLine: string | null;
+  secondLine: string | null;
+  city: string | null;
+  postalCode: string | null;
+  region: string | null;
+  countryCode: string | null;
+}

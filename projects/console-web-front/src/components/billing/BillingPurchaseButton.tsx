@@ -1,6 +1,6 @@
 import {
   BillingMethodNiceBase,
-  BillingSubscriptionPlanInfoResponse,
+  BillingPlanInfoResponse,
   CloudLicenseBase,
   SelfHostedLicenseBase,
 } from '@dogu-private/console';
@@ -43,7 +43,7 @@ const BillingPurchaseButton: React.FC = () => {
 
   const handleSuccess = (
     newLicense: CloudLicenseBase | SelfHostedLicenseBase | null,
-    plan: BillingSubscriptionPlanInfoResponse | null,
+    plan: BillingPlanInfoResponse | null,
     method: Partial<BillingMethodNiceBase> | null,
   ) => {
     sendSuccessNotification(shouldPurchase ? t('purchaseSuccessMessage') : t('changePlanSuccessMessage'));
@@ -55,9 +55,9 @@ const BillingPurchaseButton: React.FC = () => {
         ...newLicense,
         billingOrganization: {
           ...license.billingOrganization,
-          billingSubscriptionPlanInfos: plan
-            ? [...license.billingOrganization.billingSubscriptionPlanInfos.filter((p) => p.type !== plan.type), plan]
-            : license.billingOrganization.billingSubscriptionPlanInfos,
+          billingPlanInfos: plan
+            ? [...license.billingOrganization.billingPlanInfos.filter((p) => p.type !== plan.type), plan]
+            : license.billingOrganization.billingPlanInfos,
           billingMethodNice: Object.assign({}, license.billingOrganization.billingMethodNice, method ?? {}),
         },
       });
@@ -75,11 +75,7 @@ const BillingPurchaseButton: React.FC = () => {
       if (!withNewCard && Object.values(values).every((v) => !v)) {
         const rv = await requestPurchaseWithExistingCard({
           organizationId: license.organizationId,
-          category: selectedPlan.category,
-          type: selectedPlan.type,
-          option: selectedPlan.option,
-          currency: 'KRW',
-          period: isAnnual ? 'yearly' : 'monthly',
+          billingPlanSourceId: selectedPlan.billingPlanSourceId,
           couponCode: couponCode ?? undefined,
         });
 
@@ -103,11 +99,7 @@ const BillingPurchaseButton: React.FC = () => {
       } else {
         const rv = await requestPurchaseWithNewCard({
           organizationId: license.organizationId,
-          category: selectedPlan.category,
-          type: selectedPlan.type,
-          option: selectedPlan.option,
-          currency: 'KRW',
-          period: isAnnual ? 'yearly' : 'monthly',
+          billingPlanSourceId: selectedPlan.billingPlanSourceId,
           couponCode: couponCode ?? undefined,
           registerCard: parseNicePaymentMethodFormValues(values),
         });

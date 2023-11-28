@@ -1,7 +1,7 @@
 import { assertUnreachable } from '@dogu-tech/common';
-import { BillingSubscriptionPlanInfo } from '../../db/entity/billing-subscription-plan-info.entity';
+import { BillingPlanInfo } from '../../db/entity/billing-plan-info.entity';
 
-export function applyChangeRequested(planInfo: BillingSubscriptionPlanInfo): void {
+export function applyChangeRequested(planInfo: BillingPlanInfo): void {
   if (planInfo.changeRequestedOption) {
     planInfo.option = planInfo.changeRequestedOption;
   }
@@ -17,15 +17,15 @@ export function applyChangeRequested(planInfo: BillingSubscriptionPlanInfo): voi
   clearChangeRequested(planInfo);
 }
 
-export function clearChangeRequested(planInfo: BillingSubscriptionPlanInfo): void {
+export function clearChangeRequested(planInfo: BillingPlanInfo): void {
   planInfo.changeRequestedOption = null;
   planInfo.changeRequestedPeriod = null;
   planInfo.changeRequestedOriginPrice = null;
   planInfo.changeRequestedDiscountedAmount = null;
 }
 
-export function invalidateSubscriptionPlanInfo(planInfo: BillingSubscriptionPlanInfo, now: Date): BillingSubscriptionPlanInfo {
-  planInfo.billingSubscriptionPlanHistoryId = null;
+export function invalidatePlanInfo(planInfo: BillingPlanInfo, now: Date): BillingPlanInfo {
+  planInfo.billingPlanHistoryId = null;
   if (planInfo.state !== 'unsubscribed') {
     clearChangeRequested(planInfo);
     planInfo.state = 'unsubscribed';
@@ -35,7 +35,7 @@ export function invalidateSubscriptionPlanInfo(planInfo: BillingSubscriptionPlan
   return planInfo;
 }
 
-export function applySubscriptionPlanInfoState(planInfo: BillingSubscriptionPlanInfo, now: Date): BillingSubscriptionPlanInfo {
+export function applyPlanInfoState(planInfo: BillingPlanInfo, now: Date): BillingPlanInfo {
   const { state } = planInfo;
   switch (state) {
     case 'unsubscribed': {
@@ -61,12 +61,12 @@ export function applySubscriptionPlanInfoState(planInfo: BillingSubscriptionPlan
 }
 
 export interface PurchaseAmountInfo {
-  planInfo: BillingSubscriptionPlanInfo;
+  planInfo: BillingPlanInfo;
   discountedAmount: number;
   purchaseAmount: number;
 }
 
-export function calculatePurchaseAmountAndApplyCouponCount(planInfo: BillingSubscriptionPlanInfo): PurchaseAmountInfo {
+export function calculatePurchaseAmountAndApplyCouponCount(planInfo: BillingPlanInfo): PurchaseAmountInfo {
   const { originPrice, period, billingCoupon } = planInfo;
 
   const clearAndReturn = (): PurchaseAmountInfo => {
@@ -88,32 +88,7 @@ export function calculatePurchaseAmountAndApplyCouponCount(planInfo: BillingSubs
   }
 
   const isApplyDiscount = planInfo.couponRemainingApplyCount === null || planInfo.couponRemainingApplyCount > 0;
-  let discountedAmount = 0;
-  if (isApplyDiscount) {
-    switch (period) {
-      case 'monthly': {
-        const discountPercent = billingCoupon.monthlyDiscountPercent;
-        if (discountPercent === null) {
-          return clearAndReturn();
-        }
-
-        discountedAmount = Math.floor((originPrice * discountPercent) / 100);
-        break;
-      }
-      case 'yearly': {
-        const discountPercent = billingCoupon.yearlyDiscountPercent;
-        if (discountPercent === null) {
-          return clearAndReturn();
-        }
-
-        discountedAmount = Math.floor((originPrice * discountPercent) / 100);
-        break;
-      }
-      default: {
-        assertUnreachable(period);
-      }
-    }
-  }
+  const discountedAmount = isApplyDiscount ? Math.floor((originPrice * billingCoupon.discountPercent) / 100) : 0;
 
   if (planInfo.couponRemainingApplyCount !== null && planInfo.couponRemainingApplyCount > 0) {
     planInfo.couponRemainingApplyCount -= 1;

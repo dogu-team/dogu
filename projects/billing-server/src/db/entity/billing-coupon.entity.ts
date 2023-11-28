@@ -1,4 +1,4 @@
-import { BillingCouponBase, BillingCouponType, BillingSubscriptionPlanType } from '@dogu-private/console';
+import { BillingCouponBase, BillingCouponType, BillingPeriod, BillingPlanType } from '@dogu-private/console';
 import { Column, Entity, PrimaryColumn } from 'typeorm';
 import { CreatedAt, DateColumn, DeletedAt, UpdatedAt } from '../decorators';
 
@@ -15,20 +15,17 @@ export class BillingCoupon implements BillingCouponBase {
   @Column({ type: 'enum', enum: BillingCouponType, default: 'basic' })
   type!: BillingCouponType;
 
-  @Column({ type: 'enum', enum: BillingSubscriptionPlanType, nullable: true })
-  subscriptionPlanType!: BillingSubscriptionPlanType | null;
+  @Column({ type: 'enum', enum: BillingPlanType, nullable: true })
+  planType!: BillingPlanType | null;
+
+  @Column({ type: 'enum', enum: BillingPeriod })
+  period!: BillingPeriod;
+
+  @Column({ type: 'integer' })
+  discountPercent!: number;
 
   @Column({ type: 'integer', nullable: true })
-  monthlyDiscountPercent!: number | null;
-
-  @Column({ type: 'integer', nullable: true })
-  monthlyApplyCount!: number | null;
-
-  @Column({ type: 'integer', nullable: true })
-  yearlyDiscountPercent!: number | null;
-
-  @Column({ type: 'integer', nullable: true })
-  yearlyApplyCount!: number | null;
+  applyCount!: number | null;
 
   @Column({ type: 'integer', nullable: true })
   remainingAvailableCount!: number | null;

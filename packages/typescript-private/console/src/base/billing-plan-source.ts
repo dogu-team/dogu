@@ -1,10 +1,10 @@
 import { propertiesOf } from '@dogu-tech/common';
 import { IsUUID } from 'class-validator';
-import { BillingSubscriptionPlanData } from './billing';
+import { BillingPlanData } from './billing';
 import { BillingOrganizationBase } from './billing-organization';
 
-export interface BillingSubscriptionPlanSourceBase extends BillingSubscriptionPlanData {
-  billingSubscriptionPlanSourceId: number;
+export interface BillingPlanSourceBase extends BillingPlanData {
+  billingPlanSourceId: number;
   name: string;
   billingOrganizationId: string | null;
   createdAt: Date;
@@ -13,9 +13,9 @@ export interface BillingSubscriptionPlanSourceBase extends BillingSubscriptionPl
   billingOrganization?: BillingOrganizationBase;
 }
 
-export const BillingSubscriptionPlanSourceProp = propertiesOf<BillingSubscriptionPlanSourceBase>();
+export const BillingPlanSourceProp = propertiesOf<BillingPlanSourceBase>();
 
-export class FindBillingSubscriptionPlanSourcesDto {
+export class FindAllBillingPlanSourcesDto {
   @IsUUID()
   organizationId!: string;
 }

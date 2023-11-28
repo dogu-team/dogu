@@ -1,8 +1,8 @@
 import {
-  BillingSubscriptionPlanMap,
+  BillingPlanMap,
   CallBillingApiResponse,
-  GetBillingSubscriptionPreviewDto,
-  GetBillingSubscriptionPreviewResponse,
+  GetBillingPreviewDto,
+  GetBillingPreviewResponse,
 } from '@dogu-private/console';
 import { Alert, Divider, Tag } from 'antd';
 import Trans from 'next-translate/Trans';
@@ -34,16 +34,12 @@ const BillingCalculatedPreview: React.FC<Props> = ({}) => {
   const [license, updateLicense] = useLicenseStore((state) => [state.license, state.updateLicense], shallow);
   const router = useRouter();
 
-  const dto: GetBillingSubscriptionPreviewDto = {
+  const dto: GetBillingPreviewDto = {
     organizationId: license?.organizationId ?? '',
-    category: 'cloud',
-    period: isAnnual ? 'yearly' : 'monthly',
-    type: selectedPlan?.type ?? 'live-testing',
-    option: selectedPlan?.option ?? 1,
-    currency: 'KRW',
+    billingPlanSourceId: selectedPlan?.billingPlanSourceId ?? 0,
     couponCode: couponCode ?? undefined,
   };
-  const { data, isLoading } = useSWR<CallBillingApiResponse<GetBillingSubscriptionPreviewResponse>>(
+  const { data, isLoading } = useSWR<CallBillingApiResponse<GetBillingPreviewResponse>>(
     !!license && selectedPlan && `/billing/purchase/preview?${buildQueryPraramsByObject(dto, { removeFalsy: true })}`,
     swrAuthFetcher,
     {
@@ -81,7 +77,7 @@ const BillingCalculatedPreview: React.FC<Props> = ({}) => {
   }
 
   if (!data?.body?.ok || data?.errorMessage) {
-    if (data?.body?.resultCode.reason === 'subscription-plan-duplicated') {
+    if (data?.body?.resultCode.reason === 'plan-duplicated') {
       return (
         <Box>
           <ErrorBox title="Oops" desc={t('samePlanSelectedErrorMessage')} />
@@ -95,9 +91,9 @@ const BillingCalculatedPreview: React.FC<Props> = ({}) => {
     );
   }
 
-  const shouldPurchase = checkShouldPurchase(license, { ...selectedPlan, period: data.body.subscriptionPlan.period });
+  const shouldPurchase = checkShouldPurchase(license, { ...selectedPlan, period: data.body.plan.period });
   const planDescription = planDescriptionInfoMap[selectedPlan.type];
-  const responseSubscriptionPlan = data.body.subscriptionPlan;
+  const responseSubscriptionPlan = data.body.plan;
   const isAnnualSubscription = responseSubscriptionPlan.period === 'yearly';
   const originPricePerMonth = isAnnualSubscription
     ? responseSubscriptionPlan.originPrice / 12
@@ -242,18 +238,18 @@ const BillingCalculatedPreview: React.FC<Props> = ({}) => {
             <OptionDescription style={{ fontSize: '.75rem' }}>
               {isAnnualSubscription
                 ? t(
-                    data.body.coupon.yearlyApplyCount ?? 1 > 1
+                    data.body.coupon.applyCount ?? 1 > 1
                       ? 'couponOptionYearPluralText'
                       : 'couponOptionYearSingularText',
-                    { year: data.body.coupon.yearlyApplyCount ?? 1, discount: data.body.coupon.yearlyDiscountPercent },
+                    { year: data.body.coupon.applyCount ?? 1, discount: data.body.coupon.discountPercent },
                   )
                 : t(
-                    data.body.coupon.monthlyApplyCount ?? 1 > 1
+                    data.body.coupon.applyCount ?? 1 > 1
                       ? 'couponOptionMonthPluralText'
                       : 'couponOptionMonthSingularText',
                     {
-                      month: data.body.coupon.monthlyApplyCount ?? 1,
-                      discount: data.body.coupon.monthlyDiscountPercent,
+                      month: data.body.coupon.applyCount ?? 1,
+                      discount: data.body.coupon.discountPercent,
                     },
                   )}
             </OptionDescription>
@@ -360,12 +356,12 @@ const BillingCalculatedPreview: React.FC<Props> = ({}) => {
                       {getLocaleFormattedPrice(
                         router.locale,
                         responseSubscriptionPlan.currency,
-                        (BillingSubscriptionPlanMap[responseSubscriptionPlan.type].optionMap[
-                          responseSubscriptionPlan.option
-                        ][responseSubscriptionPlan.currency].monthly.originPrice -
-                          BillingSubscriptionPlanMap[responseSubscriptionPlan.type].optionMap[
-                            responseSubscriptionPlan.option
-                          ][responseSubscriptionPlan.currency].yearly.originPrice /
+                        (BillingPlanMap[responseSubscriptionPlan.type].optionMap[responseSubscriptionPlan.option][
+                          responseSubscriptionPlan.currency
+                        ].monthly.originPrice -
+                          BillingPlanMap[responseSubscriptionPlan.type].optionMap[responseSubscriptionPlan.option][
+                            responseSubscriptionPlan.currency
+                          ].yearly.originPrice /
                             12) *
                           12,
                       )}

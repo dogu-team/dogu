@@ -1,27 +1,20 @@
-import {
-  BillingCategory,
-  BillingCurrency,
-  BillingPeriod,
-  BillingSubscriptionPlanSourceBase,
-  BillingSubscriptionPlanSourceProp,
-  BillingSubscriptionPlanType,
-} from '@dogu-private/console';
+import { BillingCategory, BillingCurrency, BillingPeriod, BillingPlanSourceBase, BillingPlanSourceProp, BillingPlanType } from '@dogu-private/console';
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 import { CreatedAt, DeletedAt, UpdatedAt } from '../decorators';
 import { BillingOrganization } from './billing-organization.entity';
 
-export const BillingSubscriptionPlanSourceTableName = 'billing_subscription_plan_source';
+export const BillingPlanSourceTableName = 'billing_plan_source';
 
-@Entity(BillingSubscriptionPlanSourceTableName)
-export class BillingSubscriptionPlanSource implements BillingSubscriptionPlanSourceBase {
+@Entity(BillingPlanSourceTableName)
+export class BillingPlanSource implements BillingPlanSourceBase {
   @PrimaryColumn({ type: 'integer' })
-  billingSubscriptionPlanSourceId!: number;
+  billingPlanSourceId!: number;
 
   @Column({ type: 'enum', enum: BillingCategory })
   category!: BillingCategory;
 
-  @Column({ type: 'enum', enum: BillingSubscriptionPlanType })
-  type!: BillingSubscriptionPlanType;
+  @Column({ type: 'enum', enum: BillingPlanType })
+  type!: BillingPlanType;
 
   @Column({ type: 'text' })
   name!: string;
@@ -50,7 +43,7 @@ export class BillingSubscriptionPlanSource implements BillingSubscriptionPlanSou
   @DeletedAt()
   deletedAt!: Date | null;
 
-  @ManyToOne(() => BillingOrganization, (billingOrganization) => billingOrganization.billingSubscriptionPlanSources)
-  @JoinColumn({ name: BillingSubscriptionPlanSourceProp.billingOrganizationId })
+  @ManyToOne(() => BillingOrganization, (billingOrganization) => billingOrganization.billingPlanSources)
+  @JoinColumn({ name: BillingPlanSourceProp.billingOrganizationId })
   billingOrganization?: BillingOrganization;
 }
