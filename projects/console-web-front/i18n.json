@@ -36,6 +36,9 @@
     "/dashboard/[orgId]/web-responsive": ["organization", "web-responsive"],
     "/dashboard/[orgId]/web-responsive/creator": ["organization"],
     "/dashboard/[orgId]/web-responsive/[executorId]/viewer": ["organization"],
+    "/dashboard/[orgId]/automation/mobile-apps": ["organization", "project"],
+    "/dashboard/[orgId]/automation/mobile-game": ["organization", "project"],
+    "/dashboard/[orgId]/automation/web": ["organization", "project"],
 
     "/dashboard/[orgId]/projects/[pid]": ["project"],
     "/dashboard/[orgId]/projects/[pid]/members": ["project", "project-member"],

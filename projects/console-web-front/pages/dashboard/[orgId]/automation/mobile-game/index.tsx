@@ -6,17 +6,17 @@ import ConsoleLayout from 'src/components/layouts/ConsoleLayout';
 import OrganizationSideBar from 'src/components/layouts/OrganizationSideBar';
 import ProjectListController from 'src/components/projects/ProjectListController';
 import { getOrganizationPageServerSideProps, OrganizationServerSideProps } from 'src/ssr/organization';
-import TableListView from '../../../../src/components/common/TableListView';
-import CreateProjectButton from '../../../../src/components/projects/CreateProjectButton';
-import RefreshButton from '../../../../src/components/buttons/RefreshButton';
-import { flexRowSpaceBetweenStyle } from '../../../../src/styles/box';
-import LiveChat from '../../../../src/components/external/livechat';
+import TableListView from '../../../../../src/components/common/TableListView';
+import CreateProjectButton from '../../../../../src/components/projects/CreateProjectButton';
+import RefreshButton from '../../../../../src/components/buttons/RefreshButton';
+import LiveChat from '../../../../../src/components/external/livechat';
+import { flexRowSpaceBetweenStyle } from '../../../../../src/styles/box';
 
-const AppAutomationPage: NextPageWithLayout<OrganizationServerSideProps> = ({ user, organization }) => {
+const GameAutomationPage: NextPageWithLayout<OrganizationServerSideProps> = ({ user, organization }) => {
   return (
     <>
       <Head>
-        <title>App Automation - {organization.name} | Dogu</title>
+        <title>Mobile Game Automation - {organization.name} | Dogu</title>
       </Head>
       <TableListView
         top={
@@ -38,9 +38,13 @@ const AppAutomationPage: NextPageWithLayout<OrganizationServerSideProps> = ({ us
   );
 };
 
-AppAutomationPage.getLayout = (page) => {
+GameAutomationPage.getLayout = (page) => {
   return (
-    <ConsoleLayout {...page.props} sidebar={<OrganizationSideBar />} titleI18nKey="organization:projectPageTitle">
+    <ConsoleLayout
+      {...page.props}
+      sidebar={<OrganizationSideBar />}
+      titleI18nKey="organization:mobileGameAutomationPageTitle"
+    >
       {page}
     </ConsoleLayout>
   );
@@ -48,7 +52,7 @@ AppAutomationPage.getLayout = (page) => {
 
 export const getServerSideProps = getOrganizationPageServerSideProps;
 
-export default AppAutomationPage;
+export default GameAutomationPage;
 
 const FlexBox = styled.div`
   ${flexRowSpaceBetweenStyle}

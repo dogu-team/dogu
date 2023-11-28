@@ -2,10 +2,9 @@ import React from 'react';
 import styled from 'styled-components';
 import useTranslation from 'next-translate/useTranslation';
 import {
-  AppstoreOutlined,
   BookOutlined,
   ClusterOutlined,
-  ProjectOutlined,
+  MobileOutlined,
   SettingOutlined,
   TeamOutlined,
   UserOutlined,
@@ -15,6 +14,9 @@ import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { RiExternalLinkLine } from 'react-icons/ri';
 import { HiOutlineDevicePhoneMobile } from 'react-icons/hi2';
+import { IoAppsSharp } from 'react-icons/io5';
+import { GoBrowser } from 'react-icons/go';
+import Image from 'next/image';
 
 import { scrollbarStyle } from '../../styles/common';
 import useCollapsibleSidebar from '../../stores/collapsible-sidebar';
@@ -25,6 +27,7 @@ import { flexRowCenteredStyle } from '../../styles/box';
 import CollpaseSidebarMenu from './CollapseSidebarMenu';
 import useRefresh from '../../hooks/useRefresh';
 import useOrganizationContext from '../../hooks/context/useOrganizationContext';
+import resources from '../../resources';
 // import { IS_CLOUD } from '../../../pages/_app';
 
 type MenuItem = Required<MenuProps>['items'];
@@ -123,66 +126,80 @@ const OrganizationSideBar = () => {
       label: collapsed ? null : 'Test Automation',
       children: [
         {
-          key: 'project',
+          key: 'web-automation',
           icon: collapsed ? (
             <StyledIconLink
-              selected={router.asPath === `/dashboard/${orgId}/web-automation`}
-              href={`/dashboard/${orgId}/web-automation`}
+              selected={router.asPath.startsWith(`/dashboard/${orgId}/automation/web`)}
+              href={`/dashboard/${orgId}/automation/web`}
             >
-              <ProjectOutlined />
+              <GoBrowser />
             </StyledIconLink>
           ) : undefined,
           label: collapsed ? (
-            'Web Automation'
+            t('organization:sidebarWebAutomation')
           ) : (
             <SideBarMenu
-              icon={<ProjectOutlined style={{ fontSize: '1.2rem' }} />}
-              path={`/dashboard/${orgId}/web-automation`}
-              text={'Web Automation'}
+              icon={<GoBrowser style={{ fontSize: '1.2rem' }} />}
+              path={`/dashboard/${orgId}/automation/web`}
+              text={t('organization:sidebarWebAutomation')}
               accessId={'side-bar-web-automation'}
             />
           ),
           style: { borderRadius: '6px' },
         },
         {
-          key: 'project',
+          key: 'app-automation',
           icon: collapsed ? (
             <StyledIconLink
-              selected={router.asPath === `/dashboard/${orgId}/app-automation`}
-              href={`/dashboard/${orgId}/app-automation`}
+              selected={router.asPath.startsWith(`/dashboard/${orgId}/automation/mobile-apps`)}
+              href={`/dashboard/${orgId}/automation/mobile-apps`}
             >
-              <ProjectOutlined />
+              <MobileOutlined />
             </StyledIconLink>
           ) : undefined,
           label: collapsed ? (
-            'App Automation'
+            t('organization:sidebarMobileAppAutomation')
           ) : (
             <SideBarMenu
-              icon={<ProjectOutlined style={{ fontSize: '1.2rem' }} />}
-              path={`/dashboard/${orgId}/app-automation`}
-              text={'App Automation'}
+              icon={<MobileOutlined style={{ fontSize: '1.2rem' }} />}
+              path={`/dashboard/${orgId}/automation/mobile-apps`}
+              text={t('organization:sidebarMobileAppAutomation')}
               accessId={'side-bar-app-automation'}
             />
           ),
           style: { borderRadius: '6px' },
         },
         {
-          key: 'project',
+          key: 'game-automation',
           icon: collapsed ? (
             <StyledIconLink
-              selected={router.asPath === `/dashboard/${orgId}/game-automation`}
-              href={`/dashboard/${orgId}/game-automation`}
+              selected={router.asPath.startsWith(`/dashboard/${orgId}/automation/mobile-game`)}
+              href={`/dashboard/${orgId}/automation/mobile-game`}
             >
-              <ProjectOutlined />
+              <Image
+                src={resources.icons.mobileGame}
+                width={24}
+                height={24}
+                alt="mobile-game"
+                style={{ width: '1rem', height: '1rem' }}
+              />
             </StyledIconLink>
           ) : undefined,
           label: collapsed ? (
-            'Game Automation'
+            t('organization:sidebarMobileGameAutomation')
           ) : (
             <SideBarMenu
-              icon={<ProjectOutlined style={{ fontSize: '1.2rem' }} />}
-              path={`/dashboard/${orgId}/game-automation`}
-              text={'Game Automation'}
+              icon={
+                <Image
+                  src={resources.icons.mobileGame}
+                  width={24}
+                  height={24}
+                  alt="mobile-game"
+                  style={{ width: '1.2rem', height: '1.2rem' }}
+                />
+              }
+              path={`/dashboard/${orgId}/automation/mobile-game`}
+              text={t('organization:sidebarMobileGameAutomation')}
               accessId={'side-bar-game-automation'}
             />
           ),
@@ -227,14 +244,14 @@ const OrganizationSideBar = () => {
           key: 'application',
           icon: collapsed ? (
             <StyledIconLink selected={router.asPath === `/dashboard/${orgId}/apps`} href={`/dashboard/${orgId}/apps`}>
-              <AppstoreOutlined />
+              <IoAppsSharp />
             </StyledIconLink>
           ) : undefined,
           label: collapsed ? (
             t('organization:appsPageTitle')
           ) : (
             <SideBarMenu
-              icon={<AppstoreOutlined style={{ fontSize: '1.2rem' }} />}
+              icon={<IoAppsSharp style={{ fontSize: '1.2rem' }} />}
               path={`/dashboard/${orgId}/apps`}
               text={t('organization:appsPageTitle')}
               accessId={process.env.NEXT_PUBLIC_ENV !== 'production' ? 'side-bar-apps' : undefined}
@@ -354,6 +371,7 @@ const OrganizationSideBar = () => {
           maxHeight: '100dvh',
           display: 'flex',
           flexDirection: 'column',
+          userSelect: 'none',
         }}
       >
         <SidebarInner>
