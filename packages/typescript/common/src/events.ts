@@ -33,7 +33,7 @@ export async function emitEventAsync<Key extends string, Value extends Class<Val
       }
     }
   } catch (error) {
-    console.debug('eventEmitter.emitAsync failed', error);
+    console.error('eventEmitter.emitAsync failed', error);
     throw error;
   }
   return results as unknown[];

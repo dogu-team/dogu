@@ -20,7 +20,7 @@ fileprivate struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAP
   typealias Version = _2
 }
 
-public struct Outer_DeviceTemporaryToken {
+public struct Outer_DeviceServerToken {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -33,15 +33,15 @@ public struct Outer_DeviceTemporaryToken {
 }
 
 #if swift(>=5.5) && canImport(_Concurrency)
-extension Outer_DeviceTemporaryToken: @unchecked Sendable {}
+extension Outer_DeviceServerToken: @unchecked Sendable {}
 #endif  // swift(>=5.5) && canImport(_Concurrency)
 
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
 
 fileprivate let _protobuf_package = "outer"
 
-extension Outer_DeviceTemporaryToken: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  public static let protoMessageName: String = _protobuf_package + ".DeviceTemporaryToken"
+extension Outer_DeviceServerToken: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".DeviceServerToken"
   public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "value"),
   ]
@@ -65,7 +65,7 @@ extension Outer_DeviceTemporaryToken: SwiftProtobuf.Message, SwiftProtobuf._Mess
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: Outer_DeviceTemporaryToken, rhs: Outer_DeviceTemporaryToken) -> Bool {
+  public static func ==(lhs: Outer_DeviceServerToken, rhs: Outer_DeviceServerToken) -> Bool {
     if lhs.value != rhs.value {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true

@@ -1728,15 +1728,15 @@ public final class Streaming {
     com.dogu.protocol.generated.outer.Errors.ErrorResult getErrorResult();
 
     /**
-     * <code>.outer.DeviceTemporaryToken device_temporary_token = 4;</code>
-     * @return Whether the deviceTemporaryToken field is set.
+     * <code>.outer.DeviceServerToken device_server_token = 4;</code>
+     * @return Whether the deviceServerToken field is set.
      */
-    boolean hasDeviceTemporaryToken();
+    boolean hasDeviceServerToken();
     /**
-     * <code>.outer.DeviceTemporaryToken device_temporary_token = 4;</code>
-     * @return The deviceTemporaryToken.
+     * <code>.outer.DeviceServerToken device_server_token = 4;</code>
+     * @return The deviceServerToken.
      */
-    com.dogu.protocol.generated.outer.DeviceAuth.DeviceTemporaryToken getDeviceTemporaryToken();
+    com.dogu.protocol.generated.outer.DeviceAuth.DeviceServerToken getDeviceServerToken();
 
     public com.dogu.protocol.generated.outer.streaming.Streaming.StreamingAnswer.ValueCase getValueCase();
   }
@@ -1756,7 +1756,7 @@ public final class Streaming {
       PEER_DESCRIPTION(1),
       ICE_CANDIDATE(2),
       ERROR_RESULT(3),
-      DEVICE_TEMPORARY_TOKEN(4),
+      DEVICE_SERVER_TOKEN(4),
       VALUE_NOT_SET(0);
       private final int value;
       private ValueCase(int value) {
@@ -1775,7 +1775,7 @@ public final class Streaming {
           case 1: return PEER_DESCRIPTION;
           case 2: return ICE_CANDIDATE;
           case 3: return ERROR_RESULT;
-          case 4: return DEVICE_TEMPORARY_TOKEN;
+          case 4: return DEVICE_SERVER_TOKEN;
           case 0: return VALUE_NOT_SET;
           default: return null;
         }
@@ -1947,40 +1947,40 @@ public final class Streaming {
       }
     }
 
-    public static final int DEVICE_TEMPORARY_TOKEN_FIELD_NUMBER = 4;
+    public static final int DEVICE_SERVER_TOKEN_FIELD_NUMBER = 4;
     /**
-     * <code>.outer.DeviceTemporaryToken device_temporary_token = 4;</code>
+     * <code>.outer.DeviceServerToken device_server_token = 4;</code>
      */
     @java.lang.Override
-    public boolean hasDeviceTemporaryToken() {
+    public boolean hasDeviceServerToken() {
       return valueCase_ == 4;
     }
     /**
-     * <code>.outer.DeviceTemporaryToken device_temporary_token = 4;</code>
+     * <code>.outer.DeviceServerToken device_server_token = 4;</code>
      */
     @java.lang.Override
-    public com.dogu.protocol.generated.outer.DeviceAuth.DeviceTemporaryToken getDeviceTemporaryToken() {
+    public com.dogu.protocol.generated.outer.DeviceAuth.DeviceServerToken getDeviceServerToken() {
       if (valueCase_ == 4) {
-         return (com.dogu.protocol.generated.outer.DeviceAuth.DeviceTemporaryToken) value_;
+         return (com.dogu.protocol.generated.outer.DeviceAuth.DeviceServerToken) value_;
       }
-      return com.dogu.protocol.generated.outer.DeviceAuth.DeviceTemporaryToken.getDefaultInstance();
+      return com.dogu.protocol.generated.outer.DeviceAuth.DeviceServerToken.getDefaultInstance();
     }
     /**
-     * <code>.outer.DeviceTemporaryToken device_temporary_token = 4;</code>
+     * <code>.outer.DeviceServerToken device_server_token = 4;</code>
      */
-    private void setDeviceTemporaryToken(com.dogu.protocol.generated.outer.DeviceAuth.DeviceTemporaryToken value) {
+    private void setDeviceServerToken(com.dogu.protocol.generated.outer.DeviceAuth.DeviceServerToken value) {
       value.getClass();
   value_ = value;
       valueCase_ = 4;
     }
     /**
-     * <code>.outer.DeviceTemporaryToken device_temporary_token = 4;</code>
+     * <code>.outer.DeviceServerToken device_server_token = 4;</code>
      */
-    private void mergeDeviceTemporaryToken(com.dogu.protocol.generated.outer.DeviceAuth.DeviceTemporaryToken value) {
+    private void mergeDeviceServerToken(com.dogu.protocol.generated.outer.DeviceAuth.DeviceServerToken value) {
       value.getClass();
   if (valueCase_ == 4 &&
-          value_ != com.dogu.protocol.generated.outer.DeviceAuth.DeviceTemporaryToken.getDefaultInstance()) {
-        value_ = com.dogu.protocol.generated.outer.DeviceAuth.DeviceTemporaryToken.newBuilder((com.dogu.protocol.generated.outer.DeviceAuth.DeviceTemporaryToken) value_)
+          value_ != com.dogu.protocol.generated.outer.DeviceAuth.DeviceServerToken.getDefaultInstance()) {
+        value_ = com.dogu.protocol.generated.outer.DeviceAuth.DeviceServerToken.newBuilder((com.dogu.protocol.generated.outer.DeviceAuth.DeviceServerToken) value_)
             .mergeFrom(value).buildPartial();
       } else {
         value_ = value;
@@ -1988,9 +1988,9 @@ public final class Streaming {
       valueCase_ = 4;
     }
     /**
-     * <code>.outer.DeviceTemporaryToken device_temporary_token = 4;</code>
+     * <code>.outer.DeviceServerToken device_server_token = 4;</code>
      */
-    private void clearDeviceTemporaryToken() {
+    private void clearDeviceServerToken() {
       if (valueCase_ == 4) {
         valueCase_ = 0;
         value_ = null;
@@ -2249,50 +2249,50 @@ public final class Streaming {
       }
 
       /**
-       * <code>.outer.DeviceTemporaryToken device_temporary_token = 4;</code>
+       * <code>.outer.DeviceServerToken device_server_token = 4;</code>
        */
       @java.lang.Override
-      public boolean hasDeviceTemporaryToken() {
-        return instance.hasDeviceTemporaryToken();
+      public boolean hasDeviceServerToken() {
+        return instance.hasDeviceServerToken();
       }
       /**
-       * <code>.outer.DeviceTemporaryToken device_temporary_token = 4;</code>
+       * <code>.outer.DeviceServerToken device_server_token = 4;</code>
        */
       @java.lang.Override
-      public com.dogu.protocol.generated.outer.DeviceAuth.DeviceTemporaryToken getDeviceTemporaryToken() {
-        return instance.getDeviceTemporaryToken();
+      public com.dogu.protocol.generated.outer.DeviceAuth.DeviceServerToken getDeviceServerToken() {
+        return instance.getDeviceServerToken();
       }
       /**
-       * <code>.outer.DeviceTemporaryToken device_temporary_token = 4;</code>
+       * <code>.outer.DeviceServerToken device_server_token = 4;</code>
        */
-      public Builder setDeviceTemporaryToken(com.dogu.protocol.generated.outer.DeviceAuth.DeviceTemporaryToken value) {
+      public Builder setDeviceServerToken(com.dogu.protocol.generated.outer.DeviceAuth.DeviceServerToken value) {
         copyOnWrite();
-        instance.setDeviceTemporaryToken(value);
+        instance.setDeviceServerToken(value);
         return this;
       }
       /**
-       * <code>.outer.DeviceTemporaryToken device_temporary_token = 4;</code>
+       * <code>.outer.DeviceServerToken device_server_token = 4;</code>
        */
-      public Builder setDeviceTemporaryToken(
-          com.dogu.protocol.generated.outer.DeviceAuth.DeviceTemporaryToken.Builder builderForValue) {
+      public Builder setDeviceServerToken(
+          com.dogu.protocol.generated.outer.DeviceAuth.DeviceServerToken.Builder builderForValue) {
         copyOnWrite();
-        instance.setDeviceTemporaryToken(builderForValue.build());
+        instance.setDeviceServerToken(builderForValue.build());
         return this;
       }
       /**
-       * <code>.outer.DeviceTemporaryToken device_temporary_token = 4;</code>
+       * <code>.outer.DeviceServerToken device_server_token = 4;</code>
        */
-      public Builder mergeDeviceTemporaryToken(com.dogu.protocol.generated.outer.DeviceAuth.DeviceTemporaryToken value) {
+      public Builder mergeDeviceServerToken(com.dogu.protocol.generated.outer.DeviceAuth.DeviceServerToken value) {
         copyOnWrite();
-        instance.mergeDeviceTemporaryToken(value);
+        instance.mergeDeviceServerToken(value);
         return this;
       }
       /**
-       * <code>.outer.DeviceTemporaryToken device_temporary_token = 4;</code>
+       * <code>.outer.DeviceServerToken device_server_token = 4;</code>
        */
-      public Builder clearDeviceTemporaryToken() {
+      public Builder clearDeviceServerToken() {
         copyOnWrite();
-        instance.clearDeviceTemporaryToken();
+        instance.clearDeviceServerToken();
         return this;
       }
 
@@ -2317,7 +2317,7 @@ public final class Streaming {
               com.dogu.protocol.generated.outer.streaming.Webrtc.ProtoRTCPeerDescription.class,
               com.dogu.protocol.generated.outer.streaming.Webrtc.ProtoRTCIceCandidateInit.class,
               com.dogu.protocol.generated.outer.Errors.ErrorResult.class,
-              com.dogu.protocol.generated.outer.DeviceAuth.DeviceTemporaryToken.class,
+              com.dogu.protocol.generated.outer.DeviceAuth.DeviceServerToken.class,
             };
             java.lang.String info =
                 "\u0000\u0004\u0001\u0000\u0001\u0004\u0004\u0000\u0000\u0000\u0001<\u0000\u0002<" +

@@ -42,8 +42,8 @@ export class DeviceStreamingService
           if (!isTokenSend) {
             const tokenAnswer: StreamingAnswer = {
               value: {
-                $case: 'deviceTemporaryToken',
-                deviceTemporaryToken: this.authService.generateTemporaryToken(serial),
+                $case: 'deviceServerToken',
+                deviceServerToken: this.authService.generateTemporaryToken(serial),
               },
             };
             webSocket.send(JSON.stringify(tokenAnswer));

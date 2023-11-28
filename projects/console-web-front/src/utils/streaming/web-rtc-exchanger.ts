@@ -171,9 +171,9 @@ export class WebRtcTrickleExchanger implements WebRtcExchanger {
     } else if ($case === 'iceCandidate') {
       const { iceCandidate } = value;
       await this.addCandidate(peerConnection, iceCandidate);
-    } else if ($case === 'deviceTemporaryToken') {
-      const { deviceTemporaryToken } = value;
-      callback.token?.(deviceTemporaryToken);
+    } else if ($case === 'deviceServerToken') {
+      const { deviceServerToken } = value;
+      callback.token?.(deviceServerToken);
     } else {
       throw new Error(`invalid message ${JSON.stringify(answerDto)}`);
     }

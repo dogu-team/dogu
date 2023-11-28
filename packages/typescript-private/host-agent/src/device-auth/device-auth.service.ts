@@ -5,20 +5,24 @@ import { DoguLogger } from '../logger/logger';
 
 @Injectable()
 export class DeviceAuthService {
-  private adminToken: DeviceAdminToken;
+  private _adminToken: DeviceAdminToken;
 
   constructor(private readonly logger: DoguLogger) {
-    this.adminToken = new DeviceAdminToken(env.DOGU_SECRET_INITIAL_ADMIN_TOKEN);
+    this._adminToken = new DeviceAdminToken(env.DOGU_SECRET_INITIAL_ADMIN_TOKEN);
+  }
+
+  get adminToken(): DeviceAdminToken {
+    return this.adminToken;
   }
 
   validate(value: string): boolean {
-    if (value !== this.adminToken.value) {
+    if (value !== this._adminToken.value) {
       return false;
     }
     return true;
   }
 
   refreshAdminToken(value: string): void {
-    this.adminToken = new DeviceAdminToken(value);
+    this._adminToken = new DeviceAdminToken(value);
   }
 }

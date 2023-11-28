@@ -8,8 +8,8 @@ public final class DeviceAuth {
   public static void registerAllExtensions(
       com.google.protobuf.ExtensionRegistryLite registry) {
   }
-  public interface DeviceTemporaryTokenOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:outer.DeviceTemporaryToken)
+  public interface DeviceServerTokenOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:outer.DeviceServerToken)
       com.google.protobuf.MessageLiteOrBuilder {
 
     /**
@@ -25,14 +25,14 @@ public final class DeviceAuth {
         getValueBytes();
   }
   /**
-   * Protobuf type {@code outer.DeviceTemporaryToken}
+   * Protobuf type {@code outer.DeviceServerToken}
    */
-  public  static final class DeviceTemporaryToken extends
+  public  static final class DeviceServerToken extends
       com.google.protobuf.GeneratedMessageLite<
-          DeviceTemporaryToken, DeviceTemporaryToken.Builder> implements
-      // @@protoc_insertion_point(message_implements:outer.DeviceTemporaryToken)
-      DeviceTemporaryTokenOrBuilder {
-    private DeviceTemporaryToken() {
+          DeviceServerToken, DeviceServerToken.Builder> implements
+      // @@protoc_insertion_point(message_implements:outer.DeviceServerToken)
+      DeviceServerTokenOrBuilder {
+    private DeviceServerToken() {
       value_ = "";
     }
     public static final int VALUE_FIELD_NUMBER = 1;
@@ -82,73 +82,73 @@ public final class DeviceAuth {
       
     }
 
-    public static com.dogu.protocol.generated.outer.DeviceAuth.DeviceTemporaryToken parseFrom(
+    public static com.dogu.protocol.generated.outer.DeviceAuth.DeviceServerToken parseFrom(
         java.nio.ByteBuffer data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return com.google.protobuf.GeneratedMessageLite.parseFrom(
           DEFAULT_INSTANCE, data);
     }
-    public static com.dogu.protocol.generated.outer.DeviceAuth.DeviceTemporaryToken parseFrom(
+    public static com.dogu.protocol.generated.outer.DeviceAuth.DeviceServerToken parseFrom(
         java.nio.ByteBuffer data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return com.google.protobuf.GeneratedMessageLite.parseFrom(
           DEFAULT_INSTANCE, data, extensionRegistry);
     }
-    public static com.dogu.protocol.generated.outer.DeviceAuth.DeviceTemporaryToken parseFrom(
+    public static com.dogu.protocol.generated.outer.DeviceAuth.DeviceServerToken parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return com.google.protobuf.GeneratedMessageLite.parseFrom(
           DEFAULT_INSTANCE, data);
     }
-    public static com.dogu.protocol.generated.outer.DeviceAuth.DeviceTemporaryToken parseFrom(
+    public static com.dogu.protocol.generated.outer.DeviceAuth.DeviceServerToken parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return com.google.protobuf.GeneratedMessageLite.parseFrom(
           DEFAULT_INSTANCE, data, extensionRegistry);
     }
-    public static com.dogu.protocol.generated.outer.DeviceAuth.DeviceTemporaryToken parseFrom(byte[] data)
+    public static com.dogu.protocol.generated.outer.DeviceAuth.DeviceServerToken parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return com.google.protobuf.GeneratedMessageLite.parseFrom(
           DEFAULT_INSTANCE, data);
     }
-    public static com.dogu.protocol.generated.outer.DeviceAuth.DeviceTemporaryToken parseFrom(
+    public static com.dogu.protocol.generated.outer.DeviceAuth.DeviceServerToken parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return com.google.protobuf.GeneratedMessageLite.parseFrom(
           DEFAULT_INSTANCE, data, extensionRegistry);
     }
-    public static com.dogu.protocol.generated.outer.DeviceAuth.DeviceTemporaryToken parseFrom(java.io.InputStream input)
+    public static com.dogu.protocol.generated.outer.DeviceAuth.DeviceServerToken parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageLite.parseFrom(
           DEFAULT_INSTANCE, input);
     }
-    public static com.dogu.protocol.generated.outer.DeviceAuth.DeviceTemporaryToken parseFrom(
+    public static com.dogu.protocol.generated.outer.DeviceAuth.DeviceServerToken parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageLite.parseFrom(
           DEFAULT_INSTANCE, input, extensionRegistry);
     }
-    public static com.dogu.protocol.generated.outer.DeviceAuth.DeviceTemporaryToken parseDelimitedFrom(java.io.InputStream input)
+    public static com.dogu.protocol.generated.outer.DeviceAuth.DeviceServerToken parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return parseDelimitedFrom(DEFAULT_INSTANCE, input);
     }
-    public static com.dogu.protocol.generated.outer.DeviceAuth.DeviceTemporaryToken parseDelimitedFrom(
+    public static com.dogu.protocol.generated.outer.DeviceAuth.DeviceServerToken parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return parseDelimitedFrom(DEFAULT_INSTANCE, input, extensionRegistry);
     }
-    public static com.dogu.protocol.generated.outer.DeviceAuth.DeviceTemporaryToken parseFrom(
+    public static com.dogu.protocol.generated.outer.DeviceAuth.DeviceServerToken parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageLite.parseFrom(
           DEFAULT_INSTANCE, input);
     }
-    public static com.dogu.protocol.generated.outer.DeviceAuth.DeviceTemporaryToken parseFrom(
+    public static com.dogu.protocol.generated.outer.DeviceAuth.DeviceServerToken parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -159,19 +159,19 @@ public final class DeviceAuth {
     public static Builder newBuilder() {
       return (Builder) DEFAULT_INSTANCE.createBuilder();
     }
-    public static Builder newBuilder(com.dogu.protocol.generated.outer.DeviceAuth.DeviceTemporaryToken prototype) {
+    public static Builder newBuilder(com.dogu.protocol.generated.outer.DeviceAuth.DeviceServerToken prototype) {
       return (Builder) DEFAULT_INSTANCE.createBuilder(prototype);
     }
 
     /**
-     * Protobuf type {@code outer.DeviceTemporaryToken}
+     * Protobuf type {@code outer.DeviceServerToken}
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageLite.Builder<
-          com.dogu.protocol.generated.outer.DeviceAuth.DeviceTemporaryToken, Builder> implements
-        // @@protoc_insertion_point(builder_implements:outer.DeviceTemporaryToken)
-        com.dogu.protocol.generated.outer.DeviceAuth.DeviceTemporaryTokenOrBuilder {
-      // Construct using com.dogu.protocol.generated.outer.DeviceAuth.DeviceTemporaryToken.newBuilder()
+          com.dogu.protocol.generated.outer.DeviceAuth.DeviceServerToken, Builder> implements
+        // @@protoc_insertion_point(builder_implements:outer.DeviceServerToken)
+        com.dogu.protocol.generated.outer.DeviceAuth.DeviceServerTokenOrBuilder {
+      // Construct using com.dogu.protocol.generated.outer.DeviceAuth.DeviceServerToken.newBuilder()
       private Builder() {
         super(DEFAULT_INSTANCE);
       }
@@ -226,7 +226,7 @@ public final class DeviceAuth {
         return this;
       }
 
-      // @@protoc_insertion_point(builder_scope:outer.DeviceTemporaryToken)
+      // @@protoc_insertion_point(builder_scope:outer.DeviceServerToken)
     }
     @java.lang.Override
     @java.lang.SuppressWarnings({"unchecked", "fallthrough"})
@@ -235,7 +235,7 @@ public final class DeviceAuth {
         java.lang.Object arg0, java.lang.Object arg1) {
       switch (method) {
         case NEW_MUTABLE_INSTANCE: {
-          return new com.dogu.protocol.generated.outer.DeviceAuth.DeviceTemporaryToken();
+          return new com.dogu.protocol.generated.outer.DeviceAuth.DeviceServerToken();
         }
         case NEW_BUILDER: {
           return new Builder();
@@ -253,13 +253,13 @@ public final class DeviceAuth {
           return DEFAULT_INSTANCE;
         }
         case GET_PARSER: {
-          com.google.protobuf.Parser<com.dogu.protocol.generated.outer.DeviceAuth.DeviceTemporaryToken> parser = PARSER;
+          com.google.protobuf.Parser<com.dogu.protocol.generated.outer.DeviceAuth.DeviceServerToken> parser = PARSER;
           if (parser == null) {
-            synchronized (com.dogu.protocol.generated.outer.DeviceAuth.DeviceTemporaryToken.class) {
+            synchronized (com.dogu.protocol.generated.outer.DeviceAuth.DeviceServerToken.class) {
               parser = PARSER;
               if (parser == null) {
                 parser =
-                    new DefaultInstanceBasedParser<com.dogu.protocol.generated.outer.DeviceAuth.DeviceTemporaryToken>(
+                    new DefaultInstanceBasedParser<com.dogu.protocol.generated.outer.DeviceAuth.DeviceServerToken>(
                         DEFAULT_INSTANCE);
                 PARSER = parser;
               }
@@ -278,24 +278,24 @@ public final class DeviceAuth {
     }
 
 
-    // @@protoc_insertion_point(class_scope:outer.DeviceTemporaryToken)
-    private static final com.dogu.protocol.generated.outer.DeviceAuth.DeviceTemporaryToken DEFAULT_INSTANCE;
+    // @@protoc_insertion_point(class_scope:outer.DeviceServerToken)
+    private static final com.dogu.protocol.generated.outer.DeviceAuth.DeviceServerToken DEFAULT_INSTANCE;
     static {
-      DeviceTemporaryToken defaultInstance = new DeviceTemporaryToken();
+      DeviceServerToken defaultInstance = new DeviceServerToken();
       // New instances are implicitly immutable so no need to make
       // immutable.
       DEFAULT_INSTANCE = defaultInstance;
       com.google.protobuf.GeneratedMessageLite.registerDefaultInstance(
-        DeviceTemporaryToken.class, defaultInstance);
+        DeviceServerToken.class, defaultInstance);
     }
 
-    public static com.dogu.protocol.generated.outer.DeviceAuth.DeviceTemporaryToken getDefaultInstance() {
+    public static com.dogu.protocol.generated.outer.DeviceAuth.DeviceServerToken getDefaultInstance() {
       return DEFAULT_INSTANCE;
     }
 
-    private static volatile com.google.protobuf.Parser<DeviceTemporaryToken> PARSER;
+    private static volatile com.google.protobuf.Parser<DeviceServerToken> PARSER;
 
-    public static com.google.protobuf.Parser<DeviceTemporaryToken> parser() {
+    public static com.google.protobuf.Parser<DeviceServerToken> parser() {
       return DEFAULT_INSTANCE.getParserForType();
     }
   }

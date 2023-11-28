@@ -1,7 +1,7 @@
 import { Closable, ConsoleLogger, fillOptionsSync, Printable, PromiseOrValue } from '@dogu-tech/common';
 import {
   DeviceHostUploadFileSendMessage,
-  DeviceTemporaryToken,
+  DeviceServerToken,
   HttpRequest,
   HttpResponse,
   WebSocketCloseEvent,
@@ -51,7 +51,7 @@ export class DeviceClientOptions {
    * @default empty
    */
   @IsObject()
-  token?: DeviceTemporaryToken;
+  token?: DeviceServerToken;
 }
 
 export function fillDeviceClientOptions(options?: DeviceClientOptions): Required<DeviceClientOptions> {

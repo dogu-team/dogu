@@ -1,7 +1,7 @@
 import { IsFilledString } from '@dogu-tech/common';
-import { DeviceTemporaryToken } from '..';
+import { DeviceServerToken } from '..';
 
-export class DeviceAdminToken {
+export class DeviceAdminToken implements DeviceServerToken {
   constructor(value: string) {
     this.value = value;
   }
@@ -10,7 +10,7 @@ export class DeviceAdminToken {
   value!: string;
 }
 
-export class DeviceTemporaryTokenDto implements DeviceTemporaryToken {
+export class DeviceTemporaryToken implements DeviceServerToken {
   constructor(value: string) {
     this.value = value;
   }

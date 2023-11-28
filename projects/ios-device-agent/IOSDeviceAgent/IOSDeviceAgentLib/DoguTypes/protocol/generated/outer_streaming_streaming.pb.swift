@@ -165,12 +165,12 @@ public struct Outer_Streaming_StreamingAnswer {
     set {value = .errorResult(newValue)}
   }
 
-  public var deviceTemporaryToken: Outer_DeviceTemporaryToken {
+  public var deviceServerToken: Outer_DeviceServerToken {
     get {
-      if case .deviceTemporaryToken(let v)? = value {return v}
-      return Outer_DeviceTemporaryToken()
+      if case .deviceServerToken(let v)? = value {return v}
+      return Outer_DeviceServerToken()
     }
-    set {value = .deviceTemporaryToken(newValue)}
+    set {value = .deviceServerToken(newValue)}
   }
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
@@ -179,7 +179,7 @@ public struct Outer_Streaming_StreamingAnswer {
     case peerDescription(Outer_Streaming_ProtoRTCPeerDescription)
     case iceCandidate(Outer_Streaming_ProtoRTCIceCandidateInit)
     case errorResult(Outer_ErrorResult)
-    case deviceTemporaryToken(Outer_DeviceTemporaryToken)
+    case deviceServerToken(Outer_DeviceServerToken)
 
   #if !swift(>=4.1)
     public static func ==(lhs: Outer_Streaming_StreamingAnswer.OneOf_Value, rhs: Outer_Streaming_StreamingAnswer.OneOf_Value) -> Bool {
@@ -199,8 +199,8 @@ public struct Outer_Streaming_StreamingAnswer {
         guard case .errorResult(let l) = lhs, case .errorResult(let r) = rhs else { preconditionFailure() }
         return l == r
       }()
-      case (.deviceTemporaryToken, .deviceTemporaryToken): return {
-        guard case .deviceTemporaryToken(let l) = lhs, case .deviceTemporaryToken(let r) = rhs else { preconditionFailure() }
+      case (.deviceServerToken, .deviceServerToken): return {
+        guard case .deviceServerToken(let l) = lhs, case .deviceServerToken(let r) = rhs else { preconditionFailure() }
         return l == r
       }()
       default: return false
@@ -409,7 +409,7 @@ extension Outer_Streaming_StreamingAnswer: SwiftProtobuf.Message, SwiftProtobuf.
     1: .standard(proto: "peer_description"),
     2: .standard(proto: "ice_candidate"),
     3: .standard(proto: "error_result"),
-    4: .standard(proto: "device_temporary_token"),
+    4: .standard(proto: "device_server_token"),
   ]
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -458,16 +458,16 @@ extension Outer_Streaming_StreamingAnswer: SwiftProtobuf.Message, SwiftProtobuf.
         }
       }()
       case 4: try {
-        var v: Outer_DeviceTemporaryToken?
+        var v: Outer_DeviceServerToken?
         var hadOneofValue = false
         if let current = self.value {
           hadOneofValue = true
-          if case .deviceTemporaryToken(let m) = current {v = m}
+          if case .deviceServerToken(let m) = current {v = m}
         }
         try decoder.decodeSingularMessageField(value: &v)
         if let v = v {
           if hadOneofValue {try decoder.handleConflictingOneOf()}
-          self.value = .deviceTemporaryToken(v)
+          self.value = .deviceServerToken(v)
         }
       }()
       default: break
@@ -493,8 +493,8 @@ extension Outer_Streaming_StreamingAnswer: SwiftProtobuf.Message, SwiftProtobuf.
       guard case .errorResult(let v)? = self.value else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 3)
     }()
-    case .deviceTemporaryToken?: try {
-      guard case .deviceTemporaryToken(let v)? = self.value else { preconditionFailure() }
+    case .deviceServerToken?: try {
+      guard case .deviceServerToken(let v)? = self.value else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 4)
     }()
     case nil: break

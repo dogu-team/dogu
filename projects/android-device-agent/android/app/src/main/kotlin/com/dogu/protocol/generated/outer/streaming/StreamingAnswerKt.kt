@@ -95,27 +95,27 @@ object StreamingAnswerKt {
     }
 
     /**
-     * <code>.outer.DeviceTemporaryToken device_temporary_token = 4;</code>
+     * <code>.outer.DeviceServerToken device_server_token = 4;</code>
      */
-    var deviceTemporaryToken: com.dogu.protocol.generated.outer.DeviceAuth.DeviceTemporaryToken
-      @JvmName("getDeviceTemporaryToken")
-      get() = _builder.getDeviceTemporaryToken()
-      @JvmName("setDeviceTemporaryToken")
+    var deviceServerToken: com.dogu.protocol.generated.outer.DeviceAuth.DeviceServerToken
+      @JvmName("getDeviceServerToken")
+      get() = _builder.getDeviceServerToken()
+      @JvmName("setDeviceServerToken")
       set(value) {
-        _builder.setDeviceTemporaryToken(value)
+        _builder.setDeviceServerToken(value)
       }
     /**
-     * <code>.outer.DeviceTemporaryToken device_temporary_token = 4;</code>
+     * <code>.outer.DeviceServerToken device_server_token = 4;</code>
      */
-    fun clearDeviceTemporaryToken() {
-      _builder.clearDeviceTemporaryToken()
+    fun clearDeviceServerToken() {
+      _builder.clearDeviceServerToken()
     }
     /**
-     * <code>.outer.DeviceTemporaryToken device_temporary_token = 4;</code>
-     * @return Whether the deviceTemporaryToken field is set.
+     * <code>.outer.DeviceServerToken device_server_token = 4;</code>
+     * @return Whether the deviceServerToken field is set.
      */
-    fun hasDeviceTemporaryToken(): kotlin.Boolean {
-      return _builder.hasDeviceTemporaryToken()
+    fun hasDeviceServerToken(): kotlin.Boolean {
+      return _builder.hasDeviceServerToken()
     }
     val valueCase: com.dogu.protocol.generated.outer.streaming.Streaming.StreamingAnswer.ValueCase
       @JvmName("getValueCase")
@@ -139,6 +139,6 @@ val com.dogu.protocol.generated.outer.streaming.Streaming.StreamingAnswerOrBuild
 val com.dogu.protocol.generated.outer.streaming.Streaming.StreamingAnswerOrBuilder.errorResultOrNull: com.dogu.protocol.generated.outer.Errors.ErrorResult?
   get() = if (hasErrorResult()) getErrorResult() else null
 
-val com.dogu.protocol.generated.outer.streaming.Streaming.StreamingAnswerOrBuilder.deviceTemporaryTokenOrNull: com.dogu.protocol.generated.outer.DeviceAuth.DeviceTemporaryToken?
-  get() = if (hasDeviceTemporaryToken()) getDeviceTemporaryToken() else null
+val com.dogu.protocol.generated.outer.streaming.Streaming.StreamingAnswerOrBuilder.deviceServerTokenOrNull: com.dogu.protocol.generated.outer.DeviceAuth.DeviceServerToken?
+  get() = if (hasDeviceServerToken()) getDeviceServerToken() else null
 

@@ -238,8 +238,8 @@ exports.StreamingAnswer = {
         if (message.value?.$case === 'errorResult') {
             errors_1.ErrorResult.encode(message.value.errorResult, writer.uint32(26).fork()).ldelim();
         }
-        if (message.value?.$case === 'deviceTemporaryToken') {
-            device_auth_1.DeviceTemporaryToken.encode(message.value.deviceTemporaryToken, writer.uint32(34).fork()).ldelim();
+        if (message.value?.$case === 'deviceServerToken') {
+            device_auth_1.DeviceServerToken.encode(message.value.deviceServerToken, writer.uint32(34).fork()).ldelim();
         }
         return writer;
     },
@@ -267,8 +267,8 @@ exports.StreamingAnswer = {
                     break;
                 case 4:
                     message.value = {
-                        $case: 'deviceTemporaryToken',
-                        deviceTemporaryToken: device_auth_1.DeviceTemporaryToken.decode(reader, reader.uint32()),
+                        $case: 'deviceServerToken',
+                        deviceServerToken: device_auth_1.DeviceServerToken.decode(reader, reader.uint32()),
                     };
                     break;
                 default:
@@ -286,11 +286,8 @@ exports.StreamingAnswer = {
                     ? { $case: 'iceCandidate', iceCandidate: webrtc_1.ProtoRTCIceCandidateInit.fromJSON(object.iceCandidate) }
                     : isSet(object.errorResult)
                         ? { $case: 'errorResult', errorResult: errors_1.ErrorResult.fromJSON(object.errorResult) }
-                        : isSet(object.deviceTemporaryToken)
-                            ? {
-                                $case: 'deviceTemporaryToken',
-                                deviceTemporaryToken: device_auth_1.DeviceTemporaryToken.fromJSON(object.deviceTemporaryToken),
-                            }
+                        : isSet(object.deviceServerToken)
+                            ? { $case: 'deviceServerToken', deviceServerToken: device_auth_1.DeviceServerToken.fromJSON(object.deviceServerToken) }
                             : undefined,
         };
     },
@@ -300,8 +297,8 @@ exports.StreamingAnswer = {
             (obj.peerDescription = message.value?.peerDescription ? webrtc_1.ProtoRTCPeerDescription.toJSON(message.value?.peerDescription) : undefined);
         message.value?.$case === 'iceCandidate' && (obj.iceCandidate = message.value?.iceCandidate ? webrtc_1.ProtoRTCIceCandidateInit.toJSON(message.value?.iceCandidate) : undefined);
         message.value?.$case === 'errorResult' && (obj.errorResult = message.value?.errorResult ? errors_1.ErrorResult.toJSON(message.value?.errorResult) : undefined);
-        message.value?.$case === 'deviceTemporaryToken' &&
-            (obj.deviceTemporaryToken = message.value?.deviceTemporaryToken ? device_auth_1.DeviceTemporaryToken.toJSON(message.value?.deviceTemporaryToken) : undefined);
+        message.value?.$case === 'deviceServerToken' &&
+            (obj.deviceServerToken = message.value?.deviceServerToken ? device_auth_1.DeviceServerToken.toJSON(message.value?.deviceServerToken) : undefined);
         return obj;
     },
     fromPartial(object) {
@@ -321,10 +318,10 @@ exports.StreamingAnswer = {
         if (object.value?.$case === 'errorResult' && object.value?.errorResult !== undefined && object.value?.errorResult !== null) {
             message.value = { $case: 'errorResult', errorResult: errors_1.ErrorResult.fromPartial(object.value.errorResult) };
         }
-        if (object.value?.$case === 'deviceTemporaryToken' && object.value?.deviceTemporaryToken !== undefined && object.value?.deviceTemporaryToken !== null) {
+        if (object.value?.$case === 'deviceServerToken' && object.value?.deviceServerToken !== undefined && object.value?.deviceServerToken !== null) {
             message.value = {
-                $case: 'deviceTemporaryToken',
-                deviceTemporaryToken: device_auth_1.DeviceTemporaryToken.fromPartial(object.value.deviceTemporaryToken),
+                $case: 'deviceServerToken',
+                deviceServerToken: device_auth_1.DeviceServerToken.fromPartial(object.value.deviceServerToken),
             };
         }
         return message;

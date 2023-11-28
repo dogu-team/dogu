@@ -37,6 +37,6 @@ message StreamingAnswer {
     ProtoRTCPeerDescription peer_description = 1;
     ProtoRTCIceCandidateInit ice_candidate = 2;
     outer.ErrorResult error_result = 3;
-    outer.DeviceTemporaryToken device_temporary_token = 4;
+    outer.DeviceServerToken device_server_token = 4;
   }
 }

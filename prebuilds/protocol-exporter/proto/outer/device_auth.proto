@@ -5,6 +5,6 @@ package outer;
 option go_package = "go-device-controller/types/protocol/generated/proto/outer";
 option java_package = "com.dogu.protocol.generated.outer";
 
-message DeviceTemporaryToken {
+message DeviceServerToken {
   string value = 1;
 }

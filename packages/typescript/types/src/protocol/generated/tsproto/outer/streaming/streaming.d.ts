@@ -1,5 +1,5 @@
 import _m0 from 'protobufjs/minimal';
-import { DeviceTemporaryToken } from '../device_auth';
+import { DeviceServerToken } from '../device_auth';
 import { ErrorResult } from '../errors';
 import { Platform } from '../platform';
 import { ScreenCaptureOption } from './screencapture_option';
@@ -36,8 +36,8 @@ export interface StreamingAnswer {
         $case: 'errorResult';
         errorResult: ErrorResult;
     } | {
-        $case: 'deviceTemporaryToken';
-        deviceTemporaryToken: DeviceTemporaryToken;
+        $case: 'deviceServerToken';
+        deviceServerToken: DeviceServerToken;
     };
 }
 export declare const StreamingOption: {
@@ -345,11 +345,11 @@ export declare const StreamingAnswer: {
         } & {
             $case: "errorResult";
         }) | ({
-            deviceTemporaryToken?: {
+            deviceServerToken?: {
                 value?: string | undefined;
             } | undefined;
         } & {
-            $case: "deviceTemporaryToken";
+            $case: "deviceServerToken";
         }) | undefined;
     } & {
         value?: ({
@@ -418,18 +418,18 @@ export declare const StreamingAnswer: {
             } & { [K_5 in Exclude<keyof I["value"]["errorResult"], keyof ErrorResult>]: never; }) | undefined;
             $case: "errorResult";
         } & { [K_6 in Exclude<keyof I["value"], "$case" | "errorResult">]: never; }) | ({
-            deviceTemporaryToken?: {
+            deviceServerToken?: {
                 value?: string | undefined;
             } | undefined;
         } & {
-            $case: "deviceTemporaryToken";
+            $case: "deviceServerToken";
         } & {
-            deviceTemporaryToken?: ({
+            deviceServerToken?: ({
                 value?: string | undefined;
             } & {
                 value?: string | undefined;
-            } & { [K_7 in Exclude<keyof I["value"]["deviceTemporaryToken"], "value">]: never; }) | undefined;
-            $case: "deviceTemporaryToken";
-        } & { [K_8 in Exclude<keyof I["value"], "$case" | "deviceTemporaryToken">]: never; }) | undefined;
+            } & { [K_7 in Exclude<keyof I["value"]["deviceServerToken"], "value">]: never; }) | undefined;
+            $case: "deviceServerToken";
+        } & { [K_8 in Exclude<keyof I["value"], "$case" | "deviceServerToken">]: never; }) | undefined;
     } & { [K_9 in Exclude<keyof I, "value">]: never; }>(object: I): StreamingAnswer;
 };

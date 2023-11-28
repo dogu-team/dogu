@@ -1,4 +1,4 @@
-import { DefaultProcessInfo, errorify, loop, Printable } from '@dogu-tech/common';
+import { DefaultProcessInfo, errorify, loopTime, Printable } from '@dogu-tech/common';
 import { getProcessesMap } from '@dogu-tech/node';
 import { Code } from '@dogu-tech/types';
 import pidtree from 'pidtree';
@@ -65,7 +65,7 @@ export class ChildService {
         };
       }
       await this.deviceServer.open();
-      for await (const _ of loop(1000, 60)) {
+      for await (const _ of loopTime({ period: { seconds: 1 }, expire: { seconds: 60 } })) {
         if (await this.deviceServer.isActive()) {
           break;
         }
@@ -93,13 +93,13 @@ export class ChildService {
       };
     }
     await this.hostAgent.open();
-    for await (const _ of loop(1000, 60)) {
+    for await (const _ of loopTime({ period: { seconds: 1 }, expire: { seconds: 60 } })) {
       if (await this.hostAgent.isActive()) {
         break;
       }
     }
 
-    for await (const _ of loop(1000, 999)) {
+    for await (const _ of loopTime({ period: { seconds: 1 }, expire: { seconds: 30 } })) {
       const status = await this.hostAgent.getConnectionStatus();
       if (status.status !== 'connecting') {
         return status;

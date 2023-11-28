@@ -1,5 +1,5 @@
 import { ControllerSpec, DefaultPathProvider } from '@dogu-tech/common';
-import { DeviceAdminToken, DeviceTemporaryTokenDto, Serial } from '@dogu-tech/types';
+import { DeviceAdminToken, DeviceTemporaryToken, Serial } from '@dogu-tech/types';
 import { Type } from 'class-transformer';
 import { ValidateNested } from 'class-validator';
 import { DeviceServerResponseDto } from '../..';
@@ -17,14 +17,14 @@ export class CreateTokenRequestBody {}
 
 export class CreateTokenReponseBodyData {
   @ValidateNested()
-  @Type(() => DeviceTemporaryTokenDto)
-  token!: DeviceTemporaryTokenDto;
+  @Type(() => DeviceTemporaryToken)
+  token!: DeviceTemporaryToken;
 }
 
 export class DeleteTokenRequestBody {
   @ValidateNested()
-  @Type(() => DeviceTemporaryTokenDto)
-  token!: DeviceTemporaryTokenDto;
+  @Type(() => DeviceTemporaryToken)
+  token!: DeviceTemporaryToken;
 }
 
 export class DeleteTokenReponseBodyData {}
