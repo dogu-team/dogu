@@ -55,6 +55,9 @@ export class BillingHistory implements BillingHistoryBase {
   paymentType!: string | null;
 
   @Column({ type: 'character varying', nullable: true })
+  paddleTransactionId!: string | null;
+
+  @Column({ type: 'character varying', nullable: true })
   cancelReason!: string | null;
 
   @Column({ type: 'jsonb', nullable: true })

@@ -8,6 +8,7 @@ import { BillingHistory } from '../../db/entity/billing-history.entity';
 import { BillingOrganization } from '../../db/entity/billing-organization.entity';
 import { BillingPlanHistory } from '../../db/entity/billing-plan-history.entity';
 import { BillingPlanInfo } from '../../db/entity/billing-plan-info.entity';
+import { BillingPlanSource } from '../../db/entity/billing-plan-source.entity';
 import { RetryTransaction } from '../../db/retry-transaction';
 import { DoguLogger } from '../logger/logger';
 import { PaddleCaller } from './paddle.caller';
@@ -84,9 +85,41 @@ export class PaddleNotificationService {
 
   private async onTransactionCompleted(event: Paddle.Event): Promise<void> {
     const transaction = event.data as Paddle.Transaction;
-    const { subscriptionId, cardCode, cardName, cardNumberLast4Digits, cardExpirationYear, cardExpirationMonth, paymentType, billingHistoryId, billingOrganizationId } =
+
+    const billingHistory = await this.retryTransaction.serializable(async (context) => {
+      const { manager } = context;
+      if (!transaction.id) {
+        throw new Error(`Transaction id is empty. ${JSON.stringify(transaction)}`);
+      }
+
+      return await manager.getRepository(BillingHistory).findOne({
+        where: {
+          paddleTransactionId: transaction.id,
+        },
+      });
+    });
+
+    if (billingHistory) {
+      this.logger.info('Paddle transaction already processed', { transactionId: transaction.id });
+      return;
+    }
+
+    if (!transaction.subscription_id) {
+      throw new Error(`Subscription id is empty. ${JSON.stringify(transaction)}`);
+    }
+
+    const subscription = await this.paddleCaller.getSubscription({ subscriptionId: transaction.subscription_id });
+
+    // FIXME:
+    const billingPlanSourceId = transaction.custom_data?.billingPlanSourceId as number | undefined;
+
+    const { cardCode, cardName, cardNumberLast4Digits, cardExpirationYear, cardExpirationMonth, paymentType, billingHistoryId, billingOrganizationId } =
       await this.retryTransaction.serializable(async (context) => {
         const { manager } = context;
+        if (!transaction.id) {
+          throw new Error(`Transaction id is empty. ${JSON.stringify(transaction)}`);
+        }
+
         if (!transaction.customer_id) {
           throw new Error(`Customer id is empty. ${JSON.stringify(transaction)}`);
         }
@@ -120,10 +153,6 @@ export class PaddleNotificationService {
           throw new Error(`Method type is empty. ${JSON.stringify(transaction)}`);
         }
 
-        if (!transaction.subscription_id) {
-          throw new Error(`Subscription id is empty. ${JSON.stringify(transaction)}`);
-        }
-
         const cardNumberLast4Digits = payment.method_details.card?.last4 ?? null;
         const cardExpirationYear = payment.method_details.card?.expiry_year?.toString() ?? null;
         const cardExpirationMonth = payment.method_details.card?.expiry_month?.toString() ?? null;
@@ -146,7 +175,14 @@ export class PaddleNotificationService {
           },
         });
         const { billingOrganizationId } = billingOrganization;
+        // FIXME:
         const purchasedAmount = Number(transaction.details.totals.total);
+
+        const billingPlanSource = await manager.getRepository(BillingPlanSource).findOneOrFail({
+          where: {
+            billingPlanSourceId,
+          },
+        });
 
         const createdHistory = manager.getRepository(BillingHistory).create({
           billingHistoryId: v4(),
@@ -162,14 +198,27 @@ export class PaddleNotificationService {
           cardExpirationYear,
           cardExpirationMonth,
           paymentType,
+          paddleTransactionId: transaction.id,
         });
         const savedHistory = await manager.save(createdHistory);
 
+        // FIXME:
+        const discountedAmount = Number(transaction.details.line_items?.[0].totals.discount);
         // TODO: plan history
+
         const createdPlanHistory = manager.getRepository(BillingPlanHistory).create({
           billingPlanHistoryId: v4(),
           billingOrganizationId,
           billingHistoryId: savedHistory.billingHistoryId,
+          billingPlanSourceId,
+          discountedAmount,
+          category: billingPlanSource.category,
+          type: billingPlanSource.type,
+          option: billingPlanSource.option,
+          currency: billingPlanSource.currency,
+          originPrice: billingPlanSource.originPrice,
+          period: billingPlanSource.period,
+          historyType: 'immediate-purchase',
         });
         await manager.save(createdPlanHistory);
 
@@ -186,7 +235,6 @@ export class PaddleNotificationService {
         };
       });
 
-    const subscription = await this.paddleCaller.getSubscription({ subscriptionId });
     await this.retryTransaction.serializable(async (context) => {
       const { manager } = context;
       if (!subscription.custom_data) {

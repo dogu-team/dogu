@@ -16,27 +16,37 @@ export const BillingHistoryType = [...BillingHistoryTypePurchase, ...BillingHist
 export type BillingHistoryType = (typeof BillingHistoryType)[number];
 
 export interface BillingHistoryBase {
+  // common
   billingHistoryId: string;
   billingOrganizationId: string;
   historyType: BillingHistoryType;
   currency: BillingCurrency;
-  previewResponse: Record<string, unknown> | null;
   purchasedAmount: number | null;
   goodsName: string;
   method: BillingMethod;
-  niceSubscribePaymentsResponse: Record<string, unknown> | null;
-  niceTid: string | null;
-  niceOrderId: string | null;
   cardCode: string | null;
   cardName: string | null;
   cardNumberLast4Digits: string | null;
   cardExpirationYear: string | null;
   cardExpirationMonth: string | null;
+
+  // nice purchase only
+  previewResponse: Record<string, unknown> | null;
+  niceSubscribePaymentsResponse: Record<string, unknown> | null;
+  niceTid: string | null;
+  niceOrderId: string | null;
+
+  // paddle purchase only
   paymentType: string | null;
+  paddleTransactionId: string | null;
+
+  // nice cancel only
   cancelReason: string | null;
   nicePaymentsCancelResponse: Record<string, unknown> | null;
   purchasedBillingHistoryId: string | null;
   refundedAmount: number | null;
+
+  // common
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date | null;
