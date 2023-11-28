@@ -23,7 +23,7 @@ export class Device {
 export const devices: Device[] = [
   // new Device('4K Desktop', 'Desktop', 2023, { viewportWidth: 3840, viewportHeight: 2160, pixelRatio: 1 }),
   // new Device('QHD Desktop', 'Desktop', 2023, { viewportWidth: 2560, viewportHeight: 1440, pixelRatio: 1 }),
-  // new Device('FHD Desktop', 'Desktop', 2023, { viewportWidth: 1920, viewportHeight: 1080, pixelRatio: 1 }),
+  new Device('FHD Desktop', 'Desktop', 2023, { viewportWidth: 1920, viewportHeight: 1080, pixelRatio: 1 }),
 
   // new Device('Galaxy Z Flip 3', 'Samsung', 2021, { viewportWidth: 360, viewportHeight: 880, pixelRatio: 2 }),
 

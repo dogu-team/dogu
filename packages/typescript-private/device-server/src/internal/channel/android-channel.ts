@@ -20,7 +20,7 @@ import {
   SerialPrintable,
   StreamingAnswer,
 } from '@dogu-private/types';
-import { Closable, errorify, MixedLogger, Printable, stringify } from '@dogu-tech/common';
+import { Closable, delay, errorify, MixedLogger, Printable, stringify } from '@dogu-tech/common';
 import { AppiumCapabilities, BrowserInstallation, StreamingOfferDto } from '@dogu-tech/device-client-common';
 import { checkTime, killChildProcess, killProcessOnPort } from '@dogu-tech/node';
 import { ChildProcess } from 'child_process';
@@ -283,39 +283,69 @@ export class AndroidChannel implements DeviceChannel {
   }
 
   async getFoldStatus(): Promise<DeviceFoldStatus> {
-    const isFoldable = 1 < this.info.graphics.displays.length;
-    if (!isFoldable) {
-      return {
-        isFoldable: false,
-        isFolded: false,
-      };
-    }
-    const smallestDisplaySize = this.info.graphics.displays.reduce((acc, display) => {
+    const smallestDisplay = this.info.graphics.displays.reduce((acc, display) => {
       if (display.resolutionX < acc.resolutionX) {
         return display;
       }
       return acc;
     });
-    const currentDisplaySize = await this.adb.getCurrentDisplaySize();
+    const smallestDisplayArea = smallestDisplay.resolutionX * smallestDisplay.resolutionY;
+    if (smallestDisplayArea < 500 * 500) {
+      // filter galaxy flip or some very small display
+      return {
+        isFoldable: false,
+        isFolded: false,
+      };
+    }
+    const modelName = findDeviceModelNameByModelId(this.info.system.model);
+    if (modelName?.includes('Z Flip')) {
+      return {
+        isFoldable: false,
+        isFolded: false,
+      };
+    }
+
+    const state = await this._deviceAgent.sendWithProtobuf('dcDaGetFoldableStateParam', 'dcDaGetFoldableStateReturn', {});
+    if (!state) {
+      return {
+        isFoldable: false,
+        isFolded: false,
+      };
+    }
+    const minState = state.supportedStates.reduce((acc, state) => {
+      if (state < acc) {
+        return state;
+      }
+      return acc;
+    });
     return {
-      isFoldable: true,
-      isFolded: currentDisplaySize.override.width === smallestDisplaySize.resolutionX && currentDisplaySize.override.height === smallestDisplaySize.resolutionY,
+      isFoldable: state.isFoldable,
+      isFolded: state.currentState === minState,
     };
   }
 
   async fold(fold: boolean): Promise<void> {
-    if (fold) {
-      const smallestDisplay = this.info.graphics.displays.reduce((acc, display) => {
-        if (display.resolutionX < acc.resolutionX) {
-          return display;
-        }
-        return acc;
-      });
-      await this.adb.setDisplaySize({ width: smallestDisplay.resolutionX, height: smallestDisplay.resolutionY });
-      await this._streaming.refreshSession(this.serial);
-      return;
+    const state = await this._deviceAgent.sendWithProtobuf('dcDaGetFoldableStateParam', 'dcDaGetFoldableStateReturn', {});
+    if (!state) {
+      throw new Error('foldable state is not supported');
     }
-    await this.adb.resetDisplaySize();
+    const minState = state.supportedStates.reduce((acc, state) => {
+      if (state < acc) {
+        return state;
+      }
+      return acc;
+    });
+    const maxState = state.supportedStates.reduce((acc, state) => {
+      if (acc < state) {
+        return state;
+      }
+      return acc;
+    });
+    const newState = fold ? minState : maxState;
+    await this._deviceAgent.sendWithProtobuf('dcDaSetFoldableStateParam', 'dcDaSetFoldableStateReturn', {
+      state: newState,
+    });
+    await delay(500);
     await this._streaming.refreshSession(this.serial);
   }
 

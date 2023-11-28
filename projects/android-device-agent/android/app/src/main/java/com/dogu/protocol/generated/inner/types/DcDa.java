@@ -2207,6 +2207,1208 @@ public final class DcDa {
     }
   }
 
+  public interface DcDaGetFoldableStateParamOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:inner.types.DcDaGetFoldableStateParam)
+      com.google.protobuf.MessageLiteOrBuilder {
+  }
+  /**
+   * Protobuf type {@code inner.types.DcDaGetFoldableStateParam}
+   */
+  public  static final class DcDaGetFoldableStateParam extends
+      com.google.protobuf.GeneratedMessageLite<
+          DcDaGetFoldableStateParam, DcDaGetFoldableStateParam.Builder> implements
+      // @@protoc_insertion_point(message_implements:inner.types.DcDaGetFoldableStateParam)
+      DcDaGetFoldableStateParamOrBuilder {
+    private DcDaGetFoldableStateParam() {
+    }
+    public static com.dogu.protocol.generated.inner.types.DcDa.DcDaGetFoldableStateParam parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcDa.DcDaGetFoldableStateParam parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data, extensionRegistry);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcDa.DcDaGetFoldableStateParam parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcDa.DcDaGetFoldableStateParam parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data, extensionRegistry);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcDa.DcDaGetFoldableStateParam parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcDa.DcDaGetFoldableStateParam parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data, extensionRegistry);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcDa.DcDaGetFoldableStateParam parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, input);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcDa.DcDaGetFoldableStateParam parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, input, extensionRegistry);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcDa.DcDaGetFoldableStateParam parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return parseDelimitedFrom(DEFAULT_INSTANCE, input);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcDa.DcDaGetFoldableStateParam parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return parseDelimitedFrom(DEFAULT_INSTANCE, input, extensionRegistry);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcDa.DcDaGetFoldableStateParam parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, input);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcDa.DcDaGetFoldableStateParam parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, input, extensionRegistry);
+    }
+
+    public static Builder newBuilder() {
+      return (Builder) DEFAULT_INSTANCE.createBuilder();
+    }
+    public static Builder newBuilder(com.dogu.protocol.generated.inner.types.DcDa.DcDaGetFoldableStateParam prototype) {
+      return (Builder) DEFAULT_INSTANCE.createBuilder(prototype);
+    }
+
+    /**
+     * Protobuf type {@code inner.types.DcDaGetFoldableStateParam}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageLite.Builder<
+          com.dogu.protocol.generated.inner.types.DcDa.DcDaGetFoldableStateParam, Builder> implements
+        // @@protoc_insertion_point(builder_implements:inner.types.DcDaGetFoldableStateParam)
+        com.dogu.protocol.generated.inner.types.DcDa.DcDaGetFoldableStateParamOrBuilder {
+      // Construct using com.dogu.protocol.generated.inner.types.DcDa.DcDaGetFoldableStateParam.newBuilder()
+      private Builder() {
+        super(DEFAULT_INSTANCE);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:inner.types.DcDaGetFoldableStateParam)
+    }
+    @java.lang.Override
+    @java.lang.SuppressWarnings({"unchecked", "fallthrough"})
+    protected final java.lang.Object dynamicMethod(
+        com.google.protobuf.GeneratedMessageLite.MethodToInvoke method,
+        java.lang.Object arg0, java.lang.Object arg1) {
+      switch (method) {
+        case NEW_MUTABLE_INSTANCE: {
+          return new com.dogu.protocol.generated.inner.types.DcDa.DcDaGetFoldableStateParam();
+        }
+        case NEW_BUILDER: {
+          return new Builder();
+        }
+        case BUILD_MESSAGE_INFO: {
+            java.lang.Object[] objects = null;java.lang.String info =
+                "\u0000\u0000";
+            return newMessageInfo(DEFAULT_INSTANCE, info, objects);
+        }
+        // fall through
+        case GET_DEFAULT_INSTANCE: {
+          return DEFAULT_INSTANCE;
+        }
+        case GET_PARSER: {
+          com.google.protobuf.Parser<com.dogu.protocol.generated.inner.types.DcDa.DcDaGetFoldableStateParam> parser = PARSER;
+          if (parser == null) {
+            synchronized (com.dogu.protocol.generated.inner.types.DcDa.DcDaGetFoldableStateParam.class) {
+              parser = PARSER;
+              if (parser == null) {
+                parser =
+                    new DefaultInstanceBasedParser<com.dogu.protocol.generated.inner.types.DcDa.DcDaGetFoldableStateParam>(
+                        DEFAULT_INSTANCE);
+                PARSER = parser;
+              }
+            }
+          }
+          return parser;
+      }
+      case GET_MEMOIZED_IS_INITIALIZED: {
+        return (byte) 1;
+      }
+      case SET_MEMOIZED_IS_INITIALIZED: {
+        return null;
+      }
+      }
+      throw new UnsupportedOperationException();
+    }
+
+
+    // @@protoc_insertion_point(class_scope:inner.types.DcDaGetFoldableStateParam)
+    private static final com.dogu.protocol.generated.inner.types.DcDa.DcDaGetFoldableStateParam DEFAULT_INSTANCE;
+    static {
+      DcDaGetFoldableStateParam defaultInstance = new DcDaGetFoldableStateParam();
+      // New instances are implicitly immutable so no need to make
+      // immutable.
+      DEFAULT_INSTANCE = defaultInstance;
+      com.google.protobuf.GeneratedMessageLite.registerDefaultInstance(
+        DcDaGetFoldableStateParam.class, defaultInstance);
+    }
+
+    public static com.dogu.protocol.generated.inner.types.DcDa.DcDaGetFoldableStateParam getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static volatile com.google.protobuf.Parser<DcDaGetFoldableStateParam> PARSER;
+
+    public static com.google.protobuf.Parser<DcDaGetFoldableStateParam> parser() {
+      return DEFAULT_INSTANCE.getParserForType();
+    }
+  }
+
+  public interface DcDaGetFoldableStateReturnOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:inner.types.DcDaGetFoldableStateReturn)
+      com.google.protobuf.MessageLiteOrBuilder {
+
+    /**
+     * <code>bool is_foldable = 1;</code>
+     * @return The isFoldable.
+     */
+    boolean getIsFoldable();
+
+    /**
+     * <code>uint32 current_state = 2;</code>
+     * @return The currentState.
+     */
+    int getCurrentState();
+
+    /**
+     * <code>repeated uint32 supported_states = 3;</code>
+     * @return A list containing the supportedStates.
+     */
+    java.util.List<java.lang.Integer> getSupportedStatesList();
+    /**
+     * <code>repeated uint32 supported_states = 3;</code>
+     * @return The count of supportedStates.
+     */
+    int getSupportedStatesCount();
+    /**
+     * <code>repeated uint32 supported_states = 3;</code>
+     * @param index The index of the element to return.
+     * @return The supportedStates at the given index.
+     */
+    int getSupportedStates(int index);
+  }
+  /**
+   * Protobuf type {@code inner.types.DcDaGetFoldableStateReturn}
+   */
+  public  static final class DcDaGetFoldableStateReturn extends
+      com.google.protobuf.GeneratedMessageLite<
+          DcDaGetFoldableStateReturn, DcDaGetFoldableStateReturn.Builder> implements
+      // @@protoc_insertion_point(message_implements:inner.types.DcDaGetFoldableStateReturn)
+      DcDaGetFoldableStateReturnOrBuilder {
+    private DcDaGetFoldableStateReturn() {
+      supportedStates_ = emptyIntList();
+    }
+    public static final int IS_FOLDABLE_FIELD_NUMBER = 1;
+    private boolean isFoldable_;
+    /**
+     * <code>bool is_foldable = 1;</code>
+     * @return The isFoldable.
+     */
+    @java.lang.Override
+    public boolean getIsFoldable() {
+      return isFoldable_;
+    }
+    /**
+     * <code>bool is_foldable = 1;</code>
+     * @param value The isFoldable to set.
+     */
+    private void setIsFoldable(boolean value) {
+      
+      isFoldable_ = value;
+    }
+    /**
+     * <code>bool is_foldable = 1;</code>
+     */
+    private void clearIsFoldable() {
+      
+      isFoldable_ = false;
+    }
+
+    public static final int CURRENT_STATE_FIELD_NUMBER = 2;
+    private int currentState_;
+    /**
+     * <code>uint32 current_state = 2;</code>
+     * @return The currentState.
+     */
+    @java.lang.Override
+    public int getCurrentState() {
+      return currentState_;
+    }
+    /**
+     * <code>uint32 current_state = 2;</code>
+     * @param value The currentState to set.
+     */
+    private void setCurrentState(int value) {
+      
+      currentState_ = value;
+    }
+    /**
+     * <code>uint32 current_state = 2;</code>
+     */
+    private void clearCurrentState() {
+      
+      currentState_ = 0;
+    }
+
+    public static final int SUPPORTED_STATES_FIELD_NUMBER = 3;
+    private com.google.protobuf.Internal.IntList supportedStates_;
+    /**
+     * <code>repeated uint32 supported_states = 3;</code>
+     * @return A list containing the supportedStates.
+     */
+    @java.lang.Override
+    public java.util.List<java.lang.Integer>
+        getSupportedStatesList() {
+      return supportedStates_;
+    }
+    /**
+     * <code>repeated uint32 supported_states = 3;</code>
+     * @return The count of supportedStates.
+     */
+    @java.lang.Override
+    public int getSupportedStatesCount() {
+      return supportedStates_.size();
+    }
+    /**
+     * <code>repeated uint32 supported_states = 3;</code>
+     * @param index The index of the element to return.
+     * @return The supportedStates at the given index.
+     */
+    @java.lang.Override
+    public int getSupportedStates(int index) {
+      return supportedStates_.getInt(index);
+    }
+    private int supportedStatesMemoizedSerializedSize = -1;
+    private void ensureSupportedStatesIsMutable() {
+      com.google.protobuf.Internal.IntList tmp = supportedStates_;
+      if (!tmp.isModifiable()) {
+        supportedStates_ =
+            com.google.protobuf.GeneratedMessageLite.mutableCopy(tmp);
+       }
+    }
+    /**
+     * <code>repeated uint32 supported_states = 3;</code>
+     * @param index The index to set the value at.
+     * @param value The supportedStates to set.
+     */
+    private void setSupportedStates(
+        int index, int value) {
+      ensureSupportedStatesIsMutable();
+      supportedStates_.setInt(index, value);
+    }
+    /**
+     * <code>repeated uint32 supported_states = 3;</code>
+     * @param value The supportedStates to add.
+     */
+    private void addSupportedStates(int value) {
+      ensureSupportedStatesIsMutable();
+      supportedStates_.addInt(value);
+    }
+    /**
+     * <code>repeated uint32 supported_states = 3;</code>
+     * @param values The supportedStates to add.
+     */
+    private void addAllSupportedStates(
+        java.lang.Iterable<? extends java.lang.Integer> values) {
+      ensureSupportedStatesIsMutable();
+      com.google.protobuf.AbstractMessageLite.addAll(
+          values, supportedStates_);
+    }
+    /**
+     * <code>repeated uint32 supported_states = 3;</code>
+     */
+    private void clearSupportedStates() {
+      supportedStates_ = emptyIntList();
+    }
+
+    public static com.dogu.protocol.generated.inner.types.DcDa.DcDaGetFoldableStateReturn parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcDa.DcDaGetFoldableStateReturn parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data, extensionRegistry);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcDa.DcDaGetFoldableStateReturn parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcDa.DcDaGetFoldableStateReturn parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data, extensionRegistry);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcDa.DcDaGetFoldableStateReturn parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcDa.DcDaGetFoldableStateReturn parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data, extensionRegistry);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcDa.DcDaGetFoldableStateReturn parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, input);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcDa.DcDaGetFoldableStateReturn parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, input, extensionRegistry);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcDa.DcDaGetFoldableStateReturn parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return parseDelimitedFrom(DEFAULT_INSTANCE, input);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcDa.DcDaGetFoldableStateReturn parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return parseDelimitedFrom(DEFAULT_INSTANCE, input, extensionRegistry);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcDa.DcDaGetFoldableStateReturn parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, input);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcDa.DcDaGetFoldableStateReturn parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, input, extensionRegistry);
+    }
+
+    public static Builder newBuilder() {
+      return (Builder) DEFAULT_INSTANCE.createBuilder();
+    }
+    public static Builder newBuilder(com.dogu.protocol.generated.inner.types.DcDa.DcDaGetFoldableStateReturn prototype) {
+      return (Builder) DEFAULT_INSTANCE.createBuilder(prototype);
+    }
+
+    /**
+     * Protobuf type {@code inner.types.DcDaGetFoldableStateReturn}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageLite.Builder<
+          com.dogu.protocol.generated.inner.types.DcDa.DcDaGetFoldableStateReturn, Builder> implements
+        // @@protoc_insertion_point(builder_implements:inner.types.DcDaGetFoldableStateReturn)
+        com.dogu.protocol.generated.inner.types.DcDa.DcDaGetFoldableStateReturnOrBuilder {
+      // Construct using com.dogu.protocol.generated.inner.types.DcDa.DcDaGetFoldableStateReturn.newBuilder()
+      private Builder() {
+        super(DEFAULT_INSTANCE);
+      }
+
+
+      /**
+       * <code>bool is_foldable = 1;</code>
+       * @return The isFoldable.
+       */
+      @java.lang.Override
+      public boolean getIsFoldable() {
+        return instance.getIsFoldable();
+      }
+      /**
+       * <code>bool is_foldable = 1;</code>
+       * @param value The isFoldable to set.
+       * @return This builder for chaining.
+       */
+      public Builder setIsFoldable(boolean value) {
+        copyOnWrite();
+        instance.setIsFoldable(value);
+        return this;
+      }
+      /**
+       * <code>bool is_foldable = 1;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearIsFoldable() {
+        copyOnWrite();
+        instance.clearIsFoldable();
+        return this;
+      }
+
+      /**
+       * <code>uint32 current_state = 2;</code>
+       * @return The currentState.
+       */
+      @java.lang.Override
+      public int getCurrentState() {
+        return instance.getCurrentState();
+      }
+      /**
+       * <code>uint32 current_state = 2;</code>
+       * @param value The currentState to set.
+       * @return This builder for chaining.
+       */
+      public Builder setCurrentState(int value) {
+        copyOnWrite();
+        instance.setCurrentState(value);
+        return this;
+      }
+      /**
+       * <code>uint32 current_state = 2;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearCurrentState() {
+        copyOnWrite();
+        instance.clearCurrentState();
+        return this;
+      }
+
+      /**
+       * <code>repeated uint32 supported_states = 3;</code>
+       * @return A list containing the supportedStates.
+       */
+      @java.lang.Override
+      public java.util.List<java.lang.Integer>
+          getSupportedStatesList() {
+        return java.util.Collections.unmodifiableList(
+            instance.getSupportedStatesList());
+      }
+      /**
+       * <code>repeated uint32 supported_states = 3;</code>
+       * @return The count of supportedStates.
+       */
+      @java.lang.Override
+      public int getSupportedStatesCount() {
+        return instance.getSupportedStatesCount();
+      }
+      /**
+       * <code>repeated uint32 supported_states = 3;</code>
+       * @param index The index of the element to return.
+       * @return The supportedStates at the given index.
+       */
+      @java.lang.Override
+      public int getSupportedStates(int index) {
+        return instance.getSupportedStates(index);
+      }
+      /**
+       * <code>repeated uint32 supported_states = 3;</code>
+       * @param value The supportedStates to set.
+       * @return This builder for chaining.
+       */
+      public Builder setSupportedStates(
+          int index, int value) {
+        copyOnWrite();
+        instance.setSupportedStates(index, value);
+        return this;
+      }
+      /**
+       * <code>repeated uint32 supported_states = 3;</code>
+       * @param value The supportedStates to add.
+       * @return This builder for chaining.
+       */
+      public Builder addSupportedStates(int value) {
+        copyOnWrite();
+        instance.addSupportedStates(value);
+        return this;
+      }
+      /**
+       * <code>repeated uint32 supported_states = 3;</code>
+       * @param values The supportedStates to add.
+       * @return This builder for chaining.
+       */
+      public Builder addAllSupportedStates(
+          java.lang.Iterable<? extends java.lang.Integer> values) {
+        copyOnWrite();
+        instance.addAllSupportedStates(values);
+        return this;
+      }
+      /**
+       * <code>repeated uint32 supported_states = 3;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearSupportedStates() {
+        copyOnWrite();
+        instance.clearSupportedStates();
+        return this;
+      }
+
+      // @@protoc_insertion_point(builder_scope:inner.types.DcDaGetFoldableStateReturn)
+    }
+    @java.lang.Override
+    @java.lang.SuppressWarnings({"unchecked", "fallthrough"})
+    protected final java.lang.Object dynamicMethod(
+        com.google.protobuf.GeneratedMessageLite.MethodToInvoke method,
+        java.lang.Object arg0, java.lang.Object arg1) {
+      switch (method) {
+        case NEW_MUTABLE_INSTANCE: {
+          return new com.dogu.protocol.generated.inner.types.DcDa.DcDaGetFoldableStateReturn();
+        }
+        case NEW_BUILDER: {
+          return new Builder();
+        }
+        case BUILD_MESSAGE_INFO: {
+            java.lang.Object[] objects = new java.lang.Object[] {
+              "isFoldable_",
+              "currentState_",
+              "supportedStates_",
+            };
+            java.lang.String info =
+                "\u0000\u0003\u0000\u0000\u0001\u0003\u0003\u0000\u0001\u0000\u0001\u0007\u0002\u000b" +
+                "\u0003+";
+            return newMessageInfo(DEFAULT_INSTANCE, info, objects);
+        }
+        // fall through
+        case GET_DEFAULT_INSTANCE: {
+          return DEFAULT_INSTANCE;
+        }
+        case GET_PARSER: {
+          com.google.protobuf.Parser<com.dogu.protocol.generated.inner.types.DcDa.DcDaGetFoldableStateReturn> parser = PARSER;
+          if (parser == null) {
+            synchronized (com.dogu.protocol.generated.inner.types.DcDa.DcDaGetFoldableStateReturn.class) {
+              parser = PARSER;
+              if (parser == null) {
+                parser =
+                    new DefaultInstanceBasedParser<com.dogu.protocol.generated.inner.types.DcDa.DcDaGetFoldableStateReturn>(
+                        DEFAULT_INSTANCE);
+                PARSER = parser;
+              }
+            }
+          }
+          return parser;
+      }
+      case GET_MEMOIZED_IS_INITIALIZED: {
+        return (byte) 1;
+      }
+      case SET_MEMOIZED_IS_INITIALIZED: {
+        return null;
+      }
+      }
+      throw new UnsupportedOperationException();
+    }
+
+
+    // @@protoc_insertion_point(class_scope:inner.types.DcDaGetFoldableStateReturn)
+    private static final com.dogu.protocol.generated.inner.types.DcDa.DcDaGetFoldableStateReturn DEFAULT_INSTANCE;
+    static {
+      DcDaGetFoldableStateReturn defaultInstance = new DcDaGetFoldableStateReturn();
+      // New instances are implicitly immutable so no need to make
+      // immutable.
+      DEFAULT_INSTANCE = defaultInstance;
+      com.google.protobuf.GeneratedMessageLite.registerDefaultInstance(
+        DcDaGetFoldableStateReturn.class, defaultInstance);
+    }
+
+    public static com.dogu.protocol.generated.inner.types.DcDa.DcDaGetFoldableStateReturn getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static volatile com.google.protobuf.Parser<DcDaGetFoldableStateReturn> PARSER;
+
+    public static com.google.protobuf.Parser<DcDaGetFoldableStateReturn> parser() {
+      return DEFAULT_INSTANCE.getParserForType();
+    }
+  }
+
+  public interface DcDaSetFoldableStateParamOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:inner.types.DcDaSetFoldableStateParam)
+      com.google.protobuf.MessageLiteOrBuilder {
+
+    /**
+     * <pre>
+     * It's different by device. but normally smaller is closed
+     * </pre>
+     *
+     * <code>uint32 state = 1;</code>
+     * @return The state.
+     */
+    int getState();
+  }
+  /**
+   * Protobuf type {@code inner.types.DcDaSetFoldableStateParam}
+   */
+  public  static final class DcDaSetFoldableStateParam extends
+      com.google.protobuf.GeneratedMessageLite<
+          DcDaSetFoldableStateParam, DcDaSetFoldableStateParam.Builder> implements
+      // @@protoc_insertion_point(message_implements:inner.types.DcDaSetFoldableStateParam)
+      DcDaSetFoldableStateParamOrBuilder {
+    private DcDaSetFoldableStateParam() {
+    }
+    public static final int STATE_FIELD_NUMBER = 1;
+    private int state_;
+    /**
+     * <pre>
+     * It's different by device. but normally smaller is closed
+     * </pre>
+     *
+     * <code>uint32 state = 1;</code>
+     * @return The state.
+     */
+    @java.lang.Override
+    public int getState() {
+      return state_;
+    }
+    /**
+     * <pre>
+     * It's different by device. but normally smaller is closed
+     * </pre>
+     *
+     * <code>uint32 state = 1;</code>
+     * @param value The state to set.
+     */
+    private void setState(int value) {
+      
+      state_ = value;
+    }
+    /**
+     * <pre>
+     * It's different by device. but normally smaller is closed
+     * </pre>
+     *
+     * <code>uint32 state = 1;</code>
+     */
+    private void clearState() {
+      
+      state_ = 0;
+    }
+
+    public static com.dogu.protocol.generated.inner.types.DcDa.DcDaSetFoldableStateParam parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcDa.DcDaSetFoldableStateParam parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data, extensionRegistry);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcDa.DcDaSetFoldableStateParam parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcDa.DcDaSetFoldableStateParam parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data, extensionRegistry);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcDa.DcDaSetFoldableStateParam parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcDa.DcDaSetFoldableStateParam parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data, extensionRegistry);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcDa.DcDaSetFoldableStateParam parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, input);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcDa.DcDaSetFoldableStateParam parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, input, extensionRegistry);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcDa.DcDaSetFoldableStateParam parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return parseDelimitedFrom(DEFAULT_INSTANCE, input);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcDa.DcDaSetFoldableStateParam parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return parseDelimitedFrom(DEFAULT_INSTANCE, input, extensionRegistry);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcDa.DcDaSetFoldableStateParam parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, input);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcDa.DcDaSetFoldableStateParam parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, input, extensionRegistry);
+    }
+
+    public static Builder newBuilder() {
+      return (Builder) DEFAULT_INSTANCE.createBuilder();
+    }
+    public static Builder newBuilder(com.dogu.protocol.generated.inner.types.DcDa.DcDaSetFoldableStateParam prototype) {
+      return (Builder) DEFAULT_INSTANCE.createBuilder(prototype);
+    }
+
+    /**
+     * Protobuf type {@code inner.types.DcDaSetFoldableStateParam}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageLite.Builder<
+          com.dogu.protocol.generated.inner.types.DcDa.DcDaSetFoldableStateParam, Builder> implements
+        // @@protoc_insertion_point(builder_implements:inner.types.DcDaSetFoldableStateParam)
+        com.dogu.protocol.generated.inner.types.DcDa.DcDaSetFoldableStateParamOrBuilder {
+      // Construct using com.dogu.protocol.generated.inner.types.DcDa.DcDaSetFoldableStateParam.newBuilder()
+      private Builder() {
+        super(DEFAULT_INSTANCE);
+      }
+
+
+      /**
+       * <pre>
+       * It's different by device. but normally smaller is closed
+       * </pre>
+       *
+       * <code>uint32 state = 1;</code>
+       * @return The state.
+       */
+      @java.lang.Override
+      public int getState() {
+        return instance.getState();
+      }
+      /**
+       * <pre>
+       * It's different by device. but normally smaller is closed
+       * </pre>
+       *
+       * <code>uint32 state = 1;</code>
+       * @param value The state to set.
+       * @return This builder for chaining.
+       */
+      public Builder setState(int value) {
+        copyOnWrite();
+        instance.setState(value);
+        return this;
+      }
+      /**
+       * <pre>
+       * It's different by device. but normally smaller is closed
+       * </pre>
+       *
+       * <code>uint32 state = 1;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearState() {
+        copyOnWrite();
+        instance.clearState();
+        return this;
+      }
+
+      // @@protoc_insertion_point(builder_scope:inner.types.DcDaSetFoldableStateParam)
+    }
+    @java.lang.Override
+    @java.lang.SuppressWarnings({"unchecked", "fallthrough"})
+    protected final java.lang.Object dynamicMethod(
+        com.google.protobuf.GeneratedMessageLite.MethodToInvoke method,
+        java.lang.Object arg0, java.lang.Object arg1) {
+      switch (method) {
+        case NEW_MUTABLE_INSTANCE: {
+          return new com.dogu.protocol.generated.inner.types.DcDa.DcDaSetFoldableStateParam();
+        }
+        case NEW_BUILDER: {
+          return new Builder();
+        }
+        case BUILD_MESSAGE_INFO: {
+            java.lang.Object[] objects = new java.lang.Object[] {
+              "state_",
+            };
+            java.lang.String info =
+                "\u0000\u0001\u0000\u0000\u0001\u0001\u0001\u0000\u0000\u0000\u0001\u000b";
+            return newMessageInfo(DEFAULT_INSTANCE, info, objects);
+        }
+        // fall through
+        case GET_DEFAULT_INSTANCE: {
+          return DEFAULT_INSTANCE;
+        }
+        case GET_PARSER: {
+          com.google.protobuf.Parser<com.dogu.protocol.generated.inner.types.DcDa.DcDaSetFoldableStateParam> parser = PARSER;
+          if (parser == null) {
+            synchronized (com.dogu.protocol.generated.inner.types.DcDa.DcDaSetFoldableStateParam.class) {
+              parser = PARSER;
+              if (parser == null) {
+                parser =
+                    new DefaultInstanceBasedParser<com.dogu.protocol.generated.inner.types.DcDa.DcDaSetFoldableStateParam>(
+                        DEFAULT_INSTANCE);
+                PARSER = parser;
+              }
+            }
+          }
+          return parser;
+      }
+      case GET_MEMOIZED_IS_INITIALIZED: {
+        return (byte) 1;
+      }
+      case SET_MEMOIZED_IS_INITIALIZED: {
+        return null;
+      }
+      }
+      throw new UnsupportedOperationException();
+    }
+
+
+    // @@protoc_insertion_point(class_scope:inner.types.DcDaSetFoldableStateParam)
+    private static final com.dogu.protocol.generated.inner.types.DcDa.DcDaSetFoldableStateParam DEFAULT_INSTANCE;
+    static {
+      DcDaSetFoldableStateParam defaultInstance = new DcDaSetFoldableStateParam();
+      // New instances are implicitly immutable so no need to make
+      // immutable.
+      DEFAULT_INSTANCE = defaultInstance;
+      com.google.protobuf.GeneratedMessageLite.registerDefaultInstance(
+        DcDaSetFoldableStateParam.class, defaultInstance);
+    }
+
+    public static com.dogu.protocol.generated.inner.types.DcDa.DcDaSetFoldableStateParam getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static volatile com.google.protobuf.Parser<DcDaSetFoldableStateParam> PARSER;
+
+    public static com.google.protobuf.Parser<DcDaSetFoldableStateParam> parser() {
+      return DEFAULT_INSTANCE.getParserForType();
+    }
+  }
+
+  public interface DcDaSetFoldableStateReturnOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:inner.types.DcDaSetFoldableStateReturn)
+      com.google.protobuf.MessageLiteOrBuilder {
+
+    /**
+     * <code>.outer.ErrorResult error = 1;</code>
+     * @return Whether the error field is set.
+     */
+    boolean hasError();
+    /**
+     * <code>.outer.ErrorResult error = 1;</code>
+     * @return The error.
+     */
+    com.dogu.protocol.generated.outer.Errors.ErrorResult getError();
+  }
+  /**
+   * Protobuf type {@code inner.types.DcDaSetFoldableStateReturn}
+   */
+  public  static final class DcDaSetFoldableStateReturn extends
+      com.google.protobuf.GeneratedMessageLite<
+          DcDaSetFoldableStateReturn, DcDaSetFoldableStateReturn.Builder> implements
+      // @@protoc_insertion_point(message_implements:inner.types.DcDaSetFoldableStateReturn)
+      DcDaSetFoldableStateReturnOrBuilder {
+    private DcDaSetFoldableStateReturn() {
+    }
+    public static final int ERROR_FIELD_NUMBER = 1;
+    private com.dogu.protocol.generated.outer.Errors.ErrorResult error_;
+    /**
+     * <code>.outer.ErrorResult error = 1;</code>
+     */
+    @java.lang.Override
+    public boolean hasError() {
+      return error_ != null;
+    }
+    /**
+     * <code>.outer.ErrorResult error = 1;</code>
+     */
+    @java.lang.Override
+    public com.dogu.protocol.generated.outer.Errors.ErrorResult getError() {
+      return error_ == null ? com.dogu.protocol.generated.outer.Errors.ErrorResult.getDefaultInstance() : error_;
+    }
+    /**
+     * <code>.outer.ErrorResult error = 1;</code>
+     */
+    private void setError(com.dogu.protocol.generated.outer.Errors.ErrorResult value) {
+      value.getClass();
+  error_ = value;
+      
+      }
+    /**
+     * <code>.outer.ErrorResult error = 1;</code>
+     */
+    @java.lang.SuppressWarnings({"ReferenceEquality"})
+    private void mergeError(com.dogu.protocol.generated.outer.Errors.ErrorResult value) {
+      value.getClass();
+  if (error_ != null &&
+          error_ != com.dogu.protocol.generated.outer.Errors.ErrorResult.getDefaultInstance()) {
+        error_ =
+          com.dogu.protocol.generated.outer.Errors.ErrorResult.newBuilder(error_).mergeFrom(value).buildPartial();
+      } else {
+        error_ = value;
+      }
+      
+    }
+    /**
+     * <code>.outer.ErrorResult error = 1;</code>
+     */
+    private void clearError() {  error_ = null;
+      
+    }
+
+    public static com.dogu.protocol.generated.inner.types.DcDa.DcDaSetFoldableStateReturn parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcDa.DcDaSetFoldableStateReturn parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data, extensionRegistry);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcDa.DcDaSetFoldableStateReturn parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcDa.DcDaSetFoldableStateReturn parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data, extensionRegistry);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcDa.DcDaSetFoldableStateReturn parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcDa.DcDaSetFoldableStateReturn parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data, extensionRegistry);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcDa.DcDaSetFoldableStateReturn parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, input);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcDa.DcDaSetFoldableStateReturn parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, input, extensionRegistry);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcDa.DcDaSetFoldableStateReturn parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return parseDelimitedFrom(DEFAULT_INSTANCE, input);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcDa.DcDaSetFoldableStateReturn parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return parseDelimitedFrom(DEFAULT_INSTANCE, input, extensionRegistry);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcDa.DcDaSetFoldableStateReturn parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, input);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcDa.DcDaSetFoldableStateReturn parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, input, extensionRegistry);
+    }
+
+    public static Builder newBuilder() {
+      return (Builder) DEFAULT_INSTANCE.createBuilder();
+    }
+    public static Builder newBuilder(com.dogu.protocol.generated.inner.types.DcDa.DcDaSetFoldableStateReturn prototype) {
+      return (Builder) DEFAULT_INSTANCE.createBuilder(prototype);
+    }
+
+    /**
+     * Protobuf type {@code inner.types.DcDaSetFoldableStateReturn}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageLite.Builder<
+          com.dogu.protocol.generated.inner.types.DcDa.DcDaSetFoldableStateReturn, Builder> implements
+        // @@protoc_insertion_point(builder_implements:inner.types.DcDaSetFoldableStateReturn)
+        com.dogu.protocol.generated.inner.types.DcDa.DcDaSetFoldableStateReturnOrBuilder {
+      // Construct using com.dogu.protocol.generated.inner.types.DcDa.DcDaSetFoldableStateReturn.newBuilder()
+      private Builder() {
+        super(DEFAULT_INSTANCE);
+      }
+
+
+      /**
+       * <code>.outer.ErrorResult error = 1;</code>
+       */
+      @java.lang.Override
+      public boolean hasError() {
+        return instance.hasError();
+      }
+      /**
+       * <code>.outer.ErrorResult error = 1;</code>
+       */
+      @java.lang.Override
+      public com.dogu.protocol.generated.outer.Errors.ErrorResult getError() {
+        return instance.getError();
+      }
+      /**
+       * <code>.outer.ErrorResult error = 1;</code>
+       */
+      public Builder setError(com.dogu.protocol.generated.outer.Errors.ErrorResult value) {
+        copyOnWrite();
+        instance.setError(value);
+        return this;
+        }
+      /**
+       * <code>.outer.ErrorResult error = 1;</code>
+       */
+      public Builder setError(
+          com.dogu.protocol.generated.outer.Errors.ErrorResult.Builder builderForValue) {
+        copyOnWrite();
+        instance.setError(builderForValue.build());
+        return this;
+      }
+      /**
+       * <code>.outer.ErrorResult error = 1;</code>
+       */
+      public Builder mergeError(com.dogu.protocol.generated.outer.Errors.ErrorResult value) {
+        copyOnWrite();
+        instance.mergeError(value);
+        return this;
+      }
+      /**
+       * <code>.outer.ErrorResult error = 1;</code>
+       */
+      public Builder clearError() {  copyOnWrite();
+        instance.clearError();
+        return this;
+      }
+
+      // @@protoc_insertion_point(builder_scope:inner.types.DcDaSetFoldableStateReturn)
+    }
+    @java.lang.Override
+    @java.lang.SuppressWarnings({"unchecked", "fallthrough"})
+    protected final java.lang.Object dynamicMethod(
+        com.google.protobuf.GeneratedMessageLite.MethodToInvoke method,
+        java.lang.Object arg0, java.lang.Object arg1) {
+      switch (method) {
+        case NEW_MUTABLE_INSTANCE: {
+          return new com.dogu.protocol.generated.inner.types.DcDa.DcDaSetFoldableStateReturn();
+        }
+        case NEW_BUILDER: {
+          return new Builder();
+        }
+        case BUILD_MESSAGE_INFO: {
+            java.lang.Object[] objects = new java.lang.Object[] {
+              "error_",
+            };
+            java.lang.String info =
+                "\u0000\u0001\u0000\u0000\u0001\u0001\u0001\u0000\u0000\u0000\u0001\t";
+            return newMessageInfo(DEFAULT_INSTANCE, info, objects);
+        }
+        // fall through
+        case GET_DEFAULT_INSTANCE: {
+          return DEFAULT_INSTANCE;
+        }
+        case GET_PARSER: {
+          com.google.protobuf.Parser<com.dogu.protocol.generated.inner.types.DcDa.DcDaSetFoldableStateReturn> parser = PARSER;
+          if (parser == null) {
+            synchronized (com.dogu.protocol.generated.inner.types.DcDa.DcDaSetFoldableStateReturn.class) {
+              parser = PARSER;
+              if (parser == null) {
+                parser =
+                    new DefaultInstanceBasedParser<com.dogu.protocol.generated.inner.types.DcDa.DcDaSetFoldableStateReturn>(
+                        DEFAULT_INSTANCE);
+                PARSER = parser;
+              }
+            }
+          }
+          return parser;
+      }
+      case GET_MEMOIZED_IS_INITIALIZED: {
+        return (byte) 1;
+      }
+      case SET_MEMOIZED_IS_INITIALIZED: {
+        return null;
+      }
+      }
+      throw new UnsupportedOperationException();
+    }
+
+
+    // @@protoc_insertion_point(class_scope:inner.types.DcDaSetFoldableStateReturn)
+    private static final com.dogu.protocol.generated.inner.types.DcDa.DcDaSetFoldableStateReturn DEFAULT_INSTANCE;
+    static {
+      DcDaSetFoldableStateReturn defaultInstance = new DcDaSetFoldableStateReturn();
+      // New instances are implicitly immutable so no need to make
+      // immutable.
+      DEFAULT_INSTANCE = defaultInstance;
+      com.google.protobuf.GeneratedMessageLite.registerDefaultInstance(
+        DcDaSetFoldableStateReturn.class, defaultInstance);
+    }
+
+    public static com.dogu.protocol.generated.inner.types.DcDa.DcDaSetFoldableStateReturn getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static volatile com.google.protobuf.Parser<DcDaSetFoldableStateReturn> PARSER;
+
+    public static com.google.protobuf.Parser<DcDaSetFoldableStateReturn> parser() {
+      return DEFAULT_INSTANCE.getParserForType();
+    }
+  }
+
 
   static {
   }

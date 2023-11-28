@@ -27,6 +27,12 @@ exports.DcDaParam = {
         if (message.value?.$case === 'dcDaControlParam') {
             dc_da_1.DcDaControlParam.encode(message.value.dcDaControlParam, writer.uint32(42).fork()).ldelim();
         }
+        if (message.value?.$case === 'dcDaGetFoldableStateParam') {
+            dc_da_1.DcDaGetFoldableStateParam.encode(message.value.dcDaGetFoldableStateParam, writer.uint32(50).fork()).ldelim();
+        }
+        if (message.value?.$case === 'dcDaSetFoldableStateParam') {
+            dc_da_1.DcDaSetFoldableStateParam.encode(message.value.dcDaSetFoldableStateParam, writer.uint32(58).fork()).ldelim();
+        }
         return writer;
     },
     decode(input, length) {
@@ -63,6 +69,18 @@ exports.DcDaParam = {
                         dcDaControlParam: dc_da_1.DcDaControlParam.decode(reader, reader.uint32()),
                     };
                     break;
+                case 6:
+                    message.value = {
+                        $case: 'dcDaGetFoldableStateParam',
+                        dcDaGetFoldableStateParam: dc_da_1.DcDaGetFoldableStateParam.decode(reader, reader.uint32()),
+                    };
+                    break;
+                case 7:
+                    message.value = {
+                        $case: 'dcDaSetFoldableStateParam',
+                        dcDaSetFoldableStateParam: dc_da_1.DcDaSetFoldableStateParam.decode(reader, reader.uint32()),
+                    };
+                    break;
                 default:
                     reader.skipType(tag & 7);
                     break;
@@ -90,7 +108,17 @@ exports.DcDaParam = {
                         }
                         : isSet(object.dcDaControlParam)
                             ? { $case: 'dcDaControlParam', dcDaControlParam: dc_da_1.DcDaControlParam.fromJSON(object.dcDaControlParam) }
-                            : undefined,
+                            : isSet(object.dcDaGetFoldableStateParam)
+                                ? {
+                                    $case: 'dcDaGetFoldableStateParam',
+                                    dcDaGetFoldableStateParam: dc_da_1.DcDaGetFoldableStateParam.fromJSON(object.dcDaGetFoldableStateParam),
+                                }
+                                : isSet(object.dcDaSetFoldableStateParam)
+                                    ? {
+                                        $case: 'dcDaSetFoldableStateParam',
+                                        dcDaSetFoldableStateParam: dc_da_1.DcDaSetFoldableStateParam.fromJSON(object.dcDaSetFoldableStateParam),
+                                    }
+                                    : undefined,
         };
     },
     toJSON(message) {
@@ -105,6 +133,10 @@ exports.DcDaParam = {
                 ? dc_da_1.DcDaApplyStreamingOptionParam.toJSON(message.value?.dcDaApplyStreamingOptionParam)
                 : undefined);
         message.value?.$case === 'dcDaControlParam' && (obj.dcDaControlParam = message.value?.dcDaControlParam ? dc_da_1.DcDaControlParam.toJSON(message.value?.dcDaControlParam) : undefined);
+        message.value?.$case === 'dcDaGetFoldableStateParam' &&
+            (obj.dcDaGetFoldableStateParam = message.value?.dcDaGetFoldableStateParam ? dc_da_1.DcDaGetFoldableStateParam.toJSON(message.value?.dcDaGetFoldableStateParam) : undefined);
+        message.value?.$case === 'dcDaSetFoldableStateParam' &&
+            (obj.dcDaSetFoldableStateParam = message.value?.dcDaSetFoldableStateParam ? dc_da_1.DcDaSetFoldableStateParam.toJSON(message.value?.dcDaSetFoldableStateParam) : undefined);
         return obj;
     },
     fromPartial(object) {
@@ -136,6 +168,18 @@ exports.DcDaParam = {
                 dcDaControlParam: dc_da_1.DcDaControlParam.fromPartial(object.value.dcDaControlParam),
             };
         }
+        if (object.value?.$case === 'dcDaGetFoldableStateParam' && object.value?.dcDaGetFoldableStateParam !== undefined && object.value?.dcDaGetFoldableStateParam !== null) {
+            message.value = {
+                $case: 'dcDaGetFoldableStateParam',
+                dcDaGetFoldableStateParam: dc_da_1.DcDaGetFoldableStateParam.fromPartial(object.value.dcDaGetFoldableStateParam),
+            };
+        }
+        if (object.value?.$case === 'dcDaSetFoldableStateParam' && object.value?.dcDaSetFoldableStateParam !== undefined && object.value?.dcDaSetFoldableStateParam !== null) {
+            message.value = {
+                $case: 'dcDaSetFoldableStateParam',
+                dcDaSetFoldableStateParam: dc_da_1.DcDaSetFoldableStateParam.fromPartial(object.value.dcDaSetFoldableStateParam),
+            };
+        }
         return message;
     },
 };
@@ -158,6 +202,12 @@ exports.DcDaReturn = {
         }
         if (message.value?.$case === 'dcDaControlReturn') {
             dc_da_1.DcDaControlReturn.encode(message.value.dcDaControlReturn, writer.uint32(42).fork()).ldelim();
+        }
+        if (message.value?.$case === 'dcDaGetFoldableStateReturn') {
+            dc_da_1.DcDaGetFoldableStateReturn.encode(message.value.dcDaGetFoldableStateReturn, writer.uint32(50).fork()).ldelim();
+        }
+        if (message.value?.$case === 'dcDaSetFoldableStateReturn') {
+            dc_da_1.DcDaSetFoldableStateReturn.encode(message.value.dcDaSetFoldableStateReturn, writer.uint32(58).fork()).ldelim();
         }
         return writer;
     },
@@ -195,6 +245,18 @@ exports.DcDaReturn = {
                         dcDaControlReturn: dc_da_1.DcDaControlReturn.decode(reader, reader.uint32()),
                     };
                     break;
+                case 6:
+                    message.value = {
+                        $case: 'dcDaGetFoldableStateReturn',
+                        dcDaGetFoldableStateReturn: dc_da_1.DcDaGetFoldableStateReturn.decode(reader, reader.uint32()),
+                    };
+                    break;
+                case 7:
+                    message.value = {
+                        $case: 'dcDaSetFoldableStateReturn',
+                        dcDaSetFoldableStateReturn: dc_da_1.DcDaSetFoldableStateReturn.decode(reader, reader.uint32()),
+                    };
+                    break;
                 default:
                     reader.skipType(tag & 7);
                     break;
@@ -222,7 +284,17 @@ exports.DcDaReturn = {
                         }
                         : isSet(object.dcDaControlReturn)
                             ? { $case: 'dcDaControlReturn', dcDaControlReturn: dc_da_1.DcDaControlReturn.fromJSON(object.dcDaControlReturn) }
-                            : undefined,
+                            : isSet(object.dcDaGetFoldableStateReturn)
+                                ? {
+                                    $case: 'dcDaGetFoldableStateReturn',
+                                    dcDaGetFoldableStateReturn: dc_da_1.DcDaGetFoldableStateReturn.fromJSON(object.dcDaGetFoldableStateReturn),
+                                }
+                                : isSet(object.dcDaSetFoldableStateReturn)
+                                    ? {
+                                        $case: 'dcDaSetFoldableStateReturn',
+                                        dcDaSetFoldableStateReturn: dc_da_1.DcDaSetFoldableStateReturn.fromJSON(object.dcDaSetFoldableStateReturn),
+                                    }
+                                    : undefined,
         };
     },
     toJSON(message) {
@@ -238,6 +310,10 @@ exports.DcDaReturn = {
                 : undefined);
         message.value?.$case === 'dcDaControlReturn' &&
             (obj.dcDaControlReturn = message.value?.dcDaControlReturn ? dc_da_1.DcDaControlReturn.toJSON(message.value?.dcDaControlReturn) : undefined);
+        message.value?.$case === 'dcDaGetFoldableStateReturn' &&
+            (obj.dcDaGetFoldableStateReturn = message.value?.dcDaGetFoldableStateReturn ? dc_da_1.DcDaGetFoldableStateReturn.toJSON(message.value?.dcDaGetFoldableStateReturn) : undefined);
+        message.value?.$case === 'dcDaSetFoldableStateReturn' &&
+            (obj.dcDaSetFoldableStateReturn = message.value?.dcDaSetFoldableStateReturn ? dc_da_1.DcDaSetFoldableStateReturn.toJSON(message.value?.dcDaSetFoldableStateReturn) : undefined);
         return obj;
     },
     fromPartial(object) {
@@ -267,6 +343,18 @@ exports.DcDaReturn = {
             message.value = {
                 $case: 'dcDaControlReturn',
                 dcDaControlReturn: dc_da_1.DcDaControlReturn.fromPartial(object.value.dcDaControlReturn),
+            };
+        }
+        if (object.value?.$case === 'dcDaGetFoldableStateReturn' && object.value?.dcDaGetFoldableStateReturn !== undefined && object.value?.dcDaGetFoldableStateReturn !== null) {
+            message.value = {
+                $case: 'dcDaGetFoldableStateReturn',
+                dcDaGetFoldableStateReturn: dc_da_1.DcDaGetFoldableStateReturn.fromPartial(object.value.dcDaGetFoldableStateReturn),
+            };
+        }
+        if (object.value?.$case === 'dcDaSetFoldableStateReturn' && object.value?.dcDaSetFoldableStateReturn !== undefined && object.value?.dcDaSetFoldableStateReturn !== null) {
+            message.value = {
+                $case: 'dcDaSetFoldableStateReturn',
+                dcDaSetFoldableStateReturn: dc_da_1.DcDaSetFoldableStateReturn.fromPartial(object.value.dcDaSetFoldableStateReturn),
             };
         }
         return message;

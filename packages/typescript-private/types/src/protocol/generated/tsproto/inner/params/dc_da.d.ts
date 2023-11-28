@@ -1,5 +1,5 @@
 import _m0 from 'protobufjs/minimal';
-import { DcDaApplyStreamingOptionParam, DcDaApplyStreamingOptionReturn, DcDaConnectionParam, DcDaConnectionReturn, DcDaControlParam, DcDaControlReturn, DcDaQueryProfileParam, DcDaQueryProfileReturn } from '../types/dc_da';
+import { DcDaApplyStreamingOptionParam, DcDaApplyStreamingOptionReturn, DcDaConnectionParam, DcDaConnectionReturn, DcDaControlParam, DcDaControlReturn, DcDaGetFoldableStateParam, DcDaGetFoldableStateReturn, DcDaQueryProfileParam, DcDaQueryProfileReturn, DcDaSetFoldableStateParam, DcDaSetFoldableStateReturn } from '../types/dc_da';
 export interface DcDaParam {
     seq: number;
     value?: {
@@ -14,6 +14,12 @@ export interface DcDaParam {
     } | {
         $case: 'dcDaControlParam';
         dcDaControlParam: DcDaControlParam;
+    } | {
+        $case: 'dcDaGetFoldableStateParam';
+        dcDaGetFoldableStateParam: DcDaGetFoldableStateParam;
+    } | {
+        $case: 'dcDaSetFoldableStateParam';
+        dcDaSetFoldableStateParam: DcDaSetFoldableStateParam;
     };
 }
 export interface DcDaReturn {
@@ -30,6 +36,12 @@ export interface DcDaReturn {
     } | {
         $case: 'dcDaControlReturn';
         dcDaControlReturn: DcDaControlReturn;
+    } | {
+        $case: 'dcDaGetFoldableStateReturn';
+        dcDaGetFoldableStateReturn: DcDaGetFoldableStateReturn;
+    } | {
+        $case: 'dcDaSetFoldableStateReturn';
+        dcDaSetFoldableStateReturn: DcDaSetFoldableStateReturn;
     };
 }
 export declare const DcDaParam: {
@@ -101,6 +113,16 @@ export declare const DcDaParam: {
             } | undefined;
         } & {
             $case: "dcDaControlParam";
+        }) | ({
+            dcDaGetFoldableStateParam?: {} | undefined;
+        } & {
+            $case: "dcDaGetFoldableStateParam";
+        }) | ({
+            dcDaSetFoldableStateParam?: {
+                state?: number | undefined;
+            } | undefined;
+        } & {
+            $case: "dcDaSetFoldableStateParam";
         }) | undefined;
     } & {
         seq?: number | undefined;
@@ -327,8 +349,28 @@ export declare const DcDaParam: {
                 } & { [K_11 in Exclude<keyof I["value"]["dcDaControlParam"]["control"], keyof import("../index").DeviceControl>]: never; }) | undefined;
             } & { [K_12 in Exclude<keyof I["value"]["dcDaControlParam"], "control">]: never; }) | undefined;
             $case: "dcDaControlParam";
-        } & { [K_13 in Exclude<keyof I["value"], "$case" | "dcDaControlParam">]: never; }) | undefined;
-    } & { [K_14 in Exclude<keyof I, keyof DcDaParam>]: never; }>(object: I): DcDaParam;
+        } & { [K_13 in Exclude<keyof I["value"], "$case" | "dcDaControlParam">]: never; }) | ({
+            dcDaGetFoldableStateParam?: {} | undefined;
+        } & {
+            $case: "dcDaGetFoldableStateParam";
+        } & {
+            dcDaGetFoldableStateParam?: ({} & {} & { [K_14 in Exclude<keyof I["value"]["dcDaGetFoldableStateParam"], never>]: never; }) | undefined;
+            $case: "dcDaGetFoldableStateParam";
+        } & { [K_15 in Exclude<keyof I["value"], "$case" | "dcDaGetFoldableStateParam">]: never; }) | ({
+            dcDaSetFoldableStateParam?: {
+                state?: number | undefined;
+            } | undefined;
+        } & {
+            $case: "dcDaSetFoldableStateParam";
+        } & {
+            dcDaSetFoldableStateParam?: ({
+                state?: number | undefined;
+            } & {
+                state?: number | undefined;
+            } & { [K_16 in Exclude<keyof I["value"]["dcDaSetFoldableStateParam"], "state">]: never; }) | undefined;
+            $case: "dcDaSetFoldableStateParam";
+        } & { [K_17 in Exclude<keyof I["value"], "$case" | "dcDaSetFoldableStateParam">]: never; }) | undefined;
+    } & { [K_18 in Exclude<keyof I, keyof DcDaParam>]: never; }>(object: I): DcDaParam;
 };
 export declare const DcDaReturn: {
     encode(message: DcDaReturn, writer?: _m0.Writer): _m0.Writer;
@@ -443,6 +485,26 @@ export declare const DcDaReturn: {
             dcDaControlReturn?: {} | undefined;
         } & {
             $case: "dcDaControlReturn";
+        }) | ({
+            dcDaGetFoldableStateReturn?: {
+                isFoldable?: boolean | undefined;
+                currentState?: number | undefined;
+                supportedStates?: number[] | undefined;
+            } | undefined;
+        } & {
+            $case: "dcDaGetFoldableStateReturn";
+        }) | ({
+            dcDaSetFoldableStateReturn?: {
+                error?: {
+                    code?: import("../../index").Code | undefined;
+                    message?: string | undefined;
+                    details?: {
+                        [x: string]: any;
+                    } | undefined;
+                } | undefined;
+            } | undefined;
+        } & {
+            $case: "dcDaSetFoldableStateReturn";
         }) | undefined;
     } & {
         seq?: number | undefined;
@@ -1102,6 +1164,64 @@ export declare const DcDaReturn: {
         } & {
             dcDaControlReturn?: ({} & {} & { [K_33 in Exclude<keyof I["value"]["dcDaControlReturn"], never>]: never; }) | undefined;
             $case: "dcDaControlReturn";
-        } & { [K_34 in Exclude<keyof I["value"], "$case" | "dcDaControlReturn">]: never; }) | undefined;
-    } & { [K_35 in Exclude<keyof I, keyof DcDaReturn>]: never; }>(object: I): DcDaReturn;
+        } & { [K_34 in Exclude<keyof I["value"], "$case" | "dcDaControlReturn">]: never; }) | ({
+            dcDaGetFoldableStateReturn?: {
+                isFoldable?: boolean | undefined;
+                currentState?: number | undefined;
+                supportedStates?: number[] | undefined;
+            } | undefined;
+        } & {
+            $case: "dcDaGetFoldableStateReturn";
+        } & {
+            dcDaGetFoldableStateReturn?: ({
+                isFoldable?: boolean | undefined;
+                currentState?: number | undefined;
+                supportedStates?: number[] | undefined;
+            } & {
+                isFoldable?: boolean | undefined;
+                currentState?: number | undefined;
+                supportedStates?: (number[] & number[] & { [K_35 in Exclude<keyof I["value"]["dcDaGetFoldableStateReturn"]["supportedStates"], keyof number[]>]: never; }) | undefined;
+            } & { [K_36 in Exclude<keyof I["value"]["dcDaGetFoldableStateReturn"], keyof DcDaGetFoldableStateReturn>]: never; }) | undefined;
+            $case: "dcDaGetFoldableStateReturn";
+        } & { [K_37 in Exclude<keyof I["value"], "$case" | "dcDaGetFoldableStateReturn">]: never; }) | ({
+            dcDaSetFoldableStateReturn?: {
+                error?: {
+                    code?: import("../../index").Code | undefined;
+                    message?: string | undefined;
+                    details?: {
+                        [x: string]: any;
+                    } | undefined;
+                } | undefined;
+            } | undefined;
+        } & {
+            $case: "dcDaSetFoldableStateReturn";
+        } & {
+            dcDaSetFoldableStateReturn?: ({
+                error?: {
+                    code?: import("../../index").Code | undefined;
+                    message?: string | undefined;
+                    details?: {
+                        [x: string]: any;
+                    } | undefined;
+                } | undefined;
+            } & {
+                error?: ({
+                    code?: import("../../index").Code | undefined;
+                    message?: string | undefined;
+                    details?: {
+                        [x: string]: any;
+                    } | undefined;
+                } & {
+                    code?: import("../../index").Code | undefined;
+                    message?: string | undefined;
+                    details?: ({
+                        [x: string]: any;
+                    } & {
+                        [x: string]: any;
+                    } & { [K_38 in Exclude<keyof I["value"]["dcDaSetFoldableStateReturn"]["error"]["details"], string | number>]: never; }) | undefined;
+                } & { [K_39 in Exclude<keyof I["value"]["dcDaSetFoldableStateReturn"]["error"], keyof import("../../index").ErrorResult>]: never; }) | undefined;
+            } & { [K_40 in Exclude<keyof I["value"]["dcDaSetFoldableStateReturn"], "error">]: never; }) | undefined;
+            $case: "dcDaSetFoldableStateReturn";
+        } & { [K_41 in Exclude<keyof I["value"], "$case" | "dcDaSetFoldableStateReturn">]: never; }) | undefined;
+    } & { [K_42 in Exclude<keyof I, keyof DcDaReturn>]: never; }>(object: I): DcDaReturn;
 };

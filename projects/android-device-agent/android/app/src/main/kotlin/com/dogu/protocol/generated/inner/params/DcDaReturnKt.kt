@@ -134,6 +134,54 @@ object DcDaReturnKt {
     fun hasDcDaControlReturn(): kotlin.Boolean {
       return _builder.hasDcDaControlReturn()
     }
+
+    /**
+     * <code>.inner.types.DcDaGetFoldableStateReturn dc_da_get_foldable_state_return = 6;</code>
+     */
+    var dcDaGetFoldableStateReturn: com.dogu.protocol.generated.inner.types.DcDa.DcDaGetFoldableStateReturn
+      @JvmName("getDcDaGetFoldableStateReturn")
+      get() = _builder.getDcDaGetFoldableStateReturn()
+      @JvmName("setDcDaGetFoldableStateReturn")
+      set(value) {
+        _builder.setDcDaGetFoldableStateReturn(value)
+      }
+    /**
+     * <code>.inner.types.DcDaGetFoldableStateReturn dc_da_get_foldable_state_return = 6;</code>
+     */
+    fun clearDcDaGetFoldableStateReturn() {
+      _builder.clearDcDaGetFoldableStateReturn()
+    }
+    /**
+     * <code>.inner.types.DcDaGetFoldableStateReturn dc_da_get_foldable_state_return = 6;</code>
+     * @return Whether the dcDaGetFoldableStateReturn field is set.
+     */
+    fun hasDcDaGetFoldableStateReturn(): kotlin.Boolean {
+      return _builder.hasDcDaGetFoldableStateReturn()
+    }
+
+    /**
+     * <code>.inner.types.DcDaSetFoldableStateReturn dc_da_set_foldable_state_return = 7;</code>
+     */
+    var dcDaSetFoldableStateReturn: com.dogu.protocol.generated.inner.types.DcDa.DcDaSetFoldableStateReturn
+      @JvmName("getDcDaSetFoldableStateReturn")
+      get() = _builder.getDcDaSetFoldableStateReturn()
+      @JvmName("setDcDaSetFoldableStateReturn")
+      set(value) {
+        _builder.setDcDaSetFoldableStateReturn(value)
+      }
+    /**
+     * <code>.inner.types.DcDaSetFoldableStateReturn dc_da_set_foldable_state_return = 7;</code>
+     */
+    fun clearDcDaSetFoldableStateReturn() {
+      _builder.clearDcDaSetFoldableStateReturn()
+    }
+    /**
+     * <code>.inner.types.DcDaSetFoldableStateReturn dc_da_set_foldable_state_return = 7;</code>
+     * @return Whether the dcDaSetFoldableStateReturn field is set.
+     */
+    fun hasDcDaSetFoldableStateReturn(): kotlin.Boolean {
+      return _builder.hasDcDaSetFoldableStateReturn()
+    }
     val valueCase: com.dogu.protocol.generated.inner.params.DcDa.DcDaReturn.ValueCase
       @JvmName("getValueCase")
       get() = _builder.getValueCase()
@@ -158,4 +206,10 @@ val com.dogu.protocol.generated.inner.params.DcDa.DcDaReturnOrBuilder.dcDaApplyS
 
 val com.dogu.protocol.generated.inner.params.DcDa.DcDaReturnOrBuilder.dcDaControlReturnOrNull: com.dogu.protocol.generated.inner.types.DcDa.DcDaControlReturn?
   get() = if (hasDcDaControlReturn()) getDcDaControlReturn() else null
+
+val com.dogu.protocol.generated.inner.params.DcDa.DcDaReturnOrBuilder.dcDaGetFoldableStateReturnOrNull: com.dogu.protocol.generated.inner.types.DcDa.DcDaGetFoldableStateReturn?
+  get() = if (hasDcDaGetFoldableStateReturn()) getDcDaGetFoldableStateReturn() else null
+
+val com.dogu.protocol.generated.inner.params.DcDa.DcDaReturnOrBuilder.dcDaSetFoldableStateReturnOrNull: com.dogu.protocol.generated.inner.types.DcDa.DcDaSetFoldableStateReturn?
+  get() = if (hasDcDaSetFoldableStateReturn()) getDcDaSetFoldableStateReturn() else null
 

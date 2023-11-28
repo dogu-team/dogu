@@ -11,7 +11,7 @@ import com.dogu.protocol.generated.inner.types.DcDa as DcDaTypes
 
 class ApplyStreamingOptionAPIHandler : IDcDaProtoAPIHandler {
     override fun process(appContext: AppContext, param: DcDaParams.DcDaParam): DcDaParams.DcDaReturn.Builder {
-        Logger.v( "ApplyStreamingOptionAPIHandler.handle")
+        Logger.v( "ApplyStreamingOptionAPIHandler.process")
         val option = param.dcDaApplyStreamingOptionParam.option
 
         val befOption = appContext.options.copy()

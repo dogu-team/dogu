@@ -1,5 +1,5 @@
 import { DeviceSystemInfo, Platform, PrivateProtocol, Serial, SerialPrintable } from '@dogu-private/types';
-import { closeWebSocketWithTruncateReason, delay, Milisecond, Printable, stringifyError } from '@dogu-tech/common';
+import { closeWebSocketWithTruncateReason, delay, Milisecond, Printable, stringify, stringifyError } from '@dogu-tech/common';
 import { isFreePort, killChildProcess } from '@dogu-tech/node';
 import child_process from 'child_process';
 import { EventEmitter } from 'stream';
@@ -23,6 +23,8 @@ type DcDaParam = PrivateProtocol.DcDaParam;
 type DcDaReturn = PrivateProtocol.DcDaReturn;
 const DcDaParam = PrivateProtocol.DcDaParam;
 const DcDaReturn = PrivateProtocol.DcDaReturn;
+
+type ResultCallback<ResultValue> = (result: ResultValue | undefined, error: Error | undefined) => void;
 
 export class AndroidDeviceAgentService implements DeviceAgentService, Zombieable {
   private protoWs: WebSocket | undefined = undefined;
@@ -103,58 +105,91 @@ export class AndroidDeviceAgentService implements DeviceAgentService, Zombieable
     ParamValue extends DcDaParamUnionPickValue<ParamKey>,
     ReturnValue extends DcDaReturnUnionPickValue<ReturnKey>,
   >(paramKey: ParamKey, returnKey: ReturnKey, paramValue: ParamValue, timeout = 10000): Promise<ReturnValue | null> {
-    // dcLogger.verbose(`AndroidDeviceAgentService.sendWithProtobuf ${paramKey}`);
-    return new Promise((resolve) => {
-      if (!this.protoWs) {
-        this.logger.error('AndroidDeviceAgentService.sendAndWaitParamResult this.protoWs is null');
-        return null;
-      }
-      const seq = this.getSeq();
-
-      // complete handle
-      this.protoAPIRetEmitter.once(seq.toString(), (data: DcDaReturn) => {
-        if (data.value?.$case !== returnKey) {
-          this.logger.error(`AndroidDeviceAgentService.sendWithProtobuf ${returnKey} is null`);
-          resolve(null);
-          return;
-        }
-        const returnObj = data.value as DcDaReturnUnionPick<ReturnKey>;
-        if (returnObj == null) {
-          this.logger.error('AndroidDeviceAgentService.sendWithProtobuf returnObj is null');
-          resolve(null);
-          return;
-        }
-        resolve(returnObj[returnKey] as ReturnValue);
-      });
-
-      // timeout handle
-      setTimeout(() => {
-        resolve(null);
-      }, timeout);
-
-      // request
-      const paramObj = {
-        $case: paramKey,
-        [paramKey]: paramValue,
-      } as unknown as DcDaParamUnionPick<ParamKey>;
-
-      const castedParam: DcDaParam = {
-        seq: seq,
-        value: paramObj,
-      };
-      const buffer = DcDaParam.encode(castedParam).finish();
-      // logger.verbose(`AndroidDeviceAgentService.sendWithProtobuf size : ${buffer.byteLength}`);
-      this.protoWs.send(buffer);
+    return new Promise<ReturnValue | null>((resolve) => {
+      this.sendInternal(
+        paramKey,
+        returnKey,
+        paramValue,
+        (result: ReturnValue | undefined, error) => {
+          if (error) {
+            this.logger.error(`AndroidDeviceAgentService.sendInternal error: ${stringify(error)}`);
+          }
+          if (!result) {
+            resolve(null);
+            return;
+          }
+          resolve(result);
+        },
+        timeout,
+      );
     });
   }
 
-  async test(): Promise<void> {
-    const ret = await this.sendWithProtobuf('dcDaConnectionParam', 'dcDaConnectionReturn', {
-      version: '1.0.0',
-      nickname: 'asd',
+  sendInternal<
+    ParamKey extends DcDaParamKeys & keyof DcDaParamUnionPick<ParamKey>,
+    ReturnKey extends DcDaReturnKeys & keyof DcDaReturnUnionPick<ReturnKey>,
+    ParamValue extends DcDaParamUnionPickValue<ParamKey>,
+    ReturnValue extends DcDaReturnUnionPickValue<ReturnKey>,
+  >(paramKey: ParamKey, returnKey: ReturnKey, paramValue: ParamValue, onResult: ResultCallback<ReturnValue>, timeout = 10000): void {
+    let isResolved = false;
+    const resolve = (result: ReturnValue | undefined, error: Error | undefined): void => {
+      if (isResolved) {
+        return;
+      }
+
+      isResolved = true;
+      onResult(result, error);
+    };
+    // dcLogger.verbose(`AndroidDeviceAgentService.sendWithProtobuf ${paramKey}`);
+    if (!this.protoWs) {
+      resolve(undefined, new Error('AndroidDeviceAgentService.sendAndWaitParamResult this.protoWs is null'));
+      return;
+    }
+    const seq = this.getSeq();
+
+    // timeout handle
+    setTimeout(() => {
+      resolve(undefined, new Error(`AndroidDeviceAgentService.sendWithProtobuf timeout ${timeout}`));
+    }, timeout);
+
+    // complete handle
+    this.protoAPIRetEmitter.once(seq.toString(), (data: DcDaReturn) => {
+      if (data.value?.$case !== returnKey) {
+        this.logger.error(`AndroidDeviceAgentService.sendWithProtobuf ${returnKey} is null`);
+        resolve(undefined, new Error(`AndroidDeviceAgentService.sendWithProtobuf ${returnKey} is null`));
+        return;
+      }
+      const returnObj = data.value as DcDaReturnUnionPick<ReturnKey>;
+      if (returnObj == null) {
+        this.logger.error('AndroidDeviceAgentService.sendWithProtobuf returnObj is null');
+        resolve(undefined, new Error('AndroidDeviceAgentService.sendWithProtobuf returnObj is null'));
+        return;
+      }
+      resolve(returnObj[returnKey] as ReturnValue, undefined);
     });
-    if (!ret) return;
-    return;
+
+    // request
+    const paramObj = {
+      $case: paramKey,
+      [paramKey]: paramValue,
+    } as unknown as DcDaParamUnionPick<ParamKey>;
+
+    const castedParam: DcDaParam = {
+      seq: seq,
+      value: paramObj,
+    };
+    const buffer = DcDaParam.encode(castedParam).finish();
+    // logger.verbose(`AndroidDeviceAgentService.sendWithProtobuf size : ${buffer.byteLength}`);
+    this.protoWs.send(buffer);
+  }
+
+  async test(): Promise<void> {
+    for (let i = 0; i < 100000; i++) {
+      this.logger.info(`AndroidDeviceAgentService.test ${i}`);
+      const ret = await this.sendWithProtobuf('dcDaQueryProfileParam', 'dcDaQueryProfileReturn', { profileMethods: [] });
+      this.logger.info(`AndroidDeviceAgentService.test ${i} ret: ${stringify(ret)}`);
+      await delay(1000);
+    }
   }
 
   private onMessage(data: WebSocket.Data): void {
