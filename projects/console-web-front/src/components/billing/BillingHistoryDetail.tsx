@@ -18,6 +18,8 @@ const BillingHistoryDetail: React.FC<Props> = ({ history }) => {
   const router = useRouter();
   const { t } = useTranslation('billing');
 
+  const cardName = history.method === 'paddle' ? history.cardCode : history.cardName;
+
   if (!history.billingPlanHistories) {
     return <ErrorBox title="Something went wrong" desc="No details for invoice" />;
   }
@@ -41,7 +43,8 @@ const BillingHistoryDetail: React.FC<Props> = ({ history }) => {
       <DetailInfo>
         <span>{t('historyDetailPaymentText')}</span>
         <label style={{ verticalAlign: 'sub' }}>**** **** **** </label>
-        {history.cardNumberLast4Digits} {`(${history.cardName?.replace(/\[|\]/g, '')})`}
+        {history.cardNumberLast4Digits}{' '}
+        <span style={{ textTransform: 'capitalize' }}>{`(${cardName?.replace(/\[|\]/g, '')})`}</span>
       </DetailInfo>
 
       <Divider style={{ margin: '.5rem 0' }} />

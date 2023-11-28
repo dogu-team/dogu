@@ -54,7 +54,7 @@ const HistoryItem: React.FC<ItemProps> = ({ history }) => {
             );
           })}
         </Cell>
-        <Cell flex={1}>{getLocaleFormattedPrice('ko', 'KRW', getHistoryAmount(history))}</Cell>
+        <Cell flex={1}>{getLocaleFormattedPrice(router.locale, history.currency, getHistoryAmount(history))}</Cell>
         <ButtonWrapper>
           <Button type="link" onClick={() => openModal()}>
             {t('historySeeDetailButtonText')}

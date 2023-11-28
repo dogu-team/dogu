@@ -20,7 +20,6 @@ const usePaddle = (): { paddleRef: MutableRefObject<Paddle | undefined>; loading
       })
         .then((paddle) => {
           if (paddle) {
-            console.log(paddle);
             paddleRef.current = paddle;
           }
           setLoading(false);

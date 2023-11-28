@@ -33,12 +33,17 @@ export class BillingHistoryService {
         .take(offset)
         .getManyAndCount();
 
+      const historiesWithoutBillingOrganization: BillingHistory[] = histories.map((history) => {
+        const { billingOrganization, ...rest } = history;
+        return rest;
+      });
+
       return {
         page,
         offset,
         totalCount,
         totalPage: Math.ceil(totalCount / offset),
-        items: histories,
+        items: historiesWithoutBillingOrganization,
       };
     });
   }

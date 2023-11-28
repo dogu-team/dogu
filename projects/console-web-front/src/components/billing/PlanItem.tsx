@@ -13,7 +13,7 @@ import { useState } from 'react';
 import styled from 'styled-components';
 import { shallow } from 'zustand/shallow';
 
-import { usePromotionCouponSWR } from '../../api/billing';
+import { precheckoutPurchase, usePromotionCouponSWR } from '../../api/billing';
 import { PlanDescriptionInfo } from '../../resources/plan';
 import useBillingPlanPurchaseStore from '../../stores/billing-plan-purchase';
 import useLicenseStore from '../../stores/license';
@@ -21,7 +21,8 @@ import { getSubscriptionPlansFromLicense } from '../../utils/billing';
 import { getLocaleFormattedPrice } from '../../utils/locale';
 import usePaddle from '../../hooks/usePaddle';
 import useAuthStore from '../../stores/auth';
-import api from '../../api';
+import useRequest from '../../hooks/useRequest';
+import { sendErrorNotification } from '../../utils/antd';
 
 interface Props {
   planType: BillingPlanType;
@@ -46,6 +47,7 @@ const PlanItem: React.FC<Props> = ({ planType, planInfo, descriptionInfo }) => {
   const router = useRouter();
   const { t } = useTranslation('billing');
   const { paddleRef, loading: paddleLoading } = usePaddle();
+  const [precheckoutLoading, requestPrecheckoutPurchase] = useRequest(precheckoutPurchase);
 
   const currency: BillingCurrency = router.locale === 'ko' ? 'KRW' : 'USD';
   const usingPlans = license ? getSubscriptionPlansFromLicense(license, [planType]) : [];
@@ -102,13 +104,15 @@ const PlanItem: React.FC<Props> = ({ planType, planInfo, descriptionInfo }) => {
 
   const { text: buttonText, disabled: buttonDisabled, shouldGoAnnual } = getButtonState();
 
-  const handleClickButton = () => {
+  const handleClickButton = async () => {
+    const billingPlanSourceId = planInfo.optionMap[Number(selectedValue)][currency][isAnnual ? 'yearly' : 'monthly'].id;
+
     if (router.locale === 'ko') {
       updateSelectedPlan({
         type: planType,
         option: Number(selectedValue) ?? 0,
         category: planInfo.category,
-        billingPlanSourceId: planInfo.optionMap[Number(selectedValue)][currency][isAnnual ? 'yearly' : 'monthly'].id,
+        billingPlanSourceId,
       });
       if (shouldGoAnnual) {
         // annual plan is not available for now
@@ -120,37 +124,37 @@ const PlanItem: React.FC<Props> = ({ planType, planInfo, descriptionInfo }) => {
       }
 
       try {
-        api
-          .get('/billing/purchase/precheckout', {
-            params: {
-              organizationId: license.organizationId,
-              billingPlanSourceId: 3,
+        const res = await requestPrecheckoutPurchase({
+          organizationId: license.organizationId,
+          billingPlanSourceId,
+        });
+
+        if (!res.body?.paddle) {
+          sendErrorNotification('Failed to get purchase data. Please contact us.');
+          return;
+        }
+
+        paddleRef.current?.Checkout.open({
+          settings: {
+            allowLogout: false,
+            displayMode: 'overlay',
+          },
+          items: [
+            {
+              priceId: res.body.paddle.priceId,
             },
-          })
-          .then((res) => {
-            console.log(res.data);
-            paddleRef.current?.Checkout.open({
-              settings: {
-                allowLogout: false,
-                displayMode: 'overlay',
-              },
-              items: [
-                {
-                  priceId: res.data.body.paddle.priceId,
-                },
-              ],
-              customer: {
-                id: res.data.body.paddle.customerId,
-              },
-              discountId: res.data.body.paddle.discountId,
-              customData: {
-                // need to add billingPlanSourceId to customData for paddle webhook
-                billingPlanSourceId: 3,
-              },
-            });
-          });
+          ],
+          customer: {
+            id: res.body.paddle.customerId,
+          },
+          discountId: res.body.paddle.discountId ?? undefined,
+          customData: {
+            // need to add billingPlanSourceId to customData for paddle webhook
+            billingPlanSourceId,
+          },
+        });
       } catch (e) {
-        console.error(e);
+        sendErrorNotification('Failed to get purchase data. Please contact us.');
       }
     }
   };
@@ -222,7 +226,7 @@ const PlanItem: React.FC<Props> = ({ planType, planInfo, descriptionInfo }) => {
         <div>
           {selectedValue === CONTACT_US_OPTION_KEY ? (
             <a href="https://dogutech.io/book-demo" target="_blank">
-              <Button type="primary" style={{ width: '100%' }} loading={paddleLoading}>
+              <Button type="primary" style={{ width: '100%' }} loading={paddleLoading || precheckoutLoading}>
                 {t('contactUs')}
               </Button>
             </a>
@@ -232,7 +236,7 @@ const PlanItem: React.FC<Props> = ({ planType, planInfo, descriptionInfo }) => {
               style={{ width: '100%' }}
               onClick={handleClickButton}
               disabled={buttonDisabled}
-              loading={paddleLoading}
+              loading={paddleLoading || precheckoutLoading}
             >
               {buttonText}
             </Button>
