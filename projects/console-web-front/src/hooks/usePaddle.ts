@@ -13,9 +13,6 @@ const usePaddle = (): { paddleRef: MutableRefObject<Paddle | undefined>; loading
       environment: 'sandbox',
       token: 'test_34410b5690f361ec275f1cb58bf',
       debug: true,
-      eventCallback: (data) => {
-        console.log('eventCallback', data);
-      },
     })
       .then((paddle) => {
         if (paddle) {
