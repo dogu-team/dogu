@@ -1,5 +1,6 @@
 import {
   BillingHistoryBase,
+  BillingMethod,
   BillingPeriod,
   BillingPlanHistoryBase,
   BillingPlanInfoBase,
@@ -97,4 +98,23 @@ export const getHistoryAmount = (history: BillingHistoryBase | BillingPlanHistor
   }
 
   return history.refundedAmount !== null ? -history.refundedAmount : 0;
+};
+
+export const getPaymentMethodFromLicense = (
+  routerLocale: string = 'en',
+  license: CloudLicenseResponse | SelfHostedLicenseResponse,
+): BillingMethod => {
+  if (license.billingOrganization.billingMethod) {
+    return license.billingOrganization.billingMethod;
+  }
+
+  if (license.billingOrganization.billingMethodNice) {
+    return 'nice';
+  }
+
+  if (license.billingOrganization.billingMethodPaddle) {
+    return 'paddle';
+  }
+
+  return routerLocale === 'ko' ? 'nice' : 'paddle';
 };

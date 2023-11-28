@@ -17,7 +17,7 @@ import { precheckoutPurchase, usePromotionCouponSWR } from '../../api/billing';
 import { PlanDescriptionInfo } from '../../resources/plan';
 import useBillingPlanPurchaseStore from '../../stores/billing-plan-purchase';
 import useLicenseStore from '../../stores/license';
-import { getSubscriptionPlansFromLicense } from '../../utils/billing';
+import { getPaymentMethodFromLicense, getSubscriptionPlansFromLicense } from '../../utils/billing';
 import { getLocaleFormattedPrice } from '../../utils/locale';
 import usePaddle from '../../hooks/usePaddle';
 import useAuthStore from '../../stores/auth';
@@ -49,7 +49,13 @@ const PlanItem: React.FC<Props> = ({ planType, planInfo, descriptionInfo }) => {
   const { paddleRef, loading: paddleLoading } = usePaddle();
   const [precheckoutLoading, requestPrecheckoutPurchase] = useRequest(precheckoutPurchase);
 
-  const currency: BillingCurrency = router.locale === 'ko' ? 'KRW' : 'USD';
+  const currency: BillingCurrency = license
+    ? getPaymentMethodFromLicense(router.locale, license) === 'nice'
+      ? 'KRW'
+      : 'USD'
+    : router.locale === 'ko'
+    ? 'KRW'
+    : 'USD';
   const usingPlans = license ? getSubscriptionPlansFromLicense(license, [planType]) : [];
   const baseOptions: SelectProps<string | number>['options'] = Object.keys(planInfo.optionMap).map((optionKey) => {
     return {
@@ -107,7 +113,14 @@ const PlanItem: React.FC<Props> = ({ planType, planInfo, descriptionInfo }) => {
   const handleClickButton = async () => {
     const billingPlanSourceId = planInfo.optionMap[Number(selectedValue)][currency][isAnnual ? 'yearly' : 'monthly'].id;
 
-    if (router.locale === 'ko') {
+    if (
+      license?.billingOrganization.billingMethod === 'nice' ||
+      !!license?.billingOrganization.billingMethodNice ||
+      (license?.billingOrganization.billingMethod === null &&
+        license?.billingOrganization.billingMethodNice === null &&
+        license?.billingOrganization.billingMethodPaddle === null &&
+        router.locale === 'ko')
+    ) {
       updateSelectedPlan({
         type: planType,
         option: Number(selectedValue) ?? 0,

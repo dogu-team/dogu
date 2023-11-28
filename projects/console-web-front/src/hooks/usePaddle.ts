@@ -8,27 +8,25 @@ const usePaddle = (): { paddleRef: MutableRefObject<Paddle | undefined>; loading
   const router = useRouter();
 
   useEffect(() => {
-    if (router.locale !== 'ko') {
-      setLoading(true);
-      initializePaddle({
-        environment: 'sandbox',
-        token: 'test_34410b5690f361ec275f1cb58bf',
-        debug: true,
-        eventCallback: (data) => {
-          console.log('eventCallback', data);
-        },
+    setLoading(true);
+    initializePaddle({
+      environment: 'sandbox',
+      token: 'test_34410b5690f361ec275f1cb58bf',
+      debug: true,
+      eventCallback: (data) => {
+        console.log('eventCallback', data);
+      },
+    })
+      .then((paddle) => {
+        if (paddle) {
+          paddleRef.current = paddle;
+        }
+        setLoading(false);
       })
-        .then((paddle) => {
-          if (paddle) {
-            paddleRef.current = paddle;
-          }
-          setLoading(false);
-        })
-        .catch((e) => {
-          setLoading(false);
-          console.error(e);
-        });
-    }
+      .catch((e) => {
+        setLoading(false);
+        console.error(e);
+      });
   }, [router.locale]);
 
   return { paddleRef, loading };
