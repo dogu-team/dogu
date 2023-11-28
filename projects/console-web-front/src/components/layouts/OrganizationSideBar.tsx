@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import useTranslation from 'next-translate/useTranslation';
 import {
+  AppstoreOutlined,
   BookOutlined,
   ClusterOutlined,
   MobileOutlined,
@@ -251,14 +252,14 @@ const OrganizationSideBar = () => {
               selected={router.asPath === `/dashboard/${organization?.organizationId}/apps`}
               href={`/dashboard/${organization?.organizationId}/apps`}
             >
-              <IoAppsSharp />
+              <AppstoreOutlined />
             </StyledIconLink>
           ) : undefined,
           label: collapsed ? (
             t('organization:appsPageTitle')
           ) : (
             <SideBarMenu
-              icon={<IoAppsSharp style={{ fontSize: '1.2rem' }} />}
+              icon={<AppstoreOutlined style={{ fontSize: '1.2rem' }} />}
               path={`/dashboard/${organization?.organizationId}/apps`}
               text={t('organization:appsPageTitle')}
               accessId={process.env.NEXT_PUBLIC_ENV !== 'production' ? 'side-bar-apps' : undefined}
