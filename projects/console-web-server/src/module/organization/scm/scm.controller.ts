@@ -1,4 +1,4 @@
-import { OrganizationPropCamel, UpdateOrganizationScmDto } from '@dogu-private/console';
+import { OrganizationPropCamel, OrganizationScmRespository, UpdateOrganizationScmDto } from '@dogu-private/console';
 import { OrganizationId } from '@dogu-private/types';
 import { Body, Controller, Delete, Get, Param, Patch } from '@nestjs/common';
 import { OrganizationScm } from '../../../db/entity/organization-scm.entity';
@@ -23,7 +23,8 @@ export class OrganizationScmController {
   }
 
   @Get('repositories')
-  async findAllRepositories(@Param(OrganizationPropCamel.organizationId) organizationId: OrganizationId): Promise<any> {
+  @OrganizationPermission(ORGANIZATION_ROLE.MEMBER)
+  async findAllRepositories(@Param(OrganizationPropCamel.organizationId) organizationId: OrganizationId): Promise<OrganizationScmRespository[]> {
     return await this.organizationScmService.findAllRepositories(organizationId);
   }
 }
