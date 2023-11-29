@@ -3,6 +3,7 @@ import { DeviceConnectionState, LiveSessionActiveStates, LiveSessionId, LiveSess
 import { errorify } from '@dogu-tech/common';
 import { HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
+import Redis from 'ioredis';
 import { DataSource, EntityManager, In } from 'typeorm';
 import { v4 } from 'uuid';
 
@@ -144,20 +145,21 @@ export class LiveSessionService {
     await this.redis.expire(key, config.liveSession.heartbeat.allowedSeconds);
   }
 
-  async subscribeCloseWaitEvent(liveSessionId: LiveSessionId, onMessage: (message: string) => void): Promise<() => Promise<void>> {
-    return await this.redis.subscribeMessage(config.redis.key.liveSessionCloseWaitEvent(liveSessionId), onMessage);
+  async subscribeCloseWaitEvent(liveSessionId: LiveSessionId, onMessage: (message: string) => void): Promise<Redis> {
+    return await this.redis.createSubscriber(config.redis.key.liveSessionCloseWaitEvent(liveSessionId), onMessage);
   }
 
   async publishCloseWaitEvent(liveSessionId: LiveSessionId, message: string): Promise<void> {
     await this.redis.publish(config.redis.key.liveSessionCloseWaitEvent(liveSessionId), message);
   }
 
-  async subscribeCloseEvent(liveSessionId: LiveSessionId, onMessage: (message: string) => void): Promise<() => Promise<void>> {
-    return await this.redis.subscribeMessage(config.redis.key.liveSessionCloseEvent(liveSessionId), onMessage);
+  async subscribeCloseEvent(liveSessionId: LiveSessionId, onMessage: (message: string) => void): Promise<Redis> {
+    return await this.redis.createSubscriber(config.redis.key.liveSessionCloseEvent(liveSessionId), onMessage);
   }
 
   async publishCloseEvent(liveSessionId: LiveSessionId, message: string): Promise<void> {
     await this.redis.publish(config.redis.key.liveSessionCloseEvent(liveSessionId), message);
+    this.logger.debug('LiveSessionService.publishCloseEvent', { liveSessionId, message });
   }
 
   async isLiveSessionExists(liveSessionId: LiveSessionId): Promise<boolean> {
@@ -197,15 +199,23 @@ export class LiveSessionService {
     });
     await this.updateCloudLicenseId(liveSessionId, cloudLicenseId);
     await this.updateCloudLicenseLiveTestingHeartbeat(cloudLicenseId);
-    let unsubscribeCloseEvent: () => Promise<void> | undefined;
+    let subscriber: Redis | undefined;
     this.cloudLicenseService.startUpdateLiveTesting(cloudLicenseId, {
       onOpen: async (close) => {
-        unsubscribeCloseEvent = await this.subscribeCloseEvent(liveSessionId, () => {
+        subscriber = await this.subscribeCloseEvent(liveSessionId, () => {
           close();
+          this.logger.debug('LiveSessionService.startUpdateLiveTesting.onOpen.subscribeCloseEvent', {
+            cloudLicenseId,
+            liveSessionId,
+          });
         });
       },
       onClose: async () => {
-        await unsubscribeCloseEvent?.();
+        await subscriber?.quit();
+        this.logger.debug('LiveSessionService.startUpdateLiveTesting.onClose', {
+          cloudLicenseId,
+          liveSessionId,
+        });
       },
       onMessage: async (message) => {
         await this.updateCloudLicenseLiveTestingHeartbeat(cloudLicenseId);
@@ -248,8 +258,8 @@ export class LiveSessionService {
     await this.redis.publish(config.redis.key.cloudLicenseLiveTesting(cloudLicenseId), message);
   }
 
-  async subscribeCloudLicenseLiveTesting(cloudLicenseId: string, onMessage: (message: string) => void): Promise<() => Promise<void>> {
-    return await this.redis.subscribeMessage(config.redis.key.cloudLicenseLiveTesting(cloudLicenseId), onMessage);
+  async subscribeCloudLicenseLiveTesting(cloudLicenseId: string, onMessage: (message: string) => void): Promise<Redis> {
+    return await this.redis.createSubscriber(config.redis.key.cloudLicenseLiveTesting(cloudLicenseId), onMessage);
   }
 
   static async validateCloudLicense(manager: EntityManager, organizationId: OrganizationId, cloudLicense: CloudLicenseBase): Promise<boolean> {
