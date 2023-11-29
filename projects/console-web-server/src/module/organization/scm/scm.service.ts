@@ -65,12 +65,16 @@ export class OrganizationScmService {
         try {
           const orgName = this.getOrganizationName(scm.url);
           const results = await Github.findAllRepositories(token, orgName);
-          return results.map((result) => {
-            return {
-              name: result.name,
-              url: result.html_url,
-            };
-          });
+          return results
+            .map((result) => {
+              return {
+                name: result.name,
+                url: result.html_url,
+              };
+            })
+            .sort((a, b) => {
+              return a.name.localeCompare(b.name);
+            });
         } catch (e) {
           throw new InternalServerErrorException(`Failed to fetch repositories from github.`);
         }
@@ -80,12 +84,16 @@ export class OrganizationScmService {
           const orgName = this.getOrganizationName(scm.url);
           const results = await Bitbucket.findAllRepositories(token, orgName);
           return (
-            results.values?.map((result) => {
-              return {
-                name: result.name ?? '',
-                url: result.links?.html?.href ?? '',
-              };
-            }) ?? []
+            results.values
+              ?.map((result) => {
+                return {
+                  name: result.name ?? '',
+                  url: result.links?.html?.href ?? '',
+                };
+              })
+              .sort((a, b) => {
+                return a.name.localeCompare(b.name);
+              }) ?? []
           );
         } catch (e) {
           throw new InternalServerErrorException(`Failed to fetch repositories from bitbucket.`);
@@ -96,12 +104,16 @@ export class OrganizationScmService {
           const url = new URL(scm.url);
           const hostUrl = url.origin;
           const results = await Gitlab.findAllRepositories(hostUrl, token);
-          return results.map((result) => {
-            return {
-              name: result.name,
-              url: result.web_url,
-            };
-          });
+          return results
+            .map((result) => {
+              return {
+                name: result.name,
+                url: result.web_url,
+              };
+            })
+            .sort((a, b) => {
+              return a.name.localeCompare(b.name);
+            });
         } catch (e) {
           throw new InternalServerErrorException(`Failed to fetch repositories from gitlab.`);
         }
