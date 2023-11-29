@@ -178,7 +178,7 @@ class Device(private val options: Options) {
         fun injectEvent(inputEvent: InputEvent?, displayId: Int, injectMode: Int): Boolean {
             // Logger.v("injectEvent: $inputEvent, $displayId, $injectMode")
             if (!supportsInputEvents(displayId)) {
-                throw AssertionError("Could not inject input event if !supportsInputEvents()")
+                throw InternalException("Could not inject input event if !supportsInputEvents()")
             }
             return if (displayId != 0 && !InputManager.setDisplayId(inputEvent, displayId)) {
                 false

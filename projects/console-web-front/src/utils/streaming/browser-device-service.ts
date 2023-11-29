@@ -193,7 +193,7 @@ export class BrowserDeviceService implements DeviceService {
 
       // timeout handle
       const timeout = setTimeout(() => {
-        console.error(`DeviceServerBrowserService. request timeout: ${sequenceId}`);
+        console.error(`BrowserDeviceService. request timeout: ${sequenceId}`);
         reject(new Error('device http request timeout'));
       }, options.timeout);
 
@@ -229,7 +229,7 @@ export class BrowserDeviceService implements DeviceService {
         }
         const { response } = httpRequestResultValue;
         console.debug(
-          `DeviceServerBrowserService. request: ${sequenceId} responsed ${
+          `BrowserDeviceService. request: ${sequenceId} responsed ${
             response.body?.value?.$case === 'stringValue'
               ? response.body?.value?.stringValue.length
               : response?.body?.value?.bytesValue.length
@@ -249,7 +249,7 @@ export class BrowserDeviceService implements DeviceService {
         sendBuffer.push(buffer);
       }
       this.requestFlushSendBuffer();
-      console.debug(`DeviceServerBrowserService. request: ${JSON.stringify(httpRequestParam).substring(0, 300)} >> `);
+      console.debug(`BrowserDeviceService. request: ${JSON.stringify(httpRequestParam).substring(0, 300)} >> `);
     });
   }
 
@@ -269,14 +269,14 @@ export class BrowserDeviceService implements DeviceService {
 
     // timeout handle
     const openTimeout = setTimeout(() => {
-      console.error(`DeviceServerBrowserService. websocket timeout: ${name}, ${sequenceId}`);
+      console.error(`BrowserDeviceService. websocket timeout: ${name}, ${sequenceId}`);
       this.removeChannel(name);
     }, options.timeout);
 
     // complete handle
     resultEmitter.on(sequenceId.toString(), (result: HttpRequestWebSocketResult) => {
       const clearAndRemove = (message: string) => {
-        console.log(`DeviceServerBrowserService. close ${name}. ${message}`);
+        console.log(`BrowserDeviceService. close ${name}. ${message}`);
         clearTimeout(openTimeout);
         this.removeChannel(name);
       };

@@ -55,7 +55,7 @@ object SurfaceControl {
         try {
             CLASS!!.getMethod("openTransaction").invoke(null)
         } catch (e: Exception) {
-            throw AssertionError(e)
+            throw e
         }
     }
 
@@ -63,7 +63,7 @@ object SurfaceControl {
         try {
             CLASS!!.getMethod("closeTransaction").invoke(null)
         } catch (e: Exception) {
-            throw AssertionError(e)
+            throw e
         }
     }
 
@@ -83,7 +83,7 @@ object SurfaceControl {
             )
                 .invoke(null, displayToken, orientation, layerStackRect, displayRect)
         } catch (e: Exception) {
-            throw AssertionError(e)
+            throw e
         }
     }
 
@@ -95,7 +95,7 @@ object SurfaceControl {
                 Int::class.javaPrimitiveType
             ).invoke(null, displayToken, layerStack)
         } catch (e: Exception) {
-            throw AssertionError(e)
+            throw e
         }
     }
 
@@ -104,7 +104,7 @@ object SurfaceControl {
             CLASS!!.getMethod("setDisplaySurface", IBinder::class.java, Surface::class.java)
                 .invoke(null, displayToken, surface)
         } catch (e: Exception) {
-            throw AssertionError(e)
+            throw e
         }
     }
 
@@ -113,7 +113,7 @@ object SurfaceControl {
             CLASS!!.getMethod("createDisplay", String::class.java, Boolean::class.javaPrimitiveType)
                 .invoke(null, name, secure) as IBinder
         } catch (e: Exception) {
-            throw AssertionError(e)
+            throw e
         }
     }
 
@@ -161,7 +161,7 @@ object SurfaceControl {
         try {
             CLASS!!.getMethod("destroyDisplay", IBinder::class.java).invoke(null, displayToken)
         } catch (e: Exception) {
-            throw AssertionError(e)
+            throw e
         }
     }
 
@@ -169,7 +169,7 @@ object SurfaceControl {
         try {
             CLASS = Class.forName("android.view.SurfaceControl")
         } catch (e: ClassNotFoundException) {
-            throw AssertionError(e)
+            throw e
         }
     }
 }
