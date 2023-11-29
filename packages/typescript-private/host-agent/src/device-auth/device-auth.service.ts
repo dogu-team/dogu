@@ -12,7 +12,7 @@ export class DeviceAuthService {
   }
 
   get adminToken(): DeviceAdminToken {
-    return this.adminToken;
+    return this._adminToken;
   }
 
   validate(value: string): boolean {

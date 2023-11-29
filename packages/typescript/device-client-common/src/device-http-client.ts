@@ -32,7 +32,7 @@ export class DeviceHttpClient {
     const path = httpSpec.resolvePath(pathProvider);
     const method = httpSpec.method;
     const headers: Headers = {
-      values: [{ key: 'Authorization', value: `Custom ${this.options.token.value}` }],
+      values: [{ key: 'Authorization', value: `Custom ${this.options.tokenGetter().value}` }],
     };
     if (requestBody) {
       headers.values.push({ key: 'Content-Type', value: 'application/json' });

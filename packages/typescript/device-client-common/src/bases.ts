@@ -50,8 +50,7 @@ export class DeviceClientOptions {
   /**
    * @default empty
    */
-  @IsObject()
-  token?: DeviceServerToken;
+  tokenGetter?: () => DeviceServerToken;
 }
 
 export function fillDeviceClientOptions(options?: DeviceClientOptions): Required<DeviceClientOptions> {
@@ -61,7 +60,9 @@ export function fillDeviceClientOptions(options?: DeviceClientOptions): Required
       port: 0,
       printable: ConsoleLogger.instance,
       timeout: 60000,
-      token: { value: '' },
+      tokenGetter: () => {
+        return { value: '' };
+      },
     },
     options,
   );

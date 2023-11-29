@@ -38,7 +38,7 @@ export class DeviceClientService implements OnModuleInit {
         info: this.logger.info.bind(this.logger),
         error: this.logger.error.bind(this.logger),
       },
-      token: this.authService.adminToken,
+      tokenGetter: () => this.authService.adminToken,
     });
     const { deviceClient, deviceHostClient } = factory.create();
     this._deviceClient = deviceClient;

@@ -20,6 +20,10 @@ export class DeviceGuard implements CanActivate {
     }
 
     const token = authField.replace('Custom ', '');
+    if (this.authService.validateAdmin(token)) {
+      return true;
+    }
+
     const serial = request.params.serial;
     return this.authService.validateTemporaryToken(serial, { value: token });
   }

@@ -20,6 +20,9 @@ export class DeviceHostGuard implements CanActivate {
     }
 
     const token = authField.replace('Custom ', '');
+    if (this.authService.validateAdmin(token)) {
+      return true;
+    }
     return this.authService.validateTemporaryTokenExist({ value: token });
   }
 }

@@ -55,10 +55,11 @@ const useDeviceClient = (
         return { name, channel };
       };
       const deviceService = new BrowserDeviceService(deviceHttpDc, deviceServerWsDcCreator, sendThrottleMs);
+      const tokenGetter = () => deviceToken;
 
-      const dc = new DeviceClient(deviceService, { token: deviceToken });
-      const dhc = new DeviceHostClient(deviceService, { token: deviceToken });
-      const di = new BrowserDeviceInspector(deviceService, { token: deviceToken });
+      const dc = new DeviceClient(deviceService, { tokenGetter });
+      const dhc = new DeviceHostClient(deviceService, { tokenGetter });
+      const di = new BrowserDeviceInspector(deviceService, { tokenGetter });
 
       deviceClientRef.current = dc;
       deviceHostClientRef.current = dhc;
