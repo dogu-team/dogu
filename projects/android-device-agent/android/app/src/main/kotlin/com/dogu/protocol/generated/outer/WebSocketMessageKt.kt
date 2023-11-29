@@ -69,6 +69,30 @@ object WebSocketMessageKt {
     fun hasBytesValue(): kotlin.Boolean {
       return _builder.hasBytesValue()
     }
+
+    /**
+     * <code>.outer.WebSocketConnection connection = 3;</code>
+     */
+    var connection: com.dogu.protocol.generated.outer.HttpWs.WebSocketConnection
+      @JvmName("getConnection")
+      get() = _builder.getConnection()
+      @JvmName("setConnection")
+      set(value) {
+        _builder.setConnection(value)
+      }
+    /**
+     * <code>.outer.WebSocketConnection connection = 3;</code>
+     */
+    fun clearConnection() {
+      _builder.clearConnection()
+    }
+    /**
+     * <code>.outer.WebSocketConnection connection = 3;</code>
+     * @return Whether the connection field is set.
+     */
+    fun hasConnection(): kotlin.Boolean {
+      return _builder.hasConnection()
+    }
     val valueCase: com.dogu.protocol.generated.outer.HttpWs.WebSocketMessage.ValueCase
       @JvmName("getValueCase")
       get() = _builder.getValueCase()
@@ -81,4 +105,7 @@ object WebSocketMessageKt {
 @kotlin.jvm.JvmSynthetic
 inline fun com.dogu.protocol.generated.outer.HttpWs.WebSocketMessage.copy(block: com.dogu.protocol.generated.outer.WebSocketMessageKt.Dsl.() -> kotlin.Unit): com.dogu.protocol.generated.outer.HttpWs.WebSocketMessage =
   com.dogu.protocol.generated.outer.WebSocketMessageKt.Dsl._create(this.toBuilder()).apply { block() }._build()
+
+val com.dogu.protocol.generated.outer.HttpWs.WebSocketMessageOrBuilder.connectionOrNull: com.dogu.protocol.generated.outer.HttpWs.WebSocketConnection?
+  get() = if (hasConnection()) getConnection() else null
 

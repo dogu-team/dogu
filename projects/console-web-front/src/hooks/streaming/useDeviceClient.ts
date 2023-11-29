@@ -1,5 +1,5 @@
 import { DeviceBase } from '@dogu-private/console';
-import { DeviceTemporaryToken, PrivateProtocol, WebSocketConnection } from '@dogu-private/types';
+import { DeviceTemporaryToken, PrivateProtocol } from '@dogu-private/types';
 import { time } from '@dogu-tech/common';
 import { DeviceClient, DeviceHostClient } from '@dogu-tech/device-client-common';
 import { RefObject, useEffect, useRef } from 'react';
@@ -39,21 +39,20 @@ const useDeviceClient = (
       });
       deviceHttpDc.bufferedAmountLowThreshold = 65535;
 
-      const deviceServerWsDcCreator = (connection: WebSocketConnection) => {
+      const deviceServerWsDcCreator = () => {
         const name = `device-ws-${uuidv4()}`;
         const deviceWsDcLabel: DataChannelLabel = {
           name,
           protocol: {
             $case: 'deviceWebSocket',
-            deviceWebSocket: {
-              connection,
-            },
+            deviceWebSocket: {},
           },
         };
         const channel = createDataChannel(peerConnectionRef.current!, deviceWsDcLabel, {
           ordered: true,
           maxRetransmits: 5,
         });
+
         deviceChannelRef.current = channel;
         channel.bufferedAmountLowThreshold = 65535;
         return { name, channel };

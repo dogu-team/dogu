@@ -127,7 +127,7 @@ export class BrowserDeviceService implements DeviceService {
 
   constructor(
     httpChannel: RTCDataChannel,
-    readonly wsChannelCreator: (connection: WebSocketConnection) => {
+    readonly wsChannelCreator: () => {
       name: string;
       channel: RTCDataChannel;
     },
@@ -259,7 +259,7 @@ export class BrowserDeviceService implements DeviceService {
     listener?: DeviceWebSocketListener,
   ): DeviceWebSocket {
     console.log('connectWebSocket', connection.path);
-    const { name, channel } = this.wsChannelCreator(connection);
+    const { name, channel } = this.wsChannelCreator();
     this.addChannel(name, channel);
     const channelInfo = this.channels.get(name);
     if (!channelInfo) {
@@ -333,6 +333,21 @@ export class BrowserDeviceService implements DeviceService {
       }
       this.requestFlushSendBuffer();
     };
+
+    channel.addEventListener('open', () => {
+      console.log(`BrowserDeviceService. websocket open: ${name}`);
+      connection.headers = {
+        values: [{ key: 'Authorization', value: `Custom ${options.tokenGetter().value}` }],
+      };
+
+      sendInternal({
+        value: {
+          $case: 'connection',
+          connection,
+        },
+      });
+    });
+
     return new BrowserDeviceWebSocket(
       name,
       () => {

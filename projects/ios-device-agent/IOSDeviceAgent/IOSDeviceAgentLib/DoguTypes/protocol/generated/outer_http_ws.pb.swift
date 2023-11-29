@@ -286,12 +286,22 @@ public struct Outer_WebSocketConnection {
   /// Clears the value of `query`. Subsequent reads from it will return its default value.
   public mutating func clearQuery() {self._query = nil}
 
+  public var headers: Outer_Headers {
+    get {return _headers ?? Outer_Headers()}
+    set {_headers = newValue}
+  }
+  /// Returns true if `headers` has been explicitly set.
+  public var hasHeaders: Bool {return self._headers != nil}
+  /// Clears the value of `headers`. Subsequent reads from it will return its default value.
+  public mutating func clearHeaders() {self._headers = nil}
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
 
   fileprivate var _protocolDomain: String? = nil
   fileprivate var _query: SwiftProtobuf.Google_Protobuf_Struct? = nil
+  fileprivate var _headers: Outer_Headers? = nil
 }
 
 public struct Outer_WebSocketMessage {
@@ -317,11 +327,20 @@ public struct Outer_WebSocketMessage {
     set {value = .bytesValue(newValue)}
   }
 
+  public var connection: Outer_WebSocketConnection {
+    get {
+      if case .connection(let v)? = value {return v}
+      return Outer_WebSocketConnection()
+    }
+    set {value = .connection(newValue)}
+  }
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public enum OneOf_Value: Equatable {
     case stringValue(String)
     case bytesValue(Data)
+    case connection(Outer_WebSocketConnection)
 
   #if !swift(>=4.1)
     public static func ==(lhs: Outer_WebSocketMessage.OneOf_Value, rhs: Outer_WebSocketMessage.OneOf_Value) -> Bool {
@@ -335,6 +354,10 @@ public struct Outer_WebSocketMessage {
       }()
       case (.bytesValue, .bytesValue): return {
         guard case .bytesValue(let l) = lhs, case .bytesValue(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.connection, .connection): return {
+        guard case .connection(let l) = lhs, case .connection(let r) = rhs else { preconditionFailure() }
         return l == r
       }()
       default: return false
@@ -356,71 +379,6 @@ public struct Outer_WebSocketClose {
   public var reason: String = String()
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
-
-  public init() {}
-}
-
-public struct Outer_WebSocketParam {
-  // SwiftProtobuf.Message conformance is added in an extension below. See the
-  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
-  // methods supported on all messages.
-
-  public var value: Outer_WebSocketParam.OneOf_Value? = nil
-
-  public var connection: Outer_WebSocketConnection {
-    get {
-      if case .connection(let v)? = value {return v}
-      return Outer_WebSocketConnection()
-    }
-    set {value = .connection(newValue)}
-  }
-
-  public var message: Outer_WebSocketMessage {
-    get {
-      if case .message(let v)? = value {return v}
-      return Outer_WebSocketMessage()
-    }
-    set {value = .message(newValue)}
-  }
-
-  public var close: Outer_WebSocketClose {
-    get {
-      if case .close(let v)? = value {return v}
-      return Outer_WebSocketClose()
-    }
-    set {value = .close(newValue)}
-  }
-
-  public var unknownFields = SwiftProtobuf.UnknownStorage()
-
-  public enum OneOf_Value: Equatable {
-    case connection(Outer_WebSocketConnection)
-    case message(Outer_WebSocketMessage)
-    case close(Outer_WebSocketClose)
-
-  #if !swift(>=4.1)
-    public static func ==(lhs: Outer_WebSocketParam.OneOf_Value, rhs: Outer_WebSocketParam.OneOf_Value) -> Bool {
-      // The use of inline closures is to circumvent an issue where the compiler
-      // allocates stack space for every case branch when no optimizations are
-      // enabled. https://github.com/apple/swift-protobuf/issues/1034
-      switch (lhs, rhs) {
-      case (.connection, .connection): return {
-        guard case .connection(let l) = lhs, case .connection(let r) = rhs else { preconditionFailure() }
-        return l == r
-      }()
-      case (.message, .message): return {
-        guard case .message(let l) = lhs, case .message(let r) = rhs else { preconditionFailure() }
-        return l == r
-      }()
-      case (.close, .close): return {
-        guard case .close(let l) = lhs, case .close(let r) = rhs else { preconditionFailure() }
-        return l == r
-      }()
-      default: return false
-      }
-    }
-  #endif
-  }
 
   public init() {}
 }
@@ -672,8 +630,6 @@ extension Outer_WebSocketConnection: @unchecked Sendable {}
 extension Outer_WebSocketMessage: @unchecked Sendable {}
 extension Outer_WebSocketMessage.OneOf_Value: @unchecked Sendable {}
 extension Outer_WebSocketClose: @unchecked Sendable {}
-extension Outer_WebSocketParam: @unchecked Sendable {}
-extension Outer_WebSocketParam.OneOf_Value: @unchecked Sendable {}
 extension Outer_WebSocketOpenEvent: @unchecked Sendable {}
 extension Outer_WebSocketErrorEvent: @unchecked Sendable {}
 extension Outer_WebSocketCloseEvent: @unchecked Sendable {}
@@ -1051,6 +1007,7 @@ extension Outer_WebSocketConnection: SwiftProtobuf.Message, SwiftProtobuf._Messa
     1: .standard(proto: "protocol_domain"),
     2: .same(proto: "path"),
     3: .same(proto: "query"),
+    4: .same(proto: "headers"),
   ]
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -1062,6 +1019,7 @@ extension Outer_WebSocketConnection: SwiftProtobuf.Message, SwiftProtobuf._Messa
       case 1: try { try decoder.decodeSingularStringField(value: &self._protocolDomain) }()
       case 2: try { try decoder.decodeSingularStringField(value: &self.path) }()
       case 3: try { try decoder.decodeSingularMessageField(value: &self._query) }()
+      case 4: try { try decoder.decodeSingularMessageField(value: &self._headers) }()
       default: break
       }
     }
@@ -1081,6 +1039,9 @@ extension Outer_WebSocketConnection: SwiftProtobuf.Message, SwiftProtobuf._Messa
     try { if let v = self._query {
       try visitor.visitSingularMessageField(value: v, fieldNumber: 3)
     } }()
+    try { if let v = self._headers {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 4)
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -1088,6 +1049,7 @@ extension Outer_WebSocketConnection: SwiftProtobuf.Message, SwiftProtobuf._Messa
     if lhs._protocolDomain != rhs._protocolDomain {return false}
     if lhs.path != rhs.path {return false}
     if lhs._query != rhs._query {return false}
+    if lhs._headers != rhs._headers {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -1098,6 +1060,7 @@ extension Outer_WebSocketMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageI
   public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .standard(proto: "string_value"),
     2: .standard(proto: "bytes_value"),
+    3: .same(proto: "connection"),
   ]
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -1122,6 +1085,19 @@ extension Outer_WebSocketMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageI
           self.value = .bytesValue(v)
         }
       }()
+      case 3: try {
+        var v: Outer_WebSocketConnection?
+        var hadOneofValue = false
+        if let current = self.value {
+          hadOneofValue = true
+          if case .connection(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.value = .connection(v)
+        }
+      }()
       default: break
       }
     }
@@ -1140,6 +1116,10 @@ extension Outer_WebSocketMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageI
     case .bytesValue?: try {
       guard case .bytesValue(let v)? = self.value else { preconditionFailure() }
       try visitor.visitSingularBytesField(value: v, fieldNumber: 2)
+    }()
+    case .connection?: try {
+      guard case .connection(let v)? = self.value else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 3)
     }()
     case nil: break
     }
@@ -1186,94 +1166,6 @@ extension Outer_WebSocketClose: SwiftProtobuf.Message, SwiftProtobuf._MessageImp
   public static func ==(lhs: Outer_WebSocketClose, rhs: Outer_WebSocketClose) -> Bool {
     if lhs.code != rhs.code {return false}
     if lhs.reason != rhs.reason {return false}
-    if lhs.unknownFields != rhs.unknownFields {return false}
-    return true
-  }
-}
-
-extension Outer_WebSocketParam: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  public static let protoMessageName: String = _protobuf_package + ".WebSocketParam"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "connection"),
-    2: .same(proto: "message"),
-    3: .same(proto: "close"),
-  ]
-
-  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-    while let fieldNumber = try decoder.nextFieldNumber() {
-      // The use of inline closures is to circumvent an issue where the compiler
-      // allocates stack space for every case branch when no optimizations are
-      // enabled. https://github.com/apple/swift-protobuf/issues/1034
-      switch fieldNumber {
-      case 1: try {
-        var v: Outer_WebSocketConnection?
-        var hadOneofValue = false
-        if let current = self.value {
-          hadOneofValue = true
-          if case .connection(let m) = current {v = m}
-        }
-        try decoder.decodeSingularMessageField(value: &v)
-        if let v = v {
-          if hadOneofValue {try decoder.handleConflictingOneOf()}
-          self.value = .connection(v)
-        }
-      }()
-      case 2: try {
-        var v: Outer_WebSocketMessage?
-        var hadOneofValue = false
-        if let current = self.value {
-          hadOneofValue = true
-          if case .message(let m) = current {v = m}
-        }
-        try decoder.decodeSingularMessageField(value: &v)
-        if let v = v {
-          if hadOneofValue {try decoder.handleConflictingOneOf()}
-          self.value = .message(v)
-        }
-      }()
-      case 3: try {
-        var v: Outer_WebSocketClose?
-        var hadOneofValue = false
-        if let current = self.value {
-          hadOneofValue = true
-          if case .close(let m) = current {v = m}
-        }
-        try decoder.decodeSingularMessageField(value: &v)
-        if let v = v {
-          if hadOneofValue {try decoder.handleConflictingOneOf()}
-          self.value = .close(v)
-        }
-      }()
-      default: break
-      }
-    }
-  }
-
-  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    // The use of inline closures is to circumvent an issue where the compiler
-    // allocates stack space for every if/case branch local when no optimizations
-    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
-    // https://github.com/apple/swift-protobuf/issues/1182
-    switch self.value {
-    case .connection?: try {
-      guard case .connection(let v)? = self.value else { preconditionFailure() }
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
-    }()
-    case .message?: try {
-      guard case .message(let v)? = self.value else { preconditionFailure() }
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
-    }()
-    case .close?: try {
-      guard case .close(let v)? = self.value else { preconditionFailure() }
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 3)
-    }()
-    case nil: break
-    }
-    try unknownFields.traverse(visitor: &visitor)
-  }
-
-  public static func ==(lhs: Outer_WebSocketParam, rhs: Outer_WebSocketParam) -> Bool {
-    if lhs.value != rhs.value {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

@@ -1,6 +1,5 @@
 import _m0 from 'protobufjs/minimal';
 import { ErrorResult } from '../../outer/errors';
-import { WebSocketConnection } from '../../outer/http_ws';
 import { DeviceControl } from './device_control';
 export interface DataChannelProtocolDefault {
 }
@@ -10,7 +9,6 @@ export interface DataChannelProtocolRelayTcp {
 export interface DataChannelProtocolDeviceHttp {
 }
 export interface DataChannelProtocolDeviceWebSocket {
-    connection: WebSocketConnection | undefined;
 }
 export interface DataChannelLabel {
     name: string;
@@ -60,35 +58,11 @@ export declare const DataChannelProtocolDeviceHttp: {
     fromPartial<I extends {} & {} & { [K in Exclude<keyof I, never>]: never; }>(_: I): DataChannelProtocolDeviceHttp;
 };
 export declare const DataChannelProtocolDeviceWebSocket: {
-    encode(message: DataChannelProtocolDeviceWebSocket, writer?: _m0.Writer): _m0.Writer;
+    encode(_: DataChannelProtocolDeviceWebSocket, writer?: _m0.Writer): _m0.Writer;
     decode(input: _m0.Reader | Uint8Array, length?: number): DataChannelProtocolDeviceWebSocket;
-    fromJSON(object: any): DataChannelProtocolDeviceWebSocket;
-    toJSON(message: DataChannelProtocolDeviceWebSocket): unknown;
-    fromPartial<I extends {
-        connection?: {
-            protocolDomain?: string | undefined;
-            path?: string | undefined;
-            query?: {
-                [x: string]: any;
-            } | undefined;
-        } | undefined;
-    } & {
-        connection?: ({
-            protocolDomain?: string | undefined;
-            path?: string | undefined;
-            query?: {
-                [x: string]: any;
-            } | undefined;
-        } & {
-            protocolDomain?: string | undefined;
-            path?: string | undefined;
-            query?: ({
-                [x: string]: any;
-            } & {
-                [x: string]: any;
-            } & { [K in Exclude<keyof I["connection"]["query"], string | number>]: never; }) | undefined;
-        } & { [K_1 in Exclude<keyof I["connection"], keyof WebSocketConnection>]: never; }) | undefined;
-    } & { [K_2 in Exclude<keyof I, "connection">]: never; }>(object: I): DataChannelProtocolDeviceWebSocket;
+    fromJSON(_: any): DataChannelProtocolDeviceWebSocket;
+    toJSON(_: DataChannelProtocolDeviceWebSocket): unknown;
+    fromPartial<I extends {} & {} & { [K in Exclude<keyof I, never>]: never; }>(_: I): DataChannelProtocolDeviceWebSocket;
 };
 export declare const DataChannelLabel: {
     encode(message: DataChannelLabel, writer?: _m0.Writer): _m0.Writer;
@@ -112,15 +86,7 @@ export declare const DataChannelLabel: {
         } & {
             $case: "deviceHttp";
         }) | ({
-            deviceWebSocket?: {
-                connection?: {
-                    protocolDomain?: string | undefined;
-                    path?: string | undefined;
-                    query?: {
-                        [x: string]: any;
-                    } | undefined;
-                } | undefined;
-            } | undefined;
+            deviceWebSocket?: {} | undefined;
         } & {
             $case: "deviceWebSocket";
         }) | undefined;
@@ -154,46 +120,14 @@ export declare const DataChannelLabel: {
             deviceHttp?: ({} & {} & { [K_4 in Exclude<keyof I["protocol"]["deviceHttp"], never>]: never; }) | undefined;
             $case: "deviceHttp";
         } & { [K_5 in Exclude<keyof I["protocol"], "$case" | "deviceHttp">]: never; }) | ({
-            deviceWebSocket?: {
-                connection?: {
-                    protocolDomain?: string | undefined;
-                    path?: string | undefined;
-                    query?: {
-                        [x: string]: any;
-                    } | undefined;
-                } | undefined;
-            } | undefined;
+            deviceWebSocket?: {} | undefined;
         } & {
             $case: "deviceWebSocket";
         } & {
-            deviceWebSocket?: ({
-                connection?: {
-                    protocolDomain?: string | undefined;
-                    path?: string | undefined;
-                    query?: {
-                        [x: string]: any;
-                    } | undefined;
-                } | undefined;
-            } & {
-                connection?: ({
-                    protocolDomain?: string | undefined;
-                    path?: string | undefined;
-                    query?: {
-                        [x: string]: any;
-                    } | undefined;
-                } & {
-                    protocolDomain?: string | undefined;
-                    path?: string | undefined;
-                    query?: ({
-                        [x: string]: any;
-                    } & {
-                        [x: string]: any;
-                    } & { [K_6 in Exclude<keyof I["protocol"]["deviceWebSocket"]["connection"]["query"], string | number>]: never; }) | undefined;
-                } & { [K_7 in Exclude<keyof I["protocol"]["deviceWebSocket"]["connection"], keyof WebSocketConnection>]: never; }) | undefined;
-            } & { [K_8 in Exclude<keyof I["protocol"]["deviceWebSocket"], "connection">]: never; }) | undefined;
+            deviceWebSocket?: ({} & {} & { [K_6 in Exclude<keyof I["protocol"]["deviceWebSocket"], never>]: never; }) | undefined;
             $case: "deviceWebSocket";
-        } & { [K_9 in Exclude<keyof I["protocol"], "$case" | "deviceWebSocket">]: never; }) | undefined;
-    } & { [K_10 in Exclude<keyof I, keyof DataChannelLabel>]: never; }>(object: I): DataChannelLabel;
+        } & { [K_7 in Exclude<keyof I["protocol"], "$case" | "deviceWebSocket">]: never; }) | undefined;
+    } & { [K_8 in Exclude<keyof I, keyof DataChannelLabel>]: never; }>(object: I): DataChannelLabel;
 };
 export declare const CfGdcDaControlParam: {
     encode(message: CfGdcDaControlParam, writer?: _m0.Writer): _m0.Writer;
