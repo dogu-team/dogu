@@ -2,6 +2,7 @@ package labeled_datachannel
 
 import (
 	"fmt"
+	"net/http"
 	"net/url"
 
 	"go-device-controller/types/protocol/generated/proto/inner/types"
@@ -50,9 +51,15 @@ func (ldc *DeviceServerWebSocketLabeledDatachannel) handleConnection(connection 
 	}
 
 	var err error
+	var header http.Header = make(http.Header)
+	for _, v := range connection.GetHeaders().GetValues() {
+		key := v.Key
+		value := v.Value
+		header.Add(key, value)
+	}
 	url := url.URL{Scheme: "ws", Host: fmt.Sprintf("127.0.0.1:%d", ldc.deviceServerPort), Path: connection.GetPath(), RawQuery: queryMap.Encode()}
 	ldc.connectionMessage = connection
-	ldc.conn, _, err = websocket.DefaultDialer.Dial(url.String(), nil)
+	ldc.conn, _, err = websocket.DefaultDialer.Dial(url.String(), header)
 	if err != nil {
 		log.Inst.Error("DeviceServerWebSocketLabeledDatachannel connection error", zap.String("name", name), zap.String("path", path), zap.Error(err))
 		return
