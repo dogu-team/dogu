@@ -6,16 +6,16 @@ import {
   CreatePurchaseWithNewCardDto,
   CreatePurchaseWithNewCardResponse,
   getBillingMethodNicePublic,
+  GetBillingPrecheckoutDto,
+  GetBillingPrecheckoutResponse,
   GetBillingPreviewDto,
   GetBillingPreviewResponse,
-  PrecheckoutDto,
-  PrecheckoutResponse,
   RefundFullDto,
   RefundPlanDto,
   resultCode,
 } from '@dogu-private/console';
 import { stringify } from '@dogu-tech/common';
-import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource, In } from 'typeorm';
 import { v4 } from 'uuid';
@@ -24,12 +24,11 @@ import { BillingOrganization } from '../../db/entity/billing-organization.entity
 import { BillingPlanHistory } from '../../db/entity/billing-plan-history.entity';
 import { BillingPlanInfo } from '../../db/entity/billing-plan-info.entity';
 import { RetryTransaction } from '../../db/retry-transaction';
-import { validateCoupon } from '../billing-coupon/billing-coupon.serializables';
 import { BillingCouponService } from '../billing-coupon/billing-coupon.service';
 import { createOrUpdateMethodNice } from '../billing-method/billing-method-nice.serializables';
 import { BillingMethodPaddleService } from '../billing-method/billing-method-paddle.service';
-import { findBillingOrganizationWithMethodAndPlans, findBillingOrganizationWithPlans } from '../billing-organization/billing-organization.serializables';
 import { BillingOrganizationService } from '../billing-organization/billing-organization.service';
+import { validateCurrency } from '../billing-organization/billing-organization.utils';
 import { invalidatePlanInfo } from '../billing-plan-info/billing-plan-info.utils';
 import { BillingPlanSourceService } from '../billing-plan-source/billing-plan-source.service';
 import { ConsoleService } from '../console/console.service';
@@ -38,7 +37,8 @@ import { DoguLogger } from '../logger/logger';
 import { NiceCaller } from '../nice/nice.caller';
 import { PaddleCaller } from '../paddle/paddle.caller';
 import { SlackService } from '../slack/slack.service';
-import { processNextPurchase, processNowPurchase, processPurchasePreview } from './billing-purchase.serializables';
+import { preprocess, processNextPurchase, processNowPurchase } from './billing-purchase.serializables';
+import { processPurchasePreview } from './billing-purchase.utils';
 
 @Injectable()
 export class BillingPurchaseService {
@@ -64,24 +64,17 @@ export class BillingPurchaseService {
   async getPreview(dto: GetBillingPreviewDto): Promise<GetBillingPreviewResponse> {
     return await this.retryTransaction.serializable(async (context) => {
       const now = this.dateTimeSimulatorService.now();
-      const billingOrganization = await findBillingOrganizationWithPlans(context, dto);
-      if (!billingOrganization) {
-        return {
-          ok: false,
-          resultCode: resultCode('organization-not-found'),
-        };
-      }
-
-      const processPreviewResult = await processPurchasePreview(context, {
-        billingOrganization,
-        previewOptions: dto,
+      const preprocessResult = await preprocess(context, {
+        ...dto,
         now,
       });
+      if (!preprocessResult.ok) {
+        return preprocessResult;
+      }
+
+      const processPreviewResult = processPurchasePreview(preprocessResult.value);
       if (!processPreviewResult.ok) {
-        return {
-          ok: false,
-          resultCode: processPreviewResult.resultCode,
-        };
+        return processPreviewResult;
       }
 
       const { value } = processPreviewResult;
@@ -93,25 +86,27 @@ export class BillingPurchaseService {
     return await this.retryTransaction.serializable(async (context) => {
       const { setTriggerRollbackBeforeReturn } = context;
       const now = this.dateTimeSimulatorService.now();
-      const billingOrganization = await findBillingOrganizationWithMethodAndPlans(context, dto);
-      if (!billingOrganization) {
+      const preprocessResult = await preprocess(context, {
+        ...dto,
+        now,
+      });
+      if (!preprocessResult.ok) {
         return {
           ok: false,
-          resultCode: resultCode('organization-not-found', {
-            organizationId: dto.organizationId,
-          }),
+          resultCode: preprocessResult.resultCode,
           plan: null,
           license: null,
           niceResultCode: null,
         };
       }
 
-      const { billingMethodNice } = billingOrganization;
+      const { organization, planSource } = preprocessResult.value;
+      const { billingMethodNice } = organization;
       if (!billingMethodNice) {
         return {
           ok: false,
           resultCode: resultCode('organization-method-nice-not-found', {
-            billingOrganization: billingOrganization.billingOrganizationId,
+            organizationId: organization.organizationId,
           }),
           plan: null,
           license: null,
@@ -119,26 +114,23 @@ export class BillingPurchaseService {
         };
       }
 
-      const processPreviewResult = await processPurchasePreview(context, {
-        billingOrganization,
-        previewOptions: dto,
-        now,
-      });
-      if (!processPreviewResult.ok) {
+      const previewResult = processPurchasePreview(preprocessResult.value);
+      if (!previewResult.ok) {
         return {
           ok: false,
-          resultCode: processPreviewResult.resultCode,
+          resultCode: previewResult.resultCode,
           plan: null,
           license: null,
           niceResultCode: null,
         };
       }
 
-      const { needPurchase, planSource } = processPreviewResult.value;
+      const { needPurchase } = previewResult.value;
       if (!needPurchase) {
         const processNextResult = await processNextPurchase(context, {
-          billingOrganization,
-          ...processPreviewResult.value,
+          organization,
+          planSource,
+          ...previewResult.value,
         });
         if (!processNextResult.ok) {
           return {
@@ -161,9 +153,9 @@ export class BillingPurchaseService {
 
       const processNowResult = await processNowPurchase(context, {
         niceCaller: this.niceCaller,
-        billingMethodNice,
-        billingOrganization,
-        ...processPreviewResult.value,
+        organization,
+        planSource,
+        ...previewResult.value,
       });
 
       if (!processNowResult.ok) {
@@ -231,35 +223,35 @@ export class BillingPurchaseService {
       const { setTriggerRollbackBeforeReturn } = context;
       const { registerCard } = dto;
       const now = this.dateTimeSimulatorService.now();
-      const billingOrganization = await findBillingOrganizationWithMethodAndPlans(context, dto);
-      if (!billingOrganization) {
-        return {
-          ok: false,
-          resultCode: resultCode('organization-not-found'),
-          plan: null,
-          method: null,
-          license: null,
-          niceResultCode: null,
-        };
-      }
-      const { billingOrganizationId } = billingOrganization;
-
-      const processPreviewResult = await processPurchasePreview(context, {
-        billingOrganization,
-        previewOptions: dto,
+      const preprocessResult = await preprocess(context, {
+        ...dto,
         now,
       });
-      if (!processPreviewResult.ok) {
+      if (!preprocessResult.ok) {
         return {
           ok: false,
-          resultCode: processPreviewResult.resultCode,
+          resultCode: preprocessResult.resultCode,
           plan: null,
           method: null,
           license: null,
           niceResultCode: null,
         };
       }
-      const { needPurchase, planSource } = processPreviewResult.value;
+      const { organization, planSource } = preprocessResult.value;
+      const { billingOrganizationId } = organization;
+
+      const previewResult = processPurchasePreview(preprocessResult.value);
+      if (!previewResult.ok) {
+        return {
+          ok: false,
+          resultCode: previewResult.resultCode,
+          plan: null,
+          method: null,
+          license: null,
+          niceResultCode: null,
+        };
+      }
+      const { needPurchase } = previewResult.value;
 
       const niceResult = await createOrUpdateMethodNice(context, {
         niceCaller: this.niceCaller,
@@ -289,8 +281,9 @@ export class BillingPurchaseService {
       const method = getBillingMethodNicePublic(billingMethodNice);
       if (!needPurchase) {
         const processNextResult = await processNextPurchase(context, {
-          billingOrganization,
-          ...processPreviewResult.value,
+          organization,
+          planSource,
+          ...previewResult.value,
         });
 
         if (!processNextResult.ok) {
@@ -314,12 +307,12 @@ export class BillingPurchaseService {
         };
       }
 
-      billingOrganization.billingMethodNice = billingMethodNice;
+      organization.billingMethodNice = billingMethodNice;
       const processNowResult = await processNowPurchase(context, {
         niceCaller: this.niceCaller,
-        billingMethodNice,
-        billingOrganization,
-        ...processPreviewResult.value,
+        organization,
+        planSource,
+        ...previewResult.value,
       });
 
       if (!processNowResult.ok) {
@@ -620,61 +613,74 @@ export class BillingPurchaseService {
     });
   }
 
-  async precheckout(dto: PrecheckoutDto): Promise<PrecheckoutResponse> {
-    const { organizationId, billingPlanSourceId, couponCode } = dto;
-    const billingMethodPaddle = await this.billingMethodPaddleService.findByOrganizationId({ organizationId });
+  async getPrecheckout(dto: GetBillingPrecheckoutDto): Promise<GetBillingPrecheckoutResponse> {
+    const { organizationId } = dto;
+    const preprocessResult = await this.retryTransaction.serializable(async (context) => {
+      const now = this.dateTimeSimulatorService.now();
+      const preprocessResult = await preprocess(context, {
+        ...dto,
+        now,
+      });
+      if (!preprocessResult.ok) {
+        throw new BadRequestException({
+          message: 'preprocess failed',
+          resultCode: preprocessResult.resultCode,
+        });
+      }
+
+      return preprocessResult.value;
+    });
+
+    const { organization, planSource, coupon } = preprocessResult;
+    const { billingMethodPaddle } = organization;
+    validateCurrency(organization, planSource.currency);
+
     if (!billingMethodPaddle) {
-      throw new InternalServerErrorException(`method paddle must exist. organizationId: ${organizationId}`);
+      throw new InternalServerErrorException({
+        message: 'billing method paddle not found',
+        organizationId,
+      });
     }
 
     const { customerId } = billingMethodPaddle;
-    const billingPlanSource = await this.billingPlanSourceService.find({
-      billingPlanSourceId,
-    });
-    if (!billingPlanSource) {
-      throw new InternalServerErrorException(`billing subscription plan source must exist. dto: ${stringify(dto)}`);
-    }
-
     const price = await this.paddleCaller.findPrice(dto);
     if (!price) {
-      throw new InternalServerErrorException(`price must exist. dto: ${stringify(dto)}`);
+      throw new InternalServerErrorException({
+        message: 'price not found',
+        dto,
+      });
     }
+
     const priceId = price.id;
     if (!priceId) {
-      throw new InternalServerErrorException(`price id must exist. dto: ${stringify(dto)}`);
+      throw new InternalServerErrorException({
+        message: 'price id not found',
+        dto,
+      });
     }
 
-    if (couponCode) {
-      const coupon = await this.billingCouponService.findByCouponCode(couponCode);
-      if (!coupon) {
-        throw new NotFoundException(`coupon not found. couponCode: ${couponCode}`);
-      }
-
-      await this.retryTransaction.serializable(async (context) => {
-        await validateCoupon(context, {
-          organizationId,
-          code: couponCode,
-          period: billingPlanSource.period,
-          planType: billingPlanSource.type,
-          now: this.dateTimeSimulatorService.now(),
-        });
-      });
-
-      const discount = await this.paddleCaller.findDiscount({ billingCouponId: coupon.billingCouponId });
+    if (coupon) {
+      const { billingCouponId } = coupon;
+      const discount = await this.paddleCaller.findDiscount({ billingCouponId });
       if (!discount) {
-        throw new InternalServerErrorException(`discount must exist. couponCode: ${couponCode}`);
+        throw new InternalServerErrorException({
+          message: 'discount not found',
+          billingCouponId,
+        });
       }
 
       if (!discount.id) {
-        throw new InternalServerErrorException(`discount id must exist. couponCode: ${couponCode}`);
+        throw new InternalServerErrorException({
+          message: 'discount id not found',
+          billingCouponId,
+        });
       }
 
-      const discountId = discount.id;
       return {
         paddle: {
           customerId,
           priceId,
-          discountId,
+          discountId: discount.id,
         },
       };
     }

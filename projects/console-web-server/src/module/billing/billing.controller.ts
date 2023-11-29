@@ -4,8 +4,8 @@ import {
   BillingPromotionCouponResponse,
   CallBillingApiResponse,
   CreatePurchaseWithNewCardResponse,
+  GetBillingPrecheckoutResponse,
   GetBillingPreviewResponse,
-  PrecheckoutResponse,
   UpdateBillingMethodResponse,
   ValidateBillingCouponResponse,
 } from '@dogu-private/console';
@@ -137,7 +137,7 @@ export class BillingController {
 
   @Get('/purchase/precheckout')
   @OrganizationPermission(ORGANIZATION_ROLE.ADMIN)
-  async getSubscriptionPreviewPaddle(@Query() query: object): Promise<CallBillingApiResponse<PrecheckoutResponse>> {
+  async getSubscriptionPreviewPaddle(@Query() query: object): Promise<CallBillingApiResponse<GetBillingPrecheckoutResponse>> {
     return await this.billingCaller.callBillingApi({
       method: 'GET',
       path: 'billing/purchase/precheckout',

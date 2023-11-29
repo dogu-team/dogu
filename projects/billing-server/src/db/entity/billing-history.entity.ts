@@ -52,7 +52,7 @@ export class BillingHistory implements BillingHistoryBase {
   cardExpirationMonth!: string | null;
 
   @Column({ type: 'character varying', nullable: true })
-  paymentType!: string | null;
+  paddlePaymentType!: string | null;
 
   @Column({ type: 'character varying', nullable: true })
   paddleTransactionId!: string | null;

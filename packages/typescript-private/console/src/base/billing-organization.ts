@@ -31,7 +31,11 @@ export interface BillingOrganizationBase {
 
 export const BillingOrganizationProp = propertiesOf<BillingOrganizationBase>();
 
-export class FindBillingOrganizationDto {
+export type FindBillingOrganizationOptions = {
+  organizationId: string;
+};
+
+export class FindBillingOrganizationDto implements FindBillingOrganizationOptions {
   @IsUUID()
   organizationId!: string;
 }

@@ -1,26 +1,26 @@
 import {
   BillingCurrency,
   BillingPeriod,
-  BillingPlanPreviewOptions,
+  BillingPlanHistoryData,
   BillingResult,
   BillingResultCode,
   CouponPreviewResponse,
   ElapsedPlan,
+  GetBillingPreviewResponse,
   RemainingPlan,
   resultCode,
 } from '@dogu-private/console';
 import { assertUnreachable } from '@dogu-tech/common';
 import { calculateFlooredNow, createExpiredAt, NormalizedDateTime } from '../../date-time-utils';
-import { BillingCoupon } from '../../db/entity/billing-coupon.entity';
 import { BillingOrganization } from '../../db/entity/billing-organization.entity';
 import { BillingPlanInfo } from '../../db/entity/billing-plan-info.entity';
 import { BillingPlanSource } from '../../db/entity/billing-plan-source.entity';
-import { calculateCouponFactor, resolveCoupon } from '../billing-coupon/billing-coupon.utils';
+import { calculateCouponFactor, resolveCoupon, ResolveCouponResultSuccess } from '../billing-coupon/billing-coupon.utils';
 import { isMonthlySubscriptionExpiredOrNull, isYearlySubscriptionExpiredOrNull } from '../billing-organization/billing-organization.utils';
-import { ProcessPurchasePreviewResultValue } from './billing-purchase.serializables';
+import { PreprocessResult } from './billing-purchase.serializables';
 
-export function resolveCurrency(billingOrganizationCurrency: BillingCurrency | null, argumentCurrency: BillingCurrency): BillingCurrency {
-  const currency = billingOrganizationCurrency ?? argumentCurrency;
+export function resolveCurrency(organizationCurrency: BillingCurrency | null, argumentCurrency: BillingCurrency): BillingCurrency {
+  const currency = organizationCurrency ?? argumentCurrency;
   return currency;
 }
 
@@ -131,7 +131,7 @@ export interface PurchaseDateTimes {
 }
 
 export interface CalculateYearlyPurchaseDateTimesOptions {
-  billingOrganization: BillingOrganization;
+  organization: BillingOrganization;
   now: Date;
 }
 
@@ -147,8 +147,8 @@ export interface CalculateYearlyPurchaseDateTimesResultSuccess extends PurchaseD
 export type CalculateYearlyPurchaseDateTimesResult = CalculateYearlyPurchaseDateTimesResultFailure | CalculateYearlyPurchaseDateTimesResultSuccess;
 
 export function calculateYearlyPurchaseDateTimes(options: CalculateYearlyPurchaseDateTimesOptions): CalculateYearlyPurchaseDateTimesResult {
-  const { billingOrganization, now } = options;
-  if (isYearlySubscriptionExpiredOrNull(billingOrganization, now)) {
+  const { organization, now } = options;
+  if (isYearlySubscriptionExpiredOrNull(organization, now)) {
     const notNormalizedStartedAt = now;
     const startedAt = NormalizedDateTime.fromDate(notNormalizedStartedAt);
     const expiredAt = createExpiredAt(startedAt, 'yearly');
@@ -185,28 +185,28 @@ export function calculateYearlyPurchaseDateTimes(options: CalculateYearlyPurchas
       remainingDays,
     };
   } else {
-    if (billingOrganization.subscriptionYearlyStartedAt === null) {
+    if (organization.subscriptionYearlyStartedAt === null) {
       return {
         ok: false,
         resultCode: resultCode('organization-subscription-yearly-started-at-not-found', {
-          billingOrganizationId: billingOrganization.billingOrganizationId,
+          billingOrganizationId: organization.billingOrganizationId,
         }),
       };
     }
 
-    if (billingOrganization.subscriptionYearlyExpiredAt === null) {
+    if (organization.subscriptionYearlyExpiredAt === null) {
       return {
         ok: false,
         resultCode: resultCode('organization-subscription-yearly-expired-at-not-found', {
-          billingOrganizationId: billingOrganization.billingOrganizationId,
+          billingOrganizationId: organization.billingOrganizationId,
         }),
       };
     }
 
-    const notNormalizedStartedAt = billingOrganization.subscriptionYearlyStartedAt;
+    const notNormalizedStartedAt = organization.subscriptionYearlyStartedAt;
     const startedAt = NormalizedDateTime.fromDate(notNormalizedStartedAt);
     const calculatedExpiredAt = createExpiredAt(startedAt, 'yearly');
-    const expiredAt = NormalizedDateTime.fromDate(billingOrganization.subscriptionYearlyExpiredAt);
+    const expiredAt = NormalizedDateTime.fromDate(organization.subscriptionYearlyExpiredAt);
     if (expiredAt.date.getTime() !== calculatedExpiredAt.date.getTime()) {
       return {
         ok: false,
@@ -263,7 +263,7 @@ export function calculateYearlyPurchaseDateTimes(options: CalculateYearlyPurchas
 }
 
 export interface CalculateMonthlyPurchaseDateTimesOptions {
-  billingOrganization: BillingOrganization;
+  organization: BillingOrganization;
   now: Date;
 }
 
@@ -279,8 +279,8 @@ export interface CalculateMonthlyPurchaseDateTimesResultSuccess extends Purchase
 export type CalculateMonthlyPurchaseDateTimesResult = CalculateMonthlyPurchaseDateTimesResultFailure | CalculateMonthlyPurchaseDateTimesResultSuccess;
 
 export function calculateMonthlyPurchaseDateTimes(options: CalculateMonthlyPurchaseDateTimesOptions): CalculateMonthlyPurchaseDateTimesResult {
-  const { billingOrganization, now } = options;
-  if (isMonthlySubscriptionExpiredOrNull(billingOrganization, now)) {
+  const { organization, now } = options;
+  if (isMonthlySubscriptionExpiredOrNull(organization, now)) {
     const notNormalizedStartedAt = now;
     const startedAt = NormalizedDateTime.fromDate(notNormalizedStartedAt);
     const expiredAt = createExpiredAt(startedAt, 'monthly');
@@ -317,28 +317,28 @@ export function calculateMonthlyPurchaseDateTimes(options: CalculateMonthlyPurch
       remainingDays,
     };
   } else {
-    if (billingOrganization.subscriptionMonthlyStartedAt === null) {
+    if (organization.subscriptionMonthlyStartedAt === null) {
       return {
         ok: false,
         resultCode: resultCode('organization-subscription-monthly-started-at-not-found', {
-          billingOrganizationId: billingOrganization.billingOrganizationId,
+          billingOrganizationId: organization.billingOrganizationId,
         }),
       };
     }
 
-    if (billingOrganization.subscriptionMonthlyExpiredAt === null) {
+    if (organization.subscriptionMonthlyExpiredAt === null) {
       return {
         ok: false,
         resultCode: resultCode('organization-subscription-monthly-expired-at-not-found', {
-          billingOrganizationId: billingOrganization.billingOrganizationId,
+          billingOrganizationId: organization.billingOrganizationId,
         }),
       };
     }
 
-    const notNormalizedStartedAt = billingOrganization.subscriptionMonthlyStartedAt;
+    const notNormalizedStartedAt = organization.subscriptionMonthlyStartedAt;
     const startedAt = NormalizedDateTime.fromDate(notNormalizedStartedAt);
     const expiredAtCalculated = createExpiredAt(startedAt, 'monthly');
-    const expiredAt = NormalizedDateTime.fromDate(billingOrganization.subscriptionMonthlyExpiredAt);
+    const expiredAt = NormalizedDateTime.fromDate(organization.subscriptionMonthlyExpiredAt);
     if (expiredAt.date.getTime() !== expiredAtCalculated.date.getTime()) {
       return {
         ok: false,
@@ -395,7 +395,7 @@ export function calculateMonthlyPurchaseDateTimes(options: CalculateMonthlyPurch
 }
 
 export interface CalculatePurchaseDateTimesOptions {
-  billingOrganization: BillingOrganization;
+  organization: BillingOrganization;
   now: Date;
 }
 
@@ -413,8 +413,8 @@ export interface CalculatePurchaseDateTimesResultSuccess {
 export type CalculatePurchaseDateTimesResult = CalculatePurchaseDateTimesResultFailure | CalculatePurchaseDateTimesResultSuccess;
 
 export function calculatePurchaseDateTimes(options: CalculatePurchaseDateTimesOptions): CalculatePurchaseDateTimesResult {
-  const { billingOrganization, now } = options;
-  const yearlyResult = calculateYearlyPurchaseDateTimes({ billingOrganization, now });
+  const { organization, now } = options;
+  const yearlyResult = calculateYearlyPurchaseDateTimes({ organization, now });
   if (!yearlyResult.ok) {
     return {
       ok: false,
@@ -422,7 +422,7 @@ export function calculatePurchaseDateTimes(options: CalculatePurchaseDateTimesOp
     };
   }
 
-  const monthlyResult = calculateMonthlyPurchaseDateTimes({ billingOrganization, now });
+  const monthlyResult = calculateMonthlyPurchaseDateTimes({ organization, now });
   if (!monthlyResult.ok) {
     return {
       ok: false,
@@ -451,31 +451,35 @@ export function getPurchaseDateTimes(dateTimes: CalculatePurchaseDateTimesResult
   }
 }
 
-export interface ProcessPurchasePreviewInternalOptions {
-  previewOptions: BillingPlanPreviewOptions;
-  billingOrganization: BillingOrganization;
-  resolvedCurrency: BillingCurrency;
-  planSource: BillingPlanSource;
-  coupon: BillingCoupon | null;
+export type ProcessPurchasePreviewOptions = PreprocessResult;
+
+export interface ProcessPurchasePreviewResult {
+  previewResponse: GetBillingPreviewResponse;
+  couponResult: ResolveCouponResultSuccess;
+  needPurchase: boolean;
+  totalPrice: number;
+  discountedAmount: number;
   now: Date;
+  dateTimes: CalculatePurchaseDateTimesResultSuccess;
+  planHistory: BillingPlanHistoryData | null;
 }
 
-export function processPurchasePreviewInternal(options: ProcessPurchasePreviewInternalOptions): BillingResult<ProcessPurchasePreviewResultValue> {
-  const { previewOptions, billingOrganization, resolvedCurrency, planSource, now } = options;
+export function processPurchasePreview(options: ProcessPurchasePreviewOptions): BillingResult<ProcessPurchasePreviewResult> {
+  const { organization, currency, planSource, now } = options;
   const newCoupon = options.coupon;
 
-  if (billingOrganization.category !== planSource.category) {
+  if (organization.category !== planSource.category) {
     return {
       ok: false,
       resultCode: resultCode('plan-category-not-matched', {
-        billingOrganizationCategory: billingOrganization.category,
+        organizationCategory: organization.category,
         category: planSource.category,
       }),
     };
   }
 
   const calculatePurchaseDateTimesResult = calculatePurchaseDateTimes({
-    billingOrganization,
+    organization,
     now,
   });
   if (!calculatePurchaseDateTimesResult.ok) {
@@ -485,13 +489,13 @@ export function processPurchasePreviewInternal(options: ProcessPurchasePreviewIn
     };
   }
 
-  const infos = billingOrganization.billingPlanInfos ?? [];
-  if (infos.length > 0 && infos.some((plan) => plan.currency !== resolvedCurrency)) {
+  const infos = organization.billingPlanInfos ?? [];
+  if (infos.length > 0 && infos.some((plan) => plan.currency !== currency)) {
     return {
       ok: false,
       resultCode: resultCode('plan-currency-not-matched', {
-        billingOrganizationCurrency: billingOrganization.currency,
-        resolvedCurrency,
+        organizationCurrency: organization.currency,
+        currency,
       }),
     };
   }
@@ -501,7 +505,7 @@ export function processPurchasePreviewInternal(options: ProcessPurchasePreviewIn
   const foundInfo = infos.find((plan) => plan.type === planSource.type && plan.state !== 'unsubscribed');
 
   const couponResult = resolveCoupon({
-    billingPlanInfo: foundInfo,
+    planInfo: foundInfo,
     newCoupon,
     period: planSource.period,
   });
@@ -569,7 +573,6 @@ export function processPurchasePreviewInternal(options: ProcessPurchasePreviewIn
           remainingPlans: [],
           coupon: couponPreviewResponse,
         },
-        planSource,
         couponResult,
         discountedAmount,
         totalPrice,
@@ -601,7 +604,7 @@ export function processPurchasePreviewInternal(options: ProcessPurchasePreviewIn
   } else {
     const infoDateTimes = getPurchaseDateTimes(calculatePurchaseDateTimesResult, foundInfo.period);
 
-    const processNowPurchaseReturn = (): BillingResult<ProcessPurchasePreviewResultValue> => {
+    const processNowPurchaseReturn = (): BillingResult<ProcessPurchasePreviewResult> => {
       const calculateRemainingPlanResult = calculateRemainingPlan({
         foundInfo,
         dateTimes: infoDateTimes,
@@ -666,7 +669,6 @@ export function processPurchasePreviewInternal(options: ProcessPurchasePreviewIn
             elapsedPlans: elapsedPlan.elapsedDays > 0 ? [elapsedPlan] : [],
             remainingPlans: [remainingPlan],
           },
-          planSource,
           couponResult,
           discountedAmount,
           totalPrice,
@@ -697,7 +699,7 @@ export function processPurchasePreviewInternal(options: ProcessPurchasePreviewIn
       };
     };
 
-    const processNextPurchaseReturn = (): BillingResult<ProcessPurchasePreviewResultValue> => {
+    const processNextPurchaseReturn = (): BillingResult<ProcessPurchasePreviewResult> => {
       const nextPurchaseAmount = Math.floor(planSource.originPrice * firstCouponFactor);
       const discountedAmount = planSource.originPrice - nextPurchaseAmount;
       const couponPreviewResponse: CouponPreviewResponse | null = coupon
@@ -730,7 +732,6 @@ export function processPurchasePreviewInternal(options: ProcessPurchasePreviewIn
             elapsedPlans: [],
             remainingPlans: [],
           },
-          planSource,
           couponResult,
           discountedAmount: 0,
           totalPrice: 0,

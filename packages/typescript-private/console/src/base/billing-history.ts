@@ -29,29 +29,25 @@ export interface BillingHistoryBase {
   cardNumberLast4Digits: string | null;
   cardExpirationYear: string | null;
   cardExpirationMonth: string | null;
-
-  // nice purchase only
-  previewResponse: Record<string, unknown> | null;
-  niceSubscribePaymentsResponse: Record<string, unknown> | null;
-  niceTid: string | null;
-  niceOrderId: string | null;
-
-  // paddle purchase only
-  paymentType: string | null;
-  paddleTransactionId: string | null;
-
-  // nice cancel only
   cancelReason: string | null;
-  nicePaymentsCancelResponse: Record<string, unknown> | null;
-  purchasedBillingHistoryId: string | null;
   refundedAmount: number | null;
-
-  // common
+  purchasedBillingHistoryId: string | null;
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date | null;
   billingOrganization?: BillingOrganizationBase;
   billingPlanHistories?: BillingPlanHistoryBase[];
+
+  // nice only
+  previewResponse: Record<string, unknown> | null;
+  niceSubscribePaymentsResponse: Record<string, unknown> | null;
+  niceTid: string | null;
+  niceOrderId: string | null;
+  nicePaymentsCancelResponse: Record<string, unknown> | null;
+
+  // paddle only
+  paddlePaymentType: string | null;
+  paddleTransactionId: string | null;
 }
 
 export const BillingHistoryProp = propertiesOf<BillingHistoryBase>();

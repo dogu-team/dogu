@@ -10,12 +10,13 @@ import { BillingPlanInfoResponse } from './billing-plan-info';
 import { CloudLicenseBase } from './cloud-license';
 import { SelfHostedLicenseBase } from './self-hosted-license';
 
-export interface BillingPlanPreviewOptions {
+export interface BillingPreprocessOptions {
+  organizationId: string;
   billingPlanSourceId: number;
   couponCode?: string;
 }
 
-export class GetBillingPreviewDto implements BillingPlanPreviewOptions {
+export class GetBillingPreviewDto implements BillingPreprocessOptions {
   @IsUUID()
   organizationId!: string;
 
@@ -140,9 +141,20 @@ export class RefundFullDto {
   billingHistoryId!: string;
 }
 
-export class PrecheckoutDto extends GetBillingPreviewDto {}
+export class GetBillingPrecheckoutDto implements BillingPreprocessOptions {
+  @IsUUID()
+  organizationId!: string;
 
-export interface PrecheckoutResponse {
+  @IsNumber()
+  @Type(() => Number)
+  billingPlanSourceId!: number;
+
+  @IsString()
+  @IsOptional()
+  couponCode?: string;
+}
+
+export interface GetBillingPrecheckoutResponse {
   paddle: {
     customerId: string;
     priceId: string;

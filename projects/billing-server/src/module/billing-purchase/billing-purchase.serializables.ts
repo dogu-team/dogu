@@ -1,9 +1,9 @@
 import {
+  BillingCurrency,
   BillingGoodsName,
-  BillingMethodNiceBase,
   BillingPlanHistoryData,
   BillingPlanInfoResponse,
-  BillingPlanPreviewOptions,
+  BillingPreprocessOptions,
   BillingResult,
   CreatePurchaseResponse,
   GetBillingPreviewResponse,
@@ -11,6 +11,7 @@ import {
 } from '@dogu-private/console';
 import { assertUnreachable } from '@dogu-tech/common';
 import { v4 } from 'uuid';
+import { BillingCoupon } from '../../db/entity/billing-coupon.entity';
 import { BillingHistory } from '../../db/entity/billing-history.entity';
 import { BillingOrganization } from '../../db/entity/billing-organization.entity';
 import { BillingPlanHistory } from '../../db/entity/billing-plan-history.entity';
@@ -19,110 +20,85 @@ import { BillingPlanSource } from '../../db/entity/billing-plan-source.entity';
 import { CloudLicense } from '../../db/entity/cloud-license.entity';
 import { SelfHostedLicense } from '../../db/entity/self-hosted-license.entity';
 import { RetryTransactionContext } from '../../db/retry-transaction';
-import { findAvailablePromotionCoupon, parseCoupon, useCoupon } from '../billing-coupon/billing-coupon.serializables';
+import { parseCoupon, useCoupon } from '../billing-coupon/billing-coupon.serializables';
 import { ResolveCouponResultSuccess } from '../billing-coupon/billing-coupon.utils';
 import { createPurchase } from '../billing-method/billing-method-nice.serializables';
+import { findBillingOrganization } from '../billing-organization/billing-organization.serializables';
+import { updateCurrency, updateMethod, validateMethod } from '../billing-organization/billing-organization.utils';
 import { newAndApplyPlanInfo } from '../billing-plan-info/billing-plan-info.serializables';
+import { findBillingPlanSource } from '../billing-plan-source/billing-plan-source.serializables';
 import { updateCloudLicense } from '../cloud-license/cloud-license.serializables';
 import { BillingPlanInfoResponseBuilder } from '../common/plan-info-common.module';
 import { NiceCaller } from '../nice/nice.caller';
-import { CalculatePurchaseDateTimesResultSuccess, getPurchaseDateTimes, processPurchasePreviewInternal, resolveCurrency } from './billing-purchase.utils';
+import { CalculatePurchaseDateTimesResultSuccess, getPurchaseDateTimes, resolveCurrency } from './billing-purchase.utils';
 
-export interface ProcessPurchasePreviewOptions {
-  billingOrganization: BillingOrganization;
-  previewOptions: BillingPlanPreviewOptions;
+export type PreprocessOptions = BillingPreprocessOptions & {
   now: Date;
-}
+};
 
-export interface ProcessPurchasePreviewResultValue {
-  previewResponse: GetBillingPreviewResponse;
-  couponResult: ResolveCouponResultSuccess;
+export type PreprocessResult = {
+  organization: BillingOrganization;
   planSource: BillingPlanSource;
-  needPurchase: boolean;
-  totalPrice: number;
-  discountedAmount: number;
+  coupon: BillingCoupon | null;
+  currency: BillingCurrency;
   now: Date;
-  dateTimes: CalculatePurchaseDateTimesResultSuccess;
-  planHistory: BillingPlanHistoryData | null;
-}
+};
 
-export async function processPurchasePreview(context: RetryTransactionContext, options: ProcessPurchasePreviewOptions): Promise<BillingResult<ProcessPurchasePreviewResultValue>> {
-  const { billingOrganization, previewOptions, now } = options;
-  const { billingPlanSourceId } = previewOptions;
-  const { billingOrganizationId, organizationId } = billingOrganization;
-  const planSource = await context.manager.getRepository(BillingPlanSource).findOne({
-    where: {
-      billingPlanSourceId,
-    },
+export async function preprocess(context: RetryTransactionContext, options: PreprocessOptions): Promise<BillingResult<PreprocessResult>> {
+  const { organizationId, billingPlanSourceId, couponCode, now } = options;
+  const organization = await findBillingOrganization(context, {
+    organizationId,
   });
-
-  if (!planSource) {
+  if (!organization) {
     return {
       ok: false,
-      resultCode: resultCode('plan-source-not-found', {
-        billingOrganizationId,
-        billingPlanSourceId: previewOptions.billingPlanSourceId,
+      resultCode: resultCode('organization-not-found', {
+        organizationId,
       }),
     };
   }
 
-  const resolvedCurrency = resolveCurrency(billingOrganization.currency, planSource.currency);
-
-  const parseCouponResult = await parseCoupon({
-    context,
-    organizationId,
-    couponCode: previewOptions.couponCode,
-    period: planSource.period,
-    planType: planSource.type,
-    now,
+  const planSource = await findBillingPlanSource(context, {
+    billingPlanSourceId,
   });
-  if (!parseCouponResult.ok) {
+  if (!planSource) {
     return {
-      ok: parseCouponResult.ok,
-      resultCode: parseCouponResult.resultCode,
+      ok: false,
+      resultCode: resultCode('plan-source-not-found', {
+        organizationId,
+        billingPlanSourceId,
+      }),
     };
   }
 
-  // promotion coupon
-  let coupon = parseCouponResult.value;
-  if (!coupon) {
-    const subscribed = billingOrganization.billingPlanInfos?.find((plan) => plan.type === planSource.type && plan.state !== 'unsubscribed');
-    if (!subscribed) {
-      const promotionCoupon = await findAvailablePromotionCoupon(context, {
-        billingOrganizationId,
-        planType: planSource.type,
-        now,
-      });
-      if (promotionCoupon) {
-        const promotionResult = await parseCoupon({
-          context,
-          organizationId,
-          couponCode: promotionCoupon.code,
-          period: planSource.period,
-          planType: planSource.type,
-          now,
-        });
-        if (promotionResult.ok) {
-          coupon = promotionResult.value;
-        }
-      }
-    }
-  }
-
-  return processPurchasePreviewInternal({
-    billingOrganization,
-    previewOptions,
-    resolvedCurrency,
+  const currency = resolveCurrency(organization.currency, planSource.currency);
+  const parseCouponResult = await parseCoupon(context, {
+    couponCode,
+    organization,
     planSource,
-    coupon,
     now,
   });
+  if (!parseCouponResult.ok) {
+    return parseCouponResult;
+  }
+
+  return {
+    ok: true,
+    value: {
+      organization,
+      planSource,
+      coupon: parseCouponResult.value,
+      currency,
+      now,
+    },
+  };
 }
+
+export type ProcessPurchasePreviewOptions = PreprocessResult;
 
 export interface ProcessNowPurchaseOptions {
   niceCaller: NiceCaller;
-  billingOrganization: BillingOrganization;
-  billingMethodNice: BillingMethodNiceBase;
+  organization: BillingOrganization;
   planSource: BillingPlanSource;
   couponResult: ResolveCouponResultSuccess;
   totalPrice: number;
@@ -138,14 +114,14 @@ export interface ProcessNowPurchaseResponse extends CreatePurchaseResponse {
 
 export async function processNowPurchase(context: RetryTransactionContext, options: ProcessNowPurchaseOptions): Promise<ProcessNowPurchaseResponse> {
   const { manager } = context;
-  const { niceCaller, billingOrganization, billingMethodNice, totalPrice, couponResult, discountedAmount, planSource, previewResponse } = options;
+  const { niceCaller, organization, totalPrice, couponResult, discountedAmount, planSource, previewResponse } = options;
   const { period, currency } = planSource;
-  const { billingOrganizationId, billingPlanInfos } = billingOrganization;
+  const { organizationId, billingOrganizationId, billingPlanInfos, billingMethodNice } = organization;
   if (billingPlanInfos === undefined) {
     return {
       ok: false,
       resultCode: resultCode('organization-plan-infos-not-found', {
-        billingOrganizationId,
+        organizationId,
       }),
       plan: null,
       license: null,
@@ -154,6 +130,20 @@ export async function processNowPurchase(context: RetryTransactionContext, optio
     };
   }
 
+  if (!billingMethodNice) {
+    return {
+      ok: false,
+      resultCode: resultCode('organization-method-nice-not-found', {
+        organizationId,
+      }),
+      plan: null,
+      license: null,
+      niceResultCode: null,
+      planHistory: null,
+    };
+  }
+
+  validateMethod(organization, 'nice');
   const createPurchaseResult = await createPurchase(context, niceCaller, {
     billingMethodNiceId: billingMethodNice.billingMethodNiceId,
     goodsName: BillingGoodsName,
@@ -170,6 +160,7 @@ export async function processNowPurchase(context: RetryTransactionContext, optio
     };
   }
   const { tid, orderId } = createPurchaseResult.value;
+  updateMethod(organization, 'nice');
 
   const useCouponResult = await useCoupon(context, { couponResult, billingOrganizationId });
   const planInfoResult = newAndApplyPlanInfo(context, {
@@ -193,18 +184,16 @@ export async function processNowPurchase(context: RetryTransactionContext, optio
 
   const dateTimes = getPurchaseDateTimes(options.dateTimes, period);
 
-  if (billingOrganization.currency === null) {
-    billingOrganization.currency = currency;
-  }
+  updateCurrency(organization, currency);
   switch (period) {
     case 'monthly': {
-      billingOrganization.subscriptionMonthlyStartedAt = dateTimes.startedAt.date;
-      billingOrganization.subscriptionMonthlyExpiredAt = dateTimes.expiredAt.date;
+      organization.subscriptionMonthlyStartedAt = dateTimes.startedAt.date;
+      organization.subscriptionMonthlyExpiredAt = dateTimes.expiredAt.date;
       break;
     }
     case 'yearly': {
-      billingOrganization.subscriptionYearlyStartedAt = dateTimes.startedAt.date;
-      billingOrganization.subscriptionYearlyExpiredAt = dateTimes.expiredAt.date;
+      organization.subscriptionYearlyStartedAt = dateTimes.startedAt.date;
+      organization.subscriptionYearlyExpiredAt = dateTimes.expiredAt.date;
       break;
     }
     default: {
@@ -214,16 +203,16 @@ export async function processNowPurchase(context: RetryTransactionContext, optio
 
   const hasMonthlyPlan = billingPlanInfos.some((plan) => plan.period === 'monthly' && plan.state !== 'unsubscribed');
   if (!hasMonthlyPlan) {
-    billingOrganization.subscriptionMonthlyStartedAt = null;
-    billingOrganization.subscriptionMonthlyExpiredAt = null;
+    organization.subscriptionMonthlyStartedAt = null;
+    organization.subscriptionMonthlyExpiredAt = null;
   }
 
   const hasYearlyPlan = billingPlanInfos.some((plan) => plan.period === 'yearly' && plan.state !== 'unsubscribed');
   if (!hasYearlyPlan) {
-    billingOrganization.subscriptionYearlyStartedAt = null;
-    billingOrganization.subscriptionYearlyExpiredAt = null;
+    organization.subscriptionYearlyStartedAt = null;
+    organization.subscriptionYearlyExpiredAt = null;
   }
-  await manager.getRepository(BillingOrganization).save(billingOrganization);
+  await manager.save(organization);
 
   const billingHistory = manager.getRepository(BillingHistory).create({
     billingHistoryId: v4(),
@@ -256,7 +245,7 @@ export async function processNowPurchase(context: RetryTransactionContext, optio
     });
     await manager.getRepository(BillingPlanHistory).save(billingPlanHistory);
 
-    const info = billingOrganization.billingPlanInfos?.find((plan) => plan.type === planSource.type);
+    const info = organization.billingPlanInfos?.find((plan) => plan.type === planSource.type);
     if (info) {
       info.billingPlanHistoryId = billingPlanHistory.billingPlanHistoryId;
       await manager.getRepository(BillingPlanInfo).save(info);
@@ -264,7 +253,7 @@ export async function processNowPurchase(context: RetryTransactionContext, optio
   }
 
   let license: CloudLicense | SelfHostedLicense | null = null;
-  switch (billingOrganization.category) {
+  switch (organization.category) {
     case 'cloud':
       {
         const licenseResult = await updateCloudLicense(context, {
@@ -282,11 +271,11 @@ export async function processNowPurchase(context: RetryTransactionContext, optio
       }
       break;
     default: {
-      assertUnreachable(billingOrganization.category);
+      assertUnreachable(organization.category);
     }
   }
 
-  const planInfoResponse = new BillingPlanInfoResponseBuilder(billingOrganization, []).build(planInfoResult.value);
+  const planInfoResponse = new BillingPlanInfoResponseBuilder(organization, []).build(planInfoResult.value);
   return {
     ok: true,
     resultCode: resultCode('ok'),
@@ -298,7 +287,7 @@ export async function processNowPurchase(context: RetryTransactionContext, optio
 }
 
 export interface ProcessNextPurchaseOptions {
-  billingOrganization: BillingOrganization;
+  organization: BillingOrganization;
   planSource: BillingPlanSource;
   totalPrice: number;
   discountedAmount: number;
@@ -308,13 +297,13 @@ export interface ProcessNextPurchaseOptions {
 
 export async function processNextPurchase(context: RetryTransactionContext, options: ProcessNextPurchaseOptions): Promise<BillingResult<BillingPlanInfoResponse>> {
   const { manager } = context;
-  const { billingOrganization, planSource, discountedAmount } = options;
-  const found = billingOrganization.billingPlanInfos?.find((plan) => plan.type === planSource.type);
+  const { organization, planSource, discountedAmount } = options;
+  const found = organization.billingPlanInfos?.find((plan) => plan.type === planSource.type);
   if (!found) {
     return {
       ok: false,
       resultCode: resultCode('plan-not-found', {
-        billingOrganizationId: billingOrganization.billingOrganizationId,
+        organizationId: organization.organizationId,
         type: planSource.type,
       }),
     };
@@ -324,7 +313,7 @@ export async function processNextPurchase(context: RetryTransactionContext, opti
     return {
       ok: false,
       resultCode: resultCode('plan-unsubscribed', {
-        billingOrganizationId: billingOrganization.billingOrganizationId,
+        billingOrganizationId: organization.billingOrganizationId,
         type: planSource.type,
       }),
     };
@@ -336,7 +325,7 @@ export async function processNextPurchase(context: RetryTransactionContext, opti
   found.changeRequestedDiscountedAmount = discountedAmount;
   found.state = 'change-option-or-period-requested';
   const planInfo = await manager.getRepository(BillingPlanInfo).save(found);
-  const planInfoResponse = new BillingPlanInfoResponseBuilder(billingOrganization, []).build(planInfo);
+  const planInfoResponse = new BillingPlanInfoResponseBuilder(organization, []).build(planInfo);
   return {
     ok: true,
     value: planInfoResponse,

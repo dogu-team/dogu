@@ -90,7 +90,7 @@ export function calculateCouponFactor(options: CalculateCouponFactorOptions): Ca
 }
 
 export interface ResolveCouponOptions {
-  billingPlanInfo: BillingPlanInfo | undefined;
+  planInfo: BillingPlanInfo | undefined;
   newCoupon: BillingCoupon | null;
   period: BillingPeriod;
 }
@@ -125,7 +125,7 @@ export type ResolveCouponResultSuccess = ResolveCouponResultSuccessNew | Resolve
 export type ResolveCouponResult = ResolveCouponResultFailure | ResolveCouponResultSuccess;
 
 export function resolveCoupon(options: ResolveCouponOptions): ResolveCouponResult {
-  const { billingPlanInfo, newCoupon, period } = options;
+  const { planInfo, newCoupon, period } = options;
   if (newCoupon !== null) {
     switch (period) {
       case 'monthly': {
@@ -150,14 +150,14 @@ export function resolveCoupon(options: ResolveCouponOptions): ResolveCouponResul
     }
   }
 
-  if (billingPlanInfo === undefined) {
+  if (planInfo === undefined) {
     return {
       ok: true,
       coupon: null,
       type: 'none',
     };
   } else {
-    const oldCoupon = billingPlanInfo.billingCoupon ?? null;
+    const oldCoupon = planInfo.billingCoupon ?? null;
     if (oldCoupon === null) {
       return {
         ok: true,
@@ -166,40 +166,40 @@ export function resolveCoupon(options: ResolveCouponOptions): ResolveCouponResul
       };
     }
 
-    if (billingPlanInfo.period === 'monthly' && period === 'yearly') {
+    if (planInfo.period === 'monthly' && period === 'yearly') {
       return {
         ok: true,
         coupon: null,
         type: 'none',
       };
-    } else if (billingPlanInfo.period === 'yearly' && period === 'monthly') {
+    } else if (planInfo.period === 'yearly' && period === 'monthly') {
       return {
         ok: true,
         coupon: null,
         type: 'none',
       };
-    } else if (billingPlanInfo.period === period) {
-      if (billingPlanInfo.couponApplied && billingPlanInfo.couponRemainingApplyCount !== null) {
+    } else if (planInfo.period === period) {
+      if (planInfo.couponApplied && planInfo.couponRemainingApplyCount !== null) {
         // If user change the option with the coupon applied, user can use the existing coupon again.
         return {
           ok: true,
           coupon: oldCoupon,
           type: 'old',
-          couponRemainingApplyCount: billingPlanInfo.couponRemainingApplyCount + 1,
+          couponRemainingApplyCount: planInfo.couponRemainingApplyCount + 1,
         };
       } else {
         return {
           ok: true,
           coupon: oldCoupon,
           type: 'old',
-          couponRemainingApplyCount: billingPlanInfo.couponRemainingApplyCount,
+          couponRemainingApplyCount: planInfo.couponRemainingApplyCount,
         };
       }
     } else {
       return {
         ok: false,
         resultCode: resultCode('unexpected-error', {
-          infoPeriod: billingPlanInfo.period,
+          infoPeriod: planInfo.period,
           period,
         }),
       };

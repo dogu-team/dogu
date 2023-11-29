@@ -20,7 +20,7 @@ export class BillingPlanSourceSubscriber {
 
   async subscribe(): Promise<void> {
     await subscribe(this.logger, this.dataSource, BillingPlanSourceTableName, (message) => {
-      this.logger.info('BillingPlanSourceSubscriber.subscribe', { message: JSON.stringify(message) });
+      this.logger.info('BillingPlanSourceSubscriber.subscribe', { message });
       (async (): Promise<void> => {
         const planSource = message.data as unknown as BillingPlanSource;
         if (message.event === 'created') {
@@ -34,14 +34,14 @@ export class BillingPlanSourceSubscriber {
             throw new Error(`Product id not found for category ${planSource.category} and type ${planSource.type}`);
           }
 
-          const created = await this.paddleCaller.createPrice({
+          await this.paddleCaller.createPrice({
             productId: product.id,
             amount: BillingUsdAmount.fromDollars(planSource.originPrice),
             currency: planSource.currency,
             period: planSource.period,
             billingPlanSourceId: planSource.billingPlanSourceId,
           });
-          this.logger.info('BillingPlanSourceSubscriber.subscribe.created', { created });
+          await this.paddleCaller.listProductsAllAndCache({ refresh: true });
         } else if (message.event === 'updated') {
           const products = await this.paddleCaller.listProductsAllAndCache({ refresh: false });
           const product = products.find((product) => matchProduct(planSource, product));
@@ -62,14 +62,14 @@ export class BillingPlanSourceSubscriber {
             throw new Error(`Price id not found for category ${planSource.category} and type ${planSource.type}`);
           }
 
-          const updated = await this.paddleCaller.updatePrice({
+          await this.paddleCaller.updatePrice({
             id: price.id,
             amount: BillingUsdAmount.fromDollars(planSource.originPrice),
             currency: planSource.currency,
             period: planSource.period,
             billingPlanSourceId: planSource.billingPlanSourceId,
           });
-          this.logger.info('BillingPlanSourceSubscriber.subscribe.updated', { updated });
+          await this.paddleCaller.listProductsAllAndCache({ refresh: true });
         } else {
           throw new Error(`Not supported event ${JSON.stringify(message)}`);
         }

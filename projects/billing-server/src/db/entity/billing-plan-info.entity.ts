@@ -68,7 +68,7 @@ export class BillingPlanInfo implements BillingPlanInfoBase {
   billingPlanHistoryId!: string | null;
 
   @Column({ type: 'character varying', nullable: true })
-  paymentType!: string | null;
+  paddlePaymentType!: string | null;
 
   @Column({ type: 'character varying', nullable: true })
   cardCode!: string | null;

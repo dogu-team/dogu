@@ -10,33 +10,9 @@ export class BillingOrganizationController {
 
   @Get()
   @BillingTokenPermission()
-  async findOrganizationWithMethod(@Query() dto: FindBillingOrganizationDto): Promise<BillingOrganization> {
+  async findOrganization(@Query() dto: FindBillingOrganizationDto): Promise<BillingOrganization> {
     const { organizationId } = dto;
-    const billingOrganization = await this.billingOrganizationService.findOrganizationWithMethod(dto);
-    if (!billingOrganization) {
-      throw new NotFoundException(`BillingOrganization not found by organizationId ${organizationId}`);
-    }
-
-    return billingOrganization;
-  }
-
-  @Get('/with-plans')
-  @BillingTokenPermission()
-  async findOrganizationWithPlans(@Query() dto: FindBillingOrganizationDto): Promise<BillingOrganization> {
-    const { organizationId } = dto;
-    const billingOrganization = await this.billingOrganizationService.findOrganizationWithPlans(dto);
-    if (!billingOrganization) {
-      throw new NotFoundException(`BillingOrganization not found by organizationId ${organizationId}`);
-    }
-
-    return billingOrganization;
-  }
-
-  @Get('/with-method-and-plans')
-  @BillingTokenPermission()
-  async findOrganizationWithMethodAndPlans(@Query() dto: FindBillingOrganizationDto): Promise<BillingOrganization> {
-    const { organizationId } = dto;
-    const billingOrganization = await this.billingOrganizationService.findOrganizationWithMethodAndPlans(dto);
+    const billingOrganization = await this.billingOrganizationService.findOrganization(dto);
     if (!billingOrganization) {
       throw new NotFoundException(`BillingOrganization not found by organizationId ${organizationId}`);
     }

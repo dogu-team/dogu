@@ -2,18 +2,13 @@ import { BillingCategory, BillingCouponType, BillingCurrency, BillingPeriod, Bil
 import { setAxiosFilterErrorAndLogging } from '@dogu-tech/common';
 import { Injectable } from '@nestjs/common';
 import axios, { AxiosInstance } from 'axios';
+import { config } from '../../config';
 import { FeatureConfig } from '../../feature.config';
 import { DoguLogger } from '../logger/logger';
 import { Paddle } from './paddle.types';
 import { matchDiscount, matchPrice } from './paddle.utils';
 
 const PaddleBaseUrl = FeatureConfig.get('sandbox') ? 'https://sandbox-api.paddle.com' : 'https://api.paddle.com';
-
-/**
- * TODO: move to env
- * @description this is sandbox api key
- */
-const PaddleApiKey = '7dc2e51c683f1426e5bfa78755c403be85d97f5284740e1c66';
 
 export interface CreateCustomerOptions {
   organizationId: string;
@@ -106,6 +101,10 @@ export interface FindDiscountOptions {
   billingCouponId: string;
 }
 
+export interface GetDiscountOptions {
+  id: string;
+}
+
 export interface ListSubscriptionsOptions extends ListOptions {
   customerId?: string;
 }
@@ -136,7 +135,7 @@ export interface UpdateAddressOptions extends Omit<Paddle.Address, 'id' | 'creat
   addressId: string;
 }
 
-export class PaddleError extends Error {
+export class PaddleCallError extends Error {
   constructor(
     message: string,
     readonly requestId: string | undefined,
@@ -151,7 +150,7 @@ function processPaddleListResponse<T>(paddleResponse: Paddle.Response<T[]>, erro
   const { request_id, pagination } = meta ?? {};
 
   if (error) {
-    throw new PaddleError(errorMessage, request_id, error);
+    throw new PaddleCallError(errorMessage, request_id, error);
   }
 
   const items = data ?? [];
@@ -186,7 +185,7 @@ export class PaddleCaller {
       baseURL: baseUrl,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${PaddleApiKey}`,
+        Authorization: `Bearer ${config.paddle.apiKey}`,
       },
     });
     setAxiosFilterErrorAndLogging(PaddleCaller.name, this.client, this.logger);
@@ -228,7 +227,7 @@ export class PaddleCaller {
     const { request_id } = meta ?? {};
 
     if (error) {
-      throw new PaddleError('create customer failed', request_id, error);
+      throw new PaddleCallError('create customer failed', request_id, error);
     }
 
     const customer = data ?? {};
@@ -247,7 +246,7 @@ export class PaddleCaller {
     const { request_id } = meta ?? {};
 
     if (error) {
-      throw new PaddleError('get customer failed', request_id, error);
+      throw new PaddleCallError('get customer failed', request_id, error);
     }
 
     const customer = data ?? {};
@@ -269,7 +268,7 @@ export class PaddleCaller {
     const { request_id } = meta ?? {};
 
     if (error) {
-      throw new PaddleError('update customer failed', request_id, error);
+      throw new PaddleCallError('update customer failed', request_id, error);
     }
 
     const customer = data ?? {};
@@ -345,7 +344,7 @@ export class PaddleCaller {
     const { request_id } = meta ?? {};
 
     if (error) {
-      throw new PaddleError('create product failed', request_id, error);
+      throw new PaddleCallError('create product failed', request_id, error);
     }
 
     const product = data ?? {};
@@ -367,7 +366,7 @@ export class PaddleCaller {
     const { request_id } = meta ?? {};
 
     if (error) {
-      throw new PaddleError('update product failed', request_id, error);
+      throw new PaddleCallError('update product failed', request_id, error);
     }
 
     const product = data ?? {};
@@ -406,7 +405,7 @@ export class PaddleCaller {
     const { request_id } = meta ?? {};
 
     if (error) {
-      throw new PaddleError('create price failed', request_id, error);
+      throw new PaddleCallError('create price failed', request_id, error);
     }
 
     const price = data ?? {};
@@ -443,7 +442,7 @@ export class PaddleCaller {
     const { error, data, meta } = response.data;
     const { request_id } = meta ?? {};
     if (error) {
-      throw new PaddleError('update price failed', request_id, error);
+      throw new PaddleCallError('update price failed', request_id, error);
     }
 
     const price = data ?? {};
@@ -480,6 +479,24 @@ export class PaddleCaller {
   }
 
   /**
+   * @see https://developer.paddle.com/api-reference/discounts/get-discount
+   */
+  async getDiscount(options: GetDiscountOptions): Promise<Paddle.Discount> {
+    const { id } = options;
+    const path = `/discounts/${id}`;
+
+    const response = await this.client.get<Paddle.Response<Paddle.Discount>>(path);
+    const { error, data, meta } = response.data;
+    const { request_id } = meta ?? {};
+    if (error) {
+      throw new PaddleCallError('get discount failed', request_id, error);
+    }
+
+    const discount = data ?? {};
+    return discount;
+  }
+
+  /**
    * @see https://developer.paddle.com/api-reference/discounts/create-discount
    */
   async createDiscount(options: CreateDiscountOptions): Promise<Paddle.Discount> {
@@ -508,7 +525,7 @@ export class PaddleCaller {
     const { request_id } = meta ?? {};
 
     if (error) {
-      throw new PaddleError('create discount failed', request_id, error);
+      throw new PaddleCallError('create discount failed', request_id, error);
     }
 
     const discount = data ?? {};
@@ -541,7 +558,7 @@ export class PaddleCaller {
     const { error, data, meta } = response.data;
     const { request_id } = meta ?? {};
     if (error) {
-      throw new PaddleError('update discount failed', request_id, error);
+      throw new PaddleCallError('update discount failed', request_id, error);
     }
 
     const discount = data ?? {};
@@ -597,7 +614,7 @@ export class PaddleCaller {
     const { error, data, meta } = response.data;
     const { request_id } = meta ?? {};
     if (error) {
-      throw new PaddleError('get subscription failed', request_id, error);
+      throw new PaddleCallError('get subscription failed', request_id, error);
     }
 
     const subscription = data ?? {};
@@ -615,7 +632,7 @@ export class PaddleCaller {
     const { error, data, meta } = response.data;
     const { request_id } = meta ?? {};
     if (error) {
-      throw new PaddleError('update payment method failed', request_id, error);
+      throw new PaddleCallError('update payment method failed', request_id, error);
     }
 
     const transaction = data ?? {};
@@ -655,7 +672,7 @@ export class PaddleCaller {
     const { error, data, meta } = response.data;
     const { request_id } = meta ?? {};
     if (error) {
-      throw new PaddleError('update address failed', request_id, error);
+      throw new PaddleCallError('update address failed', request_id, error);
     }
 
     const address = data ?? {};

@@ -2,7 +2,6 @@ import {
   BillingCouponProp,
   BillingOrganizationProp,
   BillingOrganizationUsedBillingCouponProp,
-  BillingPeriod,
   BillingPlanType,
   BillingPromotionCouponResponse,
   BillingResult,
@@ -19,6 +18,7 @@ import { v4 } from 'uuid';
 import { BillingCoupon } from '../../db/entity/billing-coupon.entity';
 import { BillingOrganizationUsedBillingCoupon } from '../../db/entity/billing-organization-used-billing-coupon.entity';
 import { BillingOrganization } from '../../db/entity/billing-organization.entity';
+import { BillingPlanSource } from '../../db/entity/billing-plan-source.entity';
 import { RetryTransactionContext } from '../../db/retry-transaction';
 import { registerUsedCoupon } from '../billing-organization/billing-organization.serializables';
 import { findCloudLicense } from '../cloud-license/cloud-license.serializables';
@@ -230,37 +230,57 @@ export async function createBillingCoupon(context: RetryTransactionContext, dto:
 }
 
 export interface ParseCouponOptions {
-  context: RetryTransactionContext;
-  organizationId: string;
   couponCode: string | undefined;
-  period: BillingPeriod;
-  planType: BillingPlanType;
+  organization: BillingOrganization;
+  planSource: BillingPlanSource;
   now: Date;
 }
 
 export type ParseCouponResult = BillingResult<BillingCoupon | null>;
 
-export async function parseCoupon(options: ParseCouponOptions): Promise<ParseCouponResult> {
-  const { context, organizationId, couponCode, period, planType, now } = options;
+export async function parseCoupon(context: RetryTransactionContext, options: ParseCouponOptions): Promise<ParseCouponResult> {
+  const { couponCode, planSource, now, organization } = options;
+  const { billingOrganizationId, organizationId } = organization;
   if (couponCode === undefined) {
+    const subscribed = organization.billingPlanInfos?.find((plan) => plan.type === planSource.type && plan.state !== 'unsubscribed');
+    if (!subscribed) {
+      const promotionCoupon = await findAvailablePromotionCoupon(context, {
+        billingOrganizationId,
+        planType: planSource.type,
+        now,
+      });
+      if (promotionCoupon) {
+        const promotionResult = await validateCoupon(context, {
+          organizationId,
+          code: promotionCoupon.code,
+          period: planSource.period,
+          planType: planSource.type,
+          now,
+        });
+        if (promotionResult.ok) {
+          return {
+            ok: true,
+            value: promotionCoupon,
+          };
+        }
+      }
+    }
+
     return {
       ok: true,
       value: null,
     };
   }
 
-  const validateResult = await validateCoupon(context, { organizationId, code: couponCode, period, planType, now });
-  if (!validateResult.ok) {
-    return {
-      ok: false,
-      resultCode: validateResult.resultCode,
-    };
-  }
+  const validateResult = await validateCoupon(context, {
+    organizationId,
+    code: couponCode,
+    period: planSource.period,
+    planType: planSource.type,
+    now,
+  });
 
-  return {
-    ok: true,
-    value: validateResult.value,
-  };
+  return validateResult;
 }
 
 export interface UseCouponOptions {

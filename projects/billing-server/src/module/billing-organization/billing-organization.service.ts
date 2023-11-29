@@ -6,12 +6,7 @@ import { BillingOrganization } from '../../db/entity/billing-organization.entity
 import { RetryTransaction } from '../../db/retry-transaction';
 import { DoguLogger } from '../logger/logger';
 import { PaddleCaller } from '../paddle/paddle.caller';
-import {
-  createBillingOrganization,
-  findBillingOrganizationWithMethod,
-  findBillingOrganizationWithMethodAndPlans,
-  findBillingOrganizationWithPlans,
-} from './billing-organization.serializables';
+import { createBillingOrganization, findBillingOrganization } from './billing-organization.serializables';
 
 @Injectable()
 export class BillingOrganizationService {
@@ -26,21 +21,9 @@ export class BillingOrganizationService {
     this.retryTransaction = new RetryTransaction(this.logger, this.dataSource);
   }
 
-  async findOrganizationWithMethod(dto: FindBillingOrganizationDto): Promise<BillingOrganization | null> {
+  async findOrganization(dto: FindBillingOrganizationDto): Promise<BillingOrganization | null> {
     return await this.retryTransaction.serializable(async (context) => {
-      return await findBillingOrganizationWithMethod(context, dto);
-    });
-  }
-
-  async findOrganizationWithPlans(dto: FindBillingOrganizationDto): Promise<BillingOrganization | null> {
-    return await this.retryTransaction.serializable(async (context) => {
-      return await findBillingOrganizationWithPlans(context, dto);
-    });
-  }
-
-  async findOrganizationWithMethodAndPlans(dto: FindBillingOrganizationDto): Promise<BillingOrganization | null> {
-    return await this.retryTransaction.serializable(async (context) => {
-      return await findBillingOrganizationWithMethodAndPlans(context, dto);
+      return await findBillingOrganization(context, dto);
     });
   }
 
@@ -53,16 +36,22 @@ export class BillingOrganizationService {
   async updateBillingEmail(dto: UpdateBillingEmailDto): Promise<void> {
     const { organizationId, email } = dto;
     return await this.retryTransaction.serializable(async (context) => {
-      const billingOrganization = await findBillingOrganizationWithMethod(context, { organizationId });
-      if (!billingOrganization) {
-        throw new NotFoundException(`BillingOrganization not found by organizationId ${organizationId}`);
+      const organization = await findBillingOrganization(context, dto);
+      if (!organization) {
+        throw new NotFoundException({
+          message: 'BillingOrganization not found',
+          organizationId,
+        });
       }
 
-      if (!billingOrganization.billingMethodPaddle) {
-        throw new InternalServerErrorException(`BillingMethodPaddle not found by organizationId ${organizationId}`);
+      if (!organization.billingMethodPaddle) {
+        throw new InternalServerErrorException({
+          message: 'BillingMethodPaddle not found',
+          organizationId,
+        });
       }
 
-      const { customerId } = billingOrganization.billingMethodPaddle;
+      const { customerId } = organization.billingMethodPaddle;
       await this.paddleCaller.updateCustomer({ customerId, email });
     });
   }
@@ -70,25 +59,37 @@ export class BillingOrganizationService {
   async updateBillingAddress(dto: UpdateBillingAddressDto): Promise<UpdateBillingAddressResponse> {
     const { organizationId, ...rest } = dto;
     return await this.retryTransaction.serializable(async (context) => {
-      const billingOrganization = await findBillingOrganizationWithMethod(context, { organizationId });
-      if (!billingOrganization) {
-        throw new NotFoundException(`BillingOrganization not found by organizationId ${organizationId}`);
+      const organization = await findBillingOrganization(context, { organizationId });
+      if (!organization) {
+        throw new NotFoundException({
+          message: 'BillingOrganization not found',
+          organizationId,
+        });
       }
 
-      if (!billingOrganization.billingMethodPaddle) {
-        throw new InternalServerErrorException(`BillingMethodPaddle not found by organizationId ${organizationId}`);
+      if (!organization.billingMethodPaddle) {
+        throw new InternalServerErrorException({
+          message: 'BillingMethodPaddle not found',
+          organizationId,
+        });
       }
 
-      const { customerId } = billingOrganization.billingMethodPaddle;
+      const { customerId } = organization.billingMethodPaddle;
       const paddleAddresses = await this.paddleCaller.listAddressesAll({ customerId });
       if (paddleAddresses.length === 0) {
-        throw new InternalServerErrorException(`PaddleAddresses not found by customerId ${customerId}`);
+        throw new InternalServerErrorException({
+          message: 'PaddleAddress not found',
+          customerId,
+        });
       }
 
       const firstAddress = paddleAddresses[0];
       const { id: addressId } = firstAddress;
       if (!addressId) {
-        throw new InternalServerErrorException(`PaddleAddress.id not found by customerId ${customerId}`);
+        throw new InternalServerErrorException({
+          message: 'PaddleAddress id not found',
+          customerId,
+        });
       }
 
       const paddleAddress = await this.paddleCaller.updateAddress({ customerId, addressId, ...rest });

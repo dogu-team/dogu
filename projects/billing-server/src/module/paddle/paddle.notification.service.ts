@@ -1,23 +1,20 @@
 import { BillingGoodsName, isBillingCurrency } from '@dogu-private/console';
-import { errorify } from '@dogu-tech/common';
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import * as crypto from 'crypto';
 import { DataSource } from 'typeorm';
 import { v4 } from 'uuid';
+import { config } from '../../config';
+import { BillingCoupon } from '../../db/entity/billing-coupon.entity';
 import { BillingHistory } from '../../db/entity/billing-history.entity';
 import { BillingOrganization } from '../../db/entity/billing-organization.entity';
 import { BillingPlanHistory } from '../../db/entity/billing-plan-history.entity';
 import { BillingPlanInfo } from '../../db/entity/billing-plan-info.entity';
 import { BillingPlanSource } from '../../db/entity/billing-plan-source.entity';
 import { RetryTransaction } from '../../db/retry-transaction';
+import { BillingCouponService } from '../billing-coupon/billing-coupon.service';
 import { DoguLogger } from '../logger/logger';
 import { PaddleCaller } from './paddle.caller';
 import { Paddle } from './paddle.types';
-
-/**
- * TODO: move to env
- */
-const paddleNotificationKey = 'pdl_ntfset_01hfvf6np93stpzgg99tzqh67f_vP5ukftxMEHcQtReFTbhVMCRBXPVLejU';
 
 /**
  * @see https://developer.paddle.com/webhooks/overview
@@ -25,95 +22,202 @@ const paddleNotificationKey = 'pdl_ntfset_01hfvf6np93stpzgg99tzqh67f_vP5ukftxMEH
 @Injectable()
 export class PaddleNotificationService {
   private readonly retryTransaction: RetryTransaction;
+  private readonly handlers = new Map<string, (event: Paddle.Event) => Promise<void>>();
 
   constructor(
     private readonly logger: DoguLogger,
     private readonly dataSource: DataSource,
     private readonly paddleCaller: PaddleCaller,
+    private readonly billingCouponService: BillingCouponService,
   ) {
     this.retryTransaction = new RetryTransaction(this.logger, this.dataSource);
+    this.registerHandler('transaction.created', async (event) => this.onTransactionCreated(event));
+    this.registerHandler('transaction.completed', async (event) => this.onTransactionCompleted(event));
   }
 
   async onNotification(paddleSignature: string, body: unknown): Promise<unknown> {
     if (!paddleSignature) {
-      this.logger.error('Paddle-Signature header is missing');
-      throw new BadRequestException('Paddle-Signature header is missing');
-    }
-
-    if (typeof paddleSignature !== 'string') {
-      this.logger.error('Paddle-Signature header is not a string');
-      throw new BadRequestException('Paddle-Signature header is not a string');
+      throw new BadRequestException({
+        message: 'Paddle-Signature header is missing',
+        paddleSignature,
+      });
     }
 
     const [timestampKeyValue, signatureKeyValue] = paddleSignature.split(';') as (string | undefined)[];
     if (!timestampKeyValue || !signatureKeyValue) {
-      this.logger.error('Paddle-Signature header is malformed', { paddleSignature });
-      throw new BadRequestException('Paddle-Signature header is malformed');
+      throw new BadRequestException({
+        message: 'Paddle-Signature header is malformed',
+        paddleSignature,
+      });
     }
 
     const [timestampKey, timestamp] = timestampKeyValue.split('=') as (string | undefined)[];
     const [signatureKey, signature] = signatureKeyValue.split('=') as (string | undefined)[];
     if (!timestampKey || !timestamp || !signatureKey || !signature) {
-      this.logger.error('Paddle-Signature header is malformed', { paddleSignature });
-      throw new BadRequestException('Paddle-Signature header is malformed');
+      throw new BadRequestException({
+        message: 'Paddle-Signature header is malformed',
+        paddleSignature,
+      });
+    }
+
+    if (!body) {
+      throw new BadRequestException({
+        message: 'Request body is empty',
+      });
     }
 
     if (typeof body !== 'object') {
-      this.logger.error('Request body is not a object', { body });
-      throw new BadRequestException('Request body is not a object');
+      throw new BadRequestException({
+        message: 'Request body is not object',
+        body,
+      });
     }
 
     const signedPayload = `${timestamp}:${JSON.stringify(body)}`;
-    const expectedSignature = crypto.createHmac('sha256', paddleNotificationKey).update(signedPayload).digest('hex');
+    const expectedSignature = crypto.createHmac('sha256', config.paddle.notificationKey).update(signedPayload).digest('hex');
     if (signature !== expectedSignature) {
-      this.logger.error('Paddle-Signature header is invalid', { paddleSignature });
-      throw new BadRequestException('Paddle-Signature header is invalid');
+      throw new BadRequestException({
+        message: 'Paddle-Signature header is invalid',
+        body,
+      });
     }
 
     this.logger.info('Paddle notification received', { body });
-
-    try {
-      const event = body as Paddle.Event;
-      if (event.event_type === 'transaction.completed') {
-        return await this.onTransactionCompleted(event);
-      }
-    } catch (e) {
-      this.logger.error('Paddle notification processing failed', { error: errorify(e) });
-      throw e;
-    }
-  }
-
-  private async onTransactionCompleted(event: Paddle.Event): Promise<void> {
-    const transaction = event.data as Paddle.Transaction;
-
-    const billingHistory = await this.retryTransaction.serializable(async (context) => {
-      const { manager } = context;
-      if (!transaction.id) {
-        throw new Error(`Transaction id is empty. ${JSON.stringify(transaction)}`);
-      }
-
-      return await manager.getRepository(BillingHistory).findOne({
-        where: {
-          paddleTransactionId: transaction.id,
-        },
+    const event = body as Paddle.Event;
+    const { event_type } = event;
+    if (!event_type) {
+      throw new BadRequestException({
+        message: 'event_type is missing',
+        body,
       });
-    });
+    }
 
-    if (billingHistory) {
-      this.logger.info('Paddle transaction already processed', { transactionId: transaction.id });
+    const handler = this.handlers.get(event_type);
+    if (!handler) {
+      this.logger.warn('Paddle notification handler not found', { eventType: event_type });
       return;
     }
 
-    if (!transaction.subscription_id) {
-      throw new Error(`Subscription id is empty. ${JSON.stringify(transaction)}`);
+    await handler(event);
+  }
+
+  registerHandler(eventType: string, handler: (event: Paddle.Event) => Promise<void>): void {
+    if (this.handlers.has(eventType)) {
+      throw new Error(`Handler already registered. ${eventType}`);
     }
 
-    const subscription = await this.paddleCaller.getSubscription({ subscriptionId: transaction.subscription_id });
+    this.handlers.set(eventType, handler);
+  }
 
-    // FIXME:
-    const billingPlanSourceId = transaction.custom_data?.billingPlanSourceId as number | undefined;
+  private async onTransactionCreated(event: Paddle.Event<Paddle.Transaction>): Promise<void> {
+    const transaction = event.data;
+    if (!transaction) {
+      throw new BadRequestException({
+        message: 'Transaction is empty',
+        event,
+      });
+    }
 
-    const { cardCode, cardName, cardNumberLast4Digits, cardExpirationYear, cardExpirationMonth, paymentType, billingHistoryId, billingOrganizationId } =
+    const { discount_id } = transaction;
+    if (discount_id) {
+      const discount = await this.paddleCaller.getDiscount({ id: discount_id });
+      const { billingCouponId } = discount.custom_data ?? {};
+      if (!billingCouponId) {
+        throw new InternalServerErrorException({
+          message: 'custom_data.billingCouponId is empty',
+          discount,
+        });
+      }
+
+      const billingCoupon = await this.dataSource.getRepository(BillingCoupon).findOneOrFail({
+        where: {
+          billingCouponId,
+        },
+      });
+
+      if (discount.code !== billingCoupon.code) {
+        throw new InternalServerErrorException({
+          message: 'discount.code is not equal to billingCoupon.code',
+          discount,
+          billingCoupon,
+        });
+      }
+
+      const { organizationId, billingPlanSourceId } = transaction.custom_data ?? {};
+      if (!organizationId) {
+        throw new InternalServerErrorException({
+          message: 'custom_data.organizationId is empty',
+          transaction,
+        });
+      }
+
+      if (!billingPlanSourceId) {
+        throw new InternalServerErrorException({
+          message: 'custom_data.billingPlanSourceId is empty',
+          transaction,
+        });
+      }
+
+      const billingPlanSource = await this.dataSource.getRepository(BillingPlanSource).findOneOrFail({
+        where: {
+          billingPlanSourceId,
+        },
+      });
+      const response = await this.billingCouponService.validateCoupon({
+        organizationId,
+        code: billingCoupon.code,
+        period: billingPlanSource.period,
+        planType: billingPlanSource.type,
+      });
+      if (!response.ok) {
+        throw new BadRequestException({
+          message: 'Coupon is invalid',
+          response,
+        });
+      }
+    }
+  }
+
+  private async onTransactionCompleted(event: Paddle.Event<Paddle.Transaction>): Promise<void> {
+    const transaction = event.data;
+    if (!transaction) {
+      throw new BadRequestException({
+        message: 'transaction is empty',
+        event,
+      });
+    }
+
+    if (!transaction.id) {
+      throw new BadRequestException({
+        message: 'id is empty',
+        transaction,
+      });
+    }
+
+    const paddleTransactionId = transaction.id;
+    const { subscription_id } = transaction;
+    const { billingPlanSourceId } = transaction.custom_data ?? {};
+
+    const existHistory = await this.dataSource.getRepository(BillingHistory).exist({
+      where: {
+        paddleTransactionId,
+      },
+    });
+    if (existHistory) {
+      this.logger.info('Paddle transaction already processed', { paddleTransactionId });
+      return;
+    }
+
+    if (!subscription_id) {
+      throw new BadRequestException({
+        message: 'subscription_id is empty',
+        transaction,
+      });
+    }
+
+    const subscription = await this.paddleCaller.getSubscription({ subscriptionId: subscription_id });
+
+    const { cardCode, cardName, cardNumberLast4Digits, cardExpirationYear, cardExpirationMonth, paddlePaymentType, billingHistoryId, billingOrganizationId } =
       await this.retryTransaction.serializable(async (context) => {
         const { manager } = context;
         if (!transaction.id) {
@@ -158,7 +262,7 @@ export class PaddleNotificationService {
         const cardExpirationMonth = payment.method_details.card?.expiry_month?.toString() ?? null;
         const cardName = payment.method_details.card?.cardholder_name ?? null;
         const cardCode = payment.method_details.card?.type ?? null;
-        const paymentType = payment.method_details.type;
+        const paddlePaymentType = payment.method_details.type;
         const currency = isBillingCurrency(transaction.currency_code) ? transaction.currency_code : null;
         if (!currency) {
           throw new Error(`Currency is invalid. ${JSON.stringify(transaction)}`);
@@ -197,7 +301,7 @@ export class PaddleNotificationService {
           cardNumberLast4Digits,
           cardExpirationYear,
           cardExpirationMonth,
-          paymentType,
+          paddlePaymentType,
           paddleTransactionId: transaction.id,
         });
         const savedHistory = await manager.save(createdHistory);
@@ -229,7 +333,7 @@ export class PaddleNotificationService {
           cardNumberLast4Digits,
           cardExpirationYear,
           cardExpirationMonth,
-          paymentType,
+          paddlePaymentType,
           billingHistoryId: savedHistory.billingHistoryId,
           billingOrganizationId: billingOrganization.billingOrganizationId,
         };
@@ -251,7 +355,7 @@ export class PaddleNotificationService {
         },
       });
       if (billingPlanInfo) {
-        billingPlanInfo.paymentType = paymentType;
+        billingPlanInfo.paddlePaymentType = paddlePaymentType;
         billingPlanInfo.cardCode = cardCode;
         billingPlanInfo.cardName = cardName;
         billingPlanInfo.cardNumberLast4Digits = cardNumberLast4Digits;
@@ -264,7 +368,7 @@ export class PaddleNotificationService {
         const created = manager.getRepository(BillingPlanInfo).create({
           billingPlanInfoId: v4(),
           billingOrganizationId,
-          paymentType,
+          paddlePaymentType,
           cardCode,
           cardName,
           cardNumberLast4Digits,

@@ -3,10 +3,10 @@ import {
   CreatePurchaseResponse,
   CreatePurchaseWithNewCardDto,
   CreatePurchaseWithNewCardResponse,
+  GetBillingPrecheckoutDto,
+  GetBillingPrecheckoutResponse,
   GetBillingPreviewDto,
   GetBillingPreviewResponse,
-  PrecheckoutDto,
-  PrecheckoutResponse,
   RefundFullDto,
   RefundPlanDto,
 } from '@dogu-private/console';
@@ -50,7 +50,7 @@ export class BillingPurchaseController {
 
   @Get('/precheckout')
   @BillingTokenPermission()
-  async precheckout(@Query() dto: PrecheckoutDto): Promise<PrecheckoutResponse> {
-    return await this.billingPurchaseService.precheckout(dto);
+  async precheckout(@Query() dto: GetBillingPrecheckoutDto): Promise<GetBillingPrecheckoutResponse> {
+    return await this.billingPurchaseService.getPrecheckout(dto);
   }
 }

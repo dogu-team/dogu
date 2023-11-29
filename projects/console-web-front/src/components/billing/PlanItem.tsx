@@ -161,6 +161,7 @@ const PlanItem: React.FC<Props> = ({ planType, planInfo, descriptionInfo }) => {
           discountId: res.body.paddle.discountId ?? undefined,
           customData: {
             // need to add billingPlanSourceId to customData for paddle webhook
+            organizationId: license.organizationId,
             billingPlanSourceId,
           },
         });

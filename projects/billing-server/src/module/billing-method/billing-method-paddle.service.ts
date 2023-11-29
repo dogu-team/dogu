@@ -89,18 +89,4 @@ export class BillingMethodPaddleService {
 
     return billingMethodPaddle;
   }
-
-  async findByOrganizationId(options: FindMethodPaddleByOrganizationIdOptions): Promise<BillingMethodPaddle | null> {
-    const { organizationId } = options;
-    return await this.dataSource.getRepository(BillingMethodPaddle).findOne({
-      where: {
-        billingOrganization: {
-          organizationId,
-        },
-      },
-      relations: {
-        billingOrganization: true,
-      },
-    });
-  }
 }

@@ -27,12 +27,12 @@ export namespace Paddle {
     meta?: Meta;
   }
 
-  export interface Event {
+  export interface Event<T = Record<string, unknown>> {
     event_id?: string;
     event_type?: string;
     occurred_at?: string;
     notification_id?: string;
-    data?: Record<string, unknown>;
+    data?: T;
   }
 
   export interface Customer {
@@ -261,7 +261,12 @@ export namespace Paddle {
     customer_id?: string | null;
     address_id?: string | null;
     business_id?: string | null;
-    custom_data?: Record<string, unknown> | null;
+    custom_data?:
+      | ({
+          organizationId?: string;
+          billingPlanSourceId?: number;
+        } & Record<string, unknown>)
+      | null;
     currency_code?: string;
     origin?: string;
     subscription_id?: string | null;

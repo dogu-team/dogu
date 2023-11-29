@@ -40,7 +40,7 @@ export class PaddleMigrator {
       };
     });
 
-    const products = await this.paddleCaller.listProductsAllAndCache({ refresh: true });
+    const products = await this.paddleCaller.listProductsAllAndCache({ refresh: false });
     for (const origin of origins) {
       const product = products.find((product) => matchProduct(origin, product));
       if (product) {
@@ -87,6 +87,8 @@ export class PaddleMigrator {
         category: created.custom_data?.category,
       });
     }
+
+    await this.paddleCaller.listProductsAllAndCache({ refresh: true });
   }
 
   private async migratePrices(): Promise<void> {
@@ -96,7 +98,7 @@ export class PaddleMigrator {
       },
     });
 
-    const products = await this.paddleCaller.listProductsAllAndCache({ refresh: true });
+    const products = await this.paddleCaller.listProductsAllAndCache({ refresh: false });
     for (const product of products) {
       const { category, type } = product.custom_data ?? {};
       if (!category) {
@@ -140,6 +142,8 @@ export class PaddleMigrator {
         });
       }
     }
+
+    await this.paddleCaller.listProductsAllAndCache({ refresh: true });
   }
 
   private async migrateDiscounts(): Promise<void> {
