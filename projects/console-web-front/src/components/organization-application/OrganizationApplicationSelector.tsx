@@ -9,6 +9,7 @@ import useSWR from 'swr';
 import { swrAuthFetcher } from '../../api/index';
 import useDebouncedInputValues from '../../hooks/useDebouncedInputValues';
 import { flexRowCenteredStyle } from '../../styles/box';
+import { buildQueryPraramsByObject } from '../../utils/query';
 import OrganizationApplicationOptionItem from './OrganizationApplicationOptionItem';
 
 interface Props extends Omit<SelectProps<string>, 'options'> {
@@ -30,17 +31,26 @@ const OrganizationApplicationSelector = ({
   ...props
 }: Props) => {
   const { debouncedValue, handleChangeValues } = useDebouncedInputValues();
-  const { data, isLoading, error } = useSWR<OrganizationApplicationWithIcon[]>(
-    `/organizations/${organizationId}/applications/packages${extension ? `?extension=${extension}` : ''}`,
+  const query = buildQueryPraramsByObject(
+    {
+      extension,
+      page: 1,
+      offset: 9999,
+    },
+    { removeFalsy: true },
+  );
+  const { data, isLoading, error } = useSWR<PageBase<OrganizationApplicationWithIcon>>(
+    `/organizations/${organizationId}/applications/packages?${query}`,
     swrAuthFetcher,
   );
 
-  const applications = selectedApplication ? [selectedApplication, ...(data || [])] : data;
+  const applications = selectedApplication ? [selectedApplication, ...(data?.items || [])] : data?.items || [];
   const options: SelectProps['options'] = applications?.map((item) => ({
     label: <OrganizationApplicationOptionItem app={item} />,
     value: item.package,
   }));
-  const isInvalid = !!props.value && props.value !== 'latest' && !data?.find((item) => item.package === props.value);
+  const isInvalid =
+    !!props.value && props.value !== 'latest' && !data?.items?.find((item) => item.package === props.value);
 
   return (
     <Select<string>
@@ -52,7 +62,7 @@ const OrganizationApplicationSelector = ({
       suffixIcon={isInvalid ? <WarningFilled style={{ color: '#ffd666' }} /> : undefined}
       onSearch={handleChangeValues}
       onChange={(appPackage) => {
-        const selected = data?.find((item) => item.package === appPackage);
+        const selected = data?.items?.find((item) => item.package === appPackage);
         onSelectApp(appPackage, selected);
       }}
       dropdownMatchSelectWidth={false}

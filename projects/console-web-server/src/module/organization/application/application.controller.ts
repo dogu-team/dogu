@@ -10,7 +10,6 @@ import { applicationFileParser } from '../../../utils/file';
 import { ORGANIZATION_ROLE, PROJECT_ROLE } from '../../auth/auth.types';
 import { OrganizationPermission, ProjectPermission, User } from '../../auth/decorators';
 import { Page } from '../../common/dto/pagination/page';
-import { PageDto } from '../../common/dto/pagination/page.dto';
 import { UploadSampleAppDto } from '../../project/application/dto/application.dto';
 import { FindOrganizationApplicationByPackageNameDto, FindOrganizationApplicationDto } from './application.dto';
 import { OrganizationApplicationService } from './application.service';
@@ -31,7 +30,10 @@ export class OrganizationApplicationController {
 
   @Get('/packages')
   @OrganizationPermission(ORGANIZATION_ROLE.MEMBER)
-  async findUniquePackageApplications(@Param('organizationId') organizationId: OrganizationId, @Query() dto: PageDto): Promise<Page<OrganizationApplicationWithIcon>> {
+  async findUniquePackageApplications(
+    @Param('organizationId') organizationId: OrganizationId,
+    @Query() dto: FindOrganizationApplicationByPackageNameDto,
+  ): Promise<Page<OrganizationApplicationWithIcon>> {
     return await this.applicationService.findUniquePackageApplications(organizationId, dto);
   }
 

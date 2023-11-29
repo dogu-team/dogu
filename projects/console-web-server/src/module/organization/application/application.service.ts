@@ -12,7 +12,6 @@ import { OrganizationApplication } from '../../../db/entity/organization-applica
 import { Apk } from '../../../sdk/apk';
 import { Ipa } from '../../../sdk/ipa';
 import { Page } from '../../common/dto/pagination/page';
-import { PageDto } from '../../common/dto/pagination/page.dto';
 import { convertExtToOrganizationAppType, organizationAppMeta } from '../../file/organization-app-file';
 import { OrganizationFileService } from '../../file/organization-file.service';
 import { FindOrganizationApplicationByPackageNameDto, FindOrganizationApplicationDto } from './application.dto';
@@ -33,7 +32,7 @@ export class OrganizationApplicationService {
       .createQueryBuilder('organizationApplication')
       .leftJoinAndSelect(`organizationApplication.${OrganizationApplicationPropCamel.creator}`, 'creator')
       .where({ organizationId })
-      .andWhere(extension ? 'organizationApplication.fileExtension = :extension' : '1=1', { extension: extension })
+      .andWhere(dto.extension ? `organizationApplication.${OrganizationApplicationPropCamel.fileExtension} = :extension` : '1=1', { extension: dto.extension })
       .andWhere(latestOnly ? 'organizationApplication.isLatest = 1' : version ? 'organizationApplication.version LIKE :version' : '1=1', { version: `%${version}%` })
       .orderBy('organizationApplication.isLatest', 'DESC')
       .addOrderBy('organizationApplication.createdAt', 'DESC')
@@ -46,12 +45,13 @@ export class OrganizationApplicationService {
     return new Page(page, offset, count, projectApplicationList);
   }
 
-  async findUniquePackageApplications(organizationId: string, dto: PageDto): Promise<Page<OrganizationApplicationWithIcon>> {
+  async findUniquePackageApplications(organizationId: string, dto: FindOrganizationApplicationByPackageNameDto): Promise<Page<OrganizationApplicationWithIcon>> {
     const [applications, count] = await this.dataSource
       .getRepository(OrganizationApplication)
       .createQueryBuilder('organizationApplication')
       .leftJoinAndSelect(`organizationApplication.${OrganizationApplicationPropCamel.creator}`, 'creator')
       .where({ organizationId })
+      .andWhere(dto.extension ? `organizationApplication.${OrganizationApplicationPropCamel.fileExtension} = :extension` : '1=1', { extension: dto.extension })
       .orderBy(`organizationApplication.${OrganizationApplicationPropCamel.name}`, 'ASC')
       .addOrderBy(`organizationApplication.${OrganizationApplicationPropCamel.fileExtension}`, 'ASC')
       .skip(dto.getDBOffset())
