@@ -4,6 +4,8 @@ import { DeviceRuntimeInfoSubscribe } from '@dogu-tech/device-client-common';
 import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import { IncomingMessage } from 'http';
 import WebSocket from 'ws';
+import { AuthService } from '../../auth/auth.service';
+import { AuthIncomingMessage, DeviceWsPermission } from '../../auth/guard/device.ws.guard';
 import { OnDeviceRuntimeInfoSubscriberConnectedEvent, OnDeviceRuntimeInfoSubscriberDisconnectedEvent, OnDeviceRuntimeInfoUpdatedEvent } from '../../events';
 import { DoguLogger } from '../../logger/logger';
 
@@ -16,7 +18,11 @@ export class DeviceRuntimeInfoSubscribeService
   extends WebSocketGatewayBase<Value, typeof DeviceRuntimeInfoSubscribe.sendMessage, typeof DeviceRuntimeInfoSubscribe.receiveMessage>
   implements OnWebSocketClose<Value>, OnWebSocketMessage<Value, typeof DeviceRuntimeInfoSubscribe.sendMessage, typeof DeviceRuntimeInfoSubscribe.receiveMessage>
 {
-  constructor(private readonly eventEmitter: EventEmitter2, private readonly logger: DoguLogger) {
+  constructor(
+    private readonly eventEmitter: EventEmitter2,
+    private readonly authService: AuthService,
+    private readonly logger: DoguLogger,
+  ) {
     super(DeviceRuntimeInfoSubscribe, logger);
   }
 
@@ -36,7 +42,8 @@ export class DeviceRuntimeInfoSubscribeService
     });
   }
 
-  override async onWebSocketOpen(webSocket: WebSocket, incommingMessage: IncomingMessage): Promise<Value> {
+  @DeviceWsPermission()
+  override async onWebSocketOpen(webSocket: WebSocket, @AuthIncomingMessage() incommingMessage: IncomingMessage): Promise<Value> {
     await validateAndEmitEventAsync(this.eventEmitter, OnDeviceRuntimeInfoSubscriberConnectedEvent, {
       webSocket,
     });

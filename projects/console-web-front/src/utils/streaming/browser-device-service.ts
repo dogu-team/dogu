@@ -336,9 +336,12 @@ export class BrowserDeviceService implements DeviceService {
 
     channel.addEventListener('open', () => {
       console.log(`BrowserDeviceService. websocket open: ${name}`);
-      connection.headers = {
-        values: [{ key: 'Authorization', value: `Custom ${options.tokenGetter().value}` }],
-      };
+      if (!connection.headers) {
+        connection.headers = {
+          values: [],
+        };
+      }
+      connection.headers.values.push({ key: 'Authorization', value: `Custom ${options.tokenGetter().value}` });
 
       sendInternal({
         value: {
