@@ -114,7 +114,11 @@ export class NodeDeviceService implements DeviceService {
     const logger = new PrefixLogger(printable, '[NodeDeviceService.connectWebSocket]');
     const { path } = connection;
     const url = `ws://127.0.0.1:${port}${path}`;
-    const webSocket = new WebSocket(url);
+    const webSocket = new WebSocket(url, {
+      headers: {
+        Authorization: `Custom ${options.tokenGetter().value}`,
+      },
+    });
     webSocket.on('open', () => {
       logger.verbose('open', { url });
       listener?.onOpen?.({});
