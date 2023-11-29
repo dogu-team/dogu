@@ -1,4 +1,7 @@
 import { OrganizationRoleId, UserId } from '@dogu-private/types';
+import { IsFilledString } from '@dogu-tech/common';
+import { IsIn, IsNotEmpty } from 'class-validator';
+import { OrganizationScmServiceType } from '../..';
 
 export interface UpdateOrganizationDtoBase {
   name: string;
@@ -14,4 +17,14 @@ export interface UpdateOrganizationOwnerDtoBase {
 
 export interface UpdateOrganizationRoleDtoBase {
   organizationRoleId: OrganizationRoleId;
+}
+
+export class UpdateOrganizationScmDto {
+  @IsNotEmpty()
+  @IsIn(OrganizationScmServiceType)
+  serviceType!: OrganizationScmServiceType;
+
+  @IsNotEmpty()
+  @IsFilledString()
+  token!: string;
 }

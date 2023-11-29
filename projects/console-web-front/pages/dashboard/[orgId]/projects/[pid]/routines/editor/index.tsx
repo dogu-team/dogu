@@ -44,11 +44,7 @@ const ProjectRoutineEditorPage: NextPageWithLayout<ProjectServerSideProps> = ({
         <title>Edit routine - {project.name} | Dogu</title>
       </Head>
       <Box>
-        {!store.isGitIntegrated && (
-          <div style={{ marginBottom: '1rem' }}>
-            <RoutineGitIntegrationAlert />
-          </div>
-        )}
+        {!store.isGitIntegrated && <div style={{ marginBottom: '1rem' }}>{/* <RoutineGitIntegrationAlert /> */}</div>}
         <RoutineUpdator project={project} routineId={routineId} value={data} />
       </Box>
     </>

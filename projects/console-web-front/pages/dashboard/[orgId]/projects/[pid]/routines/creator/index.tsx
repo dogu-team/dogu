@@ -32,11 +32,7 @@ const ProjectRoutineCreatorPage: NextPageWithLayout<ProjectServerSideProps> = ({
         <title>Create routine - {project.name} | Dogu</title>
       </Head>
       <Box>
-        {!isGitIntegratedState && (
-          <div style={{ marginBottom: '1rem' }}>
-            <RoutineGitIntegrationAlert />
-          </div>
-        )}
+        {!isGitIntegratedState && <div style={{ marginBottom: '1rem' }}>{/* <RoutineGitIntegrationAlert /> */}</div>}
         <RoutineCreator project={project} />
       </Box>
     </>

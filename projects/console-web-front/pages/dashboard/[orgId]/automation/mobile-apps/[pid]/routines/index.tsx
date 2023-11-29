@@ -22,6 +22,7 @@ import ExternalGuideLink from 'src/components/common/ExternalGuideLink';
 import SlackRoutineChannelButton from 'enterprise/components/slack/SlackRoutineChannelButton';
 import AutomationLayout from '../../../../../../../src/components/layouts/AutomationLayout';
 import TutorialButton from '../../../../../../../src/components/buttons/TutorialButton';
+import { isOrganizationScmIntegrated } from '../../../../../../../src/utils/organization';
 
 const ProjectRoutinePage: NextPageWithLayout<ProjectServerSideProps> = ({ organization, project }) => {
   const router = useRouter();
@@ -119,7 +120,7 @@ ProjectRoutinePage.getLayout = (page) => {
   return (
     <AutomationLayout
       {...page.props}
-      innerSidebar={<RoutineSideBar isGitIntegrated={page.props.isGitIntegrated} />}
+      innerSidebar={<RoutineSideBar isScmIntegrated={isOrganizationScmIntegrated(page.props.organization)} />}
       titleI18nKey="organization:mobileAppAutomationPageTitle"
     >
       {page}

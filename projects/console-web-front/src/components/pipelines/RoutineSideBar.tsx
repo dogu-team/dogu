@@ -10,10 +10,10 @@ import CreateRoutineButton from '../routine/CreateRoutineButton';
 import { flexRowBaseStyle } from '../../styles/box';
 
 interface Props {
-  isGitIntegrated: boolean;
+  isScmIntegrated: boolean;
 }
 
-const RoutineSideBar = ({ isGitIntegrated }: Props) => {
+const RoutineSideBar = ({ isScmIntegrated }: Props) => {
   const router = useRouter();
   const { t } = useTranslation();
 
@@ -26,7 +26,7 @@ const RoutineSideBar = ({ isGitIntegrated }: Props) => {
         <FlexRow>
           <H6>{t('routine:routineSidebarTitle')}</H6>
           <div style={{ marginLeft: '.5rem' }}>
-            <GitIntegrationTag isGitIntegrated={isGitIntegrated} />
+            <GitIntegrationTag isScmIntegrated={isScmIntegrated} />
           </div>
         </FlexRow>
 

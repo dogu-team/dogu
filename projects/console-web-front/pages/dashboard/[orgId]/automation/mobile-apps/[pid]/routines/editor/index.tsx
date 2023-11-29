@@ -11,6 +11,7 @@ import { swrAuthFetcher } from 'src/api';
 import useGitIntegrationStore from '../../../../../../../../src/stores/git-integration';
 import RoutineGitIntegrationAlert from '../../../../../../../../src/components/projects/RoutineGitIntegrationAlert';
 import AutomationLayout from '../../../../../../../../src/components/layouts/AutomationLayout';
+import { isOrganizationScmIntegrated } from '../../../../../../../../src/utils/organization';
 
 const ProjectRoutineEditorPage: NextPageWithLayout<ProjectServerSideProps> = ({
   organization,
@@ -46,7 +47,7 @@ const ProjectRoutineEditorPage: NextPageWithLayout<ProjectServerSideProps> = ({
       <Box>
         {!store.isGitIntegrated && (
           <div style={{ marginBottom: '1rem' }}>
-            <RoutineGitIntegrationAlert />
+            <RoutineGitIntegrationAlert isScmIntegrated={isOrganizationScmIntegrated(organization)} />
           </div>
         )}
         <RoutineUpdator project={project} routineId={routineId} value={data} />

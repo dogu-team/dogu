@@ -10,6 +10,7 @@ import RoutineCreator from 'src/components/routine/editor/RoutineCreator';
 import AutomationLayout from '../../../../../../../../src/components/layouts/AutomationLayout';
 import useGitIntegrationStore from '../../../../../../../../src/stores/git-integration';
 import RoutineGitIntegrationAlert from '../../../../../../../../src/components/projects/RoutineGitIntegrationAlert';
+import { isOrganizationScmIntegrated } from '../../../../../../../../src/utils/organization';
 
 const ProjectRoutineCreatorPage: NextPageWithLayout<ProjectServerSideProps> = ({
   organization,
@@ -34,7 +35,7 @@ const ProjectRoutineCreatorPage: NextPageWithLayout<ProjectServerSideProps> = ({
       <Box>
         {!isGitIntegratedState && (
           <div style={{ marginBottom: '1rem' }}>
-            <RoutineGitIntegrationAlert />
+            <RoutineGitIntegrationAlert isScmIntegrated={isOrganizationScmIntegrated(organization)} />
           </div>
         )}
         <RoutineCreator project={project} />

@@ -2,9 +2,11 @@ import {
   CreateOrganizationDtoBase,
   InviteEmailDtoBase,
   OrganizationBase,
+  OrganizationScmBase,
   UpdateOrganizationDtoBase,
   UpdateOrganizationOwnerDtoBase,
   UpdateOrganizationRoleDtoBase,
+  UpdateOrganizationScmDto,
   UserBase,
 } from '@dogu-private/console';
 import { OrganizationId, UserId } from '@dogu-private/types';
@@ -124,4 +126,16 @@ export const uploadDeviceApp = async (
   });
 
   return data;
+};
+
+export const updateOrganizationScm = async (
+  orgId: OrganizationId,
+  dto: UpdateOrganizationScmDto,
+): Promise<OrganizationScmBase> => {
+  const { data } = await api.patch<OrganizationScmBase>(`/organizations/${orgId}/scm`, dto);
+  return data;
+};
+
+export const disconnectOrganizationScm = async (orgId: OrganizationId): Promise<void> => {
+  await api.delete(`/organizations/${orgId}/scm`);
 };
