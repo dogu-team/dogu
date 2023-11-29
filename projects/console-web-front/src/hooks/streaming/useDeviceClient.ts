@@ -1,4 +1,6 @@
+import { DeviceBase } from '@dogu-private/console';
 import { DeviceTemporaryToken, PrivateProtocol, WebSocketConnection } from '@dogu-private/types';
+import { time } from '@dogu-tech/common';
 import { DeviceClient, DeviceHostClient } from '@dogu-tech/device-client-common';
 import { RefObject, useEffect, useRef } from 'react';
 import { v4 as uuidv4 } from 'uuid';
@@ -10,6 +12,7 @@ import { createDataChannel } from '../../utils/streaming/web-rtc';
 type DataChannelLabel = PrivateProtocol.DataChannelLabel;
 
 const useDeviceClient = (
+  device: DeviceBase | undefined,
   peerConnectionRef: RefObject<RTCPeerConnection | undefined>,
   deviceToken: DeviceTemporaryToken | undefined,
   sendThrottleMs: number,
@@ -18,9 +21,10 @@ const useDeviceClient = (
   const deviceHostClientRef = useRef<DeviceHostClient | undefined>(undefined);
   const deviceChannelRef = useRef<RTCDataChannel | undefined>(undefined);
   const deviceInspectorRef = useRef<BrowserDeviceInspector | undefined>(undefined);
+  const heartbeatTimer = useRef<NodeJS.Timer | undefined>(undefined);
 
   useEffect(() => {
-    if (peerConnectionRef.current && deviceToken) {
+    if (device && peerConnectionRef.current && deviceToken) {
       const deviceHttpDcLabel: DataChannelLabel = {
         name: 'device-http',
         protocol: {
@@ -60,10 +64,19 @@ const useDeviceClient = (
       const dc = new DeviceClient(deviceService, { tokenGetter });
       const dhc = new DeviceHostClient(deviceService, { tokenGetter });
       const di = new BrowserDeviceInspector(deviceService, { tokenGetter });
+      const timer = setInterval(
+        () => {
+          dc.getHearbeat(device.serial).catch((e) => {
+            console.error('heartbeat error', e);
+          });
+        },
+        time({ minutes: 1 }),
+      );
 
       deviceClientRef.current = dc;
       deviceHostClientRef.current = dhc;
       deviceInspectorRef.current = di;
+      heartbeatTimer.current = timer;
     }
 
     return () => {
@@ -72,6 +85,10 @@ const useDeviceClient = (
       deviceClientRef.current = undefined;
       deviceHostClientRef.current = undefined;
       deviceChannelRef.current = undefined;
+      if (heartbeatTimer.current) {
+        clearInterval(heartbeatTimer.current);
+      }
+      heartbeatTimer.current = undefined;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sendThrottleMs, deviceToken]);

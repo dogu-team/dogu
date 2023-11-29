@@ -47,6 +47,21 @@ export class DeviceController {
     };
   }
 
+  @Get(Device.getHeartbeat.path)
+  @DevicePermission()
+  getHeartbeat(@Param('serial') serial: Serial): Instance<typeof Device.getHeartbeat.responseBody> {
+    const device = this.scanService.findChannel(serial);
+    if (device === null) {
+      return deviceNotFoundError(serial);
+    }
+    return {
+      value: {
+        $case: 'data',
+        data: {},
+      },
+    };
+  }
+
   @Get(Device.getDeviceSystemInfo.path)
   @DevicePermission()
   getDeviceSystemInfo(@Param('serial') serial: Serial): Instance<typeof Device.getDeviceSystemInfo.responseBody> {

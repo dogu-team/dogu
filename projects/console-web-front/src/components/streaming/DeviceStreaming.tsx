@@ -37,7 +37,7 @@ const DeviceStreaming = ({ device, children, pid, isCloudDevice, isAdmin }: Prop
     { device, pid, isCloudDevice },
     THROTTLE_MS,
   );
-  const deviceService = useDeviceClient(peerConnectionRef, deviceToken, THROTTLE_MS);
+  const deviceService = useDeviceClient(device, peerConnectionRef, deviceToken, THROTTLE_MS);
   const gamiumService = useGamiumClient(
     peerConnectionRef,
     device,

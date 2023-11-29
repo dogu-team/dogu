@@ -56,6 +56,10 @@ export class DeviceClient extends DeviceHttpClient implements DeviceInterface {
     return info;
   }
 
+  async getHearbeat(serial: Serial): Promise<void> {
+    await this.httpRequest(Device.getHeartbeat, new Device.getHeartbeat.pathProvider(serial));
+  }
+
   async getDeviceSystemInfo(serial: Serial): Promise<DeviceSystemInfo> {
     const response = await this.httpRequest(Device.getDeviceSystemInfo, new Device.getDeviceSystemInfo.pathProvider(serial));
     return response;

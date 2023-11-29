@@ -27,7 +27,7 @@ export class AuthController {
 
   @Post(DeviceAuth.createToken.path)
   @DeviceAdminPermission()
-  createToken(@Param('serial') serial: Serial, @Body() request: Instance<typeof DeviceAuth.createToken.requestBody>): Instance<typeof DeviceAuth.createToken.responseBody> {
+  createToken(@Param('serial') serial: Serial): Instance<typeof DeviceAuth.createToken.responseBody> {
     const token = this.authService.generateTemporaryToken(serial);
     return {
       value: {
