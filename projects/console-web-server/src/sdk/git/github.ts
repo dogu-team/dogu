@@ -11,6 +11,43 @@ export module Github {
     });
   }
 
+  async function getOrgNameFromToken(token: string): Promise<string> {
+    const octokit = createSession(token);
+    const userResult = await octokit.request(`GET /user/orgs`, {
+      headers: {
+        'X-GitHub-Api-Version': GITHUB_API_VERSION,
+      },
+    });
+    if (userResult.status === 200) {
+      // const username = userResult.data.login;
+      const rv = await octokit.request(`GET /`);
+      if (rv.status === 200) {
+        // return rv.data[0].login;
+        return 'test';
+      } else {
+        throw new Error(`Failed to get organizations.`);
+      }
+    } else {
+      throw new Error(`Failed to get authenticated user.`);
+    }
+  }
+
+  export async function findAllRepositories(token: string, owner: string) {
+    const octokit = createSession(token);
+    const rv = await octokit.repos.listForOrg({
+      org: owner,
+      headers: {
+        'X-GitHub-Api-Version': GITHUB_API_VERSION,
+      },
+    });
+
+    if (rv.status === 200) {
+      return rv.data;
+    } else {
+      throw new Error(`Failed to get repositories. status: ${rv.status}, message: ${rv.data}`);
+    }
+  }
+
   export async function readDoguConfigFile(token: string, owner: string, repo: string): Promise<DoguConfig> {
     const octokit = createSession(token);
     const rv = await octokit.repos.getContent({

@@ -20,6 +20,7 @@ import { disconnectOrganizationScm, updateOrganizationScm } from '../../api/orga
 import useOrganizationContext from '../../hooks/context/useOrganizationContext';
 import { flexRowBaseStyle } from '../../styles/box';
 import { isOrganizationScmIntegrated } from '../../utils/organization';
+import GitIcon from 'public/resources/icons/git-logo.svg';
 
 const ScmServiceType: React.FC<{ serviceType: OrganizationScmServiceType }> = ({ serviceType }) => {
   switch (serviceType) {
@@ -85,6 +86,7 @@ const ScmIntegrationButton: React.FC<Props> = ({}) => {
     try {
       await updateScm(organization.organizationId, {
         serviceType: values.git,
+        url: values.url,
         token: values.token,
       });
       sendSuccessNotification('SCM integration saved');
@@ -103,13 +105,17 @@ const ScmIntegrationButton: React.FC<Props> = ({}) => {
   return (
     <>
       <IntegrationButton
-        icon={<FaGitAlt style={{ width: '24px', height: '24px' }} />}
+        icon={<GitIcon style={{ width: '24px', height: '24px' }} />}
         name="SCM"
         description={
           isConnected && !!scm ? (
             <FlexRow>
               Integrated with&nbsp;
               <ScmServiceType serviceType={scm.serviceType} />
+              &nbsp;-&nbsp;
+              <a href={scm.url} target="_blank">
+                {scm.url.split('/')[scm.url.split('/').length - 1]}
+              </a>
             </FlexRow>
           ) : (
             <>
@@ -147,6 +153,10 @@ const ScmIntegrationButton: React.FC<Props> = ({}) => {
         onOk={updateScmIntegration}
         confirmLoading={saveLoading}
         title="SCM Integration"
+        okButtonProps={{
+          htmlType: 'submit',
+          form: 'git-integration',
+        }}
       >
         <GitIntegrationForm form={form} />
       </Modal>

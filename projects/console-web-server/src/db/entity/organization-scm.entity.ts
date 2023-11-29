@@ -18,6 +18,9 @@ export class OrganizationScm extends BaseEntity implements OrganizationScmBase {
   @Column({ type: 'enum', name: OrganizationScmPropSnake.service_type, enum: OrganizationScmServiceType, nullable: false })
   serviceType!: OrganizationScmServiceType;
 
+  @Column({ type: 'character varying', name: OrganizationScmPropSnake.url, nullable: false })
+  url!: string;
+
   @Column({ type: 'character varying', name: OrganizationScmPropSnake.token, nullable: false })
   token!: string;
 

@@ -14,6 +14,7 @@ export interface OrganizationScmBaseTraits {
   organizationId: OrganizationId;
   type: OrganizationScmType;
   serviceType: OrganizationScmServiceType;
+  url: string;
   token: string;
   createdAt: Date;
   updatedAt: Date;
@@ -27,3 +28,8 @@ export interface OrganizationScmRelationTraits {
 export type OrganizationScmBase = OrganizationScmBaseTraits & OrganizationScmRelationTraits;
 export const OrganizationScmPropCamel = propertiesOf<OrganizationScmBase>();
 export const OrganizationScmPropSnake = camelToSnakeCasePropertiesOf<OrganizationScmBase>();
+
+export type OrganizationScmRespository = {
+  name: string;
+  url: string;
+};

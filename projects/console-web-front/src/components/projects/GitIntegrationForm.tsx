@@ -5,6 +5,7 @@ import { IoLogoBitbucket } from 'react-icons/io5';
 
 export type GitIntegrationFormValues = {
   git: OrganizationScmServiceType;
+  url: string;
   token: string;
 };
 
@@ -34,7 +35,15 @@ const GitIntegrationForm = ({ form, hideType }: Props) => {
           </Radio.Group>
         </Form.Item>
       )}
-      <Form.Item label="Token" name="token" required rules={[{ required: true, message: 'Input token' }]}>
+      <Form.Item
+        label="Organization(personal) url"
+        name="url"
+        required
+        rules={[{ required: true, message: 'Please enter valid url', type: 'url' }]}
+      >
+        <Input placeholder="https://github.com/dogu-team" required type="url" />
+      </Form.Item>
+      <Form.Item label="Token" name="token" required rules={[{ required: true, message: 'Please enter token' }]}>
         <Input placeholder="ghp_1234567890abcd" required />
       </Form.Item>
     </Form>
