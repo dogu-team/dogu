@@ -106,7 +106,7 @@ const ScmIntegrationButton: React.FC<Props> = ({}) => {
     <>
       <IntegrationButton
         icon={<GitIcon style={{ width: '24px', height: '24px' }} />}
-        name="SCM"
+        name="Git"
         description={
           isConnected && !!scm ? (
             <FlexRow>
@@ -119,7 +119,7 @@ const ScmIntegrationButton: React.FC<Props> = ({}) => {
             </FlexRow>
           ) : (
             <>
-              Integrate organizaiton with SCM.{' '}
+              Integrate organizaiton with Git.{' '}
               <Link href="https://docs.dogutech.io/management/project/git-integration" target="_blank">
                 Visit docs
               </Link>{' '}
@@ -130,8 +130,8 @@ const ScmIntegrationButton: React.FC<Props> = ({}) => {
         connectButton={
           isConnected ? (
             <DisconnectButton
-              modalTitle={'Disconnect with SCM'}
-              modalContent={<p>Are you sure you want to disconnect with SCM?</p>}
+              modalTitle={'Disconnect with Git'}
+              modalContent={<p>Are you sure you want to disconnect with Git?</p>}
               modalButtonTitle={'Confirm & disconnect'}
               onConfirm={disconnect}
               loading={deleteLoading}
@@ -152,7 +152,7 @@ const ScmIntegrationButton: React.FC<Props> = ({}) => {
         okText={'Save'}
         onOk={updateScmIntegration}
         confirmLoading={saveLoading}
-        title="SCM Integration"
+        title="Git Integration"
         okButtonProps={{
           htmlType: 'submit',
           form: 'git-integration',
