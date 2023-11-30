@@ -79,6 +79,18 @@ export class BillingPlanInfoService {
       const paddleSubscriptions = await this.paddleCaller.listSubscriptionsAll({
         customerId: billingOrganization.billingMethodPaddle.customerId,
       });
+      const subscription = paddleSubscriptions.find((subscription) => subscription.custom_data?.billingPlanInfoId === billingPlanInfoId);
+      if (subscription) {
+        if (!subscription.id) {
+          throw new InternalServerErrorException({
+            reason: `PaddleSubscription does not have a id. billingPlanInfoId: ${billingPlanInfoId}`,
+            subscription,
+          });
+        }
+
+        await this.paddleCaller.resumeSubscription({ subscriptionId: subscription.id });
+      }
+
       return new BillingPlanInfoResponseBuilder(billingOrganization, paddleSubscriptions).build(saved);
     });
   }
@@ -165,6 +177,18 @@ export class BillingPlanInfoService {
       const paddleSubscriptions = await this.paddleCaller.listSubscriptionsAll({
         customerId: billingOrganization.billingMethodPaddle.customerId,
       });
+      const subscription = paddleSubscriptions.find((subscription) => subscription.custom_data?.billingPlanInfoId === billingPlanInfoId);
+      if (subscription) {
+        if (!subscription.id) {
+          throw new InternalServerErrorException({
+            reason: `PaddleSubscription does not have a id. billingPlanInfoId: ${billingPlanInfoId}`,
+            subscription,
+          });
+        }
+
+        await this.paddleCaller.pauseSubscription({ subscriptionId: subscription.id });
+      }
+
       const billingPlanInfoResponse = new BillingPlanInfoResponseBuilder(billingOrganization, paddleSubscriptions).build(saved);
 
       this.slackService
