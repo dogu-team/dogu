@@ -659,6 +659,7 @@ export class BillingPurchaseService {
       });
     }
 
+    let discountId: string | null = null;
     if (coupon) {
       const { billingCouponId } = coupon;
       const discount = await this.paddleCaller.findDiscount({ billingCouponId });
@@ -676,20 +677,18 @@ export class BillingPurchaseService {
         });
       }
 
-      return {
-        paddle: {
-          customerId,
-          priceId,
-          discountId: discount.id,
-        },
-      };
+      discountId = discount.id;
     }
+
+    const addresses = await this.paddleCaller.listAddressesAll({ customerId });
+    const addressId = addresses.length > 0 ? addresses[0].id ?? null : null;
 
     return {
       paddle: {
         customerId,
         priceId,
-        discountId: null,
+        discountId,
+        addressId,
       },
     };
   }
