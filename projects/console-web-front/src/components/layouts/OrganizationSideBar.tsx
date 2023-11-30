@@ -39,8 +39,6 @@ const OrganizationSideBar = () => {
   const { t } = useTranslation();
   const collapsed = useCollapsibleSidebar((state) => state.collapsed);
 
-  console.log(organization?.organizationId);
-
   useRefresh(['onOrganizationUpdated'], () => mutate?.());
 
   const items: MenuItem = [
@@ -405,9 +403,9 @@ export default OrganizationSideBar;
 const StyledSider = styled(Layout.Sider)`
   position: relative;
   display: flex;
-  width: ${(props) => (props.collapsed ? '' : '16rem !important')};
-  min-width: ${(props) => (props.collapsed ? '' : '16rem !important')};
-  max-width: ${(props) => (props.collapsed ? '' : '16rem !important')};
+  width: ${(props) => (props.collapsed ? '' : '15rem !important')};
+  min-width: ${(props) => (props.collapsed ? '' : '15rem !important')};
+  max-width: ${(props) => (props.collapsed ? '' : '15rem !important')};
   transition: none;
   background-color: #ffffff !important;
   border-right: 1px solid ${(props) => props.theme.colors.gray2};

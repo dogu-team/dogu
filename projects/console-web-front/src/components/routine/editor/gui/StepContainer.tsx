@@ -12,7 +12,6 @@ import useProjectContext from '../../../../hooks/context/useProjectContext';
 import ErrorBox from '../../../common/boxes/ErrorBox';
 import StepActionArgumentContainer from './StepActionArgumentContainer';
 import WorkingDirectoryContainer from './WorkingDirectoryContainer';
-import RepositorySelector from './RepositorySelector';
 
 interface Props {
   jobName: string;
@@ -123,16 +122,6 @@ echo Dogu!`}
               />
             </div>
           </Content>
-
-          {step.uses === RUN_TEST_ACTION_NAME && (
-            <Content>
-              <ContentTitle>Repository</ContentTitle>
-              <ContentDesc>Select repo...</ContentDesc>
-              <SelectWrapper>
-                <RepositorySelector placeholder="repository" />
-              </SelectWrapper>
-            </Content>
-          )}
 
           {step.uses === RUN_TEST_ACTION_NAME && (
             <Content>

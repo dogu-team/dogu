@@ -20,6 +20,9 @@ properties:
       type:
         - string
         - 'null'
+  repository:
+    type: string
+    description: The repository to run the pipeline on.
 required:
   - jobs
   - name

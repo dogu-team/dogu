@@ -64,8 +64,8 @@ export class OrganizationScmService {
     switch (scm.serviceType) {
       case 'github': {
         try {
-          const orgName = this.getOrganizationName(scm.url);
-          const results = await Github.findAllRepositories(token, orgName);
+          const { org } = this.getGitInformationFromUrl(scm.url);
+          const results = await Github.findAllRepositories(token, org);
           return results
             .map((result) => {
               return {
@@ -82,8 +82,8 @@ export class OrganizationScmService {
       }
       case 'bitbucket': {
         try {
-          const orgName = this.getOrganizationName(scm.url);
-          const results = await Bitbucket.findAllRepositories(token, orgName);
+          const { org } = this.getGitInformationFromUrl(scm.url);
+          const results = await Bitbucket.findAllRepositories(token, org);
           return (
             results.values
               ?.map((result) => {
@@ -119,13 +119,71 @@ export class OrganizationScmService {
           throw new InternalServerErrorException(`Failed to fetch repositories from gitlab.`);
         }
       }
+      default: {
+        throw new BadRequestException(`Unknown SCM type: ${scm.serviceType}`);
+      }
     }
   }
 
-  getOrganizationName(url: string): string {
-    const urlObj = new URL(url);
-    const parts: string[] = urlObj.pathname.split('/');
+  async findCwds(organizationId: OrganizationId, repositoryName: string): Promise<string[]> {
+    if (!repositoryName) {
+      throw new BadRequestException('Repository name is required');
+    }
+
+    const scm = await this.dataSource.manager.findOne(OrganizationScm, { where: { organizationId } });
+    if (!scm) {
+      throw new BadRequestException('SCM is not configured');
+    }
+
+    const token = await EncryptService.decryptToken(this.dataSource.manager, organizationId, scm.token);
+
+    switch (scm.serviceType) {
+      case 'github': {
+        try {
+          const { org } = this.getGitInformationFromUrl(scm.url);
+
+          const content = await Github.readDoguConfigFile(token, org, repositoryName);
+
+          return content.workingDirPaths ?? [];
+        } catch (e) {
+          throw new InternalServerErrorException(`Failed to fetch cwds from github.`);
+        }
+      }
+      case 'gitlab': {
+        try {
+          const { org } = this.getGitInformationFromUrl(scm.url);
+
+          const content = await Gitlab.readDoguConfigFile(token, org, repositoryName);
+
+          return content.workingDirPaths ?? [];
+        } catch (e) {
+          throw new InternalServerErrorException(`Failed to fetch cwds from gitlab.`);
+        }
+      }
+      case 'bitbucket': {
+        try {
+          const { org } = this.getGitInformationFromUrl(scm.url);
+
+          const content = await Bitbucket.readDoguConfigFile(token, org, repositoryName);
+
+          return content.workingDirPaths ?? [];
+        } catch (e) {
+          throw new InternalServerErrorException(`Failed to fetch cwds from bitbucket.`);
+        }
+      }
+      default:
+        throw new BadRequestException('Invalid repository type');
+    }
+  }
+
+  private getGitInformationFromUrl(scmUrl: string): { url: URL; org: string } {
+    const url = new URL(scmUrl);
+    const parts: string[] = url.pathname.split('/');
     const org: string = parts[1];
-    return org;
+
+    return {
+      url,
+      org,
+    };
   }
 }

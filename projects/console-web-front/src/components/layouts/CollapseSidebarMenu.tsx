@@ -23,7 +23,7 @@ export default CollpaseSidebarMenu;
 const CollapseButton = styled.button<{ collapsed: boolean }>`
   position: fixed;
   top: calc(50% - 0.875rem);
-  left: ${(props) => (props.collapsed ? '4rem' : '15rem')};
+  left: ${(props) => (props.collapsed ? '4rem' : '14rem')};
   opacity: 0;
   width: 1.75rem;
   height: 1.75rem;

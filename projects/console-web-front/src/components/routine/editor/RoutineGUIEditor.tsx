@@ -9,6 +9,7 @@ import RoutineNameEditor from './gui/RoutineNameEditor';
 import { RUN_TEST_ACTION_NAME } from '../../../types/routine';
 import { CLOUD_LINUX_DEVICE_NAME } from '../../../resources/routine';
 import { IS_CLOUD } from '../../../../pages/_app';
+import RepositorySelector from './gui/RepositorySelector';
 
 interface Props {
   projectType: PROJECT_TYPE;
@@ -191,6 +192,15 @@ const RoutineGUIEditor = ({ projectType, hideAddButton }: Props) => {
     <RoutineProjectTypeContext.Provider value={projectType}>
       <Box>
         <RoutineNameEditor name={schema.name} onChange={(value) => updateSchema({ ...schema, name: value })} />
+        <div style={{ marginBottom: '1rem' }}>
+          <StyledTitle>Repository</StyledTitle>
+          <RepositorySelector
+            value={schema.repository}
+            onChange={(value) => updateSchema({ ...schema, repository: value })}
+            style={{ maxWidth: '250px', width: '100%' }}
+            placeholder={'Select repository'}
+          />
+        </div>
         <StyledTitle>{t('routine:routineGuiEditorJobLabel')}</StyledTitle>
         <JobWrapper>
           {Object.keys(schema.jobs).map((jobName, i) => {

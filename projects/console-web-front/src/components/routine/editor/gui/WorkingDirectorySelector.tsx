@@ -7,15 +7,18 @@ import { GoFileDirectory } from 'react-icons/go';
 import { swrAuthFetcher } from '../../../../api';
 import { flexRowCenteredStyle } from '../../../../styles/box';
 import { LoadingOutlined } from '@ant-design/icons';
+import useOrganizationContext from '../../../../hooks/context/useOrganizationContext';
+import useRoutineEditorStore from '../../../../stores/routine-editor';
 
-interface Props extends Omit<SelectProps, 'options'> {
-  organizationId: OrganizationId;
-  projectId: ProjectId;
-}
+interface Props extends Omit<SelectProps, 'options'> {}
 
-const WorkingDirectorySelector = ({ organizationId, projectId, ...props }: Props) => {
+const WorkingDirectorySelector = ({ ...props }: Props) => {
+  const schema = useRoutineEditorStore((state) => state.schema);
+  const { organization } = useOrganizationContext();
   const { data, isLoading, error } = useSWR<string[]>(
-    `/organizations/${organizationId}/projects/${projectId}/scm/cwds`,
+    !!organization?.organizationId &&
+      !!schema.repo &&
+      `/organizations/${organization.organizationId}/scm/repositories/${schema.repo}/cwds`,
     swrAuthFetcher,
   );
 

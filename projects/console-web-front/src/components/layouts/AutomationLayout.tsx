@@ -60,7 +60,7 @@ const FlexRow = styled.div`
 const SideBar = styled.div`
   position: sticky;
   top: -2rem;
-  width: 300px;
+  width: 18rem;
   max-height: calc(100dvh - 57px);
   padding: 1rem 1rem 0 0;
   flex-shrink: 0;

@@ -28,4 +28,10 @@ export class OrganizationScmController {
   async findAllRepositories(@Param(OrganizationPropCamel.organizationId) organizationId: OrganizationId): Promise<OrganizationScmRespository[]> {
     return await this.organizationScmService.findAllRepositories(organizationId);
   }
+
+  @Get('repositories/:repositoryName/cwds')
+  @OrganizationPermission(ORGANIZATION_ROLE.MEMBER)
+  async getCwds(@Param(OrganizationPropCamel.organizationId) organizationId: OrganizationId, @Param('repositoryName') repositoryName: string): Promise<string[]> {
+    return await this.organizationScmService.findCwds(organizationId, repositoryName);
+  }
 }
