@@ -160,5 +160,6 @@ export interface GetBillingPrecheckoutResponse {
     priceId: string;
     discountId: string | null;
     addressId: string | null;
+    businessId: string | null;
   };
 }

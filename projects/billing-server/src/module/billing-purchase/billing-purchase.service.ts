@@ -683,12 +683,16 @@ export class BillingPurchaseService {
     const addresses = await this.paddleCaller.listAddressesAll({ customerId });
     const addressId = addresses.length > 0 ? addresses[0].id ?? null : null;
 
+    const businesses = await this.paddleCaller.listBusinessesAll({ customerId });
+    const businessId = businesses.length > 0 ? businesses[0].id ?? null : null;
+
     return {
       paddle: {
         customerId,
         priceId,
         discountId,
         addressId,
+        businessId,
       },
     };
   }

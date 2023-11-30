@@ -162,6 +162,11 @@ const PlanItem: React.FC<Props> = ({ planType, planInfo, descriptionInfo }) => {
                   id: res.body.paddle.addressId,
                 }
               : undefined,
+            business: res.body.paddle.businessId
+              ? {
+                  id: res.body.paddle.businessId,
+                }
+              : undefined,
           },
           discountId: res.body.paddle.discountId ?? undefined,
           customData: {
