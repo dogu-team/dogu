@@ -160,10 +160,12 @@ export class BillingOrganizationService {
       const paddleBusiness = await this.paddleCaller.updateBusiness({
         customerId,
         businessId,
+        name: rest.name,
         company_number: rest.companyNumber,
         tax_identifier: rest.taxIdentifier,
       });
       return {
+        name: paddleBusiness.name ?? null,
         companyNumber: paddleBusiness.company_number ?? null,
         taxIdentifier: paddleBusiness.tax_identifier ?? null,
       };

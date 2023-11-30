@@ -725,9 +725,10 @@ export class PaddleCaller {
    */
   async pauseSubscription(options: PauseSubscriptionOptions): Promise<Paddle.Subscription> {
     const { subscriptionId } = options;
-    const path = `/subscription/${subscriptionId}/pause`;
+    const path = `/subscriptions/${subscriptionId}/pause`;
+    const body = {};
 
-    const response = await this.client.post<Paddle.Response<Paddle.Subscription>>(path);
+    const response = await this.client.post<Paddle.Response<Paddle.Subscription>>(path, body);
     const { error, data, meta } = response.data;
     const { request_id } = meta ?? {};
     if (error) {
@@ -743,9 +744,12 @@ export class PaddleCaller {
    */
   async resumeSubscription(options: ResumeSubscriptionOptions): Promise<Paddle.Subscription> {
     const { subscriptionId } = options;
-    const path = `/subscription/${subscriptionId}/resume`;
+    const path = `/subscriptions/${subscriptionId}/resume`;
+    const body = {
+      effective_from: 'next_billing_period',
+    };
 
-    const response = await this.client.post<Paddle.Response<Paddle.Subscription>>(path);
+    const response = await this.client.post<Paddle.Response<Paddle.Subscription>>(path, body);
     const { error, data, meta } = response.data;
     const { request_id } = meta ?? {};
     if (error) {

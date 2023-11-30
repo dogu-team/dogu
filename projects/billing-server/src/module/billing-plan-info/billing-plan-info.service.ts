@@ -47,6 +47,9 @@ export class BillingPlanInfoService {
         where: {
           organizationId,
         },
+        relations: {
+          billingMethodPaddle: true,
+        },
       });
 
       if (!billingOrganization) {
@@ -103,6 +106,9 @@ export class BillingPlanInfoService {
         where: {
           organizationId,
         },
+        relations: {
+          billingMethodPaddle: true,
+        },
       });
 
       if (!billingOrganization) {
@@ -145,6 +151,9 @@ export class BillingPlanInfoService {
       const billingOrganization = await manager.getRepository(BillingOrganization).findOne({
         where: {
           organizationId,
+        },
+        relations: {
+          billingMethodPaddle: true,
         },
       });
 

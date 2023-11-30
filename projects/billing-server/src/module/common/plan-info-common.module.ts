@@ -96,6 +96,7 @@ export class BillingOrganizationResponseBuilder {
       const paddleBusiness = this.paddleBusinesses[0];
       if (paddleBusiness) {
         const business: BillingBusiness = {
+          name: paddleBusiness.name ?? null,
           companyNumber: paddleBusiness.company_number ?? null,
           taxIdentifier: paddleBusiness.tax_identifier ?? null,
         };

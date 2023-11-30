@@ -69,6 +69,10 @@ export class UpdateBillingBusinessDto {
 
   @IsString()
   @IsOptional()
+  name?: string;
+
+  @IsString()
+  @IsOptional()
   companyNumber?: string;
 
   @IsString()
@@ -77,6 +81,7 @@ export class UpdateBillingBusinessDto {
 }
 
 export interface BillingBusiness {
+  name: string | null;
   companyNumber: string | null;
   taxIdentifier: string | null;
 }
