@@ -17,8 +17,8 @@ const WorkingDirectorySelector = ({ ...props }: Props) => {
   const { organization } = useOrganizationContext();
   const { data, isLoading, error } = useSWR<string[]>(
     !!organization?.organizationId &&
-      !!schema.repo &&
-      `/organizations/${organization.organizationId}/scm/repositories/${schema.repo}/cwds`,
+      !!schema.repository &&
+      `/organizations/${organization.organizationId}/scm/repositories/${schema.repository}/cwds`,
     swrAuthFetcher,
   );
 
