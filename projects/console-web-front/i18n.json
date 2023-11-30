@@ -31,6 +31,7 @@
     "/dashboard/[orgId]/device-farm/standby-devices": ["device-farm"],
     "/dashboard/[orgId]/device-farm/hosts": ["device-farm"],
     "/dashboard/[orgId]/device-farm/tags": ["device-farm"],
+    "/dashboard/[orgId]/device-farm/live-testing/[deviceId]": ["device-streaming"],
     "/dashboard/[orgId]/live-testing": ["cloud-device"],
     "/dashboard/[orgId]/live-testing/[sessionId]/[deviceId]": ["device-streaming"],
     "/dashboard/[orgId]/web-responsive": ["web-responsive"],

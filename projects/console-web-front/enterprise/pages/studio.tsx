@@ -17,7 +17,7 @@ import StudioLayout from '../components/studio/StudioLayout';
 
 export interface StudioTestingPageProps {
   organization: OrganizationBase;
-  project: ProjectBase;
+  // project: ProjectBase;
   me: UserBase;
   device: DeviceBase;
 }
@@ -43,7 +43,6 @@ export const getStudioTestingLayout = (page: React.ReactElement<StudioTestingPag
           <StudioDeviceSelector
             selectedDevice={page.props.device ?? undefined}
             organizationId={page.props.organization.organizationId}
-            projectId={page.props.project.projectId}
             onSelectedDeviceChanged={(device) => {
               if (device) {
                 router.push({
@@ -120,9 +119,9 @@ export const getStudioTestingServerSideProps: GetServerSideProps<StudioTestingPa
   }
 
   try {
-    const [organization, project, user, device] = await Promise.all([
+    const [organization, user, device] = await Promise.all([
       getOrganizationInServerSide(context),
-      getProjectInServerSide(context),
+      // getProjectInServerSide(context),
       getUserInServerSide(context),
       getDeviceByIdInServerSide(context, organizationId, deviceId),
     ]);
@@ -131,7 +130,7 @@ export const getStudioTestingServerSideProps: GetServerSideProps<StudioTestingPa
       return {
         props: {
           organization,
-          project,
+          // project,
           me: user,
           device,
         },

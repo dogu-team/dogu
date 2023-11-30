@@ -2,26 +2,26 @@ import { GetServerSideProps } from 'next';
 import styled from 'styled-components';
 
 import { NextPageWithLayout } from 'pages/_app';
-import ManualTesting from 'src/components/studio/LiveTesting';
+import LiveTesting from 'src/components/studio/LiveTesting';
 import {
-  getStudioTestingLayout,
-  getStudioTestingServerSideProps,
   StudioTestingPageProps,
+  getStudioTestingServerSideProps,
+  getStudioTestingLayout,
 } from 'enterprise/pages/studio';
 
-const StudioManualPage: NextPageWithLayout<StudioTestingPageProps> = ({ organization, me, device }) => {
+const DeviceFarmLiveTestingPage: NextPageWithLayout<StudioTestingPageProps> = ({ organization, me, device }) => {
   return (
     <Box>
-      <ManualTesting organization={organization} device={device} me={me} />
+      <LiveTesting organization={organization} device={device} me={me} />
     </Box>
   );
 };
 
-StudioManualPage.getLayout = getStudioTestingLayout;
+DeviceFarmLiveTestingPage.getLayout = getStudioTestingLayout;
 
 export const getServerSideProps: GetServerSideProps<StudioTestingPageProps> = getStudioTestingServerSideProps;
 
-export default StudioManualPage;
+export default DeviceFarmLiveTestingPage;
 
 const Box = styled.div`
   width: 100%;
