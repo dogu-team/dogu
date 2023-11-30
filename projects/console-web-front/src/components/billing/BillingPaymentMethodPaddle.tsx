@@ -1,13 +1,13 @@
 import { EditOutlined } from '@ant-design/icons';
 import { BillingPlanInfoBase } from '@dogu-private/console';
 import useTranslation from 'next-translate/useTranslation';
+import { PiPaypalLogo } from 'react-icons/pi';
 import styled from 'styled-components';
-import { shallow } from 'zustand/shallow';
 
 import { getUpdatePaymentMethodTransaction } from '../../api/billing';
 import usePaddle from '../../hooks/usePaddle';
+import useRequest from '../../hooks/useRequest';
 import useLicenseStore from '../../stores/license';
-import { flexRowSpaceBetweenStyle } from '../../styles/box';
 import { sendErrorNotification } from '../../utils/antd';
 
 interface Props {
@@ -18,6 +18,7 @@ const BillingPaymentMethodPaddle: React.FC<Props> = ({ plan }) => {
   const license = useLicenseStore((state) => state.license);
   const { t } = useTranslation();
   const { paddleRef, loading } = usePaddle();
+  const [requestLoading, request] = useRequest(getUpdatePaymentMethodTransaction);
 
   const handleClickEdit = async () => {
     if (!license) {
@@ -25,7 +26,7 @@ const BillingPaymentMethodPaddle: React.FC<Props> = ({ plan }) => {
     }
 
     try {
-      const rv = await getUpdatePaymentMethodTransaction(plan.billingPlanInfoId);
+      const rv = await request(plan.billingPlanInfoId);
       if (rv.status === 200 && rv.body) {
         paddleRef.current?.Checkout.open({
           settings: {
@@ -68,6 +69,23 @@ const BillingPaymentMethodPaddle: React.FC<Props> = ({ plan }) => {
 
         <div style={{ marginTop: '1rem' }}>
           <EditButton onClick={handleClickEdit} disabled={loading}>
+            <EditOutlined />
+            &nbsp;Edit payment method
+          </EditButton>
+        </div>
+      </div>
+    );
+  }
+
+  if (plan.paddleMethodType === 'paypal') {
+    return (
+      <div>
+        <div>
+          <PiPaypalLogo /> Paypal
+        </div>
+
+        <div style={{ marginTop: '1rem' }}>
+          <EditButton onClick={handleClickEdit} disabled={loading || requestLoading}>
             <EditOutlined />
             &nbsp;Edit payment method
           </EditButton>
