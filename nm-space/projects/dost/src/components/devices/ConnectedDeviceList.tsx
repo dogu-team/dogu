@@ -1,15 +1,16 @@
 import { CheckIcon, NotAllowedIcon } from '@chakra-ui/icons';
-import { Button, CircularProgress, HStack, List, ListItem, Spacer, Spinner, Text, Tooltip, UnorderedList, useToast } from '@chakra-ui/react';
+import { CircularProgress, HStack, IconButton, List, ListItem, Spacer, Spinner, Text, Tooltip, UnorderedList, useDisclosure, useToast } from '@chakra-ui/react';
 import { DeviceConnectionState, findDeviceModelNameByModelId, Platform, platformTypeFromPlatform } from '@dogu-private/types';
 import { stringify } from '@dogu-tech/common';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 import { DeviceConnectionSubscribeReceiveMessage } from '@dogu-tech/device-client-common';
+import { AiOutlineCode } from 'react-icons/ai';
 import { ipc } from '../../utils/window';
 import BorderBox from '../layouts/BorderBox';
 import DevicePlatformIcon from './DevicePlatformIcon';
-import { deviceLookupClientKey } from '../../shares/device-lookup';
+import { DeviceTokenAlert } from '../overlays/DeviceTokenAlert';
 
 function getConnectedDeviceByPlatform(messages: DeviceConnectionSubscribeReceiveMessage[]): { platform: Platform; count: number }[] {
   const platforms: { platform: Platform; count: number }[] = [];
@@ -30,18 +31,8 @@ function getConnectedDeviceByPlatform(messages: DeviceConnectionSubscribeReceive
 const ConnectedDeviceList = () => {
   const [deviceStatuses, setDeviceStatuses] = useState<DeviceConnectionSubscribeReceiveMessage[]>([]);
   const connectedDeviceByPlatforms = deviceStatuses.length > 5 ? getConnectedDeviceByPlatform(deviceStatuses) : [];
-  const toast = useToast();
-  const onClipboardCopy = (text: string) => {
-    ipc.settingsClient.writeTextToClipboard(text);
-    toast.closeAll();
-    toast({
-      title: 'Clipboard',
-      description: `Copied ${text} to clipboard`,
-      status: 'success',
-      duration: 1000,
-      isClosable: true,
-    });
-  };
+  const { isOpen: isDeviceTokenAlertOpen, onOpen: onDeviceTokenAlertOpen, onClose: onDeviceTokenAlertClose } = useDisclosure();
+  const [selectedSerial, setSelectedSerial] = useState<string>('');
 
   useEffect(() => {
     const reload = async () => {
@@ -100,9 +91,18 @@ const ConnectedDeviceList = () => {
                       </Text>
                     </Tooltip>
                     <Text fontSize="small">{device.model.length > 0 ? findDeviceModelNameByModelId(device.model) ?? device.model : device.serial}</Text>
-                    <Button colorScheme="teal" variant="link" fontSize="10px" fontWeight="light" textColor="CaptionText" onClick={() => onClipboardCopy(device.serial)}>
-                      ({device.serial})
-                    </Button>
+                    <Tooltip label="Create an environment variables.">
+                      <IconButton
+                        size="xs"
+                        icon={<AiOutlineCode />}
+                        aria-label={'device-code-icon'}
+                        background="transparent"
+                        onClick={() => {
+                          setSelectedSerial(device.serial);
+                          onDeviceTokenAlertOpen();
+                        }}
+                      />
+                    </Tooltip>
                   </HStack>
                   {0 < device.errorMessage.length && (
                     <UnorderedList>
@@ -116,6 +116,7 @@ const ConnectedDeviceList = () => {
           </List>
         </BorderBox>
       )}
+      <DeviceTokenAlert serial={selectedSerial} isOpen={isDeviceTokenAlertOpen} onClose={onDeviceTokenAlertClose} />
     </>
   );
 };

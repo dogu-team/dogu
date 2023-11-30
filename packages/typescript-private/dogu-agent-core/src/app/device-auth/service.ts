@@ -1,5 +1,5 @@
 import { DeviceAuthSubscribe } from '@dogu-private/dost-children';
-import { DeviceAdminToken, DOGU_DEVICE_AUTHORIZATION_HEADER_KEY } from '@dogu-private/types';
+import { DeviceAdminToken, DeviceTemporaryToken, DOGU_DEVICE_AUTHORIZATION_HEADER_KEY } from '@dogu-private/types';
 import { FilledPrintable, Instance, setAxiosErrorFilterToIntercepter, stringify } from '@dogu-tech/common';
 import { DeviceAuth } from '@dogu-tech/device-client-common';
 import axios, { AxiosInstance } from 'axios';
@@ -68,6 +68,26 @@ export class DeviceAuthService {
     });
   }
 
+  public async generateDeviceToken(serial: string): Promise<DeviceTemporaryToken> {
+    if (!this._deviceServerClient) {
+      throw new Error('Device server client is not initialized');
+    }
+
+    const pathProvider = new DeviceAuth.createToken.pathProvider(serial);
+    const path = DeviceAuth.createToken.resolvePath(pathProvider);
+    const request: Instance<typeof DeviceAuth.createToken.requestBody> = {};
+    const response = await this._deviceServerClient.post(path, request, {
+      headers: { [DOGU_DEVICE_AUTHORIZATION_HEADER_KEY]: this._adminToken.value },
+    });
+    const responseBody = response.data as Instance<typeof DeviceAuth.createToken.responseBody>;
+    const { value } = responseBody;
+    const { $case } = value;
+    if ($case === 'data' && value.data?.token) {
+      return value.data.token;
+    }
+    throw new Error(`Unexpected $case: ${stringify(value)}`);
+  }
+
   private async notifyRefreshToken(webSocket: WebSocket): Promise<void> {
     const { logger } = this;
     const beforeToken = this._adminToken;
@@ -76,11 +96,13 @@ export class DeviceAuthService {
       logger.error('Device server client is not initialized');
       return;
     }
+    const pathProvider = new DeviceAuth.refreshAdminToken.pathProvider();
+    const path = DeviceAuth.refreshAdminToken.resolvePath(pathProvider);
     const newToken = new DeviceAdminToken(uuidv4());
     const request: Instance<typeof DeviceAuth.refreshAdminToken.requestBody> = {
       newToken,
     };
-    await this._deviceServerClient.post(`${DeviceAuth.controller.path}${DeviceAuth.refreshAdminToken.path}`, request, {
+    await this._deviceServerClient.post(path, request, {
       headers: { [DOGU_DEVICE_AUTHORIZATION_HEADER_KEY]: beforeToken.value },
     });
 

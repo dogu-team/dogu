@@ -64,6 +64,10 @@ export class DeviceLookupService {
       });
       return ret;
     });
+
+    ipcMain.handle(deviceLookupClientKey.generateDeviceToken, async (_, serial: Serial) => {
+      return (await instance.authService.generateDeviceToken(serial)).value;
+    });
   }
 
   private async doReconnect(): Promise<boolean> {
