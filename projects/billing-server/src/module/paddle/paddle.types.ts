@@ -256,6 +256,21 @@ export namespace Paddle {
     updated_at?: string;
   }
 
+  export interface Business {
+    id?: string;
+    name?: string;
+    company_number?: string | null;
+    tax_identifier?: string | null;
+    status?: Status;
+    contacts?: {
+      name?: string;
+      email?: string;
+    }[];
+    created_at?: string;
+    updated_at?: string;
+    custom_data?: Record<string, unknown> | null;
+  }
+
   export interface Transaction {
     id?: string;
     customer_id?: string | null;

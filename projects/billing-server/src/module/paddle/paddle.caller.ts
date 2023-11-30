@@ -34,8 +34,18 @@ interface ListResult<T> {
   nextAfter: string | null;
 }
 
+export interface ListBusinessesOptions extends ListOptions {
+  customerId: string;
+}
+
+export interface UpdateBusinessOptions extends Omit<Paddle.Business, 'id' | 'created_at' | 'updated_at'> {
+  customerId: string;
+  businessId: string;
+}
+
 export type ListEventsResult = ListResult<Paddle.Event>;
 export type ListProductsResult = ListResult<Paddle.ProductWithPrices>;
+export type ListBusinessesResult = ListResult<Paddle.Business>;
 
 export interface ListProductsAllOptions {
   refresh: boolean;
@@ -128,6 +138,9 @@ export interface UpdateSubscriptionOptions {
 export interface GetUpdatePaymentMethodTransactionOptions {
   subscriptionId: string;
 }
+
+export type PauseSubscriptionOptions = GetSubscriptionOptions;
+export type ResumeSubscriptionOptions = GetSubscriptionOptions;
 
 export interface ListAddressesOptions extends ListOptions {
   customerId: string;
@@ -278,6 +291,46 @@ export class PaddleCaller {
 
     const customer = data ?? {};
     return customer;
+  }
+
+  /**
+   * @see https://developer.paddle.com/api-reference/businesses/list-businesses
+   */
+  async listBusinesses(options: ListBusinessesOptions): Promise<ListBusinessesResult> {
+    const { after, customerId } = options;
+    const path = `/customers/${customerId}/businesses`;
+    const query = {
+      order_by: 'id[ASC]',
+      per_page: 50,
+      after,
+    };
+
+    const response = await this.client.get<Paddle.Response<Paddle.Business[]>>(path, {
+      params: query,
+    });
+    return processPaddleListResponse(response.data, 'list businesses failed');
+  }
+
+  async listBusinessesAll(options: ListBusinessesOptions): Promise<Paddle.Business[]> {
+    return await this.listAll(options, async (options) => this.listBusinesses(options));
+  }
+
+  /**
+   * @see https://developer.paddle.com/api-reference/businesses/update-business
+   */
+  async updateBusiness(options: UpdateBusinessOptions): Promise<Paddle.Business> {
+    const { customerId, businessId, ...body } = options;
+    const path = `/customers/${customerId}/businesses/${businessId}`;
+
+    const response = await this.client.patch<Paddle.Response<Paddle.Business>>(path, body);
+    const { error, data, meta } = response.data;
+    const { request_id } = meta ?? {};
+    if (error) {
+      throw new PaddleCallError('update business failed', request_id, error);
+    }
+
+    const business = data ?? {};
+    return business;
   }
 
   /**
@@ -665,6 +718,42 @@ export class PaddleCaller {
 
     const transaction = data ?? {};
     return transaction;
+  }
+
+  /**
+   * @see https://developer.paddle.com/api-reference/subscriptions/pause-subscription
+   */
+  async pauseSubscription(options: PauseSubscriptionOptions): Promise<Paddle.Subscription> {
+    const { subscriptionId } = options;
+    const path = `/subscription/${subscriptionId}/pause`;
+
+    const response = await this.client.post<Paddle.Response<Paddle.Subscription>>(path);
+    const { error, data, meta } = response.data;
+    const { request_id } = meta ?? {};
+    if (error) {
+      throw new PaddleCallError('pause subscription failed', request_id, error);
+    }
+
+    const subscription = data ?? {};
+    return subscription;
+  }
+
+  /**
+   * @see https://developer.paddle.com/api-reference/subscriptions/resume-subscription
+   */
+  async resumeSubscription(options: ResumeSubscriptionOptions): Promise<Paddle.Subscription> {
+    const { subscriptionId } = options;
+    const path = `/subscription/${subscriptionId}/resume`;
+
+    const response = await this.client.post<Paddle.Response<Paddle.Subscription>>(path);
+    const { error, data, meta } = response.data;
+    const { request_id } = meta ?? {};
+    if (error) {
+      throw new PaddleCallError('resume subscription failed', request_id, error);
+    }
+
+    const subscription = data ?? {};
+    return subscription;
   }
 
   /**

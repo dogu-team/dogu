@@ -8,6 +8,7 @@ import {
   GetBillingPreviewResponse,
   GetUpdatePaymentMethodTransactionResponse,
   UpdateBillingAddressResponse,
+  UpdateBillingBusinessResponse,
   UpdateBillingMethodResponse,
   ValidateBillingCouponResponse,
 } from '@dogu-private/console';
@@ -109,6 +110,16 @@ export class BillingController {
     return await this.billingCaller.callBillingApi<UpdateBillingAddressResponse>({
       method: 'PATCH',
       path: 'billing/organizations/address',
+      body,
+    });
+  }
+
+  @Patch('/business')
+  @OrganizationPermission(ORGANIZATION_ROLE.ADMIN)
+  async updateBillingBusiness(@Body() body: object): Promise<CallBillingApiResponse<UpdateBillingBusinessResponse>> {
+    return await this.billingCaller.callBillingApi<UpdateBillingBusinessResponse>({
+      method: 'PATCH',
+      path: 'billing/organizations/business',
       body,
     });
   }

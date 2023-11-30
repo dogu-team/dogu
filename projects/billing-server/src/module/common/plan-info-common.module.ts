@@ -1,4 +1,4 @@
-import { BillingAddress, BillingMethodPaddleResponse, BillingOrganizationResponse, BillingPlanInfoResponse, BillingPlanType } from '@dogu-private/console';
+import { BillingAddress, BillingBusiness, BillingMethodPaddleResponse, BillingOrganizationResponse, BillingPlanInfoResponse, BillingPlanType } from '@dogu-private/console';
 import { assertUnreachable } from '@dogu-tech/common';
 import { BillingOrganization } from '../../db/entity/billing-organization.entity';
 import { BillingPlanInfo } from '../../db/entity/billing-plan-info.entity';
@@ -66,6 +66,7 @@ export class BillingOrganizationResponseBuilder {
     private readonly billingOrganization: BillingOrganization,
     private readonly paddleSubscriptions: Paddle.Subscription[],
     private readonly paddleAddresses: Paddle.Address[],
+    private readonly paddleBusinesses: Paddle.Business[],
   ) {}
 
   build(): BillingOrganizationResponse {
@@ -78,6 +79,7 @@ export class BillingOrganizationResponseBuilder {
 
     if (billingOrganization.billingMethodPaddle) {
       const billingMethodPaddle = billingOrganization.billingMethodPaddle as BillingMethodPaddleResponse;
+
       const paddleAddress = paddleAddresses[0];
       if (paddleAddress) {
         const address: BillingAddress = {
@@ -89,6 +91,15 @@ export class BillingOrganizationResponseBuilder {
           countryCode: paddleAddress.country_code ?? null,
         };
         billingMethodPaddle.address = address;
+      }
+
+      const paddleBusiness = this.paddleBusinesses[0];
+      if (paddleBusiness) {
+        const business: BillingBusiness = {
+          companyNumber: paddleBusiness.company_number ?? null,
+          taxIdentifier: paddleBusiness.tax_identifier ?? null,
+        };
+        billingMethodPaddle.business = business;
       }
     }
 

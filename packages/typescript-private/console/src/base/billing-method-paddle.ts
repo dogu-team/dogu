@@ -63,6 +63,27 @@ export interface BillingAddress {
 
 export type UpdateBillingAddressResponse = BillingAddress;
 
+export class UpdateBillingBusinessDto {
+  @IsUUID()
+  organizationId!: OrganizationId;
+
+  @IsString()
+  @IsOptional()
+  companyNumber?: string;
+
+  @IsString()
+  @IsOptional()
+  taxIdentifier?: string;
+}
+
+export interface BillingBusiness {
+  companyNumber: string | null;
+  taxIdentifier: string | null;
+}
+
+export type UpdateBillingBusinessResponse = BillingBusiness;
+
 export interface BillingMethodPaddleResponse extends BillingMethodPaddleBase {
   address?: BillingAddress;
+  business?: BillingBusiness;
 }

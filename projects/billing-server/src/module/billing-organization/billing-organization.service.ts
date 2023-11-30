@@ -1,4 +1,12 @@
-import { CreateBillingOrganizationDto, FindBillingOrganizationDto, UpdateBillingAddressDto, UpdateBillingAddressResponse, UpdateBillingEmailDto } from '@dogu-private/console';
+import {
+  CreateBillingOrganizationDto,
+  FindBillingOrganizationDto,
+  UpdateBillingAddressDto,
+  UpdateBillingAddressResponse,
+  UpdateBillingBusinessDto,
+  UpdateBillingBusinessResponse,
+  UpdateBillingEmailDto,
+} from '@dogu-private/console';
 import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
@@ -92,7 +100,16 @@ export class BillingOrganizationService {
         });
       }
 
-      const paddleAddress = await this.paddleCaller.updateAddress({ customerId, addressId, ...rest });
+      const paddleAddress = await this.paddleCaller.updateAddress({
+        customerId,
+        addressId,
+        first_line: rest.firstLine,
+        second_line: rest.secondLine,
+        city: rest.city,
+        postal_code: rest.postalCode,
+        region: rest.region,
+        country_code: rest.countryCode,
+      });
       return {
         firstLine: paddleAddress.first_line ?? null,
         secondLine: paddleAddress.second_line ?? null,
@@ -100,6 +117,55 @@ export class BillingOrganizationService {
         postalCode: paddleAddress.postal_code ?? null,
         region: paddleAddress.region ?? null,
         countryCode: paddleAddress.country_code ?? null,
+      };
+    });
+  }
+
+  async updateBillingBusiness(dto: UpdateBillingBusinessDto): Promise<UpdateBillingBusinessResponse> {
+    const { organizationId, ...rest } = dto;
+    return await this.retryTransaction.serializable(async (context) => {
+      const organization = await findBillingOrganization(context, { organizationId });
+      if (!organization) {
+        throw new NotFoundException({
+          reason: 'BillingOrganization not found',
+          organizationId,
+        });
+      }
+
+      if (!organization.billingMethodPaddle) {
+        throw new InternalServerErrorException({
+          reason: 'BillingMethodPaddle not found',
+          organizationId,
+        });
+      }
+
+      const { customerId } = organization.billingMethodPaddle;
+      const paddleBusinesses = await this.paddleCaller.listBusinessesAll({ customerId });
+      if (paddleBusinesses.length === 0) {
+        throw new InternalServerErrorException({
+          reason: 'PaddleBusiness not found',
+          customerId,
+        });
+      }
+
+      const firstBusiness = paddleBusinesses[0];
+      const { id: businessId } = firstBusiness;
+      if (!businessId) {
+        throw new InternalServerErrorException({
+          reason: 'PaddleBusiness id not found',
+          customerId,
+        });
+      }
+
+      const paddleBusiness = await this.paddleCaller.updateBusiness({
+        customerId,
+        businessId,
+        company_number: rest.companyNumber,
+        tax_identifier: rest.taxIdentifier,
+      });
+      return {
+        companyNumber: paddleBusiness.company_number ?? null,
+        taxIdentifier: paddleBusiness.tax_identifier ?? null,
       };
     });
   }
