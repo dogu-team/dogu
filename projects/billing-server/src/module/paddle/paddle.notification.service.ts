@@ -218,8 +218,9 @@ export class PaddleNotificationService {
     const cardName = card?.cardholder_name ?? null;
     const cardCode = card?.type ?? null;
     const paddleMethodType = method_details?.type ?? null;
+    const subscriptionId = subscription_id ?? null;
 
-    if (!subscription_id) {
+    if (!subscriptionId) {
       throw new BadRequestException({
         reason: 'subscription_id is empty',
         transaction,
@@ -259,7 +260,7 @@ export class PaddleNotificationService {
       }
     }
 
-    const subscription = await this.paddleCaller.getSubscription({ subscriptionId: subscription_id });
+    const subscription = await this.paddleCaller.getSubscription({ subscriptionId });
     const { current_billing_period } = subscription;
     const { starts_at, ends_at } = current_billing_period ?? {};
     if (!starts_at) {
@@ -356,6 +357,12 @@ export class PaddleNotificationService {
         planInfo.currency = planSource.currency;
       }
       planInfo = await manager.save(planInfo);
+      const { billingPlanInfoId } = planInfo;
+
+      const updatedSubscription = await this.paddleCaller.updateSubscription({
+        subscriptionId,
+        billingPlanInfoId,
+      });
 
       const createdHistory = manager.getRepository(BillingHistory).create({
         billingHistoryId: v4(),

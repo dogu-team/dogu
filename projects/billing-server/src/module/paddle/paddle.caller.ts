@@ -120,6 +120,11 @@ export interface GetSubscriptionOptions {
   subscriptionId: string;
 }
 
+export interface UpdateSubscriptionOptions {
+  subscriptionId: string;
+  billingPlanInfoId: string;
+}
+
 export interface GetUpdatePaymentMethodTransactionOptions {
   subscriptionId: string;
 }
@@ -615,6 +620,29 @@ export class PaddleCaller {
     const { request_id } = meta ?? {};
     if (error) {
       throw new PaddleCallError('get subscription failed', request_id, error);
+    }
+
+    const subscription = data ?? {};
+    return subscription;
+  }
+
+  /**
+   * @see https://developer.paddle.com/api-reference/subscriptions/update-subscription
+   */
+  async updateSubscription(options: UpdateSubscriptionOptions): Promise<Paddle.Subscription> {
+    const { subscriptionId, billingPlanInfoId } = options;
+    const path = `/subscriptions/${subscriptionId}`;
+    const body = {
+      custom_data: {
+        billingPlanInfoId,
+      },
+    };
+
+    const response = await this.client.patch<Paddle.Response<Paddle.Subscription>>(path, body);
+    const { error, data, meta } = response.data;
+    const { request_id } = meta ?? {};
+    if (error) {
+      throw new PaddleCallError('update subscription failed', request_id, error);
     }
 
     const subscription = data ?? {};
