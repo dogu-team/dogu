@@ -5,6 +5,7 @@ import { DeviceFindWindows } from '@dogu-tech/device-client-common';
 import { getChildProcessIds, getProcessesMapMacos } from '@dogu-tech/node';
 import { IncomingMessage } from 'http';
 import WebSocket from 'ws';
+import { AuthIncomingMessage, DeviceWsPermission } from '../../auth/guard/device.ws.guard';
 import { DoguLogger } from '../../logger/logger';
 import { ScanService } from '../../scan/scan.service';
 
@@ -20,11 +21,15 @@ export class DeviceFindWindowsService
   extends WebSocketGatewayBase<Value, typeof DeviceFindWindows.sendMessage, typeof DeviceFindWindows.receiveMessage>
   implements OnWebSocketMessage<Value, typeof DeviceFindWindows.sendMessage, typeof DeviceFindWindows.receiveMessage>, OnWebSocketClose<Value>
 {
-  constructor(private readonly scanService: ScanService, private readonly logger: DoguLogger) {
+  constructor(
+    private readonly scanService: ScanService,
+    private readonly logger: DoguLogger,
+  ) {
     super(DeviceFindWindows, logger);
   }
 
-  override onWebSocketOpen(webSocket: WebSocket, incommingMessage: IncomingMessage): Value {
+  @DeviceWsPermission()
+  override onWebSocketOpen(webSocket: WebSocket, @AuthIncomingMessage() incommingMessage: IncomingMessage): Value {
     return { serial: '', parentPid: 0, timer: null, updateGuard: new DuplicatedCallGuarder() };
   }
 

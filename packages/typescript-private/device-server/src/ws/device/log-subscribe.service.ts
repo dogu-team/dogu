@@ -4,6 +4,7 @@ import { DeviceLogSubscribe } from '@dogu-tech/device-client-common';
 import { DateNano } from '@dogu-tech/node';
 import { IncomingMessage } from 'http';
 import WebSocket from 'ws';
+import { AuthIncomingMessage, DeviceWsPermission } from '../../auth/guard/device.ws.guard';
 import { DoguLogger } from '../../logger/logger';
 import { ScanService } from '../../scan/scan.service';
 
@@ -16,11 +17,15 @@ export class DeviceLogSubscribeService
   extends WebSocketGatewayBase<Value, typeof DeviceLogSubscribe.sendMessage, typeof DeviceLogSubscribe.receiveMessage>
   implements OnWebSocketClose<Value>, OnWebSocketMessage<Value, typeof DeviceLogSubscribe.sendMessage, typeof DeviceLogSubscribe.receiveMessage>
 {
-  constructor(private readonly scanService: ScanService, private readonly logger: DoguLogger) {
+  constructor(
+    private readonly scanService: ScanService,
+    private readonly logger: DoguLogger,
+  ) {
     super(DeviceLogSubscribe, logger);
   }
 
-  override onWebSocketOpen(webSocket: WebSocket, incommingMessage: IncomingMessage): Value {
+  @DeviceWsPermission()
+  override onWebSocketOpen(webSocket: WebSocket, @AuthIncomingMessage() incommingMessage: IncomingMessage): Value {
     return {
       closer: null,
     };

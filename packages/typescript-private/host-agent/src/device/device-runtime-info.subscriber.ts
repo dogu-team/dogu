@@ -38,11 +38,7 @@ export class DeviceRuntimeInfoSubscriber {
   }
 
   private subscribeRuntimeInfo(organizationId: OrganizationId, deviceId: DeviceId, serial: Serial): WebSocket {
-    const webSocket = new WebSocket(`ws://${env.DOGU_DEVICE_SERVER_HOST_PORT}${DeviceRuntimeInfoSubscribe.path}`, {
-      headers: {
-        Authorization: `Custom ${this.authService.adminToken.value}`,
-      },
-    });
+    const webSocket = new WebSocket(`ws://${env.DOGU_DEVICE_SERVER_HOST_PORT}${DeviceRuntimeInfoSubscribe.path}`, { headers: this.authService.makeAuthHeader() });
     webSocket.on('open', () => {
       this.logger.debug('deviceRuntimeInfoSubscribe.open');
       const sendMessage: Instance<typeof DeviceRuntimeInfoSubscribe.sendMessage> = {

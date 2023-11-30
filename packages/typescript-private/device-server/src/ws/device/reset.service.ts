@@ -3,6 +3,7 @@ import { closeWebSocketWithTruncateReason, delay, errorify, Instance } from '@do
 import { DeviceReset } from '@dogu-tech/device-client-common';
 import { IncomingMessage } from 'http';
 import WebSocket from 'ws';
+import { AuthIncomingMessage, DeviceWsPermission } from '../../auth/guard/device.ws.guard';
 import { DoguLogger } from '../../logger/logger';
 import { ScanService } from '../../scan/scan.service';
 
@@ -11,11 +12,15 @@ export class DeviceResetService
   extends WebSocketGatewayBase<null, typeof DeviceReset.sendMessage, typeof DeviceReset.receiveMessage>
   implements OnWebSocketMessage<null, typeof DeviceReset.sendMessage, typeof DeviceReset.receiveMessage>
 {
-  constructor(private readonly logger: DoguLogger, private readonly scanService: ScanService) {
+  constructor(
+    private readonly logger: DoguLogger,
+    private readonly scanService: ScanService,
+  ) {
     super(DeviceReset, logger);
   }
 
-  override onWebSocketOpen(webSocket: WebSocket, incommingMessage: IncomingMessage): null {
+  @DeviceWsPermission()
+  override onWebSocketOpen(webSocket: WebSocket, @AuthIncomingMessage() incommingMessage: IncomingMessage): null {
     return null;
   }
 

@@ -4,6 +4,7 @@ import { DeviceRunApp } from '@dogu-tech/device-client-common';
 import { DateNano } from '@dogu-tech/node';
 import { IncomingMessage } from 'http';
 import WebSocket from 'ws';
+import { AuthIncomingMessage, DeviceWsPermission } from '../../auth/guard/device.ws.guard';
 import { DoguLogger } from '../../logger/logger';
 import { ScanService } from '../../scan/scan.service';
 
@@ -12,11 +13,15 @@ export class DeviceRunAppService
   extends WebSocketGatewayBase<null, typeof DeviceRunApp.sendMessage, typeof DeviceRunApp.receiveMessage>
   implements OnWebSocketMessage<null, typeof DeviceRunApp.sendMessage, typeof DeviceRunApp.receiveMessage>
 {
-  constructor(private readonly scanService: ScanService, private readonly logger: DoguLogger) {
+  constructor(
+    private readonly scanService: ScanService,
+    private readonly logger: DoguLogger,
+  ) {
     super(DeviceRunApp, logger);
   }
 
-  override onWebSocketOpen(webSocket: WebSocket, incommingMessage: IncomingMessage): null {
+  @DeviceWsPermission()
+  override onWebSocketOpen(webSocket: WebSocket, @AuthIncomingMessage() incommingMessage: IncomingMessage): null {
     return null;
   }
 

@@ -4,6 +4,7 @@ import { closeWebSocketWithTruncateReason, Instance } from '@dogu-tech/common';
 import { DeviceRecording } from '@dogu-tech/device-client-common';
 import { IncomingMessage } from 'http';
 import WebSocket from 'ws';
+import { AuthIncomingMessage, DeviceWsPermission } from '../../auth/guard/device.ws.guard';
 import { DoguLogger } from '../../logger/logger';
 import { ScanService } from '../../scan/scan.service';
 
@@ -18,11 +19,15 @@ export class DeviceRecordingService
   extends WebSocketGatewayBase<Value, typeof DeviceRecording.sendMessage, typeof DeviceRecording.receiveMessage>
   implements OnWebSocketMessage<Value, typeof DeviceRecording.sendMessage, typeof DeviceRecording.receiveMessage>, OnWebSocketClose<Value>
 {
-  constructor(private readonly scanService: ScanService, private readonly logger: DoguLogger) {
+  constructor(
+    private readonly scanService: ScanService,
+    private readonly logger: DoguLogger,
+  ) {
     super(DeviceRecording, logger);
   }
 
-  override onWebSocketOpen(webSocket: WebSocket, incommingMessage: IncomingMessage): Value {
+  @DeviceWsPermission()
+  override onWebSocketOpen(webSocket: WebSocket, @AuthIncomingMessage() incommingMessage: IncomingMessage): Value {
     return { serial: '', filePath: '', isRecording: false };
   }
 

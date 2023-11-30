@@ -1,3 +1,4 @@
+import { Inject } from '@nestjs/common';
 import { IncomingMessage } from 'http';
 import { AuthService } from '../auth.service';
 
@@ -12,17 +13,25 @@ export function AuthIncomingMessage(): ParameterDecorator {
   };
 }
 
+/*
+ * @caution This decorator injects AuthService to the class instance. so you should have dependency to AuthModule in your module.
+ * Use This decorator with AuthIncomingMessage parameter decorator.
+ */
 export function DeviceWsPermission(): MethodDecorator {
+  const injectAuthService = Inject(AuthService);
+
   // eslint-disable-next-line @typescript-eslint/ban-types
   return (target: object, propertyKey: string | symbol, descriptor: PropertyDescriptor): void => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const method = descriptor.value;
 
+    injectAuthService(target, '__authService');
+
     descriptor.value = function (): unknown {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      const authService = this.authService as AuthService;
+      const authService = this.__authService as AuthService;
 
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const paramIndexes: number[] = Reflect.getOwnMetadata(AuthIncomingMessageDecoratorKey, target, propertyKey);

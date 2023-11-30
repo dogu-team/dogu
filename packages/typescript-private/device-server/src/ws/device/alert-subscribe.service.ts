@@ -4,6 +4,7 @@ import { delay, DuplicatedCallGuarder, Instance, stringify, SyncClosable } from 
 import { DeviceAlertSubscribe, DeviceAlertSubscribeReceiveMessageValue } from '@dogu-tech/device-client-common';
 import { IncomingMessage } from 'http';
 import WebSocket from 'ws';
+import { AuthIncomingMessage, DeviceWsPermission } from '../../auth/guard/device.ws.guard';
 import { DoguLogger } from '../../logger/logger';
 import { ScanService } from '../../scan/scan.service';
 
@@ -23,7 +24,8 @@ export class DeviceAlertSubscribeService
     super(DeviceAlertSubscribe, logger);
   }
 
-  override onWebSocketOpen(webSocket: WebSocket, incommingMessage: IncomingMessage): Value {
+  @DeviceWsPermission()
+  override onWebSocketOpen(webSocket: WebSocket, @AuthIncomingMessage() incommingMessage: IncomingMessage): Value {
     return {
       closer: null,
     };

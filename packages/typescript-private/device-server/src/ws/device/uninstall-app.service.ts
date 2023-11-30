@@ -4,6 +4,7 @@ import { DeviceUninstallApp } from '@dogu-tech/device-client-common';
 import { DateNano } from '@dogu-tech/node';
 import { IncomingMessage } from 'http';
 import WebSocket from 'ws';
+import { AuthIncomingMessage, DeviceWsPermission } from '../../auth/guard/device.ws.guard';
 import { DoguLogger } from '../../logger/logger';
 import { ScanService } from '../../scan/scan.service';
 
@@ -12,11 +13,15 @@ export class DeviceUninstallAppService
   extends WebSocketGatewayBase<null, typeof DeviceUninstallApp.sendMessage, typeof DeviceUninstallApp.receiveMessage>
   implements OnWebSocketMessage<null, typeof DeviceUninstallApp.sendMessage, typeof DeviceUninstallApp.receiveMessage>
 {
-  constructor(private readonly scanService: ScanService, private readonly logger: DoguLogger) {
+  constructor(
+    private readonly scanService: ScanService,
+    private readonly logger: DoguLogger,
+  ) {
     super(DeviceUninstallApp, logger);
   }
 
-  override onWebSocketOpen(webSocket: WebSocket, incommingMessage: IncomingMessage): null {
+  @DeviceWsPermission()
+  override onWebSocketOpen(webSocket: WebSocket, @AuthIncomingMessage() incommingMessage: IncomingMessage): null {
     return null;
   }
 

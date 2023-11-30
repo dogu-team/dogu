@@ -5,6 +5,7 @@ import { DeviceForward } from '@dogu-tech/device-client-common';
 import { DateNano } from '@dogu-tech/node';
 import { IncomingMessage } from 'http';
 import WebSocket from 'ws';
+import { AuthIncomingMessage, DeviceWsPermission } from '../../auth/guard/device.ws.guard';
 import { DoguLogger } from '../../logger/logger';
 import { ScanService } from '../../scan/scan.service';
 
@@ -18,11 +19,15 @@ export class DeviceForwardService
   extends WebSocketGatewayBase<Value, typeof DeviceForward.sendMessage, typeof DeviceForward.receiveMessage>
   implements OnWebSocketMessage<Value, typeof DeviceForward.sendMessage, typeof DeviceForward.receiveMessage>, OnWebSocketClose<Value>
 {
-  constructor(private readonly scanService: ScanService, private readonly logger: DoguLogger) {
+  constructor(
+    private readonly scanService: ScanService,
+    private readonly logger: DoguLogger,
+  ) {
     super(DeviceForward, logger);
   }
 
-  override onWebSocketOpen(webSocket: WebSocket, incommingMessage: IncomingMessage): Value {
+  @DeviceWsPermission()
+  override onWebSocketOpen(webSocket: WebSocket, @AuthIncomingMessage() incommingMessage: IncomingMessage): Value {
     return { serial: '', hostPort: 0 };
   }
 

@@ -10,13 +10,12 @@ import { LogsPath } from '../path-map';
 export class ChildService {
   static instance: ChildService;
 
-  static open(appConfigService: AppConfigService, featureConfigService: FeatureConfigService, externalService: ExternalService) {
+  static open(appConfigService: AppConfigService, featureConfigService: FeatureConfigService, externalService: ExternalService, authService: DeviceAuthService) {
     const listener = {
       onStdout: () => {},
       onStderr: () => {},
       onClose: () => {},
     };
-    const authService = new DeviceAuthService(logger);
 
     const impl = new ChildServiceFactory({
       appConfigService: appConfigService.impl,

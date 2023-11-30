@@ -15,6 +15,12 @@ export class DeviceAuthService {
     return this._adminToken;
   }
 
+  makeAuthHeader(): { Authorization: string } {
+    return {
+      Authorization: `Custom ${this._adminToken.value}`,
+    };
+  }
+
   validate(value: string): boolean {
     if (value !== this._adminToken.value) {
       return false;

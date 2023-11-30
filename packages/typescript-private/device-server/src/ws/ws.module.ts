@@ -10,7 +10,6 @@ import { DeviceConnectionSubscribeService } from './device/connection-subscribe.
 import { DeviceFindWindowsService } from './device/find-windows.service';
 import { DeviceForwardService } from './device/forward.service';
 import { DeviceInstallAppService } from './device/install-app.service';
-import { DeviceJoinWifiService } from './device/join-wifi.service';
 import { DeviceLogSubscribeService } from './device/log-subscribe.service';
 import { DeviceRecordingService } from './device/recording.service';
 import { DeviceResetService } from './device/reset.service';
@@ -35,7 +34,6 @@ import { DeviceWebSocketRelayService } from './device/websocket-relay.service';
     DeviceUninstallAppService,
     DeviceRecordingService,
     DeviceResetService,
-    DeviceJoinWifiService,
     DeviceWebSocketRelayService,
     DeviceTcpRelayService,
     DeviceRunAppiumServerService,
