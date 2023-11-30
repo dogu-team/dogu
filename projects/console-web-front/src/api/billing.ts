@@ -10,6 +10,10 @@ import {
   GetBillingPrecheckoutDto,
   GetBillingPrecheckoutResponse,
   GetUpdatePaymentMethodTransactionResponse,
+  UpdateBillingAddressDto,
+  UpdateBillingAddressResponse,
+  UpdateBillingBusinessDto,
+  UpdateBillingBusinessResponse,
   UpdateBillingMethodResponse,
   UpdateBillingPlanInfoStateDto,
   UpdateMethodNiceDto,
@@ -108,6 +112,20 @@ export const precheckoutPurchase = async (
       params: dto,
     },
   );
+  return data;
+};
+
+export const updatePaddleAddress = async (
+  dto: UpdateBillingAddressDto,
+): Promise<CallBillingApiResponse<UpdateBillingAddressResponse>> => {
+  const { data } = await api.patch<CallBillingApiResponse<UpdateBillingAddressResponse>>('/billing/address', dto);
+  return data;
+};
+
+export const updatePaddleBusiness = async (
+  dto: UpdateBillingBusinessDto,
+): Promise<CallBillingApiResponse<UpdateBillingBusinessResponse>> => {
+  const { data } = await api.patch<CallBillingApiResponse<UpdateBillingBusinessResponse>>('/billing/business', dto);
   return data;
 };
 

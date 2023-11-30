@@ -8382,6 +8382,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/iso-3166-1-alpha-2@npm:^1":
+  version: 1.0.2
+  resolution: "@types/iso-3166-1-alpha-2@npm:1.0.2"
+  checksum: 435827b6a099a00475bebb22575b83d5d761c2b5d47a9196de031c3c5ece1e79905ebcf40f36769000b4ca2332498044f3c41d15274785650b9072e54d0f4267
+  languageName: node
+  linkType: hard
+
 "@types/istanbul-lib-coverage@npm:*, @types/istanbul-lib-coverage@npm:^2.0.0, @types/istanbul-lib-coverage@npm:^2.0.1":
   version: 2.0.4
   resolution: "@types/istanbul-lib-coverage@npm:2.0.4"
@@ -13520,6 +13527,7 @@ __metadata:
     "@swc/core": 1.2.220
     "@types/cookie": 0.5.1
     "@types/hoist-non-react-statics": 3.3.1
+    "@types/iso-3166-1-alpha-2": ^1
     "@types/lodash": 4.14.186
     "@types/node": 18.15.11
     "@types/nprogress": 0.2.0
@@ -13555,6 +13563,7 @@ __metadata:
     flatbuffers: 22.10.26
     gamium: 2.0.2
     hoist-non-react-statics: 3.3.2
+    iso-3166-1-alpha-2: ^1.0.1
     lodash: 4.17.21
     moment: 2.29.4
     monaco-editor: 0.36.1
@@ -19482,6 +19491,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"iso-3166-1-alpha-2@npm:^1.0.1":
+  version: 1.0.1
+  resolution: "iso-3166-1-alpha-2@npm:1.0.1"
+  dependencies:
+    mout: ^1.2.3
+  checksum: b8932aa55fe26568c136df053fa3a5d7858778ca32b95bab9c4a773f932327e4d5a7cf9f69627e720232ecc91550e75009961861584853c5014427c56f753810
+  languageName: node
+  linkType: hard
+
 "isobject@npm:^2.0.0":
   version: 2.1.0
   resolution: "isobject@npm:2.1.0"
@@ -24163,6 +24181,13 @@ __metadata:
   version: 0.36.1
   resolution: "monaco-editor@npm:0.36.1"
   checksum: 75e7cfbe03b4cb964e550c8021d6b2cc4f5265ee17703ddda7a63a26492a95fdbfaf34aa3e50004930ff8afb1422ae2b1dc0b9d3f122d558bdf1a335403937fd
+  languageName: node
+  linkType: hard
+
+"mout@npm:^1.2.3":
+  version: 1.2.4
+  resolution: "mout@npm:1.2.4"
+  checksum: 761801ab6616cea1a7f3c2082d1e2fb0b984898cc92117c70f34aab104723285eadf03545b5e092d44a17d6cfbd367a005064d7b23a8517ee4f6b77a8d345561
   languageName: node
   linkType: hard
 

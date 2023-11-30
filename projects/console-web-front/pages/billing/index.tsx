@@ -8,6 +8,8 @@ import styled from 'styled-components';
 
 import { getLicenseInServerSide } from '../../enterprise/api/license';
 import BillingHistoryList from '../../src/components/billing/BillingHistoryList';
+import BillingPaddleAddress from '../../src/components/billing/BillingPaddleAddress';
+import BillingPaddleBusiness from '../../src/components/billing/BillingPaddleBusiness';
 import BillingPaymentMethodNice from '../../src/components/billing/BillingPaymentMethodNice';
 import BillingPaymentMethodPaddle from '../../src/components/billing/BillingPaymentMethodPaddle';
 import BillingSubscribedPlanList from '../../src/components/billing/BillingSubscribedPlanList';
@@ -67,7 +69,11 @@ const BillingPage: NextPageWithLayout<BillingPageProps> = ({ me, license }) => {
         {!!license.billingOrganization.billingMethod !== null && (
           <Content>
             <TitleWrapper>
-              <ContentTitle>{t('billingPaymentMethodTitle')}</ContentTitle>
+              <ContentTitle>
+                {license.billingOrganization.billingMethod === 'nice'
+                  ? t('billingPaymentMethodTitle')
+                  : 'Billing information'}
+              </ContentTitle>
             </TitleWrapper>
             <ContentInner>
               {license.billingOrganization.billingMethod === 'nice' ? (
@@ -76,11 +82,16 @@ const BillingPage: NextPageWithLayout<BillingPageProps> = ({ me, license }) => {
                   organizationId={license.organizationId as OrganizationId}
                 />
               ) : (
-                <div>For change payment method for plan, click menu button of each plan.</div>
-                // <BillingPaymentMethodPaddle
-                //   method={license.billingOrganization.billingMethodPaddle!}
-                //   organizationId={license.organizationId as OrganizationId}
-                // />
+                <div>
+                  <p style={{ fontSize: '.8rem', color: '#777' }}>
+                    * For change payment method for plan, click menu button of each plan.
+                  </p>
+
+                  <BillingInfoWrapper>
+                    <BillingPaddleAddress />
+                    <BillingPaddleBusiness />
+                  </BillingInfoWrapper>
+                </div>
               )}
             </ContentInner>
           </Content>
@@ -158,4 +169,10 @@ const ContentTitle = styled.h3`
 
 const ContentInner = styled.div`
   font-size: 0.9rem;
+`;
+
+const BillingInfoWrapper = styled.div`
+  display: flex;
+  margin-top: 0.5rem;
+  gap: 2rem;
 `;
