@@ -24,6 +24,7 @@ export class DeviceClient extends DeviceHttpClient {
   private subscribe<S extends Class<S>, R>(
     spec: WebSocketSpec<S, R>,
     query: Record<string, unknown> | undefined,
+    serial: Serial,
     onOpen: (deviceWebSocket: DeviceWebSocket) => void,
     onMessage: (message: string) => void,
   ): Promise<DeviceCloser> {
@@ -35,6 +36,7 @@ export class DeviceClient extends DeviceHttpClient {
           path,
           query,
         },
+        serial,
         this.options,
         {
           onOpen() {
@@ -87,6 +89,7 @@ export class DeviceClient extends DeviceHttpClient {
       this.subscribe(
         DeviceForward,
         undefined,
+        serial,
         (deviceServerWebSocket) => {
           const sendMessage: Instance<typeof DeviceForward.sendMessage> = {
             serial,
@@ -153,6 +156,7 @@ export class DeviceClient extends DeviceHttpClient {
       this.subscribe(
         DeviceRunAppiumServer,
         undefined,
+        serial,
         (deviceServerWebSocket) => {
           const sendMessage: Instance<typeof DeviceRunAppiumServer.sendMessage> = {
             serial,

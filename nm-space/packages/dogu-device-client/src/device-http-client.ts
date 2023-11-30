@@ -4,13 +4,17 @@ import { PathProviderType as PathProviderType_ } from './common/specs.js';
 import { Class, Instance } from './common/types.js';
 import { DeviceServerControllerMethodSpec } from './specs/types.js';
 import { Body } from './types/http-ws.js';
+import { DOGU_DEVICE_AUTHORIZATION_HEADER_KEY, Headers } from './types/types.js';
 import { transformAndValidate } from './validations/functions.js';
 import { DeviceServerResponseDto } from './validations/types/responses.js';
 
 export class DeviceHttpClient {
   protected readonly options: Required<DeviceClientOptions>;
 
-  constructor(protected readonly deviceService: DeviceService, options?: DeviceClientOptions) {
+  constructor(
+    protected readonly deviceService: DeviceService,
+    options?: DeviceClientOptions,
+  ) {
     this.options = fillDeviceClientOptions(options);
   }
 
@@ -29,6 +33,12 @@ export class DeviceHttpClient {
   ): Promise<Instance<ResponseBodyDataType>> {
     const path = httpSpec.resolvePath(pathProvider);
     const method = httpSpec.method;
+    const headers: Headers = {
+      values: [{ key: DOGU_DEVICE_AUTHORIZATION_HEADER_KEY, value: this.options.token }],
+    };
+    if (requestBody) {
+      headers.values.push({ key: 'Content-Type', value: 'application/json' });
+    }
     const body: Body | undefined = requestBody
       ? {
           value: {

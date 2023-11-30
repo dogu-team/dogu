@@ -1,8 +1,9 @@
 import { Type } from 'class-transformer';
-import { IsNumber, IsObject } from 'class-validator';
+import { IsNumber, IsObject, IsString } from 'class-validator';
 import { ConsoleLogger, Printable } from './common/logs.js';
 import { PromiseOrValue } from './common/types.js';
 import { HttpRequest, HttpResponse, WebSocketCloseEvent, WebSocketConnection, WebSocketErrorEvent, WebSocketMessageEvent, WebSocketOpenEvent } from './types/http-ws.js';
+import { Serial } from './types/types.js';
 import { fillOptionsSync } from './validations/functions.js';
 
 export interface DeviceWebSocketListener {
@@ -38,6 +39,9 @@ export class DeviceClientOptions {
   @IsNumber()
   @Type(() => Number)
   timeout?: number;
+
+  @IsString()
+  token?: string;
 }
 
 export function fillDeviceClientOptions(options?: DeviceClientOptions): Required<DeviceClientOptions> {
@@ -47,6 +51,7 @@ export function fillDeviceClientOptions(options?: DeviceClientOptions): Required
       port: 0,
       printable: ConsoleLogger.instance,
       timeout: 60000,
+      token: '',
     },
     options,
   );
@@ -54,7 +59,7 @@ export function fillDeviceClientOptions(options?: DeviceClientOptions): Required
 
 export interface DeviceService {
   httpRequest(request: HttpRequest, options: Required<DeviceClientOptions>): PromiseOrValue<HttpResponse>;
-  connectWebSocket(connection: WebSocketConnection, options: Required<DeviceClientOptions>, listener?: DeviceWebSocketListener): DeviceWebSocket;
+  connectWebSocket(connection: WebSocketConnection, serial: Serial | undefined, options: Required<DeviceClientOptions>, listener?: DeviceWebSocketListener): DeviceWebSocket;
 }
 
 export class DeviceCloser {

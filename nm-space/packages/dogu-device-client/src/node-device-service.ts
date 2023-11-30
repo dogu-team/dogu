@@ -6,12 +6,16 @@ import { stringify } from './common/functions.js';
 import { closeWebSocketWithTruncateReason } from './common/http-ws.js';
 import { FilledPrintable, PrefixLogger, Printable } from './common/logs.js';
 import { Headers, HeaderValue, HttpRequest, HttpResponse, WebSocketConnection } from './types/http-ws.js';
+import { DOGU_DEVICE_AUTHORIZATION_HEADER_KEY, DOGU_DEVICE_SERIAL_HEADER_KEY, Serial } from './types/types.js';
 import { DeviceServerResponseDto } from './validations/types/responses.js';
 
 export class NodeDeviceWebSocket implements DeviceWebSocket {
   private readonly logger: FilledPrintable;
 
-  constructor(private readonly webSocket: WebSocket, printable: Printable) {
+  constructor(
+    private readonly webSocket: WebSocket,
+    printable: Printable,
+  ) {
     this.logger = new PrefixLogger(printable, '[NodeDeviceWebSocket]');
   }
 
@@ -116,12 +120,17 @@ export class NodeDeviceService implements DeviceService {
     return returningResponse;
   }
 
-  connectWebSocket(connection: WebSocketConnection, options: Required<DeviceClientOptions>, listener?: DeviceWebSocketListener): DeviceWebSocket {
+  connectWebSocket(connection: WebSocketConnection, serial: Serial | undefined, options: Required<DeviceClientOptions>, listener?: DeviceWebSocketListener): DeviceWebSocket {
     const { port, printable } = options;
     const logger = new PrefixLogger(printable, '[NodeDeviceService.connectWebSocket]');
     const { path } = connection;
     const url = `ws://127.0.0.1:${port}${path}`;
-    const webSocket = new WebSocket(url);
+    const webSocket = new WebSocket(url, {
+      headers: {
+        [DOGU_DEVICE_AUTHORIZATION_HEADER_KEY]: options.token,
+        [DOGU_DEVICE_SERIAL_HEADER_KEY]: serial,
+      },
+    });
     webSocket.on('open', () => {
       logger.verbose('open', { url });
       listener?.onOpen?.({});
