@@ -340,6 +340,8 @@ export class PaddleNotificationService {
           currency: planSource.currency,
         });
       } else {
+        planInfo.billingOrganizationId = billingOrganizationId;
+        planInfo.billingPlanSourceId = billingPlanSourceId;
         planInfo.billingCouponId = billingCouponId;
         planInfo.discountedAmount = discountedAmount;
         planInfo.state = 'subscribed';
