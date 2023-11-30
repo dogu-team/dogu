@@ -42,7 +42,7 @@ export class SelfHostedLicenseService {
       throw new InternalServerErrorException(`Self-hosted license does not have a billing organization. organizationId: ${dto.organizationId}`);
     }
 
-    const builder = new BillingOrganizationResponseBuilder(selfHostedLicense.billingOrganization, []);
+    const builder = new BillingOrganizationResponseBuilder(selfHostedLicense.billingOrganization, [], []);
     selfHostedLicense.billingOrganization = builder.build();
     const selfHostedLicenseResponse = selfHostedLicense as SelfHostedLicenseResponse;
     return selfHostedLicenseResponse;

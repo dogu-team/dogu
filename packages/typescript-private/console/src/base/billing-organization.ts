@@ -1,7 +1,7 @@
 import { propertiesOf } from '@dogu-tech/common';
 import { Type } from 'class-transformer';
 import { IsIn, IsUUID, ValidateNested } from 'class-validator';
-import { BillingMethodPaddleBase } from '..';
+import { BillingMethodPaddleBase, BillingMethodPaddleResponse } from '..';
 import { BillingCategory, BillingCurrency, BillingMethod } from './billing';
 import { BillingMethodNiceBase } from './billing-method-nice';
 import { BillingPlanInfoBase, BillingPlanInfoResponse } from './billing-plan-info';
@@ -62,4 +62,5 @@ export class CreateOrUpdateBillingOrganizationWithNiceDto {
 
 export interface BillingOrganizationResponse extends BillingOrganizationBase {
   billingPlanInfos: BillingPlanInfoResponse[];
+  billingMethodPaddle: BillingMethodPaddleResponse;
 }

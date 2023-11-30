@@ -1,4 +1,4 @@
-import { BillingOrganizationResponse, BillingPlanInfoResponse, BillingPlanType } from '@dogu-private/console';
+import { BillingAddress, BillingMethodPaddleResponse, BillingOrganizationResponse, BillingPlanInfoResponse, BillingPlanType } from '@dogu-private/console';
 import { assertUnreachable } from '@dogu-tech/common';
 import { BillingOrganization } from '../../db/entity/billing-organization.entity';
 import { BillingPlanInfo } from '../../db/entity/billing-plan-info.entity';
@@ -65,15 +65,33 @@ export class BillingOrganizationResponseBuilder {
   constructor(
     private readonly billingOrganization: BillingOrganization,
     private readonly paddleSubscriptions: Paddle.Subscription[],
+    private readonly paddleAddresses: Paddle.Address[],
   ) {}
 
   build(): BillingOrganizationResponse {
-    const { billingOrganization, paddleSubscriptions } = this;
+    const { billingOrganization, paddleSubscriptions, paddleAddresses } = this;
     const planInfoResponseBuilder = new BillingPlanInfoResponseBuilder(billingOrganization, paddleSubscriptions);
     const billingPlanInfos = billingOrganization.billingPlanInfos ?? [];
     billingOrganization.billingPlanInfos = billingPlanInfos.map((planInfo) => {
       return planInfoResponseBuilder.build(planInfo);
     });
+
+    if (billingOrganization.billingMethodPaddle) {
+      const billingMethodPaddle = billingOrganization.billingMethodPaddle as BillingMethodPaddleResponse;
+      const paddleAddress = paddleAddresses[0];
+      if (paddleAddress) {
+        const address: BillingAddress = {
+          firstLine: paddleAddress.first_line ?? null,
+          secondLine: paddleAddress.second_line ?? null,
+          city: paddleAddress.city ?? null,
+          postalCode: paddleAddress.postal_code ?? null,
+          region: paddleAddress.region ?? null,
+          countryCode: paddleAddress.country_code ?? null,
+        };
+        billingMethodPaddle.address = address;
+      }
+    }
+
     return billingOrganization as BillingOrganizationResponse;
   }
 }

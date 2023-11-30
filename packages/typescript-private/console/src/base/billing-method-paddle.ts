@@ -52,11 +52,17 @@ export class UpdateBillingAddressDto {
   countryCode?: string;
 }
 
-export interface UpdateBillingAddressResponse {
+export interface BillingAddress {
   firstLine: string | null;
   secondLine: string | null;
   city: string | null;
   postalCode: string | null;
   region: string | null;
   countryCode: string | null;
+}
+
+export type UpdateBillingAddressResponse = BillingAddress;
+
+export interface BillingMethodPaddleResponse extends BillingMethodPaddleBase {
+  address?: BillingAddress;
 }

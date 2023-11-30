@@ -84,7 +84,10 @@ export class CloudLicenseService {
     const paddleSubscriptions = await this.paddleCaller.listSubscriptionsAll({
       customerId: cloudLicense.billingOrganization.billingMethodPaddle.customerId,
     });
-    const builder = new BillingOrganizationResponseBuilder(cloudLicense.billingOrganization, paddleSubscriptions);
+    const paddleAddresses = await this.paddleCaller.listAddressesAll({
+      customerId: cloudLicense.billingOrganization.billingMethodPaddle.customerId,
+    });
+    const builder = new BillingOrganizationResponseBuilder(cloudLicense.billingOrganization, paddleSubscriptions, paddleAddresses);
     cloudLicense.billingOrganization = builder.build();
     const cloudLicenseResponse = cloudLicense as CloudLicenseResponse;
     return cloudLicenseResponse;
