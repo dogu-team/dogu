@@ -135,6 +135,15 @@ export class BillingController {
     });
   }
 
+  @Get('/plan-infos/:billingPlanInfoId/update-payment-method-transaction')
+  @OrganizationPermission(ORGANIZATION_ROLE.ADMIN)
+  async getUpdatePaymentMethodTransaction(@Param('billingPlanInfoId') billingPlanInfoId: string): Promise<CallBillingApiResponse> {
+    return await this.billingCaller.callBillingApi({
+      method: 'GET',
+      path: `billing/plan-infos/${billingPlanInfoId}/update-payment-method-transaction`,
+    });
+  }
+
   @Get('/purchase/precheckout')
   @OrganizationPermission(ORGANIZATION_ROLE.ADMIN)
   async getSubscriptionPreviewPaddle(@Query() query: object): Promise<CallBillingApiResponse<GetBillingPrecheckoutResponse>> {

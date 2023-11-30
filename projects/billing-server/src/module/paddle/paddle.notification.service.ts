@@ -11,6 +11,7 @@ import { BillingPlanInfo } from '../../db/entity/billing-plan-info.entity';
 import { BillingPlanSource } from '../../db/entity/billing-plan-source.entity';
 import { RetryTransaction } from '../../db/retry-transaction';
 import { BillingCouponService } from '../billing-coupon/billing-coupon.service';
+import { updateMethod, validateMethod } from '../billing-organization/billing-organization.utils';
 import { preprocess } from '../billing-purchase/billing-purchase.serializables';
 import { DateTimeSimulatorService } from '../date-time-simulator/date-time-simulator.service';
 import { DoguLogger } from '../logger/logger';
@@ -305,6 +306,8 @@ export class PaddleNotificationService {
 
       const { organization, planSource, currency } = preprocessResult.value;
       const { billingOrganizationId } = organization;
+
+      validateMethod(organization, 'paddle');
       if (currency !== currency_code) {
         throw new InternalServerErrorException({
           reason: 'currency is not equal to currency_code',
@@ -313,7 +316,7 @@ export class PaddleNotificationService {
         });
       }
 
-      let planInfo = organization.billingPlanInfos?.find((planInfo) => planInfo.billingPlanSourceId === billingPlanSourceId);
+      let planInfo = organization.billingPlanInfos?.find((planInfo) => planInfo.category === planSource.category && planInfo.type === planSource.type);
       if (!planInfo) {
         planInfo = manager.getRepository(BillingPlanInfo).create({
           billingPlanInfoId: v4(),
@@ -345,6 +348,12 @@ export class PaddleNotificationService {
         planInfo.cardNumberLast4Digits = cardNumberLast4Digits;
         planInfo.cardExpirationYear = cardExpirationYear;
         planInfo.cardExpirationMonth = cardExpirationMonth;
+        planInfo.category = planSource.category;
+        planInfo.period = planSource.period;
+        planInfo.originPrice = planSource.originPrice;
+        planInfo.type = planSource.type;
+        planInfo.option = planSource.option;
+        planInfo.currency = planSource.currency;
       }
       planInfo = await manager.save(planInfo);
 
@@ -386,6 +395,19 @@ export class PaddleNotificationService {
         currency: planSource.currency,
       });
       const planHistory = await manager.save(createdPlanHistory);
+
+      updateMethod(organization, 'paddle');
+      await manager.save(organization);
+
+      this.logger.info('Paddle transaction completed', {
+        paddleTransactionId,
+        billingOrganizationId,
+        billingHistoryId: history.billingHistoryId,
+        billingPlanHistoryId: planHistory.billingPlanHistoryId,
+        billingPlanInfoId: planInfo.billingPlanInfoId,
+        billingPlanSourceId,
+        billingCouponId,
+      });
     });
   }
 }
