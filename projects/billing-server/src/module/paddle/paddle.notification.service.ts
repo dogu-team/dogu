@@ -339,6 +339,7 @@ export class PaddleNotificationService {
           option: planSource.option,
           currency: planSource.currency,
         });
+        organization.billingPlanInfos = [...(organization.billingPlanInfos ?? []), planInfo];
       } else {
         planInfo.billingOrganizationId = billingOrganizationId;
         planInfo.billingPlanSourceId = billingPlanSourceId;
