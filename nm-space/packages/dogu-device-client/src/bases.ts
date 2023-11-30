@@ -65,7 +65,7 @@ export interface DeviceService {
 export class DeviceCloser {
   constructor(readonly deviceWebSocket: DeviceWebSocket) {}
 
-  async close(): Promise<void> {
-    await this.deviceWebSocket.close(1000, 'close');
+  close(): void {
+    this.deviceWebSocket.close(1000, 'close').catch(() => {});
   }
 }
