@@ -110,24 +110,6 @@ export const regenerateOrganizationAccessToken = async (orgId: OrganizationId) =
   return data;
 };
 
-export const uploadDeviceApp = async (
-  orgId: OrganizationId,
-  file: File,
-  progress?: (e: AxiosProgressEvent) => void,
-) => {
-  const formData = new FormData();
-  formData.append('app', file);
-
-  const { data } = await api.post<string>(`/organizations/${orgId}/apps`, formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
-    onUploadProgress: progress,
-  });
-
-  return data;
-};
-
 export const updateOrganizationScm = async (
   orgId: OrganizationId,
   dto: UpdateOrganizationScmDto,

@@ -129,7 +129,7 @@ export class OrganizationApplicationService {
     creatorUserId: UserId | null,
     creatorType: CREATOR_TYPE,
     organizationId: OrganizationId,
-  ): Promise<void> {
+  ): Promise<OrganizationApplication> {
     const extension = file.originalname.split('.').pop();
     if (!extension) {
       throw new Error('extension is null');
@@ -188,7 +188,12 @@ export class OrganizationApplicationService {
       );
     }
 
-    await manager.getRepository(OrganizationApplication).insert({
+    if (appInfo.icon && iconFileName) {
+      await appFileDirectory.uploadBuffer(appInfo.icon, iconFileName, ['.png', '.jpg', '.jpeg', 'webp'], file.mimetype);
+    }
+    await appFileDirectory.uploadFile(file, fileName, organizationAppMeta[appFileType].mimeTypes);
+
+    const newApp = manager.getRepository(OrganizationApplication).create({
       organizationApplicationId: v4(),
       organizationId: organizationId,
       creatorId: creatorUserId,
@@ -203,11 +208,7 @@ export class OrganizationApplicationService {
       versionCode: appInfo.versionCode,
       isLatest: isLatest ? 1 : 0,
     });
-
-    if (appInfo.icon && iconFileName) {
-      await appFileDirectory.uploadBuffer(appInfo.icon, iconFileName, ['.png', '.jpg', '.jpeg', 'webp'], file.mimetype);
-    }
-    await appFileDirectory.uploadFile(file, fileName, organizationAppMeta[appFileType].mimeTypes);
+    return await manager.getRepository(OrganizationApplication).save(newApp);
   }
 
   async uploadSampleApk(manager: EntityManager, sampleAppPath: string, creatorUserId: UserId, organizationId: OrganizationId): Promise<void> {

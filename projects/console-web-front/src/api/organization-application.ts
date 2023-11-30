@@ -1,4 +1,4 @@
-import { UploadSampleAppDtoBase } from '@dogu-private/console';
+import { OrganizationApplicationBase, UploadSampleAppDtoBase } from '@dogu-private/console';
 import { OrganizationId } from '@dogu-private/types';
 import { AxiosProgressEvent } from 'axios';
 
@@ -8,16 +8,21 @@ export const uploadOrganizationApplication = async (
   organizationId: OrganizationId,
   file: File,
   progress?: (e: AxiosProgressEvent) => void,
-) => {
+): Promise<OrganizationApplicationBase> => {
   const formData = new FormData();
   formData.append('file', file);
 
-  await api.put<void>(`/organizations/${organizationId}/applications`, formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data',
+  const { data } = await api.put<OrganizationApplicationBase>(
+    `/organizations/${organizationId}/applications`,
+    formData,
+    {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+      onUploadProgress: progress,
     },
-    onUploadProgress: progress,
-  });
+  );
+  return data;
 };
 
 export const getOrganizationApplicationDownloadUrl = async (organizationId: OrganizationId, id: string) => {

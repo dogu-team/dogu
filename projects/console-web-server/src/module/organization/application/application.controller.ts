@@ -5,6 +5,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { InjectDataSource } from '@nestjs/typeorm';
 import path from 'path';
 import { DataSource } from 'typeorm';
+import { OrganizationApplication } from '../../../db/entity/organization-application.entity';
 
 import { applicationFileParser } from '../../../utils/file';
 import { ORGANIZATION_ROLE, PROJECT_ROLE } from '../../auth/auth.types';
@@ -61,7 +62,7 @@ export class OrganizationApplicationController {
     @UploadedFile(applicationFileParser) file: Express.Multer.File,
     @User() userPayload: UserPayload,
     @Param('organizationId') organizationId: OrganizationId,
-  ): Promise<void> {
+  ): Promise<OrganizationApplication> {
     return await this.dataSource.transaction(async (manager) => {
       return await this.applicationService.uploadApplication(manager, file, userPayload.userId, CREATOR_TYPE.USER, organizationId);
     });
