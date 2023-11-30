@@ -1,4 +1,11 @@
-import { FindBillingOrganizationDto, UpdateBillingAddressDto, UpdateBillingAddressResponse, UpdateBillingBusinessResponse, UpdateBillingEmailDto } from '@dogu-private/console';
+import {
+  FindBillingOrganizationDto,
+  UpdateBillingAddressDto,
+  UpdateBillingAddressResponse,
+  UpdateBillingBusinessDto,
+  UpdateBillingBusinessResponse,
+  UpdateBillingEmailDto,
+} from '@dogu-private/console';
 import { Body, Controller, Get, NotFoundException, Patch, Put, Query } from '@nestjs/common';
 import { BillingOrganization } from '../../db/entity/billing-organization.entity';
 import { BillingTokenPermission } from '../auth/guard/billing-token.guard';
@@ -34,7 +41,7 @@ export class BillingOrganizationController {
 
   @Patch('/business')
   @BillingTokenPermission()
-  async updateBillingBusiness(@Body() dto: UpdateBillingAddressDto): Promise<UpdateBillingBusinessResponse> {
+  async updateBillingBusiness(@Body() dto: UpdateBillingBusinessDto): Promise<UpdateBillingBusinessResponse> {
     return await this.billingOrganizationService.updateBillingBusiness(dto);
   }
 }
