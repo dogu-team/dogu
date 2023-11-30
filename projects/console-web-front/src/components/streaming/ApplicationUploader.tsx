@@ -10,6 +10,7 @@ import {
 import { OrganizationApplicationWithIcon, PageBase } from '@dogu-private/console';
 import { OrganizationId, Platform } from '@dogu-private/types';
 import { Button, Divider, Progress, Steps, Upload } from 'antd';
+import moment from 'moment';
 import useTranslation from 'next-translate/useTranslation';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
@@ -18,7 +19,6 @@ import styled from 'styled-components';
 import useSWR from 'swr';
 
 import { swrAuthFetcher } from '../../api';
-import { getOrganizationApplicationDownloadUrl } from '../../api/organization-application';
 import useDeviceAppInstall from '../../hooks/streaming/useDeviceAppInstall';
 import useDeviceStreamingContext from '../../hooks/streaming/useDeviceStreamingContext';
 import { flexRowCenteredStyle, flexRowSpaceBetweenStyle } from '../../styles/box';
@@ -119,8 +119,22 @@ const ApplicationUploader = ({}: Props) => {
                           alt={app.name}
                           style={{ marginRight: '.25rem' }}
                         />
-                        v{app.version}
-                        <span style={{ fontSize: '.9em', color: '#888' }}>(Build {app.versionCode})</span>
+                        <div>
+                          <p style={{ textAlign: 'left' }}>
+                            v{app.version}
+                            <span style={{ fontSize: '.9em', color: '#888' }}>(Build {app.versionCode})</span>
+                          </p>
+                          <p style={{ fontSize: '.85em', color: '#888', textAlign: 'left' }}>
+                            {new Intl.DateTimeFormat(router.locale, {
+                              year: 'numeric',
+                              month: 'numeric',
+                              day: 'numeric',
+                              hour: 'numeric',
+                              minute: 'numeric',
+                              second: 'numeric',
+                            }).format(moment(app.createdAt).toDate())}
+                          </p>
+                        </div>
                       </div>
                       {app.isLatest && <OrganizationApplicationLatestTag style={{ marginRight: '0' }} />}
                     </StyledButton>
