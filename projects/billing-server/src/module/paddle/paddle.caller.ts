@@ -2,6 +2,7 @@ import { BillingCategory, BillingCouponType, BillingCurrency, BillingPeriod, Bil
 import { setAxiosFilterErrorAndLogging } from '@dogu-tech/common';
 import { Injectable } from '@nestjs/common';
 import axios, { AxiosInstance } from 'axios';
+import _ from 'lodash';
 import { config } from '../../config';
 import { FeatureConfig } from '../../feature.config';
 import { DoguLogger } from '../logger/logger';
@@ -130,7 +131,7 @@ export interface GetSubscriptionOptions {
   subscriptionId: string;
 }
 
-export interface UpdateSubscriptionOptions {
+export interface UpdateSubscriptionOptions extends Omit<Paddle.Subscription, 'id' | 'created_at' | 'updated_at'> {
   subscriptionId: string;
   billingPlanInfoId: string;
 }
@@ -683,19 +684,40 @@ export class PaddleCaller {
    * @see https://developer.paddle.com/api-reference/subscriptions/update-subscription
    */
   async updateSubscription(options: UpdateSubscriptionOptions): Promise<Paddle.Subscription> {
-    const { subscriptionId, billingPlanInfoId } = options;
+    const { subscriptionId, billingPlanInfoId, ...rest } = options;
     const path = `/subscriptions/${subscriptionId}`;
-    const body = {
+    const body = _.merge(rest, {
       custom_data: {
         billingPlanInfoId,
       },
-    };
+    });
 
     const response = await this.client.patch<Paddle.Response<Paddle.Subscription>>(path, body);
     const { error, data, meta } = response.data;
     const { request_id } = meta ?? {};
     if (error) {
       throw new PaddleCallError('update subscription failed', request_id, error);
+    }
+
+    const subscription = data ?? {};
+    return subscription;
+  }
+
+  /**
+   * @see https://developer.paddle.com/build/subscriptions/pause-subscriptions#remove-scheduled-change
+   */
+  async removeScheduledChange(options: GetSubscriptionOptions): Promise<Paddle.Subscription> {
+    const { subscriptionId } = options;
+    const path = `/subscriptions/${subscriptionId}`;
+    const body = {
+      scheduled_change: null,
+    };
+
+    const response = await this.client.patch<Paddle.Response<Paddle.Subscription>>(path, body);
+    const { error, data, meta } = response.data;
+    const { request_id } = meta ?? {};
+    if (error) {
+      throw new PaddleCallError('remove scheduled change failed', request_id, error);
     }
 
     const subscription = data ?? {};

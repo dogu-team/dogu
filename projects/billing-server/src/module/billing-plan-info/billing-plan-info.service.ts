@@ -91,7 +91,9 @@ export class BillingPlanInfoService {
           });
         }
 
-        await this.paddleCaller.resumeSubscription({ subscriptionId: subscription.id });
+        await this.paddleCaller.removeScheduledChange({
+          subscriptionId: subscription.id,
+        });
       }
 
       return new BillingPlanInfoResponseBuilder(billingOrganization, paddleSubscriptions).build(saved);
