@@ -198,7 +198,11 @@ export class PaddleNotificationService {
     }
 
     const paddleTransactionId = transaction.id;
-    const { subscription_id, payments, custom_data, currency_code, discount_id, details, items, billing_period } = transaction;
+    const { subscription_id, payments, custom_data, currency_code, discount_id, details, items, origin } = transaction;
+    if (origin === 'subscription_payment_method_change') {
+      return await this.onTransactionCompletedSubscriptionPaymentMethodChange(event);
+    }
+
     const item = items?.[0];
     const { line_items } = details ?? {};
     const lineItem = line_items?.[0];
@@ -418,6 +422,76 @@ export class PaddleNotificationService {
         billingPlanSourceId,
         billingCouponId,
       });
+    });
+  }
+
+  private async onTransactionCompletedSubscriptionPaymentMethodChange(event: Paddle.Event<Paddle.Transaction>): Promise<void> {
+    const transaction = event.data;
+    if (!transaction) {
+      throw new BadRequestException({
+        reason: 'transaction is empty',
+        event,
+      });
+    }
+
+    if (!transaction.id) {
+      throw new BadRequestException({
+        reason: 'id is empty',
+        transaction,
+      });
+    }
+
+    const paddleTransactionId = transaction.id;
+    const { payments, custom_data, origin } = transaction;
+    if (origin !== 'subscription_payment_method_change') {
+      throw new InternalServerErrorException({
+        reason: 'origin is not subscription_payment_method_change',
+        transaction,
+      });
+    }
+
+    const payment = payments?.find((payment) => payment.status === 'authorized');
+    if (!payment) {
+      this.logger.warn('Paddle transaction does not have authorized payment', { paddleTransactionId });
+      return;
+    }
+
+    const { billingPlanInfoId } = custom_data ?? {};
+    if (!billingPlanInfoId) {
+      throw new InternalServerErrorException({
+        reason: 'custom_data.billingPlanInfoId is empty',
+        transaction,
+      });
+    }
+
+    const { method_details } = payment;
+    const { card } = method_details ?? {};
+    const cardNumberLast4Digits = card?.last4 ?? null;
+    const cardExpirationYear = card?.expiry_year?.toString() ?? null;
+    const cardExpirationMonth = card?.expiry_month?.toString() ?? null;
+    const cardName = card?.cardholder_name ?? null;
+    const cardCode = card?.type ?? null;
+    const paddleMethodType = method_details?.type ?? null;
+
+    await this.retryTransaction.serializable(async (context) => {
+      const { manager } = context;
+      const planInfo = await manager.getRepository(BillingPlanInfo).findOne({
+        where: {
+          billingPlanInfoId,
+        },
+      });
+      if (!planInfo) {
+        this.logger.warn('Paddle transaction does not have planInfo', { paddleTransactionId });
+        return;
+      }
+
+      planInfo.paddleMethodType = paddleMethodType;
+      planInfo.cardCode = cardCode;
+      planInfo.cardName = cardName;
+      planInfo.cardNumberLast4Digits = cardNumberLast4Digits;
+      planInfo.cardExpirationYear = cardExpirationYear;
+      planInfo.cardExpirationMonth = cardExpirationMonth;
+      await manager.save(planInfo);
     });
   }
 }

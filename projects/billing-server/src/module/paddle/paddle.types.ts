@@ -265,6 +265,7 @@ export namespace Paddle {
       | ({
           organizationId?: string;
           billingPlanSourceId?: number;
+          billingPlanInfoId?: string;
         } & Record<string, unknown>)
       | null;
     currency_code?: string;
