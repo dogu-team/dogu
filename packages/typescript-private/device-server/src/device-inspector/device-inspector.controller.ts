@@ -16,7 +16,7 @@ export class DeviceInspectorController {
   ) {}
 
   @Get(DeviceInspector.getPageSource.path)
-  @DevicePermission()
+  @DevicePermission({ allowAdmin: true, allowTemporary: 'serial' })
   async getPageSource(@Param('serial') serial: Serial): Promise<Instance<typeof DeviceInspector.getPageSource.responseBody>> {
     const channel = this.scanService.findChannel(serial);
     if (!channel) {
@@ -38,7 +38,7 @@ export class DeviceInspectorController {
   }
 
   @Get(DeviceInspector.getContexts.path)
-  @DevicePermission()
+  @DevicePermission({ allowAdmin: true, allowTemporary: 'serial' })
   async getContexts(@Param('serial') serial: Serial): Promise<Instance<typeof DeviceInspector.getContexts.responseBody>> {
     const channel = this.scanService.findChannel(serial);
     if (!channel) {
@@ -60,7 +60,7 @@ export class DeviceInspectorController {
   }
 
   @Get(DeviceInspector.getContext.path)
-  @DevicePermission()
+  @DevicePermission({ allowAdmin: true, allowTemporary: 'serial' })
   async getContext(@Param('serial') serial: Serial): Promise<Instance<typeof DeviceInspector.getContext.responseBody>> {
     const channel = this.scanService.findChannel(serial);
     if (!channel) {
@@ -82,7 +82,7 @@ export class DeviceInspectorController {
   }
 
   @Post(DeviceInspector.switchContext.path)
-  @DevicePermission()
+  @DevicePermission({ allowAdmin: true, allowTemporary: 'serial' })
   async switchContext(@Param('serial') serial: Serial, @Body() body: SwitchContextRequest): Promise<Instance<typeof DeviceInspector.switchContext.responseBody>> {
     const channel = this.scanService.findChannel(serial);
     if (!channel) {
@@ -103,7 +103,7 @@ export class DeviceInspectorController {
   }
 
   @Post(DeviceInspector.switchContextAndGetPageSource.path)
-  @DevicePermission()
+  @DevicePermission({ allowAdmin: true, allowTemporary: 'serial' })
   async switchContextAndGetPageSource(
     @Param('serial') serial: Serial,
     @Body() body: SwitchContextRequest,
@@ -129,7 +129,7 @@ export class DeviceInspectorController {
   }
 
   @Get(DeviceInspector.getContextPageSources.path)
-  @DevicePermission()
+  @DevicePermission({ allowAdmin: true, allowTemporary: 'serial' })
   async getContextPageSources(@Param('serial') serial: Serial): Promise<Instance<typeof DeviceInspector.getContextPageSources.responseBody>> {
     const channel = this.scanService.findChannel(serial);
     if (!channel) {
@@ -167,7 +167,7 @@ export class DeviceInspectorController {
   }
 
   @Post(DeviceInspector.tryConnectGamiumInspector.path)
-  @DevicePermission()
+  @DevicePermission({ allowAdmin: true, allowTemporary: 'serial' })
   async connectGamiumInspector(
     @Param('serial') serial: Serial,
     @Body() body: TryConnectGamiumInspectorRequest,
@@ -215,7 +215,7 @@ export class DeviceInspectorController {
   }
 
   @Get(DeviceInspector.getHitPoint.path)
-  @DevicePermission()
+  @DevicePermission({ allowAdmin: true, allowTemporary: 'serial' })
   async getHitPoint(@Param('serial') serial: Serial, @Query() getHitPointQueryDto: GetHitPointQuery): Promise<Instance<typeof DeviceInspector.getHitPoint.responseBody>> {
     const channel = this.scanService.findChannel(serial);
     if (!channel) {

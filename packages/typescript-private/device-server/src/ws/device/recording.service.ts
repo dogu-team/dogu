@@ -26,7 +26,7 @@ export class DeviceRecordingService
     super(DeviceRecording, logger);
   }
 
-  @DeviceWsPermission()
+  @DeviceWsPermission({ allowAdmin: true, allowTemporary: 'serial' })
   override onWebSocketOpen(webSocket: WebSocket, @AuthIncomingMessage() incommingMessage: IncomingMessage): Value {
     return { serial: '', filePath: '', isRecording: false };
   }

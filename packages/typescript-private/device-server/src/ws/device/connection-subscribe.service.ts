@@ -108,7 +108,7 @@ export class DeviceConnectionSubscribeService
     messages.forEach((message) => this.notify(message));
   }
 
-  @DeviceWsPermission()
+  @DeviceWsPermission({ allowAdmin: true, allowTemporary: 'no' })
   override async onWebSocketOpen(webSocket: WebSocket, @AuthIncomingMessage() incommingMessage: IncomingMessage): Promise<null> {
     await validateAndEmitEventAsync(this.eventEmitter, OnDeviceConnectionSubscriberConnectedEvent, {
       webSocket,

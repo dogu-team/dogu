@@ -1,4 +1,4 @@
-import { DeviceAdminToken, DeviceTemporaryToken, Serial } from '@dogu-private/types';
+import { DeviceAdminToken, DeviceServerToken, DeviceTemporaryToken, Serial } from '@dogu-private/types';
 import { DuplicatedCallGuarder, Instance, time } from '@dogu-tech/common';
 import { Injectable } from '@nestjs/common';
 import { Interval } from '@nestjs/schedule';
@@ -6,6 +6,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { env } from '../env';
 import { OnUpdateEvent } from '../events';
 import { DoguLogger } from '../logger/logger';
+import { PermissionOptions } from './options';
 
 interface SerialToToken {
   serial: Serial;
@@ -51,7 +52,29 @@ export class AuthService {
     this.temporaryTokens = this.temporaryTokens.filter((t) => t.token.value !== token.value);
   }
 
-  validateTemporaryToken(serial: Serial, token: DeviceTemporaryToken): boolean {
+  validate(token: DeviceServerToken, serial: Serial | undefined, option: PermissionOptions): boolean {
+    if (option.allowAdmin && this.validateAdmin(token.value)) {
+      return true;
+    }
+    switch (option.allowTemporary) {
+      case 'serial':
+        if (!serial) {
+          return false;
+        }
+        if (this.validateTemporaryToken(serial, token)) {
+          return true;
+        }
+        break;
+      case 'exist':
+        if (this.validateTemporaryTokenExist(token)) {
+          return true;
+        }
+        break;
+    }
+    return false;
+  }
+
+  private validateTemporaryToken(serial: Serial, token: DeviceTemporaryToken): boolean {
     const found = this.temporaryTokens.find((t) => t.token.value === token.value && t.serial === serial);
     if (!found) {
       return false;
@@ -60,7 +83,7 @@ export class AuthService {
     return true;
   }
 
-  validateTemporaryTokenExist(token: DeviceTemporaryToken): boolean {
+  private validateTemporaryTokenExist(token: DeviceTemporaryToken): boolean {
     const found = this.temporaryTokens.find((t) => t.token.value === token.value);
     if (!found) {
       return false;
@@ -69,7 +92,7 @@ export class AuthService {
     return true;
   }
 
-  cleanupOldTemporaryTokens(): void {
+  private cleanupOldTemporaryTokens(): void {
     const now = Date.now();
     const expireTime = now - time({ minutes: 10 });
     this.temporaryTokens = this.temporaryTokens.filter((t) => t.lastAccessedAt > expireTime);

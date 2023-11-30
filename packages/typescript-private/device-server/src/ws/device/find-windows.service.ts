@@ -28,7 +28,7 @@ export class DeviceFindWindowsService
     super(DeviceFindWindows, logger);
   }
 
-  @DeviceWsPermission()
+  @DeviceWsPermission({ allowAdmin: true, allowTemporary: 'serial' })
   override onWebSocketOpen(webSocket: WebSocket, @AuthIncomingMessage() incommingMessage: IncomingMessage): Value {
     return { serial: '', parentPid: 0, timer: null, updateGuard: new DuplicatedCallGuarder() };
   }

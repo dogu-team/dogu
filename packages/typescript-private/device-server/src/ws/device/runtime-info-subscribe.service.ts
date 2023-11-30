@@ -40,7 +40,7 @@ export class DeviceRuntimeInfoSubscribeService
     });
   }
 
-  @DeviceWsPermission()
+  @DeviceWsPermission({ allowAdmin: true, allowTemporary: 'serial' })
   override async onWebSocketOpen(webSocket: WebSocket, @AuthIncomingMessage() incommingMessage: IncomingMessage): Promise<Value> {
     await validateAndEmitEventAsync(this.eventEmitter, OnDeviceRuntimeInfoSubscriberConnectedEvent, {
       webSocket,

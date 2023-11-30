@@ -24,7 +24,7 @@ export class DeviceAlertSubscribeService
     super(DeviceAlertSubscribe, logger);
   }
 
-  @DeviceWsPermission()
+  @DeviceWsPermission({ allowAdmin: true, allowTemporary: 'serial' })
   override onWebSocketOpen(webSocket: WebSocket, @AuthIncomingMessage() incommingMessage: IncomingMessage): Value {
     return {
       closer: null,

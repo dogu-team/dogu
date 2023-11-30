@@ -4,7 +4,7 @@ import { DeviceAuth } from '@dogu-tech/device-client-common';
 import { Body, Controller, Delete, Param, Post } from '@nestjs/common';
 import { DoguLogger } from '../logger/logger';
 import { AuthService } from './auth.service';
-import { DeviceAdminPermission } from './decorators';
+import { DevicePermission } from './decorators';
 
 @Controller(DeviceAuth.controller)
 export class AuthController {
@@ -14,7 +14,7 @@ export class AuthController {
   ) {}
 
   @Post(DeviceAuth.refreshAdminToken.path)
-  @DeviceAdminPermission()
+  @DevicePermission({ allowAdmin: true, allowTemporary: 'no' })
   refreshAdminToken(@Body() request: Instance<typeof DeviceAuth.refreshAdminToken.requestBody>): Instance<typeof DeviceAuth.refreshAdminToken.responseBody> {
     this.authService.refreshAdminToken(request.newToken.value);
     return {
@@ -26,7 +26,7 @@ export class AuthController {
   }
 
   @Post(DeviceAuth.createToken.path)
-  @DeviceAdminPermission()
+  @DevicePermission({ allowAdmin: true, allowTemporary: 'no' })
   createToken(@Param('serial') serial: Serial): Instance<typeof DeviceAuth.createToken.responseBody> {
     const token = this.authService.generateTemporaryToken(serial);
     return {
@@ -40,7 +40,7 @@ export class AuthController {
   }
 
   @Delete(DeviceAuth.deleteToken.path)
-  @DeviceAdminPermission()
+  @DevicePermission({ allowAdmin: true, allowTemporary: 'no' })
   deleteToken(@Body() request: Instance<typeof DeviceAuth.deleteToken.requestBody>): Instance<typeof DeviceAuth.deleteToken.responseBody> {
     this.authService.deleteTemporaryToken(request.token);
     return {

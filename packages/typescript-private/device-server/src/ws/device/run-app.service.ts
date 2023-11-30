@@ -20,7 +20,7 @@ export class DeviceRunAppService
     super(DeviceRunApp, logger);
   }
 
-  @DeviceWsPermission()
+  @DeviceWsPermission({ allowAdmin: true, allowTemporary: 'serial' })
   override onWebSocketOpen(webSocket: WebSocket, @AuthIncomingMessage() incommingMessage: IncomingMessage): null {
     return null;
   }

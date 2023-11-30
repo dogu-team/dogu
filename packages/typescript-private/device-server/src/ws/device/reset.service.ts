@@ -19,7 +19,7 @@ export class DeviceResetService
     super(DeviceReset, logger);
   }
 
-  @DeviceWsPermission()
+  @DeviceWsPermission({ allowAdmin: true, allowTemporary: 'no' })
   override onWebSocketOpen(webSocket: WebSocket, @AuthIncomingMessage() incommingMessage: IncomingMessage): null {
     return null;
   }

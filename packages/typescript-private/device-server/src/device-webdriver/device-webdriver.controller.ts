@@ -15,7 +15,7 @@ export class DeviceWebDriverController {
   ) {}
 
   @Post(DeviceWebDriver.relayHttp.path)
-  @DevicePermission()
+  @DevicePermission({ allowAdmin: true, allowTemporary: 'serial' })
   async relayHttp(
     @Headers() headers: HeaderRecord,
     @Param('serial') serial: Serial,
@@ -51,7 +51,7 @@ export class DeviceWebDriverController {
   }
 
   @Delete(DeviceWebDriver.sessionDeleted.path)
-  @DevicePermission()
+  @DevicePermission({ allowAdmin: true, allowTemporary: 'serial' })
   async sessionDeleted(
     @Headers() headers: HeaderRecord,
     @Param('serial') serial: Serial,

@@ -1,16 +1,7 @@
-import { applyDecorators, UseGuards } from '@nestjs/common';
-import { DeviceAdminGuard } from './guard/device-admin.guard';
-import { DeviceHostGuard } from './guard/device-host.guard';
-import { DeviceGuard } from './guard/device.guard';
+import { applyDecorators, SetMetadata, UseGuards } from '@nestjs/common';
+import { TokenGuard } from './guard/token.guard';
+import { PermissionOptions, PERMISSION_OPTIONS_KEY } from './options';
 
-export function DevicePermission(): PropertyDecorator {
-  return applyDecorators(UseGuards(DeviceGuard));
-}
-
-export function DeviceHostPermission(): PropertyDecorator {
-  return applyDecorators(UseGuards(DeviceHostGuard));
-}
-
-export function DeviceAdminPermission(): PropertyDecorator {
-  return applyDecorators(UseGuards(DeviceAdminGuard));
+export function DevicePermission(option: PermissionOptions): PropertyDecorator {
+  return applyDecorators(SetMetadata(PERMISSION_OPTIONS_KEY, option), UseGuards(TokenGuard));
 }

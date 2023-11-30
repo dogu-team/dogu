@@ -4,7 +4,7 @@ import { HostPaths } from '@dogu-tech/node';
 import { Body, Controller, Delete, Get, Post, Query } from '@nestjs/common';
 import fs from 'fs';
 import path from 'path';
-import { DeviceHostPermission } from '../auth/decorators';
+import { DevicePermission } from '../auth/decorators';
 import { BrowserManagerService } from '../browser-manager/browser-manager.service';
 import { getFreePort } from '../internal/util/net';
 import { pathMap } from '../path-map';
@@ -19,7 +19,7 @@ export class DeviceHostController {
   ) {}
 
   @Get(DeviceHost.getFreePort.path)
-  @DeviceHostPermission()
+  @DevicePermission({ allowAdmin: true, allowTemporary: 'exist' })
   async getFreePort(@Query() query: GetFreePortQuery): Promise<Instance<typeof DeviceHost.getFreePort.responseBody>> {
     const { excludes, offset } = query;
     const port = await getFreePort(excludes, offset);
@@ -34,7 +34,7 @@ export class DeviceHostController {
   }
 
   @Get(DeviceHost.getPathMap.path)
-  @DeviceHostPermission()
+  @DevicePermission({ allowAdmin: true, allowTemporary: 'exist' })
   getPathMap(): Instance<typeof DeviceHost.getPathMap.responseBody> {
     return {
       value: {
@@ -47,7 +47,7 @@ export class DeviceHostController {
   }
 
   @Get(DeviceHost.getTempPath.path)
-  @DeviceHostPermission()
+  @DevicePermission({ allowAdmin: true, allowTemporary: 'exist' })
   getTempPath(): Instance<typeof DeviceHost.getTempPath.responseBody> {
     return {
       value: {
@@ -60,7 +60,7 @@ export class DeviceHostController {
   }
 
   @Delete(DeviceHost.removeTemp.path)
-  @DeviceHostPermission()
+  @DevicePermission({ allowAdmin: true, allowTemporary: 'exist' })
   async removeTemp(@Body() param: DeleteTempPathRequestBody): Promise<Instance<typeof DeviceHost.removeTemp.responseBody>> {
     const filePathResolved = path.join(HostPaths.doguTempPath(), param.pathUnderTemp);
     if (validateFilePath(filePathResolved, ['temp'])) {
@@ -80,7 +80,7 @@ export class DeviceHostController {
   }
 
   @Post(DeviceHost.ensureBrowserAndDriver.path)
-  @DeviceHostPermission()
+  @DevicePermission({ allowAdmin: true, allowTemporary: 'exist' })
   async ensureBrowserAndDriver(@Body() options: DeviceHostEnsureBrowserAndDriverRequestBody): Promise<Instance<typeof DeviceHost.ensureBrowserAndDriver.responseBody>> {
     const result = await this.browserManagerService.ensureBrowserAndDriver(options);
     return {
@@ -92,7 +92,7 @@ export class DeviceHostController {
   }
 
   @Post(DeviceHost.resignAppFile.path)
-  @DeviceHostPermission()
+  @DevicePermission({ allowAdmin: true, allowTemporary: 'exist' })
   async resignAppFile(@Body() body: ResignAppFileRequestBody): Promise<Instance<typeof DeviceHost.resignAppFile.responseBody>> {
     const result = await this.appFileSerivce.queueResign(body);
     return {

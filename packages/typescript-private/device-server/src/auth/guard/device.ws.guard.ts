@@ -1,6 +1,7 @@
 import { Inject } from '@nestjs/common';
 import { IncomingMessage } from 'http';
 import { AuthService } from '../auth.service';
+import { PermissionOptions } from '../options';
 
 const AuthIncomingMessageDecoratorKey = Symbol('AuthIncomingMessage');
 
@@ -17,7 +18,7 @@ export function AuthIncomingMessage(): ParameterDecorator {
  * @caution This decorator injects AuthService to the class instance. so you should have dependency to AuthModule in your module.
  * Use This decorator with AuthIncomingMessage parameter decorator.
  */
-export function DeviceWsPermission(): MethodDecorator {
+export function DeviceWsPermission(options: PermissionOptions): MethodDecorator {
   const injectAuthService = Inject(AuthService);
 
   // eslint-disable-next-line @typescript-eslint/ban-types
@@ -53,10 +54,12 @@ export function DeviceWsPermission(): MethodDecorator {
             throw new Error(`No authorization header found`);
           }
           const token = authField.replace('Custom ', '');
-          if (!authService.validateAdmin(token)) {
-            if (!authService.validateTemporaryTokenExist({ value: token })) {
-              throw new Error(`Invalid token`);
-            }
+          const serialField = request.headers.serial;
+          if (serialField instanceof Array) {
+            throw new Error(`Multiple serial header found`);
+          }
+          if (!authService.validate({ value: token }, serialField, options)) {
+            throw new Error(`Invalid token`);
           }
         });
       }
