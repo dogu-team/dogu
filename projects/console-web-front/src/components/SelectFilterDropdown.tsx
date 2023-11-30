@@ -39,13 +39,14 @@ export const SelectFilterDropdownMenu = ({
 
 interface FilterSelectedTagProps {
   value: string;
+  displayValue?: React.ReactNode;
   onClick: (value: string) => void;
 }
 
-export const FilterSelectedTag = React.memo(({ value, onClick }: FilterSelectedTagProps) => {
+export const FilterSelectedTag = React.memo(({ value, displayValue, onClick }: FilterSelectedTagProps) => {
   return (
     <SelectedTag onClick={() => onClick(value)}>
-      <p>{value}</p>
+      <p>{displayValue ?? value}</p>
       <CloseOutlined style={{ fontSize: 10, marginLeft: 4, padding: 2 }} />
     </SelectedTag>
   );
@@ -105,6 +106,8 @@ const FilterTagBox = styled.div`
 const TagBox = styled.div`
   position: relative;
   margin-top: 0.5rem;
+  max-height: 200px;
+  overflow-y: auto;
 `;
 
 const SelectedTag = styled.div`

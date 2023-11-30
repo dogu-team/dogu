@@ -1,5 +1,5 @@
 import { MAX_TAG_NAMES_FILTER_LENGTH, PageBase, DeviceTagBase } from '@dogu-private/console';
-import { Input, message } from 'antd';
+import { Input } from 'antd';
 import { debounce } from 'lodash';
 import { useRouter } from 'next/router';
 import styled from 'styled-components';
@@ -19,7 +19,7 @@ const DeviceTagSearchBox = () => {
   const [name, setName] = useState('');
   const { filterValue, updateFilter } = useDeviceFilterStore();
   const { data, error, isLoading } = useSWR<PageBase<DeviceTagBase>>(
-    organizationId && `/organizations/${organizationId}/tags?offset=5&keyword=${keyword}`,
+    organizationId && `/organizations/${organizationId}/tags?offset=1000&keyword=${keyword}`,
     swrAuthFetcher,
     {
       keepPreviousData: true,
