@@ -174,7 +174,12 @@ const EditDeviceProjectModal = ({ device, isOpen, close, isGlobal: isGlobalProp 
                     key={`device-${device.deviceId}-${item.projectId}`}
                     closable
                     onClose={() => handleDeleteProject(item.projectId)}
+                    style={{ display: 'inline-flex', alignItems: 'center' }}
                   >
+                    <ProjectTypeIcon
+                      type={item.type}
+                      style={{ marginRight: '.25rem', width: '12px', height: '12px' }}
+                    />{' '}
                     {item.name}
                   </Tag>
                 );
