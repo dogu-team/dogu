@@ -3,6 +3,7 @@ from typing import List, Optional
 import requests
 from dogu.device.common.device_http_response import DeviceHttpResponse
 from dogu.device.logger import create_logger
+from dogu.device.common.const import DOGU_DEVICE_AUTHORIZATION_HEADER_KEY
 
 
 @dataclass(frozen=True)
@@ -66,10 +67,11 @@ class EnsureBrowserAndDriverResult:
 
 
 class DeviceHostClient:
-    def __init__(self, host: str, port: int, timeout: int = 10):
+    def __init__(self, host: str, port: int, token: str, timeout: int = 10):
         self.host = host
         self.port = port
         self._host_and_port = f"{self.host}:{self.port}"
+        self._token = token
         self.timeout = timeout
         self._logger = create_logger(__name__)
 
@@ -78,7 +80,12 @@ class DeviceHostClient:
             excludes = []
         full_path = f"http://{self._host_and_port}/device-host/free-port"
         param = GetFreePortQuery(excludes=excludes, offset=0)
-        res = requests.get(full_path, json=asdict(param), timeout=self.timeout)
+        headers = {}
+        headers[DOGU_DEVICE_AUTHORIZATION_HEADER_KEY] = self._token
+
+        res = requests.get(
+            full_path, json=asdict(param), timeout=self.timeout, headers=headers
+        )
         res.raise_for_status()
         device_res = DeviceHttpResponse(res)
         if device_res.error()[0]:
@@ -94,7 +101,12 @@ class DeviceHostClient:
         full_path = (
             f"http://{self._host_and_port}/device-host/ensure-browser-and-driver"
         )
-        res = requests.post(full_path, json=asdict(options), timeout=self.timeout)
+        headers = {}
+        headers[DOGU_DEVICE_AUTHORIZATION_HEADER_KEY] = self._token
+
+        res = requests.post(
+            full_path, json=asdict(options), timeout=self.timeout, headers=headers
+        )
         res.raise_for_status()
         device_res = DeviceHttpResponse(res)
         if device_res.error()[0]:
