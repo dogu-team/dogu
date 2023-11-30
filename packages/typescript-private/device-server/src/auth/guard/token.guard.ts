@@ -1,3 +1,4 @@
+import { DOGU_DEVICE_AUTHORIZATION_HEADER_KEY } from '@dogu-private/types';
 import { CanActivate, ExecutionContext, HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
@@ -20,14 +21,17 @@ export class TokenGuard implements CanActivate {
     }
 
     const request = context.switchToHttp().getRequest<Request>();
-    const authField = request.headers.authorization;
+    const authField = request.headers[DOGU_DEVICE_AUTHORIZATION_HEADER_KEY];
     if (!authField) {
       this.logger.warn('No authorization header found');
       return false;
     }
+    if (authField instanceof Array) {
+      this.logger.warn('Multiple authorization header found');
+      return false;
+    }
 
-    const token = authField.replace('Custom ', '');
     const serial = request.params.serial as string | undefined;
-    return this.authService.validate({ value: token }, serial, option);
+    return this.authService.validate({ value: authField }, serial, option);
   }
 }

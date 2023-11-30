@@ -1,3 +1,4 @@
+import { DOGU_DEVICE_AUTHORIZATION_HEADER_KEY, DOGU_DEVICE_SERIAL_HEADER_KEY } from '@dogu-private/types';
 import { Inject } from '@nestjs/common';
 import { IncomingMessage } from 'http';
 import { AuthService } from '../auth.service';
@@ -49,16 +50,18 @@ export function DeviceWsPermission(options: PermissionOptions): MethodDecorator 
           if (!request) {
             throw new Error(`Missing ${AuthIncomingMessageDecoratorKey.toString()} parameter`);
           }
-          const authField = request.headers.authorization;
+          const authField = request.headers[DOGU_DEVICE_AUTHORIZATION_HEADER_KEY];
           if (!authField) {
             throw new Error(`No authorization header found`);
           }
-          const token = authField.replace('Custom ', '');
-          const serialField = request.headers.serial;
+          if (authField instanceof Array) {
+            throw new Error(`Multiple authorization header found`);
+          }
+          const serialField = request.headers[DOGU_DEVICE_SERIAL_HEADER_KEY];
           if (serialField instanceof Array) {
             throw new Error(`Multiple serial header found`);
           }
-          if (!authService.validate({ value: token }, serialField, options)) {
+          if (!authService.validate({ value: authField }, serialField, options)) {
             throw new Error(`Invalid token`);
           }
         });
