@@ -1,4 +1,5 @@
 import {
+  DOGU_DEVICE_AUTHORIZATION_HEADER_KEY,
   HttpRequest,
   HttpRequestParam,
   HttpRequestWebSocketResult,
@@ -341,7 +342,10 @@ export class BrowserDeviceService implements DeviceService {
           values: [],
         };
       }
-      connection.headers.values.push({ key: 'Authorization', value: `Custom ${options.tokenGetter().value}` });
+      connection.headers.values.push({
+        key: DOGU_DEVICE_AUTHORIZATION_HEADER_KEY,
+        value: options.tokenGetter().value,
+      });
 
       sendInternal({
         value: {

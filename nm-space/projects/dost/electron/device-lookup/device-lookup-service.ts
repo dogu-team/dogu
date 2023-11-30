@@ -1,5 +1,5 @@
 import { DeviceAuthService } from '@dogu-private/dogu-agent-core/app';
-import { DeviceConnectionState, Platform, Serial } from '@dogu-private/types';
+import { DeviceConnectionState, DOGU_DEVICE_AUTHORIZATION_HEADER_KEY, Platform, Serial } from '@dogu-private/types';
 import { delay, loop, transformAndValidate } from '@dogu-tech/common';
 import { DeviceConnectionSubscribe, DeviceConnectionSubscribeReceiveMessage } from '@dogu-tech/device-client-common';
 import { ipcMain } from 'electron';
@@ -72,7 +72,7 @@ export class DeviceLookupService {
 
   private connect(): void {
     const url = `ws://127.0.0.1:${this.deviceServerPort}${DeviceConnectionSubscribe.path}`;
-    this.client = new WebSocket(url, { headers: { authorization: `Custom ${this.authService.adminToken.value}` } });
+    this.client = new WebSocket(url, { headers: { [DOGU_DEVICE_AUTHORIZATION_HEADER_KEY]: this.authService.adminToken.value } });
     this.client.on('open', () => {
       logger.info('DeviceLookupService is connected', {
         url,

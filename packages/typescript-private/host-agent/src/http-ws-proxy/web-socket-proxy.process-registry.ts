@@ -1,5 +1,5 @@
 import { WebSocketProxyConnect, WebSocketProxyId, WebSocketProxySendClose, WebSocketProxySendMessage } from '@dogu-private/console-host-agent';
-import { DeviceId, OrganizationId } from '@dogu-private/types';
+import { DeviceId, DOGU_DEVICE_AUTHORIZATION_HEADER_KEY, OrganizationId } from '@dogu-private/types';
 import { closeWebSocketWithTruncateReason, errorify, Instance, stringify, validateAndEmitEventAsync } from '@dogu-tech/common';
 import { Injectable } from '@nestjs/common';
 import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
@@ -42,7 +42,7 @@ export class WebSocketProxyProcessRegistry {
     const { info, eventHandler } = context;
     const { deviceId, organizationId } = info;
     const headers = param.headers ?? {};
-    headers['Authorization'] = this.authService.makeAuthHeader().Authorization;
+    headers[DOGU_DEVICE_AUTHORIZATION_HEADER_KEY] = this.authService.makeAuthHeader()[DOGU_DEVICE_AUTHORIZATION_HEADER_KEY];
 
     const webSocket = new WebSocket(`ws://${env.DOGU_DEVICE_SERVER_HOST_PORT}${path}`, { headers });
     const webSocketProxyInfo: WebSocketProxyInfo = { webSocket, organizationId, deviceId, webSocketProxyId };

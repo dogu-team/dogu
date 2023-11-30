@@ -1,6 +1,6 @@
 import { closeWebSocketWithTruncateReason, FilledPrintable, PrefixLogger, Printable, setAxiosErrorFilterToIntercepter, stringify } from '@dogu-tech/common';
 import { DeviceClientOptions, DeviceServerResponseDto, DeviceService, DeviceWebSocket, DeviceWebSocketListener } from '@dogu-tech/device-client-common';
-import { Headers, HeaderValue, HttpRequest, HttpResponse, WebSocketConnection } from '@dogu-tech/types';
+import { DOGU_DEVICE_AUTHORIZATION_HEADER_KEY, Headers, HeaderValue, HttpRequest, HttpResponse, WebSocketConnection } from '@dogu-tech/types';
 import axios from 'axios';
 import { WebSocket } from 'ws';
 
@@ -116,7 +116,7 @@ export class NodeDeviceService implements DeviceService {
     const url = `ws://127.0.0.1:${port}${path}`;
     const webSocket = new WebSocket(url, {
       headers: {
-        Authorization: `Custom ${options.tokenGetter().value}`,
+        [DOGU_DEVICE_AUTHORIZATION_HEADER_KEY]: options.tokenGetter().value,
       },
     });
     webSocket.on('open', () => {

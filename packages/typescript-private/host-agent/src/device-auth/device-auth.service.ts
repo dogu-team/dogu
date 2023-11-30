@@ -1,4 +1,4 @@
-import { DeviceAdminToken } from '@dogu-private/types';
+import { DeviceAdminToken, DOGU_DEVICE_AUTHORIZATION_HEADER_KEY } from '@dogu-private/types';
 import { Injectable } from '@nestjs/common';
 import { env } from '../env';
 import { DoguLogger } from '../logger/logger';
@@ -15,9 +15,9 @@ export class DeviceAuthService {
     return this._adminToken;
   }
 
-  makeAuthHeader(): { Authorization: string } {
+  makeAuthHeader(): { [DOGU_DEVICE_AUTHORIZATION_HEADER_KEY]: string } {
     return {
-      Authorization: `Custom ${this._adminToken.value}`,
+      [DOGU_DEVICE_AUTHORIZATION_HEADER_KEY]: this._adminToken.value,
     };
   }
 

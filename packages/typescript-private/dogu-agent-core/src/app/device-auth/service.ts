@@ -1,5 +1,5 @@
 import { DeviceAuthSubscribe } from '@dogu-private/dost-children';
-import { DeviceAdminToken } from '@dogu-private/types';
+import { DeviceAdminToken, DOGU_DEVICE_AUTHORIZATION_HEADER_KEY } from '@dogu-private/types';
 import { FilledPrintable, Instance, setAxiosErrorFilterToIntercepter, stringify } from '@dogu-tech/common';
 import { DeviceAuth } from '@dogu-tech/device-client-common';
 import axios, { AxiosInstance } from 'axios';
@@ -81,7 +81,7 @@ export class DeviceAuthService {
       newToken,
     };
     await this._deviceServerClient.post(`${DeviceAuth.controller.path}${DeviceAuth.refreshAdminToken.path}`, request, {
-      headers: { Authorization: `Custom ${beforeToken.value}` },
+      headers: { [DOGU_DEVICE_AUTHORIZATION_HEADER_KEY]: beforeToken.value },
     });
 
     const sendMessage: Instance<typeof DeviceAuthSubscribe.sendMessage> = {
