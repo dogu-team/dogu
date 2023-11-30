@@ -9,6 +9,7 @@ import {
   GetAvailableBillingCouponsDto,
   GetBillingPrecheckoutDto,
   GetBillingPrecheckoutResponse,
+  GetUpdatePaymentMethodTransactionResponse,
   UpdateBillingMethodResponse,
   UpdateBillingPlanInfoStateDto,
   UpdateMethodNiceDto,
@@ -106,6 +107,15 @@ export const precheckoutPurchase = async (
     {
       params: dto,
     },
+  );
+  return data;
+};
+
+export const getUpdatePaymentMethodTransaction = async (
+  planId: string,
+): Promise<CallBillingApiResponse<GetUpdatePaymentMethodTransactionResponse>> => {
+  const { data } = await api.get<CallBillingApiResponse<GetUpdatePaymentMethodTransactionResponse>>(
+    `/billing/plan-infos/${planId}/update-payment-method-transaction`,
   );
   return data;
 };

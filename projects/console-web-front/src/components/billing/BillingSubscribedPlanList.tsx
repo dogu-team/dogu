@@ -5,7 +5,7 @@ import {
   CloudLicenseResponse,
   SelfHostedLicenseBase,
 } from '@dogu-private/console';
-import { Alert, List, MenuProps, Tag } from 'antd';
+import { Alert, List, MenuProps, Modal, Tag } from 'antd';
 import Trans from 'next-translate/Trans';
 import useTranslation from 'next-translate/useTranslation';
 import { useRouter } from 'next/router';
@@ -23,6 +23,7 @@ import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd
 import { getLocaleFormattedDate } from '../../utils/locale';
 import MenuButton from '../buttons/MenuButton';
 import MenuItemButton from '../buttons/MenuItemButton';
+import BillingPaymentMethodPaddle from './BillingPaymentMethodPaddle';
 import UpgradePlanModal from './UpgradePlanModal';
 
 interface OptionProps {
@@ -242,6 +243,7 @@ interface ItemProps {
 
 const PlanItem: React.FC<ItemProps> = ({ plan }) => {
   const [license, updateLicense] = useLicenseStore((state) => [state.license, state.updateLicense], shallow);
+  const [isOpen, openModal, closeModal] = useModal();
   const { t } = useTranslation('billing');
 
   const description = planDescriptionInfoMap[plan.type];
@@ -280,6 +282,16 @@ const PlanItem: React.FC<ItemProps> = ({ plan }) => {
   };
 
   const items: MenuProps['items'] = [
+    license?.billingOrganization.billingMethod === 'paddle'
+      ? {
+          label: (
+            <MenuItemButton danger={false} onClick={() => openModal()}>
+              Payment method
+            </MenuItemButton>
+          ),
+          key: 'payment-method',
+        }
+      : null,
     {
       label: (
         <MenuItemButton
@@ -319,25 +331,31 @@ const PlanItem: React.FC<ItemProps> = ({ plan }) => {
   ];
 
   return (
-    <Item>
-      <ItemInner>
-        <Cell flex={1}>
-          <b>{t(description.titleI18nKey)}</b>
-        </Cell>
-        <Cell flex={1}>
-          <PlanOption plan={plan} />
-        </Cell>
-        <Cell flex={1}>
-          <StateBadge plan={plan} />
-        </Cell>
-        <Cell flex={1}>
-          <NextCharge plan={plan} />
-        </Cell>
-        <ButtonWrapper>
-          <MenuButton menu={{ items }} />
-        </ButtonWrapper>
-      </ItemInner>
-    </Item>
+    <>
+      <Item>
+        <ItemInner>
+          <Cell flex={1}>
+            <b>{t(description.titleI18nKey)}</b>
+          </Cell>
+          <Cell flex={1}>
+            <PlanOption plan={plan} />
+          </Cell>
+          <Cell flex={1}>
+            <StateBadge plan={plan} />
+          </Cell>
+          <Cell flex={1}>
+            <NextCharge plan={plan} />
+          </Cell>
+          <ButtonWrapper>
+            <MenuButton menu={{ items }} />
+          </ButtonWrapper>
+        </ItemInner>
+      </Item>
+
+      <Modal open={isOpen} centered footer={null} closable onCancel={closeModal} title="Payment method">
+        <BillingPaymentMethodPaddle plan={plan} />
+      </Modal>
+    </>
   );
 };
 

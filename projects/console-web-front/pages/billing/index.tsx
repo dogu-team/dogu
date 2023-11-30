@@ -6,11 +6,7 @@ import useTranslation from 'next-translate/useTranslation';
 import Head from 'next/head';
 import styled from 'styled-components';
 
-import {
-  getCloudLicenseInServerSide,
-  getLicenseInServerSide,
-  getSelfHostedLicenseInServerSide,
-} from '../../enterprise/api/license';
+import { getLicenseInServerSide } from '../../enterprise/api/license';
 import BillingHistoryList from '../../src/components/billing/BillingHistoryList';
 import BillingPaymentMethodNice from '../../src/components/billing/BillingPaymentMethodNice';
 import BillingPaymentMethodPaddle from '../../src/components/billing/BillingPaymentMethodPaddle';
@@ -20,7 +16,7 @@ import LiveChat from '../../src/components/external/livechat';
 import ConsoleBasicLayout from '../../src/components/layouts/ConsoleBasicLayout';
 import Footer from '../../src/components/layouts/Footer';
 import useLicenseStore from '../../src/stores/license';
-import { checkLoginInServerSide, checkUserVerifiedInServerSide } from '../../src/utils/auth';
+import { checkUserVerifiedInServerSide } from '../../src/utils/auth';
 import { NextPageWithLayout } from '../_app';
 
 interface BillingPageProps {
@@ -31,6 +27,8 @@ interface BillingPageProps {
 const BillingPage: NextPageWithLayout<BillingPageProps> = ({ me, license }) => {
   const { t } = useTranslation('billing');
   const storedLicense = useLicenseStore((state) => state.license);
+
+  console.log(license);
 
   if (!storedLicense) {
     return (
@@ -78,10 +76,11 @@ const BillingPage: NextPageWithLayout<BillingPageProps> = ({ me, license }) => {
                   organizationId={license.organizationId as OrganizationId}
                 />
               ) : (
-                <BillingPaymentMethodPaddle
-                  method={license.billingOrganization.billingMethodPaddle!}
-                  organizationId={license.organizationId as OrganizationId}
-                />
+                <div>For change payment method for plan, click menu button of each plan.</div>
+                // <BillingPaymentMethodPaddle
+                //   method={license.billingOrganization.billingMethodPaddle!}
+                //   organizationId={license.organizationId as OrganizationId}
+                // />
               )}
             </ContentInner>
           </Content>

@@ -6,6 +6,7 @@ import {
   CreatePurchaseWithNewCardResponse,
   GetBillingPrecheckoutResponse,
   GetBillingPreviewResponse,
+  GetUpdatePaymentMethodTransactionResponse,
   UpdateBillingMethodResponse,
   ValidateBillingCouponResponse,
 } from '@dogu-private/console';
@@ -137,7 +138,7 @@ export class BillingController {
 
   @Get('/plan-infos/:billingPlanInfoId/update-payment-method-transaction')
   @OrganizationPermission(ORGANIZATION_ROLE.ADMIN)
-  async getUpdatePaymentMethodTransaction(@Param('billingPlanInfoId') billingPlanInfoId: string): Promise<CallBillingApiResponse> {
+  async getUpdatePaymentMethodTransaction(@Param('billingPlanInfoId') billingPlanInfoId: string): Promise<CallBillingApiResponse<GetUpdatePaymentMethodTransactionResponse>> {
     return await this.billingCaller.callBillingApi({
       method: 'GET',
       path: `billing/plan-infos/${billingPlanInfoId}/update-payment-method-transaction`,
