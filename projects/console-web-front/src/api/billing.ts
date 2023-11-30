@@ -7,8 +7,8 @@ import {
   CreatePurchaseWithNewCardDto,
   CreatePurchaseWithNewCardResponse,
   GetAvailableBillingCouponsDto,
-  PrecheckoutDto,
-  PrecheckoutResponse,
+  GetBillingPrecheckoutDto,
+  GetBillingPrecheckoutResponse,
   UpdateBillingMethodResponse,
   UpdateBillingPlanInfoStateDto,
   UpdateMethodNiceDto,
@@ -99,11 +99,14 @@ export const cancelChangePlanOptionOrPeriod = async (
 };
 
 export const precheckoutPurchase = async (
-  dto: PrecheckoutDto,
-): Promise<CallBillingApiResponse<PrecheckoutResponse>> => {
-  const { data } = await api.get<CallBillingApiResponse<PrecheckoutResponse>>('/billing/purchase/precheckout', {
-    params: dto,
-  });
+  dto: GetBillingPrecheckoutDto,
+): Promise<CallBillingApiResponse<GetBillingPrecheckoutResponse>> => {
+  const { data } = await api.get<CallBillingApiResponse<GetBillingPrecheckoutResponse>>(
+    '/billing/purchase/precheckout',
+    {
+      params: dto,
+    },
+  );
   return data;
 };
 
