@@ -16,7 +16,6 @@ export const BillingHistoryType = [...BillingHistoryTypePurchase, ...BillingHist
 export type BillingHistoryType = (typeof BillingHistoryType)[number];
 
 export interface BillingHistoryBase {
-  // common
   billingHistoryId: string;
   billingOrganizationId: string;
   historyType: BillingHistoryType;
@@ -46,8 +45,9 @@ export interface BillingHistoryBase {
   nicePaymentsCancelResponse: Record<string, unknown> | null;
 
   // paddle only
-  paddlePaymentType: string | null;
+  paddleMethodType: string | null;
   paddleTransactionId: string | null;
+  paddleTransaction: Record<string, unknown> | null;
 }
 
 export const BillingHistoryProp = propertiesOf<BillingHistoryBase>();

@@ -13,12 +13,6 @@ export interface BillingPlanInfoBase extends BillingPlanData {
   billingPlanInfoId: string;
   billingOrganizationId: string;
   billingCouponId: string | null;
-
-  /**
-   * @description null means unlimited
-   */
-  couponRemainingApplyCount: number | null;
-  couponApplied: boolean;
   discountedAmount: number;
   billingPlanSourceId: number;
   changeRequestedPeriod: BillingPeriod | null;
@@ -27,19 +21,29 @@ export interface BillingPlanInfoBase extends BillingPlanData {
   changeRequestedDiscountedAmount: number | null;
   unsubscribedAt: Date | null;
   state: BillingPlanState;
-  paddlePaymentType: string | null;
-  cardCode: string | null;
-  cardName: string | null;
-  cardNumberLast4Digits: string | null;
-  cardExpirationYear: string | null;
-  cardExpirationMonth: string | null;
   billingPlanHistoryId: string | null;
+
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date | null;
   billingOrganization?: BillingOrganizationBase;
   billingCoupon?: BillingCouponBase;
   billingPlanSource?: BillingPlanSourceBase;
+
+  // nice only
+  /**
+   * @description null means unlimited
+   */
+  couponRemainingApplyCount: number | null;
+  couponApplied: boolean;
+
+  // paddle only
+  paddleMethodType: string | null;
+  cardCode: string | null;
+  cardName: string | null;
+  cardNumberLast4Digits: string | null;
+  cardExpirationYear: string | null;
+  cardExpirationMonth: string | null;
 }
 
 export const BillingPlanInfoProp = propertiesOf<BillingPlanInfoBase>();

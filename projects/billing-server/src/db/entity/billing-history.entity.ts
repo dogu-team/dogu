@@ -52,10 +52,13 @@ export class BillingHistory implements BillingHistoryBase {
   cardExpirationMonth!: string | null;
 
   @Column({ type: 'character varying', nullable: true })
-  paddlePaymentType!: string | null;
+  paddleMethodType!: string | null;
 
   @Column({ type: 'character varying', nullable: true })
   paddleTransactionId!: string | null;
+
+  @Column({ type: 'jsonb', nullable: true })
+  paddleTransaction!: Record<string, unknown> | null;
 
   @Column({ type: 'character varying', nullable: true })
   cancelReason!: string | null;

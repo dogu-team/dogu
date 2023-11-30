@@ -11,8 +11,8 @@ const usePaddle = (): { paddleRef: MutableRefObject<Paddle | undefined>; loading
     setLoading(true);
     initializePaddle({
       environment: 'sandbox',
-      // token: 'test_34410b5690f361ec275f1cb58bf',
-      token: 'test_3184624ff37cdb070269ed045c9',
+      token: 'test_34410b5690f361ec275f1cb58bf',
+      // token: 'test_3184624ff37cdb070269ed045c9',
       debug: true,
     })
       .then((paddle) => {

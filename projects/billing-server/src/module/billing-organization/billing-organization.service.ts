@@ -39,14 +39,14 @@ export class BillingOrganizationService {
       const organization = await findBillingOrganization(context, dto);
       if (!organization) {
         throw new NotFoundException({
-          message: 'BillingOrganization not found',
+          reason: 'BillingOrganization not found',
           organizationId,
         });
       }
 
       if (!organization.billingMethodPaddle) {
         throw new InternalServerErrorException({
-          message: 'BillingMethodPaddle not found',
+          reason: 'BillingMethodPaddle not found',
           organizationId,
         });
       }
@@ -62,14 +62,14 @@ export class BillingOrganizationService {
       const organization = await findBillingOrganization(context, { organizationId });
       if (!organization) {
         throw new NotFoundException({
-          message: 'BillingOrganization not found',
+          reason: 'BillingOrganization not found',
           organizationId,
         });
       }
 
       if (!organization.billingMethodPaddle) {
         throw new InternalServerErrorException({
-          message: 'BillingMethodPaddle not found',
+          reason: 'BillingMethodPaddle not found',
           organizationId,
         });
       }
@@ -78,7 +78,7 @@ export class BillingOrganizationService {
       const paddleAddresses = await this.paddleCaller.listAddressesAll({ customerId });
       if (paddleAddresses.length === 0) {
         throw new InternalServerErrorException({
-          message: 'PaddleAddress not found',
+          reason: 'PaddleAddress not found',
           customerId,
         });
       }
@@ -87,7 +87,7 @@ export class BillingOrganizationService {
       const { id: addressId } = firstAddress;
       if (!addressId) {
         throw new InternalServerErrorException({
-          message: 'PaddleAddress id not found',
+          reason: 'PaddleAddress id not found',
           customerId,
         });
       }

@@ -52,7 +52,7 @@ export function validateMethod(organization: BillingOrganization, method: Billin
 
   if (organization.billingMethod !== method) {
     throw new BadRequestException({
-      message: 'Do not mix billing methods',
+      reason: 'Do not mix billing methods',
       organizationMethod: organization.billingMethod,
       method,
     });
@@ -74,7 +74,7 @@ export function validateCurrency(organization: BillingOrganization, currency: Bi
 
   if (organization.currency !== currency) {
     throw new BadRequestException({
-      message: 'Do not mix currencies',
+      reason: 'Do not mix currencies',
       organizationCurrency: organization.currency,
       currency,
     });

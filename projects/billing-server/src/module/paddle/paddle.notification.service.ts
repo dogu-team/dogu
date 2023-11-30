@@ -1,4 +1,4 @@
-import { BillingGoodsName, isBillingCurrency } from '@dogu-private/console';
+import { BillingGoodsName, BillingUsdAmount } from '@dogu-private/console';
 import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import * as crypto from 'crypto';
 import { DataSource } from 'typeorm';
@@ -6,12 +6,13 @@ import { v4 } from 'uuid';
 import { config } from '../../config';
 import { BillingCoupon } from '../../db/entity/billing-coupon.entity';
 import { BillingHistory } from '../../db/entity/billing-history.entity';
-import { BillingOrganization } from '../../db/entity/billing-organization.entity';
 import { BillingPlanHistory } from '../../db/entity/billing-plan-history.entity';
 import { BillingPlanInfo } from '../../db/entity/billing-plan-info.entity';
 import { BillingPlanSource } from '../../db/entity/billing-plan-source.entity';
 import { RetryTransaction } from '../../db/retry-transaction';
 import { BillingCouponService } from '../billing-coupon/billing-coupon.service';
+import { preprocess } from '../billing-purchase/billing-purchase.serializables';
+import { DateTimeSimulatorService } from '../date-time-simulator/date-time-simulator.service';
 import { DoguLogger } from '../logger/logger';
 import { PaddleCaller } from './paddle.caller';
 import { Paddle } from './paddle.types';
@@ -29,6 +30,7 @@ export class PaddleNotificationService {
     private readonly dataSource: DataSource,
     private readonly paddleCaller: PaddleCaller,
     private readonly billingCouponService: BillingCouponService,
+    private readonly dateTimeSimulatorService: DateTimeSimulatorService,
   ) {
     this.retryTransaction = new RetryTransaction(this.logger, this.dataSource);
     this.registerHandler('transaction.created', async (event) => this.onTransactionCreated(event));
@@ -38,7 +40,7 @@ export class PaddleNotificationService {
   async onNotification(paddleSignature: string, body: unknown): Promise<unknown> {
     if (!paddleSignature) {
       throw new BadRequestException({
-        message: 'Paddle-Signature header is missing',
+        reason: 'Paddle-Signature header is missing',
         paddleSignature,
       });
     }
@@ -46,7 +48,7 @@ export class PaddleNotificationService {
     const [timestampKeyValue, signatureKeyValue] = paddleSignature.split(';') as (string | undefined)[];
     if (!timestampKeyValue || !signatureKeyValue) {
       throw new BadRequestException({
-        message: 'Paddle-Signature header is malformed',
+        reason: 'Paddle-Signature header is malformed',
         paddleSignature,
       });
     }
@@ -55,20 +57,20 @@ export class PaddleNotificationService {
     const [signatureKey, signature] = signatureKeyValue.split('=') as (string | undefined)[];
     if (!timestampKey || !timestamp || !signatureKey || !signature) {
       throw new BadRequestException({
-        message: 'Paddle-Signature header is malformed',
+        reason: 'Paddle-Signature header is malformed',
         paddleSignature,
       });
     }
 
     if (!body) {
       throw new BadRequestException({
-        message: 'Request body is empty',
+        reason: 'Request body is empty',
       });
     }
 
     if (typeof body !== 'object') {
       throw new BadRequestException({
-        message: 'Request body is not object',
+        reason: 'Request body is not object',
         body,
       });
     }
@@ -77,7 +79,7 @@ export class PaddleNotificationService {
     const expectedSignature = crypto.createHmac('sha256', config.paddle.notificationKey).update(signedPayload).digest('hex');
     if (signature !== expectedSignature) {
       throw new BadRequestException({
-        message: 'Paddle-Signature header is invalid',
+        reason: 'Paddle-Signature header is invalid',
         body,
       });
     }
@@ -87,7 +89,7 @@ export class PaddleNotificationService {
     const { event_type } = event;
     if (!event_type) {
       throw new BadRequestException({
-        message: 'event_type is missing',
+        reason: 'event_type is missing',
         body,
       });
     }
@@ -113,7 +115,7 @@ export class PaddleNotificationService {
     const transaction = event.data;
     if (!transaction) {
       throw new BadRequestException({
-        message: 'Transaction is empty',
+        reason: 'Transaction is empty',
         event,
       });
     }
@@ -124,7 +126,7 @@ export class PaddleNotificationService {
       const { billingCouponId } = discount.custom_data ?? {};
       if (!billingCouponId) {
         throw new InternalServerErrorException({
-          message: 'custom_data.billingCouponId is empty',
+          reason: 'custom_data.billingCouponId is empty',
           discount,
         });
       }
@@ -137,7 +139,7 @@ export class PaddleNotificationService {
 
       if (discount.code !== billingCoupon.code) {
         throw new InternalServerErrorException({
-          message: 'discount.code is not equal to billingCoupon.code',
+          reason: 'discount.code is not equal to billingCoupon.code',
           discount,
           billingCoupon,
         });
@@ -146,14 +148,14 @@ export class PaddleNotificationService {
       const { organizationId, billingPlanSourceId } = transaction.custom_data ?? {};
       if (!organizationId) {
         throw new InternalServerErrorException({
-          message: 'custom_data.organizationId is empty',
+          reason: 'custom_data.organizationId is empty',
           transaction,
         });
       }
 
       if (!billingPlanSourceId) {
         throw new InternalServerErrorException({
-          message: 'custom_data.billingPlanSourceId is empty',
+          reason: 'custom_data.billingPlanSourceId is empty',
           transaction,
         });
       }
@@ -171,7 +173,7 @@ export class PaddleNotificationService {
       });
       if (!response.ok) {
         throw new BadRequestException({
-          message: 'Coupon is invalid',
+          reason: 'Coupon is invalid',
           response,
         });
       }
@@ -182,201 +184,208 @@ export class PaddleNotificationService {
     const transaction = event.data;
     if (!transaction) {
       throw new BadRequestException({
-        message: 'transaction is empty',
+        reason: 'transaction is empty',
         event,
       });
     }
 
     if (!transaction.id) {
       throw new BadRequestException({
-        message: 'id is empty',
+        reason: 'id is empty',
         transaction,
       });
     }
 
     const paddleTransactionId = transaction.id;
-    const { subscription_id } = transaction;
-    const { billingPlanSourceId } = transaction.custom_data ?? {};
+    const { subscription_id, payments, custom_data, currency_code, discount_id, details, items, billing_period } = transaction;
+    const item = items?.[0];
+    const { line_items } = details ?? {};
+    const lineItem = line_items?.[0];
+    const { organizationId, billingPlanSourceId } = custom_data ?? {};
+    const payment = payments?.[0];
+    const { method_details } = payment ?? {};
+    const { card } = method_details ?? {};
 
-    const existHistory = await this.dataSource.getRepository(BillingHistory).exist({
-      where: {
-        paddleTransactionId,
-      },
-    });
-    if (existHistory) {
-      this.logger.info('Paddle transaction already processed', { paddleTransactionId });
-      return;
-    }
+    const originPriceInCents = Number(item?.price?.unit_price?.amount ?? 0);
+    const purchasedAmountInCents = Number(lineItem?.totals?.total ?? 0);
+    const purchasedAmount = BillingUsdAmount.fromCents(purchasedAmountInCents).toDollars();
+    const discountedAmountInCents = originPriceInCents - purchasedAmountInCents;
+    const discountedAmount = BillingUsdAmount.fromCents(discountedAmountInCents).toDollars();
+    const cardNumberLast4Digits = card?.last4 ?? null;
+    const cardExpirationYear = card?.expiry_year?.toString() ?? null;
+    const cardExpirationMonth = card?.expiry_month?.toString() ?? null;
+    const cardName = card?.cardholder_name ?? null;
+    const cardCode = card?.type ?? null;
+    const paddleMethodType = method_details?.type ?? null;
 
     if (!subscription_id) {
       throw new BadRequestException({
-        message: 'subscription_id is empty',
+        reason: 'subscription_id is empty',
         transaction,
       });
     }
 
-    const subscription = await this.paddleCaller.getSubscription({ subscriptionId: subscription_id });
-
-    const { cardCode, cardName, cardNumberLast4Digits, cardExpirationYear, cardExpirationMonth, paddlePaymentType, billingHistoryId, billingOrganizationId } =
-      await this.retryTransaction.serializable(async (context) => {
-        const { manager } = context;
-        if (!transaction.id) {
-          throw new Error(`Transaction id is empty. ${JSON.stringify(transaction)}`);
-        }
-
-        if (!transaction.customer_id) {
-          throw new Error(`Customer id is empty. ${JSON.stringify(transaction)}`);
-        }
-
-        if (!transaction.currency_code) {
-          throw new Error(`Currency code is empty. ${JSON.stringify(transaction)}`);
-        }
-
-        if (!transaction.details) {
-          throw new Error(`Details is empty. ${JSON.stringify(transaction)}`);
-        }
-
-        if (!transaction.details.totals) {
-          throw new Error(`Totals is empty. ${JSON.stringify(transaction)}`);
-        }
-
-        if (!transaction.payments) {
-          throw new Error(`Payments is empty. ${JSON.stringify(transaction)}`);
-        }
-
-        if (transaction.payments.length <= 0) {
-          throw new Error(`Payments is empty. ${JSON.stringify(transaction)}`);
-        }
-
-        const payment = transaction.payments[0];
-        if (!payment.method_details) {
-          throw new Error(`Method details is empty. ${JSON.stringify(transaction)}`);
-        }
-
-        if (!payment.method_details.type) {
-          throw new Error(`Method type is empty. ${JSON.stringify(transaction)}`);
-        }
-
-        const cardNumberLast4Digits = payment.method_details.card?.last4 ?? null;
-        const cardExpirationYear = payment.method_details.card?.expiry_year?.toString() ?? null;
-        const cardExpirationMonth = payment.method_details.card?.expiry_month?.toString() ?? null;
-        const cardName = payment.method_details.card?.cardholder_name ?? null;
-        const cardCode = payment.method_details.card?.type ?? null;
-        const paddlePaymentType = payment.method_details.type;
-        const currency = isBillingCurrency(transaction.currency_code) ? transaction.currency_code : null;
-        if (!currency) {
-          throw new Error(`Currency is invalid. ${JSON.stringify(transaction)}`);
-        }
-
-        const billingOrganization = await manager.getRepository(BillingOrganization).findOneOrFail({
-          where: {
-            billingMethodPaddle: {
-              customerId: transaction.customer_id,
-            },
-          },
-          relations: {
-            billingMethodPaddle: true,
-          },
-        });
-        const { billingOrganizationId } = billingOrganization;
-        // FIXME:
-        const purchasedAmount = Number(transaction.details.totals.total);
-
-        const billingPlanSource = await manager.getRepository(BillingPlanSource).findOneOrFail({
-          where: {
-            billingPlanSourceId,
-          },
-        });
-
-        const createdHistory = manager.getRepository(BillingHistory).create({
-          billingHistoryId: v4(),
-          billingOrganizationId,
-          purchasedAmount,
-          currency,
-          goodsName: BillingGoodsName,
-          method: 'paddle',
-          historyType: 'immediate-purchase',
-          cardCode,
-          cardName,
-          cardNumberLast4Digits,
-          cardExpirationYear,
-          cardExpirationMonth,
-          paddlePaymentType,
-          paddleTransactionId: transaction.id,
-        });
-        const savedHistory = await manager.save(createdHistory);
-
-        // FIXME:
-        const discountedAmount = Number(transaction.details.line_items?.[0].totals.discount);
-        // TODO: plan history
-
-        const createdPlanHistory = manager.getRepository(BillingPlanHistory).create({
-          billingPlanHistoryId: v4(),
-          billingOrganizationId,
-          billingHistoryId: savedHistory.billingHistoryId,
-          billingPlanSourceId,
-          discountedAmount,
-          category: billingPlanSource.category,
-          type: billingPlanSource.type,
-          option: billingPlanSource.option,
-          currency: billingPlanSource.currency,
-          originPrice: billingPlanSource.originPrice,
-          period: billingPlanSource.period,
-          historyType: 'immediate-purchase',
-        });
-        await manager.save(createdPlanHistory);
-
-        return {
-          subscriptionId: transaction.subscription_id,
-          cardCode,
-          cardName,
-          cardNumberLast4Digits,
-          cardExpirationYear,
-          cardExpirationMonth,
-          paddlePaymentType,
-          billingHistoryId: savedHistory.billingHistoryId,
-          billingOrganizationId: billingOrganization.billingOrganizationId,
-        };
+    if (!currency_code) {
+      throw new BadRequestException({
+        reason: 'currency_code is empty',
+        transaction,
       });
+    }
+
+    if (!organizationId) {
+      throw new InternalServerErrorException({
+        reason: 'custom_data.organizationId is empty',
+        transaction,
+      });
+    }
+
+    if (!billingPlanSourceId) {
+      throw new InternalServerErrorException({
+        reason: 'custom_data.billingPlanSourceId is empty',
+        transaction,
+      });
+    }
+
+    let billingCouponId: string | null = null;
+    if (discount_id) {
+      const discount = await this.paddleCaller.getDiscount({ id: discount_id });
+      billingCouponId = discount.custom_data?.billingCouponId ?? null;
+      if (!billingCouponId) {
+        throw new InternalServerErrorException({
+          reason: 'custom_data.billingCouponId is empty',
+          discount,
+        });
+      }
+    }
+
+    const subscription = await this.paddleCaller.getSubscription({ subscriptionId: subscription_id });
+    const { current_billing_period } = subscription;
+    const { starts_at, ends_at } = current_billing_period ?? {};
+    if (!starts_at) {
+      throw new InternalServerErrorException({
+        reason: 'current_billing_period.starts_at is empty',
+        subscription,
+      });
+    }
+
+    if (!ends_at) {
+      throw new InternalServerErrorException({
+        reason: 'current_billing_period.ends_at is empty',
+        subscription,
+      });
+    }
+
+    const startedAt = new Date(starts_at);
+    const expiredAt = new Date(ends_at);
 
     await this.retryTransaction.serializable(async (context) => {
       const { manager } = context;
-      if (!subscription.custom_data) {
-        throw new Error(`Custom data is empty. ${JSON.stringify(subscription)}`);
-      }
-
-      if (!subscription.custom_data.billingPlanInfoId) {
-        throw new Error(`Billing plan info id is empty. ${JSON.stringify(subscription)}`);
-      }
-
-      const billingPlanInfo = await manager.getRepository(BillingPlanInfo).findOne({
+      const existHistory = await manager.getRepository(BillingHistory).exist({
         where: {
-          billingPlanInfoId: subscription.custom_data.billingPlanInfoId,
+          paddleTransactionId,
         },
       });
-      if (billingPlanInfo) {
-        billingPlanInfo.paddlePaymentType = paddlePaymentType;
-        billingPlanInfo.cardCode = cardCode;
-        billingPlanInfo.cardName = cardName;
-        billingPlanInfo.cardNumberLast4Digits = cardNumberLast4Digits;
-        billingPlanInfo.cardExpirationYear = cardExpirationYear;
-        billingPlanInfo.cardExpirationMonth = cardExpirationMonth;
-        billingPlanInfo.billingPlanHistoryId = billingHistoryId;
-        await manager.save(billingPlanInfo);
-      } else {
-        // TODO: plan info
-        const created = manager.getRepository(BillingPlanInfo).create({
+      if (existHistory) {
+        this.logger.info('Paddle transaction already processed', { paddleTransactionId });
+        return;
+      }
+
+      const now = this.dateTimeSimulatorService.now();
+      const preprocessResult = await preprocess(context, {
+        organizationId,
+        billingPlanSourceId,
+        now,
+      });
+      if (!preprocessResult.ok) {
+        throw new InternalServerErrorException({
+          reason: 'Preprocess failed',
+          preprocessResult,
+        });
+      }
+
+      const { organization, planSource, currency } = preprocessResult.value;
+      const { billingOrganizationId } = organization;
+      if (currency !== currency_code) {
+        throw new InternalServerErrorException({
+          reason: 'currency is not equal to currency_code',
+          currency,
+          currency_code,
+        });
+      }
+
+      let planInfo = organization.billingPlanInfos?.find((planInfo) => planInfo.billingPlanSourceId === billingPlanSourceId);
+      if (!planInfo) {
+        planInfo = manager.getRepository(BillingPlanInfo).create({
           billingPlanInfoId: v4(),
           billingOrganizationId,
-          paddlePaymentType,
+          billingPlanSourceId,
+          billingCouponId,
+          discountedAmount,
+          state: 'subscribed',
+          paddleMethodType,
           cardCode,
           cardName,
           cardNumberLast4Digits,
           cardExpirationYear,
           cardExpirationMonth,
+          category: planSource.category,
+          period: planSource.period,
+          originPrice: planSource.originPrice,
+          type: planSource.type,
+          option: planSource.option,
+          currency: planSource.currency,
         });
-        await manager.save(created);
+      } else {
+        planInfo.billingCouponId = billingCouponId;
+        planInfo.discountedAmount = discountedAmount;
+        planInfo.state = 'subscribed';
+        planInfo.paddleMethodType = paddleMethodType;
+        planInfo.cardCode = cardCode;
+        planInfo.cardName = cardName;
+        planInfo.cardNumberLast4Digits = cardNumberLast4Digits;
+        planInfo.cardExpirationYear = cardExpirationYear;
+        planInfo.cardExpirationMonth = cardExpirationMonth;
       }
+      planInfo = await manager.save(planInfo);
+
+      const createdHistory = manager.getRepository(BillingHistory).create({
+        billingHistoryId: v4(),
+        billingOrganizationId,
+        historyType: 'immediate-purchase',
+        currency,
+        purchasedAmount,
+        goodsName: BillingGoodsName,
+        method: 'paddle',
+        cardCode,
+        cardName,
+        cardNumberLast4Digits,
+        cardExpirationYear,
+        cardExpirationMonth,
+        paddleMethodType,
+        paddleTransactionId,
+        paddleTransaction: transaction as Record<string, unknown>,
+      });
+      const history = await manager.save(createdHistory);
+
+      const createdPlanHistory = manager.getRepository(BillingPlanHistory).create({
+        billingPlanHistoryId: v4(),
+        billingOrganizationId,
+        billingHistoryId: history.billingHistoryId,
+        historyType: history.historyType,
+        billingCouponId,
+        billingPlanSourceId,
+        discountedAmount,
+        purchasedAmount,
+        startedAt,
+        expiredAt,
+        category: planSource.category,
+        period: planSource.period,
+        originPrice: planSource.originPrice,
+        type: planSource.type,
+        option: planSource.option,
+        currency: planSource.currency,
+      });
+      const planHistory = await manager.save(createdPlanHistory);
     });
   }
 }

@@ -374,7 +374,7 @@ export namespace Paddle {
           tax?: string;
           total?: string;
         };
-        totals: {
+        totals?: {
           subtotal?: string;
           discount?: string;
           tax?: string;

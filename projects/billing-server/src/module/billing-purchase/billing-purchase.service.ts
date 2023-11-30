@@ -623,7 +623,7 @@ export class BillingPurchaseService {
       });
       if (!preprocessResult.ok) {
         throw new BadRequestException({
-          message: 'preprocess failed',
+          reason: 'preprocess failed',
           resultCode: preprocessResult.resultCode,
         });
       }
@@ -637,7 +637,7 @@ export class BillingPurchaseService {
 
     if (!billingMethodPaddle) {
       throw new InternalServerErrorException({
-        message: 'billing method paddle not found',
+        reason: 'billing method paddle not found',
         organizationId,
       });
     }
@@ -646,7 +646,7 @@ export class BillingPurchaseService {
     const price = await this.paddleCaller.findPrice(dto);
     if (!price) {
       throw new InternalServerErrorException({
-        message: 'price not found',
+        reason: 'price not found',
         dto,
       });
     }
@@ -654,7 +654,7 @@ export class BillingPurchaseService {
     const priceId = price.id;
     if (!priceId) {
       throw new InternalServerErrorException({
-        message: 'price id not found',
+        reason: 'price id not found',
         dto,
       });
     }
@@ -664,14 +664,14 @@ export class BillingPurchaseService {
       const discount = await this.paddleCaller.findDiscount({ billingCouponId });
       if (!discount) {
         throw new InternalServerErrorException({
-          message: 'discount not found',
+          reason: 'discount not found',
           billingCouponId,
         });
       }
 
       if (!discount.id) {
         throw new InternalServerErrorException({
-          message: 'discount id not found',
+          reason: 'discount id not found',
           billingCouponId,
         });
       }

@@ -22,21 +22,20 @@ export class BillingCouponSubscriber {
       this.logger.info('BillingCouponSubscriber.subscribe', { message });
       (async (): Promise<void> => {
         const coupon = message.data as unknown as BillingCoupon;
-        if (message.event === 'created') {
-          await this.paddleCaller.createDiscount({
-            code: coupon.code,
-            type: coupon.type,
-            period: coupon.period,
-            discountPercent: coupon.discountPercent,
-            applyCount: coupon.applyCount,
-            expiredAt: coupon.expiredAt,
-            billingCouponId: coupon.billingCouponId,
-          });
-        } else if (message.event === 'updated') {
+        if (message.event === 'created' || message.event === 'updated') {
           const discounts = await this.paddleCaller.listDiscountsAll();
           const discount = discounts.find((discount) => matchDiscount(coupon, discount));
           if (!discount) {
-            throw new Error(`Discount not found for code ${coupon.billingCouponId}`);
+            await this.paddleCaller.createDiscount({
+              code: coupon.code,
+              type: coupon.type,
+              period: coupon.period,
+              discountPercent: coupon.discountPercent,
+              applyCount: coupon.applyCount,
+              expiredAt: coupon.expiredAt,
+              billingCouponId: coupon.billingCouponId,
+            });
+            return;
           }
 
           if (!discount.id) {
@@ -53,8 +52,6 @@ export class BillingCouponSubscriber {
             expiredAt: coupon.expiredAt,
             billingCouponId: coupon.billingCouponId,
           });
-        } else {
-          throw new Error(`Not supported event ${JSON.stringify(message)}`);
         }
       })().catch((e) => {
         this.logger.error('BillingCouponSubscriber.subscribe.catch', { error: errorify(e) });
