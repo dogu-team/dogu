@@ -18,7 +18,7 @@ export class DeviceClient extends DeviceHttpClient implements DeviceInterface {
     super(deviceService, options);
   }
 
-  private async execute<S extends Class<S>, R>(spec: WebSocketSpec<S, R>, sendMessage: Instance<S>): Promise<void> {
+  private async execute<S extends Class<S>, R>(spec: WebSocketSpec<S, R>, serial: Serial, sendMessage: Instance<S>): Promise<void> {
     return new Promise((resolve, reject) => {
       const { path } = spec;
       const deviceWebSocket = this.deviceService.connectWebSocket(
@@ -26,6 +26,7 @@ export class DeviceClient extends DeviceHttpClient implements DeviceInterface {
           path,
           query: undefined,
         },
+        serial,
         this.options,
         {
           onOpen() {
@@ -98,21 +99,21 @@ export class DeviceClient extends DeviceHttpClient implements DeviceInterface {
   }
 
   async installApp(serial: Serial, appPath: string): Promise<void> {
-    return this.execute(DeviceInstallApp, {
+    return this.execute(DeviceInstallApp, serial, {
       serial,
       appPath,
     });
   }
 
   async uninstallApp(serial: Serial, appPath: string): Promise<void> {
-    return this.execute(DeviceUninstallApp, {
+    return this.execute(DeviceUninstallApp, serial, {
       serial,
       appPath,
     });
   }
 
   async runApp(serial: Serial, appPath: string): Promise<void> {
-    return this.execute(DeviceRunApp, {
+    return this.execute(DeviceRunApp, serial, {
       serial,
       appPath,
     });
@@ -121,6 +122,7 @@ export class DeviceClient extends DeviceHttpClient implements DeviceInterface {
   private async subscribe<S extends Class<S>, R>(
     spec: WebSocketSpec<S, R>,
     query: Record<string, unknown> | undefined,
+    serial: Serial,
     onOpen: (deviceWebSocket: DeviceWebSocket) => void,
     onMessage: (message: string) => void,
   ): Promise<Closable> {
@@ -133,6 +135,7 @@ export class DeviceClient extends DeviceHttpClient implements DeviceInterface {
           path,
           query,
         },
+        serial,
         this.options,
         {
           onOpen() {
@@ -185,6 +188,7 @@ export class DeviceClient extends DeviceHttpClient implements DeviceInterface {
       this.subscribe(
         DeviceForward,
         undefined,
+        serial,
         (deviceServerWebSocket) => {
           const sendMessage: Instance<typeof DeviceForward.sendMessage> = {
             serial,
@@ -239,6 +243,7 @@ export class DeviceClient extends DeviceHttpClient implements DeviceInterface {
     return this.subscribe(
       DeviceRuntimeInfoSubscribe,
       undefined,
+      serial,
       (deviceServerWebSocket) => {
         const sendMessage: Instance<typeof DeviceRuntimeInfoSubscribe.sendMessage> = {
           serial,
@@ -262,6 +267,7 @@ export class DeviceClient extends DeviceHttpClient implements DeviceInterface {
     return this.subscribe(
       DeviceLogSubscribe,
       undefined,
+      serial,
       (deviceServerWebSocket) => {
         const sendMessage: Instance<typeof DeviceLogSubscribe.sendMessage> = {
           serial,
@@ -285,6 +291,7 @@ export class DeviceClient extends DeviceHttpClient implements DeviceInterface {
     return this.subscribe(
       DeviceAlertSubscribe,
       undefined,
+      serial,
       (deviceServerWebSocket) => {
         const sendMessage: Instance<typeof DeviceAlertSubscribe.sendMessage> = {
           serial,

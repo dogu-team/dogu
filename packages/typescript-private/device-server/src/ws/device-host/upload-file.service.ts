@@ -13,6 +13,7 @@ import { IncomingMessage } from 'http';
 import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
 import WebSocket from 'ws';
+import { WebsocketHeaderPermission, WebsocketIncomingMessage } from '../../auth/guard/websocket.guard';
 import { DoguLogger } from '../../logger/logger';
 import { ScanService } from '../../scan/scan.service';
 
@@ -28,7 +29,10 @@ export class DeviceHostUploadFileService
   extends WebSocketGatewayBase<Value, typeof DeviceHostUploadFile.sendMessage, typeof DeviceHostUploadFile.receiveMessage>
   implements OnWebSocketMessage<Value, typeof DeviceHostUploadFile.sendMessage, typeof DeviceHostUploadFile.receiveMessage>, OnWebSocketClose<Value>
 {
-  constructor(private readonly scanService: ScanService, private readonly logger: DoguLogger) {
+  constructor(
+    private readonly scanService: ScanService,
+    private readonly logger: DoguLogger,
+  ) {
     super(DeviceHostUploadFile, logger, (event: WebSocket.MessageEvent) => {
       const { data } = event;
       if (data instanceof Buffer) {
@@ -38,7 +42,8 @@ export class DeviceHostUploadFileService
     });
   }
 
-  override onWebSocketOpen(webSocket: WebSocket, incommingMessage: IncomingMessage): Value {
+  @WebsocketHeaderPermission({ allowAdmin: true, allowTemporary: 'exist' })
+  override onWebSocketOpen(webSocket: WebSocket, @WebsocketIncomingMessage() incommingMessage: IncomingMessage): Value {
     return { tempFilePath: '', filePath: '', fileSize: 0, stream: null };
   }
 

@@ -1,9 +1,11 @@
 import {
   DOGU_DEVICE_AUTHORIZATION_HEADER_KEY,
+  DOGU_DEVICE_SERIAL_HEADER_KEY,
   HttpRequest,
   HttpRequestParam,
   HttpRequestWebSocketResult,
   HttpResponse,
+  Serial,
   WebSocketConnection,
   WebSocketMessage,
 } from '@dogu-private/types';
@@ -256,6 +258,7 @@ export class BrowserDeviceService implements DeviceService {
 
   connectWebSocket(
     connection: WebSocketConnection,
+    serial: Serial | undefined,
     options: Required<DeviceClientOptions>,
     listener?: DeviceWebSocketListener,
   ): DeviceWebSocket {
@@ -346,6 +349,12 @@ export class BrowserDeviceService implements DeviceService {
         key: DOGU_DEVICE_AUTHORIZATION_HEADER_KEY,
         value: options.tokenGetter().value,
       });
+      if (serial) {
+        connection.headers.values.push({
+          key: DOGU_DEVICE_SERIAL_HEADER_KEY,
+          value: serial,
+        });
+      }
 
       sendInternal({
         value: {

@@ -1,6 +1,15 @@
 import { closeWebSocketWithTruncateReason, FilledPrintable, PrefixLogger, Printable, setAxiosErrorFilterToIntercepter, stringify } from '@dogu-tech/common';
 import { DeviceClientOptions, DeviceServerResponseDto, DeviceService, DeviceWebSocket, DeviceWebSocketListener } from '@dogu-tech/device-client-common';
-import { DOGU_DEVICE_AUTHORIZATION_HEADER_KEY, Headers, HeaderValue, HttpRequest, HttpResponse, WebSocketConnection } from '@dogu-tech/types';
+import {
+  DOGU_DEVICE_AUTHORIZATION_HEADER_KEY,
+  DOGU_DEVICE_SERIAL_HEADER_KEY,
+  Headers,
+  HeaderValue,
+  HttpRequest,
+  HttpResponse,
+  Serial,
+  WebSocketConnection,
+} from '@dogu-tech/types';
 import axios from 'axios';
 import { WebSocket } from 'ws';
 
@@ -109,7 +118,7 @@ export class NodeDeviceService implements DeviceService {
     return returningResponse;
   }
 
-  connectWebSocket(connection: WebSocketConnection, options: Required<DeviceClientOptions>, listener?: DeviceWebSocketListener): DeviceWebSocket {
+  connectWebSocket(connection: WebSocketConnection, serial: Serial | undefined, options: Required<DeviceClientOptions>, listener?: DeviceWebSocketListener): DeviceWebSocket {
     const { port, printable } = options;
     const logger = new PrefixLogger(printable, '[NodeDeviceService.connectWebSocket]');
     const { path } = connection;
@@ -117,6 +126,7 @@ export class NodeDeviceService implements DeviceService {
     const webSocket = new WebSocket(url, {
       headers: {
         [DOGU_DEVICE_AUTHORIZATION_HEADER_KEY]: options.tokenGetter().value,
+        [DOGU_DEVICE_SERIAL_HEADER_KEY]: serial,
       },
     });
     webSocket.on('open', () => {

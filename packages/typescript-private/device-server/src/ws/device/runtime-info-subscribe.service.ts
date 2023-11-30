@@ -4,7 +4,7 @@ import { DeviceRuntimeInfoSubscribe } from '@dogu-tech/device-client-common';
 import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import { IncomingMessage } from 'http';
 import WebSocket from 'ws';
-import { AuthIncomingMessage, DeviceWsPermission } from '../../auth/guard/device.ws.guard';
+import { WebsocketHeaderPermission, WebsocketIncomingMessage } from '../../auth/guard/websocket.guard';
 import { OnDeviceRuntimeInfoSubscriberConnectedEvent, OnDeviceRuntimeInfoSubscriberDisconnectedEvent, OnDeviceRuntimeInfoUpdatedEvent } from '../../events';
 import { DoguLogger } from '../../logger/logger';
 
@@ -40,8 +40,8 @@ export class DeviceRuntimeInfoSubscribeService
     });
   }
 
-  @DeviceWsPermission({ allowAdmin: true, allowTemporary: 'serial' })
-  override async onWebSocketOpen(webSocket: WebSocket, @AuthIncomingMessage() incommingMessage: IncomingMessage): Promise<Value> {
+  @WebsocketHeaderPermission({ allowAdmin: true, allowTemporary: 'serial' })
+  override async onWebSocketOpen(webSocket: WebSocket, @WebsocketIncomingMessage() incommingMessage: IncomingMessage): Promise<Value> {
     await validateAndEmitEventAsync(this.eventEmitter, OnDeviceRuntimeInfoSubscriberConnectedEvent, {
       webSocket,
     });

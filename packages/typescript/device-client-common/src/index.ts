@@ -20,7 +20,6 @@ export * from './specs/ws/device/connection-subscribe';
 export * from './specs/ws/device/find-windows';
 export * from './specs/ws/device/forward';
 export * from './specs/ws/device/install-app';
-export * from './specs/ws/device/join-wifi';
 export * from './specs/ws/device/log-subscribe';
 export * from './specs/ws/device/recording';
 export * from './specs/ws/device/reset';

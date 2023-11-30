@@ -5,7 +5,7 @@ import { DefaultDeviceConnectionSubscribeReceiveMessage, DeviceConnectionSubscri
 import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import { IncomingMessage } from 'http';
 import WebSocket from 'ws';
-import { AuthIncomingMessage, DeviceWsPermission } from '../../auth/guard/device.ws.guard';
+import { WebsocketHeaderPermission, WebsocketIncomingMessage } from '../../auth/guard/websocket.guard';
 import { BrowserManagerService } from '../../browser-manager/browser-manager.service';
 import {
   OnDeviceConnectionSubscriberConnectedEvent,
@@ -108,8 +108,8 @@ export class DeviceConnectionSubscribeService
     messages.forEach((message) => this.notify(message));
   }
 
-  @DeviceWsPermission({ allowAdmin: true, allowTemporary: 'no' })
-  override async onWebSocketOpen(webSocket: WebSocket, @AuthIncomingMessage() incommingMessage: IncomingMessage): Promise<null> {
+  @WebsocketHeaderPermission({ allowAdmin: true, allowTemporary: 'no' })
+  override async onWebSocketOpen(webSocket: WebSocket, @WebsocketIncomingMessage() incommingMessage: IncomingMessage): Promise<null> {
     await validateAndEmitEventAsync(this.eventEmitter, OnDeviceConnectionSubscriberConnectedEvent, {
       webSocket,
     });

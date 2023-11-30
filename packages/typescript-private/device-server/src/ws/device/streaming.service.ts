@@ -5,7 +5,7 @@ import { DeviceStreaming } from '@dogu-tech/device-client-common';
 import { IncomingMessage } from 'http';
 import WebSocket from 'ws';
 import { AuthService } from '../../auth/auth.service';
-import { AuthIncomingMessage, DeviceWsPermission } from '../../auth/guard/device.ws.guard';
+import { WebsocketHeaderPermission, WebsocketIncomingMessage } from '../../auth/guard/websocket.guard';
 import { DoguLogger } from '../../logger/logger';
 import { ScanService } from '../../scan/scan.service';
 
@@ -22,8 +22,8 @@ export class DeviceStreamingService
     super(DeviceStreaming, logger);
   }
 
-  @DeviceWsPermission({ allowAdmin: true, allowTemporary: 'no' })
-  override onWebSocketOpen(webSocket: WebSocket, @AuthIncomingMessage() incommingMessage: IncomingMessage): null {
+  @WebsocketHeaderPermission({ allowAdmin: true, allowTemporary: 'no' })
+  override onWebSocketOpen(webSocket: WebSocket, @WebsocketIncomingMessage() incommingMessage: IncomingMessage): null {
     return null;
   }
 

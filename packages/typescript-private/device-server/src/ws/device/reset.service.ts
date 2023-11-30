@@ -3,7 +3,7 @@ import { closeWebSocketWithTruncateReason, delay, errorify, Instance } from '@do
 import { DeviceReset } from '@dogu-tech/device-client-common';
 import { IncomingMessage } from 'http';
 import WebSocket from 'ws';
-import { AuthIncomingMessage, DeviceWsPermission } from '../../auth/guard/device.ws.guard';
+import { WebsocketHeaderPermission, WebsocketIncomingMessage } from '../../auth/guard/websocket.guard';
 import { DoguLogger } from '../../logger/logger';
 import { ScanService } from '../../scan/scan.service';
 
@@ -19,8 +19,8 @@ export class DeviceResetService
     super(DeviceReset, logger);
   }
 
-  @DeviceWsPermission({ allowAdmin: true, allowTemporary: 'no' })
-  override onWebSocketOpen(webSocket: WebSocket, @AuthIncomingMessage() incommingMessage: IncomingMessage): null {
+  @WebsocketHeaderPermission({ allowAdmin: true, allowTemporary: 'no' })
+  override onWebSocketOpen(webSocket: WebSocket, @WebsocketIncomingMessage() incommingMessage: IncomingMessage): null {
     return null;
   }
 

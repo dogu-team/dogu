@@ -4,22 +4,22 @@ import { IncomingMessage } from 'http';
 import { AuthService } from '../auth.service';
 import { PermissionOptions } from '../options';
 
-const AuthIncomingMessageDecoratorKey = Symbol('AuthIncomingMessage');
+const WebsocketIncomingMessageDecoratorKey = Symbol('WebsocketIncomingMessage');
 
-export function AuthIncomingMessage(): ParameterDecorator {
+export function WebsocketIncomingMessage(): ParameterDecorator {
   return function (target: object, propertyKey: string | symbol, parameterIndex: number): void {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const existingRequiredParameters: number[] = Reflect.getOwnMetadata(AuthIncomingMessageDecoratorKey, target, propertyKey) || [];
+    const existingRequiredParameters: number[] = Reflect.getOwnMetadata(WebsocketIncomingMessageDecoratorKey, target, propertyKey) || [];
     existingRequiredParameters.push(parameterIndex);
-    Reflect.defineMetadata(AuthIncomingMessageDecoratorKey, existingRequiredParameters, target, propertyKey);
+    Reflect.defineMetadata(WebsocketIncomingMessageDecoratorKey, existingRequiredParameters, target, propertyKey);
   };
 }
 
 /*
  * @caution This decorator injects AuthService to the class instance. so you should have dependency to AuthModule in your module.
- * Use This decorator with AuthIncomingMessage parameter decorator.
+ * Use This decorator with WebsocketIncomingMessage parameter decorator.
  */
-export function DeviceWsPermission(options: PermissionOptions): MethodDecorator {
+export function WebsocketHeaderPermission(options: PermissionOptions): MethodDecorator {
   const injectAuthService = Inject(AuthService);
 
   // eslint-disable-next-line @typescript-eslint/ban-types
@@ -36,19 +36,19 @@ export function DeviceWsPermission(options: PermissionOptions): MethodDecorator 
       const authService = this.__authService as AuthService;
 
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const paramIndexes: number[] = Reflect.getOwnMetadata(AuthIncomingMessageDecoratorKey, target, propertyKey);
+      const paramIndexes: number[] = Reflect.getOwnMetadata(WebsocketIncomingMessageDecoratorKey, target, propertyKey);
       if (paramIndexes) {
         for (const parameterIndex of paramIndexes) {
           // eslint-disable-next-line prefer-rest-params
           if (parameterIndex >= arguments.length || arguments[parameterIndex] === undefined) {
-            throw new Error(`Missing ${AuthIncomingMessageDecoratorKey.toString()} parameter`);
+            throw new Error(`Missing ${WebsocketIncomingMessageDecoratorKey.toString()} parameter`);
           }
         }
         paramIndexes.forEach((parameterIndex) => {
           // eslint-disable-next-line prefer-rest-params
           const request = arguments[parameterIndex] as IncomingMessage;
           if (!request) {
-            throw new Error(`Missing ${AuthIncomingMessageDecoratorKey.toString()} parameter`);
+            throw new Error(`Missing ${WebsocketIncomingMessageDecoratorKey.toString()} parameter`);
           }
           const authField = request.headers[DOGU_DEVICE_AUTHORIZATION_HEADER_KEY];
           if (!authField) {

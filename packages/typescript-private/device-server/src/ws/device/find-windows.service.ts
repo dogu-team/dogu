@@ -5,7 +5,7 @@ import { DeviceFindWindows } from '@dogu-tech/device-client-common';
 import { getChildProcessIds, getProcessesMapMacos } from '@dogu-tech/node';
 import { IncomingMessage } from 'http';
 import WebSocket from 'ws';
-import { AuthIncomingMessage, DeviceWsPermission } from '../../auth/guard/device.ws.guard';
+import { WebsocketHeaderPermission, WebsocketIncomingMessage } from '../../auth/guard/websocket.guard';
 import { DoguLogger } from '../../logger/logger';
 import { ScanService } from '../../scan/scan.service';
 
@@ -28,8 +28,8 @@ export class DeviceFindWindowsService
     super(DeviceFindWindows, logger);
   }
 
-  @DeviceWsPermission({ allowAdmin: true, allowTemporary: 'serial' })
-  override onWebSocketOpen(webSocket: WebSocket, @AuthIncomingMessage() incommingMessage: IncomingMessage): Value {
+  @WebsocketHeaderPermission({ allowAdmin: true, allowTemporary: 'serial' })
+  override onWebSocketOpen(webSocket: WebSocket, @WebsocketIncomingMessage() incommingMessage: IncomingMessage): Value {
     return { serial: '', parentPid: 0, timer: null, updateGuard: new DuplicatedCallGuarder() };
   }
 
