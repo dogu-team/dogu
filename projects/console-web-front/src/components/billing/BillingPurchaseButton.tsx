@@ -76,6 +76,28 @@ const BillingPurchaseButton: React.FC = () => {
     }
 
     if (license.billingOrganization.billingMethod === 'paddle') {
+      const rv = await requestPurchaseWithExistingCard({
+        organizationId: license.organizationId,
+        billingPlanSourceId: selectedPlan.billingPlanSourceId,
+        couponCode: couponCode ?? undefined,
+        method: 'paddle',
+      });
+      if (rv.errorMessage || !rv.body?.ok) {
+        if (!rv.body?.ok) {
+          const niceCode = rv.body?.niceResultCode;
+          updatePurchaseErrorText(
+            niceCode && niceErrorCodeMessageI18nKeyMap[niceCode]
+              ? t(`${niceErrorCodeMessageI18nKeyMap[niceCode]}`)
+              : t('purchaseErrorMessage', { code: niceCode }),
+          );
+          return;
+        }
+        updatePurchaseErrorText(
+          shouldPurchase ? t('purchaseErrorMessage', { code: rv.errorMessage }) : t('changePlanErrorMessage'),
+        );
+        return;
+      }
+      handleSuccess(rv.body.license, rv.body.plan, null);
       return;
     }
 
@@ -87,7 +109,7 @@ const BillingPurchaseButton: React.FC = () => {
           organizationId: license.organizationId,
           billingPlanSourceId: selectedPlan.billingPlanSourceId,
           couponCode: couponCode ?? undefined,
-          method: license ? getPaymentMethodFromLicense(router.locale, license) : 'nice',
+          method: 'nice',
         });
 
         if (rv.errorMessage || !rv.body?.ok) {
@@ -113,7 +135,7 @@ const BillingPurchaseButton: React.FC = () => {
           billingPlanSourceId: selectedPlan.billingPlanSourceId,
           couponCode: couponCode ?? undefined,
           registerCard: parseNicePaymentMethodFormValues(values),
-          method: license ? getPaymentMethodFromLicense(router.locale, license) : 'nice',
+          method: 'nice',
         });
 
         if (rv.errorMessage || !rv.body?.ok) {
