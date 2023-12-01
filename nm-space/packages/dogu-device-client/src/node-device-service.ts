@@ -125,11 +125,12 @@ export class NodeDeviceService implements DeviceService {
     const logger = new PrefixLogger(printable, '[NodeDeviceService.connectWebSocket]');
     const { path } = connection;
     const url = `ws://127.0.0.1:${port}${path}`;
+    const headers: Record<string, string> = { [DOGU_DEVICE_AUTHORIZATION_HEADER_KEY]: options.token };
+    if (serial) {
+      headers[DOGU_DEVICE_SERIAL_HEADER_KEY] = serial;
+    }
     const webSocket = new WebSocket(url, {
-      headers: {
-        [DOGU_DEVICE_AUTHORIZATION_HEADER_KEY]: options.token,
-        [DOGU_DEVICE_SERIAL_HEADER_KEY]: serial,
-      },
+      headers,
     });
     webSocket.on('open', () => {
       logger.verbose('open', { url });

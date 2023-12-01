@@ -1,5 +1,6 @@
 import { closeWebSocketWithTruncateReason, errorify, Instance, stringify, transformAndValidate, WebSocketSpec } from '@dogu-tech/common';
-import { Serial, ThirdPartyPathMap } from '@dogu-tech/types';
+import { DeviceTemporaryToken, Serial, ThirdPartyPathMap } from '@dogu-tech/types';
+import { DeviceAuth } from '.';
 import { DeviceClientOptions, DeviceCloser, DeviceService, DeviceWebSocket } from './bases';
 import { DeviceHttpClient } from './device-http-client';
 import { DeviceHost } from './specs/http/device-host';
@@ -45,6 +46,15 @@ export class DeviceHostClient extends DeviceHttpClient {
   async resignApp(options: Instance<typeof DeviceHost.resignAppFile.requestBody>): Promise<Instance<typeof DeviceHost.resignAppFile.responseBodyData>> {
     const result = await this.httpRequest(DeviceHost.resignAppFile, new DeviceHost.resignAppFile.pathProvider(), undefined, options);
     return result;
+  }
+
+  async generateTemporaryToken(serial: Serial, body: Instance<typeof DeviceAuth.createToken.requestBody>): Promise<DeviceTemporaryToken> {
+    const response = await this.httpRequest(DeviceAuth.createToken, new DeviceAuth.createToken.pathProvider(serial), undefined, body);
+    return response.token;
+  }
+
+  async deleteTemporaryToken(body: Instance<typeof DeviceAuth.deleteToken.requestBody>): Promise<void> {
+    await this.httpRequest(DeviceAuth.deleteToken, new DeviceAuth.deleteToken.pathProvider(), undefined, body);
   }
 
   private async connectWebSocket<SendMessageType, ReceiveMessageType, ReturnType>(

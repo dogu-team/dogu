@@ -22,7 +22,7 @@ export class ConsoleActionClient {
   }
 
   @Retry({ printable: ActionLogger })
-  async getGitlabUrl(): Promise<Instance<typeof PublicAction.getGitUrl.responseBody>> {
+  async getGitUrl(): Promise<Instance<typeof PublicAction.getGitUrl.responseBody>> {
     const pathProvider = new PublicAction.getGitUrl.pathProvider(this.DOGU_ORGANIZATION_ID, this.DOGU_PROJECT_ID);
     const path = PublicAction.getGitUrl.resolvePath(pathProvider);
     const { data } = await this.instance.get<Instance<typeof PublicAction.getGitUrl.responseBody>>(path, {

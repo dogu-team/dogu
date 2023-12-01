@@ -1,6 +1,6 @@
 import { Class, Closable, errorify, Instance, Log, stringify, transformAndValidate, WebSocketSpec } from '@dogu-tech/common';
-import { DeviceAlert, DeviceFoldStatus, DeviceSystemInfo, DeviceTemporaryToken, FilledRuntimeInfo, GeoLocation, LocaleCode, PlatformSerial, Serial } from '@dogu-tech/types';
-import { DeviceAlertSubscribe, DeviceAuth } from '.';
+import { DeviceAlert, DeviceFoldStatus, DeviceSystemInfo, FilledRuntimeInfo, GeoLocation, LocaleCode, PlatformSerial, Serial } from '@dogu-tech/types';
+import { DeviceAlertSubscribe } from '.';
 import { DeviceClientOptions, DeviceCloser, DeviceService, DeviceWebSocket } from './bases';
 import { DeviceHttpClient } from './device-http-client';
 import { DeviceInterface } from './interface';
@@ -96,15 +96,6 @@ export class DeviceClient extends DeviceHttpClient implements DeviceInterface {
   async screenshot(serial: Serial): Promise<string> {
     const response = await this.httpRequest(Device.getScreenshot, new Device.getScreenshot.pathProvider(serial));
     return response.base64;
-  }
-
-  async generateTemporaryToken(serial: Serial, body: Instance<typeof DeviceAuth.createToken.requestBody>): Promise<DeviceTemporaryToken> {
-    const response = await this.httpRequest(DeviceAuth.createToken, new DeviceAuth.createToken.pathProvider(serial), undefined, body);
-    return response.token;
-  }
-
-  async deleteTemporaryToken(body: Instance<typeof DeviceAuth.deleteToken.requestBody>): Promise<void> {
-    await this.httpRequest(DeviceAuth.deleteToken, new DeviceAuth.deleteToken.pathProvider(), undefined, body);
   }
 
   async installApp(serial: Serial, appPath: string): Promise<void> {

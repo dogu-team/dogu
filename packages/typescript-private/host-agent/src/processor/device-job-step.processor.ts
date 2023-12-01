@@ -7,6 +7,7 @@ import { EventEmitter2 } from '@nestjs/event-emitter';
 import fs from 'fs';
 import path, { delimiter } from 'path';
 import { DeviceAuthService } from '../device-auth/device-auth.service';
+import { DeviceClientService } from '../device-client/device-client.service';
 import { DeviceJobContextRegistry } from '../device-job/device-job.context-registry';
 import {
   OnDeviceJobCancelRequestedEvent,
@@ -30,6 +31,7 @@ export class DeviceJobStepProcessor {
     private readonly eventEmitter: EventEmitter2,
     private readonly deviceJobContextRegistry: DeviceJobContextRegistry,
     private readonly rootWorkspace: RoutineWorkspace,
+    private readonly deviceClient: DeviceClientService,
     private readonly authService: DeviceAuthService,
   ) {}
 
@@ -140,7 +142,7 @@ export class DeviceJobStepProcessor {
     } = param;
     const { info, router, environmentVariableReplacer } = context;
     const { platform, serial, deviceWorkspacePath, rootWorkspacePath, hostPlatform, hostWorkspacePath, pathMap } = info;
-    const temporaryToken = await this.authService.generateTemporaryToken(serial, time({ minutes: 30 }));
+    const temporaryToken = await this.deviceClient.deviceHostClient.generateTemporaryToken(serial, { lifetimeMs: time({ minutes: 30 }) });
     this.logger.info(`Step ${routineStepId} started`);
     try {
       await validateAndEmitEventAsync(this.eventEmitter, OnStepStartedEvent, {
@@ -292,7 +294,7 @@ export class DeviceJobStepProcessor {
     this.logger.info(`Step ${routineStepId} completed`);
     try {
       await delay(10); // padding for log missing. (If last log time and step complete time is same )
-      await this.authService.deleteTemporaryToken(temporaryToken);
+      await this.deviceClient.deviceHostClient.deleteTemporaryToken({ token: temporaryToken });
       await validateAndEmitEventAsync(this.eventEmitter, OnStepCompletedEvent, {
         organizationId,
         deviceId,
