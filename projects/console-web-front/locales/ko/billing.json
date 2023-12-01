@@ -111,6 +111,7 @@
 
   "seeDetailsText": "더 알아보기",
 
+  "paymentFormNameOnCard": "카드에 표기된 이름",
   "paymentFormCardNumberLabel": "카드 번호",
   "paymentFormExpiryLabel": "유효기간",
   "paymentFormPasswordLabel": "비밀번호 앞 2자리",

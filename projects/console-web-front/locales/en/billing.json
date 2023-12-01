@@ -111,6 +111,7 @@
 
   "seeDetailsText": "See details",
 
+  "paymentFormNameOnCard": "Name on card",
   "paymentFormCardNumberLabel": "Card number",
   "paymentFormExpiryLabel": "Expiry",
   "paymentFormPasswordLabel": "Password (first 2 digits)",

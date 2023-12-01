@@ -26,8 +26,8 @@ const BillingPurchaseButton: React.FC = () => {
   const [purchaseWithExistingCardLoading, requestPurchaseWithExistingCard] = useRequest(purchasePlanWithExistingCard);
   const isAnnual = useBillingPlanPurchaseStore((state) => state.isAnnual);
   const couponCode = useBillingPlanPurchaseStore((state) => state.coupon);
-  const updatePurchaseErrorText = useBillingPlanPurchaseStore((state) => state.updatePurchaseErrorText);
   const [license, updateLicense] = useLicenseStore((state) => [state.license, state.updateLicense], shallow);
+  const updatePurchaseErrorText = useBillingPlanPurchaseStore((state) => state.updatePurchaseErrorText);
   const fireEvent = useEventStore((state) => state.fireEvent);
   const { t } = useTranslation('billing');
 
@@ -66,6 +66,10 @@ const BillingPurchaseButton: React.FC = () => {
 
   const handlePurchase = async () => {
     if (!cardForm || !license?.organizationId || !selectedPlan) {
+      return;
+    }
+
+    if (license.billingOrganization.billingMethod === 'paddle') {
       return;
     }
 

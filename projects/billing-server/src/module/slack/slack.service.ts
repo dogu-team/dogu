@@ -15,7 +15,7 @@ export class SlackService {
     const blocks: KnownBlock[] = [
       {
         type: 'header',
-        text: { type: 'plain_text', text: param.isSucceeded ? '✅ New purchase succeeded!' : '🚨 Purchase failed!' },
+        text: { type: 'plain_text', text: param.isSucceeded ? `(${env.DOGU_BILLING_RUN_TYPE}) ✅ New purchase succeeded!` : `(${env.DOGU_BILLING_RUN_TYPE}) 🚨 Purchase failed!` },
       },
       {
         type: 'section',
@@ -78,7 +78,7 @@ export class SlackService {
     const blocks: KnownBlock[] = [
       {
         type: 'header',
-        text: { type: 'plain_text', text: '😭 User unsubsribed plan!' },
+        text: { type: 'plain_text', text: `(${env.DOGU_BILLING_RUN_TYPE}) 😭 User unsubsribed plan!` },
       },
       {
         type: 'section',

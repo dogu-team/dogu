@@ -29,8 +29,6 @@ const BillingPage: NextPageWithLayout<BillingPageProps> = ({ me, license }) => {
   const { t } = useTranslation('billing');
   const storedLicense = useLicenseStore((state) => state.license);
 
-  console.log(license);
-
   if (!storedLicense) {
     return (
       <>

@@ -62,12 +62,8 @@ const BillingPaddleAddressEditor: React.FC<{
     }
   };
 
-  if (!license?.billingOrganization.billingMethodPaddle.business) {
-    return null;
-  }
-
-  const business = license.billingOrganization.billingMethodPaddle.business;
-  const { name, companyNumber, taxIdentifier } = business;
+  const business = license?.billingOrganization.billingMethodPaddle.business;
+  // const { name, companyNumber, taxIdentifier } = business;
 
   return (
     <Modal
@@ -88,16 +84,16 @@ const BillingPaddleAddressEditor: React.FC<{
         <Form.Item
           label="Name"
           name="name"
-          initialValue={name}
+          initialValue={business?.name}
           required
           rules={[{ required: true, message: 'Please enter name' }]}
         >
           <Input placeholder="Dogu Technologies" />
         </Form.Item>
-        <Form.Item label="Company number" name="companyNumber" initialValue={companyNumber}>
+        <Form.Item label="Company number" name="companyNumber" initialValue={business?.companyNumber}>
           <Input placeholder="Company number for business" />
         </Form.Item>
-        <Form.Item label="VAT/GST" name="tax" initialValue={taxIdentifier}>
+        <Form.Item label="VAT/GST" name="tax" initialValue={business?.taxIdentifier}>
           <Input required placeholder="VAT/GST number" />
         </Form.Item>
       </Form>
@@ -110,7 +106,18 @@ const BillingPaddleBusiness: React.FC = () => {
   const [isOpen, openModal, closeModal] = useModal();
 
   if (!license?.billingOrganization.billingMethodPaddle.business) {
-    return null;
+    return (
+      <>
+        <div>
+          <TitleWrapper>
+            <Title>Business</Title>
+            <Button onClick={() => openModal()} icon={<EditOutlined />} type="link" />
+          </TitleWrapper>
+        </div>
+
+        <BillingPaddleAddressEditor open={isOpen} close={closeModal} />
+      </>
+    );
   }
 
   const business = license.billingOrganization.billingMethodPaddle.business;

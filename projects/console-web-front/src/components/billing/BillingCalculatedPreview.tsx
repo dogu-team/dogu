@@ -119,7 +119,7 @@ const BillingCalculatedPreview: React.FC<Props> = ({}) => {
           <PlanTitle>{t(planDescription.titleI18nKey)}</PlanTitle>
           <div>
             <MonthlyPrice>
-              {getLocaleFormattedPrice('ko', responseSubscriptionPlan.currency, originPricePerMonth)}
+              {getLocaleFormattedPrice(router.locale, responseSubscriptionPlan.currency, originPricePerMonth)}
             </MonthlyPrice>
             <PerMonthText> / {t('perMonthText')}</PerMonthText>
           </div>
@@ -133,12 +133,12 @@ const BillingCalculatedPreview: React.FC<Props> = ({}) => {
           <div style={{ marginTop: '.25rem' }}>
             <CalculatedPriceContent>
               <span>
-                {getLocaleFormattedPrice('ko', responseSubscriptionPlan.currency, originPricePerMonth)} *{' '}
+                {getLocaleFormattedPrice(router.locale, responseSubscriptionPlan.currency, originPricePerMonth)} *{' '}
                 {isAnnualSubscription ? t('monthCountPlural', { month: 12 }) : t('monthCountSingular', { month: 1 })}
               </span>
               <b>
                 {getLocaleFormattedPrice(
-                  'ko',
+                  router.locale,
                   responseSubscriptionPlan.currency,
                   originPricePerMonth * (isAnnualSubscription ? 12 : 1),
                 )}
@@ -153,7 +153,7 @@ const BillingCalculatedPreview: React.FC<Props> = ({}) => {
               <span>{t('subscriptionAdjustmentTitle')}</span>
               <b className="minus">
                 {getLocaleFormattedPrice(
-                  'ko',
+                  router.locale,
                   responseSubscriptionPlan.currency,
                   -(
                     data.body.elapsedPlans.reduce((amount, plan) => amount + plan.elapsedDiscountedAmount, 0) +
@@ -174,7 +174,7 @@ const BillingCalculatedPreview: React.FC<Props> = ({}) => {
                       <CalculatedPriceContent style={{ fontSize: '.85rem' }}>
                         <p style={{ fontWeight: '500' }}>{t(planDescriptionInfoMap[plan.type].titleI18nKey)}</p>
                         <b className="minus">
-                          {getLocaleFormattedPrice('ko', plan.currency, -plan.elapsedDiscountedAmount)}
+                          {getLocaleFormattedPrice(router.locale, plan.currency, -plan.elapsedDiscountedAmount)}
                         </b>
                       </CalculatedPriceContent>
                       <CalculatedPriceContent>

@@ -30,7 +30,7 @@ const BillingPaymentMethodPaddle: React.FC<Props> = ({ plan }) => {
       if (rv.status === 200 && rv.body) {
         paddleRef.current?.Checkout.open({
           settings: {
-            successUrl: `${window.location.origin}/billing`,
+            successUrl: `${window.location.origin}/${window.location.pathname}`,
           },
           transactionId: rv.body.paddle.transactionId,
           customer: {
@@ -52,6 +52,10 @@ const BillingPaymentMethodPaddle: React.FC<Props> = ({ plan }) => {
   if (plan.paddleMethodType === 'card') {
     return (
       <div>
+        <CardDetail>
+          <span>{t('billing:paymentFormNameOnCard')}</span>
+          <p>{plan.cardName}</p>
+        </CardDetail>
         <CardDetail>
           <span>{t('billing:cardNumberLabel')}</span>
           <p>

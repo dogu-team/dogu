@@ -150,7 +150,7 @@ const PlanItem: React.FC<Props> = ({ planType, planInfo, descriptionInfo }) => {
         return;
       }
 
-      if (buttonState === ButtonState.UPGRADE || buttonState === ButtonState.CHANGE) {
+      if (usingPlans[0] && (buttonState === ButtonState.UPGRADE || buttonState === ButtonState.CHANGE)) {
         updateSelectedPlan({
           type: planType,
           option: Number(selectedValue) ?? 0,

@@ -15,6 +15,7 @@ import { updateMethod, validateMethod } from '../billing-organization/billing-or
 import { preprocess } from '../billing-purchase/billing-purchase.serializables';
 import { DateTimeSimulatorService } from '../date-time-simulator/date-time-simulator.service';
 import { DoguLogger } from '../logger/logger';
+import { SlackService } from '../slack/slack.service';
 import { PaddleCaller } from './paddle.caller';
 import { Paddle } from './paddle.types';
 
@@ -32,6 +33,7 @@ export class PaddleNotificationService {
     private readonly paddleCaller: PaddleCaller,
     private readonly billingCouponService: BillingCouponService,
     private readonly dateTimeSimulatorService: DateTimeSimulatorService,
+    private readonly slackService: SlackService,
   ) {
     this.retryTransaction = new RetryTransaction(this.logger, this.dataSource);
     this.registerHandler('transaction.created', async (event) => this.onTransactionCreated(event));
@@ -422,6 +424,22 @@ export class PaddleNotificationService {
         billingPlanSourceId,
         billingCouponId,
       });
+      this.slackService
+        .sendPurchaseSlackMessage({
+          isSucceeded: true,
+          organizationId: organization.organizationId,
+          amount: history.purchasedAmount ?? 0,
+          currency: history.currency,
+          purchasedAt: history.createdAt,
+          historyId: history.billingHistoryId,
+          plans: [
+            {
+              option: planSource.option,
+              type: planSource.type,
+            },
+          ],
+        })
+        .catch((err) => this.logger.error(`Failed to send slack. organizationId: ${organization.organizationId}`));
     });
   }
 
