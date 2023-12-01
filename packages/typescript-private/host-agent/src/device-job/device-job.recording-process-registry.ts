@@ -24,7 +24,10 @@ export class DeviceJobRecordingProcessRegistry {
   private hostResolutionInfo: HostResolutionInfo | null = null;
   private readonly webSockets = new Map<string, DeviceRecordingInfo>();
 
-  constructor(private readonly logger: DoguLogger, private readonly record: DeviceJobRecordingService) {}
+  constructor(
+    private readonly logger: DoguLogger,
+    private readonly record: DeviceJobRecordingService,
+  ) {}
 
   @OnEvent(OnHostDisconnectedEvent.key)
   onHostDisconnected(value: Instance<typeof OnHostDisconnectedEvent.value>): void {

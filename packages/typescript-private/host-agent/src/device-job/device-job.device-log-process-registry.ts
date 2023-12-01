@@ -4,6 +4,7 @@ import { DeviceLogSubscribe } from '@dogu-tech/device-client';
 import { Injectable } from '@nestjs/common';
 import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import WebSocket from 'ws';
+import { DeviceAuthService } from '../device-auth/device-auth.service';
 import { OnDeviceJobCancelRequestedEvent, OnDeviceJobLoggedEvent, OnDeviceJobPostProcessCompletedEvent, OnDeviceJobStartedEvent } from '../device-job/device-job.events';
 import { env } from '../env';
 import { OnHostDisconnectedEvent } from '../host/host.events';
@@ -21,7 +22,11 @@ interface DeviceLogInfo {
 export class DeviceJobLogProcessRegistry {
   private readonly webSockets = new Map<string, DeviceLogInfo>();
 
-  constructor(private readonly logger: DoguLogger, private readonly eventEmitter: EventEmitter2) {}
+  constructor(
+    private readonly logger: DoguLogger,
+    private readonly eventEmitter: EventEmitter2,
+    private readonly authService: DeviceAuthService,
+  ) {}
 
   @OnEvent(OnHostDisconnectedEvent.key)
   onHostDisconnected(value: Instance<typeof OnHostDisconnectedEvent.value>): void {
@@ -35,7 +40,7 @@ export class DeviceJobLogProcessRegistry {
   @OnEvent(OnDeviceJobStartedEvent.key)
   onDeviceJobStarted(value: Instance<typeof OnDeviceJobStartedEvent.value>): void {
     const { organizationId, deviceId, routineDeviceJobId, serial } = value;
-    const webSocket = new WebSocket(`ws://${env.DOGU_DEVICE_SERVER_HOST_PORT}${DeviceLogSubscribe.path}`);
+    const webSocket = new WebSocket(`ws://${env.DOGU_DEVICE_SERVER_HOST_PORT}${DeviceLogSubscribe.path}`, { headers: this.authService.makeAuthHeader() });
     const key = this.createKey(organizationId, deviceId, routineDeviceJobId);
 
     if (this.webSockets.has(key)) {
