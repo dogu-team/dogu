@@ -221,6 +221,16 @@ const StateBadge: React.FC<StateProps> = ({ plan }) => {
         </div>
       );
     case 'unsubscribe-requested':
+      return (
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <Tag color="error">{t('planStatusUnsubscribeRequestedText')}</Tag>
+          <StyledCancelUnsubscribeButton onClick={clickCancelUnsubscribe} disabled={loading}>
+            {t('planCancelUnsubscribeButtonText')}
+          </StyledCancelUnsubscribeButton>
+
+          <UpgradePlanModal isOpen={isOpen} close={closeModal} />
+        </div>
+      );
     case 'unsubscribed':
       return (
         <div style={{ display: 'flex', alignItems: 'center' }}>

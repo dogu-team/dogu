@@ -159,6 +159,7 @@
   "cancelChangeOptionErrorMessage": "취소에 실패했습니다. 다시 시도해주세요.",
 
   "planStatusSubscribedText": "구독중",
+  "planStatusUnsubscribeRequestedText": "정기결제 중지됨",
   "planStatusUnsubscribedText": "구독 취소됨",
   "planCancelUnsubscribeButtonText": "다시 구독하기",
   "planNextChargeUnsubscribeRequestedText": "{{date}}까지 이용 가능",

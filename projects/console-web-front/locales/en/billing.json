@@ -159,6 +159,7 @@
   "cancelChangeOptionErrorMessage": "Failed to cancel changing option. Please try again.",
 
   "planStatusSubscribedText": "Subscribed",
+  "planStatusUnsubscribeRequestedText": "Renewal stopped",
   "planStatusUnsubscribedText": "Unsubscribed",
   "planCancelUnsubscribeButtonText": "Subscribe again",
   "planNextChargeUnsubscribeRequestedText": "Available until {{date}}",
