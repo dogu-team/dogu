@@ -116,6 +116,8 @@ const BillingPaddleBusiness: React.FC = () => {
   const business = license.billingOrganization.billingMethodPaddle.business;
   const { name, companyNumber, taxIdentifier } = business;
 
+  const displayBusiness = [name, companyNumber, taxIdentifier].filter((v) => !!v).join(', ');
+
   return (
     <>
       <div>
@@ -123,18 +125,9 @@ const BillingPaddleBusiness: React.FC = () => {
           <Title>Business</Title>
           <Button onClick={() => openModal()} icon={<EditOutlined />} type="link" />
         </TitleWrapper>
-        <div>
-          <p>Name</p>
-          <b>{name}</b>
-        </div>
-        <div>
-          <p>Company Number</p>
-          <b>{companyNumber}</b>
-        </div>
-        <div>
-          <p>Tax</p>
-          <b>{taxIdentifier}</b>
-        </div>
+        <Content>
+          <p>{displayBusiness}</p>
+        </Content>
       </div>
 
       <BillingPaddleAddressEditor open={isOpen} close={closeModal} />
@@ -151,4 +144,8 @@ const TitleWrapper = styled.div`
 const Title = styled.p`
   font-size: 1rem;
   font-weight: 500;
+`;
+
+const Content = styled.div`
+  width: 250px;
 `;

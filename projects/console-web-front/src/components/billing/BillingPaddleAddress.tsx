@@ -153,6 +153,17 @@ const BillingPaddleAddress: React.FC = () => {
   const address = license.billingOrganization.billingMethodPaddle.address;
   const { firstLine, secondLine, city, postalCode, region, countryCode } = address;
 
+  const displayAddress = [
+    firstLine,
+    secondLine,
+    city,
+    region,
+    postalCode,
+    countryCode ? iso3311a2.getCountry(countryCode) : undefined,
+  ]
+    .filter((value) => !!value)
+    .join(', ');
+
   return (
     <>
       <div>
@@ -160,32 +171,9 @@ const BillingPaddleAddress: React.FC = () => {
           <Title>Address</Title>
           <Button onClick={() => openModal()} icon={<EditOutlined />} type="link" />
         </TitleWrapper>
-        <div>
-          <p>First address</p>
-          <b>{firstLine}</b>
-        </div>
-        <div>
-          <p>Second address</p>
-          <b>{secondLine}</b>
-        </div>
-        <div>
-          <p>City</p>
-          <b>{city}</b>
-        </div>
-        <div>
-          <p>Postal code</p>
-          <b>{postalCode}</b>
-        </div>
-        <div>
-          <p>Region</p>
-          <b>{region}</b>
-        </div>
-        {countryCode && (
-          <div>
-            <p>Country code</p>
-            <b>{iso3311a2.getCountry(countryCode)}</b>
-          </div>
-        )}
+        <Content>
+          <p>{displayAddress}</p>
+        </Content>
       </div>
 
       <BillingPaddleAddressEditor open={isOpen} close={closeModal} />
@@ -208,4 +196,8 @@ const TitleWrapper = styled.div`
 const Title = styled.p`
   font-size: 1rem;
   font-weight: 500;
+`;
+
+const Content = styled.div`
+  width: 250px;
 `;
