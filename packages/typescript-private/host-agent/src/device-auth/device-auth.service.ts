@@ -1,5 +1,6 @@
-import { DeviceAdminToken, DOGU_DEVICE_AUTHORIZATION_HEADER_KEY } from '@dogu-private/types';
+import { DeviceAdminToken, DeviceTemporaryToken, DOGU_DEVICE_AUTHORIZATION_HEADER_KEY } from '@dogu-private/types';
 import { Injectable } from '@nestjs/common';
+import { DeviceClientService } from '../device-client/device-client.service';
 import { env } from '../env';
 import { DoguLogger } from '../logger/logger';
 
@@ -7,7 +8,10 @@ import { DoguLogger } from '../logger/logger';
 export class DeviceAuthService {
   private _adminToken: DeviceAdminToken;
 
-  constructor(private readonly logger: DoguLogger) {
+  constructor(
+    private readonly deviceClient: DeviceClientService,
+    private readonly logger: DoguLogger,
+  ) {
     this._adminToken = new DeviceAdminToken(env.DOGU_SECRET_INITIAL_ADMIN_TOKEN);
   }
 
@@ -30,5 +34,13 @@ export class DeviceAuthService {
 
   refreshAdminToken(value: string): void {
     this._adminToken = new DeviceAdminToken(value);
+  }
+
+  async generateTemporaryToken(serial: string, lifetimeMs: number): Promise<DeviceTemporaryToken> {
+    return await this.deviceClient.deviceClient.generateTemporaryToken(serial, { lifetimeMs });
+  }
+
+  async deleteTemporaryToken(token: DeviceTemporaryToken): Promise<void> {
+    await this.deviceClient.deviceClient.deleteTemporaryToken({ token });
   }
 }

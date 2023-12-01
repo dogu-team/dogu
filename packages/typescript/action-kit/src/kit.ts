@@ -1,7 +1,7 @@
 import { FilledPrintable, LogLevel, PromiseOrValue } from '@dogu-tech/common';
 import { DeviceClient, DeviceClients, DeviceClientsFactory, DeviceHostClient } from '@dogu-tech/device-client';
 import { Logger } from '@dogu-tech/node';
-import { OrganizationId, ProjectId } from '@dogu-tech/types';
+import { DeviceServerToken, OrganizationId, ProjectId } from '@dogu-tech/types';
 import { ActionConfig } from './config/config';
 import { ActionInputAccessor } from './config/input-accessor';
 import { ActionConfigLoader } from './config/loader';
@@ -43,11 +43,12 @@ export class ActionKit {
         DOGU_PROJECT_ID,
         DOGU_ACTION_INPUTS,
         DOGU_HOST_TOKEN,
+        DOGU_DEVICE_TOKEN,
       } = filledOptions;
       this.updateLogger(ActionLogger, DOGU_LOG_LEVEL, DOGU_LOG_TO_FILE);
       const actionConfig = await this.loadActionConfig(ActionLogger);
       const actionInputAccessor = new ActionInputAccessor(actionConfig, DOGU_ACTION_INPUTS);
-      const deviceClients = this.createDeviceClients(ActionLogger, DOGU_DEVICE_SERVER_PORT, DOGU_REQUEST_TIMEOUT);
+      const deviceClients = this.createDeviceClients(ActionLogger, DOGU_DEVICE_SERVER_PORT, DOGU_DEVICE_TOKEN, DOGU_REQUEST_TIMEOUT);
       const { deviceClient, deviceHostClient } = deviceClients;
       const consoleActionClient = this.createConsoleActionClient(ActionLogger, DOGU_API_BASE_URL, DOGU_ORGANIZATION_ID, DOGU_PROJECT_ID, DOGU_HOST_TOKEN);
       await onRun({ options: filledOptions, logger: ActionLogger, config: actionConfig, input: actionInputAccessor, deviceClient, deviceHostClient, consoleActionClient });
@@ -88,7 +89,7 @@ export class ActionKit {
     return client;
   }
 
-  private createDeviceClients(printable: FilledPrintable, DOGU_DEVICE_SERVER_PORT: string, DOGU_REQUEST_TIMEOUT: number): DeviceClients {
+  private createDeviceClients(printable: FilledPrintable, DOGU_DEVICE_SERVER_PORT: string, DOGU_DEVICE_TOKEN: string, DOGU_REQUEST_TIMEOUT: number): DeviceClients {
     if (!DOGU_DEVICE_SERVER_PORT) {
       printable.error('DeviceClientsFactory is not created because of missing environment variables', {
         DOGU_DEVICE_SERVER_PORT,
@@ -98,6 +99,11 @@ export class ActionKit {
     const deviceClientsFactory = new DeviceClientsFactory({
       port: Number(DOGU_DEVICE_SERVER_PORT),
       printable: ActionLogger,
+      tokenGetter: (): DeviceServerToken => {
+        return {
+          value: DOGU_DEVICE_TOKEN,
+        };
+      },
       timeout: DOGU_REQUEST_TIMEOUT,
     });
     const clients = deviceClientsFactory.create();

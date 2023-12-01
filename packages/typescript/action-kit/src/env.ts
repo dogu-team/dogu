@@ -13,6 +13,7 @@ export class ActionKitEnv
       | 'DOGU_DEVICE_WORKSPACE_PATH'
       | 'DOGU_ROUTINE_WORKSPACE_PATH'
       | 'DOGU_DEVICE_SERIAL'
+      | 'DOGU_DEVICE_TOKEN'
       | 'DOGU_DEVICE_SERVER_PORT'
       | 'DOGU_HOST_PLATFORM'
       | 'DOGU_HOST_WORKSPACE_PATH'
@@ -66,6 +67,13 @@ export class ActionKitEnv
    */
   @IsFilledString()
   DOGU_DEVICE_SERIAL!: Serial;
+
+  /**
+   * @requires process.env.DOGU_DEVICE_TOKEN
+   * @default ''
+   */
+  @IsFilledString()
+  DOGU_DEVICE_TOKEN!: Serial;
 
   /**
    * @requires process.env.DOGU_DEVICE_SERVER_PORT
