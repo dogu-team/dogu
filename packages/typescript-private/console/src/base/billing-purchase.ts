@@ -154,6 +154,9 @@ export class GetBillingPrecheckoutDto implements BillingPreprocessOptions {
   couponCode?: string;
 }
 
+export const BillingPrecheckoutType = ['new', 'upgrade', 'downgrade'] as const;
+export type BillingPrecheckoutType = (typeof BillingPrecheckoutType)[number];
+
 export interface GetBillingPrecheckoutResponse {
   paddle: {
     customerId: string;
@@ -162,4 +165,26 @@ export interface GetBillingPrecheckoutResponse {
     addressId: string | null;
     businessId: string | null;
   };
+  type: BillingPrecheckoutType;
+  upgrade: {
+    totalPrice: number;
+    nextPurchaseTotalPrice: number;
+    nextPurchasedAt: Date;
+    tax: number;
+    plan: BillingPlanData;
+    elapsedPlan: {
+      category: BillingCategory;
+      type: BillingPlanType;
+      option: number;
+      period: BillingPeriod;
+      currency: BillingCurrency;
+      elapsedMinutesRate: number;
+    };
+  } | null;
+  downgrade: {
+    nextPurchaseTotalPrice: number;
+    nextPurchasedAt: Date;
+    tax: number;
+    plan: BillingPlanData;
+  } | null;
 }

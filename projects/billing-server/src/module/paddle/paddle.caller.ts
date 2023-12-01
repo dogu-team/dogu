@@ -11,148 +11,15 @@ import { matchDiscount, matchPrice } from './paddle.utils';
 
 const PaddleBaseUrl = FeatureConfig.get('sandbox') ? 'https://sandbox-api.paddle.com' : 'https://api.paddle.com';
 
-export interface CreateCustomerOptions {
-  organizationId: string;
-  email: string;
-}
-
-export interface GetCustomerOptions {
-  customerId: string;
-}
-
-export interface UpdateCustomerOptions {
-  customerId: string;
-  email: string;
-}
-
-interface ListOptions {
+type ListOptions = {
   after?: string;
-}
+};
 
-interface ListResult<T> {
+type ListResult<T> = {
   items: T[];
   hasMore: boolean;
   nextAfter: string | null;
-}
-
-export interface ListBusinessesOptions extends ListOptions {
-  customerId: string;
-}
-
-export interface UpdateBusinessOptions extends Omit<Paddle.Business, 'id' | 'created_at' | 'updated_at'> {
-  customerId: string;
-  businessId: string;
-}
-
-export type ListEventsResult = ListResult<Paddle.Event>;
-export type ListProductsResult = ListResult<Paddle.ProductWithPrices>;
-export type ListBusinessesResult = ListResult<Paddle.Business>;
-
-export interface ListProductsAllOptions {
-  refresh: boolean;
-}
-
-export interface CreateProductOptions {
-  category: BillingCategory;
-  type: BillingPlanType;
-  name: string;
-}
-
-export interface UpdateProductOptions {
-  productId: string;
-  name?: string;
-  status?: Paddle.Status;
-}
-
-export interface CreatePriceOptions {
-  billingPlanSourceId: number;
-  currency: BillingCurrency;
-  amount: BillingUsdAmount;
-  period: BillingPeriod;
-  productId: string;
-}
-
-export interface UpdatePriceOptions {
-  id: string;
-  status?: Paddle.Status;
-  billingPlanSourceId: number;
-  currency?: BillingCurrency;
-  amount?: BillingUsdAmount;
-  period?: BillingPeriod;
-}
-
-export interface FindPriceOptions {
-  billingPlanSourceId: number;
-}
-
-export type ListDiscountsResult = ListResult<Paddle.Discount>;
-
-export interface CreateDiscountOptions {
-  code: string;
-  type: BillingCouponType;
-  period: BillingPeriod;
-  discountPercent: number;
-  applyCount: number | null;
-  expiredAt: Date | null;
-  billingCouponId: string;
-}
-
-export interface UpdateDiscountOptions {
-  id: string;
-  code: string;
-  type: BillingCouponType;
-  period: BillingPeriod;
-  discountPercent: number;
-  applyCount: number | null;
-  expiredAt: Date | null;
-  billingCouponId: string;
-}
-
-export interface FindDiscountOptions {
-  billingCouponId: string;
-}
-
-export interface GetDiscountOptions {
-  id: string;
-}
-
-export interface ListSubscriptionsOptions extends ListOptions {
-  customerId?: string;
-}
-
-export type ListSubscriptionsResult = ListResult<Paddle.Subscription>;
-
-export interface FindSubscriptionOptions {
-  customerId: string;
-  billingPlanInfoId: string;
-}
-
-export interface GetSubscriptionOptions {
-  subscriptionId: string;
-}
-
-export interface UpdateSubscriptionOptions extends Omit<Paddle.Subscription, 'id' | 'created_at' | 'updated_at'> {
-  subscriptionId: string;
-  billingPlanInfoId: string;
-}
-
-export interface GetUpdatePaymentMethodTransactionOptions {
-  subscriptionId: string;
-}
-
-export type PauseSubscriptionOptions = GetSubscriptionOptions;
-export type ResumeSubscriptionOptions = GetSubscriptionOptions;
-
-export interface ListAddressesOptions extends ListOptions {
-  customerId: string;
-}
-
-export type ListAddressesResult = ListResult<Paddle.Address>;
-
-export interface UpdateAddressOptions extends Omit<Paddle.Address, 'id' | 'created_at' | 'updated_at'> {
-  customerId: string;
-  addressId: string;
-}
+};
 
 export class PaddleCallError extends Error {
   constructor(
@@ -162,6 +29,18 @@ export class PaddleCallError extends Error {
   ) {
     super(`${message} requestId: ${requestId} error: ${JSON.stringify(error)}`);
   }
+}
+
+function processPaddleResponse<T>(paddleResponse: Paddle.Response<T>, errorMessage: string): T {
+  const { error, data, meta } = paddleResponse;
+  const { request_id } = meta ?? {};
+
+  if (error) {
+    throw new PaddleCallError(errorMessage, request_id, error);
+  }
+
+  const item = data ?? ({} as T);
+  return item;
 }
 
 function processPaddleListResponse<T>(paddleResponse: Paddle.Response<T[]>, errorMessage: string): ListResult<T> {
@@ -181,6 +60,148 @@ function processPaddleListResponse<T>(paddleResponse: Paddle.Response<T[]>, erro
     nextAfter,
   };
 }
+
+export type CreateCustomerOptions = {
+  organizationId: string;
+  email: string;
+};
+
+export type GetCustomerOptions = {
+  customerId: string;
+};
+
+export type UpdateCustomerOptions = {
+  customerId: string;
+  email: string;
+};
+
+export type ListBusinessesOptions = ListOptions & {
+  customerId: string;
+};
+
+export type UpdateBusinessOptions = Omit<Paddle.Business, 'id' | 'created_at' | 'updated_at'> & {
+  customerId: string;
+  businessId: string;
+};
+
+export type ListEventsResult = ListResult<Paddle.Event>;
+export type ListProductsResult = ListResult<Paddle.ProductWithPrices>;
+export type ListBusinessesResult = ListResult<Paddle.Business>;
+
+export type ListProductsAllOptions = {
+  refresh: boolean;
+};
+
+export type CreateProductOptions = {
+  category: BillingCategory;
+  type: BillingPlanType;
+  name: string;
+};
+
+export type UpdateProductOptions = {
+  productId: string;
+  name?: string;
+  status?: Paddle.Status;
+};
+
+export type CreatePriceOptions = {
+  billingPlanSourceId: number;
+  currency: BillingCurrency;
+  amount: BillingUsdAmount;
+  period: BillingPeriod;
+  productId: string;
+};
+
+export type UpdatePriceOptions = {
+  priceId: string;
+  status?: Paddle.Status;
+  billingPlanSourceId: number;
+  currency?: BillingCurrency;
+  amount?: BillingUsdAmount;
+  period?: BillingPeriod;
+};
+
+export type FindPriceOptions = {
+  billingPlanSourceId: number;
+};
+
+export type ListDiscountsResult = ListResult<Paddle.Discount>;
+
+export type CreateDiscountOptions = {
+  code: string;
+  type: BillingCouponType;
+  period: BillingPeriod;
+  discountPercent: number;
+  applyCount: number | null;
+  expiredAt: Date | null;
+  billingCouponId: string;
+};
+
+export type UpdateDiscountOptions = {
+  discountId: string;
+  code: string;
+  type: BillingCouponType;
+  period: BillingPeriod;
+  discountPercent: number;
+  applyCount: number | null;
+  expiredAt: Date | null;
+  billingCouponId: string;
+};
+
+export type FindDiscountOptions = {
+  billingCouponId: string;
+};
+
+export type GetDiscountOptions = {
+  discountId: string;
+};
+
+export type ListSubscriptionsOptions = ListOptions & {
+  customerId: string;
+};
+
+export type ListSubscriptionsResult = ListResult<Paddle.Subscription>;
+
+export type FindSubscriptionOptions = {
+  customerId: string;
+  billingPlanInfoId: string;
+};
+
+export type GetSubscriptionOptions = {
+  subscriptionId: string;
+};
+
+export type UpdateSubscriptionOptions = Omit<Paddle.Subscription, 'id' | 'created_at' | 'updated_at'> & {
+  subscriptionId: string;
+  billingPlanInfoId: string;
+};
+
+export type GetUpdatePaymentMethodTransactionOptions = {
+  subscriptionId: string;
+};
+
+export type RemoveScheduledChangeSubscriptionOptions = GetSubscriptionOptions;
+export type PauseSubscriptionOptions = GetSubscriptionOptions;
+export type ResumeSubscriptionOptions = GetSubscriptionOptions;
+
+export type PreviewSubscriptionOptions = {
+  subscriptionId: string;
+  discountId?: string;
+  discountEffectiveFrom?: 'next_billing_period' | 'immediately';
+  priceIds: string[];
+  prorationBillingMode: Paddle.SubscriptionProrationBillingMode;
+};
+
+export type ListAddressesOptions = ListOptions & {
+  customerId: string;
+};
+
+export type ListAddressesResult = ListResult<Paddle.Address>;
+
+export type UpdateAddressOptions = Omit<Paddle.Address, 'id' | 'created_at' | 'updated_at'> & {
+  customerId: string;
+  addressId: string;
+};
 
 @Injectable()
 export class PaddleCaller {
@@ -242,15 +263,7 @@ export class PaddleCaller {
     };
 
     const response = await this.client.post<Paddle.Response<Paddle.Customer>>(path, body);
-    const { error, data, meta } = response.data;
-    const { request_id } = meta ?? {};
-
-    if (error) {
-      throw new PaddleCallError('create customer failed', request_id, error);
-    }
-
-    const customer = data ?? {};
-    return customer;
+    return processPaddleResponse(response.data, 'create customer failed');
   }
 
   /**
@@ -283,15 +296,7 @@ export class PaddleCaller {
     };
 
     const response = await this.client.patch<Paddle.Response<Paddle.Customer>>(path, body);
-    const { error, data, meta } = response.data;
-    const { request_id } = meta ?? {};
-
-    if (error) {
-      throw new PaddleCallError('update customer failed', request_id, error);
-    }
-
-    const customer = data ?? {};
-    return customer;
+    return processPaddleResponse(response.data, 'update customer failed');
   }
 
   /**
@@ -324,14 +329,7 @@ export class PaddleCaller {
     const path = `/customers/${customerId}/businesses/${businessId}`;
 
     const response = await this.client.patch<Paddle.Response<Paddle.Business>>(path, body);
-    const { error, data, meta } = response.data;
-    const { request_id } = meta ?? {};
-    if (error) {
-      throw new PaddleCallError('update business failed', request_id, error);
-    }
-
-    const business = data ?? {};
-    return business;
+    return processPaddleResponse(response.data, 'update business failed');
   }
 
   /**
@@ -399,15 +397,7 @@ export class PaddleCaller {
     };
 
     const response = await this.client.post<Paddle.Response<Paddle.Product>>(path, body);
-    const { error, data, meta } = response.data;
-    const { request_id } = meta ?? {};
-
-    if (error) {
-      throw new PaddleCallError('create product failed', request_id, error);
-    }
-
-    const product = data ?? {};
-    return product;
+    return processPaddleResponse(response.data, 'create product failed');
   }
 
   /**
@@ -421,15 +411,7 @@ export class PaddleCaller {
     };
 
     const response = await this.client.patch<Paddle.Response<Paddle.Product>>(path, body);
-    const { error, data, meta } = response.data;
-    const { request_id } = meta ?? {};
-
-    if (error) {
-      throw new PaddleCallError('update product failed', request_id, error);
-    }
-
-    const product = data ?? {};
-    return product;
+    return processPaddleResponse(response.data, 'update product failed');
   }
 
   /**
@@ -460,23 +442,15 @@ export class PaddleCaller {
     };
 
     const response = await this.client.post<Paddle.Response<Paddle.Price>>(path, body);
-    const { error, data, meta } = response.data;
-    const { request_id } = meta ?? {};
-
-    if (error) {
-      throw new PaddleCallError('create price failed', request_id, error);
-    }
-
-    const price = data ?? {};
-    return price;
+    return processPaddleResponse(response.data, 'create price failed');
   }
 
   /**
    * @see https://developer.paddle.com/api-reference/prices/update-price
    */
   async updatePrice(options: UpdatePriceOptions): Promise<Paddle.Price> {
-    const { id, status, billingPlanSourceId, currency, amount, period } = options;
-    const path = `/prices/${id}`;
+    const { priceId, status, billingPlanSourceId, currency, amount, period } = options;
+    const path = `/prices/${priceId}`;
     const body = {
       description: `billingPlanSourceId: ${billingPlanSourceId}`,
       status,
@@ -498,14 +472,7 @@ export class PaddleCaller {
     };
 
     const response = await this.client.patch<Paddle.Response<Paddle.Price>>(path, body);
-    const { error, data, meta } = response.data;
-    const { request_id } = meta ?? {};
-    if (error) {
-      throw new PaddleCallError('update price failed', request_id, error);
-    }
-
-    const price = data ?? {};
-    return price;
+    return processPaddleResponse(response.data, 'update price failed');
   }
 
   /**
@@ -541,18 +508,11 @@ export class PaddleCaller {
    * @see https://developer.paddle.com/api-reference/discounts/get-discount
    */
   async getDiscount(options: GetDiscountOptions): Promise<Paddle.Discount> {
-    const { id } = options;
-    const path = `/discounts/${id}`;
+    const { discountId } = options;
+    const path = `/discounts/${discountId}`;
 
     const response = await this.client.get<Paddle.Response<Paddle.Discount>>(path);
-    const { error, data, meta } = response.data;
-    const { request_id } = meta ?? {};
-    if (error) {
-      throw new PaddleCallError('get discount failed', request_id, error);
-    }
-
-    const discount = data ?? {};
-    return discount;
+    return processPaddleResponse(response.data, 'get discount failed');
   }
 
   /**
@@ -580,23 +540,15 @@ export class PaddleCaller {
     };
 
     const response = await this.client.post<Paddle.Response<Paddle.Discount>>(path, body);
-    const { error, data, meta } = response.data;
-    const { request_id } = meta ?? {};
-
-    if (error) {
-      throw new PaddleCallError('create discount failed', request_id, error);
-    }
-
-    const discount = data ?? {};
-    return discount;
+    return processPaddleResponse(response.data, 'create discount failed');
   }
 
   /**
    * @see https://developer.paddle.com/api-reference/discounts/update-discount
    */
   async updateDiscount(options: UpdateDiscountOptions): Promise<Paddle.Discount> {
-    const { id, code, type, period, discountPercent, applyCount, expiredAt, billingCouponId } = options;
-    const path = `/discounts/${id}`;
+    const { discountId, code, type, period, discountPercent, applyCount, expiredAt, billingCouponId } = options;
+    const path = `/discounts/${discountId}`;
     const body = {
       type: 'percentage',
       description: `code: ${code}, type: ${type}, period: ${period}, discountPercent: ${discountPercent}, applyCount: ${applyCount}, expiredAt: ${
@@ -614,14 +566,7 @@ export class PaddleCaller {
     };
 
     const response = await this.client.patch<Paddle.Response<Paddle.Discount>>(path, body);
-    const { error, data, meta } = response.data;
-    const { request_id } = meta ?? {};
-    if (error) {
-      throw new PaddleCallError('update discount failed', request_id, error);
-    }
-
-    const discount = data ?? {};
-    return discount;
+    return processPaddleResponse(response.data, 'update discount failed');
   }
 
   async findDiscount(options: FindDiscountOptions): Promise<Paddle.Discount | null> {
@@ -670,14 +615,7 @@ export class PaddleCaller {
     const path = `/subscriptions/${subscriptionId}`;
 
     const response = await this.client.get<Paddle.Response<Paddle.Subscription>>(path);
-    const { error, data, meta } = response.data;
-    const { request_id } = meta ?? {};
-    if (error) {
-      throw new PaddleCallError('get subscription failed', request_id, error);
-    }
-
-    const subscription = data ?? {};
-    return subscription;
+    return processPaddleResponse(response.data, 'get subscription failed');
   }
 
   /**
@@ -693,20 +631,13 @@ export class PaddleCaller {
     });
 
     const response = await this.client.patch<Paddle.Response<Paddle.Subscription>>(path, body);
-    const { error, data, meta } = response.data;
-    const { request_id } = meta ?? {};
-    if (error) {
-      throw new PaddleCallError('update subscription failed', request_id, error);
-    }
-
-    const subscription = data ?? {};
-    return subscription;
+    return processPaddleResponse(response.data, 'update subscription failed');
   }
 
   /**
    * @see https://developer.paddle.com/build/subscriptions/pause-subscriptions#remove-scheduled-change
    */
-  async removeScheduledChange(options: GetSubscriptionOptions): Promise<Paddle.Subscription> {
+  async removeScheduledChangeSubscription(options: RemoveScheduledChangeSubscriptionOptions): Promise<Paddle.Subscription> {
     const { subscriptionId } = options;
     const path = `/subscriptions/${subscriptionId}`;
     const body = {
@@ -714,14 +645,7 @@ export class PaddleCaller {
     };
 
     const response = await this.client.patch<Paddle.Response<Paddle.Subscription>>(path, body);
-    const { error, data, meta } = response.data;
-    const { request_id } = meta ?? {};
-    if (error) {
-      throw new PaddleCallError('remove scheduled change failed', request_id, error);
-    }
-
-    const subscription = data ?? {};
-    return subscription;
+    return processPaddleResponse(response.data, 'remove scheduled change failed');
   }
 
   /**
@@ -732,14 +656,7 @@ export class PaddleCaller {
     const path = `/subscriptions/${subscriptionId}/update-payment-method-transaction`;
 
     const response = await this.client.get<Paddle.Response<Paddle.Transaction>>(path);
-    const { error, data, meta } = response.data;
-    const { request_id } = meta ?? {};
-    if (error) {
-      throw new PaddleCallError('update payment method failed', request_id, error);
-    }
-
-    const transaction = data ?? {};
-    return transaction;
+    return processPaddleResponse(response.data, 'get update payment method transaction failed');
   }
 
   /**
@@ -751,14 +668,7 @@ export class PaddleCaller {
     const body = {};
 
     const response = await this.client.post<Paddle.Response<Paddle.Subscription>>(path, body);
-    const { error, data, meta } = response.data;
-    const { request_id } = meta ?? {};
-    if (error) {
-      throw new PaddleCallError('pause subscription failed', request_id, error);
-    }
-
-    const subscription = data ?? {};
-    return subscription;
+    return processPaddleResponse(response.data, 'pause subscription failed');
   }
 
   /**
@@ -772,14 +682,31 @@ export class PaddleCaller {
     };
 
     const response = await this.client.post<Paddle.Response<Paddle.Subscription>>(path, body);
-    const { error, data, meta } = response.data;
-    const { request_id } = meta ?? {};
-    if (error) {
-      throw new PaddleCallError('resume subscription failed', request_id, error);
-    }
+    return processPaddleResponse(response.data, 'resume subscription failed');
+  }
 
-    const subscription = data ?? {};
-    return subscription;
+  /**
+   * @see https://developer.paddle.com/api-reference/subscriptions/preview-subscription
+   */
+  async previewSubscription(options: PreviewSubscriptionOptions): Promise<Paddle.PreviewSubscription> {
+    const { subscriptionId, discountId, discountEffectiveFrom, priceIds, prorationBillingMode } = options;
+    const path = `/subscriptions/${subscriptionId}/preview`;
+    const body = {
+      discount: discountId
+        ? {
+            id: discountId,
+            effective_from: discountEffectiveFrom,
+          }
+        : undefined,
+      items: priceIds.map((priceId) => ({
+        price_id: priceId,
+        quantity: 1,
+      })),
+      proration_billing_mode: prorationBillingMode,
+    };
+
+    const response = await this.client.patch<Paddle.Response<Paddle.PreviewSubscription>>(path, body);
+    return processPaddleResponse(response.data, 'preview subscription failed');
   }
 
   /**
@@ -812,13 +739,6 @@ export class PaddleCaller {
     const path = `/customers/${customerId}/addresses/${addressId}`;
 
     const response = await this.client.patch<Paddle.Response<Paddle.Address>>(path, body);
-    const { error, data, meta } = response.data;
-    const { request_id } = meta ?? {};
-    if (error) {
-      throw new PaddleCallError('update address failed', request_id, error);
-    }
-
-    const address = data ?? {};
-    return address;
+    return processPaddleResponse(response.data, 'update address failed');
   }
 }

@@ -43,7 +43,7 @@ export class BillingCouponSubscriber {
           }
 
           await this.paddleCaller.updateDiscount({
-            id: discount.id,
+            discountId: discount.id,
             code: coupon.code,
             type: coupon.type,
             period: coupon.period,

@@ -63,7 +63,7 @@ export class BillingPlanSourceSubscriber {
           }
 
           await this.paddleCaller.updatePrice({
-            id: price.id,
+            priceId: price.id,
             amount: BillingUsdAmount.fromDollars(planSource.originPrice),
             currency: planSource.currency,
             period: planSource.period,

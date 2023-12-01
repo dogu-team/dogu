@@ -4,7 +4,7 @@ export namespace Paddle {
   export const Status = ['active', 'archived'] as const;
   export type Status = (typeof Status)[number];
 
-  export interface Meta {
+  export type Meta = {
     request_id?: string;
     pagination?: {
       per_page?: number;
@@ -12,30 +12,30 @@ export namespace Paddle {
       has_more?: boolean;
       estimated_total?: number;
     };
-  }
+  };
 
-  export interface Error {
+  export type Error = {
     type?: string;
     code?: string;
     detail?: string;
     documentation_url?: string;
-  }
+  };
 
-  export interface Response<T> {
+  export type Response<T> = {
     error?: Error;
     data?: T;
     meta?: Meta;
-  }
+  };
 
-  export interface Event<T = Record<string, unknown>> {
+  export type Event<T = Record<string, unknown>> = {
     event_id?: string;
     event_type?: string;
     occurred_at?: string;
     notification_id?: string;
     data?: T;
-  }
+  };
 
-  export interface Customer {
+  export type Customer = {
     id?: string;
     name?: string | null;
     email?: string | null;
@@ -50,9 +50,9 @@ export namespace Paddle {
     locale?: string;
     created_at?: string;
     updated_at?: string;
-  }
+  };
 
-  export interface Product {
+  export type Product = {
     id?: string;
     name?: string;
     description?: string | null;
@@ -66,9 +66,9 @@ export namespace Paddle {
       | null;
     status?: Status;
     created_at?: string;
-  }
+  };
 
-  export interface Price {
+  export type Price = {
     id?: string;
     product_id?: string;
     description?: string;
@@ -103,24 +103,11 @@ export namespace Paddle {
           billingPlanSourceId?: number;
         } & Record<string, unknown>)
       | null;
-  }
+  };
 
-  export interface ProductWithPrices extends Product {
+  export type ProductWithPrices = Product & {
     prices?: Price[];
-  }
-
-  export interface PriceMatch {
-    billingPlanSourceId: number;
-  }
-
-  export interface ProductMatch {
-    category: BillingCategory;
-    type: BillingPlanType;
-  }
-
-  export interface ProductOrigin extends ProductMatch {
-    name: string;
-  }
+  };
 
   export const DiscountStatus = ['active', 'archived', 'expired', 'used'] as const;
   export type DiscountStatus = (typeof DiscountStatus)[number];
@@ -128,7 +115,7 @@ export namespace Paddle {
   export const DiscountType = ['flat', 'flat_per_seat', 'percentage'] as const;
   export type DiscountType = (typeof DiscountType)[number];
 
-  export interface Discount {
+  export type Discount = {
     id?: string;
     status?: DiscountStatus;
     external_id?: string;
@@ -153,11 +140,7 @@ export namespace Paddle {
     times_used?: number;
     created_at?: string;
     updated_at?: string;
-  }
-
-  export interface DiscountMatch {
-    billingCouponId: string;
-  }
+  };
 
   export const SubscriptionStatus = ['active', 'canceled', 'past_due', 'paused', 'trialing'] as const;
   export type SubscriptionStatus = (typeof SubscriptionStatus)[number];
@@ -168,11 +151,18 @@ export namespace Paddle {
   export const SubscriptionItemStatus = ['active', 'inactive', 'trialing'] as const;
   export type SubscriptionItemStatus = (typeof SubscriptionItemStatus)[number];
 
-  export interface Subscription {
+  export const SubscriptionProrationBillingMode = ['prorated_immediately', 'prorated_next_billing_period', 'full_immediately', 'full_next_billing_period', 'do_not_bill'] as const;
+  export type SubscriptionProrationBillingMode = (typeof SubscriptionProrationBillingMode)[number];
+
+  export const SubscriptionCollectionMode = ['automatic', 'manual'] as const;
+  export type SubscriptionCollectionMode = (typeof SubscriptionCollectionMode)[number];
+
+  export type Subscription = {
     id?: string;
     status?: SubscriptionStatus;
     customer_id?: string;
     address_id?: string;
+    business_id?: string | null;
     currency_code?: string;
     created_at?: string;
     updated_at?: string;
@@ -185,6 +175,16 @@ export namespace Paddle {
       id?: string;
       starts_at?: string;
       ends_at?: string;
+    } | null;
+    collection_mode?: SubscriptionCollectionMode;
+    billing_details?: {
+      enable_checkout?: boolean;
+      purchase_order_number?: string;
+      additional_information?: string | null;
+      payment_terms?: {
+        interval?: string;
+        frequency?: number;
+      };
     } | null;
     current_billing_period?: {
       starts_at?: string;
@@ -239,9 +239,225 @@ export namespace Paddle {
           billingPlanInfoId?: string;
         } & Record<string, unknown>)
       | null;
-  }
+  };
 
-  export interface Address {
+  export type PreviewSubscription = Omit<Subscription, 'id'> & {
+    immediate_transaction?: {
+      billing_period?: {
+        starts_at?: string;
+        ends_at?: string;
+      };
+      details?: {
+        tax_rates_used?: {
+          tax_rate?: string;
+          totals?: {
+            subtotal?: string;
+            discount?: string;
+            tax?: string;
+            total?: string;
+          };
+        }[];
+        totals?: {
+          subtotal?: string;
+          discount?: string;
+          tax?: string;
+          total?: string;
+          credit?: string;
+          balance?: string;
+          grand_total?: string;
+          fee?: string | null;
+          earnings?: string | null;
+          currency_code?: string;
+        };
+        line_items?: {
+          price_id?: string;
+          quantity?: number;
+          tax_rate?: string;
+          unit_totals?: {
+            subtotal?: string;
+            discount?: string;
+            tax?: string;
+            total?: string;
+          };
+          proration?: {
+            rate?: string;
+            billing_period?: {
+              starts_at?: string;
+              ends_at?: string;
+            };
+          };
+          totals?: {
+            subtotal?: string;
+            discount?: string;
+            tax?: string;
+            total?: string;
+          };
+          product?: Product;
+        }[];
+      };
+      adjustments?: {
+        transaction_id?: string;
+        items?: {
+          item_id?: string;
+          type?: string;
+          amount?: string | null;
+          proration?: {
+            rate?: string;
+            billing_period?: {
+              starts_at?: string;
+              ends_at?: string;
+            };
+          } | null;
+          totals?: {
+            subtotal?: string;
+            tax?: string;
+            total?: string;
+          };
+        }[];
+        totals?: {
+          subtotal?: string;
+          tax?: string;
+          total?: string;
+          fee?: string;
+          earnings?: string;
+          currency_code?: string;
+        };
+      }[];
+    } | null;
+    next_transaction?: {
+      billing_period: {
+        starts_at: string;
+        ends_at: string;
+      };
+      details: {
+        tax_rates_used: {
+          tax_rate?: string;
+          totals?: {
+            subtotal?: string;
+            discount?: string;
+            tax?: string;
+            total?: string;
+          };
+        }[];
+        totals?: {
+          subtotal?: string;
+          discount?: string;
+          tax?: string;
+          total?: string;
+          credit?: string;
+          balance?: string;
+          grand_total?: string;
+          fee?: string | null;
+          earnings?: string | null;
+          currency_code?: string;
+        };
+        line_items?: {
+          price_id?: string;
+          quantity?: number;
+          tax_rate?: string;
+          unit_totals?: {
+            subtotal?: string;
+            discount?: string;
+            tax?: string;
+            total?: string;
+          };
+          totals?: {
+            subtotal?: string;
+            discount?: string;
+            tax?: string;
+            total?: string;
+          };
+          product?: Product;
+        }[];
+      };
+      adjustments?: {
+        transaction_id?: string;
+        items?: {
+          item_id?: string;
+          type?: string;
+          amount?: string | null;
+          proration?: {
+            rate?: string;
+            billing_period?: {
+              starts_at?: string;
+              ends_at?: string;
+            };
+          } | null;
+          totals?: {
+            subtotal?: string;
+            tax?: string;
+            total?: string;
+          };
+        }[];
+        totals?: {
+          subtotal?: string;
+          tax?: string;
+          total?: string;
+          fee?: string;
+          earnings?: string;
+          currency_code?: string;
+        };
+      }[];
+    } | null;
+    recurring_transaction_details?: {
+      tax_rates_used?: {
+        tax_rate?: string;
+        totals?: {
+          subtotal?: string;
+          discount?: string;
+          tax?: string;
+          total?: string;
+        };
+      }[];
+      totals?: {
+        subtotal?: string;
+        discount?: string;
+        tax?: string;
+        total?: string;
+        credit?: string;
+        balance?: string;
+        grand_total?: string;
+        fee?: string | null;
+        earnings?: string | null;
+        currency_code?: string;
+      };
+      line_items?: {
+        price_id?: string;
+        quantity?: number;
+        tax_rate?: string;
+        unit_totals?: {
+          subtotal?: string;
+          discount?: string;
+          tax?: string;
+          total?: string;
+        };
+        totals?: {
+          subtotal?: string;
+          discount?: string;
+          tax?: string;
+          total?: string;
+        };
+        product?: Product;
+      }[];
+    };
+    update_summary?: {
+      credit?: {
+        amount?: string;
+        currency_code?: string;
+      };
+      charge?: {
+        amount?: string;
+        currency_code?: string;
+      };
+      result?: {
+        action?: 'credit' | 'charge';
+        amount?: string;
+        currency_code?: string;
+      };
+    } | null;
+  };
+
+  export type Address = {
     id?: string;
     description?: string | null;
     first_line?: string | null;
@@ -254,9 +470,9 @@ export namespace Paddle {
     status?: Status;
     created_at?: string;
     updated_at?: string;
-  }
+  };
 
-  export interface Business {
+  export type Business = {
     id?: string;
     name?: string;
     company_number?: string | null;
@@ -269,9 +485,9 @@ export namespace Paddle {
     created_at?: string;
     updated_at?: string;
     custom_data?: Record<string, unknown> | null;
-  }
+  };
 
-  export interface Transaction {
+  export type Transaction = {
     id?: string;
     customer_id?: string | null;
     address_id?: string | null;
@@ -424,5 +640,26 @@ export namespace Paddle {
     created_at?: string;
     updated_at?: string;
     billed_at?: string | null;
-  }
+  };
+
+  /**
+   * @note custom types for billing server
+   */
+
+  export type PriceMatch = {
+    billingPlanSourceId: number;
+  };
+
+  export type ProductMatch = {
+    category: BillingCategory;
+    type: BillingPlanType;
+  };
+
+  export type ProductOrigin = ProductMatch & {
+    name: string;
+  };
+
+  export type DiscountMatch = {
+    billingCouponId: string;
+  };
 }

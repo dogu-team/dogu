@@ -123,7 +123,7 @@ export class PaddleNotificationService {
 
     const { discount_id } = transaction;
     if (discount_id) {
-      const discount = await this.paddleCaller.getDiscount({ id: discount_id });
+      const discount = await this.paddleCaller.getDiscount({ discountId: discount_id });
       const { billingCouponId } = discount.custom_data ?? {};
       if (!billingCouponId) {
         throw new InternalServerErrorException({
@@ -254,7 +254,7 @@ export class PaddleNotificationService {
 
     let billingCouponId: string | null = null;
     if (discount_id) {
-      const discount = await this.paddleCaller.getDiscount({ id: discount_id });
+      const discount = await this.paddleCaller.getDiscount({ discountId: discount_id });
       billingCouponId = discount.custom_data?.billingCouponId ?? null;
       if (!billingCouponId) {
         throw new InternalServerErrorException({

@@ -686,6 +686,65 @@ export class BillingPurchaseService {
     const businesses = await this.paddleCaller.listBusinessesAll({ customerId });
     const businessId = businesses.length > 0 ? businesses[0].id ?? null : null;
 
+    const planInfo = organization.billingPlanInfos?.find((info) => info.category === planSource.category && info.type === planSource.type);
+    if (!planInfo) {
+      return {
+        paddle: {
+          customerId,
+          priceId,
+          discountId,
+          addressId,
+          businessId,
+        },
+        type: 'new',
+        upgrade: null,
+        downgrade: null,
+      };
+    }
+
+    if (planInfo.option === planSource.option && planInfo.period === planSource.period) {
+      throw new BadRequestException({
+        reason: 'already subscribed',
+        billingPlanInfoId: planInfo.billingPlanInfoId,
+      });
+    }
+
+    const isUpgrade = planInfo.option < planSource.option || (planInfo.period === 'monthly' && planSource.period === 'yearly');
+    const subscriptions = await this.paddleCaller.listSubscriptionsAll({ customerId });
+    const subscription = subscriptions.find((subscription) => subscription.custom_data?.billingPlanInfoId === planInfo.billingPlanInfoId);
+    if (!subscription) {
+      throw new InternalServerErrorException({
+        reason: 'subscription not found',
+        billingPlanInfoId: planInfo.billingPlanInfoId,
+      });
+    }
+
+    if (!subscription.id) {
+      throw new InternalServerErrorException({
+        reason: 'subscription id not found',
+        subscription,
+      });
+    }
+
+    const previewSubscription = await this.paddleCaller.previewSubscription({
+      subscriptionId: subscription.id,
+      priceIds: [priceId],
+      prorationBillingMode: isUpgrade ? 'prorated_immediately' : 'prorated_next_billing_period',
+      discountId: discountId ?? undefined,
+      discountEffectiveFrom: isUpgrade ? 'immediately' : 'next_billing_period',
+    });
+    const totalPrice = Number(previewSubscription.immediate_transaction?.details?.totals?.grand_total ?? '0');
+    const nextPurchaseTotalPrice = Number(previewSubscription.next_transaction?.details.totals?.grand_total ?? '0');
+    const tax = Number(previewSubscription.immediate_transaction?.adjustments?.[0].totals?.tax ?? '0');
+    const elapsedMinutesRate = Number(previewSubscription.immediate_transaction?.details?.line_items?.[0].proration?.rate ?? '0');
+    if (!previewSubscription.next_billed_at) {
+      throw new InternalServerErrorException({
+        reason: 'next billed at not found',
+        previewSubscription,
+      });
+    }
+
+    const nextPurchasedAt = new Date(previewSubscription.next_billed_at);
     return {
       paddle: {
         customerId,
@@ -694,6 +753,46 @@ export class BillingPurchaseService {
         addressId,
         businessId,
       },
+      type: isUpgrade ? 'upgrade' : 'downgrade',
+      upgrade: isUpgrade
+        ? {
+            totalPrice,
+            nextPurchaseTotalPrice,
+            nextPurchasedAt,
+            tax,
+            plan: {
+              category: planSource.category,
+              period: planSource.period,
+              option: planSource.option,
+              type: planSource.type,
+              currency: planSource.currency,
+              originPrice: planSource.originPrice,
+            },
+            elapsedPlan: {
+              category: planInfo.category,
+              period: planInfo.period,
+              option: planInfo.option,
+              type: planInfo.type,
+              currency: planInfo.currency,
+              elapsedMinutesRate,
+            },
+          }
+        : null,
+      downgrade: !isUpgrade
+        ? {
+            nextPurchaseTotalPrice,
+            nextPurchasedAt,
+            tax,
+            plan: {
+              category: planSource.category,
+              period: planSource.period,
+              option: planSource.option,
+              type: planSource.type,
+              currency: planSource.currency,
+              originPrice: planSource.originPrice,
+            },
+          }
+        : null,
     };
   }
 }

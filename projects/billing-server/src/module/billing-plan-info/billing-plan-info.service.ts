@@ -91,7 +91,7 @@ export class BillingPlanInfoService {
           });
         }
 
-        await this.paddleCaller.removeScheduledChange({
+        await this.paddleCaller.removeScheduledChangeSubscription({
           subscriptionId: subscription.id,
         });
       }
