@@ -140,9 +140,13 @@ export class AndroidChannel implements DeviceChannel {
     );
     await deviceAgent.wait();
 
-    await adb.uninstallApp('io.appium.settings', false).catch((error) => {
-      logger.error('adb.uninstallApp.io.appium.settings', { error: errorify(error) });
-    });
+    const uninstallAppiumApps = ['io.appium.uiautomator2.server', 'io.appium.uiautomator2.server.test', 'io.appium.settings'];
+    for (const app of uninstallAppiumApps) {
+      await adb.uninstallApp(app, false).catch((error) => {
+        logger.error(`adb.uninstallApp.${app} failed`, { error: errorify(error) });
+      });
+    }
+
     const appiumContextProxy = deviceServerService.appiumService.createAndroidAppiumContext(
       serial,
       'builtin',
