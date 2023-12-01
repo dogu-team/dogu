@@ -196,7 +196,7 @@ export class BillingPurchaseService {
 
         const totalPriceCents = Number(previewSubscription.immediate_transaction?.details?.totals?.grand_total ?? '0');
         const totalPrice = BillingUsdAmount.fromCents(totalPriceCents).toDollars();
-        const nextPurchaseTotalPriceCents = Number(previewSubscription.next_transaction?.details.totals?.grand_total ?? '0');
+        const nextPurchaseTotalPriceCents = Number(previewSubscription.recurring_transaction_details?.totals?.grand_total ?? '0');
         const nextPurchaseTotalPrice = BillingUsdAmount.fromCents(nextPurchaseTotalPriceCents).toDollars();
         const taxCents = Number(previewSubscription.immediate_transaction?.adjustments?.[0].totals?.tax ?? '0');
         const tax = BillingUsdAmount.fromCents(taxCents).toDollars();
