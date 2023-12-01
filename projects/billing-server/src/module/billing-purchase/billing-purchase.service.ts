@@ -153,12 +153,6 @@ export class BillingPurchaseService {
           discountId = discount.id;
         }
 
-        const addresses = await this.paddleCaller.listAddressesAll({ customerId });
-        const addressId = addresses.length > 0 ? addresses[0].id ?? null : null;
-
-        const businesses = await this.paddleCaller.listBusinessesAll({ customerId });
-        const businessId = businesses.length > 0 ? businesses[0].id ?? null : null;
-
         const planInfo = organization.billingPlanInfos?.find((info) => info.category === planSource.category && info.type === planSource.type);
         if (!planInfo) {
           throw new BadRequestException({
@@ -460,12 +454,6 @@ export class BillingPurchaseService {
 
           discountId = discount.id;
         }
-
-        const addresses = await this.paddleCaller.listAddressesAll({ customerId });
-        const addressId = addresses.length > 0 ? addresses[0].id ?? null : null;
-
-        const businesses = await this.paddleCaller.listBusinessesAll({ customerId });
-        const businessId = businesses.length > 0 ? businesses[0].id ?? null : null;
 
         const planInfo = organization.billingPlanInfos?.find((info) => info.category === planSource.category && info.type === planSource.type);
         if (!planInfo) {
