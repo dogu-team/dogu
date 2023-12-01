@@ -14,7 +14,7 @@ import {
   RefundPlanDto,
   resultCode,
 } from '@dogu-private/console';
-import { stringify } from '@dogu-tech/common';
+import { assertUnreachable, stringify } from '@dogu-tech/common';
 import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource, In } from 'typeorm';
@@ -62,24 +62,187 @@ export class BillingPurchaseService {
   }
 
   async getPreview(dto: GetBillingPreviewDto): Promise<GetBillingPreviewResponse> {
-    return await this.retryTransaction.serializable(async (context) => {
-      const now = this.dateTimeSimulatorService.now();
-      const preprocessResult = await preprocess(context, {
-        ...dto,
-        now,
-      });
-      if (!preprocessResult.ok) {
-        return preprocessResult;
-      }
+    const { method } = dto;
+    switch (method) {
+      case 'nice': {
+        return await this.retryTransaction.serializable(async (context) => {
+          const now = this.dateTimeSimulatorService.now();
+          const preprocessResult = await preprocess(context, {
+            ...dto,
+            now,
+          });
+          if (!preprocessResult.ok) {
+            return preprocessResult;
+          }
 
-      const processPreviewResult = processPurchasePreview(preprocessResult.value);
-      if (!processPreviewResult.ok) {
-        return processPreviewResult;
-      }
+          const processPreviewResult = processPurchasePreview(preprocessResult.value);
+          if (!processPreviewResult.ok) {
+            return processPreviewResult;
+          }
 
-      const { value } = processPreviewResult;
-      return value.previewResponse;
-    });
+          const { value } = processPreviewResult;
+          return value.previewResponse;
+        });
+      }
+      case 'paddle': {
+        const { organizationId } = dto;
+        const preprocessResult = await this.retryTransaction.serializable(async (context) => {
+          const now = this.dateTimeSimulatorService.now();
+          const preprocessResult = await preprocess(context, {
+            ...dto,
+            now,
+          });
+          if (!preprocessResult.ok) {
+            throw new BadRequestException({
+              reason: 'preprocess failed',
+              resultCode: preprocessResult.resultCode,
+            });
+          }
+
+          return preprocessResult.value;
+        });
+
+        const { organization, planSource, coupon } = preprocessResult;
+        const { billingMethodPaddle } = organization;
+        validateCurrency(organization, planSource.currency);
+
+        if (!billingMethodPaddle) {
+          throw new InternalServerErrorException({
+            reason: 'billing method paddle not found',
+            organizationId,
+          });
+        }
+
+        const { customerId } = billingMethodPaddle;
+        const price = await this.paddleCaller.findPrice(dto);
+        if (!price) {
+          throw new InternalServerErrorException({
+            reason: 'price not found',
+            dto,
+          });
+        }
+
+        const priceId = price.id;
+        if (!priceId) {
+          throw new InternalServerErrorException({
+            reason: 'price id not found',
+            dto,
+          });
+        }
+
+        let discountId: string | null = null;
+        if (coupon) {
+          const { billingCouponId } = coupon;
+          const discount = await this.paddleCaller.findDiscount({ billingCouponId });
+          if (!discount) {
+            throw new InternalServerErrorException({
+              reason: 'discount not found',
+              billingCouponId,
+            });
+          }
+
+          if (!discount.id) {
+            throw new InternalServerErrorException({
+              reason: 'discount id not found',
+              billingCouponId,
+            });
+          }
+
+          discountId = discount.id;
+        }
+
+        const addresses = await this.paddleCaller.listAddressesAll({ customerId });
+        const addressId = addresses.length > 0 ? addresses[0].id ?? null : null;
+
+        const businesses = await this.paddleCaller.listBusinessesAll({ customerId });
+        const businessId = businesses.length > 0 ? businesses[0].id ?? null : null;
+
+        const planInfo = organization.billingPlanInfos?.find((info) => info.category === planSource.category && info.type === planSource.type);
+        if (!planInfo) {
+          throw new BadRequestException({
+            reason: 'plan info not found',
+            category: planSource.category,
+            type: planSource.type,
+          });
+        }
+
+        if (planInfo.option === planSource.option && planInfo.period === planSource.period) {
+          throw new BadRequestException({
+            reason: 'already subscribed',
+            billingPlanInfoId: planInfo.billingPlanInfoId,
+          });
+        }
+
+        const isUpgrade = planInfo.option < planSource.option || (planInfo.period === 'monthly' && planSource.period === 'yearly');
+        const subscriptions = await this.paddleCaller.listSubscriptionsAll({ customerId });
+        const subscription = subscriptions.find((subscription) => subscription.custom_data?.billingPlanInfoId === planInfo.billingPlanInfoId);
+        if (!subscription) {
+          throw new InternalServerErrorException({
+            reason: 'subscription not found',
+            billingPlanInfoId: planInfo.billingPlanInfoId,
+          });
+        }
+
+        if (!subscription.id) {
+          throw new InternalServerErrorException({
+            reason: 'subscription id not found',
+            subscription,
+          });
+        }
+
+        const previewSubscription = await this.paddleCaller.previewSubscription({
+          subscriptionId: subscription.id,
+          priceIds: [priceId],
+          prorationBillingMode: isUpgrade ? 'prorated_immediately' : 'prorated_next_billing_period',
+          discountId: discountId ?? undefined,
+          discountEffectiveFrom: isUpgrade ? 'immediately' : 'next_billing_period',
+        });
+        const totalPrice = Number(previewSubscription.immediate_transaction?.details?.totals?.grand_total ?? '0');
+        const nextPurchaseTotalPrice = Number(previewSubscription.next_transaction?.details.totals?.grand_total ?? '0');
+        const tax = Number(previewSubscription.immediate_transaction?.adjustments?.[0].totals?.tax ?? '0');
+        const elapsedMinutesRate = Number(previewSubscription.immediate_transaction?.details?.line_items?.[0].proration?.rate ?? '0');
+        if (!previewSubscription.next_billed_at) {
+          throw new InternalServerErrorException({
+            reason: 'next billed at not found',
+            previewSubscription,
+          });
+        }
+
+        const nextPurchasedAt = new Date(previewSubscription.next_billed_at);
+        return {
+          ok: true,
+          resultCode: resultCode('ok'),
+          totalPrice,
+          nextPurchaseTotalPrice,
+          nextPurchasedAt,
+          tax,
+          coupon: null,
+          plan: {
+            category: planSource.category,
+            period: planSource.period,
+            option: planSource.option,
+            type: planSource.type,
+            currency: planSource.currency,
+            originPrice: planSource.originPrice,
+          },
+          paddleElapsePlans: [
+            {
+              category: planInfo.category,
+              period: planInfo.period,
+              option: planInfo.option,
+              type: planInfo.type,
+              currency: planInfo.currency,
+              elapsedMinutesRate,
+            },
+          ],
+          elapsedPlans: [],
+          remainingPlans: [],
+        };
+      }
+      default: {
+        assertUnreachable(method);
+      }
+    }
   }
 
   async createPurchase(dto: CreatePurchaseDto): Promise<CreatePurchaseResponse> {
@@ -686,65 +849,6 @@ export class BillingPurchaseService {
     const businesses = await this.paddleCaller.listBusinessesAll({ customerId });
     const businessId = businesses.length > 0 ? businesses[0].id ?? null : null;
 
-    const planInfo = organization.billingPlanInfos?.find((info) => info.category === planSource.category && info.type === planSource.type);
-    if (!planInfo) {
-      return {
-        paddle: {
-          customerId,
-          priceId,
-          discountId,
-          addressId,
-          businessId,
-        },
-        type: 'new',
-        upgrade: null,
-        downgrade: null,
-      };
-    }
-
-    if (planInfo.option === planSource.option && planInfo.period === planSource.period) {
-      throw new BadRequestException({
-        reason: 'already subscribed',
-        billingPlanInfoId: planInfo.billingPlanInfoId,
-      });
-    }
-
-    const isUpgrade = planInfo.option < planSource.option || (planInfo.period === 'monthly' && planSource.period === 'yearly');
-    const subscriptions = await this.paddleCaller.listSubscriptionsAll({ customerId });
-    const subscription = subscriptions.find((subscription) => subscription.custom_data?.billingPlanInfoId === planInfo.billingPlanInfoId);
-    if (!subscription) {
-      throw new InternalServerErrorException({
-        reason: 'subscription not found',
-        billingPlanInfoId: planInfo.billingPlanInfoId,
-      });
-    }
-
-    if (!subscription.id) {
-      throw new InternalServerErrorException({
-        reason: 'subscription id not found',
-        subscription,
-      });
-    }
-
-    const previewSubscription = await this.paddleCaller.previewSubscription({
-      subscriptionId: subscription.id,
-      priceIds: [priceId],
-      prorationBillingMode: isUpgrade ? 'prorated_immediately' : 'prorated_next_billing_period',
-      discountId: discountId ?? undefined,
-      discountEffectiveFrom: isUpgrade ? 'immediately' : 'next_billing_period',
-    });
-    const totalPrice = Number(previewSubscription.immediate_transaction?.details?.totals?.grand_total ?? '0');
-    const nextPurchaseTotalPrice = Number(previewSubscription.next_transaction?.details.totals?.grand_total ?? '0');
-    const tax = Number(previewSubscription.immediate_transaction?.adjustments?.[0].totals?.tax ?? '0');
-    const elapsedMinutesRate = Number(previewSubscription.immediate_transaction?.details?.line_items?.[0].proration?.rate ?? '0');
-    if (!previewSubscription.next_billed_at) {
-      throw new InternalServerErrorException({
-        reason: 'next billed at not found',
-        previewSubscription,
-      });
-    }
-
-    const nextPurchasedAt = new Date(previewSubscription.next_billed_at);
     return {
       paddle: {
         customerId,
@@ -753,46 +857,6 @@ export class BillingPurchaseService {
         addressId,
         businessId,
       },
-      type: isUpgrade ? 'upgrade' : 'downgrade',
-      upgrade: isUpgrade
-        ? {
-            totalPrice,
-            nextPurchaseTotalPrice,
-            nextPurchasedAt,
-            tax,
-            plan: {
-              category: planSource.category,
-              period: planSource.period,
-              option: planSource.option,
-              type: planSource.type,
-              currency: planSource.currency,
-              originPrice: planSource.originPrice,
-            },
-            elapsedPlan: {
-              category: planInfo.category,
-              period: planInfo.period,
-              option: planInfo.option,
-              type: planInfo.type,
-              currency: planInfo.currency,
-              elapsedMinutesRate,
-            },
-          }
-        : null,
-      downgrade: !isUpgrade
-        ? {
-            nextPurchaseTotalPrice,
-            nextPurchasedAt,
-            tax,
-            plan: {
-              category: planSource.category,
-              period: planSource.period,
-              option: planSource.option,
-              type: planSource.type,
-              currency: planSource.currency,
-              originPrice: planSource.originPrice,
-            },
-          }
-        : null,
     };
   }
 }

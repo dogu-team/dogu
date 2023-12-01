@@ -1,8 +1,8 @@
 import { IsFilledString } from '@dogu-tech/common';
 import { Type } from 'class-transformer';
-import { buildMessage, IsNumber, IsOptional, IsString, IsUUID, Length, ValidateBy, ValidateNested } from 'class-validator';
+import { buildMessage, IsIn, IsNumber, IsOptional, IsString, IsUUID, Length, ValidateBy, ValidateNested } from 'class-validator';
 
-import { BillingCategory, BillingCurrency, BillingPeriod, BillingPlanData, BillingPlanType } from './billing';
+import { BillingCategory, BillingCurrency, BillingMethod, BillingPeriod, BillingPlanData, BillingPlanType } from './billing';
 import { BillingResultCode } from './billing-code';
 import { BillingCouponBase } from './billing-coupon';
 import { BillingMethodNicePublic } from './billing-method-nice';
@@ -23,6 +23,9 @@ export class GetBillingPreviewDto implements BillingPreprocessOptions {
   @IsNumber()
   @Type(() => Number)
   billingPlanSourceId!: number;
+
+  @IsIn(BillingMethod)
+  method!: BillingMethod;
 
   @IsString()
   @IsOptional()
@@ -49,6 +52,15 @@ export interface ElapsedPlan {
   elapsedDays: number;
 }
 
+export type PaddleElapsePlan = {
+  category: BillingCategory;
+  type: BillingPlanType;
+  option: number;
+  period: BillingPeriod;
+  currency: BillingCurrency;
+  elapsedMinutesRate: number;
+};
+
 export interface CouponPreviewResponse extends BillingCouponBase {
   discountedAmount: number;
 }
@@ -69,6 +81,7 @@ export interface GetBillingPreviewResponseSuccess {
   plan: BillingPlanData;
   elapsedPlans: ElapsedPlan[];
   remainingPlans: RemainingPlan[];
+  paddleElapsePlans: PaddleElapsePlan[];
 }
 
 export type GetBillingPreviewResponse = GetBillingPreviewResponseFailure | GetBillingPreviewResponseSuccess;
@@ -165,26 +178,4 @@ export interface GetBillingPrecheckoutResponse {
     addressId: string | null;
     businessId: string | null;
   };
-  type: BillingPrecheckoutType;
-  upgrade: {
-    totalPrice: number;
-    nextPurchaseTotalPrice: number;
-    nextPurchasedAt: Date;
-    tax: number;
-    plan: BillingPlanData;
-    elapsedPlan: {
-      category: BillingCategory;
-      type: BillingPlanType;
-      option: number;
-      period: BillingPeriod;
-      currency: BillingCurrency;
-      elapsedMinutesRate: number;
-    };
-  } | null;
-  downgrade: {
-    nextPurchaseTotalPrice: number;
-    nextPurchasedAt: Date;
-    tax: number;
-    plan: BillingPlanData;
-  } | null;
 }
