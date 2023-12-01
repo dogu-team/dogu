@@ -6,6 +6,7 @@ import {
 } from '@dogu-private/console';
 import { Button } from 'antd';
 import useTranslation from 'next-translate/useTranslation';
+import { useRouter } from 'next/router';
 import { shallow } from 'zustand/shallow';
 
 import { purchasePlanWithExistingCard, purchasePlanWithNewCard } from '../../api/billing';
@@ -27,6 +28,7 @@ const BillingPurchaseButton: React.FC = () => {
   const isAnnual = useBillingPlanPurchaseStore((state) => state.isAnnual);
   const couponCode = useBillingPlanPurchaseStore((state) => state.coupon);
   const [license, updateLicense] = useLicenseStore((state) => [state.license, state.updateLicense], shallow);
+  const router = useRouter();
   const updatePurchaseErrorText = useBillingPlanPurchaseStore((state) => state.updatePurchaseErrorText);
   const fireEvent = useEventStore((state) => state.fireEvent);
   const { t } = useTranslation('billing');
@@ -91,7 +93,8 @@ const BillingPurchaseButton: React.FC = () => {
         );
         return;
       }
-      handleSuccess(rv.body.license, rv.body.plan, null);
+
+      router.push(`/billing/success?redirect=${router.asPath}`);
       return;
     }
 

@@ -35,7 +35,7 @@ const BillingSuccessPage: NextPageWithLayout<BillingPageProps> = ({ me, license 
 
   useEffect(() => {
     if (remainSeconds === 0) {
-      router.back();
+      router.push((router.query.redirect as string | undefined) ?? '/');
       clearInterval(timer.current);
     }
   }, [remainSeconds]);
@@ -54,7 +54,7 @@ const BillingSuccessPage: NextPageWithLayout<BillingPageProps> = ({ me, license 
           Automatically return to the original page after {remainSeconds} {remainSeconds > 1 ? 'seconds' : 'second'}.
         </p>
         <div>
-          <Button type="link" onClick={() => router.back()}>
+          <Button type="link" onClick={() => router.push((router.query.redirect as string | undefined) ?? '/')}>
             Go back
           </Button>
         </div>

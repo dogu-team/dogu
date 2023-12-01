@@ -175,7 +175,7 @@ const PlanItem: React.FC<Props> = ({ planType, planInfo, descriptionInfo }) => {
           settings: {
             allowLogout: false,
             displayMode: 'overlay',
-            successUrl: `${window.location.origin}/billing/success`,
+            successUrl: `${window.location.origin}/billing/success?redirect=${router.asPath}`,
           },
           items: [
             {
