@@ -502,6 +502,8 @@ export class BillingPurchaseService {
 
         const updatedSubscription = await this.paddleCaller.updateSubscription({
           subscriptionId: subscription.id,
+          organizationId: organization.organizationId,
+          billingPlanSourceId: planSource.billingPlanSourceId,
           billingPlanInfoId: planInfo.billingPlanInfoId,
           priceIds: [priceId],
           prorationBillingMode: isUpgrade ? 'prorated_immediately' : 'prorated_next_billing_period',

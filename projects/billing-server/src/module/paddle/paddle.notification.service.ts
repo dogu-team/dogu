@@ -1,4 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { BillingGoodsName, BillingUsdAmount } from '@dogu-private/console';
+import { assertUnreachable } from '@dogu-tech/common';
 import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import * as crypto from 'crypto';
 import { DataSource } from 'typeorm';
@@ -9,10 +11,13 @@ import { BillingHistory } from '../../db/entity/billing-history.entity';
 import { BillingPlanHistory } from '../../db/entity/billing-plan-history.entity';
 import { BillingPlanInfo } from '../../db/entity/billing-plan-info.entity';
 import { BillingPlanSource } from '../../db/entity/billing-plan-source.entity';
+import { CloudLicense } from '../../db/entity/cloud-license.entity';
+import { SelfHostedLicense } from '../../db/entity/self-hosted-license.entity';
 import { RetryTransaction } from '../../db/retry-transaction';
 import { BillingCouponService } from '../billing-coupon/billing-coupon.service';
 import { updateMethod, validateMethod } from '../billing-organization/billing-organization.utils';
 import { preprocess } from '../billing-purchase/billing-purchase.serializables';
+import { updateCloudLicense } from '../cloud-license/cloud-license.serializables';
 import { DateTimeSimulatorService } from '../date-time-simulator/date-time-simulator.service';
 import { DoguLogger } from '../logger/logger';
 import { SlackService } from '../slack/slack.service';
@@ -203,18 +208,19 @@ export class PaddleNotificationService {
     const { subscription_id, payments, custom_data, currency_code, discount_id, details, items, origin } = transaction;
     if (origin === 'subscription_payment_method_change') {
       return await this.onTransactionCompletedSubscriptionPaymentMethodChange(event);
+    } else if (!(origin === 'web' || origin === 'subscription_update')) {
+      this.logger.warn('Paddle transaction origin is not web or subscription_update', { paddleTransactionId, origin });
+      return;
     }
 
     const item = items?.[0];
-    const { line_items } = details ?? {};
-    const lineItem = line_items?.[0];
     const { organizationId, billingPlanSourceId } = custom_data ?? {};
     const payment = payments?.[0];
     const { method_details } = payment ?? {};
     const { card } = method_details ?? {};
 
     const originPriceInCents = Number(item?.price?.unit_price?.amount ?? 0);
-    const purchasedAmountInCents = Number(lineItem?.totals?.total ?? 0);
+    const purchasedAmountInCents = Number(details?.totals?.grand_total ?? 0);
     const purchasedAmount = BillingUsdAmount.fromCents(purchasedAmountInCents).toDollars();
     const discountedAmountInCents = originPriceInCents - purchasedAmountInCents;
     const discountedAmount = BillingUsdAmount.fromCents(discountedAmountInCents).toDollars();
@@ -370,6 +376,8 @@ export class PaddleNotificationService {
 
       const updatedSubscription = await this.paddleCaller.updateSubscription({
         subscriptionId,
+        organizationId,
+        billingPlanSourceId,
         billingPlanInfoId,
       });
 
@@ -414,6 +422,29 @@ export class PaddleNotificationService {
 
       updateMethod(organization, 'paddle');
       await manager.save(organization);
+
+      let license: CloudLicense | SelfHostedLicense | null = null;
+      switch (organization.category) {
+        case 'cloud':
+          {
+            const licenseResult = await updateCloudLicense(context, {
+              billingOrganizationId,
+              planInfos: [planInfo],
+            });
+            if (licenseResult.ok) {
+              license = licenseResult.value;
+            }
+          }
+          break;
+        case 'self-hosted':
+          {
+            // TODO: apply self-hosted license
+          }
+          break;
+        default: {
+          assertUnreachable(organization.category);
+        }
+      }
 
       this.logger.info('Paddle transaction completed', {
         paddleTransactionId,

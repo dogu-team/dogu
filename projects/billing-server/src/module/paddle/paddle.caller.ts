@@ -172,6 +172,8 @@ export type GetSubscriptionOptions = {
 
 export type UpdateSubscriptionOptions = Omit<Paddle.Subscription, 'id' | 'created_at' | 'updated_at'> & {
   subscriptionId: string;
+  organizationId: string;
+  billingPlanSourceId: number;
   billingPlanInfoId: string;
   discountId?: string;
   discountEffectiveFrom?: 'next_billing_period' | 'immediately';
@@ -625,10 +627,12 @@ export class PaddleCaller {
    * @see https://developer.paddle.com/api-reference/subscriptions/update-subscription
    */
   async updateSubscription(options: UpdateSubscriptionOptions): Promise<Paddle.Subscription> {
-    const { subscriptionId, billingPlanInfoId, discountId, discountEffectiveFrom, priceIds, prorationBillingMode } = options;
+    const { subscriptionId, organizationId, billingPlanSourceId, billingPlanInfoId, discountId, discountEffectiveFrom, priceIds, prorationBillingMode } = options;
     const path = `/subscriptions/${subscriptionId}`;
     const body = {
       custom_data: {
+        organizationId,
+        billingPlanSourceId,
         billingPlanInfoId,
       },
       discount: discountId
@@ -638,7 +642,7 @@ export class PaddleCaller {
           }
         : undefined,
       proration_billing_mode: prorationBillingMode ? prorationBillingMode : undefined,
-      items: priceIds ? [priceIds.map((priceId) => ({ price_id: priceId, quantity: 1 }))] : undefined,
+      items: priceIds ? priceIds.map((priceId) => ({ price_id: priceId, quantity: 1 })) : undefined,
     };
 
     const response = await this.client.patch<Paddle.Response<Paddle.Subscription>>(path, body);
