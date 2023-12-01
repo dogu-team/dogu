@@ -256,139 +256,271 @@ export class BillingPurchaseService {
   }
 
   async createPurchase(dto: CreatePurchaseDto): Promise<CreatePurchaseResponse> {
-    return await this.retryTransaction.serializable(async (context) => {
-      const { setTriggerRollbackBeforeReturn } = context;
-      const now = this.dateTimeSimulatorService.now();
-      const preprocessResult = await preprocess(context, {
-        ...dto,
-        now,
-      });
-      if (!preprocessResult.ok) {
-        return {
-          ok: false,
-          resultCode: preprocessResult.resultCode,
-          plan: null,
-          license: null,
-          niceResultCode: null,
-        };
-      }
+    const { method } = dto;
+    switch (method) {
+      case 'nice': {
+        return await this.retryTransaction.serializable(async (context) => {
+          const { setTriggerRollbackBeforeReturn } = context;
+          const now = this.dateTimeSimulatorService.now();
+          const preprocessResult = await preprocess(context, {
+            ...dto,
+            now,
+          });
+          if (!preprocessResult.ok) {
+            return {
+              ok: false,
+              resultCode: preprocessResult.resultCode,
+              plan: null,
+              license: null,
+              niceResultCode: null,
+            };
+          }
 
-      const { organization, planSource } = preprocessResult.value;
-      const { billingMethodNice } = organization;
-      if (!billingMethodNice) {
-        return {
-          ok: false,
-          resultCode: resultCode('organization-method-nice-not-found', {
-            organizationId: organization.organizationId,
-          }),
-          plan: null,
-          license: null,
-          niceResultCode: null,
-        };
-      }
+          const { organization, planSource } = preprocessResult.value;
+          const { billingMethodNice } = organization;
+          if (!billingMethodNice) {
+            return {
+              ok: false,
+              resultCode: resultCode('organization-method-nice-not-found', {
+                organizationId: organization.organizationId,
+              }),
+              plan: null,
+              license: null,
+              niceResultCode: null,
+            };
+          }
 
-      const previewResult = processPurchasePreview(preprocessResult.value);
-      if (!previewResult.ok) {
-        return {
-          ok: false,
-          resultCode: previewResult.resultCode,
-          plan: null,
-          license: null,
-          niceResultCode: null,
-        };
-      }
+          const previewResult = processPurchasePreview(preprocessResult.value);
+          if (!previewResult.ok) {
+            return {
+              ok: false,
+              resultCode: previewResult.resultCode,
+              plan: null,
+              license: null,
+              niceResultCode: null,
+            };
+          }
 
-      const { needPurchase } = previewResult.value;
-      if (!needPurchase) {
-        const processNextResult = await processNextPurchase(context, {
-          organization,
-          planSource,
-          ...previewResult.value,
-        });
-        if (!processNextResult.ok) {
+          const { needPurchase } = previewResult.value;
+          if (!needPurchase) {
+            const processNextResult = await processNextPurchase(context, {
+              organization,
+              planSource,
+              ...previewResult.value,
+            });
+            if (!processNextResult.ok) {
+              return {
+                ok: false,
+                resultCode: processNextResult.resultCode,
+                plan: null,
+                license: null,
+                niceResultCode: null,
+              };
+            }
+
+            return {
+              ok: true,
+              resultCode: resultCode('ok'),
+              plan: processNextResult.value,
+              license: null,
+              niceResultCode: null,
+            };
+          }
+
+          const processNowResult = await processNowPurchase(context, {
+            niceCaller: this.niceCaller,
+            organization,
+            planSource,
+            ...previewResult.value,
+          });
+
+          if (!processNowResult.ok) {
+            setTriggerRollbackBeforeReturn();
+            this.slackService
+              .sendPurchaseSlackMessage({
+                organizationId: dto.organizationId,
+                isSucceeded: false,
+                purchasedAt: processNowResult.planHistory?.createdAt ?? new Date(),
+                plans: [
+                  {
+                    option: processNowResult.plan?.option ?? planSource.option,
+                    type: processNowResult.plan?.type ?? planSource.type,
+                  },
+                ],
+              })
+              .catch((err) => this.logger.error(`Failed to send slack. organizationId: ${dto.organizationId}`));
+            return {
+              ok: false,
+              resultCode: processNowResult.resultCode,
+              plan: null,
+              license: null,
+              niceResultCode: processNowResult.niceResultCode,
+            };
+          }
+
+          // success
+          if (processNowResult.planHistory && processNowResult.plan) {
+            this.slackService
+              .sendPurchaseSlackMessage({
+                organizationId: dto.organizationId,
+                historyId: processNowResult.planHistory.billingHistoryId,
+                isSucceeded: true,
+                amount: processNowResult.planHistory.purchasedAmount ?? 0,
+                currency: processNowResult.planHistory.currency,
+                purchasedAt: processNowResult.planHistory.createdAt,
+                plans: [
+                  {
+                    option: processNowResult.plan.option,
+                    type: processNowResult.plan.type,
+                  },
+                ],
+              })
+              .catch((err) => this.logger.error(`Failed to send slack. organizationId: ${dto.organizationId}`));
+            this.consoleService
+              .sendSubscriptionSuccessEmailToOwner(dto.organizationId, {
+                planHistory: processNowResult.planHistory,
+                plan: processNowResult.plan,
+              })
+              .catch((err) => this.logger.error(`Failed to send email to organization owner: organizationId: ${dto.organizationId}`));
+          }
+
           return {
-            ok: false,
-            resultCode: processNextResult.resultCode,
-            plan: null,
-            license: null,
+            ok: processNowResult.ok,
+            resultCode: processNowResult.resultCode,
+            plan: processNowResult.plan,
+            license: processNowResult.license,
             niceResultCode: null,
           };
+        });
+      }
+      case 'paddle': {
+        // TODO: refactor with precheckout
+        const { organizationId } = dto;
+        const preprocessResult = await this.retryTransaction.serializable(async (context) => {
+          const now = this.dateTimeSimulatorService.now();
+          const preprocessResult = await preprocess(context, {
+            ...dto,
+            now,
+          });
+          if (!preprocessResult.ok) {
+            throw new BadRequestException({
+              reason: 'preprocess failed',
+              resultCode: preprocessResult.resultCode,
+            });
+          }
+
+          return preprocessResult.value;
+        });
+
+        const { organization, planSource, coupon } = preprocessResult;
+        const { billingMethodPaddle } = organization;
+        validateCurrency(organization, planSource.currency);
+
+        if (!billingMethodPaddle) {
+          throw new InternalServerErrorException({
+            reason: 'billing method paddle not found',
+            organizationId,
+          });
         }
+
+        const { customerId } = billingMethodPaddle;
+        const price = await this.paddleCaller.findPrice(dto);
+        if (!price) {
+          throw new InternalServerErrorException({
+            reason: 'price not found',
+            dto,
+          });
+        }
+
+        const priceId = price.id;
+        if (!priceId) {
+          throw new InternalServerErrorException({
+            reason: 'price id not found',
+            dto,
+          });
+        }
+
+        let discountId: string | null = null;
+        if (coupon) {
+          const { billingCouponId } = coupon;
+          const discount = await this.paddleCaller.findDiscount({ billingCouponId });
+          if (!discount) {
+            throw new InternalServerErrorException({
+              reason: 'discount not found',
+              billingCouponId,
+            });
+          }
+
+          if (!discount.id) {
+            throw new InternalServerErrorException({
+              reason: 'discount id not found',
+              billingCouponId,
+            });
+          }
+
+          discountId = discount.id;
+        }
+
+        const addresses = await this.paddleCaller.listAddressesAll({ customerId });
+        const addressId = addresses.length > 0 ? addresses[0].id ?? null : null;
+
+        const businesses = await this.paddleCaller.listBusinessesAll({ customerId });
+        const businessId = businesses.length > 0 ? businesses[0].id ?? null : null;
+
+        const planInfo = organization.billingPlanInfos?.find((info) => info.category === planSource.category && info.type === planSource.type);
+        if (!planInfo) {
+          throw new BadRequestException({
+            reason: 'plan info not found',
+            category: planSource.category,
+            type: planSource.type,
+          });
+        }
+
+        if (planInfo.option === planSource.option && planInfo.period === planSource.period) {
+          throw new BadRequestException({
+            reason: 'already subscribed',
+            billingPlanInfoId: planInfo.billingPlanInfoId,
+          });
+        }
+
+        const isUpgrade = planInfo.option < planSource.option || (planInfo.period === 'monthly' && planSource.period === 'yearly');
+        const subscriptions = await this.paddleCaller.listSubscriptionsAll({ customerId });
+        const subscription = subscriptions.find((subscription) => subscription.custom_data?.billingPlanInfoId === planInfo.billingPlanInfoId);
+        if (!subscription) {
+          throw new InternalServerErrorException({
+            reason: 'subscription not found',
+            billingPlanInfoId: planInfo.billingPlanInfoId,
+          });
+        }
+
+        if (!subscription.id) {
+          throw new InternalServerErrorException({
+            reason: 'subscription id not found',
+            subscription,
+          });
+        }
+
+        const updatedSubscription = await this.paddleCaller.updateSubscription({
+          subscriptionId: subscription.id,
+          billingPlanInfoId: planInfo.billingPlanInfoId,
+          priceIds: [priceId],
+          prorationBillingMode: isUpgrade ? 'prorated_immediately' : 'prorated_next_billing_period',
+          discountId: discountId ?? undefined,
+          discountEffectiveFrom: isUpgrade ? 'immediately' : 'next_billing_period',
+        });
 
         return {
           ok: true,
           resultCode: resultCode('ok'),
-          plan: processNextResult.value,
+          plan: null,
           license: null,
           niceResultCode: null,
         };
       }
-
-      const processNowResult = await processNowPurchase(context, {
-        niceCaller: this.niceCaller,
-        organization,
-        planSource,
-        ...previewResult.value,
-      });
-
-      if (!processNowResult.ok) {
-        setTriggerRollbackBeforeReturn();
-        this.slackService
-          .sendPurchaseSlackMessage({
-            organizationId: dto.organizationId,
-            isSucceeded: false,
-            purchasedAt: processNowResult.planHistory?.createdAt ?? new Date(),
-            plans: [
-              {
-                option: processNowResult.plan?.option ?? planSource.option,
-                type: processNowResult.plan?.type ?? planSource.type,
-              },
-            ],
-          })
-          .catch((err) => this.logger.error(`Failed to send slack. organizationId: ${dto.organizationId}`));
-        return {
-          ok: false,
-          resultCode: processNowResult.resultCode,
-          plan: null,
-          license: null,
-          niceResultCode: processNowResult.niceResultCode,
-        };
+      default: {
+        assertUnreachable(method);
       }
-
-      // success
-      if (processNowResult.planHistory && processNowResult.plan) {
-        this.slackService
-          .sendPurchaseSlackMessage({
-            organizationId: dto.organizationId,
-            historyId: processNowResult.planHistory.billingHistoryId,
-            isSucceeded: true,
-            amount: processNowResult.planHistory.purchasedAmount ?? 0,
-            currency: processNowResult.planHistory.currency,
-            purchasedAt: processNowResult.planHistory.createdAt,
-            plans: [
-              {
-                option: processNowResult.plan.option,
-                type: processNowResult.plan.type,
-              },
-            ],
-          })
-          .catch((err) => this.logger.error(`Failed to send slack. organizationId: ${dto.organizationId}`));
-        this.consoleService
-          .sendSubscriptionSuccessEmailToOwner(dto.organizationId, {
-            planHistory: processNowResult.planHistory,
-            plan: processNowResult.plan,
-          })
-          .catch((err) => this.logger.error(`Failed to send email to organization owner: organizationId: ${dto.organizationId}`));
-      }
-
-      return {
-        ok: processNowResult.ok,
-        resultCode: processNowResult.resultCode,
-        plan: processNowResult.plan,
-        license: processNowResult.license,
-        niceResultCode: null,
-      };
-    });
+    }
   }
 
   async createPurchaseWithNewCard(dto: CreatePurchaseWithNewCardDto): Promise<CreatePurchaseWithNewCardResponse> {

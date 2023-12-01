@@ -2,7 +2,6 @@ import { BillingCategory, BillingCouponType, BillingCurrency, BillingPeriod, Bil
 import { setAxiosFilterErrorAndLogging } from '@dogu-tech/common';
 import { Injectable } from '@nestjs/common';
 import axios, { AxiosInstance } from 'axios';
-import _ from 'lodash';
 import { config } from '../../config';
 import { FeatureConfig } from '../../feature.config';
 import { DoguLogger } from '../logger/logger';
@@ -174,6 +173,10 @@ export type GetSubscriptionOptions = {
 export type UpdateSubscriptionOptions = Omit<Paddle.Subscription, 'id' | 'created_at' | 'updated_at'> & {
   subscriptionId: string;
   billingPlanInfoId: string;
+  discountId?: string;
+  discountEffectiveFrom?: 'next_billing_period' | 'immediately';
+  priceIds?: string[];
+  prorationBillingMode?: Paddle.SubscriptionProrationBillingMode;
 };
 
 export type GetUpdatePaymentMethodTransactionOptions = {
@@ -622,13 +625,21 @@ export class PaddleCaller {
    * @see https://developer.paddle.com/api-reference/subscriptions/update-subscription
    */
   async updateSubscription(options: UpdateSubscriptionOptions): Promise<Paddle.Subscription> {
-    const { subscriptionId, billingPlanInfoId, ...rest } = options;
+    const { subscriptionId, billingPlanInfoId, discountId, discountEffectiveFrom, priceIds, prorationBillingMode } = options;
     const path = `/subscriptions/${subscriptionId}`;
-    const body = _.merge(rest, {
+    const body = {
       custom_data: {
         billingPlanInfoId,
       },
-    });
+      discount: discountId
+        ? {
+            id: discountId,
+            effective_from: discountEffectiveFrom,
+          }
+        : undefined,
+      proration_billing_mode: prorationBillingMode ? prorationBillingMode : undefined,
+      items: priceIds ? [priceIds.map((priceId) => ({ price_id: priceId, quantity: 1 }))] : undefined,
+    };
 
     const response = await this.client.patch<Paddle.Response<Paddle.Subscription>>(path, body);
     return processPaddleResponse(response.data, 'update subscription failed');
