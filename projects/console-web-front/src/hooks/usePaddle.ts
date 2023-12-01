@@ -10,9 +10,8 @@ const usePaddle = (): { paddleRef: MutableRefObject<Paddle | undefined>; loading
   useEffect(() => {
     setLoading(true);
     initializePaddle({
-      environment: 'sandbox',
-      token: 'test_34410b5690f361ec275f1cb58bf',
-      // token: 'test_3184624ff37cdb070269ed045c9',
+      environment: process.env.NEXT_PUBLIC_PADDLE_ENVIRONMENT ?? 'sandbox',
+      token: process.env.NEXT_PUBLIC_PADDLE_TOKEN,
       debug: true,
     })
       .then((paddle) => {
