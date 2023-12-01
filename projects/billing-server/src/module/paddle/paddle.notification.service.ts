@@ -224,13 +224,13 @@ export class PaddleNotificationService {
     const purchasedAmount = BillingUsdAmount.fromCents(purchasedAmountInCents).toDollars();
     const discountedAmountInCents = originPriceInCents - purchasedAmountInCents;
     const discountedAmount = BillingUsdAmount.fromCents(discountedAmountInCents).toDollars();
-    const cardNumberLast4Digits = card?.last4 ?? null;
-    const cardExpirationYear = card?.expiry_year?.toString() ?? null;
-    const cardExpirationMonth = card?.expiry_month?.toString() ?? null;
-    const cardName = card?.cardholder_name ?? null;
-    const cardCode = card?.type ?? null;
-    const paddleMethodType = method_details?.type ?? null;
     const subscriptionId = subscription_id ?? null;
+    let cardNumberLast4Digits = card?.last4 ?? null;
+    let cardExpirationYear = card?.expiry_year?.toString() ?? null;
+    let cardExpirationMonth = card?.expiry_month?.toString() ?? null;
+    let cardName = card?.cardholder_name ?? null;
+    let cardCode = card?.type ?? null;
+    let paddleMethodType = method_details?.type ?? null;
 
     if (!subscriptionId) {
       throw new BadRequestException({
@@ -353,6 +353,15 @@ export class PaddleNotificationService {
         });
         organization.billingPlanInfos = [...(organization.billingPlanInfos ?? []), planInfo];
       } else {
+        if (origin === 'subscription_update') {
+          cardNumberLast4Digits = planInfo.cardNumberLast4Digits;
+          cardExpirationYear = planInfo.cardExpirationYear;
+          cardExpirationMonth = planInfo.cardExpirationMonth;
+          cardName = planInfo.cardName;
+          cardCode = planInfo.cardCode;
+          paddleMethodType = planInfo.paddleMethodType;
+        }
+
         planInfo.billingOrganizationId = billingOrganizationId;
         planInfo.billingPlanSourceId = billingPlanSourceId;
         planInfo.billingCouponId = billingCouponId;
