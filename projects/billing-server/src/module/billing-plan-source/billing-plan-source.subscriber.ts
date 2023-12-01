@@ -1,5 +1,5 @@
 import { BillingUsdAmount } from '@dogu-private/console';
-import { errorify } from '@dogu-tech/common';
+import { errorify, stringify } from '@dogu-tech/common';
 import { Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
@@ -20,7 +20,7 @@ export class BillingPlanSourceSubscriber {
 
   async subscribe(): Promise<void> {
     await subscribe(this.logger, this.dataSource, BillingPlanSourceTableName, (message) => {
-      this.logger.info('BillingPlanSourceSubscriber.subscribe', { message });
+      this.logger.info('BillingPlanSourceSubscriber.subscribe', { message: stringify(message) });
       (async (): Promise<void> => {
         const planSource = message.data as unknown as BillingPlanSource;
         if (message.event === 'created') {

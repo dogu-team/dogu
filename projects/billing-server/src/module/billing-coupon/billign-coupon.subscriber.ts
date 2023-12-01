@@ -1,4 +1,4 @@
-import { errorify } from '@dogu-tech/common';
+import { errorify, stringify } from '@dogu-tech/common';
 import { Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
@@ -19,7 +19,7 @@ export class BillingCouponSubscriber {
 
   async subscribe(): Promise<void> {
     await subscribe(this.logger, this.dataSource, BillingCouponTableName, (message) => {
-      this.logger.info('BillingCouponSubscriber.subscribe', { message });
+      this.logger.info('BillingCouponSubscriber.subscribe', { message: stringify(message) });
       (async (): Promise<void> => {
         const coupon = message.data as unknown as BillingCoupon;
         if (message.event === 'created' || message.event === 'updated') {
