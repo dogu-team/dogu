@@ -13,11 +13,11 @@ export class TokenGuard implements CanActivate {
     private readonly authService: AuthService,
     private readonly logger: DoguLogger,
   ) {}
-  canActivate(context: ExecutionContext): boolean {
-    return true;
-  }
+  // canActivate(context: ExecutionContext): boolean {
+  //   return true;
+  // }
 
-  canActivateNotYetEnabled(context: ExecutionContext): boolean {
+  canActivate(context: ExecutionContext): boolean {
     const option: PermissionOptions = this.reflector.get<PermissionOptions>(PERMISSION_OPTIONS_KEY, context.getHandler());
     if (!option) {
       throw new HttpException(`TokenGuard. The option is not defined.`, HttpStatus.UNAUTHORIZED);

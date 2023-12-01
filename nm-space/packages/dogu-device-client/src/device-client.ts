@@ -25,8 +25,11 @@ export class DeviceClient extends DeviceHttpClient {
     spec: WebSocketSpec<S, R>,
     query: Record<string, unknown> | undefined,
     serial: Serial,
-    onOpen: (deviceWebSocket: DeviceWebSocket) => void,
-    onMessage: (message: string) => void,
+    callback: {
+      onOpen: (deviceWebSocket: DeviceWebSocket) => void;
+      onClose: (code: number, reason: string) => void;
+      onMessage: (message: string) => void;
+    },
   ): Promise<DeviceCloser> {
     return new Promise((resolve, reject) => {
       const { path } = spec;
@@ -41,11 +44,12 @@ export class DeviceClient extends DeviceHttpClient {
         {
           onOpen() {
             isOpened = true;
-            onOpen(deviceWebSocket);
+            callback.onOpen(deviceWebSocket);
             resolve(new DeviceCloser(deviceWebSocket));
           },
           onClose(ev) {
             const { code, reason } = ev;
+            callback.onClose(code, reason.toString());
             if (!isOpened) {
               reject(new Error(`Unexpected close: ${code} ${reason.toString()}`));
               return;
@@ -66,7 +70,7 @@ export class DeviceClient extends DeviceHttpClient {
             } else {
               throw new Error(`Unexpected $case: ${stringify(value)}`);
             }
-            onMessage(stringValue);
+            callback.onMessage(stringValue);
           },
         },
       );
@@ -86,11 +90,8 @@ export class DeviceClient extends DeviceHttpClient {
         returningClosable?.close();
         reject(new Error(`Timeout to forward`));
       }, 60 * 1000);
-      this.subscribe(
-        DeviceForward,
-        undefined,
-        serial,
-        (deviceServerWebSocket) => {
+      this.subscribe(DeviceForward, undefined, serial, {
+        onOpen: (deviceServerWebSocket) => {
           const sendMessage: Instance<typeof DeviceForward.sendMessage> = {
             serial,
             hostPort,
@@ -98,7 +99,17 @@ export class DeviceClient extends DeviceHttpClient {
           };
           deviceServerWebSocket.send(JSON.stringify(sendMessage));
         },
-        (message) => {
+        onClose: (code, reason) => {
+          if (code === 1000) {
+            printable.info?.(`Forward closed`, { code, reason });
+            return;
+          }
+          if (resolvedOrRejected) {
+            return;
+          }
+          reject(new Error(`Forward closed code: ${code}, reason: ${reason}`));
+        },
+        onMessage: (message) => {
           const parsed = JSON.parse(message) as Instance<typeof DeviceForward.receiveMessage>;
           const { value } = parsed;
           const { kind } = value;
@@ -129,7 +140,7 @@ export class DeviceClient extends DeviceHttpClient {
             throw new Error(`Unexpected kind: ${stringify(kind)}`);
           }
         },
-      )
+      })
         .then((closable) => {
           returningClosable = closable;
         })
@@ -153,17 +164,24 @@ export class DeviceClient extends DeviceHttpClient {
         returningClosable?.close();
         reject(new Error(`Timeout to runAppiumServer`));
       }, 300 * 1000);
-      this.subscribe(
-        DeviceRunAppiumServer,
-        undefined,
-        serial,
-        (deviceServerWebSocket) => {
+      this.subscribe(DeviceRunAppiumServer, undefined, serial, {
+        onOpen: (deviceServerWebSocket) => {
           const sendMessage: Instance<typeof DeviceRunAppiumServer.sendMessage> = {
             serial,
           };
           deviceServerWebSocket.send(JSON.stringify(sendMessage));
         },
-        (message) => {
+        onClose: (code, reason) => {
+          if (code === 1000) {
+            printable.info?.(`Forward closed`, { code, reason });
+            return;
+          }
+          if (resolvedOrRejected) {
+            return;
+          }
+          reject(new Error(`RunAppiumServer closed code: ${code}, reason: ${reason}`));
+        },
+        onMessage: (message) => {
           const parsed = JSON.parse(message) as Instance<typeof DeviceRunAppiumServer.receiveMessage>;
           const { value } = parsed;
           const { kind } = value;
@@ -194,7 +212,7 @@ export class DeviceClient extends DeviceHttpClient {
             throw new Error(`Unexpected kind: ${stringify(kind)}`);
           }
         },
-      )
+      })
         .then((closable) => {
           returningClosable = closable;
         })

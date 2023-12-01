@@ -1,6 +1,6 @@
 import { DeviceAuthSubscribe } from '@dogu-private/dost-children';
 import { DeviceAdminToken, DeviceTemporaryToken, DOGU_DEVICE_AUTHORIZATION_HEADER_KEY } from '@dogu-private/types';
-import { FilledPrintable, Instance, setAxiosErrorFilterToIntercepter, stringify } from '@dogu-tech/common';
+import { FilledPrintable, Instance, setAxiosErrorFilterToIntercepter, stringify, time } from '@dogu-tech/common';
 import { DeviceAuth } from '@dogu-tech/device-client-common';
 import axios, { AxiosInstance } from 'axios';
 import { v4 as uuidv4 } from 'uuid';
@@ -75,7 +75,9 @@ export class DeviceAuthService {
 
     const pathProvider = new DeviceAuth.createToken.pathProvider(serial);
     const path = DeviceAuth.createToken.resolvePath(pathProvider);
-    const request: Instance<typeof DeviceAuth.createToken.requestBody> = {};
+    const request: Instance<typeof DeviceAuth.createToken.requestBody> = {
+      lifetimeMs: time({ hours: 7 * 24 }),
+    };
     const response = await this._deviceServerClient.post(path, request, {
       headers: { [DOGU_DEVICE_AUTHORIZATION_HEADER_KEY]: this._adminToken.value },
     });

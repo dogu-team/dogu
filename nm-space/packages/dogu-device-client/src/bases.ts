@@ -65,7 +65,8 @@ export interface DeviceService {
 export class DeviceCloser {
   constructor(readonly deviceWebSocket: DeviceWebSocket) {}
 
-  close(): void {
-    this.deviceWebSocket.close(1000, 'close').catch(() => {});
+  async close(): Promise<void> {
+    // Must wait to prevent jest 'Cannot log after tests are done.' warning
+    await this.deviceWebSocket.close(1000, 'close');
   }
 }

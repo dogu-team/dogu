@@ -1,7 +1,7 @@
 import { ControllerSpec, DefaultPathProvider } from '@dogu-tech/common';
 import { DeviceAdminToken, DeviceTemporaryToken, Serial } from '@dogu-tech/types';
 import { Type } from 'class-transformer';
-import { ValidateNested } from 'class-validator';
+import { IsNumber, ValidateNested } from 'class-validator';
 import { DeviceServerResponseDto } from '../..';
 import { DeviceServerControllerMethodSpec } from '../types';
 
@@ -13,7 +13,10 @@ export class RefreshAdminTokenRequestBody {
 
 export class RefreshAdminTokenReponseBodyData {}
 
-export class CreateTokenRequestBody {}
+export class CreateTokenRequestBody {
+  @IsNumber()
+  lifetimeMs!: number;
+}
 
 export class CreateTokenReponseBodyData {
   @ValidateNested()

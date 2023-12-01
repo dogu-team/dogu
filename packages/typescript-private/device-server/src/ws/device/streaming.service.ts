@@ -1,6 +1,6 @@
 import { OnWebSocketMessage, WebSocketGatewayBase, WebSocketRegistryValueAccessor, WebSocketService } from '@dogu-private/nestjs-common';
 import { StreamingAnswer } from '@dogu-private/types';
-import { closeWebSocketWithTruncateReason, errorify, Instance } from '@dogu-tech/common';
+import { closeWebSocketWithTruncateReason, errorify, Instance, time } from '@dogu-tech/common';
 import { DeviceStreaming } from '@dogu-tech/device-client-common';
 import { IncomingMessage } from 'http';
 import WebSocket from 'ws';
@@ -45,7 +45,7 @@ export class DeviceStreamingService
             const tokenAnswer: StreamingAnswer = {
               value: {
                 $case: 'deviceServerToken',
-                deviceServerToken: this.authService.generateTemporaryToken(serial),
+                deviceServerToken: this.authService.generateTemporaryToken(serial, time({ minutes: 10 })),
               },
             };
             webSocket.send(JSON.stringify(tokenAnswer));

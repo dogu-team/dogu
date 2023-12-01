@@ -19,26 +19,26 @@ export function WebsocketIncomingMessage(): ParameterDecorator {
  * @caution This decorator injects AuthService to the class instance. so you should have dependency to AuthModule in your module.
  * Use This decorator with WebsocketIncomingMessage parameter decorator.
  */
-export function WebsocketHeaderPermission(options: PermissionOptions): MethodDecorator {
-  const injectAuthService = Inject(AuthService);
+// export function WebsocketHeaderPermission(options: PermissionOptions): MethodDecorator {
+//   const injectAuthService = Inject(AuthService);
 
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  return (target: object, propertyKey: string | symbol, descriptor: PropertyDescriptor): void => {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const method = descriptor.value;
+//   // eslint-disable-next-line @typescript-eslint/ban-types
+//   return (target: object, propertyKey: string | symbol, descriptor: PropertyDescriptor): void => {
+//     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+//     const method = descriptor.value;
 
-    descriptor.value = function (): unknown {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, prefer-rest-params
-      return method.apply(this, arguments);
-    };
-  };
-}
+//     descriptor.value = function (): unknown {
+//       // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, prefer-rest-params
+//       return method.apply(this, arguments);
+//     };
+//   };
+// }
 
 /*
  * @caution This decorator injects AuthService to the class instance. so you should have dependency to AuthModule in your module.
  * Use This decorator with WebsocketIncomingMessage parameter decorator.
  */
-export function WebsocketHeaderPermissionNotYetEnabled(options: PermissionOptions): MethodDecorator {
+export function WebsocketHeaderPermission(options: PermissionOptions): MethodDecorator {
   const injectAuthService = Inject(AuthService);
 
   // eslint-disable-next-line @typescript-eslint/ban-types

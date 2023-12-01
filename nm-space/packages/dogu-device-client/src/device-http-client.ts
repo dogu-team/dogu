@@ -52,6 +52,7 @@ export class DeviceHttpClient {
       {
         method,
         path,
+        headers,
         query: queryCasted,
         body,
       },

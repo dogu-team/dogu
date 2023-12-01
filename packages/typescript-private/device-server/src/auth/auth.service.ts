@@ -11,6 +11,7 @@ import { PermissionOptions } from './options';
 interface SerialToToken {
   serial: Serial;
   token: DeviceTemporaryToken;
+  lifetimeMs: number;
   lastAccessedAt: number;
 }
 
@@ -42,9 +43,9 @@ export class AuthService {
     this.adminToken = new DeviceAdminToken(value);
   }
 
-  generateTemporaryToken(serial: Serial): DeviceTemporaryToken {
+  generateTemporaryToken(serial: Serial, lifetimeMs: number): DeviceTemporaryToken {
     const token: DeviceTemporaryToken = { value: uuidv4() };
-    this.temporaryTokens.push({ serial, token, lastAccessedAt: Date.now() });
+    this.temporaryTokens.push({ serial, token, lifetimeMs, lastAccessedAt: Date.now() });
     return token;
   }
 
@@ -94,7 +95,6 @@ export class AuthService {
 
   private cleanupOldTemporaryTokens(): void {
     const now = Date.now();
-    const expireTime = now - time({ minutes: 10 });
-    this.temporaryTokens = this.temporaryTokens.filter((t) => t.lastAccessedAt > expireTime);
+    this.temporaryTokens = this.temporaryTokens.filter((t) => t.lastAccessedAt + t.lifetimeMs > now);
   }
 }
