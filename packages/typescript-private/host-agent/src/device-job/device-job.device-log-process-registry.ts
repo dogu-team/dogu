@@ -1,4 +1,4 @@
-import { DeviceId, DEVICE_JOB_LOG_TYPE, OrganizationId, RoutineDeviceJobId, Serial } from '@dogu-private/types';
+import { DeviceId, DEVICE_JOB_LOG_TYPE, OrganizationId, RoutineDeviceJobId, RoutineStepId, Serial } from '@dogu-private/types';
 import { closeWebSocketWithTruncateReason, Instance, stringify, transformAndValidate, validateAndEmitEventAsync } from '@dogu-tech/common';
 import { DeviceLogSubscribe } from '@dogu-tech/device-client';
 import { Injectable } from '@nestjs/common';
@@ -9,12 +9,14 @@ import { OnDeviceJobCancelRequestedEvent, OnDeviceJobLoggedEvent, OnDeviceJobPos
 import { env } from '../env';
 import { OnHostDisconnectedEvent } from '../host/host.events';
 import { DoguLogger } from '../logger/logger';
+import { OnStepStartedEvent } from '../step/step.events';
 
 interface DeviceLogInfo {
   webSocket: WebSocket;
   organizationId: OrganizationId;
   deviceId: DeviceId;
   routineDeviceJobId: RoutineDeviceJobId;
+  routineStepId?: RoutineStepId;
   serial: Serial;
 }
 
@@ -79,6 +81,11 @@ export class DeviceJobLogProcessRegistry {
       const { data } = ev;
       transformAndValidate(DeviceLogSubscribe.receiveMessage, JSON.parse(data.toString()))
         .then(async (message) => {
+          const storeValue = this.webSockets.get(key);
+          if (!storeValue) {
+            this.logger.error('startDeviceLogSubscribe failed to get storeValue', { key });
+            return;
+          }
           await validateAndEmitEventAsync(this.eventEmitter, OnDeviceJobLoggedEvent, {
             organizationId,
             deviceId,
@@ -86,6 +93,7 @@ export class DeviceJobLogProcessRegistry {
             log: {
               ...message,
               type: DEVICE_JOB_LOG_TYPE.DEVICE,
+              routineStepId: storeValue.routineStepId,
             },
           });
         })
@@ -93,6 +101,19 @@ export class DeviceJobLogProcessRegistry {
           this.logger.error('startDeviceLogSubscribe failed to parse message', { error: stringify(error) });
         });
     });
+  }
+
+  @OnEvent(OnStepStartedEvent.key)
+  onStepStartedEvent(value: Instance<typeof OnStepStartedEvent.value>): void {
+    const { organizationId, deviceId, routineDeviceJobId, routineStepId } = value;
+    const key = this.createKey(organizationId, deviceId, routineDeviceJobId);
+    const storeValue = this.webSockets.get(key);
+
+    if (!storeValue) {
+      this.logger.warn(`DeviceJobLogProcessRegistry.onStepStartedEvent deviceJob not exists: ${key}`);
+      return;
+    }
+    this.webSockets.set(key, { ...storeValue, routineStepId });
   }
 
   @OnEvent(OnDeviceJobCancelRequestedEvent.key)

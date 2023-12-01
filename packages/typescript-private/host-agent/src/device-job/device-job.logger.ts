@@ -14,7 +14,10 @@ import { OnDeviceJobLoggedEvent } from './device-job.events';
 export class DeviceJobLogger {
   private readonly buffers = new Map<string, DeviceJobLog[]>();
 
-  constructor(private readonly consoleClientService: ConsoleClientService, private readonly logger: DoguLogger) {}
+  constructor(
+    private readonly consoleClientService: ConsoleClientService,
+    private readonly logger: DoguLogger,
+  ) {}
 
   @Interval(1000)
   flush(): void {
