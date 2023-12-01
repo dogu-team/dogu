@@ -58,6 +58,7 @@ export type PaddleElapsePlan = {
   option: number;
   period: BillingPeriod;
   currency: BillingCurrency;
+  elapsedPurchaseAmount: number;
   elapsedMinutesRate: number;
 };
 

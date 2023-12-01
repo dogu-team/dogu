@@ -1,6 +1,7 @@
 import {
   BillingHistoryTypePurchase,
   BillingHistoryTypeRefund,
+  BillingUsdAmount,
   CreatePurchaseDto,
   CreatePurchaseResponse,
   CreatePurchaseWithNewCardDto,
@@ -85,6 +86,7 @@ export class BillingPurchaseService {
         });
       }
       case 'paddle': {
+        // TODO: refactor with precheckout
         const { organizationId } = dto;
         const preprocessResult = await this.retryTransaction.serializable(async (context) => {
           const now = this.dateTimeSimulatorService.now();
@@ -197,10 +199,17 @@ export class BillingPurchaseService {
           discountId: discountId ?? undefined,
           discountEffectiveFrom: isUpgrade ? 'immediately' : 'next_billing_period',
         });
-        const totalPrice = Number(previewSubscription.immediate_transaction?.details?.totals?.grand_total ?? '0');
-        const nextPurchaseTotalPrice = Number(previewSubscription.next_transaction?.details.totals?.grand_total ?? '0');
-        const tax = Number(previewSubscription.immediate_transaction?.adjustments?.[0].totals?.tax ?? '0');
+
+        const totalPriceCents = Number(previewSubscription.immediate_transaction?.details?.totals?.grand_total ?? '0');
+        const totalPrice = BillingUsdAmount.fromCents(totalPriceCents).toDollars();
+        const nextPurchaseTotalPriceCents = Number(previewSubscription.next_transaction?.details.totals?.grand_total ?? '0');
+        const nextPurchaseTotalPrice = BillingUsdAmount.fromCents(nextPurchaseTotalPriceCents).toDollars();
+        const taxCents = Number(previewSubscription.immediate_transaction?.adjustments?.[0].totals?.tax ?? '0');
+        const tax = BillingUsdAmount.fromCents(taxCents).toDollars();
         const elapsedMinutesRate = Number(previewSubscription.immediate_transaction?.details?.line_items?.[0].proration?.rate ?? '0');
+        const elapsedPurchaseAmountCents = Number(previewSubscription.immediate_transaction?.details?.line_items?.[0].totals?.total ?? '0');
+        const elapsedPurchaseAmount = BillingUsdAmount.fromCents(elapsedPurchaseAmountCents).toDollars();
+
         if (!previewSubscription.next_billed_at) {
           throw new InternalServerErrorException({
             reason: 'next billed at not found',
@@ -233,6 +242,7 @@ export class BillingPurchaseService {
               type: planInfo.type,
               currency: planInfo.currency,
               elapsedMinutesRate,
+              elapsedPurchaseAmount,
             },
           ],
           elapsedPlans: [],
