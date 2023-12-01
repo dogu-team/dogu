@@ -6,7 +6,6 @@ import { useRouter } from 'next/router';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { checkDeviceStateAsync } from 'src/api/device';
-// import useStreamingOptionStore from 'src/stores/streaming-option';
 import { StreamingError, StreamingErrorType } from 'src/types/streaming';
 import { config } from '../../../config';
 import useEventStore from '../../stores/events';
@@ -24,7 +23,6 @@ type Option = {
 const useRTCConnection = ({ device, pid, isCloudDevice }: Option, sendThrottleMs: number) => {
   const router = useRouter();
   const organizationId = router.query.orgId as OrganizationId;
-  // const { fps, resolution } = useStreamingOptionStore((state) => state.option);
   const timer = useRef<NodeJS.Timeout | null>(null);
   const peerConnectionRef = useRef<RTCPeerConnection | undefined>();
   const deviceRTCCallerRef = useRef<DeviceRTCCaller | undefined>();
@@ -211,7 +209,7 @@ const useRTCConnection = ({ device, pid, isCloudDevice }: Option, sendThrottleMs
     if (loading && !haConnectionError) {
       const timer = setInterval(() => {
         if (pid) {
-          console.log('retry initialize connection');
+          console.debug('retry initialize connection');
           initializeConnection(pid);
         }
       }, 15000);
@@ -226,7 +224,7 @@ const useRTCConnection = ({ device, pid, isCloudDevice }: Option, sendThrottleMs
         return;
       }
 
-      console.log('clear initialize connection');
+      console.debug('clear initialize connection');
 
       if (videoRef.current) {
         videoRef.current.srcObject = null;
@@ -240,9 +238,7 @@ const useRTCConnection = ({ device, pid, isCloudDevice }: Option, sendThrottleMs
   }, [loading, pid, haConnectionError, cleanUp, initializeConnection]);
 
   useEffect(() => {
-    console.log('pid', pid);
-
-    console.log('initialize connection');
+    console.debug('initialize connection');
     initializeConnection(pid);
 
     return () => {
