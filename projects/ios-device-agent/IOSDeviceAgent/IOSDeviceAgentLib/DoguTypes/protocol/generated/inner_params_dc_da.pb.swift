@@ -61,6 +61,22 @@ public struct Inner_Params_DcDaParam {
     set {value = .dcDaControlParam(newValue)}
   }
 
+  public var dcDaGetFoldableStateParam: Inner_Types_DcDaGetFoldableStateParam {
+    get {
+      if case .dcDaGetFoldableStateParam(let v)? = value {return v}
+      return Inner_Types_DcDaGetFoldableStateParam()
+    }
+    set {value = .dcDaGetFoldableStateParam(newValue)}
+  }
+
+  public var dcDaSetFoldableStateParam: Inner_Types_DcDaSetFoldableStateParam {
+    get {
+      if case .dcDaSetFoldableStateParam(let v)? = value {return v}
+      return Inner_Types_DcDaSetFoldableStateParam()
+    }
+    set {value = .dcDaSetFoldableStateParam(newValue)}
+  }
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public enum OneOf_Value: Equatable {
@@ -68,6 +84,8 @@ public struct Inner_Params_DcDaParam {
     case dcDaQueryProfileParam(Inner_Types_DcDaQueryProfileParam)
     case dcDaApplyStreamingOptionParam(Inner_Types_DcDaApplyStreamingOptionParam)
     case dcDaControlParam(Inner_Types_DcDaControlParam)
+    case dcDaGetFoldableStateParam(Inner_Types_DcDaGetFoldableStateParam)
+    case dcDaSetFoldableStateParam(Inner_Types_DcDaSetFoldableStateParam)
 
   #if !swift(>=4.1)
     public static func ==(lhs: Inner_Params_DcDaParam.OneOf_Value, rhs: Inner_Params_DcDaParam.OneOf_Value) -> Bool {
@@ -89,6 +107,14 @@ public struct Inner_Params_DcDaParam {
       }()
       case (.dcDaControlParam, .dcDaControlParam): return {
         guard case .dcDaControlParam(let l) = lhs, case .dcDaControlParam(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.dcDaGetFoldableStateParam, .dcDaGetFoldableStateParam): return {
+        guard case .dcDaGetFoldableStateParam(let l) = lhs, case .dcDaGetFoldableStateParam(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.dcDaSetFoldableStateParam, .dcDaSetFoldableStateParam): return {
+        guard case .dcDaSetFoldableStateParam(let l) = lhs, case .dcDaSetFoldableStateParam(let r) = rhs else { preconditionFailure() }
         return l == r
       }()
       default: return false
@@ -141,6 +167,22 @@ public struct Inner_Params_DcDaReturn {
     set {value = .dcDaControlReturn(newValue)}
   }
 
+  public var dcDaGetFoldableStateReturn: Inner_Types_DcDaGetFoldableStateReturn {
+    get {
+      if case .dcDaGetFoldableStateReturn(let v)? = value {return v}
+      return Inner_Types_DcDaGetFoldableStateReturn()
+    }
+    set {value = .dcDaGetFoldableStateReturn(newValue)}
+  }
+
+  public var dcDaSetFoldableStateReturn: Inner_Types_DcDaSetFoldableStateReturn {
+    get {
+      if case .dcDaSetFoldableStateReturn(let v)? = value {return v}
+      return Inner_Types_DcDaSetFoldableStateReturn()
+    }
+    set {value = .dcDaSetFoldableStateReturn(newValue)}
+  }
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public enum OneOf_Value: Equatable {
@@ -148,6 +190,8 @@ public struct Inner_Params_DcDaReturn {
     case dcDaQueryProfileReturn(Inner_Types_DcDaQueryProfileReturn)
     case dcDaApplyStreamingOptionReturn(Inner_Types_DcDaApplyStreamingOptionReturn)
     case dcDaControlReturn(Inner_Types_DcDaControlReturn)
+    case dcDaGetFoldableStateReturn(Inner_Types_DcDaGetFoldableStateReturn)
+    case dcDaSetFoldableStateReturn(Inner_Types_DcDaSetFoldableStateReturn)
 
   #if !swift(>=4.1)
     public static func ==(lhs: Inner_Params_DcDaReturn.OneOf_Value, rhs: Inner_Params_DcDaReturn.OneOf_Value) -> Bool {
@@ -169,6 +213,14 @@ public struct Inner_Params_DcDaReturn {
       }()
       case (.dcDaControlReturn, .dcDaControlReturn): return {
         guard case .dcDaControlReturn(let l) = lhs, case .dcDaControlReturn(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.dcDaGetFoldableStateReturn, .dcDaGetFoldableStateReturn): return {
+        guard case .dcDaGetFoldableStateReturn(let l) = lhs, case .dcDaGetFoldableStateReturn(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.dcDaSetFoldableStateReturn, .dcDaSetFoldableStateReturn): return {
+        guard case .dcDaSetFoldableStateReturn(let l) = lhs, case .dcDaSetFoldableStateReturn(let r) = rhs else { preconditionFailure() }
         return l == r
       }()
       default: return false
@@ -199,6 +251,8 @@ extension Inner_Params_DcDaParam: SwiftProtobuf.Message, SwiftProtobuf._MessageI
     3: .standard(proto: "dc_da_query_profile_param"),
     4: .standard(proto: "dc_da_apply_streaming_option_param"),
     5: .standard(proto: "dc_da_control_param"),
+    6: .standard(proto: "dc_da_get_foldable_state_param"),
+    7: .standard(proto: "dc_da_set_foldable_state_param"),
   ]
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -260,6 +314,32 @@ extension Inner_Params_DcDaParam: SwiftProtobuf.Message, SwiftProtobuf._MessageI
           self.value = .dcDaControlParam(v)
         }
       }()
+      case 6: try {
+        var v: Inner_Types_DcDaGetFoldableStateParam?
+        var hadOneofValue = false
+        if let current = self.value {
+          hadOneofValue = true
+          if case .dcDaGetFoldableStateParam(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.value = .dcDaGetFoldableStateParam(v)
+        }
+      }()
+      case 7: try {
+        var v: Inner_Types_DcDaSetFoldableStateParam?
+        var hadOneofValue = false
+        if let current = self.value {
+          hadOneofValue = true
+          if case .dcDaSetFoldableStateParam(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.value = .dcDaSetFoldableStateParam(v)
+        }
+      }()
       default: break
       }
     }
@@ -290,6 +370,14 @@ extension Inner_Params_DcDaParam: SwiftProtobuf.Message, SwiftProtobuf._MessageI
       guard case .dcDaControlParam(let v)? = self.value else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 5)
     }()
+    case .dcDaGetFoldableStateParam?: try {
+      guard case .dcDaGetFoldableStateParam(let v)? = self.value else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 6)
+    }()
+    case .dcDaSetFoldableStateParam?: try {
+      guard case .dcDaSetFoldableStateParam(let v)? = self.value else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 7)
+    }()
     case nil: break
     }
     try unknownFields.traverse(visitor: &visitor)
@@ -311,6 +399,8 @@ extension Inner_Params_DcDaReturn: SwiftProtobuf.Message, SwiftProtobuf._Message
     3: .standard(proto: "dc_da_query_profile_return"),
     4: .standard(proto: "dc_da_apply_streaming_option_return"),
     5: .standard(proto: "dc_da_control_return"),
+    6: .standard(proto: "dc_da_get_foldable_state_return"),
+    7: .standard(proto: "dc_da_set_foldable_state_return"),
   ]
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -372,6 +462,32 @@ extension Inner_Params_DcDaReturn: SwiftProtobuf.Message, SwiftProtobuf._Message
           self.value = .dcDaControlReturn(v)
         }
       }()
+      case 6: try {
+        var v: Inner_Types_DcDaGetFoldableStateReturn?
+        var hadOneofValue = false
+        if let current = self.value {
+          hadOneofValue = true
+          if case .dcDaGetFoldableStateReturn(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.value = .dcDaGetFoldableStateReturn(v)
+        }
+      }()
+      case 7: try {
+        var v: Inner_Types_DcDaSetFoldableStateReturn?
+        var hadOneofValue = false
+        if let current = self.value {
+          hadOneofValue = true
+          if case .dcDaSetFoldableStateReturn(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.value = .dcDaSetFoldableStateReturn(v)
+        }
+      }()
       default: break
       }
     }
@@ -401,6 +517,14 @@ extension Inner_Params_DcDaReturn: SwiftProtobuf.Message, SwiftProtobuf._Message
     case .dcDaControlReturn?: try {
       guard case .dcDaControlReturn(let v)? = self.value else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 5)
+    }()
+    case .dcDaGetFoldableStateReturn?: try {
+      guard case .dcDaGetFoldableStateReturn(let v)? = self.value else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 6)
+    }()
+    case .dcDaSetFoldableStateReturn?: try {
+      guard case .dcDaSetFoldableStateReturn(let v)? = self.value else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 7)
     }()
     case nil: break
     }

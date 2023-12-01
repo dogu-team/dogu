@@ -3,6 +3,7 @@ syntax = "proto3";
 package inner.types;
 
 import "inner/types/device_control.proto";
+import "outer/errors.proto";
 import "outer/profile/profile_method.proto";
 import "outer/profile/runtime_info.proto";
 import "outer/streaming/streaming.proto";
@@ -38,4 +39,21 @@ message DcDaControlParam {
 }
 
 message DcDaControlReturn {
+}
+
+message DcDaGetFoldableStateParam {
+}
+
+message DcDaGetFoldableStateReturn {
+  bool is_foldable = 1;
+  uint32 current_state = 2;
+  repeated uint32 supported_states = 3;
+}
+
+message DcDaSetFoldableStateParam {
+  uint32 state = 1;  // It's different by device. but normally smaller is closed
+}
+
+message DcDaSetFoldableStateReturn {
+  outer.ErrorResult error = 1;
 }

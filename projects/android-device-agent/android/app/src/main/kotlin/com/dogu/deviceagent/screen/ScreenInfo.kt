@@ -126,28 +126,23 @@ class ScreenInfo(
         }
 
         private fun computeVideoSize(w: Int, h: Int, maxResolution: Int): Size {
-            // Compute the video size and the padding of the content inside this video.
-            // Principle:
-            // - scale down the great side of the screen to maxResolution (if necessary);
-            // - scale down the other side so that the aspect ratio is preserved;
-            // - round this value to the nearest multiple of 8 (H.264 only accepts multiples of 8)
             var w = w
             var h = h
-            w = w and 7.inv() // in case it's not a multiple of 8
-            h = h and 7.inv()
-            if (maxResolution > 0) {
-                if (BuildConfig.DEBUG && maxResolution % 8 != 0) {
-                    throw AssertionError("Max size must be a multiple of 8")
-                }
+            var maxRes = maxResolution
+            w = w and 3.inv() // in case it's not a multiple of 4
+            h = h and 3.inv()
+            maxRes = maxRes and 3.inv()
+            if (maxRes > 0) {
+
                 val portrait = h > w
                 var major = if (portrait) h else w
                 var minor = if (portrait) w else h
-                if (major > maxResolution) {
-                    val majorExact = major * maxResolution / minor
-                    val minorExact = minor * maxResolution / major
-                    // +4 to round the value to the nearest multiple of 8
-                    minor = maxResolution
-                    major = majorExact + 4 and 7.inv()
+                if (major > maxRes) {
+                    val majorExact = major * maxRes / minor
+                    val minorExact = minor * maxRes / major
+                    // +2 to round the value to the nearest multiple of 4
+                    minor = maxRes
+                    major = majorExact + 2 and 3.inv()
                 }
                 w = if (portrait) minor else major
                 h = if (portrait) major else minor

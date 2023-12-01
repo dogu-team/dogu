@@ -134,6 +134,54 @@ object DcDaParamKt {
     fun hasDcDaControlParam(): kotlin.Boolean {
       return _builder.hasDcDaControlParam()
     }
+
+    /**
+     * <code>.inner.types.DcDaGetFoldableStateParam dc_da_get_foldable_state_param = 6;</code>
+     */
+    var dcDaGetFoldableStateParam: com.dogu.protocol.generated.inner.types.DcDa.DcDaGetFoldableStateParam
+      @JvmName("getDcDaGetFoldableStateParam")
+      get() = _builder.getDcDaGetFoldableStateParam()
+      @JvmName("setDcDaGetFoldableStateParam")
+      set(value) {
+        _builder.setDcDaGetFoldableStateParam(value)
+      }
+    /**
+     * <code>.inner.types.DcDaGetFoldableStateParam dc_da_get_foldable_state_param = 6;</code>
+     */
+    fun clearDcDaGetFoldableStateParam() {
+      _builder.clearDcDaGetFoldableStateParam()
+    }
+    /**
+     * <code>.inner.types.DcDaGetFoldableStateParam dc_da_get_foldable_state_param = 6;</code>
+     * @return Whether the dcDaGetFoldableStateParam field is set.
+     */
+    fun hasDcDaGetFoldableStateParam(): kotlin.Boolean {
+      return _builder.hasDcDaGetFoldableStateParam()
+    }
+
+    /**
+     * <code>.inner.types.DcDaSetFoldableStateParam dc_da_set_foldable_state_param = 7;</code>
+     */
+    var dcDaSetFoldableStateParam: com.dogu.protocol.generated.inner.types.DcDa.DcDaSetFoldableStateParam
+      @JvmName("getDcDaSetFoldableStateParam")
+      get() = _builder.getDcDaSetFoldableStateParam()
+      @JvmName("setDcDaSetFoldableStateParam")
+      set(value) {
+        _builder.setDcDaSetFoldableStateParam(value)
+      }
+    /**
+     * <code>.inner.types.DcDaSetFoldableStateParam dc_da_set_foldable_state_param = 7;</code>
+     */
+    fun clearDcDaSetFoldableStateParam() {
+      _builder.clearDcDaSetFoldableStateParam()
+    }
+    /**
+     * <code>.inner.types.DcDaSetFoldableStateParam dc_da_set_foldable_state_param = 7;</code>
+     * @return Whether the dcDaSetFoldableStateParam field is set.
+     */
+    fun hasDcDaSetFoldableStateParam(): kotlin.Boolean {
+      return _builder.hasDcDaSetFoldableStateParam()
+    }
     val valueCase: com.dogu.protocol.generated.inner.params.DcDa.DcDaParam.ValueCase
       @JvmName("getValueCase")
       get() = _builder.getValueCase()
@@ -158,4 +206,10 @@ val com.dogu.protocol.generated.inner.params.DcDa.DcDaParamOrBuilder.dcDaApplySt
 
 val com.dogu.protocol.generated.inner.params.DcDa.DcDaParamOrBuilder.dcDaControlParamOrNull: com.dogu.protocol.generated.inner.types.DcDa.DcDaControlParam?
   get() = if (hasDcDaControlParam()) getDcDaControlParam() else null
+
+val com.dogu.protocol.generated.inner.params.DcDa.DcDaParamOrBuilder.dcDaGetFoldableStateParamOrNull: com.dogu.protocol.generated.inner.types.DcDa.DcDaGetFoldableStateParam?
+  get() = if (hasDcDaGetFoldableStateParam()) getDcDaGetFoldableStateParam() else null
+
+val com.dogu.protocol.generated.inner.params.DcDa.DcDaParamOrBuilder.dcDaSetFoldableStateParamOrNull: com.dogu.protocol.generated.inner.types.DcDa.DcDaSetFoldableStateParam?
+  get() = if (hasDcDaSetFoldableStateParam()) getDcDaSetFoldableStateParam() else null
 
