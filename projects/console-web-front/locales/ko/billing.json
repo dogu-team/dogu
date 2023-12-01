@@ -118,6 +118,9 @@
 
   "billingPaymentMethodTitle": "결제 수단",
   "billingInvoiceTitle": "결제 내역",
+  "billingInfomationTitle": "결제 정보",
+
+  "changePaddlePaymentMethodInfoMessage": "결제 수단 변경을 하려면 각 플랜의 메뉴 버튼을 클릭하세요.",
 
   "liveTestingFreeTierInfoBannerMessage": "무료 플랜을 사용하고 있습니다. <time></time>분 동안 사용할 수 있습니다.",
   "liveTestingFreeTierInfoBannerExpiredMessage": "무료 플랜 제공 시간을 모두 사용하셨습니다. 플랜을 업그레이드 해보세요!",
@@ -160,6 +163,8 @@
   "planCancelUnsubscribeButtonText": "다시 구독하기",
   "planNextChargeUnsubscribeRequestedText": "{{date}}까지 이용 가능",
 
+  "paymentMethodButtonText": "결제 수단",
+  "paymentMethodModalTitle": "결제 수단 관리",
   "cancelPlanButtonText": "구독 취소하기",
   "cancelPlanModalTitle": "구독 취소하기",
   "cancelPlanModalDescription": "구독을 취소하시겠습니까?",

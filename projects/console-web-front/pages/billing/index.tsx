@@ -11,7 +11,6 @@ import BillingHistoryList from '../../src/components/billing/BillingHistoryList'
 import BillingPaddleAddress from '../../src/components/billing/BillingPaddleAddress';
 import BillingPaddleBusiness from '../../src/components/billing/BillingPaddleBusiness';
 import BillingPaymentMethodNice from '../../src/components/billing/BillingPaymentMethodNice';
-import BillingPaymentMethodPaddle from '../../src/components/billing/BillingPaymentMethodPaddle';
 import BillingSubscribedPlanList from '../../src/components/billing/BillingSubscribedPlanList';
 import UpgradePlanButton from '../../src/components/billing/UpgradePlanButton';
 import LiveChat from '../../src/components/external/livechat';
@@ -70,9 +69,11 @@ const BillingPage: NextPageWithLayout<BillingPageProps> = ({ me, license }) => {
           <Content>
             <TitleWrapper>
               <ContentTitle>
-                {license.billingOrganization.billingMethod === 'nice'
-                  ? t('billingPaymentMethodTitle')
-                  : 'Billing information'}
+                {t(
+                  license.billingOrganization.billingMethod === 'nice'
+                    ? 'billingPaymentMethodTitle'
+                    : 'billingInfomationTitle',
+                )}
               </ContentTitle>
             </TitleWrapper>
             <ContentInner>
@@ -83,9 +84,7 @@ const BillingPage: NextPageWithLayout<BillingPageProps> = ({ me, license }) => {
                 />
               ) : (
                 <div>
-                  <p style={{ fontSize: '.8rem', color: '#777' }}>
-                    * For change payment method for plan, click menu button of each plan.
-                  </p>
+                  <p style={{ fontSize: '.8rem', color: '#777' }}>* {t('changePaddlePaymentMethodInfoMessage')}</p>
 
                   <BillingInfoWrapper>
                     <BillingPaddleAddress />

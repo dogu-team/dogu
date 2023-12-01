@@ -42,10 +42,10 @@ const BillingPaymentMethodPaddle: React.FC<Props> = ({ plan }) => {
           },
         });
       } else {
-        throw new Error('Failed to get transaction');
+        throw new Error('Failed to get plan information');
       }
     } catch (e) {
-      sendErrorNotification(`Failed to get transaction`);
+      sendErrorNotification(`Failed to get plan information`);
     }
   };
 

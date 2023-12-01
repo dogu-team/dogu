@@ -286,7 +286,7 @@ const PlanItem: React.FC<ItemProps> = ({ plan }) => {
       ? {
           label: (
             <MenuItemButton danger={false} onClick={() => openModal()}>
-              Payment method
+              {t('paymentMethodButtonText')}
             </MenuItemButton>
           ),
           key: 'payment-method',
@@ -352,7 +352,7 @@ const PlanItem: React.FC<ItemProps> = ({ plan }) => {
         </ItemInner>
       </Item>
 
-      <Modal open={isOpen} centered footer={null} closable onCancel={closeModal} title="Payment method">
+      <Modal open={isOpen} centered footer={null} closable onCancel={closeModal} title={t('paymentMethodModalTitle')}>
         <BillingPaymentMethodPaddle plan={plan} />
       </Modal>
     </>

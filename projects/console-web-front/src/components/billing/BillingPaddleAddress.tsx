@@ -2,7 +2,6 @@ import { shallow } from 'zustand/shallow';
 import iso3311a2 from 'iso-3166-1-alpha-2';
 import styled from 'styled-components';
 import { EditOutlined } from '@ant-design/icons';
-import { useEffect } from 'react';
 import { Button, Form, Input, Modal, Select, Space } from 'antd';
 
 import { updatePaddleAddress } from '../../api/billing';

@@ -118,6 +118,9 @@
 
   "billingPaymentMethodTitle": "Payment method",
   "billingInvoiceTitle": "Invoices",
+  "billingInfomationTitle": "Billing information",
+
+  "changePaddlePaymentMethodInfoMessage": "For change payment method for plan, click menu of each plan.",
 
   "liveTestingFreeTierInfoBannerMessage": "You are using the free plan. Live testing is available for <time></time> min.",
   "liveTestingFreeTierInfoBannerExpiredMessage": "There's no time left for live testing. Please upgrade your plan!",
@@ -160,6 +163,8 @@
   "planCancelUnsubscribeButtonText": "Subscribe again",
   "planNextChargeUnsubscribeRequestedText": "Available until {{date}}",
 
+  "paymentMethodButtonText": "Payment method",
+  "paymentMethodModalTitle": "Payment method details",
   "cancelPlanButtonText": "Unsubscribe",
   "cancelPlanModalTitle": "Unsubscribe plan",
   "cancelPlanModalDescription": "Are you sure to Unsubscribe plan?",
