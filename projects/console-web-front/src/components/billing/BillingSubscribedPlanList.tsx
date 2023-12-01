@@ -223,7 +223,7 @@ const StateBadge: React.FC<StateProps> = ({ plan }) => {
     case 'unsubscribe-requested':
       return (
         <div style={{ display: 'flex', alignItems: 'center' }}>
-          <Tag color="error">{t('planStatusUnsubscribeRequestedText')}</Tag>
+          <Tag color="warning">{t('planStatusUnsubscribeRequestedText')}</Tag>
           <StyledCancelUnsubscribeButton onClick={clickCancelUnsubscribe} disabled={loading}>
             {t('planCancelUnsubscribeButtonText')}
           </StyledCancelUnsubscribeButton>
