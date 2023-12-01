@@ -8,11 +8,13 @@ import { shallow } from 'zustand/shallow';
 import useBillingPlanPurchaseStore from '../../stores/billing-plan-purchase';
 import useLicenseStore from '../../stores/license';
 import BillingMethodRegistrationForm, { BillingMethodRegistrationFormValues } from './BillingMethodRegistrationForm';
+import BillingPaymentMethodPaddle from './BillingPaymentMethodPaddle';
 
 interface Props {}
 
 const BillingPaymentPreview: React.FC<Props> = () => {
   const license = useLicenseStore((state) => state.license);
+  const selectedPlan = useBillingPlanPurchaseStore((state) => state.selectedPlan);
   const [form] = Form.useForm<BillingMethodRegistrationFormValues>();
   const purchaseErrorText = useBillingPlanPurchaseStore((state) => state.purchaseErrorText);
   const updateCardForm = useBillingPlanPurchaseStore((state) => state.updateCardForm);
@@ -36,11 +38,17 @@ const BillingPaymentPreview: React.FC<Props> = () => {
     updateWithNewCard(e.target.value);
   };
 
+  const isPaddle = license?.billingOrganization?.billingMethod === 'paddle';
+  const paddleCurrentPlan = license?.billingOrganization.billingPlanInfos.find(
+    (info) => info.type === selectedPlan?.type,
+  );
   const currentPayment = license?.billingOrganization?.billingMethodNice;
 
   return (
     <PaymentContent>
-      {!!currentPayment ? (
+      {isPaddle ? (
+        <div>{paddleCurrentPlan && <BillingPaymentMethodPaddle plan={paddleCurrentPlan} />}</div>
+      ) : !!currentPayment ? (
         <div>
           <Radio.Group style={{ width: '100%' }} value={withNewCard} onChange={handleChangeRadio}>
             <Space direction="vertical" style={{ width: '100%' }}>

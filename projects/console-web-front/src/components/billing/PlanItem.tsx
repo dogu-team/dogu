@@ -24,6 +24,13 @@ import useAuthStore from '../../stores/auth';
 import useRequest from '../../hooks/useRequest';
 import { sendErrorNotification } from '../../utils/antd';
 
+enum ButtonState {
+  UPGRADE,
+  CHANGE,
+  GO_ANNUAL,
+  CURRENT_PLAN,
+}
+
 interface Props {
   planType: BillingPlanType;
   planInfo: BillingPlanOptionInfo;
@@ -82,18 +89,29 @@ const PlanItem: React.FC<Props> = ({ planType, planInfo, descriptionInfo }) => {
     text: string;
     disabled: boolean;
     shouldGoAnnual: boolean;
+    state: ButtonState;
   } => {
     const period: BillingPeriod = isAnnual ? 'yearly' : 'monthly';
     const plan = usingPlans[0];
 
     if (plan && plan.option === Number(selectedValue) && isAnnual && plan.period === 'yearly') {
-      return { text: t('currentPlanButtonTitle'), disabled: true, shouldGoAnnual: false };
+      return {
+        text: t('currentPlanButtonTitle'),
+        disabled: true,
+        shouldGoAnnual: false,
+        state: ButtonState.CURRENT_PLAN,
+      };
     }
 
     if (plan && plan.option === Number(selectedValue) && plan.period === 'monthly') {
       // annual plan is not available
       // return { text: t('goAnnualButtonTitle'), disabled: false, shouldGoAnnual: true };
-      return { text: t('currentPlanButtonTitle'), disabled: true, shouldGoAnnual: false };
+      return {
+        text: t('currentPlanButtonTitle'),
+        disabled: true,
+        shouldGoAnnual: false,
+        state: ButtonState.CURRENT_PLAN,
+      };
     }
 
     if (
@@ -102,13 +120,13 @@ const PlanItem: React.FC<Props> = ({ planType, planInfo, descriptionInfo }) => {
         (plan.period === period || (plan.period === 'monthly' && isAnnual)) &&
         plan.option < Number(selectedValue))
     ) {
-      return { text: t('upgradeButtonTitle'), disabled: false, shouldGoAnnual: false };
+      return { text: t('upgradeButtonTitle'), disabled: false, shouldGoAnnual: false, state: ButtonState.UPGRADE };
     }
 
-    return { text: t('changeButtonTitle'), disabled: false, shouldGoAnnual: false };
+    return { text: t('changeButtonTitle'), disabled: false, shouldGoAnnual: false, state: ButtonState.CHANGE };
   };
 
-  const { text: buttonText, disabled: buttonDisabled, shouldGoAnnual } = getButtonState();
+  const { text: buttonText, disabled: buttonDisabled, shouldGoAnnual, state: buttonState } = getButtonState();
 
   const handleClickButton = async () => {
     if (!license) {
@@ -132,6 +150,16 @@ const PlanItem: React.FC<Props> = ({ planType, planInfo, descriptionInfo }) => {
         return;
       }
 
+      if (buttonState === ButtonState.UPGRADE || buttonState === ButtonState.CHANGE) {
+        updateSelectedPlan({
+          type: planType,
+          option: Number(selectedValue) ?? 0,
+          category: planInfo.category,
+          billingPlanSourceId,
+        });
+        return;
+      }
+
       try {
         const res = await requestPrecheckoutPurchase({
           organizationId: license.organizationId,
@@ -143,7 +171,6 @@ const PlanItem: React.FC<Props> = ({ planType, planInfo, descriptionInfo }) => {
           return;
         }
 
-        // TODO: add discount id from precheckout if promotion coupon is available
         paddleRef.current?.Checkout.open({
           settings: {
             allowLogout: false,

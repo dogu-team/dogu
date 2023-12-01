@@ -81,7 +81,7 @@ const BillingPaymentMethodPaddle: React.FC<Props> = ({ plan }) => {
     return (
       <div>
         <div>
-          <PiPaypalLogo /> Paypal
+          This plan is paid through <PiPaypalLogo /> Paypal
         </div>
 
         <div style={{ marginTop: '1rem' }}>
