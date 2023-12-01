@@ -524,162 +524,175 @@ export class BillingPurchaseService {
   }
 
   async createPurchaseWithNewCard(dto: CreatePurchaseWithNewCardDto): Promise<CreatePurchaseWithNewCardResponse> {
-    return await this.retryTransaction.serializable(async (context) => {
-      const { setTriggerRollbackBeforeReturn } = context;
-      const { registerCard } = dto;
-      const now = this.dateTimeSimulatorService.now();
-      const preprocessResult = await preprocess(context, {
-        ...dto,
-        now,
-      });
-      if (!preprocessResult.ok) {
-        return {
-          ok: false,
-          resultCode: preprocessResult.resultCode,
-          plan: null,
-          method: null,
-          license: null,
-          niceResultCode: null,
-        };
-      }
-      const { organization, planSource } = preprocessResult.value;
-      const { billingOrganizationId } = organization;
+    const { method } = dto;
+    switch (method) {
+      case 'nice': {
+        return await this.retryTransaction.serializable(async (context) => {
+          const { setTriggerRollbackBeforeReturn } = context;
+          const { registerCard } = dto;
+          const now = this.dateTimeSimulatorService.now();
+          const preprocessResult = await preprocess(context, {
+            ...dto,
+            now,
+          });
+          if (!preprocessResult.ok) {
+            return {
+              ok: false,
+              resultCode: preprocessResult.resultCode,
+              plan: null,
+              method: null,
+              license: null,
+              niceResultCode: null,
+            };
+          }
+          const { organization, planSource } = preprocessResult.value;
+          const { billingOrganizationId } = organization;
 
-      const previewResult = processPurchasePreview(preprocessResult.value);
-      if (!previewResult.ok) {
-        return {
-          ok: false,
-          resultCode: previewResult.resultCode,
-          plan: null,
-          method: null,
-          license: null,
-          niceResultCode: null,
-        };
-      }
-      const { needPurchase } = previewResult.value;
+          const previewResult = processPurchasePreview(preprocessResult.value);
+          if (!previewResult.ok) {
+            return {
+              ok: false,
+              resultCode: previewResult.resultCode,
+              plan: null,
+              method: null,
+              license: null,
+              niceResultCode: null,
+            };
+          }
+          const { needPurchase } = previewResult.value;
 
-      const niceResult = await createOrUpdateMethodNice(context, {
-        niceCaller: this.niceCaller,
-        dto: {
-          billingOrganizationId,
-          subscribeRegist: {
-            registerCard,
-          },
-        },
-        now,
-      });
+          const niceResult = await createOrUpdateMethodNice(context, {
+            niceCaller: this.niceCaller,
+            dto: {
+              billingOrganizationId,
+              subscribeRegist: {
+                registerCard,
+              },
+            },
+            now,
+          });
 
-      if (!niceResult.ok) {
-        setTriggerRollbackBeforeReturn();
-        return {
-          ok: false,
-          resultCode: niceResult.resultCode,
-          plan: null,
-          method: null,
-          license: null,
-          niceResultCode: niceResult.niceResultCode,
-        };
-      }
+          if (!niceResult.ok) {
+            setTriggerRollbackBeforeReturn();
+            return {
+              ok: false,
+              resultCode: niceResult.resultCode,
+              plan: null,
+              method: null,
+              license: null,
+              niceResultCode: niceResult.niceResultCode,
+            };
+          }
 
-      const { value: billingMethodNice } = niceResult;
+          const { value: billingMethodNice } = niceResult;
 
-      const method = getBillingMethodNicePublic(billingMethodNice);
-      if (!needPurchase) {
-        const processNextResult = await processNextPurchase(context, {
-          organization,
-          planSource,
-          ...previewResult.value,
-        });
+          const method = getBillingMethodNicePublic(billingMethodNice);
+          if (!needPurchase) {
+            const processNextResult = await processNextPurchase(context, {
+              organization,
+              planSource,
+              ...previewResult.value,
+            });
 
-        if (!processNextResult.ok) {
+            if (!processNextResult.ok) {
+              return {
+                ok: false,
+                resultCode: processNextResult.resultCode,
+                plan: null,
+                license: null,
+                method,
+                niceResultCode: null,
+              };
+            }
+
+            return {
+              ok: true,
+              resultCode: resultCode('ok'),
+              plan: processNextResult.value,
+              license: null,
+              method,
+              niceResultCode: null,
+            };
+          }
+
+          organization.billingMethodNice = billingMethodNice;
+          const processNowResult = await processNowPurchase(context, {
+            niceCaller: this.niceCaller,
+            organization,
+            planSource,
+            ...previewResult.value,
+          });
+
+          if (!processNowResult.ok) {
+            setTriggerRollbackBeforeReturn();
+            this.slackService
+              .sendPurchaseSlackMessage({
+                organizationId: dto.organizationId,
+                isSucceeded: false,
+                purchasedAt: processNowResult.planHistory?.createdAt ?? new Date(),
+                plans: [
+                  {
+                    option: processNowResult.plan?.option ?? planSource.option,
+                    type: processNowResult.plan?.type ?? planSource.type,
+                  },
+                ],
+              })
+              .catch((err) => this.logger.error(`Failed to send slack. organizationId: ${dto.organizationId}`));
+            return {
+              ok: false,
+              resultCode: processNowResult.resultCode,
+              plan: null,
+              license: null,
+              method: null,
+              niceResultCode: processNowResult.niceResultCode,
+            };
+          }
+
+          // success
+          if (processNowResult.planHistory && processNowResult.plan) {
+            this.consoleService
+              .sendSubscriptionSuccessEmailToOwner(dto.organizationId, {
+                planHistory: processNowResult.planHistory,
+                plan: processNowResult.plan,
+              })
+              .catch((err) => this.logger.error(`Failed to send email to organization owner: organizationId: ${dto.organizationId}`));
+            this.slackService
+              .sendPurchaseSlackMessage({
+                isSucceeded: true,
+                organizationId: dto.organizationId,
+                amount: processNowResult.planHistory.purchasedAmount ?? 0,
+                currency: processNowResult.planHistory.currency,
+                purchasedAt: processNowResult.planHistory.createdAt,
+                historyId: processNowResult.planHistory.billingHistoryId,
+                plans: [
+                  {
+                    option: processNowResult.plan.option,
+                    type: processNowResult.plan.type,
+                  },
+                ],
+              })
+              .catch((err) => this.logger.error(`Failed to send slack. organizationId: ${dto.organizationId}`));
+          }
+
           return {
-            ok: false,
-            resultCode: processNextResult.resultCode,
-            plan: null,
-            license: null,
+            ok: processNowResult.ok,
+            resultCode: processNowResult.resultCode,
+            plan: processNowResult.plan,
+            license: processNowResult.license,
             method,
             niceResultCode: null,
           };
-        }
-
-        return {
-          ok: true,
-          resultCode: resultCode('ok'),
-          plan: processNextResult.value,
-          license: null,
-          method,
-          niceResultCode: null,
-        };
+        });
       }
-
-      organization.billingMethodNice = billingMethodNice;
-      const processNowResult = await processNowPurchase(context, {
-        niceCaller: this.niceCaller,
-        organization,
-        planSource,
-        ...previewResult.value,
-      });
-
-      if (!processNowResult.ok) {
-        setTriggerRollbackBeforeReturn();
-        this.slackService
-          .sendPurchaseSlackMessage({
-            organizationId: dto.organizationId,
-            isSucceeded: false,
-            purchasedAt: processNowResult.planHistory?.createdAt ?? new Date(),
-            plans: [
-              {
-                option: processNowResult.plan?.option ?? planSource.option,
-                type: processNowResult.plan?.type ?? planSource.type,
-              },
-            ],
-          })
-          .catch((err) => this.logger.error(`Failed to send slack. organizationId: ${dto.organizationId}`));
-        return {
-          ok: false,
-          resultCode: processNowResult.resultCode,
-          plan: null,
-          license: null,
-          method: null,
-          niceResultCode: processNowResult.niceResultCode,
-        };
+      case 'paddle': {
+        throw new BadRequestException({
+          reason: 'not supported method',
+        });
       }
-
-      // success
-      if (processNowResult.planHistory && processNowResult.plan) {
-        this.consoleService
-          .sendSubscriptionSuccessEmailToOwner(dto.organizationId, {
-            planHistory: processNowResult.planHistory,
-            plan: processNowResult.plan,
-          })
-          .catch((err) => this.logger.error(`Failed to send email to organization owner: organizationId: ${dto.organizationId}`));
-        this.slackService
-          .sendPurchaseSlackMessage({
-            isSucceeded: true,
-            organizationId: dto.organizationId,
-            amount: processNowResult.planHistory.purchasedAmount ?? 0,
-            currency: processNowResult.planHistory.currency,
-            purchasedAt: processNowResult.planHistory.createdAt,
-            historyId: processNowResult.planHistory.billingHistoryId,
-            plans: [
-              {
-                option: processNowResult.plan.option,
-                type: processNowResult.plan.type,
-              },
-            ],
-          })
-          .catch((err) => this.logger.error(`Failed to send slack. organizationId: ${dto.organizationId}`));
+      default: {
+        assertUnreachable(method);
       }
-
-      return {
-        ok: processNowResult.ok,
-        resultCode: processNowResult.resultCode,
-        plan: processNowResult.plan,
-        license: processNowResult.license,
-        method,
-        niceResultCode: null,
-      };
-    });
+    }
   }
 
   async refundPlan(dto: RefundPlanDto): Promise<void> {

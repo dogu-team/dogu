@@ -6,6 +6,7 @@ import {
 } from '@dogu-private/console';
 import { Button } from 'antd';
 import useTranslation from 'next-translate/useTranslation';
+import { useRouter } from 'next/router';
 import { shallow } from 'zustand/shallow';
 
 import { purchasePlanWithExistingCard, purchasePlanWithNewCard } from '../../api/billing';
@@ -15,7 +16,11 @@ import useBillingPlanPurchaseStore from '../../stores/billing-plan-purchase';
 import useEventStore from '../../stores/events';
 import useLicenseStore from '../../stores/license';
 import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd';
-import { checkShouldPurchase, parseNicePaymentMethodFormValues } from '../../utils/billing';
+import {
+  checkShouldPurchase,
+  getPaymentMethodFromLicense,
+  parseNicePaymentMethodFormValues,
+} from '../../utils/billing';
 import ErrorBox from '../common/boxes/ErrorBox';
 
 const BillingPurchaseButton: React.FC = () => {
@@ -26,6 +31,7 @@ const BillingPurchaseButton: React.FC = () => {
   const [purchaseWithExistingCardLoading, requestPurchaseWithExistingCard] = useRequest(purchasePlanWithExistingCard);
   const isAnnual = useBillingPlanPurchaseStore((state) => state.isAnnual);
   const couponCode = useBillingPlanPurchaseStore((state) => state.coupon);
+  const router = useRouter();
   const [license, updateLicense] = useLicenseStore((state) => [state.license, state.updateLicense], shallow);
   const updatePurchaseErrorText = useBillingPlanPurchaseStore((state) => state.updatePurchaseErrorText);
   const fireEvent = useEventStore((state) => state.fireEvent);
@@ -81,6 +87,7 @@ const BillingPurchaseButton: React.FC = () => {
           organizationId: license.organizationId,
           billingPlanSourceId: selectedPlan.billingPlanSourceId,
           couponCode: couponCode ?? undefined,
+          method: license ? getPaymentMethodFromLicense(router.locale, license) : 'nice',
         });
 
         if (rv.errorMessage || !rv.body?.ok) {
@@ -106,6 +113,7 @@ const BillingPurchaseButton: React.FC = () => {
           billingPlanSourceId: selectedPlan.billingPlanSourceId,
           couponCode: couponCode ?? undefined,
           registerCard: parseNicePaymentMethodFormValues(values),
+          method: license ? getPaymentMethodFromLicense(router.locale, license) : 'nice',
         });
 
         if (rv.errorMessage || !rv.body?.ok) {
