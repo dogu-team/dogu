@@ -1,7 +1,7 @@
 import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity('whitelist_domain')
-export class WhitelistDomain extends BaseEntity {
+@Entity('permitted_domain')
+export class PermittedDomain extends BaseEntity {
   @PrimaryGeneratedColumn('increment')
   id!: number;
 
