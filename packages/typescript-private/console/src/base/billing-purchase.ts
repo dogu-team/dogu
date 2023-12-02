@@ -148,11 +148,17 @@ export interface CreatePurchaseWithNewCardResponse {
 export class RefundPlanDto {
   @IsUUID()
   billingPlanHistoryId!: string;
+
+  @IsIn(BillingMethod)
+  method!: BillingMethod;
 }
 
 export class RefundFullDto {
   @IsUUID()
   billingHistoryId!: string;
+
+  @IsIn(BillingMethod)
+  method!: BillingMethod;
 }
 
 export class GetBillingPrecheckoutDto implements BillingPreprocessOptions {

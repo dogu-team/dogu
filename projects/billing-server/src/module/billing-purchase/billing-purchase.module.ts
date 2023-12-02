@@ -11,6 +11,8 @@ import { NiceModule } from '../nice/nice.module';
 import { PaddleModule } from '../paddle/paddle.module';
 import { SlackModule } from '../slack/slack.module';
 import { BillingPurchaseController } from './billing-purchase.controller';
+import { BillingPurchaseNiceService } from './billing-purchase.nice.service';
+import { BillingPurchasePaddleService } from './billing-purchase.paddle.service';
 import { BillingPurchaseService } from './billing-purchase.service';
 
 @Module({
@@ -28,6 +30,6 @@ import { BillingPurchaseService } from './billing-purchase.service';
     BillingCouponModule,
   ],
   controllers: [BillingPurchaseController],
-  providers: [BillingPurchaseService],
+  providers: [BillingPurchaseService, BillingPurchaseNiceService, BillingPurchasePaddleService],
 })
 export class BillingPurchaseModule {}
