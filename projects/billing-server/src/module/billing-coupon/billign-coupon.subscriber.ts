@@ -6,7 +6,7 @@ import { BillingCoupon, BillingCouponTableName } from '../../db/entity/billing-c
 import { subscribe } from '../../db/retry-transaction';
 import { DoguLogger } from '../logger/logger';
 import { PaddleCaller } from '../paddle/paddle.caller';
-import { matchDiscount } from '../paddle/paddle.utils';
+import { matchDiscount, matchDiscountCode } from '../paddle/paddle.utils';
 
 @Injectable()
 export class BillingCouponSubscriber {
@@ -24,9 +24,38 @@ export class BillingCouponSubscriber {
         const coupon = message.data as unknown as BillingCoupon;
         if (message.event === 'created' || message.event === 'updated') {
           const discounts = await this.paddleCaller.listDiscountsAll();
-          const discount = discounts.find((discount) => matchDiscount(coupon, discount));
-          if (!discount) {
-            await this.paddleCaller.createDiscount({
+          const codeMatched = discounts.find((discount) => matchDiscountCode({ code: coupon.code }, discount));
+          if (codeMatched) {
+            const idMatched = matchDiscount({ billingCouponId: coupon.billingCouponId }, codeMatched);
+            if (idMatched) {
+              // noop
+            } else {
+              this.logger.warn('BillingCouponSubscriber.subscribe code matched but id not matched', {
+                codeMatched,
+                coupon,
+              });
+            }
+          } else {
+            const discount = discounts.find((discount) => matchDiscount(coupon, discount));
+            if (!discount) {
+              await this.paddleCaller.createDiscount({
+                code: coupon.code,
+                type: coupon.type,
+                period: coupon.period,
+                discountPercent: coupon.discountPercent,
+                applyCount: coupon.applyCount,
+                expiredAt: coupon.expiredAt,
+                billingCouponId: coupon.billingCouponId,
+              });
+              return;
+            }
+
+            if (!discount.id) {
+              throw new Error(`Discount id not found for code ${coupon.billingCouponId}`);
+            }
+
+            await this.paddleCaller.updateDiscount({
+              discountId: discount.id,
               code: coupon.code,
               type: coupon.type,
               period: coupon.period,
@@ -35,23 +64,7 @@ export class BillingCouponSubscriber {
               expiredAt: coupon.expiredAt,
               billingCouponId: coupon.billingCouponId,
             });
-            return;
           }
-
-          if (!discount.id) {
-            throw new Error(`Discount id not found for code ${coupon.billingCouponId}`);
-          }
-
-          await this.paddleCaller.updateDiscount({
-            discountId: discount.id,
-            code: coupon.code,
-            type: coupon.type,
-            period: coupon.period,
-            discountPercent: coupon.discountPercent,
-            applyCount: coupon.applyCount,
-            expiredAt: coupon.expiredAt,
-            billingCouponId: coupon.billingCouponId,
-          });
         }
       })().catch((e) => {
         this.logger.error('BillingCouponSubscriber.subscribe.catch', { error: errorify(e) });

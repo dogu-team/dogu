@@ -24,14 +24,8 @@ export const config = {
     ssl: env.DOGU_BILLING_DB_SSL_CONNECTION ? { rejectUnauthorized: false } : false,
   },
   paddle: {
-    /**
-     * TODO: move to env
-     * @description this is sandbox api key
-     */
-    apiKey: '7dc2e51c683f1426e5bfa78755c403be85d97f5284740e1c66',
-    // apiKey: '4c8096b497b80fe73df17b2b148b51dafda5055a614fe99614',
-    notificationKey: 'pdl_ntfset_01hfvf6np93stpzgg99tzqh67f_vP5ukftxMEHcQtReFTbhVMCRBXPVLejU',
-    // notificationKey: 'pdl_ntfset_01hgcr3c29jygr78x5w9ef6wgk_uOa/a63IbyHRgkpWT3RqZMX4Z7KMHLtV',
+    apiKey: env.DOGU_PADDLE_API_KEY,
+    notificationKey: env.DOGU_PADDLE_NOTIFICATION_KEY,
   },
 };
 

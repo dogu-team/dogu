@@ -1,4 +1,4 @@
-import { BillingPlanMap, BillingUsdAmount, isBillingPlanType } from '@dogu-private/console';
+import { BillingPlanMap, BillingUsdAmount, isBillingPlanType, matchBillingPlanType } from '@dogu-private/console';
 import { stringify } from '@dogu-tech/common';
 import { Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
@@ -48,23 +48,14 @@ export class PaddleMigrator {
           throw new Error(`Product id is not defined. ${stringify(product)}`);
         }
 
-        this.logger.debug('Paddle product matched.', {
-          id: product.id,
-          name: product.name,
-          planType: product.custom_data?.planType,
-          category: product.custom_data?.category,
-        });
-
         if (product.name !== origin.name) {
           const updated = await this.paddleCaller.updateProduct({
             productId: product.id,
             name: origin.name,
           });
+
           this.logger.info('Paddle product updated.', {
-            id: updated.id,
-            name: updated.name,
-            planType: updated.custom_data?.planType,
-            category: updated.custom_data?.category,
+            updated,
           });
         }
 
@@ -76,15 +67,13 @@ export class PaddleMigrator {
         category: origin.category,
         name: origin.name,
       });
+
       if (!created.id) {
         throw new Error(`Product id is not defined. ${stringify(created)}`);
       }
 
       this.logger.info('Paddle product created.', {
-        id: created.id,
-        name: created.name,
-        planType: created.custom_data?.planType,
-        category: created.custom_data?.category,
+        created,
       });
     }
 
@@ -102,18 +91,24 @@ export class PaddleMigrator {
     for (const product of products) {
       const { category, type } = product.custom_data ?? {};
       if (!category) {
-        throw new Error(`Product category is not defined. ${stringify(product)}`);
+        this.logger.warn('Product category is not defined.', {
+          product,
+        });
+        continue;
       }
 
       if (!type) {
-        throw new Error(`Product type is not defined. ${stringify(product)}`);
+        this.logger.warn('Product type is not defined.', {
+          product,
+        });
+        continue;
       }
 
       if (!product.id) {
         throw new Error(`Product id is not defined. ${stringify(product)}`);
       }
 
-      const filteredSources = sources.filter((source) => source.category === category && source.type === type);
+      const filteredSources = sources.filter((source) => matchBillingPlanType({ category, type }, source));
       for (const filteredSource of filteredSources) {
         const price = product.prices?.find((price) => matchPrice(filteredSource, price));
         if (price) {
@@ -127,18 +122,13 @@ export class PaddleMigrator {
           currency: filteredSource.currency,
           period: filteredSource.period,
         });
+
         if (!created.id) {
           throw new Error(`Price id is not defined. ${stringify(created)}`);
         }
 
         this.logger.info('Paddle price created.', {
-          id: created.id,
-          productId: created.product_id,
-          unitPriceAmount: created.unit_price?.amount,
-          unitPriceCurrency: created.unit_price?.currency_code,
-          billingCycleInterval: created.billing_cycle?.interval,
-          billingCycleFrequency: created.billing_cycle?.frequency,
-          billingPlanSourceId: created.custom_data?.billingPlanSourceId,
+          created,
         });
       }
     }
@@ -170,15 +160,7 @@ export class PaddleMigrator {
       });
 
       this.logger.info('Paddle discount created.', {
-        id: created.id,
-        code: created.code,
-        type: created.type,
-        amount: created.amount,
-        maximum_recurring_intervals: created.maximum_recurring_intervals,
-        expires_at: created.expires_at,
-        billingCouponId: created.custom_data?.billingCouponId,
-        billingCouponType: created.custom_data?.type,
-        period: created.custom_data?.period,
+        created,
       });
     }
   }

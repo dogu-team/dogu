@@ -39,3 +39,11 @@ export function matchDiscount(match: Paddle.DiscountMatch, discount: Paddle.Disc
 
   return true;
 }
+
+export function matchDiscountCode(match: Paddle.DiscountCodeMatch, discount: Paddle.Discount): boolean {
+  if (match.code !== discount.code) {
+    return false;
+  }
+
+  return true;
+}

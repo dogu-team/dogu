@@ -71,7 +71,7 @@ export class BillingPlanSourceSubscriber {
           });
           await this.paddleCaller.listProductsAllAndCache({ refresh: true });
         } else {
-          throw new Error(`Not supported event ${JSON.stringify(message)}`);
+          this.logger.warn('BillingPlanSourceSubscriber.subscribe.unsupported-event', { message: stringify(message) });
         }
       })().catch((e) => {
         this.logger.error('BillingPlanSourceSubscriber.subscribe.catch', { error: errorify(e) });

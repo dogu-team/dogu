@@ -383,3 +383,20 @@ export type BillingLicenseStatus = (typeof BillingLicenseStatus)[number];
 export const isBillingLicenseStatus = (value: unknown): value is BillingLicenseStatus => BillingLicenseStatus.includes(value as BillingLicenseStatus);
 
 export const BillingGoodsName = 'Dogu Platform Subscription';
+
+export type MatchBillingPlanType = {
+  category: BillingCategory;
+  type: BillingPlanType;
+};
+
+export function matchBillingPlanType(source: MatchBillingPlanType, destination: MatchBillingPlanType): boolean {
+  if (source.category !== destination.category) {
+    return false;
+  }
+
+  if (source.type !== destination.type) {
+    return false;
+  }
+
+  return true;
+}

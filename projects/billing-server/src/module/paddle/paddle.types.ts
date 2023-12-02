@@ -662,4 +662,8 @@ export namespace Paddle {
   export type DiscountMatch = {
     billingCouponId: string;
   };
+
+  export type DiscountCodeMatch = {
+    code: string;
+  };
 }
