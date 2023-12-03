@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { BillingGoodsName, BillingUsdAmount } from '@dogu-private/console';
-import { assertUnreachable } from '@dogu-tech/common';
+import { assertUnreachable, errorify } from '@dogu-tech/common';
 import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import * as crypto from 'crypto';
 import { DataSource } from 'typeorm';
@@ -15,6 +15,7 @@ import { CloudLicense } from '../../db/entity/cloud-license.entity';
 import { SelfHostedLicense } from '../../db/entity/self-hosted-license.entity';
 import { RetryTransaction } from '../../db/retry-transaction';
 import { BillingCouponService } from '../billing-coupon/billing-coupon.service';
+import { registerUsedCoupon } from '../billing-organization/billing-organization.serializables';
 import { updateMethod, validateMethod } from '../billing-organization/billing-organization.utils';
 import { preprocess } from '../billing-purchase/billing-purchase.serializables';
 import { updateCloudLicense } from '../cloud-license/cloud-license.serializables';
@@ -46,7 +47,7 @@ export class PaddleNotificationService {
     this.registerHandler('subscription.updated', async (event) => this.onSubscriptionUpdated(event));
   }
 
-  async onNotification(paddleSignature: string, body: unknown): Promise<unknown> {
+  async onNotification(paddleSignature: string, body: unknown): Promise<void> {
     if (!paddleSignature) {
       throw new BadRequestException({
         reason: 'Paddle-Signature header is missing',
@@ -109,7 +110,12 @@ export class PaddleNotificationService {
       return;
     }
 
-    await handler(event);
+    try {
+      await handler(event);
+    } catch (e) {
+      this.logger.error('Paddle notification handler failed', { event, error: errorify(e) });
+      throw e;
+    }
   }
 
   registerHandler(eventType: string, handler: (event: Paddle.Event) => Promise<void>): void {
@@ -127,6 +133,25 @@ export class PaddleNotificationService {
         reason: 'Transaction is empty',
         event,
       });
+    }
+
+    if (!transaction.id) {
+      throw new BadRequestException({
+        reason: 'id is empty',
+        transaction,
+      });
+    }
+
+    const paddleTransactionId = transaction.id;
+    const existHistory = await this.dataSource.getRepository(BillingHistory).exist({
+      where: {
+        paddleTransactionId,
+      },
+    });
+
+    if (existHistory) {
+      this.logger.info('Paddle transaction already processed', { paddleTransactionId });
+      return;
     }
 
     const { discount_id } = transaction;
@@ -368,6 +393,11 @@ export class PaddleNotificationService {
         planInfo.type = planSource.type;
         planInfo.option = planSource.option;
         planInfo.currency = planSource.currency;
+        planInfo.changeRequestedDiscountedAmount = null;
+        planInfo.changeRequestedOption = null;
+        planInfo.changeRequestedOriginPrice = null;
+        planInfo.changeRequestedPeriod = null;
+        planInfo.unsubscribedAt = null;
       }
       planInfo = await manager.save(planInfo);
       const { billingPlanInfoId } = planInfo;
@@ -417,6 +447,13 @@ export class PaddleNotificationService {
         currency: planSource.currency,
       });
       const planHistory = await manager.save(createdPlanHistory);
+
+      if (billingCouponId) {
+        await registerUsedCoupon(context, {
+          billingOrganizationId,
+          billingCouponId,
+        });
+      }
 
       updateMethod(organization, 'paddle');
       await manager.save(organization);
@@ -556,15 +593,21 @@ export class PaddleNotificationService {
       });
     }
 
-    const { custom_data } = subscription;
-    const { billingPlanInfoId, changeRequestedBillingPlanSourceId } = custom_data ?? {};
-    if (changeRequestedBillingPlanSourceId === undefined) {
-      this.logger.info('Paddle subscription does not have changeRequestedBillingPlanSourceId', { subscription });
+    const subscriptionId = subscription.id;
+    const { custom_data, status } = subscription;
+    if (status === 'canceled') {
+      this.logger.info('Paddle subscription is canceled. skipping', { subscription });
       return;
     }
 
+    const { billingPlanInfoId, changeRequestedBillingPlanSourceId } = custom_data ?? {};
     if (!billingPlanInfoId) {
       this.logger.warn('Paddle subscription does not have billingPlanInfoId', { subscription });
+      return;
+    }
+
+    if (changeRequestedBillingPlanSourceId === undefined) {
+      this.logger.info('Paddle subscription does not have changeRequestedBillingPlanSourceId', { subscription });
       return;
     }
 
@@ -595,7 +638,14 @@ export class PaddleNotificationService {
       planInfo.state = 'change-option-or-period-requested';
       planInfo.changeRequestedPeriod = planSource.period;
       planInfo.changeRequestedOption = planSource.option;
-      await manager.save(planInfo);
+      const saved = await manager.save(planInfo);
+
+      await this.paddleCaller.updateSubscription({
+        subscriptionId,
+        organizationId: saved.billingOrganizationId,
+        billingPlanSourceId: planSource.billingPlanSourceId,
+        billingPlanInfoId: saved.billingPlanInfoId,
+      });
     });
   }
 }

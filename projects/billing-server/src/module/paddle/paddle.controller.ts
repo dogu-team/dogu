@@ -1,4 +1,3 @@
-import { errorify } from '@dogu-tech/common';
 import { Body, Controller, Headers, Post } from '@nestjs/common';
 import { DoguLogger } from '../logger/logger';
 import { PaddleNotificationService } from './paddle.notification.service';
@@ -12,11 +11,6 @@ export class PaddleController {
 
   @Post('/on-notification')
   async onNotification(@Headers('Paddle-Signature') paddleSignature: string, @Body() body: unknown): Promise<void> {
-    try {
-      await this.paddleNotificationService.onNotification(paddleSignature, body);
-    } catch (e) {
-      this.logger.error('Failed to handle paddle notification.', { error: errorify(e) });
-      throw e;
-    }
+    await this.paddleNotificationService.onNotification(paddleSignature, body);
   }
 }

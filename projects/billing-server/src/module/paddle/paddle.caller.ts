@@ -592,6 +592,7 @@ export class PaddleCaller {
       per_page: 50,
       after,
       customer_id: customerId,
+      status: 'active,past_due,paused,trialing',
     };
 
     const response = await this.client.get<Paddle.Response<Paddle.Subscription[]>>(path, {
