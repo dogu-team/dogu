@@ -236,7 +236,10 @@ export namespace Paddle {
     }[];
     custom_data?:
       | ({
+          organizationId?: string;
+          billingPlanSourceId?: number;
           billingPlanInfoId?: string;
+          changeRequestedBillingPlanSourceId?: number;
         } & Record<string, unknown>)
       | null;
   };

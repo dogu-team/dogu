@@ -43,6 +43,7 @@ export class PaddleNotificationService {
     this.retryTransaction = new RetryTransaction(this.logger, this.dataSource);
     this.registerHandler('transaction.created', async (event) => this.onTransactionCreated(event));
     this.registerHandler('transaction.completed', async (event) => this.onTransactionCompleted(event));
+    this.registerHandler('subscription.updated', async (event) => this.onSubscriptionUpdated(event));
   }
 
   async onNotification(paddleSignature: string, body: unknown): Promise<unknown> {
@@ -133,10 +134,8 @@ export class PaddleNotificationService {
       const discount = await this.paddleCaller.getDiscount({ discountId: discount_id });
       const { billingCouponId } = discount.custom_data ?? {};
       if (!billingCouponId) {
-        throw new InternalServerErrorException({
-          reason: 'custom_data.billingCouponId is empty',
-          discount,
-        });
+        this.logger.warn('Paddle transaction does not have billingCouponId', { discount });
+        return;
       }
 
       const billingCoupon = await this.dataSource.getRepository(BillingCoupon).findOneOrFail({
@@ -155,17 +154,13 @@ export class PaddleNotificationService {
 
       const { organizationId, billingPlanSourceId } = transaction.custom_data ?? {};
       if (!organizationId) {
-        throw new InternalServerErrorException({
-          reason: 'custom_data.organizationId is empty',
-          transaction,
-        });
+        this.logger.warn('Paddle transaction does not have organizationId', { transaction });
+        return;
       }
 
       if (!billingPlanSourceId) {
-        throw new InternalServerErrorException({
-          reason: 'custom_data.billingPlanSourceId is empty',
-          transaction,
-        });
+        this.logger.warn('Paddle transaction does not have billingPlanSourceId', { transaction });
+        return;
       }
 
       const billingPlanSource = await this.dataSource.getRepository(BillingPlanSource).findOneOrFail({
@@ -247,17 +242,13 @@ export class PaddleNotificationService {
     }
 
     if (!organizationId) {
-      throw new InternalServerErrorException({
-        reason: 'custom_data.organizationId is empty',
-        transaction,
-      });
+      this.logger.warn('Paddle transaction does not have organizationId', { transaction });
+      return;
     }
 
     if (!billingPlanSourceId) {
-      throw new InternalServerErrorException({
-        reason: 'custom_data.billingPlanSourceId is empty',
-        transaction,
-      });
+      this.logger.warn('Paddle transaction does not have billingPlanSourceId', { transaction });
+      return;
     }
 
     let billingCouponId: string | null = null;
@@ -265,10 +256,8 @@ export class PaddleNotificationService {
       const discount = await this.paddleCaller.getDiscount({ discountId: discount_id });
       billingCouponId = discount.custom_data?.billingCouponId ?? null;
       if (!billingCouponId) {
-        throw new InternalServerErrorException({
-          reason: 'custom_data.billingCouponId is empty',
-          discount,
-        });
+        this.logger.warn('Paddle transaction does not have billingCouponId', { discount });
+        return;
       }
     }
 
@@ -516,10 +505,8 @@ export class PaddleNotificationService {
 
     const { billingPlanInfoId } = custom_data ?? {};
     if (!billingPlanInfoId) {
-      throw new InternalServerErrorException({
-        reason: 'custom_data.billingPlanInfoId is empty',
-        transaction,
-      });
+      this.logger.warn('Paddle transaction does not have billingPlanInfoId', { transaction });
+      return;
     }
 
     const { method_details } = payment;
@@ -549,6 +536,65 @@ export class PaddleNotificationService {
       planInfo.cardNumberLast4Digits = cardNumberLast4Digits;
       planInfo.cardExpirationYear = cardExpirationYear;
       planInfo.cardExpirationMonth = cardExpirationMonth;
+      await manager.save(planInfo);
+    });
+  }
+
+  private async onSubscriptionUpdated(event: Paddle.Event<Paddle.Subscription>): Promise<void> {
+    const subscription = event.data;
+    if (!subscription) {
+      throw new BadRequestException({
+        reason: 'subscription is empty',
+        event,
+      });
+    }
+
+    if (!subscription.id) {
+      throw new BadRequestException({
+        reason: 'id is empty',
+        subscription,
+      });
+    }
+
+    const { custom_data } = subscription;
+    const { billingPlanInfoId, changeRequestedBillingPlanSourceId } = custom_data ?? {};
+    if (changeRequestedBillingPlanSourceId === undefined) {
+      this.logger.info('Paddle subscription does not have changeRequestedBillingPlanSourceId', { subscription });
+      return;
+    }
+
+    if (!billingPlanInfoId) {
+      this.logger.warn('Paddle subscription does not have billingPlanInfoId', { subscription });
+      return;
+    }
+
+    await this.retryTransaction.serializable(async (context) => {
+      const { manager } = context;
+      const planSource = await manager.getRepository(BillingPlanSource).findOne({
+        where: {
+          billingPlanSourceId: changeRequestedBillingPlanSourceId,
+        },
+      });
+
+      if (!planSource) {
+        this.logger.warn('Paddle subscription planSource not found', { changeRequestedBillingPlanSourceId });
+        return;
+      }
+
+      const planInfo = await manager.getRepository(BillingPlanInfo).findOne({
+        where: {
+          billingPlanInfoId,
+        },
+      });
+
+      if (!planInfo) {
+        this.logger.warn('Paddle subscription planInfo not found', { billingPlanInfoId });
+        return;
+      }
+
+      planInfo.state = 'change-option-or-period-requested';
+      planInfo.changeRequestedPeriod = planSource.period;
+      planInfo.changeRequestedOption = planSource.option;
       await manager.save(planInfo);
     });
   }

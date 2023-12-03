@@ -149,16 +149,20 @@ export class BillingPurchasePaddleService {
     const previewSubscription = await this.paddleCaller.previewSubscription({
       subscriptionId: subscription.id,
       priceIds: [priceId],
-      prorationBillingMode: isUpgrade ? 'prorated_immediately' : 'prorated_next_billing_period',
+      prorationBillingMode: isUpgrade ? 'prorated_immediately' : 'full_next_billing_period',
       discountId: discountId ?? undefined,
       discountEffectiveFrom: isUpgrade ? 'immediately' : 'next_billing_period',
     });
 
     const totalPriceCents = Number(previewSubscription.immediate_transaction?.details?.totals?.grand_total ?? '0');
     const totalPrice = BillingUsdAmount.fromCents(totalPriceCents).toDollars();
-    const nextPurchaseTotalPriceCents = Number(previewSubscription.recurring_transaction_details?.totals?.grand_total ?? '0');
+    const nextPurchaseTotalPriceCents = isUpgrade
+      ? Number(previewSubscription.recurring_transaction_details?.totals?.grand_total ?? '0')
+      : Number(previewSubscription.recurring_transaction_details?.totals?.total ?? '0');
     const nextPurchaseTotalPrice = BillingUsdAmount.fromCents(nextPurchaseTotalPriceCents).toDollars();
-    const taxCents = Number(previewSubscription.immediate_transaction?.adjustments?.[0].totals?.tax ?? '0');
+    const taxCents = isUpgrade
+      ? Number(previewSubscription.immediate_transaction?.details?.totals?.tax ?? '0')
+      : Number(previewSubscription.recurring_transaction_details?.totals?.tax ?? '0');
     const tax = BillingUsdAmount.fromCents(taxCents).toDollars();
     const elapsedMinutesRate = Number(previewSubscription.immediate_transaction?.details?.line_items?.[0].proration?.rate ?? '0');
     const elapsedPurchaseAmountCents = Number(previewSubscription.immediate_transaction?.details?.line_items?.[0].totals?.total ?? '0');
@@ -314,11 +318,12 @@ export class BillingPurchasePaddleService {
 
     const updatedSubscription = await this.paddleCaller.updateSubscription({
       subscriptionId: subscription.id,
-      organizationId: organization.organizationId,
+      organizationId,
       billingPlanSourceId: planSource.billingPlanSourceId,
       billingPlanInfoId: planInfo.billingPlanInfoId,
+      changeRequestedBillingPlanSourceId: !isUpgrade ? planSource.billingPlanSourceId : undefined,
       priceIds: [priceId],
-      prorationBillingMode: isUpgrade ? 'prorated_immediately' : 'prorated_next_billing_period',
+      prorationBillingMode: isUpgrade ? 'prorated_immediately' : 'full_next_billing_period',
       discountId: discountId ?? undefined,
       discountEffectiveFrom: isUpgrade ? 'immediately' : 'next_billing_period',
     });
