@@ -139,7 +139,12 @@ export class BillingUpdaterService implements OnModuleInit, OnModuleDestroy {
         }
       };
 
-      const { billingPlanInfos, billingMethodNice } = billingOrganization;
+      const { billingMethod, billingPlanInfos, billingMethodNice } = billingOrganization;
+      if (billingMethod !== 'nice') {
+        this.logger.info('BillingUpdaterService.update billingMethod is not nice. skipped', { billingOrganizationId, now });
+        return;
+      }
+
       if (!billingPlanInfos) {
         await invalidate('yearly');
         this.logger.error('BillingUpdaterService.update billingPlanInfos must not be null. invalidated', { billingOrganizationId, now });
