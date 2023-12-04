@@ -127,17 +127,15 @@ export class DeviceJobRunner {
         await manager.save(found);
 
         const device = found.device;
-        if (device) {
+        if (device && device.organization.shareable) {
           device.usageState = DeviceUsageState.PREPARING;
           const saved = await manager.save(device);
-          if (device.organization.shareable) {
-            const { organizationId, deviceId, serial } = saved;
-            result.resetDevice = {
-              organizationId,
-              deviceId,
-              serial,
-            };
-          }
+          const { organizationId, deviceId, serial } = saved;
+          result.resetDevice = {
+            organizationId,
+            deviceId,
+            serial,
+          };
         }
       }
     }
