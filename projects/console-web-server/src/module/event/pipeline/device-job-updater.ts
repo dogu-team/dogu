@@ -10,7 +10,7 @@ import {
 } from '@dogu-private/console';
 import { PIPELINE_STATUS } from '@dogu-private/types';
 import { errorify } from '@dogu-tech/common';
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import _ from 'lodash';
 import { Brackets, DataSource } from 'typeorm';
@@ -137,8 +137,27 @@ export class DeviceJobUpdater {
           return;
         }
 
+        if (!deviceRunner.device) {
+          throw new InternalServerErrorException({
+            reason: 'device must not be null',
+            deviceRunnerId: deviceRunner.deviceRunnerId,
+          });
+        }
+
+        const deviceRunnerDevice = deviceRunner.device;
+        if (deviceRunnerDevice.organization.shareable && deviceRunnerDevice.usageState !== DeviceUsageState.AVAILABLE) {
+          return;
+        }
+
         const { device } = deviceJob;
-        const { deviceId, organizationId } = device!;
+        if (!device) {
+          throw new InternalServerErrorException({
+            reason: 'device must not be null',
+            routineDeviceJobId: deviceJob.routineDeviceJobId,
+          });
+        }
+
+        const { deviceId, organizationId } = device;
         const steps = deviceJob.routineSteps;
         if (!steps || steps.length === 0) {
           throw new Error(`deviceJob ${deviceJob.routineDeviceJobId} has no steps`);
@@ -150,10 +169,9 @@ export class DeviceJobUpdater {
           await manager.getRepository(DeviceRunner).update({ deviceRunnerId: deviceRunner.deviceRunnerId }, { isInUse: 1 });
           deviceJob.deviceRunnerId = deviceRunner.deviceRunnerId;
           await this.deviceJobRunner.setStatus(manager, deviceJob, PIPELINE_STATUS.IN_PROGRESS, new Date());
-          const device = deviceRunner.device;
-          if (device && device.organization.shareable) {
-            device.usageState = DeviceUsageState.IN_USE;
-            await manager.save(device);
+          if (deviceRunnerDevice.organization.shareable) {
+            deviceRunnerDevice.usageState = DeviceUsageState.IN_USE;
+            await manager.save(deviceRunnerDevice);
           }
         });
 
@@ -162,7 +180,11 @@ export class DeviceJobUpdater {
         });
       });
 
-      await Promise.allSettled(promises);
+      const results = await Promise.allSettled(promises);
+      const rejectedResults = results.filter((result) => result.status === 'rejected');
+      if (rejectedResults.length > 0) {
+        this.logger.error('checkWaitingDeviceJobsWithInProgressJob process error', { rejectedResults });
+      }
     }
   }
 
