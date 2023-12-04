@@ -1,10 +1,11 @@
-import { DevicePropCamel, DevicePropSnake, HostBase, HostPropCamel, HostPropSnake, TokenPropSnake } from '@dogu-private/console';
+import { DevicePropCamel, DevicePropSnake, DeviceUsageState, HostBase, HostPropCamel, HostPropSnake, TokenPropSnake } from '@dogu-private/console';
 import { DeviceConnectionState, HostConnectionState, HostId, OrganizationId, UserId, UserPayload } from '@dogu-private/types';
 import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
-import { Brackets, DataSource, DeepPartial, In } from 'typeorm';
+import { Brackets, DataSource, DeepPartial, EntityManager, In } from 'typeorm';
 import { FindOneOptions } from 'typeorm/find-options/FindOneOptions';
 import { v4 } from 'uuid';
+import { DeviceRunner } from '../../../db/entity/device-runner.entity';
 import { Device } from '../../../db/entity/device.entity';
 import { Host } from '../../../db/entity/host.entity';
 import { DeviceAndDeviceTag, ProjectAndDevice } from '../../../db/entity/index';
@@ -267,5 +268,20 @@ export class HostService {
     }
 
     return host;
+  }
+
+  async isHostIdle(manager: EntityManager, hostId: HostId): Promise<boolean> {
+    const devices = await manager.getRepository(Device).find({ where: { hostId } });
+    for (const device of devices) {
+      if (device.usageState === DeviceUsageState.IN_USE) {
+        return false;
+      }
+
+      const runningRunners = await manager.getRepository(DeviceRunner).find({ where: { deviceId: device.deviceId, isInUse: 1 } });
+      if (runningRunners.length > 0) {
+        return false;
+      }
+    }
+    return true;
   }
 }
