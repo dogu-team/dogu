@@ -7,191 +7,216 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable @typescript-eslint/no-floating-promises */
 
-import * as cheerio from 'cheerio';
-import lodash from 'lodash';
-import { Configuration, OpenAIApi } from 'openai';
-import { Browser, Builder } from 'selenium-webdriver';
-import chrome from 'selenium-webdriver/chrome';
-import { URL } from 'url';
+import OpenAI from 'openai';
 import { promisify } from 'util';
 
-const configuration = new Configuration({
+const openai = new OpenAI({
   apiKey: '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',
   organization: 'org-WyY7l0TVzpwkGSKShwNDPTHr',
 });
-const openai = new OpenAIApi(configuration);
 
 const wait = promisify(setTimeout);
 
 (async () => {
-  const options = new chrome.Options();
-  // options.setChromeBinaryPath(`${path.join(__dirname, '/chromedriver')}`)
-  // console.log(`${path.join(__dirname, '/chromedriver')}`)
-  options.addArguments('--headless');
-  options.addArguments('--no-sandbox');
-  options.addArguments('--window-size=3820,2160');
-  const driver = await new Builder().forBrowser(Browser.CHROME).setChromeOptions(options).build();
+  const data: { xpath?: string; text?: string; t?: string }[] = [
+    {
+      xpath: '//html[1]/body[1]/div[1]/div[1]/a[1]',
+      text: '본문 바로가기',
+    },
+    {
+      xpath: '//html[1]/body[1]/div[1]/header[1]/div[1]/a[1]/h1[1]',
+      text: 'NAVER',
+    },
+    {
+      xpath: '//html[1]/body[1]/div[1]/div[2]/div[1]/div[1]/ul[1]/li[1]/a[1]/span[1]/span[1]',
+      text: 'ID 로그인',
+    },
+    {
+      xpath: '//html[1]/body[1]/div[1]/div[2]/div[1]/div[1]/ul[1]/li[2]/a[1]/span[1]/span[1]',
+      text: '일회용 번호',
+    },
+    {
+      xpath: '//html[1]/body[1]/div[1]/div[2]/div[1]/div[1]/ul[1]/li[3]/a[1]/span[1]/span[1]',
+      text: 'QR코드',
+    },
+    {
+      xpath: '//html[1]/body[1]/div[1]/div[2]/div[1]/div[1]/form[1]/ul[1]/li[1]/div[1]/div[1]/div[1]/div[1]/span[1]/span[1]',
+      text: '아이디',
+    },
+    {
+      xpath: '//html[1]/body[1]/div[1]/div[2]/div[1]/div[1]/form[1]/ul[1]/li[1]/div[1]/div[1]/div[1]/input[1]',
+      text: '아이디',
+    },
+    {
+      xpath: '//html[1]/body[1]/div[1]/div[2]/div[1]/div[1]/form[1]/ul[1]/li[1]/div[1]/div[1]/div[2]/div[1]/span[1]/span[1]',
+      text: '비밀번호',
+    },
+    {
+      xpath: '//html[1]/body[1]/div[1]/div[2]/div[1]/div[1]/form[1]/ul[1]/li[1]/div[1]/div[1]/div[2]/input[1]',
+      text: '비밀번호',
+    },
+    {
+      xpath: '//html[1]/body[1]/div[1]/div[2]/div[1]/div[1]/form[1]/ul[1]/li[1]/div[1]/div[2]/div[1]/label[1]',
+      text: '로그인 상태 유지',
+    },
+    {
+      xpath: '//html[1]/body[1]/div[1]/div[2]/div[1]/div[1]/form[1]/ul[1]/li[1]/div[1]/div[2]/div[2]/a[1]/span[1]',
+      text: 'IP보안',
+    },
+    {
+      xpath: '//html[1]/body[1]/div[1]/div[2]/div[1]/div[1]/form[1]/ul[1]/li[1]/div[1]/div[2]/div[2]/span[1]/label[1]/span[1]',
+      text: 'on',
+    },
+    {
+      xpath: '//html[1]/body[1]/div[1]/div[2]/div[1]/div[1]/form[1]/ul[1]/li[1]/div[1]/div[7]/button[1]/span[1]',
+      text: '로그인',
+    },
+    {
+      xpath: '//html[1]/body[1]/div[1]/div[2]/div[1]/ul[1]/li[1]/a[1]',
+      text: '비밀번호 찾기',
+    },
+    {
+      xpath: '//html[1]/body[1]/div[1]/div[2]/div[1]/ul[1]/li[2]/a[1]',
+      text: '아이디 찾기',
+    },
+    {
+      xpath: '//html[1]/body[1]/div[1]/div[2]/div[1]/ul[1]/li[3]/a[1]',
+      text: '회원가입',
+    },
+    {
+      xpath: '//html[1]/body[1]/div[1]/div[3]/div[1]/ul[1]/li[1]/a[1]/span[1]',
+      text: '이용약관',
+    },
+    {
+      xpath: '//html[1]/body[1]/div[1]/div[3]/div[1]/ul[1]/li[2]/a[1]/span[1]/strong[1]',
+      text: '개인정보처리방침',
+    },
+    {
+      xpath: '//html[1]/body[1]/div[1]/div[3]/div[1]/ul[1]/li[3]/a[1]/span[1]',
+      text: '책임의 한계와 법적고지',
+    },
+    {
+      xpath: '//html[1]/body[1]/div[1]/div[3]/div[1]/ul[1]/li[4]/a[1]/span[1]',
+      text: '회원정보 고객센터',
+    },
+    {
+      xpath: '//html[1]/body[1]/div[1]/div[3]/div[1]/div[1]/a[1]/span[1]/span[1]',
+      text: '네이버',
+    },
+    {
+      xpath: '//html[1]/body[1]/div[1]/div[3]/div[1]/div[1]/span[1]',
+      text: 'Copyright',
+    },
+    {
+      xpath: '//html[1]/body[1]/div[1]/div[3]/div[1]/div[1]/span[2]',
+      text: '© NAVER Corp.',
+    },
+    {
+      xpath: '//html[1]/body[1]/div[1]/div[3]/div[1]/div[1]/span[3]',
+      text: 'All Rights Reserved.',
+    },
+  ];
 
-  const url = 'https://www.thehyundai.com/front/cob/loginForm.thd';
-  const urlObject = new URL(url);
+  for (const item of data) {
+    item.t = item.text;
 
-  await wait(1000);
-
-  await driver.get(url);
-  await wait(1000);
-  await driver.manage().window().maximize();
-  await wait(1000);
-
-  await driver.executeScript('window.scrollBy(0,document.body.scrollHeight)', '');
-  await wait(1000);
-  await driver.executeScript('window.scrollTo(0, 0);', '');
-  await wait(1000);
-
-  const pageSource = await driver.getPageSource();
-  const $ = cheerio.load(pageSource);
-  const body = $('body')[0];
-
-  const texts: {
-    text: string;
-    bottom: number;
-    height: number;
-    left: number;
-    right: number;
-    top: number;
-    width: number;
-    x: number;
-    y: number;
-  }[] = [];
-
-  function createXPath(element: cheerio.Element) {
-    let xpath = '';
-    let currentElement = element;
-    //@ts-ignore
-    if (element.name === undefined) {
-      //@ts-ignore
-      currentElement = element.parent;
-    }
-
-    //@ts-ignore
-    while (currentElement && currentElement.type !== 'root') {
-      //@ts-ignore
-      const siblings = currentElement.parent.children.filter((child) => child.type === 'tag');
-      //@ts-ignore
-      const tagName = currentElement.tagName;
-      //@ts-ignore
-      const sameTagSiblings = siblings.filter((child) => child.tagName === tagName);
-      const tagIndex = sameTagSiblings.indexOf(currentElement) + 1;
-      xpath = '/' + tagName + '[' + tagIndex + ']' + xpath;
-      //@ts-ignore
-      currentElement = currentElement.parent;
-    }
-
-    return '/' + xpath;
+    delete item.xpath;
+    delete item.text;
   }
 
-  async function extractText(node: cheerio.Element) {
-    //@ts-ignore
-    if (node.type === 'text') {
-      //@ts-ignore
-      const textNode = node as cheerio.TextElement;
+  const prompt = `
+  사이트에서 로그인을 진행하고, '펄어비스' 주식에 관한 '종합 토론방'에서 글을 작성하는 과정을 자동화합니다.
 
-      //@ts-ignore
-      if (textNode.data) {
-        //@ts-ignore
-        const text = textNode.data.trim();
+  현재 사이트의 Xpath와 UI 텍스트 항목: 
+  ${JSON.stringify(data)}
+  `;
 
-        //@ts-ignore
-        if (text.length !== 0) {
-          const xpath = createXPath(node);
+  const chatCompletion = await openai.chat.completions.create({
+    model: 'gpt-4-1106-preview',
+    response_format: {
+      type: 'json_object',
+    },
+    messages: [
+      {
+        role: 'system',
+        content: `Request: Please create a JSON array of all automation commands that can be generated on the current site. When you're done generating commands, we'll perform them and ask for the next ones.
+        Generation rules: You must output all possible commands, and they must be based on the provided Text items. We will only generate commands that fit the structure of the current site, and we will not generate commands that use non-existent Text or are based on predictions.
+        Example JSON format: {type: 'click', text: 'div'}, {type: 'input', text: 'div', value: 'any'}, {type: 'enter', text: 'div'}`,
+      },
+      {
+        role: 'user',
+        content: prompt,
+      },
+    ],
+  });
 
-          //@ts-ignore
-          const boundingRect: Object = await driver.executeScript(
-            `return document.evaluate('${xpath}', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.getBoundingClientRect()`,
-            '',
-          );
+  console.log(chatCompletion);
+  //@ts-ignore
+  const message = JSON.parse(chatCompletion.choices[0].message.content);
 
-          //@ts-ignore
-          if (boundingRect['width'] === 0 || boundingRect['height'] === 0) {
-            return;
-          }
+  const prompt2 = `
+  {
+    "xpath": "//html[1]/body[1]/div[1]/a[1]/span[1]",
+    "text": "메인 메뉴로 바로가기"
+  },
+  {
+    "xpath": "//html[1]/body[1]/div[1]/a[2]/span[1]",
+    "text": "본문으로 바로가기"
+  },
+  {
+    "xpath": "//html[1]/body[1]/div[2]/div[1]/div[1]/div[1]/h1[1]/a[1]/span[1]",
+    "text": "네이버"
+  },
+  {
+    "xpath": "//html[1]/body[1]/div[2]/div[1]/div[1]/div[1]/h1[1]/a[2]/span[1]",
+    "text": "페이"
+  },
+  {
+    "xpath": "//html[1]/body[1]/div[2]/div[1]/div[1]/div[1]/h1[1]/a[3]/span[1]",
+    "text": "증권"
+  },
+  {
+    "xpath": "//html[1]/body[1]/div[2]/div[1]/div[1]/div[2]/div[1]/form[1]/label[1]",
+    "text": "증권 종목명·지수명 검색"
+  },
+  {
+    "xpath": "//html[1]/body[1]/div[2]/div[1]/div[1]/div[2]/div[1]/form[1]/input[1]",
+    "text": "종목명·지수명 입력"
+  },
+  {
+    "xpath": "//html[1]/body[1]/div[2]/div[1]/div[1]/div[2]/div[1]/form[1]/button[1]/span[1]",
+    "text": "검색"
+  },
+  `;
 
-          //@ts-ignore
-          const textObj = lodash.merge(boundingRect, { text: text });
-          //@ts-ignore
-          texts.push(textObj);
-        }
-      }
-      //@ts-ignore
-    } else if (node.type === 'tag' && node.name !== 'script' && node.children) {
-      for (const child of node.children) {
-        //@ts-ignore
-        await extractText(child);
-      }
-    }
-  }
+  const chatCompletion2 = await openai.chat.completions.create({
+    model: 'gpt-4-1106-preview',
+    response_format: {
+      type: 'json_object',
+    },
+    messages: [
+      {
+        role: 'system',
+        content: `Request: Please create a JSON array of all automation commands that can be generated on the current site. When you're done generating commands, we'll perform them and ask for the next ones.
+        Generation rules: You must output all possible commands, and they must be based on the provided Xpath and UI text items. We will only generate commands that fit the structure of the current site, and we will not generate commands that use non-existent Xpaths or are based on predictions.
+        Example JSON format: {type: 'click', xpath: 'div'}, {type: 'input', xpath: 'div', value: 'any'}, {type: 'enter', xpath: 'div'}`,
+      },
+      {
+        role: 'system',
+        content: `지금 테스트 목적은 "사이트에서 로그인을 진행하고, '펄어비스' 주식에 관한 '종합 토론방'에서 글을 작성하는 과정을 자동화합니다." 입니다.`,
+      },
+      {
+        role: 'system',
+        content: `이전 답변 기록 ${chatCompletion.choices[0].message.content}`,
+      },
+      {
+        role: 'user',
+        content: prompt2,
+      },
+    ],
+  });
 
-  await extractText(body);
-
-  for (const text of texts) {
-    if (text.width === 0 || text.height === 0 || text.x === 0 || text.y === 0) {
-      continue;
-    }
-
-    console.log(text.text);
-  }
-
-  // const chatCompletion = await openai.createChatCompletion({
-  //   model: 'gpt-3.5-turbo',
-  //   messages: [
-  //     {
-  //       role: 'user',
-  //       content: prompt,
-  //     },
-  //   ],
-  // });
-
-  // console.log(chatCompletion.data.choices[0].message?.content);
-
-  // const links: string[] = [];
-  // function extractLinks(node: cheerio.Element) {
-  //   if (node.type === 'tag' && node.name === 'a') {
-  //     const href = node.attribs.href;
-  //     if (href) {
-  //       if (href.startsWith('/')) {
-  //         const linkUrl = `${url}${href}`;
-  //         if (!links.includes(linkUrl)) {
-  //           links.push(linkUrl);
-  //         }
-  //       }
-
-  //       if (href.includes(urlObject.hostname)) {
-  //         if (!links.includes(href)) {
-  //           links.push(href);
-  //         }
-  //       }
-  //     }
-  //   } else if (node.type === 'tag' && node.children) {
-  //     node.children.forEach((childNode: any) => extractLinks(childNode));
-  //   }
-  // }
-
-  // extractLinks(body);
-
-  // console.log(texts);
-  // console.log(imageUrls);
-  // console.log(links);
-
-  //   console.log(prompt);
-
-  //   const chatCompletion = await openai.createChatCompletion({
-  //     model: "gpt-4",
-  //     messages: [
-  //       {
-  //         role: "user",
-  //         content: prompt,
-  //       },
-  //     ],
-  //   });
-
-  // console.log(chatCompletion.data.choices[0].message?.content);
+  //@ts-ignore
+  const message2 = JSON.parse(chatCompletion2.choices[0].message.content);
+  console.log(message2);
 })();

@@ -3,6 +3,7 @@
 import './env';
 
 import { EventEmitter } from 'events';
+import { AiExecutor } from './executors/aiExecutor';
 import { Executor } from './executors/executor';
 import { WebResponsiveExecutor } from './executors/webResponsiveExecutor';
 
@@ -13,6 +14,7 @@ interface ExecutorMap {
 void (async () => {
   const executors: ExecutorMap = {
     'web-responsive': new WebResponsiveExecutor(),
+    ai: new AiExecutor(),
   };
 
   const { MAX_PARALLEL, GOOGLE_CLOUD_RUN, EXECUTOR_NAME } = process.env;

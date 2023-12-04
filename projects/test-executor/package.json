@@ -1,14 +1,15 @@
 {
   "private": true,
   "name": "test-executor",
-  "version": "2.6.16",
+  "version": "2.6.23",
   "description": "",
   "license": "ISC",
   "author": "",
   "main": "index.js",
   "scripts": {
     "start": "node -r ts-node/register src/start.ts",
-    "test": "ts-node src/test.ts"
+    "test": "ts-node src/test.ts",
+    "test2": "node src/test2.js"
   },
   "dependencies": {
     "@dogu-private/device-data": "workspace:^",
@@ -17,7 +18,7 @@
     "@google-cloud/storage": "^7.4.0",
     "cheerio": "^1.0.0-rc.12",
     "lodash": "4.17.21",
-    "openai": "3.3.0",
+    "openai": "4.20.0",
     "playwright": "1.37.1",
     "selenium-webdriver": "^4.14.0",
     "sharp": "0.32.4",

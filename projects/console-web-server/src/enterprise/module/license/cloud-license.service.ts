@@ -81,6 +81,9 @@ export class CloudLicenseService {
       const close = (): void => {
         update();
         closeWebSocketWithTruncateReason(webSocket, 1000, 'closed');
+        this.logger.debug('LiveSessionService.startUpdateLiveTesting.close', {
+          cloudLicenseId,
+        });
       };
       handler.onOpen(close).catch((error) => {
         this.logger.error('LiveSessionService.startUpdateLiveTesting.onOpen error', {
@@ -97,6 +100,9 @@ export class CloudLicenseService {
           error: errorify(error),
           cloudLicenseId,
         });
+      });
+      this.logger.debug('LiveSessionService.startUpdateLiveTesting.onClose', {
+        cloudLicenseId,
       });
     });
 
