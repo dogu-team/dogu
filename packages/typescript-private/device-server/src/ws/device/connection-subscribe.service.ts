@@ -32,10 +32,11 @@ export class DeviceConnectionSubscribeService
   @OnEvent(OnDevicesConnectingEvent.key)
   onDevicesConnecting(value: Instance<typeof OnDevicesConnectingEvent.value>): void {
     const messages = value.platformSerials.map((platformSerial) => {
-      const { serial, platform } = platformSerial;
+      const { serial, platform, model } = platformSerial;
       const message: Instance<typeof DeviceConnectionSubscribe.receiveMessage> = {
         ...DefaultDeviceConnectionSubscribeReceiveMessage(),
         serial: serial,
+        model,
         platform: platformFromPlatformType(platform),
         state: DeviceConnectionState.DEVICE_CONNECTION_STATE_CONNECTING,
       };
@@ -47,10 +48,11 @@ export class DeviceConnectionSubscribeService
   @OnEvent(OnDevicesErrorEvent.key)
   onDevicesError(value: Instance<typeof OnDevicesErrorEvent.value>): void {
     const messages = value.errorDevices.map((errorDevice) => {
-      const { serial, platform, error } = errorDevice;
+      const { serial, platform, model, error } = errorDevice;
       const message: Instance<typeof DeviceConnectionSubscribe.receiveMessage> = {
         ...DefaultDeviceConnectionSubscribeReceiveMessage(),
         serial: serial,
+        model: model,
         platform: platformFromPlatformType(platform),
         state: DeviceConnectionState.DEVICE_CONNECTION_STATE_ERROR,
         errorMessage: error.message,

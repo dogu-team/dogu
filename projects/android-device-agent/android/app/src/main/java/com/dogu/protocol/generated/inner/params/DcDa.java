@@ -62,6 +62,28 @@ public final class DcDa {
      */
     com.dogu.protocol.generated.inner.types.DcDa.DcDaControlParam getDcDaControlParam();
 
+    /**
+     * <code>.inner.types.DcDaGetFoldableStateParam dc_da_get_foldable_state_param = 6;</code>
+     * @return Whether the dcDaGetFoldableStateParam field is set.
+     */
+    boolean hasDcDaGetFoldableStateParam();
+    /**
+     * <code>.inner.types.DcDaGetFoldableStateParam dc_da_get_foldable_state_param = 6;</code>
+     * @return The dcDaGetFoldableStateParam.
+     */
+    com.dogu.protocol.generated.inner.types.DcDa.DcDaGetFoldableStateParam getDcDaGetFoldableStateParam();
+
+    /**
+     * <code>.inner.types.DcDaSetFoldableStateParam dc_da_set_foldable_state_param = 7;</code>
+     * @return Whether the dcDaSetFoldableStateParam field is set.
+     */
+    boolean hasDcDaSetFoldableStateParam();
+    /**
+     * <code>.inner.types.DcDaSetFoldableStateParam dc_da_set_foldable_state_param = 7;</code>
+     * @return The dcDaSetFoldableStateParam.
+     */
+    com.dogu.protocol.generated.inner.types.DcDa.DcDaSetFoldableStateParam getDcDaSetFoldableStateParam();
+
     public com.dogu.protocol.generated.inner.params.DcDa.DcDaParam.ValueCase getValueCase();
   }
   /**
@@ -81,6 +103,8 @@ public final class DcDa {
       DC_DA_QUERY_PROFILE_PARAM(3),
       DC_DA_APPLY_STREAMING_OPTION_PARAM(4),
       DC_DA_CONTROL_PARAM(5),
+      DC_DA_GET_FOLDABLE_STATE_PARAM(6),
+      DC_DA_SET_FOLDABLE_STATE_PARAM(7),
       VALUE_NOT_SET(0);
       private final int value;
       private ValueCase(int value) {
@@ -100,6 +124,8 @@ public final class DcDa {
           case 3: return DC_DA_QUERY_PROFILE_PARAM;
           case 4: return DC_DA_APPLY_STREAMING_OPTION_PARAM;
           case 5: return DC_DA_CONTROL_PARAM;
+          case 6: return DC_DA_GET_FOLDABLE_STATE_PARAM;
+          case 7: return DC_DA_SET_FOLDABLE_STATE_PARAM;
           case 0: return VALUE_NOT_SET;
           default: return null;
         }
@@ -342,6 +368,106 @@ public final class DcDa {
      */
     private void clearDcDaControlParam() {
       if (valueCase_ == 5) {
+        valueCase_ = 0;
+        value_ = null;
+      }
+    }
+
+    public static final int DC_DA_GET_FOLDABLE_STATE_PARAM_FIELD_NUMBER = 6;
+    /**
+     * <code>.inner.types.DcDaGetFoldableStateParam dc_da_get_foldable_state_param = 6;</code>
+     */
+    @java.lang.Override
+    public boolean hasDcDaGetFoldableStateParam() {
+      return valueCase_ == 6;
+    }
+    /**
+     * <code>.inner.types.DcDaGetFoldableStateParam dc_da_get_foldable_state_param = 6;</code>
+     */
+    @java.lang.Override
+    public com.dogu.protocol.generated.inner.types.DcDa.DcDaGetFoldableStateParam getDcDaGetFoldableStateParam() {
+      if (valueCase_ == 6) {
+         return (com.dogu.protocol.generated.inner.types.DcDa.DcDaGetFoldableStateParam) value_;
+      }
+      return com.dogu.protocol.generated.inner.types.DcDa.DcDaGetFoldableStateParam.getDefaultInstance();
+    }
+    /**
+     * <code>.inner.types.DcDaGetFoldableStateParam dc_da_get_foldable_state_param = 6;</code>
+     */
+    private void setDcDaGetFoldableStateParam(com.dogu.protocol.generated.inner.types.DcDa.DcDaGetFoldableStateParam value) {
+      value.getClass();
+  value_ = value;
+      valueCase_ = 6;
+    }
+    /**
+     * <code>.inner.types.DcDaGetFoldableStateParam dc_da_get_foldable_state_param = 6;</code>
+     */
+    private void mergeDcDaGetFoldableStateParam(com.dogu.protocol.generated.inner.types.DcDa.DcDaGetFoldableStateParam value) {
+      value.getClass();
+  if (valueCase_ == 6 &&
+          value_ != com.dogu.protocol.generated.inner.types.DcDa.DcDaGetFoldableStateParam.getDefaultInstance()) {
+        value_ = com.dogu.protocol.generated.inner.types.DcDa.DcDaGetFoldableStateParam.newBuilder((com.dogu.protocol.generated.inner.types.DcDa.DcDaGetFoldableStateParam) value_)
+            .mergeFrom(value).buildPartial();
+      } else {
+        value_ = value;
+      }
+      valueCase_ = 6;
+    }
+    /**
+     * <code>.inner.types.DcDaGetFoldableStateParam dc_da_get_foldable_state_param = 6;</code>
+     */
+    private void clearDcDaGetFoldableStateParam() {
+      if (valueCase_ == 6) {
+        valueCase_ = 0;
+        value_ = null;
+      }
+    }
+
+    public static final int DC_DA_SET_FOLDABLE_STATE_PARAM_FIELD_NUMBER = 7;
+    /**
+     * <code>.inner.types.DcDaSetFoldableStateParam dc_da_set_foldable_state_param = 7;</code>
+     */
+    @java.lang.Override
+    public boolean hasDcDaSetFoldableStateParam() {
+      return valueCase_ == 7;
+    }
+    /**
+     * <code>.inner.types.DcDaSetFoldableStateParam dc_da_set_foldable_state_param = 7;</code>
+     */
+    @java.lang.Override
+    public com.dogu.protocol.generated.inner.types.DcDa.DcDaSetFoldableStateParam getDcDaSetFoldableStateParam() {
+      if (valueCase_ == 7) {
+         return (com.dogu.protocol.generated.inner.types.DcDa.DcDaSetFoldableStateParam) value_;
+      }
+      return com.dogu.protocol.generated.inner.types.DcDa.DcDaSetFoldableStateParam.getDefaultInstance();
+    }
+    /**
+     * <code>.inner.types.DcDaSetFoldableStateParam dc_da_set_foldable_state_param = 7;</code>
+     */
+    private void setDcDaSetFoldableStateParam(com.dogu.protocol.generated.inner.types.DcDa.DcDaSetFoldableStateParam value) {
+      value.getClass();
+  value_ = value;
+      valueCase_ = 7;
+    }
+    /**
+     * <code>.inner.types.DcDaSetFoldableStateParam dc_da_set_foldable_state_param = 7;</code>
+     */
+    private void mergeDcDaSetFoldableStateParam(com.dogu.protocol.generated.inner.types.DcDa.DcDaSetFoldableStateParam value) {
+      value.getClass();
+  if (valueCase_ == 7 &&
+          value_ != com.dogu.protocol.generated.inner.types.DcDa.DcDaSetFoldableStateParam.getDefaultInstance()) {
+        value_ = com.dogu.protocol.generated.inner.types.DcDa.DcDaSetFoldableStateParam.newBuilder((com.dogu.protocol.generated.inner.types.DcDa.DcDaSetFoldableStateParam) value_)
+            .mergeFrom(value).buildPartial();
+      } else {
+        value_ = value;
+      }
+      valueCase_ = 7;
+    }
+    /**
+     * <code>.inner.types.DcDaSetFoldableStateParam dc_da_set_foldable_state_param = 7;</code>
+     */
+    private void clearDcDaSetFoldableStateParam() {
+      if (valueCase_ == 7) {
         valueCase_ = 0;
         value_ = null;
       }
@@ -674,6 +800,102 @@ public final class DcDa {
         return this;
       }
 
+      /**
+       * <code>.inner.types.DcDaGetFoldableStateParam dc_da_get_foldable_state_param = 6;</code>
+       */
+      @java.lang.Override
+      public boolean hasDcDaGetFoldableStateParam() {
+        return instance.hasDcDaGetFoldableStateParam();
+      }
+      /**
+       * <code>.inner.types.DcDaGetFoldableStateParam dc_da_get_foldable_state_param = 6;</code>
+       */
+      @java.lang.Override
+      public com.dogu.protocol.generated.inner.types.DcDa.DcDaGetFoldableStateParam getDcDaGetFoldableStateParam() {
+        return instance.getDcDaGetFoldableStateParam();
+      }
+      /**
+       * <code>.inner.types.DcDaGetFoldableStateParam dc_da_get_foldable_state_param = 6;</code>
+       */
+      public Builder setDcDaGetFoldableStateParam(com.dogu.protocol.generated.inner.types.DcDa.DcDaGetFoldableStateParam value) {
+        copyOnWrite();
+        instance.setDcDaGetFoldableStateParam(value);
+        return this;
+      }
+      /**
+       * <code>.inner.types.DcDaGetFoldableStateParam dc_da_get_foldable_state_param = 6;</code>
+       */
+      public Builder setDcDaGetFoldableStateParam(
+          com.dogu.protocol.generated.inner.types.DcDa.DcDaGetFoldableStateParam.Builder builderForValue) {
+        copyOnWrite();
+        instance.setDcDaGetFoldableStateParam(builderForValue.build());
+        return this;
+      }
+      /**
+       * <code>.inner.types.DcDaGetFoldableStateParam dc_da_get_foldable_state_param = 6;</code>
+       */
+      public Builder mergeDcDaGetFoldableStateParam(com.dogu.protocol.generated.inner.types.DcDa.DcDaGetFoldableStateParam value) {
+        copyOnWrite();
+        instance.mergeDcDaGetFoldableStateParam(value);
+        return this;
+      }
+      /**
+       * <code>.inner.types.DcDaGetFoldableStateParam dc_da_get_foldable_state_param = 6;</code>
+       */
+      public Builder clearDcDaGetFoldableStateParam() {
+        copyOnWrite();
+        instance.clearDcDaGetFoldableStateParam();
+        return this;
+      }
+
+      /**
+       * <code>.inner.types.DcDaSetFoldableStateParam dc_da_set_foldable_state_param = 7;</code>
+       */
+      @java.lang.Override
+      public boolean hasDcDaSetFoldableStateParam() {
+        return instance.hasDcDaSetFoldableStateParam();
+      }
+      /**
+       * <code>.inner.types.DcDaSetFoldableStateParam dc_da_set_foldable_state_param = 7;</code>
+       */
+      @java.lang.Override
+      public com.dogu.protocol.generated.inner.types.DcDa.DcDaSetFoldableStateParam getDcDaSetFoldableStateParam() {
+        return instance.getDcDaSetFoldableStateParam();
+      }
+      /**
+       * <code>.inner.types.DcDaSetFoldableStateParam dc_da_set_foldable_state_param = 7;</code>
+       */
+      public Builder setDcDaSetFoldableStateParam(com.dogu.protocol.generated.inner.types.DcDa.DcDaSetFoldableStateParam value) {
+        copyOnWrite();
+        instance.setDcDaSetFoldableStateParam(value);
+        return this;
+      }
+      /**
+       * <code>.inner.types.DcDaSetFoldableStateParam dc_da_set_foldable_state_param = 7;</code>
+       */
+      public Builder setDcDaSetFoldableStateParam(
+          com.dogu.protocol.generated.inner.types.DcDa.DcDaSetFoldableStateParam.Builder builderForValue) {
+        copyOnWrite();
+        instance.setDcDaSetFoldableStateParam(builderForValue.build());
+        return this;
+      }
+      /**
+       * <code>.inner.types.DcDaSetFoldableStateParam dc_da_set_foldable_state_param = 7;</code>
+       */
+      public Builder mergeDcDaSetFoldableStateParam(com.dogu.protocol.generated.inner.types.DcDa.DcDaSetFoldableStateParam value) {
+        copyOnWrite();
+        instance.mergeDcDaSetFoldableStateParam(value);
+        return this;
+      }
+      /**
+       * <code>.inner.types.DcDaSetFoldableStateParam dc_da_set_foldable_state_param = 7;</code>
+       */
+      public Builder clearDcDaSetFoldableStateParam() {
+        copyOnWrite();
+        instance.clearDcDaSetFoldableStateParam();
+        return this;
+      }
+
       // @@protoc_insertion_point(builder_scope:inner.params.DcDaParam)
     }
     @java.lang.Override
@@ -697,10 +919,12 @@ public final class DcDa {
               com.dogu.protocol.generated.inner.types.DcDa.DcDaQueryProfileParam.class,
               com.dogu.protocol.generated.inner.types.DcDa.DcDaApplyStreamingOptionParam.class,
               com.dogu.protocol.generated.inner.types.DcDa.DcDaControlParam.class,
+              com.dogu.protocol.generated.inner.types.DcDa.DcDaGetFoldableStateParam.class,
+              com.dogu.protocol.generated.inner.types.DcDa.DcDaSetFoldableStateParam.class,
             };
             java.lang.String info =
-                "\u0000\u0005\u0001\u0000\u0001\u0005\u0005\u0000\u0000\u0000\u0001\u0006\u0002<\u0000" +
-                "\u0003<\u0000\u0004<\u0000\u0005<\u0000";
+                "\u0000\u0007\u0001\u0000\u0001\u0007\u0007\u0000\u0000\u0000\u0001\u0006\u0002<\u0000" +
+                "\u0003<\u0000\u0004<\u0000\u0005<\u0000\u0006<\u0000\u0007<\u0000";
             return newMessageInfo(DEFAULT_INSTANCE, info, objects);
         }
         // fall through
@@ -809,6 +1033,28 @@ public final class DcDa {
      */
     com.dogu.protocol.generated.inner.types.DcDa.DcDaControlReturn getDcDaControlReturn();
 
+    /**
+     * <code>.inner.types.DcDaGetFoldableStateReturn dc_da_get_foldable_state_return = 6;</code>
+     * @return Whether the dcDaGetFoldableStateReturn field is set.
+     */
+    boolean hasDcDaGetFoldableStateReturn();
+    /**
+     * <code>.inner.types.DcDaGetFoldableStateReturn dc_da_get_foldable_state_return = 6;</code>
+     * @return The dcDaGetFoldableStateReturn.
+     */
+    com.dogu.protocol.generated.inner.types.DcDa.DcDaGetFoldableStateReturn getDcDaGetFoldableStateReturn();
+
+    /**
+     * <code>.inner.types.DcDaSetFoldableStateReturn dc_da_set_foldable_state_return = 7;</code>
+     * @return Whether the dcDaSetFoldableStateReturn field is set.
+     */
+    boolean hasDcDaSetFoldableStateReturn();
+    /**
+     * <code>.inner.types.DcDaSetFoldableStateReturn dc_da_set_foldable_state_return = 7;</code>
+     * @return The dcDaSetFoldableStateReturn.
+     */
+    com.dogu.protocol.generated.inner.types.DcDa.DcDaSetFoldableStateReturn getDcDaSetFoldableStateReturn();
+
     public com.dogu.protocol.generated.inner.params.DcDa.DcDaReturn.ValueCase getValueCase();
   }
   /**
@@ -828,6 +1074,8 @@ public final class DcDa {
       DC_DA_QUERY_PROFILE_RETURN(3),
       DC_DA_APPLY_STREAMING_OPTION_RETURN(4),
       DC_DA_CONTROL_RETURN(5),
+      DC_DA_GET_FOLDABLE_STATE_RETURN(6),
+      DC_DA_SET_FOLDABLE_STATE_RETURN(7),
       VALUE_NOT_SET(0);
       private final int value;
       private ValueCase(int value) {
@@ -847,6 +1095,8 @@ public final class DcDa {
           case 3: return DC_DA_QUERY_PROFILE_RETURN;
           case 4: return DC_DA_APPLY_STREAMING_OPTION_RETURN;
           case 5: return DC_DA_CONTROL_RETURN;
+          case 6: return DC_DA_GET_FOLDABLE_STATE_RETURN;
+          case 7: return DC_DA_SET_FOLDABLE_STATE_RETURN;
           case 0: return VALUE_NOT_SET;
           default: return null;
         }
@@ -1089,6 +1339,106 @@ public final class DcDa {
      */
     private void clearDcDaControlReturn() {
       if (valueCase_ == 5) {
+        valueCase_ = 0;
+        value_ = null;
+      }
+    }
+
+    public static final int DC_DA_GET_FOLDABLE_STATE_RETURN_FIELD_NUMBER = 6;
+    /**
+     * <code>.inner.types.DcDaGetFoldableStateReturn dc_da_get_foldable_state_return = 6;</code>
+     */
+    @java.lang.Override
+    public boolean hasDcDaGetFoldableStateReturn() {
+      return valueCase_ == 6;
+    }
+    /**
+     * <code>.inner.types.DcDaGetFoldableStateReturn dc_da_get_foldable_state_return = 6;</code>
+     */
+    @java.lang.Override
+    public com.dogu.protocol.generated.inner.types.DcDa.DcDaGetFoldableStateReturn getDcDaGetFoldableStateReturn() {
+      if (valueCase_ == 6) {
+         return (com.dogu.protocol.generated.inner.types.DcDa.DcDaGetFoldableStateReturn) value_;
+      }
+      return com.dogu.protocol.generated.inner.types.DcDa.DcDaGetFoldableStateReturn.getDefaultInstance();
+    }
+    /**
+     * <code>.inner.types.DcDaGetFoldableStateReturn dc_da_get_foldable_state_return = 6;</code>
+     */
+    private void setDcDaGetFoldableStateReturn(com.dogu.protocol.generated.inner.types.DcDa.DcDaGetFoldableStateReturn value) {
+      value.getClass();
+  value_ = value;
+      valueCase_ = 6;
+    }
+    /**
+     * <code>.inner.types.DcDaGetFoldableStateReturn dc_da_get_foldable_state_return = 6;</code>
+     */
+    private void mergeDcDaGetFoldableStateReturn(com.dogu.protocol.generated.inner.types.DcDa.DcDaGetFoldableStateReturn value) {
+      value.getClass();
+  if (valueCase_ == 6 &&
+          value_ != com.dogu.protocol.generated.inner.types.DcDa.DcDaGetFoldableStateReturn.getDefaultInstance()) {
+        value_ = com.dogu.protocol.generated.inner.types.DcDa.DcDaGetFoldableStateReturn.newBuilder((com.dogu.protocol.generated.inner.types.DcDa.DcDaGetFoldableStateReturn) value_)
+            .mergeFrom(value).buildPartial();
+      } else {
+        value_ = value;
+      }
+      valueCase_ = 6;
+    }
+    /**
+     * <code>.inner.types.DcDaGetFoldableStateReturn dc_da_get_foldable_state_return = 6;</code>
+     */
+    private void clearDcDaGetFoldableStateReturn() {
+      if (valueCase_ == 6) {
+        valueCase_ = 0;
+        value_ = null;
+      }
+    }
+
+    public static final int DC_DA_SET_FOLDABLE_STATE_RETURN_FIELD_NUMBER = 7;
+    /**
+     * <code>.inner.types.DcDaSetFoldableStateReturn dc_da_set_foldable_state_return = 7;</code>
+     */
+    @java.lang.Override
+    public boolean hasDcDaSetFoldableStateReturn() {
+      return valueCase_ == 7;
+    }
+    /**
+     * <code>.inner.types.DcDaSetFoldableStateReturn dc_da_set_foldable_state_return = 7;</code>
+     */
+    @java.lang.Override
+    public com.dogu.protocol.generated.inner.types.DcDa.DcDaSetFoldableStateReturn getDcDaSetFoldableStateReturn() {
+      if (valueCase_ == 7) {
+         return (com.dogu.protocol.generated.inner.types.DcDa.DcDaSetFoldableStateReturn) value_;
+      }
+      return com.dogu.protocol.generated.inner.types.DcDa.DcDaSetFoldableStateReturn.getDefaultInstance();
+    }
+    /**
+     * <code>.inner.types.DcDaSetFoldableStateReturn dc_da_set_foldable_state_return = 7;</code>
+     */
+    private void setDcDaSetFoldableStateReturn(com.dogu.protocol.generated.inner.types.DcDa.DcDaSetFoldableStateReturn value) {
+      value.getClass();
+  value_ = value;
+      valueCase_ = 7;
+    }
+    /**
+     * <code>.inner.types.DcDaSetFoldableStateReturn dc_da_set_foldable_state_return = 7;</code>
+     */
+    private void mergeDcDaSetFoldableStateReturn(com.dogu.protocol.generated.inner.types.DcDa.DcDaSetFoldableStateReturn value) {
+      value.getClass();
+  if (valueCase_ == 7 &&
+          value_ != com.dogu.protocol.generated.inner.types.DcDa.DcDaSetFoldableStateReturn.getDefaultInstance()) {
+        value_ = com.dogu.protocol.generated.inner.types.DcDa.DcDaSetFoldableStateReturn.newBuilder((com.dogu.protocol.generated.inner.types.DcDa.DcDaSetFoldableStateReturn) value_)
+            .mergeFrom(value).buildPartial();
+      } else {
+        value_ = value;
+      }
+      valueCase_ = 7;
+    }
+    /**
+     * <code>.inner.types.DcDaSetFoldableStateReturn dc_da_set_foldable_state_return = 7;</code>
+     */
+    private void clearDcDaSetFoldableStateReturn() {
+      if (valueCase_ == 7) {
         valueCase_ = 0;
         value_ = null;
       }
@@ -1421,6 +1771,102 @@ public final class DcDa {
         return this;
       }
 
+      /**
+       * <code>.inner.types.DcDaGetFoldableStateReturn dc_da_get_foldable_state_return = 6;</code>
+       */
+      @java.lang.Override
+      public boolean hasDcDaGetFoldableStateReturn() {
+        return instance.hasDcDaGetFoldableStateReturn();
+      }
+      /**
+       * <code>.inner.types.DcDaGetFoldableStateReturn dc_da_get_foldable_state_return = 6;</code>
+       */
+      @java.lang.Override
+      public com.dogu.protocol.generated.inner.types.DcDa.DcDaGetFoldableStateReturn getDcDaGetFoldableStateReturn() {
+        return instance.getDcDaGetFoldableStateReturn();
+      }
+      /**
+       * <code>.inner.types.DcDaGetFoldableStateReturn dc_da_get_foldable_state_return = 6;</code>
+       */
+      public Builder setDcDaGetFoldableStateReturn(com.dogu.protocol.generated.inner.types.DcDa.DcDaGetFoldableStateReturn value) {
+        copyOnWrite();
+        instance.setDcDaGetFoldableStateReturn(value);
+        return this;
+      }
+      /**
+       * <code>.inner.types.DcDaGetFoldableStateReturn dc_da_get_foldable_state_return = 6;</code>
+       */
+      public Builder setDcDaGetFoldableStateReturn(
+          com.dogu.protocol.generated.inner.types.DcDa.DcDaGetFoldableStateReturn.Builder builderForValue) {
+        copyOnWrite();
+        instance.setDcDaGetFoldableStateReturn(builderForValue.build());
+        return this;
+      }
+      /**
+       * <code>.inner.types.DcDaGetFoldableStateReturn dc_da_get_foldable_state_return = 6;</code>
+       */
+      public Builder mergeDcDaGetFoldableStateReturn(com.dogu.protocol.generated.inner.types.DcDa.DcDaGetFoldableStateReturn value) {
+        copyOnWrite();
+        instance.mergeDcDaGetFoldableStateReturn(value);
+        return this;
+      }
+      /**
+       * <code>.inner.types.DcDaGetFoldableStateReturn dc_da_get_foldable_state_return = 6;</code>
+       */
+      public Builder clearDcDaGetFoldableStateReturn() {
+        copyOnWrite();
+        instance.clearDcDaGetFoldableStateReturn();
+        return this;
+      }
+
+      /**
+       * <code>.inner.types.DcDaSetFoldableStateReturn dc_da_set_foldable_state_return = 7;</code>
+       */
+      @java.lang.Override
+      public boolean hasDcDaSetFoldableStateReturn() {
+        return instance.hasDcDaSetFoldableStateReturn();
+      }
+      /**
+       * <code>.inner.types.DcDaSetFoldableStateReturn dc_da_set_foldable_state_return = 7;</code>
+       */
+      @java.lang.Override
+      public com.dogu.protocol.generated.inner.types.DcDa.DcDaSetFoldableStateReturn getDcDaSetFoldableStateReturn() {
+        return instance.getDcDaSetFoldableStateReturn();
+      }
+      /**
+       * <code>.inner.types.DcDaSetFoldableStateReturn dc_da_set_foldable_state_return = 7;</code>
+       */
+      public Builder setDcDaSetFoldableStateReturn(com.dogu.protocol.generated.inner.types.DcDa.DcDaSetFoldableStateReturn value) {
+        copyOnWrite();
+        instance.setDcDaSetFoldableStateReturn(value);
+        return this;
+      }
+      /**
+       * <code>.inner.types.DcDaSetFoldableStateReturn dc_da_set_foldable_state_return = 7;</code>
+       */
+      public Builder setDcDaSetFoldableStateReturn(
+          com.dogu.protocol.generated.inner.types.DcDa.DcDaSetFoldableStateReturn.Builder builderForValue) {
+        copyOnWrite();
+        instance.setDcDaSetFoldableStateReturn(builderForValue.build());
+        return this;
+      }
+      /**
+       * <code>.inner.types.DcDaSetFoldableStateReturn dc_da_set_foldable_state_return = 7;</code>
+       */
+      public Builder mergeDcDaSetFoldableStateReturn(com.dogu.protocol.generated.inner.types.DcDa.DcDaSetFoldableStateReturn value) {
+        copyOnWrite();
+        instance.mergeDcDaSetFoldableStateReturn(value);
+        return this;
+      }
+      /**
+       * <code>.inner.types.DcDaSetFoldableStateReturn dc_da_set_foldable_state_return = 7;</code>
+       */
+      public Builder clearDcDaSetFoldableStateReturn() {
+        copyOnWrite();
+        instance.clearDcDaSetFoldableStateReturn();
+        return this;
+      }
+
       // @@protoc_insertion_point(builder_scope:inner.params.DcDaReturn)
     }
     @java.lang.Override
@@ -1444,10 +1890,12 @@ public final class DcDa {
               com.dogu.protocol.generated.inner.types.DcDa.DcDaQueryProfileReturn.class,
               com.dogu.protocol.generated.inner.types.DcDa.DcDaApplyStreamingOptionReturn.class,
               com.dogu.protocol.generated.inner.types.DcDa.DcDaControlReturn.class,
+              com.dogu.protocol.generated.inner.types.DcDa.DcDaGetFoldableStateReturn.class,
+              com.dogu.protocol.generated.inner.types.DcDa.DcDaSetFoldableStateReturn.class,
             };
             java.lang.String info =
-                "\u0000\u0005\u0001\u0000\u0001\u0005\u0005\u0000\u0000\u0000\u0001\u0006\u0002<\u0000" +
-                "\u0003<\u0000\u0004<\u0000\u0005<\u0000";
+                "\u0000\u0007\u0001\u0000\u0001\u0007\u0007\u0000\u0000\u0000\u0001\u0006\u0002<\u0000" +
+                "\u0003<\u0000\u0004<\u0000\u0005<\u0000\u0006<\u0000\u0007<\u0000";
             return newMessageInfo(DEFAULT_INSTANCE, info, objects);
         }
         // fall through

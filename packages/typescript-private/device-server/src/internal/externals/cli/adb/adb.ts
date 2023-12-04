@@ -12,7 +12,7 @@ import { adbLogger } from '../../../../logger/logger.instance';
 import { createAdbSerialLogger, SerialLogger } from '../../../../logger/serial-logger.instance';
 import { pathMap } from '../../../../path-map';
 import { LogHandler } from '../../../public/device-channel';
-import { DeviceScanResult, DeviceScanStatus } from '../../../public/device-driver';
+import { DeviceScanResult, DeviceScanResultOnline, DeviceScanResultUnstable, DeviceScanStatus } from '../../../public/device-driver';
 import { parseRecord } from '../../../util/parse';
 import { getManifestFromApp } from '../../apk/apk-util';
 import { AndroidDfInfo, AndroidProcCpuInfo, AndroidProcDiskstats, AndroidProcMemInfo, AndroidPropInfo, AndroidShellTopInfo } from './info';
@@ -211,7 +211,7 @@ export module Adb {
     await exec(`${adbPrefix()} kill-server`);
   }
 
-  export async function serials(): Promise<DeviceScanResult[]> {
+  export async function serials(): Promise<(Omit<DeviceScanResultOnline, 'model'> | Omit<DeviceScanResultUnstable, 'model'>)[]> {
     return await usingAsnyc(new AdbScope('serials', {}), async () => {
       const output = (await execIgnoreError(`${adbPrefix()} devices`, { printable: adbLogger })).stdout;
       adbLogger.verbose('adb.serials', { output });
@@ -238,22 +238,27 @@ export module Adb {
             return `Device status is unknown. ${state}`;
         }
       };
+      const ret: DeviceScanResult[] = [];
+      for (const serialAndStateLine of output.split(os.EOL).slice(1, -2)) {
+        const matched = serialAndStateLine.match(regex);
+        if (!matched || matched.length < 2) {
+          continue;
+        }
+        const serial = matched[0];
+        const state = matched[1];
+        const deviceState = stateToDeviceStatus(state);
 
-      const scanInfos = output
-        .split(os.EOL)
-        .slice(1, -2)
-        .map((serialAndStateLine) => {
-          const matched = serialAndStateLine.match(regex);
-          if (!matched || matched.length < 2) {
-            return undefined;
-          }
-          const serial = matched[0];
-          const state = matched[1];
-          return { serial, name: state, status: stateToDeviceStatus(state), description: stateToDesciprtion(state) } as DeviceScanResult;
-        })
-        .filter((deviceScanInfo) => deviceScanInfo !== undefined)
-        .map((deviceScanInfo) => deviceScanInfo!);
-      return scanInfos;
+        ret.push({ serial, status: deviceState, description: stateToDesciprtion(state) } as DeviceScanResult);
+      }
+      return ret;
+
+      // const scanInfos = output
+      //   .split(os.EOL)
+      //   .slice(1, -2)
+      //   .map((serialAndStateLine) => {})
+      //   .filter((deviceScanInfo) => deviceScanInfo !== undefined)
+      //   .map((deviceScanInfo) => deviceScanInfo!);
+      // return scanInfos;
     });
   }
 
@@ -728,8 +733,8 @@ export class AdbSerial {
   async getProp(key: string): Promise<string> {
     const { serial, printable } = this;
     return await usingAsnyc(new AdbSerialScope('getProp', { serial }), async () => {
-      const cmdret = await shellIgnoreError(serial, `getprop ${key}`, { printable });
-      return cmdret.stdout;
+      const cmdret = await shell(serial, `getprop ${key}`);
+      return cmdret.stdout.trim();
     });
   }
 

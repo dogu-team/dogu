@@ -28,6 +28,8 @@ import { Organization, OrganizationAndUserAndOrganizationRole, OrganizationAndUs
 import { PersonalAccessToken } from '../../db/entity/personal-access-token.entity';
 import { UserAndInvitationToken } from '../../db/entity/relations/user-and-invitation-token.entity';
 import { User } from '../../db/entity/user.entity';
+import { CloudLicenseService } from '../../enterprise/module/license/cloud-license.service';
+import { FeatureConfig } from '../../feature.config';
 import { EMPTY_PAGE, Page } from '../../module/common/dto/pagination/page';
 import { FindUsersByOrganizationIdDto, ResetPasswordDto, UpdateTutorialDto, UpdateUserDto } from '../../module/user/dto/user.dto';
 import { ORGANIZATION_ROLE } from '../auth/auth.types';
@@ -43,6 +45,7 @@ export class UserService {
     private readonly dataSource: DataSource,
     private readonly userFileService: UserFileService,
     private readonly organizationService: OrganizationService,
+    private readonly cloudLicenseService: CloudLicenseService,
   ) {}
 
   async findOne(userId: UserId): Promise<UserBase> {
@@ -359,6 +362,10 @@ export class UserService {
         .getRepository(OrganizationAndUserAndOrganizationRole)
         .create({ organizationId: newOrg.organizationId, userId, organizationRoleId: ORGANIZATION_ROLE.OWNER });
       await entityManager.getRepository(OrganizationAndUserAndOrganizationRole).save(newOrganizationRole);
+
+      if (FeatureConfig.get('licenseModule') === 'cloud') {
+        await this.cloudLicenseService.createLicense({ organizationId: newOrg.organizationId });
+      }
 
       // invitation
       if (invitation) {

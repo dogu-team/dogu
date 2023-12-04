@@ -1,9 +1,11 @@
 import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+
 import { Organization, OrganizationAndUserAndOrganizationRole } from '../../db/entity/index';
 import { OrganizationRole } from '../../db/entity/organization-role.entity';
 import { UserEmailPreference } from '../../db/entity/user-email-preference.entity';
 import { User } from '../../db/entity/user.entity';
+import { LicenseModule } from '../../enterprise/module/license/license.module';
 import { EmailModule } from '../../module/email/email.module';
 import { UserController } from '../../module/user/user.controller';
 import { UserService } from '../../module/user/user.service';
@@ -19,6 +21,7 @@ import { UserEmailPreferenceService } from './user-email-preference.service';
     EmailModule,
     GitlabModule,
     FileModule,
+    LicenseModule,
     forwardRef(() => OrganizationModule),
   ],
   providers: [UserService, UserEventListner, UserEmailPreferenceService],

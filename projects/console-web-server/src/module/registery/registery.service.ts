@@ -20,6 +20,7 @@ import { UserAndVerificationToken } from '../../db/entity/relations/user-and-ver
 import { UserSns } from '../../db/entity/user-sns.entity';
 import { WhitelistDomain } from '../../db/entity/whitelist-domain.entity';
 import { CloudLicenseService } from '../../enterprise/module/license/cloud-license.service';
+import { env } from '../../env';
 import { FeatureConfig } from '../../feature.config';
 import { EmailService } from '../../module/email/email.service';
 import { SendVerifyEmailDto, VerifyEmailDto } from '../../module/registery/dto/registery.dto';
@@ -66,10 +67,10 @@ export class RegisteryService {
       where: { domain },
     });
 
+    // check email domain is valid
     if (!whitelist) {
       try {
-        // check email domain is valid
-        const rv = await axios.get(`http://${domain}`);
+        const rv = await axios.get(`http://${domain}`, { timeout: 5000 });
         if (rv.status !== 200) {
           throw new HttpException(`Unsupported email domain : ${domain}. If this error persist, please contact us.`, HttpStatus.BAD_REQUEST);
         }
@@ -160,7 +161,9 @@ export class RegisteryService {
         });
         await entityManager.getRepository(UserAndVerificationToken).save(verificationData);
 
-        void this.emailService.sendVerifyEmail(user, token.token);
+        if (env.DOGU_RUN_TYPE !== 'local') {
+          void this.emailService.sendVerifyEmail(user, token.token);
+        }
       }
 
       this.eventEmitter.emit(UserCreatedEvent.EVENT_NAME, new UserCreatedEvent(user));

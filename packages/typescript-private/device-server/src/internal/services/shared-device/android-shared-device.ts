@@ -117,55 +117,62 @@ const BlockAppList: BlockAppInfo[] = [
     runtime: true,
   },
   //#region scam
-  {
-    vender: 'unknown',
-    category: 'scam',
-    keyword: 'me.nextplus.',
-    packageName: 'me.nextplus.smsfreetext.phonecalls',
-    runtime: true,
-  },
-  {
-    vender: 'unknown',
-    category: 'scam',
-    keyword: 'me.dingtone.',
-    packageName: 'me.dingtone.app.im',
-    runtime: true,
-  },
-  {
-    vender: 'unknown',
-    category: 'scam',
-    keyword: 'com.gogii.',
-    packageName: 'com.gogii.textplus',
-    runtime: true,
-  },
-  {
-    vender: 'unknown',
-    category: 'scam',
-    keyword: 'com.talkatone.',
-    packageName: 'com.talkatone.android',
-    runtime: true,
-  },
-  {
-    vender: 'unknown',
-    category: 'scam',
-    keyword: 'me.talkyou.',
-    packageName: 'me.talkyou.app.im',
-    runtime: true,
-  },
-  {
-    vender: 'unknown',
-    category: 'scam',
-    keyword: 'com.textmeinc.',
-    packageName: 'com.textmeinc.textme',
-    runtime: true,
-  },
-  {
-    vender: 'unknown',
-    category: 'scam',
-    keyword: 'com.iplum.',
-    packageName: 'com.iplum.android',
-    runtime: true,
-  },
+  // {
+  //   vender: 'unknown',
+  //   category: 'scam',
+  //   keyword: 'me.nextplus.',
+  //   packageName: 'me.nextplus.smsfreetext.phonecalls',
+  //   runtime: true,
+  // },
+  // {
+  //   vender: 'unknown',
+  //   category: 'scam',
+  //   keyword: 'me.dingtone.',
+  //   packageName: 'me.dingtone.app.im',
+  //   runtime: true,
+  // },
+  // {
+  //   vender: 'unknown',
+  //   category: 'scam',
+  //   keyword: 'com.gogii.',
+  //   packageName: 'com.gogii.textplus',
+  //   runtime: true,
+  // },
+  // {
+  //   vender: 'unknown',
+  //   category: 'scam',
+  //   keyword: 'com.talkatone.',
+  //   packageName: 'com.talkatone.android',
+  //   runtime: true,
+  // },
+  // {
+  //   vender: 'unknown',
+  //   category: 'scam',
+  //   keyword: 'me.talkyou.',
+  //   packageName: 'me.talkyou.app.im',
+  //   runtime: true,
+  // },
+  // {
+  //   vender: 'unknown',
+  //   category: 'scam',
+  //   keyword: 'com.textmeinc.',
+  //   packageName: 'com.textmeinc.textme',
+  //   runtime: true,
+  // },
+  // {
+  //   vender: 'unknown',
+  //   category: 'scam',
+  //   keyword: 'com.iplum.',
+  //   packageName: 'com.iplum.android',
+  //   runtime: true,
+  // },
+  // {
+  //   vender: 'unknown',
+  //   category: 'scam',
+  //   keyword: 'com.whatsapp',
+  //   packageName: 'com.whatsapp',
+  //   runtime: true,
+  // },
   //#endregion
 
   /*
@@ -386,10 +393,6 @@ export class AndroidSharedDeviceService implements Zombieable {
       this.printable.error(`AndroidSharedDeviceService.revive.setGboardAsDefaultKeyboard failed.`, { serial, error: errorify(e) });
     });
 
-    await this.checkSetup(`AndroidSharedDeviceService.setup.unfold`, this.unfold(channel)).catch((e) => {
-      this.printable.error(`AndroidSharedDeviceService.revive.unfold failed.`, { serial, error: errorify(e) });
-    });
-
     await this.checkSetup(`AndroidSharedDeviceService.setup.mute`, this.mute()).catch((e) => {
       this.printable.error(`AndroidSharedDeviceService.revive.mute failed.`, { serial, error: errorify(e) });
     });
@@ -549,17 +552,6 @@ export class AndroidSharedDeviceService implements Zombieable {
     const imeId = `${targetIme.packageName}/${targetIme.service}`;
     await this.appiumAdb.enableIME(imeId);
     await this.appiumAdb.setIME(imeId);
-  }
-
-  private async unfold(channel: AndroidChannel): Promise<void> {
-    const foldStatus = await channel.getFoldStatus();
-    if (!foldStatus.isFoldable) {
-      return;
-    }
-    if (!foldStatus.isFolded) {
-      return;
-    }
-    await channel.fold(false);
   }
 
   private async mute(): Promise<void> {

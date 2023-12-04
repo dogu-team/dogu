@@ -9,6 +9,7 @@ import { WebdriverAgentProcess } from '../../externals/cli/webdriver-agent-proce
 import { IdeviceDiagnostics } from '../../externals/index';
 import {
   IosAccessibilitiySelector,
+  IosButtonClassChainStringSelector,
   IosButtonPredicateStringSelector,
   IosClassChainSelector,
   IosPredicateStringSelector,
@@ -331,7 +332,7 @@ export class IosResetService {
   @Repeat({ repeatCount: ClearRepeatCount, repeatInterval: 100 })
   private async clearSafariCache(iosDriver: IosWebDriver): Promise<void> {
     const { iosWebDriverInfo } = this;
-    const { isIpad } = iosWebDriverInfo;
+    const { isIpad, isOverIos17 } = iosWebDriverInfo;
     await usingAsnyc(
       {
         create: async () => {
@@ -348,13 +349,19 @@ export class IosResetService {
 
         await iosDriver.clickSelector(new IosAccessibilitiySelector('CLEAR_HISTORY_AND_DATA'));
 
-        if (!isIpad) {
+        if (!isIpad && isOverIos17) {
+          await iosDriver.clickSelector(new IosAccessibilitiySelector('All history', { dismissAlert: false }));
+          await iosDriver.clickSelector(new IosAccessibilitiySelector('CloseAllTabsSwitch', { dismissAlert: false }));
+          await iosDriver.clickSelector(new IosAccessibilitiySelector('ClearHistoryButton', { dismissAlert: false }));
+        } else if (!isIpad) {
           await iosDriver.clickSelector(new IosAccessibilitiySelector('Clear History and Data', { dismissAlert: false }));
-        } else {
+          await iosDriver.clickSelector(new IosClassChainSelector('**/XCUIElementTypeButton[`label == "Close Tabs"`]', { dismissAlert: false }));
+        } else if (isIpad) {
           await iosDriver.clickSelector(new IosAccessibilitiySelector('Clear', { dismissAlert: false }));
+          await iosDriver.clickSelector(new IosClassChainSelector('**/XCUIElementTypeButton[`label == "Close Tabs"`]', { dismissAlert: false }));
+        } else {
+          throw new Error('IosResetService.clearSafariCache not implemented');
         }
-
-        await iosDriver.clickSelector(new IosClassChainSelector('**/XCUIElementTypeButton[`label == "Close Tabs"`]', { dismissAlert: false }));
       },
     );
   }
@@ -455,7 +462,7 @@ export class IosResetService {
   @Repeat({ repeatCount: ClearRepeatCount, repeatInterval: 100 })
   private async clearPhotosRecentlyDeleted(iosDriver: IosWebDriver): Promise<void> {
     const { iosWebDriverInfo } = this;
-    const { isIpadAndSystemAppHasSidebar } = iosWebDriverInfo;
+    const { isOverIos17, isIpadAndSystemAppHasSidebar } = iosWebDriverInfo;
     await usingAsnyc(
       {
         create: async () => {
@@ -482,12 +489,22 @@ export class IosResetService {
           return;
         }
 
-        await iosDriver.clickSelector(new IosClassChainSelector('**/XCUIElementTypeButton[`label == "Select"`]'));
-        await iosDriver.clickSelector(new IosButtonPredicateStringSelector('Delete All'));
-        await iosDriver.clickSelectors([
-          new IosPredicateStringSelector(`type == 'XCUIElementTypeButton' && name CONTAINS 'Delete From This'`, { dismissAlert: false }),
-          new IosButtonPredicateStringSelector('Delete Photo', { dismissAlert: false }),
-        ]);
+        if (isOverIos17) {
+          await iosDriver.clickSelector(new IosClassChainSelector('**/XCUIElementTypeStaticText[`label == "Select"`]'));
+          await iosDriver.clickSelector(new IosButtonClassChainStringSelector('more'));
+          await iosDriver.clickSelector(new IosButtonClassChainStringSelector('Delete All', { dismissAlert: false }));
+          await iosDriver.clickSelectors([
+            new IosPredicateStringSelector(`type == 'XCUIElementTypeButton' && name CONTAINS 'Delete From This'`, { dismissAlert: false }),
+            new IosButtonPredicateStringSelector('Delete Photo', { dismissAlert: false }),
+          ]);
+        } else {
+          await iosDriver.clickSelector(new IosClassChainSelector('**/XCUIElementTypeButton[`label == "Select"`]'));
+          await iosDriver.clickSelector(new IosButtonPredicateStringSelector('Delete All'));
+          await iosDriver.clickSelectors([
+            new IosPredicateStringSelector(`type == 'XCUIElementTypeButton' && name CONTAINS 'Delete From This'`, { dismissAlert: false }),
+            new IosButtonPredicateStringSelector('Delete Photo', { dismissAlert: false }),
+          ]);
+        }
       },
     );
   }
@@ -698,7 +715,8 @@ export class IosResetService {
               isResetHomeDone = true;
             }
 
-            {
+            // Has bug on ios 17. that trigger intermitent disconnection
+            if (false) {
               await iosDriver.clickSelector(new IosClassChainSelector('**/XCUIElementTypeStaticText[`label == "Reset"`]'));
               await iosDriver.clickSelector(new IosButtonPredicateStringSelector('Reset Location & Privacy', { dismissAlert: false }));
               await iosDriver.clickSelector(new IosButtonPredicateStringSelector('Reset Settings', { dismissAlert: false }));

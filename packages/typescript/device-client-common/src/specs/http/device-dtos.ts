@@ -1,5 +1,5 @@
 import { IsFilledString } from '@dogu-tech/common';
-import { DeviceFoldStatus, DeviceSystemInfo, ErrorDevice, GeoLocationDto, LocalDeviceDetectToken, LocaleCodeDto, Platform, PlatformSerial, Serial } from '@dogu-tech/types';
+import { DeviceFoldStatus, DeviceSystemInfo, GeoLocationDto, LocalDeviceDetectToken, LocaleCodeDto, Platform, PlatformSerial, Serial } from '@dogu-tech/types';
 import { Type } from 'class-transformer';
 import { IsArray, IsBoolean, IsIn, IsNumber, IsObject, IsOptional, IsString, ValidateNested } from 'class-validator';
 
@@ -11,11 +11,6 @@ export class GetDeviceSerialsResponse {
 export class GetDevicePlatformSerialsResponse {
   @IsArray()
   platformSerials!: PlatformSerial[];
-}
-
-export class GetDevicesWithErrorResponse {
-  @IsArray()
-  errorDevices!: ErrorDevice[];
 }
 
 export class GetDeviceSystemInfoResponse implements DeviceSystemInfo {

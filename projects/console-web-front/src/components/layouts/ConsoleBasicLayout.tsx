@@ -53,20 +53,16 @@ const ConsoleBasicLayout = ({ children, user, license: licenseInfo }: Props) => 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  if (!me) {
-    return null;
-  }
-
   return (
     <>
       <Box>
         <PromotionBanner />
 
         <Header
-          links={license ? <LicenseTag licenseInfo={license} me={me} /> : null}
+          links={!!me && !!license ? <LicenseTag licenseInfo={license} me={me} /> : null}
           right={
             <FlexRow>
-              {process.env.NEXT_PUBLIC_ENV !== 'self-hosted' && (
+              {!!me && process.env.NEXT_PUBLIC_ENV !== 'self-hosted' && (
                 <Link href="/billing">
                   {hasAdminPermission(me) && (
                     <Button
@@ -92,7 +88,7 @@ const ConsoleBasicLayout = ({ children, user, license: licenseInfo }: Props) => 
                   <SlackOutlined />
                 </StyledLink>
               </Tooltip>
-              <ChangeLogButton />
+              {!!me && <ChangeLogButton />}
               <AccountMenu />
             </FlexRow>
           }

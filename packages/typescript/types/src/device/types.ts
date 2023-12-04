@@ -8,11 +8,13 @@ export const DEVICE_TABLE_NAME = 'device';
 export interface PlatformSerial {
   platform: PlatformType;
   serial: Serial;
+  model: string;
 }
 
 export interface ErrorDevice {
   platform: PlatformType;
   serial: Serial;
+  model: string;
   error: Error;
 }
 

@@ -9,11 +9,10 @@ import path from 'path';
 import stream, { Stream } from 'stream';
 import { v4 as uuidv4 } from 'uuid';
 import { DoguLogger } from '../logger/logger';
+import { validateFilePath } from '../validation/file-path-validation';
 
 export type DeviceHostDownloadResult = Instance<typeof DeviceHostDownloadSharedResource.receiveMessage> & { message: string };
 export type DeviceHostDownloadParam = Instance<typeof DeviceHostDownloadSharedResource.sendMessage>;
-
-const AllowedDownloadPaths = (): string[] => [HostPaths.organizationsPath(HostPaths.doguHomePath), HostPaths.doguTempPath(), HostPaths.downloadsPath(HostPaths.doguHomePath)];
 
 @Injectable()
 export class DeviceHostDownloadSharedResourceService {
@@ -40,15 +39,8 @@ export class DeviceHostDownloadSharedResourceService {
 
   private async download(message: DeviceHostDownloadParam): Promise<DeviceHostDownloadResult> {
     const { filePath, url, expectedFileSize, headers } = message;
-    const filePathResolved = path.resolve(filePath);
-    const isAllowedPath = AllowedDownloadPaths().some((allowedPath) => {
-      const relativeFrom = path.relative(allowedPath, filePathResolved);
-      if (relativeFrom.startsWith('..')) {
-        return false;
-      }
-      return true;
-    });
-    if (!isAllowedPath) {
+
+    if (validateFilePath(filePath, ['home', 'temp', 'download'])) {
       throw new Error(`File path is not allowed: ${filePath}`);
     }
     const stat = await fs.promises.stat(filePath).catch(() => null);

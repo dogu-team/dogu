@@ -7,6 +7,7 @@ import path from 'path';
 import { BrowserManagerService } from '../browser-manager/browser-manager.service';
 import { getFreePort } from '../internal/util/net';
 import { pathMap } from '../path-map';
+import { validateFilePath } from '../validation/file-path-validation';
 import { DeviceHostResignAppFileService } from './device-host.resign-app-file';
 
 @Controller(DeviceHost.controller)
@@ -57,6 +58,9 @@ export class DeviceHostController {
   @Delete(DeviceHost.removeTemp.path)
   async removeTemp(@Body() param: DeleteTempPathRequestBody): Promise<Instance<typeof DeviceHost.removeTemp.responseBody>> {
     const filePathResolved = path.join(HostPaths.doguTempPath(), param.pathUnderTemp);
+    if (validateFilePath(filePathResolved, ['temp'])) {
+      throw new Error(`File path is not allowed: ${filePathResolved}`);
+    }
     const stat = await fs.promises.stat(filePathResolved);
     if (!stat.isFile()) {
       throw new Error(`Path ${filePathResolved} is not a file`);

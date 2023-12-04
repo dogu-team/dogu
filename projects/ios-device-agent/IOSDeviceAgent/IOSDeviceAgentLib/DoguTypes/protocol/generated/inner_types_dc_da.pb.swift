@@ -139,6 +139,66 @@ public struct Inner_Types_DcDaControlReturn {
   public init() {}
 }
 
+public struct Inner_Types_DcDaGetFoldableStateParam {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public struct Inner_Types_DcDaGetFoldableStateReturn {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var isFoldable: Bool = false
+
+  public var currentState: UInt32 = 0
+
+  public var supportedStates: [UInt32] = []
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public struct Inner_Types_DcDaSetFoldableStateParam {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  /// It's different by device. but normally smaller is closed
+  public var state: UInt32 = 0
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public struct Inner_Types_DcDaSetFoldableStateReturn {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var error: Outer_ErrorResult {
+    get {return _error ?? Outer_ErrorResult()}
+    set {_error = newValue}
+  }
+  /// Returns true if `error` has been explicitly set.
+  public var hasError: Bool {return self._error != nil}
+  /// Clears the value of `error`. Subsequent reads from it will return its default value.
+  public mutating func clearError() {self._error = nil}
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+
+  fileprivate var _error: Outer_ErrorResult? = nil
+}
+
 #if swift(>=5.5) && canImport(_Concurrency)
 extension Inner_Types_DcDaConnectionParam: @unchecked Sendable {}
 extension Inner_Types_DcDaConnectionReturn: @unchecked Sendable {}
@@ -148,6 +208,10 @@ extension Inner_Types_DcDaApplyStreamingOptionParam: @unchecked Sendable {}
 extension Inner_Types_DcDaApplyStreamingOptionReturn: @unchecked Sendable {}
 extension Inner_Types_DcDaControlParam: @unchecked Sendable {}
 extension Inner_Types_DcDaControlReturn: @unchecked Sendable {}
+extension Inner_Types_DcDaGetFoldableStateParam: @unchecked Sendable {}
+extension Inner_Types_DcDaGetFoldableStateReturn: @unchecked Sendable {}
+extension Inner_Types_DcDaSetFoldableStateParam: @unchecked Sendable {}
+extension Inner_Types_DcDaSetFoldableStateReturn: @unchecked Sendable {}
 #endif  // swift(>=5.5) && canImport(_Concurrency)
 
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
@@ -384,6 +448,137 @@ extension Inner_Types_DcDaControlReturn: SwiftProtobuf.Message, SwiftProtobuf._M
   }
 
   public static func ==(lhs: Inner_Types_DcDaControlReturn, rhs: Inner_Types_DcDaControlReturn) -> Bool {
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Inner_Types_DcDaGetFoldableStateParam: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".DcDaGetFoldableStateParam"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap()
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let _ = try decoder.nextFieldNumber() {
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Inner_Types_DcDaGetFoldableStateParam, rhs: Inner_Types_DcDaGetFoldableStateParam) -> Bool {
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Inner_Types_DcDaGetFoldableStateReturn: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".DcDaGetFoldableStateReturn"
+  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .standard(proto: "is_foldable"),
+    2: .standard(proto: "current_state"),
+    3: .standard(proto: "supported_states"),
+  ]
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularBoolField(value: &self.isFoldable) }()
+      case 2: try { try decoder.decodeSingularUInt32Field(value: &self.currentState) }()
+      case 3: try { try decoder.decodeRepeatedUInt32Field(value: &self.supportedStates) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if self.isFoldable != false {
+      try visitor.visitSingularBoolField(value: self.isFoldable, fieldNumber: 1)
+    }
+    if self.currentState != 0 {
+      try visitor.visitSingularUInt32Field(value: self.currentState, fieldNumber: 2)
+    }
+    if !self.supportedStates.isEmpty {
+      try visitor.visitPackedUInt32Field(value: self.supportedStates, fieldNumber: 3)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Inner_Types_DcDaGetFoldableStateReturn, rhs: Inner_Types_DcDaGetFoldableStateReturn) -> Bool {
+    if lhs.isFoldable != rhs.isFoldable {return false}
+    if lhs.currentState != rhs.currentState {return false}
+    if lhs.supportedStates != rhs.supportedStates {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Inner_Types_DcDaSetFoldableStateParam: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".DcDaSetFoldableStateParam"
+  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "state"),
+  ]
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularUInt32Field(value: &self.state) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if self.state != 0 {
+      try visitor.visitSingularUInt32Field(value: self.state, fieldNumber: 1)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Inner_Types_DcDaSetFoldableStateParam, rhs: Inner_Types_DcDaSetFoldableStateParam) -> Bool {
+    if lhs.state != rhs.state {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Inner_Types_DcDaSetFoldableStateReturn: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".DcDaSetFoldableStateReturn"
+  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "error"),
+  ]
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularMessageField(value: &self._error) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._error {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Inner_Types_DcDaSetFoldableStateReturn, rhs: Inner_Types_DcDaSetFoldableStateReturn) -> Bool {
+    if lhs._error != rhs._error {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

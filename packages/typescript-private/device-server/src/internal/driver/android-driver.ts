@@ -5,10 +5,11 @@ import fs from 'fs';
 import { logger } from '../../logger/logger.instance';
 import { AndroidChannel } from '../channel/android-channel';
 import { Adb, AppiumAdb, createAppiumAdb } from '../externals';
-import { DOGU_ADB_SERVER_PORT } from '../externals/cli/adb/adb';
+import { AdbSerial, DOGU_ADB_SERVER_PORT } from '../externals/cli/adb/adb';
 import { DeviceChannel, DeviceChannelOpenParam, DeviceServerService } from '../public/device-channel';
 import { DeviceDriver, DeviceScanResult } from '../public/device-driver';
 
+const SerialToModelCache = new Map<Serial, string>();
 export class AndroidDriver implements DeviceDriver {
   private channelMap = new Map<Serial, AndroidChannel>();
 
@@ -31,8 +32,25 @@ export class AndroidDriver implements DeviceDriver {
   }
 
   async scanSerials(): Promise<DeviceScanResult[]> {
-    const serials = await Adb.serials();
-    return serials;
+    const scanResults = await Adb.serials();
+    const ret: DeviceScanResult[] = [];
+    for (const r of scanResults) {
+      if (r.status === 'online') {
+        const model = await AndroidDriver.cacheAndGetModel(r.serial);
+        ret.push({
+          serial: r.serial,
+          model: model,
+          status: 'online',
+        });
+        continue;
+      }
+      ret.push({
+        ...r,
+        model: '',
+      });
+    }
+
+    return ret;
   }
 
   async openChannel(initParam: DeviceChannelOpenParam): Promise<DeviceChannel> {
@@ -74,5 +92,20 @@ export class AndroidDriver implements DeviceDriver {
     logger.info('Replace appium settings apk', { reason });
     await fs.promises.rm(destSettingsApkPath, { force: true });
     await fs.promises.copyFile(originSettingsApkPath, destSettingsApkPath);
+  }
+
+  private static async cacheAndGetModel(serial: Serial): Promise<string> {
+    const cached = SerialToModelCache.get(serial);
+    if (cached) {
+      return cached;
+    }
+
+    const adb = new AdbSerial(serial, logger);
+    const model = await adb.getProp('ro.product.model').catch(() => '');
+    if (0 === model.length) {
+      return '';
+    }
+    SerialToModelCache.set(serial, model);
+    return model;
   }
 }

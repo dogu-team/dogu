@@ -113,20 +113,22 @@ export class ScanService implements OnModuleInit {
 
     const messages = [
       ...this.channelsOpening.map((platformSerial) => {
-        const { platform, serial } = platformSerial;
+        const { platform, serial, model } = platformSerial;
         const message: Instance<typeof DeviceConnectionSubscribe.receiveMessage> = {
           ...DefaultDeviceConnectionSubscribeReceiveMessage(),
           serial,
+          model,
           platform: platformFromPlatformType(platform),
           state: DeviceConnectionState.DEVICE_CONNECTION_STATE_CONNECTING,
         };
         return message;
       }),
       ...this.channelsWithOpenError.map((errorDevice) => {
-        const { platform, serial, error } = errorDevice;
+        const { platform, serial, model, error } = errorDevice;
         const message: Instance<typeof DeviceConnectionSubscribe.receiveMessage> = {
           ...DefaultDeviceConnectionSubscribeReceiveMessage(),
           serial,
+          model,
           platform: platformFromPlatformType(platform),
           state: DeviceConnectionState.DEVICE_CONNECTION_STATE_ERROR,
           errorMessage: error.message,
@@ -134,10 +136,11 @@ export class ScanService implements OnModuleInit {
         return message;
       }),
       ...this.channelsWithScanError.map((errorDevice) => {
-        const { platform, serial, error } = errorDevice;
+        const { platform, serial, model, error } = errorDevice;
         const message: Instance<typeof DeviceConnectionSubscribe.receiveMessage> = {
           ...DefaultDeviceConnectionSubscribeReceiveMessage(),
           serial,
+          model,
           platform: platformFromPlatformType(platform),
           state: DeviceConnectionState.DEVICE_CONNECTION_STATE_ERROR,
           errorMessage: error.message,
@@ -205,9 +208,10 @@ export class ScanService implements OnModuleInit {
         this.logger.error(`ScanService.update scanSerials platform: ${platform}, error: ${stringifyError(e)}`);
         return [] as DeviceScanResult[];
       });
+
       // notify open close
       {
-        const scannedOnlineSerials = scanedSerials.filter((scanInfo) => scanInfo.status === 'online').map((scanInfo) => scanInfo.serial);
+        const scannedOnlineSerials = scanedSerials.filter((scanInfo) => scanInfo.status === 'online');
         const removedSerials = befSerials.filter((befSerial) => !scanedSerials.find((result) => befSerial === result.serial));
         if (removedSerials.length !== 0) {
           this.logger.info('ScanService.update removed', {
@@ -215,8 +219,8 @@ export class ScanService implements OnModuleInit {
             removedSerials,
           });
         }
-        scannedOnlineSerials.forEach((serial) => {
-          this.deviceDoors.openIfNotActive(driver, serial);
+        scannedOnlineSerials.forEach((result) => {
+          this.deviceDoors.openIfNotActive(driver, result.serial, result.model);
         });
 
         removedSerials.forEach((serial) => {
@@ -232,9 +236,10 @@ export class ScanService implements OnModuleInit {
         });
         const befScanUnstableSerials = this.scanUnstableDevices.map((device) => device.serial);
         this.scanUnstableDevices = scannedUnstableInfos.map((scanInfo) => {
-          const { serial, description } = scanInfo;
+          const { serial, model, description } = scanInfo;
           return {
             serial,
+            model,
             platform: platformTypeFromPlatform(platform),
             error: new Error(description),
           };
@@ -258,6 +263,7 @@ export class ScanService implements OnModuleInit {
       return {
         platform: platformTypeFromPlatform(channel.platform),
         serial: channel.serial,
+        model: channel.info.system.model,
       };
     });
   }

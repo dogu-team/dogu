@@ -27,10 +27,23 @@ export class SentryBreadCrumbTrasponrt extends Transport {
       type: 'default',
       category: this.category,
       message: stringify(info.message),
-      level: stringify(info.level) as Sentry.SeverityLevel,
+      level: this.convertLevel(stringify(info.level)),
       data: (info?.meta as Record<string, unknown>) ?? {},
     });
     callback();
+  }
+
+  private convertLevel(level: string): Sentry.SeverityLevel {
+    switch (level) {
+      case 'error':
+        return 'error';
+      case 'warn':
+        return 'warning';
+      case 'info':
+        return 'info';
+      default:
+        return 'debug';
+    }
   }
 }
 

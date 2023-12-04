@@ -18,13 +18,19 @@ suspend fun DefaultWebSocketServerSession.routeStream(appContext: AppContext): U
     GlobalScope.launch {
         try {
             val device = Device(appContext.options);
+            val size = device.getDeviceSize()
+            var newOptions = appContext.options.copy()
+            var resolutionRatio =  size.height.toFloat() / (size.width.toFloat() + 1.0f)
+            if(resolutionRatio < 1.5f){
+                newOptions.maxResolution = (newOptions.maxResolution * 1.5f).toInt()
+            }
 
             Logger.v("DefaultWebSocketServerSession.routeStream $randomId create screenEncoder")
             val encoder = ScreenEncoder(
-                appContext.options,
+                newOptions,
                 emptyList(),
-                appContext.options.encoderName ?: "",
-                appContext.options.downsizeOnError
+                newOptions.encoderName ?: "",
+                newOptions.downsizeOnError
             )
 
             Logger.v("DefaultWebSocketServerSession.routeStream $randomId start stream")
