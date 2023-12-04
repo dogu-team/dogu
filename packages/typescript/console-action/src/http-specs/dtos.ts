@@ -23,7 +23,7 @@ export class GetApplicationListQuery {
 
 export class Application {
   @IsNumber()
-  id!: number;
+  id!: string;
 
   @IsFilledString()
   name!: string;

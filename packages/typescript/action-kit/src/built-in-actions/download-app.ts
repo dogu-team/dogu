@@ -4,6 +4,7 @@ import { HostPaths } from '@dogu-tech/node';
 import { PlatformType } from '@dogu-tech/types';
 import fs from 'fs';
 import path from 'path';
+
 import { Application } from '..';
 import { ConsoleActionClient } from '../console-action-client';
 

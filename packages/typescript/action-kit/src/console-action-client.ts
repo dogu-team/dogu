@@ -1,6 +1,6 @@
 import { DefaultHttpOptions, FilledPrintable, Instance, Retry, setAxiosErrorFilterToIntercepter, transformAndValidate } from '@dogu-tech/common';
 import { PublicAction } from '@dogu-tech/console-action';
-import { createConsoleApiAuthHeader, OrganizationId, ProjectApplicationId, ProjectId } from '@dogu-tech/types';
+import { createConsoleApiAuthHeader, OrganizationId, ProjectId } from '@dogu-tech/types';
 import axios, { AxiosInstance } from 'axios';
 import { ActionLogger } from './logger.instance';
 
@@ -35,7 +35,7 @@ export class ConsoleActionClient {
 
   @Retry({ printable: ActionLogger })
   async getApplicationList(query: Instance<typeof PublicAction.getApplicationList.query>): Promise<Instance<typeof PublicAction.getApplicationList.responseBody>> {
-    const pathProvider = new PublicAction.getApplicationList.pathProvider(this.DOGU_ORGANIZATION_ID, this.DOGU_PROJECT_ID);
+    const pathProvider = new PublicAction.getApplicationList.pathProvider(this.DOGU_ORGANIZATION_ID);
     const path = PublicAction.getApplicationList.resolvePath(pathProvider);
     const { data } = await this.instance.get<Instance<typeof PublicAction.getApplicationList.responseBody>>(path, {
       params: query,
@@ -48,7 +48,7 @@ export class ConsoleActionClient {
 
   @Retry({ printable: ActionLogger })
   async getApplicationsWithUniquePackage(query: Instance<typeof PublicAction.getApplicationList.query>): Promise<Instance<typeof PublicAction.getApplicationList.responseBody>> {
-    const pathProvider = new PublicAction.getApplicationsWithUniquePackage.pathProvider(this.DOGU_ORGANIZATION_ID, this.DOGU_PROJECT_ID);
+    const pathProvider = new PublicAction.getApplicationsWithUniquePackage.pathProvider(this.DOGU_ORGANIZATION_ID);
     const path = PublicAction.getApplicationsWithUniquePackage.resolvePath(pathProvider);
     const { data } = await this.instance.get<Instance<typeof PublicAction.getApplicationList.responseBody>>(path, {
       params: query,
@@ -60,8 +60,8 @@ export class ConsoleActionClient {
   }
 
   @Retry({ printable: ActionLogger })
-  async getApplicationDownloadUrl(projectApplicationId: ProjectApplicationId): Promise<Instance<typeof PublicAction.getApplicationDownloadUrl.responseBody>> {
-    const pathProvider = new PublicAction.getApplicationDownloadUrl.pathProvider(this.DOGU_ORGANIZATION_ID, this.DOGU_PROJECT_ID, projectApplicationId);
+  async getApplicationDownloadUrl(applicationId: string): Promise<Instance<typeof PublicAction.getApplicationDownloadUrl.responseBody>> {
+    const pathProvider = new PublicAction.getApplicationDownloadUrl.pathProvider(this.DOGU_ORGANIZATION_ID, applicationId);
     const path = PublicAction.getApplicationDownloadUrl.resolvePath(pathProvider);
     const { data } = await this.instance.get<Instance<typeof PublicAction.getApplicationDownloadUrl.responseBody>>(path, {
       ...createConsoleApiAuthHeader(this.DOGU_HOST_TOKEN),
