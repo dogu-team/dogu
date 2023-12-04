@@ -1,5 +1,6 @@
 import {
   DevicePropCamel,
+  DeviceUsageState,
   RoutineDeviceJobPropCamel,
   RoutineDeviceJobPropSnake,
   RoutineJobPropCamel,
@@ -130,7 +131,7 @@ export class DeviceJobUpdater {
     for (const deviceId of deviceIds) {
       const waitingRoutineDeviceJobsByDeviceId = deviceJobGroups[deviceId];
       const sortedWaitingDeviceJobs = waitingRoutineDeviceJobsByDeviceId.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
-      const deviceRunners = await this.dataSource.getRepository(DeviceRunner).find({ where: { deviceId, isInUse: 0 } });
+      const deviceRunners = await this.dataSource.getRepository(DeviceRunner).find({ where: { deviceId, isInUse: 0 }, relations: { device: true } });
       const promises = _.zip(deviceRunners, sortedWaitingDeviceJobs).map(async ([deviceRunner, deviceJob]) => {
         if (!deviceRunner || !deviceJob) {
           return;
@@ -149,6 +150,11 @@ export class DeviceJobUpdater {
           await manager.getRepository(DeviceRunner).update({ deviceRunnerId: deviceRunner.deviceRunnerId }, { isInUse: 1 });
           deviceJob.deviceRunnerId = deviceRunner.deviceRunnerId;
           await this.deviceJobRunner.setStatus(manager, deviceJob, PIPELINE_STATUS.IN_PROGRESS, new Date());
+          const device = deviceRunner.device;
+          if (device) {
+            device.usageState = DeviceUsageState.IN_USE;
+            await manager.save(device);
+          }
         });
 
         this.deviceJobRunner.sendRunDeviceJob(organizationId, deviceId, deviceJob).catch((error) => {
