@@ -117,7 +117,9 @@ export class DeviceJobRunner {
           deviceRunnerId,
         },
         relations: {
-          device: true,
+          device: {
+            organization: true,
+          },
         },
       });
       if (found) {
@@ -128,12 +130,14 @@ export class DeviceJobRunner {
         if (device) {
           device.usageState = DeviceUsageState.PREPARING;
           const saved = await manager.save(device);
-          const { organizationId, deviceId, serial } = saved;
-          result.resetDevice = {
-            organizationId,
-            deviceId,
-            serial,
-          };
+          if (device.organization.shareable) {
+            const { organizationId, deviceId, serial } = saved;
+            result.resetDevice = {
+              organizationId,
+              deviceId,
+              serial,
+            };
+          }
         }
       }
     }
