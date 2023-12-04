@@ -35,6 +35,17 @@ export class Action extends Kindable<'Action'> {
 }
 
 @OneOf()
+export class DockerAction extends Kindable<'DockerAction'> {
+  static override kind = 'DockerAction';
+
+  @IsFilledString()
+  actionId!: string;
+
+  @IsObject()
+  inputs!: Record<string, unknown>;
+}
+
+@OneOf()
 export class HttpProxyRequest extends Kindable<'HttpProxyRequest'> {
   static override kind = 'HttpProxyRequest';
 
@@ -248,7 +259,7 @@ export class ResponseResult extends Kindable<'ResponseResult'> {
   value!: ResponseResultValue;
 }
 
-const RunStepValue = [Run, Action] as const;
+const RunStepValue = [Run, Action, DockerAction] as const;
 export type RunStepValue = Instance<(typeof RunStepValue)[number]>;
 
 @OneOf()
@@ -256,10 +267,13 @@ export class RunStep extends Kindable<'RunStep'> implements Pick<RoutineStep, 'r
   static override kind = 'RunStep';
 
   @IsUUID()
-  organizationId!: OrganizationId;
+  deviceOwnerOrganizationId!: OrganizationId;
 
   @IsUUID()
-  projectId!: ProjectId;
+  executorOrganizationId!: OrganizationId;
+
+  @IsUUID()
+  executorProjectId!: ProjectId;
 
   @IsUUID()
   deviceId!: DeviceId;
@@ -311,6 +325,9 @@ export class RunDeviceJob extends Kindable<'RunDeviceJob'> implements Pick<Routi
   routineDeviceJobId!: RoutineDeviceJobId;
 
   @IsUUID()
+  executorOrganizationId!: OrganizationId;
+
+  @IsUUID()
   deviceRunnerId!: DeviceRunnerId;
 
   @IsIn([0, 1])
@@ -344,6 +361,9 @@ export class RunDeviceJob extends Kindable<'RunDeviceJob'> implements Pick<Routi
 @OneOf()
 export class CancelDeviceJob extends Kindable<'CancelDeviceJob'> {
   static override kind = 'CancelDeviceJob';
+
+  @IsUUID()
+  executorOrganizationId!: OrganizationId;
 
   @IsNumber()
   routineDeviceJobId!: RoutineDeviceJobId;

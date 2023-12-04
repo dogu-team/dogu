@@ -2,6 +2,7 @@ package com.dogu.deviceagent.control
 
 import android.view.MotionEvent.PointerCoords
 import android.view.MotionEvent.PointerProperties
+import com.dogu.deviceagent.InternalException
 import com.dogu.deviceagent.screen.Point
 
 class PointersState {
@@ -52,7 +53,7 @@ class PointersState {
         // id 0 is reserved for mouse events
         val localId = nextUnusedLocalId()
         if (localId == -1) {
-            throw AssertionError("pointers.size() < maxFingers implies that a local id is available")
+            throw InternalException("pointers.size() < maxFingers implies that a local id is available")
         }
         val pointer = Pointer(id, localId)
         pointers.add(pointer)

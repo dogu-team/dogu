@@ -1,4 +1,5 @@
-import { DeviceConnectionState, Platform, Serial } from '@dogu-private/types';
+import { DeviceAuthService } from '@dogu-private/dogu-agent-core/app';
+import { DeviceConnectionState, DOGU_DEVICE_AUTHORIZATION_HEADER_KEY, Platform, Serial } from '@dogu-private/types';
 import { delay, loop, transformAndValidate } from '@dogu-tech/common';
 import { DeviceConnectionSubscribe, DeviceConnectionSubscribeReceiveMessage } from '@dogu-tech/device-client-common';
 import { ipcMain } from 'electron';
@@ -13,20 +14,28 @@ export class DeviceLookupService {
   private client: WebSocket | null = null;
   private messages: Map<Serial, DeviceConnectionSubscribeReceiveMessage> = new Map<Serial, DeviceConnectionSubscribeReceiveMessage>();
 
-  private constructor(private readonly childService: ChildService, private readonly deviceServerPort: number) {}
+  private constructor(
+    private readonly childService: ChildService,
+    private readonly deviceServerPort: number,
+    private readonly authService: DeviceAuthService,
+  ) {}
 
-  static async open(childService: ChildService, appConfigService: AppConfigService): Promise<void> {
-    const DOGU_DEVICE_SERVER_PORT = await appConfigService.get('DOGU_DEVICE_SERVER_PORT');
-    DeviceLookupService.instance = new DeviceLookupService(childService, DOGU_DEVICE_SERVER_PORT);
+  static async open(childService: ChildService, appConfigService: AppConfigService, authService: DeviceAuthService): Promise<void> {
+    const DOGU_DEVICE_SERVER_PORT = await appConfigService.get<number>('DOGU_DEVICE_SERVER_PORT');
+    DeviceLookupService.instance = new DeviceLookupService(childService, DOGU_DEVICE_SERVER_PORT, authService);
     const { instance } = DeviceLookupService;
 
-    childService.deviceServer.eventEmitter.on('spawn', async () => {
-      for await (const _ of loop(1000, 60)) {
-        if (await childService.deviceServer.isActive()) {
-          break;
+    childService.deviceServer.eventEmitter.on('spawn', () => {
+      (async () => {
+        for await (const _ of loop(1000, 60)) {
+          if (await childService.deviceServer.isActive()) {
+            break;
+          }
         }
-      }
-      instance.connect();
+        instance.connect();
+      })().catch((error) => {
+        logger.error(error);
+      });
     });
     childService.deviceServer.eventEmitter.on('close', () => {
       instance.disconnect();
@@ -55,6 +64,10 @@ export class DeviceLookupService {
       });
       return ret;
     });
+
+    ipcMain.handle(deviceLookupClientKey.generateDeviceToken, async (_, serial: Serial) => {
+      return (await instance.authService.generateDeviceToken(serial)).value;
+    });
   }
 
   private async doReconnect(): Promise<boolean> {
@@ -63,7 +76,7 @@ export class DeviceLookupService {
 
   private connect(): void {
     const url = `ws://127.0.0.1:${this.deviceServerPort}${DeviceConnectionSubscribe.path}`;
-    this.client = new WebSocket(url);
+    this.client = new WebSocket(url, { headers: { [DOGU_DEVICE_AUTHORIZATION_HEADER_KEY]: this.authService.adminToken.value } });
     this.client.on('open', () => {
       logger.info('DeviceLookupService is connected', {
         url,
@@ -77,14 +90,18 @@ export class DeviceLookupService {
         logger.error(error);
       });
     });
-    this.client.on('close', async () => {
-      logger.info('DeviceLookupService is disconnected');
-      this.disconnect();
-      if (await this.doReconnect()) {
-        this.delayAndConnect().catch((error) => {
-          logger.error(error);
-        });
-      }
+    this.client.on('close', () => {
+      (async () => {
+        logger.info('DeviceLookupService is disconnected');
+        this.disconnect();
+        if (await this.doReconnect()) {
+          this.delayAndConnect().catch((error) => {
+            logger.error(error);
+          });
+        }
+      })().catch((error) => {
+        logger.error(error);
+      });
     });
     this.client.on('error', (error) => {
       logger.error('DeviceLookupService error', { error });

@@ -1,4 +1,4 @@
-import { DeviceId, DeviceJobLog, OrganizationId, PIPELINE_STATUS, RoutineDeviceJobId } from '@dogu-private/types';
+import { DeviceJobLog, OrganizationId, PIPELINE_STATUS, RoutineDeviceJobId } from '@dogu-private/types';
 import { ControllerMethodSpec, ControllerSpec } from '@dogu-tech/common';
 import { Type } from 'class-transformer';
 import { IsArray, IsDate, IsEnum, IsNotEmpty, IsNumber, IsOptional, ValidateNested } from 'class-validator';
@@ -70,7 +70,7 @@ export class UpdateDeviceJobWindowRequestBody {
 }
 
 const PrivateDeviceJobController = new ControllerSpec({
-  path: '/private/organizations/:organizationId/devices/:deviceId/device-jobs',
+  path: '/private/organizations/:organizationId/device-jobs',
 });
 
 export const PrivateDeviceJob = {
@@ -81,7 +81,10 @@ export const PrivateDeviceJob = {
     method: 'POST',
     path: '/:deviceJobId/logs',
     pathProvider: class {
-      constructor(readonly organizationId: OrganizationId, readonly deviceId: DeviceId, readonly deviceJobId: RoutineDeviceJobId) {}
+      constructor(
+        readonly organizationId: OrganizationId,
+        readonly deviceJobId: RoutineDeviceJobId,
+      ) {}
     },
     requestBody: WriteDeviceJobLogsRequestBody,
   }),
@@ -91,7 +94,10 @@ export const PrivateDeviceJob = {
     method: 'POST',
     path: '/:deviceJobId/record',
     pathProvider: class {
-      constructor(readonly organizationId: OrganizationId, readonly deviceId: DeviceId, readonly deviceJobId: RoutineDeviceJobId) {}
+      constructor(
+        readonly organizationId: OrganizationId,
+        readonly deviceJobId: RoutineDeviceJobId,
+      ) {}
     },
     requestBody: UploadDeviceJobRecordRequestBody,
   }),
@@ -101,7 +107,10 @@ export const PrivateDeviceJob = {
     method: 'PATCH',
     path: '/:deviceJobId/status',
     pathProvider: class {
-      constructor(readonly organizationId: OrganizationId, readonly deviceId: DeviceId, readonly deviceJobId: RoutineDeviceJobId) {}
+      constructor(
+        readonly organizationId: OrganizationId,
+        readonly deviceJobId: RoutineDeviceJobId,
+      ) {}
     },
     requestBody: UpdateDeviceJobStatusRequestBody,
   }),
@@ -111,7 +120,10 @@ export const PrivateDeviceJob = {
     method: 'PATCH',
     path: '/:deviceJobId/heartbeat/now',
     pathProvider: class {
-      constructor(readonly organizationId: OrganizationId, readonly deviceId: DeviceId, readonly deviceJobId: RoutineDeviceJobId) {}
+      constructor(
+        readonly organizationId: OrganizationId,
+        readonly deviceJobId: RoutineDeviceJobId,
+      ) {}
     },
   }),
 
@@ -120,7 +132,10 @@ export const PrivateDeviceJob = {
     method: 'PATCH',
     path: '/:deviceJobId/local-started-at',
     pathProvider: class {
-      constructor(readonly organizationId: OrganizationId, readonly deviceId: DeviceId, readonly deviceJobId: RoutineDeviceJobId) {}
+      constructor(
+        readonly organizationId: OrganizationId,
+        readonly deviceJobId: RoutineDeviceJobId,
+      ) {}
     },
     requestBody: UpdateDeviceJobLocalStartedAtRequestBody,
   }),
@@ -130,7 +145,10 @@ export const PrivateDeviceJob = {
     method: 'PATCH',
     path: '/:deviceJobId/window',
     pathProvider: class {
-      constructor(readonly organizationId: OrganizationId, readonly deviceId: DeviceId, readonly deviceJobId: RoutineDeviceJobId) {}
+      constructor(
+        readonly organizationId: OrganizationId,
+        readonly deviceJobId: RoutineDeviceJobId,
+      ) {}
     },
     requestBody: UpdateDeviceJobWindowRequestBody,
   }),

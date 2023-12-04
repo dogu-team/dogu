@@ -370,6 +370,12 @@ export declare const DcGdcStartStreamingResult: {
                 } | undefined;
             } & {
                 $case: "errorResult";
+            }) | ({
+                deviceServerToken?: {
+                    value?: string | undefined;
+                } | undefined;
+            } & {
+                $case: "deviceServerToken";
             }) | undefined;
         } | undefined;
     } & {
@@ -400,6 +406,12 @@ export declare const DcGdcStartStreamingResult: {
                 } | undefined;
             } & {
                 $case: "errorResult";
+            }) | ({
+                deviceServerToken?: {
+                    value?: string | undefined;
+                } | undefined;
+            } & {
+                $case: "deviceServerToken";
             }) | undefined;
         } & {
             value?: ({
@@ -467,9 +479,22 @@ export declare const DcGdcStartStreamingResult: {
                     } & { [K_4 in Exclude<keyof I["answer"]["value"]["errorResult"]["details"], string | number>]: never; }) | undefined;
                 } & { [K_5 in Exclude<keyof I["answer"]["value"]["errorResult"], keyof ErrorResult>]: never; }) | undefined;
                 $case: "errorResult";
-            } & { [K_6 in Exclude<keyof I["answer"]["value"], "$case" | "errorResult">]: never; }) | undefined;
-        } & { [K_7 in Exclude<keyof I["answer"], "value">]: never; }) | undefined;
-    } & { [K_8 in Exclude<keyof I, "answer">]: never; }>(object: I): DcGdcStartStreamingResult;
+            } & { [K_6 in Exclude<keyof I["answer"]["value"], "$case" | "errorResult">]: never; }) | ({
+                deviceServerToken?: {
+                    value?: string | undefined;
+                } | undefined;
+            } & {
+                $case: "deviceServerToken";
+            } & {
+                deviceServerToken?: ({
+                    value?: string | undefined;
+                } & {
+                    value?: string | undefined;
+                } & { [K_7 in Exclude<keyof I["answer"]["value"]["deviceServerToken"], "value">]: never; }) | undefined;
+                $case: "deviceServerToken";
+            } & { [K_8 in Exclude<keyof I["answer"]["value"], "$case" | "deviceServerToken">]: never; }) | undefined;
+        } & { [K_9 in Exclude<keyof I["answer"], "value">]: never; }) | undefined;
+    } & { [K_10 in Exclude<keyof I, "answer">]: never; }>(object: I): DcGdcStartStreamingResult;
 };
 export declare const DcGdcStopStreamingParam: {
     encode(message: DcGdcStopStreamingParam, writer?: _m0.Writer): _m0.Writer;

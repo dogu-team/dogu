@@ -4,6 +4,7 @@ import { DeviceInstallApp } from '@dogu-tech/device-client-common';
 import { DateNano } from '@dogu-tech/node';
 import { IncomingMessage } from 'http';
 import WebSocket from 'ws';
+import { WebsocketHeaderPermission, WebsocketIncomingMessage } from '../../auth/guard/websocket.guard';
 import { DoguLogger } from '../../logger/logger';
 import { ScanService } from '../../scan/scan.service';
 
@@ -12,11 +13,15 @@ export class DeviceInstallAppService
   extends WebSocketGatewayBase<null, typeof DeviceInstallApp.sendMessage, typeof DeviceInstallApp.receiveMessage>
   implements OnWebSocketMessage<null, typeof DeviceInstallApp.sendMessage, typeof DeviceInstallApp.receiveMessage>
 {
-  constructor(private readonly scanService: ScanService, private readonly logger: DoguLogger) {
+  constructor(
+    private readonly scanService: ScanService,
+    private readonly logger: DoguLogger,
+  ) {
     super(DeviceInstallApp, logger);
   }
 
-  override onWebSocketOpen(webSocket: WebSocket, incommingMessage: IncomingMessage): null {
+  @WebsocketHeaderPermission({ allowAdmin: true, allowTemporary: 'serial' })
+  override onWebSocketOpen(webSocket: WebSocket, @WebsocketIncomingMessage() incommingMessage: IncomingMessage): null {
     return null;
   }
 

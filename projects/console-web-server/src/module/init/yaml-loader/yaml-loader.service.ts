@@ -6,6 +6,7 @@ import Ajv, { ValidateFunction } from 'ajv';
 import fs from 'fs';
 import { YAMLException } from 'js-yaml';
 import _ from 'lodash';
+import { FeatureConfig } from '../../../feature.config';
 import { DoguLogger } from '../../logger/logger';
 import { parseRunsOn } from '../../routine/pipeline/pipeline.common';
 
@@ -63,6 +64,12 @@ export class YamlLoaderService {
       .map(({ jobName, steps }) => {
         const errors = steps
           .map((step, index) => {
+            if (FeatureConfig.get('licenseModule') === 'cloud') {
+              if (step.run) {
+                return new Error(`run is not allowed on step. job [${jobName}], step [${index + 1}]`);
+              }
+            }
+
             if (step.uses && step.run) {
               return new Error(`Choose one of uses or run. job [${jobName}], step [${index + 1}]`);
             }
@@ -82,10 +89,10 @@ export class YamlLoaderService {
   private validateRunsOn(parsedYaml: RoutineSchema): void {
     const { jobs } = parsedYaml;
     const errors = _.entries(jobs)
-      .map(([jobName, jobValue]) => ({ jobName, runsOn: jobValue['runs-on'] }))
-      .map(({ jobName, runsOn }) => {
+      .map(([jobName, jobValue]) => ({ jobName, cloud: jobValue['cloud'] ?? false, runsOn: jobValue['runs-on'] }))
+      .map(({ jobName, cloud, runsOn }) => {
         try {
-          parseRunsOn(jobName, runsOn);
+          parseRunsOn(jobName, cloud, runsOn);
           return null;
         } catch (error) {
           return error;

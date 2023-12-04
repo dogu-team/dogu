@@ -1,9 +1,12 @@
 import { Printable } from '@dogu-tech/common';
 import { DeviceHostClient } from '@dogu-tech/device-client';
-import { spawnSync } from 'child_process';
+import { exec, spawnSync } from 'child_process';
 import fs from 'fs';
+import { promisify } from 'util';
 import { GitCommand, GitCommandBuilder, isGitRepositoryPath, isSameRemoteOriginUrl } from '..';
 import { ConsoleActionClient } from '../console-action-client';
+
+const execAsync = promisify(exec);
 
 export async function checkoutProject(
   printable: Printable,
@@ -14,7 +17,7 @@ export async function checkoutProject(
   branch?: string,
   tag?: string,
   checkoutUrl?: string,
-) {
+): Promise<void> {
   if (!branch && !tag) {
     throw new Error('branch or tag must be specified');
   }
@@ -22,7 +25,7 @@ export async function checkoutProject(
   if (!checkoutUrl) {
     printable.info('Getting Git url from console...');
     try {
-      const { url } = await consoleActionClient.getGitlabUrl();
+      const { url } = await consoleActionClient.getGitUrl();
       checkoutUrl = url;
     } catch (error) {
       for (let i = 0; i < 3; ++i) {
@@ -34,8 +37,22 @@ export async function checkoutProject(
   }
   printable.info('Git url', { checkoutUrl });
 
-  const pathMap = await deviceHostClient.getPathMap();
-  const { git } = pathMap.common;
+  let git = await execAsync('git --version', { encoding: 'utf8' })
+    .then(({ stdout, stderr }) => {
+      if (stderr) {
+        return '';
+      }
+      if (stdout) {
+        printable.info('Git executable found', { stdout });
+      }
+      return 'git';
+    })
+    .catch(() => '');
+  if (!git) {
+    printable.info('Git executable not found. Getting from device host...');
+    const pathMap = await deviceHostClient.getPathMap();
+    git = pathMap.common.git;
+  }
   printable.info('Git executable path', { git });
 
   function runGitCommand(gitCommand: GitCommand, logMessage: string, errorMessage: string): void {

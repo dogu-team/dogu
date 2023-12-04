@@ -1,5 +1,6 @@
 export * from './browsers';
 export * from './dest/types';
+export * from './device-auth/token';
 export * from './device-browser-installation/types';
 export * from './device-model/model-list';
 export * from './device-model/model-utils';
@@ -26,4 +27,3 @@ export * from './protocol/generated';
 export * from './remote/types';
 export * from './slack/type';
 export * from './step/types';
-export * from './type-system/brand';

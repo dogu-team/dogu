@@ -7,6 +7,10 @@ from websockets.sync.client import connect, ClientConnection
 from dogu.device.appium_server import AppiumContextServerInfo, AppiumServerContext
 from dogu.device.common.device_closer import DeviceCloser
 from dogu.device.common.device_http_response import DeviceHttpResponse
+from dogu.device.common.const import (
+    DOGU_DEVICE_AUTHORIZATION_HEADER_KEY,
+    DOGU_DEVICE_SERIAL_HEADER_KEY,
+)
 from dogu.device.logger import create_logger
 
 
@@ -40,15 +44,18 @@ class GetAppiumContextInfoResponse:
 
 
 class DeviceClient:
-    def __init__(self, host: str, port: int, timeout: int):
-        self.host = host
-        self.port = port
-        self._host_and_port = f"{self.host}:{self.port}"
+    def __init__(self, device_server_url: str, token: str, timeout: int):
+        self.device_server_url = (
+            device_server_url
+            if device_server_url[-1] != "/"
+            else device_server_url[:-1]
+        )
+        self._token = token
         self.timeout = timeout
         self._logger = create_logger(__name__)
 
     def forward(self, serial: str, host_port: int, device_port: int) -> DeviceCloser:
-        conn = self.__subscribe("/ws/devices/forward")
+        conn = self.__subscribe("/ws/devices/forward", serial=serial)
         param = DeviceForwardSendMessage(
             serial=serial, hostPort=host_port, devicePort=device_port
         )
@@ -63,13 +70,13 @@ class DeviceClient:
             success = msg_json["value"]["success"]
             if not success:
                 raise Exception(
-                    f"Failed to forward. error: {msg_json['value']['error']}"
+                    f"Failed to forward. error: {msg_json['value']['reason']}"
                 )
             break
         return DeviceCloser(conn)
 
     def run_appium_server(self, serial: str) -> AppiumServerContext:
-        conn = self.__subscribe("/ws/devices/run-appium-server")
+        conn = self.__subscribe("/ws/devices/run-appium-server", serial=serial)
         param = DeviceRunAppiumServerSendMessage(serial=serial)
         json_param = json.dumps(asdict(param))
         conn.send(json_param)
@@ -82,7 +89,7 @@ class DeviceClient:
             success = msg_json["value"]["success"]
             if not success:
                 raise Exception(
-                    f"Failed to forward. error: {msg_json['value']['error']}"
+                    f"Failed to run_appium_server. error: {msg_json['value']['reason']}"
                 )
             break
         return AppiumServerContext(
@@ -90,8 +97,11 @@ class DeviceClient:
         )
 
     def get_appium_capabilities(self, serial: str) -> Any:
-        full_path = f"http://{self._host_and_port}/devices/{serial}/appium-capabilities"
-        res = requests.get(full_path, timeout=self.timeout)
+        full_path = f"{self.device_server_url}/devices/{serial}/appium-capabilities"
+        headers = {}
+        headers[DOGU_DEVICE_AUTHORIZATION_HEADER_KEY] = self._token
+
+        res = requests.get(full_path, timeout=self.timeout, headers=headers)
         res.raise_for_status()
         device_res = DeviceHttpResponse(res)
         if device_res.error()[0]:
@@ -100,13 +110,25 @@ class DeviceClient:
             )
         return device_res.data_dict()["capabilities"]
 
-    def __subscribe(self, path: str, try_count: int = 5) -> ClientConnection:
-        full_path = f"ws://{self._host_and_port}{path}"
+    def __subscribe(
+        self, path: str, serial: str, try_count: int = 5
+    ) -> ClientConnection:
+        ws_url = self.device_server_url.replace("http://", "ws://").replace(
+            "https://", "wss://"
+        )
+        full_path = f"{ws_url}{path}"
+
+        headers = {}
+        headers[DOGU_DEVICE_AUTHORIZATION_HEADER_KEY] = self._token
+        headers[DOGU_DEVICE_SERIAL_HEADER_KEY] = serial
 
         last_error = None
         for i in range(try_count):
             try:
-                socket = connect(full_path)
+                socket = connect(
+                    full_path,
+                    additional_headers=headers,
+                )
                 return socket
             except Exception as error:
                 last_error = error

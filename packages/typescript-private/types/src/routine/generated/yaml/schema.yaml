@@ -41,6 +41,8 @@ definitions:
               type: string
       record:
         type: boolean
+      cloud:
+        type: boolean
       browserName:
         type: string
       browserVersion:
@@ -83,7 +85,6 @@ definitions:
         items:
           '$ref': '#/definitions/Step'
     required:
-      - runs-on
       - steps
   Step:
     title: StepSchema

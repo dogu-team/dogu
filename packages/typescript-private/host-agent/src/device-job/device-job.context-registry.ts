@@ -1,5 +1,5 @@
 import { StepStatusInfo } from '@dogu-private/console-host-agent';
-import { DeviceId, OrganizationId, PIPELINE_STATUS, RoutineDeviceJobId, Serial } from '@dogu-private/types';
+import { OrganizationId, PIPELINE_STATUS, RoutineDeviceJobId, Serial } from '@dogu-private/types';
 import { Closable, errorify, Instance, validateAndEmitEventAsync } from '@dogu-tech/common';
 import { Injectable } from '@nestjs/common';
 import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
@@ -13,8 +13,7 @@ import { OnDeviceJobCancelRequestedEvent, OnDeviceJobCompletedEvent, OnDeviceJob
 
 interface DeviceJobContext {
   serial: Serial;
-  organizationId: OrganizationId;
-  deviceId: DeviceId;
+  executorOrganizationId: OrganizationId;
   routineDeviceJobId: RoutineDeviceJobId;
   canceler: MessageCanceler | null;
   stepStatusInfos: StepStatusInfo[];
@@ -51,14 +50,17 @@ export class DeviceJobContextRegistry {
     return this._contexts;
   }
 
-  constructor(private readonly logger: DoguLogger, private readonly eventEmitter: EventEmitter2) {}
+  constructor(
+    private readonly logger: DoguLogger,
+    private readonly eventEmitter: EventEmitter2,
+  ) {}
 
   @OnEvent(OnHostDisconnectedEvent.key)
   async onHostDisconnected(value: Instance<typeof OnHostDisconnectedEvent.value>): Promise<void> {
     for (const [key, context] of this._contexts) {
       try {
-        const { organizationId, deviceId, routineDeviceJobId } = context;
-        const { contextCloser } = await this.process(organizationId, deviceId, routineDeviceJobId);
+        const { executorOrganizationId, routineDeviceJobId } = context;
+        const { contextCloser } = await this.process(executorOrganizationId, routineDeviceJobId);
         contextCloser.close();
       } catch (error) {
         this.logger.error(`DeviceJobContextRegistry: error while processing deviceJob: ${key}`, { error });
@@ -74,8 +76,8 @@ export class DeviceJobContextRegistry {
         continue;
       }
       try {
-        const { organizationId, deviceId, routineDeviceJobId } = context;
-        const { contextCloser } = await this.process(organizationId, deviceId, routineDeviceJobId);
+        const { executorOrganizationId, routineDeviceJobId } = context;
+        const { contextCloser } = await this.process(executorOrganizationId, routineDeviceJobId);
         contextCloser.close();
       } catch (error) {
         this.logger.error(`DeviceJobContextRegistry: error while processing deviceJob: ${key}`, { error });
@@ -85,15 +87,14 @@ export class DeviceJobContextRegistry {
 
   @OnEvent(OnDeviceJobStartedEvent.key)
   onDeviceJobStarted(value: Instance<typeof OnDeviceJobStartedEvent.value>): void {
-    const { organizationId, deviceId, routineDeviceJobId, stepStatusInfos, serial } = value;
-    const key = this.createKey(organizationId, deviceId, routineDeviceJobId);
+    const { executorOrganizationId, routineDeviceJobId, stepStatusInfos, serial } = value;
+    const key = this.createKey(executorOrganizationId, routineDeviceJobId);
     if (this._contexts.has(key)) {
       throw new Error(`DeviceJobContextRegistry: already registered for ${key}`);
     }
     this._contexts.set(key, {
       serial,
-      organizationId,
-      deviceId,
+      executorOrganizationId,
       routineDeviceJobId,
       canceler: null,
       postProcessors: [],
@@ -104,20 +105,19 @@ export class DeviceJobContextRegistry {
 
   @OnEvent(OnDeviceJobCompletedEvent.key)
   async onDeviceJobCompleted(value: Instance<typeof OnDeviceJobCompletedEvent.value>): Promise<void> {
-    const { organizationId, deviceId, routineDeviceJobId, record, localStartedAt, localCompletedAt } = value;
-    const key = this.createKey(organizationId, deviceId, routineDeviceJobId);
+    const { executorOrganizationId, routineDeviceJobId, record, localStartedAt, localCompletedAt } = value;
+    const key = this.createKey(executorOrganizationId, routineDeviceJobId);
     const context = this._contexts.get(key);
     if (!context) {
       throw new Error(`DeviceJobContextRegistry.onDeviceJobCompleted: not registered for ${key}`);
     }
     const { cancelRequested } = context;
-    const { stepStatusInfos, contextCloser } = await this.process(organizationId, deviceId, routineDeviceJobId);
+    const { stepStatusInfos, contextCloser } = await this.process(executorOrganizationId, routineDeviceJobId);
     const everySuccess = stepStatusInfos.every((info) => info.stepStatus === PIPELINE_STATUS.SUCCESS);
     const deviceJobStatus = everySuccess ? PIPELINE_STATUS.SUCCESS : cancelRequested ? PIPELINE_STATUS.CANCELLED : PIPELINE_STATUS.FAILURE;
     try {
       await validateAndEmitEventAsync(this.eventEmitter, OnDeviceJobPostProcessCompletedEvent, {
-        organizationId,
-        deviceId,
+        executorOrganizationId,
         routineDeviceJobId,
         record,
         deviceJobStatusInfo: { deviceJobStatus, localStartedAt, localCompletedAt },
@@ -131,8 +131,8 @@ export class DeviceJobContextRegistry {
 
   @OnEvent(OnDeviceJobCancelRequestedEvent.key)
   async onDeviceJobCancelRequested(value: Instance<typeof OnDeviceJobCancelRequestedEvent.value>): Promise<void> {
-    const { organizationId, deviceId, routineDeviceJobId } = value;
-    const key = this.createKey(organizationId, deviceId, routineDeviceJobId);
+    const { executorOrganizationId, routineDeviceJobId } = value;
+    const key = this.createKey(executorOrganizationId, routineDeviceJobId);
     const context = this._contexts.get(key);
     if (!context) {
       this.logger.warn(`DeviceJobContextRegistry.onDeviceJobCancelRequested: not registered for ${key}`);
@@ -155,8 +155,8 @@ export class DeviceJobContextRegistry {
 
   @OnEvent(OnStepInProgressEvent.key)
   onStepInProgress(value: Instance<typeof OnStepInProgressEvent.value>): void {
-    const { organizationId, deviceId, routineDeviceJobId, messageCanceler, messagePostProcessor, localTimeStamp, stepIndex } = value;
-    const key = this.createKey(organizationId, deviceId, routineDeviceJobId);
+    const { executorOrganizationId, routineDeviceJobId, messageCanceler, messagePostProcessor, localTimeStamp, stepIndex } = value;
+    const key = this.createKey(executorOrganizationId, routineDeviceJobId);
     const context = this._contexts.get(key);
     if (!context) {
       throw new Error(`DeviceJobContextRegistry.onStepInProgress: not registered for ${key}`);
@@ -174,8 +174,8 @@ export class DeviceJobContextRegistry {
 
   @OnEvent(OnStepCompletedEvent.key)
   onStepCompleted(value: Instance<typeof OnStepCompletedEvent.value>): void {
-    const { organizationId, deviceId, routineDeviceJobId, stepIndex, stepStatus, localTimeStamp } = value;
-    const key = this.createKey(organizationId, deviceId, routineDeviceJobId);
+    const { executorOrganizationId, routineDeviceJobId, stepIndex, stepStatus, localTimeStamp } = value;
+    const key = this.createKey(executorOrganizationId, routineDeviceJobId);
     const context = this._contexts.get(key);
     if (!context) {
       throw new Error(`DeviceJobContextRegistry.onStepCompleted: not registered for ${key}`);
@@ -198,8 +198,8 @@ export class DeviceJobContextRegistry {
     context.canceler = null;
   }
 
-  cancelRequested(organizationId: OrganizationId, deviceId: DeviceId, routineDeviceJobId: RoutineDeviceJobId): boolean {
-    const key = this.createKey(organizationId, deviceId, routineDeviceJobId);
+  cancelRequested(organizationId: OrganizationId, routineDeviceJobId: RoutineDeviceJobId): boolean {
+    const key = this.createKey(organizationId, routineDeviceJobId);
     const context = this._contexts.get(key);
     if (!context) {
       this.logger.warn(`DeviceJobContextRegistry.cancelRequested: not registered for ${key}`);
@@ -208,12 +208,12 @@ export class DeviceJobContextRegistry {
     return context.cancelRequested;
   }
 
-  private createKey(organizationId: OrganizationId, deviceId: DeviceId, routineDeviceJobId: RoutineDeviceJobId): string {
-    return `${organizationId}:${deviceId}:${routineDeviceJobId}`;
+  private createKey(organizationId: OrganizationId, routineDeviceJobId: RoutineDeviceJobId): string {
+    return `${organizationId}:${routineDeviceJobId}`;
   }
 
-  private async process(organizationId: OrganizationId, deviceId: DeviceId, routineDeviceJobId: RoutineDeviceJobId): Promise<DeviceJobProcessResult> {
-    const key = this.createKey(organizationId, deviceId, routineDeviceJobId);
+  private async process(organizationId: OrganizationId, routineDeviceJobId: RoutineDeviceJobId): Promise<DeviceJobProcessResult> {
+    const key = this.createKey(organizationId, routineDeviceJobId);
     const context = this._contexts.get(key);
     if (!context) {
       throw new Error(`DeviceJobContextRegistry.process: not registered for ${key}`);
@@ -242,7 +242,6 @@ export class DeviceJobContextRegistry {
       } catch (error) {
         this.logger.error('Failed to post process message', {
           organizationId,
-          deviceId,
           routineDeviceJobId,
           error: errorify(error),
         });

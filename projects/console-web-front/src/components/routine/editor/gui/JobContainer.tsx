@@ -56,6 +56,10 @@ interface RunsOnProps {
 }
 
 const RunsOn = ({ runsOn, onDelete }: RunsOnProps) => {
+  if (runsOn === undefined) {
+    return null;
+  }
+
   if (typeof runsOn === 'string') {
     return (
       <Tag color="pink" closable onClose={() => onDelete(runsOn)}>

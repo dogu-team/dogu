@@ -20,16 +20,6 @@ export class DestRunner {
     const destStateStr = DEST_STATE[status];
     const incomingStateStr = DEST_STATE[incomingState];
 
-    // if (isDestCompleted(status)) {
-    //   this.logger.warn(`Dest [${destId}][${name}] is already completed. can not transition ${destStateStr} to ${incomingStateStr} state.`);
-    //   return;
-    // }
-
-    // const isValid = validateDestStateTransition(status, incomingState);
-    // if (!isValid) {
-    //   this.logger.warn(`Dest [${destId}][${name}] is in ${destStateStr} state. can not transition ${destStateStr} to ${incomingStateStr} state. something went wrong.`);
-    // }
-
     this.logger.info(`Dest [${destId}][${name}] is in ${destStateStr} state. transition to ${incomingStateStr} state...`);
     await this.setState(this.dataSource.manager, dest, incomingState, new Date(), localTimeStamp);
   }

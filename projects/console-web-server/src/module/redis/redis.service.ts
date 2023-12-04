@@ -1,12 +1,13 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import Redis from 'ioredis';
 import { config } from '../../config';
+import { DoguLogger } from '../logger/logger';
 
 @Injectable()
 export class RedisService extends Redis implements OnModuleInit {
   readonly subscriber: Redis;
 
-  constructor() {
+  constructor(private readonly logger: DoguLogger) {
     super({
       host: config.redis.options.host,
       port: config.redis.options.port,
@@ -25,18 +26,19 @@ export class RedisService extends Redis implements OnModuleInit {
     await this.quit();
   }
 
-  async subscribeMessage(channel: string, onMessage: (message: string) => void): Promise<() => Promise<void>> {
-    const onMessageImpl = (receivedChannel: string, message: string) => {
+  async createSubscriber(channel: string, onMessage: (message: string) => void): Promise<Redis> {
+    const subscriber = this.duplicate();
+    subscriber.on('message', (receivedChannel: string, message: string) => {
+      this.logger.debug('RedisService.onMessage', { channel, receivedChannel, message });
       if (channel === receivedChannel) {
         onMessage(message);
       }
-    };
-    this.subscriber.on('message', onMessageImpl);
-    await this.subscriber.subscribe(channel);
-    const unsubscribe = async () => {
-      await this.subscriber.unsubscribe(channel);
-      this.subscriber.removeListener('message', onMessageImpl);
-    };
-    return unsubscribe;
+    });
+
+    await subscriber.subscribe(channel, (error, count) => {
+      this.logger.debug('RedisService.subscribeMessage.subscribe', { channel, error, count });
+    });
+
+    return subscriber;
   }
 }

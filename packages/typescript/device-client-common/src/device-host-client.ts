@@ -1,10 +1,10 @@
 import { closeWebSocketWithTruncateReason, errorify, Instance, stringify, transformAndValidate, WebSocketSpec } from '@dogu-tech/common';
-import { DeviceHostUploadFileReceiveMessage, DeviceHostUploadFileSendMessage, ThirdPartyPathMap } from '@dogu-tech/types';
-import { DeviceClientOptions, DeviceCloser, DeviceService, DeviceWebSocket, HostFileUploader } from './bases';
+import { DeviceTemporaryToken, Serial, ThirdPartyPathMap } from '@dogu-tech/types';
+import { DeviceAuth } from '.';
+import { DeviceClientOptions, DeviceCloser, DeviceService, DeviceWebSocket } from './bases';
 import { DeviceHttpClient } from './device-http-client';
 import { DeviceHost } from './specs/http/device-host';
 import { DeviceHostDownloadSharedResource } from './specs/ws/device-host/download-shared-resource';
-import { DeviceHostUploadFile } from './specs/ws/device-host/upload-file';
 
 export class DeviceHostClient extends DeviceHttpClient {
   constructor(deviceService: DeviceService, options?: DeviceClientOptions) {
@@ -48,8 +48,18 @@ export class DeviceHostClient extends DeviceHttpClient {
     return result;
   }
 
+  async generateTemporaryToken(serial: Serial, body: Instance<typeof DeviceAuth.createToken.requestBody>): Promise<DeviceTemporaryToken> {
+    const response = await this.httpRequest(DeviceAuth.createToken, new DeviceAuth.createToken.pathProvider(serial), undefined, body);
+    return response.token;
+  }
+
+  async deleteTemporaryToken(body: Instance<typeof DeviceAuth.deleteToken.requestBody>): Promise<void> {
+    await this.httpRequest(DeviceAuth.deleteToken, new DeviceAuth.deleteToken.pathProvider(), undefined, body);
+  }
+
   private async connectWebSocket<SendMessageType, ReceiveMessageType, ReturnType>(
     webSocketSpec: WebSocketSpec<SendMessageType, ReceiveMessageType>,
+    serial: Serial | undefined,
     onOpen: (deviceWebSocket: DeviceWebSocket) => ReturnType,
     onClose: (code: number, reason: string) => void,
     onMessage: (value: string | Uint8Array, deviceWebSocket: DeviceWebSocket) => void,
@@ -61,6 +71,7 @@ export class DeviceHostClient extends DeviceHttpClient {
         {
           path,
         },
+        serial,
         this.options,
         {
           onOpen() {
@@ -94,56 +105,57 @@ export class DeviceHostClient extends DeviceHttpClient {
     });
   }
 
-  async uploadFile(fileName: string, fileSize: number, onProgress: (offset: number) => void, onComplete: (filePath: string, error?: Error) => void): Promise<HostFileUploader> {
-    return this.connectWebSocket(
-      DeviceHostUploadFile,
-      (deviceWebSocket) => {
-        const sendMessage: Instance<typeof DeviceHostUploadFile.sendMessage> = {
-          value: {
-            $case: 'start',
-            start: {
-              fileName,
-              fileSize,
-            },
-          },
-        };
-        deviceWebSocket.send(DeviceHostUploadFileSendMessage.encode(sendMessage).finish());
-        return new HostFileUploader(deviceWebSocket);
-      },
-      (code, reason) => {
-        if (code === 1000) {
-          return;
-        }
-        onComplete('', new Error(`Unexpected close: ${code} ${reason}`));
-      },
-      (value, deviceWebSocket) => {
-        if (!(value instanceof Uint8Array)) {
-          throw new Error(`Unexpected data: ${stringify(value)}`);
-        }
+  // async uploadFile(fileName: string, fileSize: number, onProgress: (offset: number) => void, onComplete: (filePath: string, error?: Error) => void): Promise<HostFileUploader> {
+  //   return this.connectWebSocket(
+  //     DeviceHostUploadFile,
+  //     (deviceWebSocket) => {
+  //       const sendMessage: Instance<typeof DeviceHostUploadFile.sendMessage> = {
+  //         value: {
+  //           $case: 'start',
+  //           start: {
+  //             fileName,
+  //             fileSize,
+  //           },
+  //         },
+  //       };
+  //       deviceWebSocket.send(DeviceHostUploadFileSendMessage.encode(sendMessage).finish());
+  //       return new HostFileUploader(deviceWebSocket);
+  //     },
+  //     (code, reason) => {
+  //       if (code === 1000) {
+  //         return;
+  //       }
+  //       onComplete('', new Error(`Unexpected close: ${code} ${reason}`));
+  //     },
+  //     (value, deviceWebSocket) => {
+  //       if (!(value instanceof Uint8Array)) {
+  //         throw new Error(`Unexpected data: ${stringify(value)}`);
+  //       }
 
-        const receiveMessage = DeviceHostUploadFileReceiveMessage.decode(value);
-        if (!receiveMessage.value) {
-          throw new Error(`Empty data: ${stringify(receiveMessage)}`);
-        }
-        const { $case } = receiveMessage.value;
-        if ($case === 'inProgress') {
-          const { offset } = receiveMessage.value.inProgress;
-          onProgress(offset);
-        } else if ($case === 'complete') {
-          const { filePath } = receiveMessage.value.complete;
+  //       const receiveMessage = DeviceHostUploadFileReceiveMessage.decode(value);
+  //       if (!receiveMessage.value) {
+  //         throw new Error(`Empty data: ${stringify(receiveMessage)}`);
+  //       }
+  //       const { $case } = receiveMessage.value;
+  //       if ($case === 'inProgress') {
+  //         const { offset } = receiveMessage.value.inProgress;
+  //         onProgress(offset);
+  //       } else if ($case === 'complete') {
+  //         const { filePath } = receiveMessage.value.complete;
 
-          onComplete(filePath);
-          deviceWebSocket.close(1000, 'OK');
-        }
-      },
-    );
-  }
+  //         onComplete(filePath);
+  //         deviceWebSocket.close(1000, 'OK');
+  //       }
+  //     },
+  //   );
+  // }
 
   async downloadSharedResource(filePath: string, url: string, expectedFileSize: number, headers?: Record<string, string>): Promise<void> {
     const { printable } = this.options;
     return new Promise((resolve, reject) => {
       this.connectWebSocket(
         DeviceHostDownloadSharedResource,
+        undefined,
         (deviceWebSocket) => {
           const sendMessage: Instance<typeof DeviceHostDownloadSharedResource.sendMessage> = {
             url,

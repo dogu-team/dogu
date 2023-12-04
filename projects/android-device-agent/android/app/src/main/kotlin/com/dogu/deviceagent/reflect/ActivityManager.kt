@@ -59,7 +59,7 @@ class ActivityManager {
             Logger.v("ActivityManager.asInterface $amReflectObj")
 
         } catch (e: Exception) {
-            throw AssertionError(e)
+            throw e
         }
     }
 

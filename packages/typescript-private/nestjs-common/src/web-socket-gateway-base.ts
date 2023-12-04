@@ -21,7 +21,10 @@ export type WebSocketRegistryValueGetter<Value> = () => Value;
 export type WebSocketRegistryValueSetter<Value> = (value: Value) => void;
 
 export class WebSocketRegistryValueAccessor<Value> {
-  constructor(private readonly webSockets: Registry<WebSocket, Value>, private readonly webSocket: WebSocket) {}
+  constructor(
+    private readonly webSockets: Registry<WebSocket, Value>,
+    private readonly webSocket: WebSocket,
+  ) {}
 
   get: WebSocketRegistryValueGetter<Value> = () => this.webSockets.get(this.webSocket);
   update: WebSocketRegistryValueSetter<Value> = (value: Value) => this.webSockets.update(this.webSocket, value);

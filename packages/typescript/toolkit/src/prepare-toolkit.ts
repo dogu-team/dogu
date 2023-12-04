@@ -12,17 +12,17 @@ export async function prepareToolkit(options?: ToolkitOptions): Promise<Toolkit>
   logger.info('Preparing Toolkit...');
   const filledOptions = fillToolkitOptions(options);
   const { dogu, gamium, appium } = filledOptions;
-  const { logLevel, deviceServerPort, requestTimeout, deviceSerial: deviceSerialFromArg, devicePlatform, uninstallApp, appPath } = dogu;
+  const { logLevel, deviceServerUrl, requestTimeout, deviceSerial: deviceSerialFromArg, devicePlatform, uninstallApp, appPath } = dogu;
   logger.setLogLevel(logLevel);
   logger.verbose('filledOptions', { filledOptions });
 
   const result = await new Preparer(logger).prepare(async (step, printable) => {
-    const { deviceClient, deviceHostClient } = await step('Create device clients', () => {
+    const { deviceClient, deviceHostClient } = await step('Create device clients', async () => {
       printable.verbose?.('arguments', {
-        deviceServerPort,
+        deviceServerUrl,
         requestTimeout,
       });
-      return createDeviceClients({ port: deviceServerPort, timeout: requestTimeout, printable });
+      return createDeviceClients({ deviceServerUrl, timeout: requestTimeout, printable });
     });
 
     let deviceSerial = deviceSerialFromArg;

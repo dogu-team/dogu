@@ -6,6 +6,7 @@ import { Injectable } from '@nestjs/common';
 import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import WebSocket from 'ws';
 import { config } from '../config';
+import { DeviceAuthService } from '../device-auth/device-auth.service';
 import { env } from '../env';
 import { OnHostDisconnectedEvent, OnHostResolvedEvent } from '../host/host.events';
 import { DoguLogger } from '../logger/logger';
@@ -20,6 +21,7 @@ export class DeviceConnectionSubscriber {
   constructor(
     private readonly eventEmitter: EventEmitter2,
     private readonly logger: DoguLogger,
+    private readonly authService: DeviceAuthService,
   ) {}
 
   get doReconnect(): boolean {
@@ -40,7 +42,7 @@ export class DeviceConnectionSubscriber {
 
   private connect(): void {
     const url = `ws://${env.DOGU_DEVICE_SERVER_HOST_PORT}${DeviceConnectionSubscribe.path}`;
-    this.client = new WebSocket(url);
+    this.client = new WebSocket(url, { headers: this.authService.makeAuthHeader() });
     this.client.on('open', () => {
       this.logger.info('DeviceConnectionStateSubscriber is connected', {
         url,

@@ -1,4 +1,4 @@
-import { ChildService as Impl, ChildServiceFactory, DeviceServerChild, HostAgentChild } from '@dogu-private/dogu-agent-core/app';
+import { ChildService as Impl, ChildServiceFactory, DeviceAuthService, DeviceServerChild, HostAgentChild } from '@dogu-private/dogu-agent-core/app';
 import { ipcMain } from 'electron';
 import { childClientKey, ChildTree, HostAgentConnectionStatus, Key } from '../../src/shares/child';
 import { AppConfigService } from '../app-config/app-config-service';
@@ -10,7 +10,7 @@ import { LogsPath } from '../path-map';
 export class ChildService {
   static instance: ChildService;
 
-  static open(appConfigService: AppConfigService, featureConfigService: FeatureConfigService, externalService: ExternalService) {
+  static open(appConfigService: AppConfigService, featureConfigService: FeatureConfigService, externalService: ExternalService, authService: DeviceAuthService) {
     const listener = {
       onStdout: () => {},
       onStderr: () => {},
@@ -21,6 +21,7 @@ export class ChildService {
       appConfigService: appConfigService.impl,
       featureConfigService: featureConfigService.impl,
       externalService: externalService.impl,
+      authService,
       logsPath: LogsPath,
       logger: logger,
       listener: listener,

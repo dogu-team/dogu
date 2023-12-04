@@ -3,6 +3,7 @@ package com.dogu.deviceagent.reflect
 
 import android.os.IInterface
 import android.view.IRotationWatcher
+import com.dogu.deviceagent.InternalException
 import com.dogu.deviceagent.Logger
 import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Method
@@ -132,7 +133,7 @@ class WindowManager(  // old version
                     .invoke(manager, rotationWatcher)
             }
         } catch (e: Exception) {
-            throw AssertionError(e)
+            throw e
         }
     }
 }

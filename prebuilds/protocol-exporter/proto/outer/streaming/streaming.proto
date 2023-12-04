@@ -2,6 +2,7 @@ syntax = "proto3";
 
 package outer.streaming;
 
+import "outer/device_auth.proto";
 import "outer/errors.proto";
 import "outer/platform.proto";
 import "outer/streaming/screencapture_option.proto";
@@ -36,5 +37,6 @@ message StreamingAnswer {
     ProtoRTCPeerDescription peer_description = 1;
     ProtoRTCIceCandidateInit ice_candidate = 2;
     outer.ErrorResult error_result = 3;
+    outer.DeviceServerToken device_server_token = 4;
   }
 }

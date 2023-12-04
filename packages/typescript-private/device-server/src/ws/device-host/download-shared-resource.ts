@@ -4,6 +4,7 @@ import { DeviceHostDownloadSharedResource } from '@dogu-tech/device-client-commo
 import axios from 'axios';
 import { IncomingMessage } from 'http';
 import WebSocket from 'ws';
+import { WebsocketHeaderPermission, WebsocketIncomingMessage } from '../../auth/guard/websocket.guard';
 import { DeviceHostDownloadSharedResourceService } from '../../device-host/device-host.download-shared-resource';
 import { DoguLogger } from '../../logger/logger';
 
@@ -18,12 +19,16 @@ export class DeviceHostDownloadSharedResourceWebSocketService
 {
   private readonly client = axios.create();
 
-  constructor(private readonly downloadService: DeviceHostDownloadSharedResourceService, private readonly logger: DoguLogger) {
+  constructor(
+    private readonly downloadService: DeviceHostDownloadSharedResourceService,
+    private readonly logger: DoguLogger,
+  ) {
     super(DeviceHostDownloadSharedResource, logger);
     setAxiosErrorFilterToIntercepter(this.client);
   }
 
-  override onWebSocketOpen(webSocket: WebSocket, incommingMessage: IncomingMessage): Value {
+  @WebsocketHeaderPermission({ allowAdmin: true, allowTemporary: 'exist' })
+  override onWebSocketOpen(webSocket: WebSocket, @WebsocketIncomingMessage() incommingMessage: IncomingMessage): Value {
     return { listenerss: new Map<string, WebSocket[]>() };
   }
 

@@ -1,3 +1,4 @@
+export * from './device_auth';
 export * from './device_server';
 export * from './errors';
 export * from './http_ws';

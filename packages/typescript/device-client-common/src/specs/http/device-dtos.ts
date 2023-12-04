@@ -13,6 +13,8 @@ export class GetDevicePlatformSerialsResponse {
   platformSerials!: PlatformSerial[];
 }
 
+export class GetDeviceHeartBeatResponse {}
+
 export class GetDeviceSystemInfoResponse implements DeviceSystemInfo {
   nickname!: string;
   marketName!: string;

@@ -2,6 +2,7 @@ import { DeviceStreamingOffer } from '@dogu-private/console';
 import {
   DefaultScreenCaptureOption,
   DeviceId,
+  DeviceTemporaryToken,
   LiveSessionId,
   OrganizationId,
   Platform,
@@ -17,6 +18,11 @@ import { config } from '../../../config';
 import { StreamingError, StreamingErrorType } from '../../types/streaming';
 import { WebSocketUrlResolver } from '../web-socket';
 
+type ExchangeCallback = {
+  token?: (token: DeviceTemporaryToken) => PromiseOrValue<void>;
+  error?: (error: StreamingError) => PromiseOrValue<void>;
+};
+
 export interface WebRtcExchanger {
   startExchange(
     organizationId: OrganizationId,
@@ -25,8 +31,8 @@ export interface WebRtcExchanger {
     serial: Serial,
     peerConnection: RTCPeerConnection,
     platform: Platform,
-    options?: StreamingOption,
-    onError?: (error: StreamingError) => PromiseOrValue<void>,
+    options: StreamingOption,
+    callback: ExchangeCallback,
   ): void;
 }
 
@@ -42,8 +48,8 @@ export class WebRtcTrickleExchanger implements WebRtcExchanger {
     serial: Serial,
     peerConnection: RTCPeerConnection,
     platform: Platform,
-    option?: StreamingOption,
-    onError?: (error: StreamingError) => PromiseOrValue<void>,
+    option: StreamingOption,
+    callback: ExchangeCallback,
   ): void {
     this.startExchangeInternal(
       organizationId,
@@ -53,11 +59,9 @@ export class WebRtcTrickleExchanger implements WebRtcExchanger {
       peerConnection,
       platform,
       option,
-      onError,
+      callback,
     ).catch(async (error) => {
-      if (onError !== undefined) {
-        await onError(error);
-      }
+      await callback.error?.(error);
       console.debug('startExchangeInternal error', error);
     });
   }
@@ -69,8 +73,8 @@ export class WebRtcTrickleExchanger implements WebRtcExchanger {
     serial: Serial,
     peerConnection: RTCPeerConnection,
     platform: Platform,
-    option?: StreamingOption,
-    onError?: (error: StreamingError) => PromiseOrValue<void>,
+    option: StreamingOption,
+    callback: ExchangeCallback,
   ): Promise<void> {
     console.debug(`${this.constructor.name} startExchangeInternal`, { option });
 
@@ -124,28 +128,30 @@ export class WebRtcTrickleExchanger implements WebRtcExchanger {
 
     webSocket.addEventListener('close', (event) => {
       console.debug(`${this.constructor.name} close`, event);
-      onError?.(new StreamingError(StreamingErrorType.WS_DISCONNECT, `WebSocket close reason: ${event.reason}`));
+      callback.error?.(new StreamingError(StreamingErrorType.WS_DISCONNECT, `WebSocket close reason: ${event.reason}`));
     });
     webSocket.addEventListener('error', (event) => {
       console.debug(`${this.constructor.name} error`, event);
-      onError?.(new StreamingError(StreamingErrorType.WS_DISCONNECT, `WebSocket error : ${event}`));
+      callback.error?.(new StreamingError(StreamingErrorType.WS_DISCONNECT, `WebSocket error : ${event}`));
     });
     webSocket.addEventListener('message', (event) => {
       console.debug(`${this.constructor.name} message`, event);
-      this.onMessage(peerConnection, event).catch((error) => {
-        if (onError !== undefined) {
-          onError(error);
-        }
+      this.onMessage(peerConnection, event, callback).catch((error) => {
+        callback.error?.(error);
         console.debug('onMessage error', error);
       });
     });
 
     if (peerConnection.signalingState === 'closed') {
-      onError?.(new StreamingError(StreamingErrorType.WS_DISCONNECT, `RTC peer signalingState closed`));
+      callback.error?.(new StreamingError(StreamingErrorType.WS_DISCONNECT, `RTC peer signalingState closed`));
     }
   }
 
-  private async processAnswer(peerConnection: RTCPeerConnection, answerDto: StreamingAnswerDto): Promise<void> {
+  private async processAnswer(
+    peerConnection: RTCPeerConnection,
+    answerDto: StreamingAnswerDto,
+    callback: ExchangeCallback,
+  ): Promise<void> {
     const { value } = answerDto;
     if (value === undefined) {
       throw new Error(`invalid message ${JSON.stringify(answerDto)}`);
@@ -165,18 +171,25 @@ export class WebRtcTrickleExchanger implements WebRtcExchanger {
     } else if ($case === 'iceCandidate') {
       const { iceCandidate } = value;
       await this.addCandidate(peerConnection, iceCandidate);
+    } else if ($case === 'deviceServerToken') {
+      const { deviceServerToken } = value;
+      callback.token?.(deviceServerToken);
     } else {
       throw new Error(`invalid message ${JSON.stringify(answerDto)}`);
     }
   }
 
-  private async onMessage(peerConnection: RTCPeerConnection, event: MessageEvent): Promise<void> {
+  private async onMessage(
+    peerConnection: RTCPeerConnection,
+    event: MessageEvent,
+    callback: ExchangeCallback,
+  ): Promise<void> {
     if (event.data === WS_PING_MESSAGE) {
       return;
     }
 
     const result = await transformAndValidate(StreamingAnswerDto, JSON.parse(event.data));
-    await this.processAnswer(peerConnection, result);
+    await this.processAnswer(peerConnection, result, callback);
   }
 
   private async addCandidate(peerConnection: RTCPeerConnection, iceCandidate: RTCIceCandidateInit): Promise<void> {

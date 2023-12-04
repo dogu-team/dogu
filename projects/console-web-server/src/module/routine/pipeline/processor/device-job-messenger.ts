@@ -10,7 +10,10 @@ import { DoguLogger } from '../../../logger/logger';
 
 @Injectable()
 export class DeviceJobMessenger {
-  constructor(private readonly deviceMessageRelayer: DeviceMessageRelayer, private readonly logger: DoguLogger) {}
+  constructor(
+    private readonly deviceMessageRelayer: DeviceMessageRelayer,
+    private readonly logger: DoguLogger,
+  ) {}
 
   async sendRunDeviceJob(organizationId: OrganizationId, deviceId: DeviceId, deviceJob: RoutineDeviceJob): Promise<void> {
     const {
@@ -46,13 +49,22 @@ export class DeviceJobMessenger {
     if (!pipeline) {
       throw new Error(`Pipeline not found: ${stringify(deviceJob)}`);
     }
-    const { projectId } = pipeline;
+    const { projectId, project } = pipeline;
+    if (!project) {
+      throw new Error(`Project not found: ${stringify(deviceJob)}`);
+    }
+
+    const executorOrganizationId = project.organizationId;
+    const executorProjectId = projectId;
     const runSteps =
-      steps?.map((step) => this.stepToRunStep(organizationId, deviceId, projectId, deviceRunnerId, step, appVersion, appPackageName, browserName, browserVersion)) ?? [];
+      steps?.map((step) =>
+        this.stepToRunStep(organizationId, executorOrganizationId, executorProjectId, deviceId, deviceRunnerId, step, appVersion, appPackageName, browserName, browserVersion),
+      ) ?? [];
     const result = await this.deviceMessageRelayer.sendParam(organizationId, deviceId, {
       kind: 'EventParam',
       value: {
         kind: 'RunDeviceJob',
+        executorOrganizationId,
         routineDeviceJobId,
         deviceRunnerId,
         record,
@@ -67,12 +79,13 @@ export class DeviceJobMessenger {
     parseEventResult(result);
   }
 
-  async sendCancelDeviceJob(organizationId: OrganizationId, deviceId: DeviceId, deviceJob: RoutineDeviceJob): Promise<void> {
+  async sendCancelDeviceJob(organizationId: OrganizationId, deviceId: DeviceId, executorOrganizationId: OrganizationId, deviceJob: RoutineDeviceJob): Promise<void> {
     const { routineDeviceJobId, record } = deviceJob;
     const result = await this.deviceMessageRelayer.sendParam(organizationId, deviceId, {
       kind: 'EventParam',
       value: {
         kind: 'CancelDeviceJob',
+        executorOrganizationId,
         routineDeviceJobId,
         record,
       },
@@ -81,9 +94,10 @@ export class DeviceJobMessenger {
   }
 
   private stepToRunStep(
-    organizationId: OrganizationId,
+    deviceOwnerOrganizationId: OrganizationId,
+    executorOrganizationId: OrganizationId,
+    executorProjectId: ProjectId,
     deviceId: DeviceId,
-    projectId: ProjectId,
     deviceRunnerId: DeviceRunnerId,
     step: RoutineStep,
     appVersion?: string,
@@ -95,8 +109,9 @@ export class DeviceJobMessenger {
     const runStepValue = this.stepToRunStepValue(step);
     return {
       kind: 'RunStep',
-      organizationId,
-      projectId,
+      deviceOwnerOrganizationId,
+      executorOrganizationId,
+      executorProjectId,
       deviceId,
       deviceRunnerId,
       routineDeviceJobId: deviceJobId,
@@ -115,6 +130,7 @@ export class DeviceJobMessenger {
   private stepToRunStepValue(step: RoutineStep): RunStepValue {
     const { uses, run, with: with_ } = step;
     if (uses !== null) {
+      // TODO: change to DockerAction when license module is cloud
       return {
         kind: 'Action',
         actionId: uses,

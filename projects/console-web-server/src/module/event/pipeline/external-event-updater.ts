@@ -78,7 +78,6 @@ export class ExternalEventUpdater {
     if (cancelPipelineEvents.length === 0) {
       return;
     }
-    // await Promise.all(cancelPipelineEvents.map((event) => this.handeCancelPipelineEvent(event)));
 
     for (const event of cancelPipelineEvents) {
       this.logger.info('consumeCancelPipelineQueue. Evnet: ', { event });
@@ -91,7 +90,6 @@ export class ExternalEventUpdater {
     if (updateDeviceJobStatusEvents.length === 0) {
       return;
     }
-    // await Promise.all(updateDeviceJobStatusEvents.map((event) => this.handlelUpdateDeviceJobStatusEvent(event)));
 
     for (const event of updateDeviceJobStatusEvents) {
       this.logger.info('consumeUpdateDeviceJobStatusQueue. Evnet: ', { event });
@@ -105,10 +103,8 @@ export class ExternalEventUpdater {
       return;
     }
 
-    // await Promise.all(updateStepStatusEvents.map((event) => this.handelUpdateStepStatusEvent(event)));
-
     for (const event of updateStepStatusEvents) {
-      this.logger.info('consumeUpdateStepStatusQueue. Evnet: ', { event });
+      this.logger.info('consumeUpdateStepStatusQueue. Event: ', { event });
       await this.handelUpdateStepStatusEvent(event);
     }
   }
@@ -119,10 +115,8 @@ export class ExternalEventUpdater {
       return;
     }
 
-    // await Promise.all(updateDestStateEvents.map((event) => this.handeUpdateDestStateEvent(event)));
-
     for (const event of updateDestStateEvents) {
-      this.logger.info('consumeUpdateDestStateQueue. Evnet: ', { event });
+      this.logger.info('consumeUpdateDestStateQueue. Event: ', { event });
       await this.handeUpdateDestStateEvent(event);
     }
   }
@@ -133,10 +127,8 @@ export class ExternalEventUpdater {
       return;
     }
 
-    // await Promise.all(updateDestStateEvents.map((event) => this.handeUpdateDestStateEvent(event)));
-
     for (const event of updateRemoteDestStateEvents) {
-      this.logger.info('consumeUpdateRemoteDestStateQueue. Evnet: ', { event });
+      this.logger.info('consumeUpdateRemoteDestStateQueue. Event: ', { event });
       await this.handeUpdateRemoteDestStateEvent(event);
     }
   }

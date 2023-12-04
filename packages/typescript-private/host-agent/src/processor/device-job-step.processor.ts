@@ -1,11 +1,13 @@
 import { CancelDeviceJob, ErrorResult, RunDeviceJob, RunStep, RunStepValue } from '@dogu-private/console-host-agent';
 import { Code, CodeUtil, DEVICE_JOB_LOG_TYPE, ErrorResultError, PIPELINE_STATUS, platformTypeFromPlatform, StepContextEnv } from '@dogu-private/types';
-import { delay, errorify, Instance, validateAndEmitEventAsync } from '@dogu-tech/common';
+import { delay, errorify, Instance, time, validateAndEmitEventAsync } from '@dogu-tech/common';
 import { EnvironmentVariableReplacementProvider, HostPaths } from '@dogu-tech/node';
 import { Injectable } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import fs from 'fs';
 import path, { delimiter } from 'path';
+import { DeviceAuthService } from '../device-auth/device-auth.service';
+import { DeviceClientService } from '../device-client/device-client.service';
 import { DeviceJobContextRegistry } from '../device-job/device-job.context-registry';
 import {
   OnDeviceJobCancelRequestedEvent,
@@ -29,12 +31,14 @@ export class DeviceJobStepProcessor {
     private readonly eventEmitter: EventEmitter2,
     private readonly deviceJobContextRegistry: DeviceJobContextRegistry,
     private readonly rootWorkspace: RoutineWorkspace,
+    private readonly deviceClient: DeviceClientService,
+    private readonly authService: DeviceAuthService,
   ) {}
 
   async onRunDeviceJob(param: RunDeviceJob, context: MessageContext): Promise<void> {
-    const { routineDeviceJobId, record, runSteps, deviceRunnerId, browserName } = param;
+    const { routineDeviceJobId, executorOrganizationId, record, runSteps, deviceRunnerId, browserName } = param;
     const { info, router } = context;
-    const { organizationId, deviceId, serial, recordWorkspacePath, platform } = info;
+    const { serial, recordWorkspacePath, platform } = info;
     const recordDeviceRunnerPath = HostPaths.recordDeviceRunnerPath(recordWorkspacePath, deviceRunnerId);
     await fs.promises.mkdir(recordDeviceRunnerPath, { recursive: true });
     this.logger.info(`DeviceJob ${routineDeviceJobId} started on device ${serial}`);
@@ -42,8 +46,7 @@ export class DeviceJobStepProcessor {
 
     try {
       await validateAndEmitEventAsync(this.eventEmitter, OnDeviceJobPrePocessStartedEvent, {
-        organizationId,
-        deviceId,
+        executorOrganizationId,
         routineDeviceJobId,
         localStartedAt: deviceJobLocalStartedAt,
       });
@@ -52,8 +55,7 @@ export class DeviceJobStepProcessor {
     }
 
     await validateAndEmitEventAsync(this.eventEmitter, OnDeviceJobStartedEvent, {
-      organizationId,
-      deviceId,
+      executorOrganizationId,
       routineDeviceJobId,
       recordDeviceRunnerPath,
       record,
@@ -67,7 +69,7 @@ export class DeviceJobStepProcessor {
     this.logger.info(`DeviceJob ${routineDeviceJobId} started event emitted on device ${serial}`);
     try {
       for (const runStep of runSteps) {
-        if (this.deviceJobContextRegistry.cancelRequested(organizationId, deviceId, routineDeviceJobId)) {
+        if (this.deviceJobContextRegistry.cancelRequested(executorOrganizationId, routineDeviceJobId)) {
           this.logger.info(`DeviceJob ${routineDeviceJobId} canceled on device ${serial}`);
           break;
         }
@@ -88,8 +90,7 @@ export class DeviceJobStepProcessor {
     this.logger.info(`DeviceJob ${routineDeviceJobId} completed on device ${serial}`);
     try {
       await validateAndEmitEventAsync(this.eventEmitter, OnDeviceJobCompletedEvent, {
-        organizationId,
-        deviceId,
+        executorOrganizationId,
         routineDeviceJobId,
         record,
         localStartedAt: deviceJobLocalStartedAt,
@@ -102,14 +103,11 @@ export class DeviceJobStepProcessor {
   }
 
   async onCancelDeviceJob(param: CancelDeviceJob, context: MessageContext): Promise<void> {
-    const { routineDeviceJobId, record } = param;
-    const { info } = context;
-    const { organizationId, deviceId } = info;
+    const { routineDeviceJobId, executorOrganizationId, record } = param;
     this.logger.info(`DeviceJob ${routineDeviceJobId} cancel requested`);
     try {
       await validateAndEmitEventAsync(this.eventEmitter, OnDeviceJobCancelRequestedEvent, {
-        organizationId,
-        deviceId,
+        executorOrganizationId,
         routineDeviceJobId,
         record,
       });
@@ -124,11 +122,12 @@ export class DeviceJobStepProcessor {
       routineStepId,
       env: stepEnv,
       value,
-      organizationId,
+      deviceOwnerOrganizationId,
+      executorOrganizationId,
+      executorProjectId,
       deviceId,
       routineDeviceJobId,
       stepIndex,
-      projectId,
       deviceRunnerId,
       browserName,
       browserVersion,
@@ -138,11 +137,11 @@ export class DeviceJobStepProcessor {
     } = param;
     const { info, router, environmentVariableReplacer } = context;
     const { platform, serial, deviceWorkspacePath, rootWorkspacePath, hostPlatform, hostWorkspacePath, pathMap } = info;
+    const temporaryToken = await this.deviceClient.deviceHostClient.generateTemporaryToken(serial, { lifetimeMs: time({ minutes: 30 }) });
     this.logger.info(`Step ${routineStepId} started`);
     try {
       await validateAndEmitEventAsync(this.eventEmitter, OnStepStartedEvent, {
-        organizationId,
-        deviceId,
+        executorOrganizationId,
         serial,
         routineDeviceJobId,
         routineStepId,
@@ -153,17 +152,13 @@ export class DeviceJobStepProcessor {
     }
     this.logger.info(`Step ${routineStepId} started event emitted`);
 
-    const deviceServerHostPort = env.DOGU_DEVICE_SERVER_HOST_PORT.split(':');
-    if (deviceServerHostPort.length !== 2) {
-      throw new Error('DOGU_DEVICE_SERVER_HOST_PORT must be in format host:port');
-    }
     const { nodeBin, gitLibexecGitCore } = pathMap.common;
-    const organizationWorkspacePath = HostPaths.organizationWorkspacePath(rootWorkspacePath, organizationId);
+    const organizationWorkspacePath = HostPaths.organizationWorkspacePath(rootWorkspacePath, executorOrganizationId);
     await fs.promises.mkdir(organizationWorkspacePath, { recursive: true });
 
     const doguRoutineWorkspacePath =
-      (await this.rootWorkspace.findRoutineWorkspace(rootWorkspacePath, { projectId, deviceId, deviceRunnerId })) ??
-      (await this.rootWorkspace.createRoutineWorkspacePath(rootWorkspacePath, { projectId, deviceId, deviceRunnerId }));
+      (await this.rootWorkspace.findRoutineWorkspace(rootWorkspacePath, { projectId: executorProjectId, deviceId, deviceRunnerId })) ??
+      (await this.rootWorkspace.createRoutineWorkspacePath(rootWorkspacePath, { projectId: executorProjectId, deviceId, deviceRunnerId }));
 
     const stepWorkingPath = path.resolve(doguRoutineWorkspacePath, cwd);
     this.logger.info(`Step ${routineStepId} working path: ${stepWorkingPath}`);
@@ -173,14 +168,15 @@ export class DeviceJobStepProcessor {
       CI: 'true',
       DOGU_DEVICE_PLATFORM: platformTypeFromPlatform(platform),
       DOGU_DEVICE_SERIAL: serial,
+      DOGU_DEVICE_TOKEN: temporaryToken.value,
       DOGU_DEVICE_ID: deviceId,
-      DOGU_DEVICE_SERVER_PORT: deviceServerHostPort[1],
+      DOGU_DEVICE_SERVER_URL: `http://${env.DOGU_DEVICE_SERVER_HOST_PORT}`,
       DOGU_DEVICE_JOB_ID: `${routineDeviceJobId}`,
       DOGU_DEVICE_WORKSPACE_PATH: deviceWorkspacePath,
       DOGU_ROUTINE_WORKSPACE_PATH: doguRoutineWorkspacePath,
-      DOGU_ORGANIZATION_ID: organizationId,
+      DOGU_ORGANIZATION_ID: executorOrganizationId,
       DOGU_ORGANIZATION_WORKSPACE_PATH: organizationWorkspacePath,
-      DOGU_PROJECT_ID: projectId,
+      DOGU_PROJECT_ID: executorProjectId,
       DOGU_STEP_ID: `${routineStepId}`,
       DOGU_STEP_WORKING_PATH: stepWorkingPath,
       DOGU_API_BASE_URL: env.DOGU_API_BASE_URL,
@@ -211,8 +207,7 @@ export class DeviceJobStepProcessor {
       {
         onProcessStarted: (pid): void => {
           const value: Instance<typeof OnStepProcessStartedEvent.value> = {
-            organizationId,
-            deviceId,
+            executorOrganizationId,
             serial,
             routineStepId,
             routineDeviceJobId,
@@ -225,8 +220,7 @@ export class DeviceJobStepProcessor {
         },
         onLog: (log): void => {
           const value: Instance<typeof OnDeviceJobLoggedEvent.value> = {
-            organizationId,
-            deviceId,
+            executorOrganizationId,
             routineDeviceJobId,
             log: { ...log, type: DEVICE_JOB_LOG_TYPE.USER_PROJECT, routineStepId },
           };
@@ -250,8 +244,7 @@ export class DeviceJobStepProcessor {
         },
         onCancelerCreated: (canceler): void => {
           const value: Instance<typeof OnStepInProgressEvent.value> = {
-            organizationId,
-            deviceId,
+            executorOrganizationId,
             serial,
             routineStepId,
             routineDeviceJobId,
@@ -288,9 +281,9 @@ export class DeviceJobStepProcessor {
     this.logger.info(`Step ${routineStepId} completed`);
     try {
       await delay(10); // padding for log missing. (If last log time and step complete time is same )
+      await this.deviceClient.deviceHostClient.deleteTemporaryToken({ token: temporaryToken });
       await validateAndEmitEventAsync(this.eventEmitter, OnStepCompletedEvent, {
-        organizationId,
-        deviceId,
+        executorOrganizationId,
         serial,
         routineDeviceJobId,
         routineStepId,
