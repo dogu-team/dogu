@@ -6,6 +6,7 @@ import { Device } from '../../../db/entity/device.entity';
 import { Host } from '../../../db/entity/host.entity';
 import { DeviceMessageRelayer } from '../../../module/device-message/device-message.relayer';
 import { DownloadService } from '../../../module/download/download.service';
+import { DoguLogger } from '../../../module/logger/logger';
 import { HostService } from '../../../module/organization/host/host.service';
 
 @Injectable()
@@ -16,6 +17,7 @@ export class HostAppService {
     private readonly hostService: HostService,
     private readonly downloadService: DownloadService,
     private readonly deviceMessageRelayer: DeviceMessageRelayer,
+    private readonly logger: DoguLogger,
   ) {}
 
   async updateAllIdleHost(): Promise<void> {
@@ -28,7 +30,9 @@ export class HostAppService {
         if (!(await this.hostService.isHostIdle(manager, host.hostId))) {
           continue;
         }
-        await this.updateInternal(manager, host.organizationId, host.hostId);
+        await this.updateInternal(manager, host.organizationId, host.hostId).catch((error) => {
+          this.logger.error(error);
+        });
       }
     });
   }
@@ -57,6 +61,9 @@ export class HostAppService {
     });
     if (!app) {
       throw new Error('updatable app not found');
+    }
+    if (app.version === host.agentVersion) {
+      throw new Error('already latest version');
     }
     const result = await this.deviceMessageRelayer.sendParam(organizationId, deviceId, {
       kind: 'RequestParam',
