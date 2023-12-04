@@ -80,7 +80,7 @@ class ReflectObject(private val className: String?, private var instance: Any? =
 //            val am = getDefaultMethod.invoke(null) as IInterface;
 //
 //        } catch (e: Exception) {
-//            throw AssertionError(e);
+//            throw e;
 //        }
 //    }
 //
@@ -90,7 +90,7 @@ class ReflectObject(private val className: String?, private var instance: Any? =
 //            val am = getDefaultMethod.invoke(null) as IInterface;
 //
 //        } catch (e: Exception) {
-//            throw AssertionError(e);
+//            throw e;
 //        }
 //    }
 

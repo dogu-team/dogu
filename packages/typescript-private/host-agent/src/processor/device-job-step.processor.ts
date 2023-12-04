@@ -1,11 +1,13 @@
 import { CancelDeviceJob, ErrorResult, RunDeviceJob, RunStep, RunStepValue } from '@dogu-private/console-host-agent';
 import { Code, CodeUtil, DEVICE_JOB_LOG_TYPE, ErrorResultError, PIPELINE_STATUS, platformTypeFromPlatform, StepContextEnv } from '@dogu-private/types';
-import { delay, errorify, Instance, validateAndEmitEventAsync } from '@dogu-tech/common';
+import { delay, errorify, Instance, time, validateAndEmitEventAsync } from '@dogu-tech/common';
 import { EnvironmentVariableReplacementProvider, HostPaths } from '@dogu-tech/node';
 import { Injectable } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import fs from 'fs';
 import path, { delimiter } from 'path';
+import { DeviceAuthService } from '../device-auth/device-auth.service';
+import { DeviceClientService } from '../device-client/device-client.service';
 import { DeviceJobContextRegistry } from '../device-job/device-job.context-registry';
 import {
   OnDeviceJobCancelRequestedEvent,
@@ -29,6 +31,8 @@ export class DeviceJobStepProcessor {
     private readonly eventEmitter: EventEmitter2,
     private readonly deviceJobContextRegistry: DeviceJobContextRegistry,
     private readonly rootWorkspace: RoutineWorkspace,
+    private readonly deviceClient: DeviceClientService,
+    private readonly authService: DeviceAuthService,
   ) {}
 
   async onRunDeviceJob(param: RunDeviceJob, context: MessageContext): Promise<void> {
@@ -133,6 +137,7 @@ export class DeviceJobStepProcessor {
     } = param;
     const { info, router, environmentVariableReplacer } = context;
     const { platform, serial, deviceWorkspacePath, rootWorkspacePath, hostPlatform, hostWorkspacePath, pathMap } = info;
+    const temporaryToken = await this.deviceClient.deviceHostClient.generateTemporaryToken(serial, { lifetimeMs: time({ minutes: 30 }) });
     this.logger.info(`Step ${routineStepId} started`);
     try {
       await validateAndEmitEventAsync(this.eventEmitter, OnStepStartedEvent, {
@@ -163,6 +168,7 @@ export class DeviceJobStepProcessor {
       CI: 'true',
       DOGU_DEVICE_PLATFORM: platformTypeFromPlatform(platform),
       DOGU_DEVICE_SERIAL: serial,
+      DOGU_DEVICE_TOKEN: temporaryToken.value,
       DOGU_DEVICE_ID: deviceId,
       DOGU_DEVICE_SERVER_URL: `http://${env.DOGU_DEVICE_SERVER_HOST_PORT}`,
       DOGU_DEVICE_JOB_ID: `${routineDeviceJobId}`,
@@ -275,6 +281,7 @@ export class DeviceJobStepProcessor {
     this.logger.info(`Step ${routineStepId} completed`);
     try {
       await delay(10); // padding for log missing. (If last log time and step complete time is same )
+      await this.deviceClient.deviceHostClient.deleteTemporaryToken({ token: temporaryToken });
       await validateAndEmitEventAsync(this.eventEmitter, OnStepCompletedEvent, {
         executorOrganizationId,
         serial,

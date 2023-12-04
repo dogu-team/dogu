@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.HttpRequestWebSocketResult = exports.WebSocketResult = exports.WebSocketMessageEvent = exports.WebSocketCloseEvent = exports.WebSocketErrorEvent = exports.WebSocketOpenEvent = exports.WebSocketParam = exports.WebSocketClose = exports.WebSocketMessage = exports.WebSocketConnection = exports.HttpRequestResult = exports.HttpRequestParam = exports.HttpResponse = exports.HttpRequest = exports.Body = exports.Headers = exports.HeaderValue = void 0;
+exports.HttpRequestWebSocketResult = exports.WebSocketResult = exports.WebSocketMessageEvent = exports.WebSocketCloseEvent = exports.WebSocketErrorEvent = exports.WebSocketOpenEvent = exports.WebSocketClose = exports.WebSocketMessage = exports.WebSocketConnection = exports.HttpRequestResult = exports.HttpRequestParam = exports.HttpResponse = exports.HttpRequest = exports.Body = exports.Headers = exports.HeaderValue = void 0;
 /* eslint-disable */
 const minimal_1 = __importDefault(require("protobufjs/minimal"));
 const struct_1 = require("../google/protobuf/struct");
@@ -423,7 +423,7 @@ exports.HttpRequestResult = {
     },
 };
 function createBaseWebSocketConnection() {
-    return { protocolDomain: undefined, path: '', query: undefined };
+    return { protocolDomain: undefined, path: '', query: undefined, headers: undefined };
 }
 exports.WebSocketConnection = {
     encode(message, writer = minimal_1.default.Writer.create()) {
@@ -435,6 +435,9 @@ exports.WebSocketConnection = {
         }
         if (message.query !== undefined) {
             struct_1.Struct.encode(struct_1.Struct.wrap(message.query), writer.uint32(26).fork()).ldelim();
+        }
+        if (message.headers !== undefined) {
+            exports.Headers.encode(message.headers, writer.uint32(34).fork()).ldelim();
         }
         return writer;
     },
@@ -454,6 +457,9 @@ exports.WebSocketConnection = {
                 case 3:
                     message.query = struct_1.Struct.unwrap(struct_1.Struct.decode(reader, reader.uint32()));
                     break;
+                case 4:
+                    message.headers = exports.Headers.decode(reader, reader.uint32());
+                    break;
                 default:
                     reader.skipType(tag & 7);
                     break;
@@ -466,6 +472,7 @@ exports.WebSocketConnection = {
             protocolDomain: isSet(object.protocolDomain) ? String(object.protocolDomain) : undefined,
             path: isSet(object.path) ? String(object.path) : '',
             query: isObject(object.query) ? object.query : undefined,
+            headers: isSet(object.headers) ? exports.Headers.fromJSON(object.headers) : undefined,
         };
     },
     toJSON(message) {
@@ -473,6 +480,7 @@ exports.WebSocketConnection = {
         message.protocolDomain !== undefined && (obj.protocolDomain = message.protocolDomain);
         message.path !== undefined && (obj.path = message.path);
         message.query !== undefined && (obj.query = message.query);
+        message.headers !== undefined && (obj.headers = message.headers ? exports.Headers.toJSON(message.headers) : undefined);
         return obj;
     },
     fromPartial(object) {
@@ -480,6 +488,7 @@ exports.WebSocketConnection = {
         message.protocolDomain = object.protocolDomain ?? undefined;
         message.path = object.path ?? '';
         message.query = object.query ?? undefined;
+        message.headers = object.headers !== undefined && object.headers !== null ? exports.Headers.fromPartial(object.headers) : undefined;
         return message;
     },
 };
@@ -493,6 +502,9 @@ exports.WebSocketMessage = {
         }
         if (message.value?.$case === 'bytesValue') {
             writer.uint32(18).bytes(message.value.bytesValue);
+        }
+        if (message.value?.$case === 'connection') {
+            exports.WebSocketConnection.encode(message.value.connection, writer.uint32(26).fork()).ldelim();
         }
         return writer;
     },
@@ -509,6 +521,9 @@ exports.WebSocketMessage = {
                 case 2:
                     message.value = { $case: 'bytesValue', bytesValue: reader.bytes() };
                     break;
+                case 3:
+                    message.value = { $case: 'connection', connection: exports.WebSocketConnection.decode(reader, reader.uint32()) };
+                    break;
                 default:
                     reader.skipType(tag & 7);
                     break;
@@ -522,13 +537,16 @@ exports.WebSocketMessage = {
                 ? { $case: 'stringValue', stringValue: String(object.stringValue) }
                 : isSet(object.bytesValue)
                     ? { $case: 'bytesValue', bytesValue: bytesFromBase64(object.bytesValue) }
-                    : undefined,
+                    : isSet(object.connection)
+                        ? { $case: 'connection', connection: exports.WebSocketConnection.fromJSON(object.connection) }
+                        : undefined,
         };
     },
     toJSON(message) {
         const obj = {};
         message.value?.$case === 'stringValue' && (obj.stringValue = message.value?.stringValue);
         message.value?.$case === 'bytesValue' && (obj.bytesValue = message.value?.bytesValue !== undefined ? base64FromBytes(message.value?.bytesValue) : undefined);
+        message.value?.$case === 'connection' && (obj.connection = message.value?.connection ? exports.WebSocketConnection.toJSON(message.value?.connection) : undefined);
         return obj;
     },
     fromPartial(object) {
@@ -538,6 +556,9 @@ exports.WebSocketMessage = {
         }
         if (object.value?.$case === 'bytesValue' && object.value?.bytesValue !== undefined && object.value?.bytesValue !== null) {
             message.value = { $case: 'bytesValue', bytesValue: object.value.bytesValue };
+        }
+        if (object.value?.$case === 'connection' && object.value?.connection !== undefined && object.value?.connection !== null) {
+            message.value = { $case: 'connection', connection: exports.WebSocketConnection.fromPartial(object.value.connection) };
         }
         return message;
     },
@@ -591,77 +612,6 @@ exports.WebSocketClose = {
         const message = createBaseWebSocketClose();
         message.code = object.code ?? 0;
         message.reason = object.reason ?? '';
-        return message;
-    },
-};
-function createBaseWebSocketParam() {
-    return { value: undefined };
-}
-exports.WebSocketParam = {
-    encode(message, writer = minimal_1.default.Writer.create()) {
-        if (message.value?.$case === 'connection') {
-            exports.WebSocketConnection.encode(message.value.connection, writer.uint32(10).fork()).ldelim();
-        }
-        if (message.value?.$case === 'message') {
-            exports.WebSocketMessage.encode(message.value.message, writer.uint32(18).fork()).ldelim();
-        }
-        if (message.value?.$case === 'close') {
-            exports.WebSocketClose.encode(message.value.close, writer.uint32(26).fork()).ldelim();
-        }
-        return writer;
-    },
-    decode(input, length) {
-        const reader = input instanceof minimal_1.default.Reader ? input : new minimal_1.default.Reader(input);
-        let end = length === undefined ? reader.len : reader.pos + length;
-        const message = createBaseWebSocketParam();
-        while (reader.pos < end) {
-            const tag = reader.uint32();
-            switch (tag >>> 3) {
-                case 1:
-                    message.value = { $case: 'connection', connection: exports.WebSocketConnection.decode(reader, reader.uint32()) };
-                    break;
-                case 2:
-                    message.value = { $case: 'message', message: exports.WebSocketMessage.decode(reader, reader.uint32()) };
-                    break;
-                case 3:
-                    message.value = { $case: 'close', close: exports.WebSocketClose.decode(reader, reader.uint32()) };
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
-            }
-        }
-        return message;
-    },
-    fromJSON(object) {
-        return {
-            value: isSet(object.connection)
-                ? { $case: 'connection', connection: exports.WebSocketConnection.fromJSON(object.connection) }
-                : isSet(object.message)
-                    ? { $case: 'message', message: exports.WebSocketMessage.fromJSON(object.message) }
-                    : isSet(object.close)
-                        ? { $case: 'close', close: exports.WebSocketClose.fromJSON(object.close) }
-                        : undefined,
-        };
-    },
-    toJSON(message) {
-        const obj = {};
-        message.value?.$case === 'connection' && (obj.connection = message.value?.connection ? exports.WebSocketConnection.toJSON(message.value?.connection) : undefined);
-        message.value?.$case === 'message' && (obj.message = message.value?.message ? exports.WebSocketMessage.toJSON(message.value?.message) : undefined);
-        message.value?.$case === 'close' && (obj.close = message.value?.close ? exports.WebSocketClose.toJSON(message.value?.close) : undefined);
-        return obj;
-    },
-    fromPartial(object) {
-        const message = createBaseWebSocketParam();
-        if (object.value?.$case === 'connection' && object.value?.connection !== undefined && object.value?.connection !== null) {
-            message.value = { $case: 'connection', connection: exports.WebSocketConnection.fromPartial(object.value.connection) };
-        }
-        if (object.value?.$case === 'message' && object.value?.message !== undefined && object.value?.message !== null) {
-            message.value = { $case: 'message', message: exports.WebSocketMessage.fromPartial(object.value.message) };
-        }
-        if (object.value?.$case === 'close' && object.value?.close !== undefined && object.value?.close !== null) {
-            message.value = { $case: 'close', close: exports.WebSocketClose.fromPartial(object.value.close) };
-        }
         return message;
     },
 };

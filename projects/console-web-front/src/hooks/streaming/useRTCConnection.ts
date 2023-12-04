@@ -1,5 +1,11 @@
 import { DeviceBase } from '@dogu-private/console';
-import { LiveSessionId, OrganizationId, PrivateProtocol, StreamingOption } from '@dogu-private/types';
+import {
+  DeviceTemporaryToken,
+  LiveSessionId,
+  OrganizationId,
+  PrivateProtocol,
+  StreamingOption,
+} from '@dogu-private/types';
 import { DeviceRTCCaller } from '@dogu-private/webrtc';
 import { AxiosError } from 'axios';
 import { useRouter } from 'next/router';
@@ -26,6 +32,7 @@ const useRTCConnection = ({ device, pid, isCloudDevice }: Option, sendThrottleMs
   const timer = useRef<NodeJS.Timeout | null>(null);
   const peerConnectionRef = useRef<RTCPeerConnection | undefined>();
   const deviceRTCCallerRef = useRef<DeviceRTCCaller | undefined>();
+  const [deviceToken, setDeviceToken] = useState<DeviceTemporaryToken | undefined>();
   const [haConnectionError, setHAConnectionError] = useState<StreamingError>();
   const [loading, setLoading] = useState(true);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -40,6 +47,7 @@ const useRTCConnection = ({ device, pid, isCloudDevice }: Option, sendThrottleMs
     console.debug('peer', peerConnectionRef.current);
     peerConnectionRef.current?.close();
     console.debug(`close connection ${device?.deviceId}`);
+    setDeviceToken(undefined);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [device?.deviceId]);
 
@@ -183,14 +191,19 @@ const useRTCConnection = ({ device, pid, isCloudDevice }: Option, sendThrottleMs
           pc,
           device.platform,
           streamingOption,
-          (error) => {
-            console.debug('startExchange error', error);
-            if (isVideoShowing(videoRef.current)) {
-              console.debug('rtc in progress. so ignore ws error', error);
-              return;
-            }
-            setHAConnectionError(error);
-            cleanUp();
+          {
+            token: (token) => {
+              setDeviceToken(token);
+            },
+            error: (error) => {
+              console.debug('startExchange error', error);
+              if (isVideoShowing(videoRef.current)) {
+                console.debug('rtc in progress. so ignore ws error', error);
+                return;
+              }
+              setHAConnectionError(error);
+              cleanUp();
+            },
           },
         );
 
@@ -260,7 +273,14 @@ const useRTCConnection = ({ device, pid, isCloudDevice }: Option, sendThrottleMs
     };
   }, [cleanUp]);
 
-  return { loading, peerConnectionRef, deviceRTCCallerRef, videoRef, error: haConnectionError };
+  return {
+    loading,
+    peerConnectionRef,
+    deviceRTCCallerRef,
+    videoRef,
+    deviceToken,
+    error: haConnectionError,
+  };
 };
 
 function isVideoShowing(elem: HTMLVideoElement | null): boolean {

@@ -1727,6 +1727,17 @@ public final class Streaming {
      */
     com.dogu.protocol.generated.outer.Errors.ErrorResult getErrorResult();
 
+    /**
+     * <code>.outer.DeviceServerToken device_server_token = 4;</code>
+     * @return Whether the deviceServerToken field is set.
+     */
+    boolean hasDeviceServerToken();
+    /**
+     * <code>.outer.DeviceServerToken device_server_token = 4;</code>
+     * @return The deviceServerToken.
+     */
+    com.dogu.protocol.generated.outer.DeviceAuth.DeviceServerToken getDeviceServerToken();
+
     public com.dogu.protocol.generated.outer.streaming.Streaming.StreamingAnswer.ValueCase getValueCase();
   }
   /**
@@ -1745,6 +1756,7 @@ public final class Streaming {
       PEER_DESCRIPTION(1),
       ICE_CANDIDATE(2),
       ERROR_RESULT(3),
+      DEVICE_SERVER_TOKEN(4),
       VALUE_NOT_SET(0);
       private final int value;
       private ValueCase(int value) {
@@ -1763,6 +1775,7 @@ public final class Streaming {
           case 1: return PEER_DESCRIPTION;
           case 2: return ICE_CANDIDATE;
           case 3: return ERROR_RESULT;
+          case 4: return DEVICE_SERVER_TOKEN;
           case 0: return VALUE_NOT_SET;
           default: return null;
         }
@@ -1929,6 +1942,56 @@ public final class Streaming {
      */
     private void clearErrorResult() {
       if (valueCase_ == 3) {
+        valueCase_ = 0;
+        value_ = null;
+      }
+    }
+
+    public static final int DEVICE_SERVER_TOKEN_FIELD_NUMBER = 4;
+    /**
+     * <code>.outer.DeviceServerToken device_server_token = 4;</code>
+     */
+    @java.lang.Override
+    public boolean hasDeviceServerToken() {
+      return valueCase_ == 4;
+    }
+    /**
+     * <code>.outer.DeviceServerToken device_server_token = 4;</code>
+     */
+    @java.lang.Override
+    public com.dogu.protocol.generated.outer.DeviceAuth.DeviceServerToken getDeviceServerToken() {
+      if (valueCase_ == 4) {
+         return (com.dogu.protocol.generated.outer.DeviceAuth.DeviceServerToken) value_;
+      }
+      return com.dogu.protocol.generated.outer.DeviceAuth.DeviceServerToken.getDefaultInstance();
+    }
+    /**
+     * <code>.outer.DeviceServerToken device_server_token = 4;</code>
+     */
+    private void setDeviceServerToken(com.dogu.protocol.generated.outer.DeviceAuth.DeviceServerToken value) {
+      value.getClass();
+  value_ = value;
+      valueCase_ = 4;
+    }
+    /**
+     * <code>.outer.DeviceServerToken device_server_token = 4;</code>
+     */
+    private void mergeDeviceServerToken(com.dogu.protocol.generated.outer.DeviceAuth.DeviceServerToken value) {
+      value.getClass();
+  if (valueCase_ == 4 &&
+          value_ != com.dogu.protocol.generated.outer.DeviceAuth.DeviceServerToken.getDefaultInstance()) {
+        value_ = com.dogu.protocol.generated.outer.DeviceAuth.DeviceServerToken.newBuilder((com.dogu.protocol.generated.outer.DeviceAuth.DeviceServerToken) value_)
+            .mergeFrom(value).buildPartial();
+      } else {
+        value_ = value;
+      }
+      valueCase_ = 4;
+    }
+    /**
+     * <code>.outer.DeviceServerToken device_server_token = 4;</code>
+     */
+    private void clearDeviceServerToken() {
+      if (valueCase_ == 4) {
         valueCase_ = 0;
         value_ = null;
       }
@@ -2185,6 +2248,54 @@ public final class Streaming {
         return this;
       }
 
+      /**
+       * <code>.outer.DeviceServerToken device_server_token = 4;</code>
+       */
+      @java.lang.Override
+      public boolean hasDeviceServerToken() {
+        return instance.hasDeviceServerToken();
+      }
+      /**
+       * <code>.outer.DeviceServerToken device_server_token = 4;</code>
+       */
+      @java.lang.Override
+      public com.dogu.protocol.generated.outer.DeviceAuth.DeviceServerToken getDeviceServerToken() {
+        return instance.getDeviceServerToken();
+      }
+      /**
+       * <code>.outer.DeviceServerToken device_server_token = 4;</code>
+       */
+      public Builder setDeviceServerToken(com.dogu.protocol.generated.outer.DeviceAuth.DeviceServerToken value) {
+        copyOnWrite();
+        instance.setDeviceServerToken(value);
+        return this;
+      }
+      /**
+       * <code>.outer.DeviceServerToken device_server_token = 4;</code>
+       */
+      public Builder setDeviceServerToken(
+          com.dogu.protocol.generated.outer.DeviceAuth.DeviceServerToken.Builder builderForValue) {
+        copyOnWrite();
+        instance.setDeviceServerToken(builderForValue.build());
+        return this;
+      }
+      /**
+       * <code>.outer.DeviceServerToken device_server_token = 4;</code>
+       */
+      public Builder mergeDeviceServerToken(com.dogu.protocol.generated.outer.DeviceAuth.DeviceServerToken value) {
+        copyOnWrite();
+        instance.mergeDeviceServerToken(value);
+        return this;
+      }
+      /**
+       * <code>.outer.DeviceServerToken device_server_token = 4;</code>
+       */
+      public Builder clearDeviceServerToken() {
+        copyOnWrite();
+        instance.clearDeviceServerToken();
+        return this;
+      }
+
       // @@protoc_insertion_point(builder_scope:outer.streaming.StreamingAnswer)
     }
     @java.lang.Override
@@ -2206,10 +2317,11 @@ public final class Streaming {
               com.dogu.protocol.generated.outer.streaming.Webrtc.ProtoRTCPeerDescription.class,
               com.dogu.protocol.generated.outer.streaming.Webrtc.ProtoRTCIceCandidateInit.class,
               com.dogu.protocol.generated.outer.Errors.ErrorResult.class,
+              com.dogu.protocol.generated.outer.DeviceAuth.DeviceServerToken.class,
             };
             java.lang.String info =
-                "\u0000\u0003\u0001\u0000\u0001\u0003\u0003\u0000\u0000\u0000\u0001<\u0000\u0002<" +
-                "\u0000\u0003<\u0000";
+                "\u0000\u0004\u0001\u0000\u0001\u0004\u0004\u0000\u0000\u0000\u0001<\u0000\u0002<" +
+                "\u0000\u0003<\u0000\u0004<\u0000";
             return newMessageInfo(DEFAULT_INSTANCE, info, objects);
         }
         // fall through

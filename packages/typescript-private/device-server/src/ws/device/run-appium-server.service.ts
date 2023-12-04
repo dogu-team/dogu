@@ -5,6 +5,7 @@ import { DeviceRunAppiumServer } from '@dogu-tech/device-client-common';
 import { IncomingMessage } from 'http';
 import WebSocket from 'ws';
 import { AppiumRemoteContextRental } from '../../appium/appium.context.proxy';
+import { WebsocketHeaderPermission, WebsocketIncomingMessage } from '../../auth/guard/websocket.guard';
 import { DoguLogger } from '../../logger/logger';
 import { ScanService } from '../../scan/scan.service';
 
@@ -25,7 +26,8 @@ export class DeviceRunAppiumServerService
     super(DeviceRunAppiumServer, logger);
   }
 
-  override onWebSocketOpen(webSocket: WebSocket, incommingMessage: IncomingMessage): Value {
+  @WebsocketHeaderPermission({ allowAdmin: true, allowTemporary: 'serial' })
+  override onWebSocketOpen(webSocket: WebSocket, @WebsocketIncomingMessage() incommingMessage: IncomingMessage): Value {
     return { serial: '', rental: null };
   }
 

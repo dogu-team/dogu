@@ -1,18 +1,21 @@
-import { DEVICE_JOB_LOG_TYPE, OrganizationId, RoutineDeviceJobId, Serial } from '@dogu-private/types';
+import { DEVICE_JOB_LOG_TYPE, OrganizationId, RoutineDeviceJobId, RoutineStepId, Serial } from '@dogu-private/types';
 import { closeWebSocketWithTruncateReason, Instance, stringify, transformAndValidate, validateAndEmitEventAsync } from '@dogu-tech/common';
 import { DeviceLogSubscribe } from '@dogu-tech/device-client';
 import { Injectable } from '@nestjs/common';
 import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import WebSocket from 'ws';
+import { DeviceAuthService } from '../device-auth/device-auth.service';
 import { OnDeviceJobCancelRequestedEvent, OnDeviceJobLoggedEvent, OnDeviceJobPostProcessCompletedEvent, OnDeviceJobStartedEvent } from '../device-job/device-job.events';
 import { env } from '../env';
 import { OnHostDisconnectedEvent } from '../host/host.events';
 import { DoguLogger } from '../logger/logger';
+import { OnStepStartedEvent } from '../step/step.events';
 
 interface DeviceLogInfo {
   webSocket: WebSocket;
   executorOrganizationId: OrganizationId;
   routineDeviceJobId: RoutineDeviceJobId;
+  routineStepId?: RoutineStepId;
   serial: Serial;
 }
 
@@ -23,6 +26,7 @@ export class DeviceJobLogProcessRegistry {
   constructor(
     private readonly logger: DoguLogger,
     private readonly eventEmitter: EventEmitter2,
+    private readonly authService: DeviceAuthService,
   ) {}
 
   @OnEvent(OnHostDisconnectedEvent.key)
@@ -37,9 +41,8 @@ export class DeviceJobLogProcessRegistry {
   @OnEvent(OnDeviceJobStartedEvent.key)
   onDeviceJobStarted(value: Instance<typeof OnDeviceJobStartedEvent.value>): void {
     const { executorOrganizationId, routineDeviceJobId, serial } = value;
-    const webSocket = new WebSocket(`ws://${env.DOGU_DEVICE_SERVER_HOST_PORT}${DeviceLogSubscribe.path}`);
     const key = this.createKey(executorOrganizationId, routineDeviceJobId);
-
+    const webSocket = new WebSocket(`ws://${env.DOGU_DEVICE_SERVER_HOST_PORT}${DeviceLogSubscribe.path}`, { headers: this.authService.makeAuthHeader() });
     if (this.webSockets.has(key)) {
       throw new Error(`device log already exists: ${key}`);
     }
@@ -77,12 +80,18 @@ export class DeviceJobLogProcessRegistry {
       // eslint-disable-next-line @typescript-eslint/no-base-to-string
       transformAndValidate(DeviceLogSubscribe.receiveMessage, JSON.parse(data.toString()))
         .then(async (message) => {
+          const storeValue = this.webSockets.get(key);
+          if (!storeValue) {
+            this.logger.error('startDeviceLogSubscribe failed to get storeValue', { key });
+            return;
+          }
           await validateAndEmitEventAsync(this.eventEmitter, OnDeviceJobLoggedEvent, {
             executorOrganizationId,
             routineDeviceJobId,
             log: {
               ...message,
               type: DEVICE_JOB_LOG_TYPE.DEVICE,
+              routineStepId: storeValue.routineStepId,
             },
           });
         })
@@ -90,6 +99,18 @@ export class DeviceJobLogProcessRegistry {
           this.logger.error('startDeviceLogSubscribe failed to parse message', { error: stringify(error) });
         });
     });
+  }
+
+  @OnEvent(OnStepStartedEvent.key)
+  onStepStartedEvent(value: Instance<typeof OnStepStartedEvent.value>): void {
+    const { executorOrganizationId, routineDeviceJobId, routineStepId } = value;
+    const key = this.createKey(executorOrganizationId, routineDeviceJobId);
+    const storeValue = this.webSockets.get(key);
+    if (!storeValue) {
+      this.logger.warn(`DeviceJobLogProcessRegistry.onStepStartedEvent deviceJob not exists: ${key}`);
+      return;
+    }
+    this.webSockets.set(key, { ...storeValue, routineStepId });
   }
 
   @OnEvent(OnDeviceJobCancelRequestedEvent.key)
@@ -122,7 +143,7 @@ export class DeviceJobLogProcessRegistry {
     closeWebSocketWithTruncateReason(webSocket, 1001, 'Completed');
   }
 
-  private createKey(organizationId: OrganizationId, routineDeviceJobId: RoutineDeviceJobId): string {
-    return `${organizationId}:${routineDeviceJobId}`;
+  private createKey(executorOrganizationId: OrganizationId, routineDeviceJobId: RoutineDeviceJobId): string {
+    return `${executorOrganizationId}:${routineDeviceJobId}`;
   }
 }

@@ -27,3 +27,14 @@ export interface EnsureBrowserAndDriverResult {
   browserPackageName?: string;
   deviceSerial?: Serial;
 }
+
+export const DOGU_DEVICE_AUTHORIZATION_HEADER_KEY = 'dogu-device-authorization';
+export const DOGU_DEVICE_SERIAL_HEADER_KEY = 'dogu-device-serial';
+
+export interface HeaderValue {
+  key: string;
+  value: string;
+}
+export interface Headers {
+  values: HeaderValue[];
+}

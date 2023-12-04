@@ -8,6 +8,7 @@ import fs from 'fs';
 import path from 'path';
 import WebSocket from 'ws';
 import { ConsoleClientService } from '../console-client/console-client.service';
+import { DeviceAuthService } from '../device-auth/device-auth.service';
 import { env } from '../env';
 import { DoguLogger } from '../logger/logger';
 
@@ -23,11 +24,12 @@ export class DeviceJobRecordingService {
   constructor(
     private readonly logger: DoguLogger,
     private readonly consoleClientService: ConsoleClientService,
+    private readonly authService: DeviceAuthService,
   ) {}
 
   connectAndUploadRecordWs(value: DeviceJobRecordParam, filePath: string, listener: { onClose: (ws: WebSocket) => void }): WebSocket {
     const { executorOrganizationId, routineDeviceJobId, serial, pid } = value;
-    const webSocket = new WebSocket(`ws://${env.DOGU_DEVICE_SERVER_HOST_PORT}${DeviceRecording.path}`);
+    const webSocket = new WebSocket(`ws://${env.DOGU_DEVICE_SERVER_HOST_PORT}${DeviceRecording.path}`, { headers: this.authService.makeAuthHeader() });
     webSocket.addEventListener('open', () => {
       this.logger.info('startRecording open', {
         filePath,
@@ -85,7 +87,7 @@ export class DeviceJobRecordingService {
     param: Instance<typeof DeviceFindWindows.sendMessage>,
     listener: { onMessage: (result: Instance<typeof DeviceFindWindows.receiveMessage>) => void; onClose: (ws: WebSocket) => void },
   ): WebSocket {
-    const webSocket = new WebSocket(`ws://${env.DOGU_DEVICE_SERVER_HOST_PORT}${DeviceFindWindows.path}`);
+    const webSocket = new WebSocket(`ws://${env.DOGU_DEVICE_SERVER_HOST_PORT}${DeviceFindWindows.path}`, { headers: this.authService.makeAuthHeader() });
     webSocket.addEventListener('open', () => {
       this.logger.info('connectFindWindowsWs open', {
         param,

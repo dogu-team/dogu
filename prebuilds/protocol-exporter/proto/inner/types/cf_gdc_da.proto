@@ -22,7 +22,6 @@ message DataChannelProtocolDeviceHttp {
 }
 
 message DataChannelProtocolDeviceWebSocket {
-  outer.WebSocketConnection connection = 1;
 }
 
 message DataChannelLabel {

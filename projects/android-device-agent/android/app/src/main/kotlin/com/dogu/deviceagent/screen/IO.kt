@@ -4,6 +4,7 @@ import android.system.ErrnoException
 import android.system.Os
 import android.system.OsConstants
 import com.dogu.deviceagent.BuildConfig
+import com.dogu.deviceagent.InternalException
 import io.ktor.util.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.Channel
@@ -33,7 +34,7 @@ object IO {
                 val w = Os.write(fd, from)
                 if (BuildConfig.DEBUG && w < 0) {
                     // w should not be negative, since an exception is thrown on error
-                    throw AssertionError("Os.write() returned a negative value ($w)")
+                    throw InternalException("Os.write() returned a negative value ($w)")
                 }
                 remaining -= w
             } catch (e: ErrnoException) {

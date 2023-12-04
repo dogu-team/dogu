@@ -13,6 +13,7 @@ function defaultActionKitOptions(): FilledActionKitOptions {
     DOGU_DEVICE_ID: '',
     DOGU_DEVICE_PLATFORM: 'unspecified',
     DOGU_DEVICE_SERIAL: '',
+    DOGU_DEVICE_TOKEN: '',
     DOGU_DEVICE_SERVER_URL: '',
     DOGU_DEVICE_WORKSPACE_PATH: '',
     DOGU_ROUTINE_WORKSPACE_PATH: '',

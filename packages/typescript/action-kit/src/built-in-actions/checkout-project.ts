@@ -25,7 +25,7 @@ export async function checkoutProject(
   if (!checkoutUrl) {
     printable.info('Getting Git url from console...');
     try {
-      const { url } = await consoleActionClient.getGitlabUrl();
+      const { url } = await consoleActionClient.getGitUrl();
       checkoutUrl = url;
     } catch (error) {
       for (let i = 0; i < 3; ++i) {

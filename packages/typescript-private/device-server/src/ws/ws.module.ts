@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { AuthModule } from '../auth/auth.module';
 import { BrowserManagerModule } from '../browser-manager/browser-manager.module';
 import { DeviceHostModule } from '../device-host/device-host.module';
 import { ScanModule } from '../scan/scan.module';
@@ -9,7 +10,6 @@ import { DeviceConnectionSubscribeService } from './device/connection-subscribe.
 import { DeviceFindWindowsService } from './device/find-windows.service';
 import { DeviceForwardService } from './device/forward.service';
 import { DeviceInstallAppService } from './device/install-app.service';
-import { DeviceJoinWifiService } from './device/join-wifi.service';
 import { DeviceLogSubscribeService } from './device/log-subscribe.service';
 import { DeviceRecordingService } from './device/recording.service';
 import { DeviceResetService } from './device/reset.service';
@@ -22,7 +22,7 @@ import { DeviceUninstallAppService } from './device/uninstall-app.service';
 import { DeviceWebSocketRelayService } from './device/websocket-relay.service';
 
 @Module({
-  imports: [ScanModule, DeviceHostModule, BrowserManagerModule],
+  imports: [ScanModule, DeviceHostModule, BrowserManagerModule, AuthModule],
   providers: [
     DeviceInstallAppService,
     DeviceConnectionSubscribeService,
@@ -34,7 +34,6 @@ import { DeviceWebSocketRelayService } from './device/websocket-relay.service';
     DeviceUninstallAppService,
     DeviceRecordingService,
     DeviceResetService,
-    DeviceJoinWifiService,
     DeviceWebSocketRelayService,
     DeviceTcpRelayService,
     DeviceRunAppiumServerService,

@@ -88,6 +88,32 @@ object WebSocketConnectionKt {
     }
     val WebSocketConnectionKt.Dsl.queryOrNull: com.google.protobuf.Struct?
       get() = _builder.queryOrNull
+
+    /**
+     * <code>optional .outer.Headers headers = 4;</code>
+     */
+    var headers: com.dogu.protocol.generated.outer.HttpWs.Headers
+      @JvmName("getHeaders")
+      get() = _builder.getHeaders()
+      @JvmName("setHeaders")
+      set(value) {
+        _builder.setHeaders(value)
+      }
+    /**
+     * <code>optional .outer.Headers headers = 4;</code>
+     */
+    fun clearHeaders() {
+      _builder.clearHeaders()
+    }
+    /**
+     * <code>optional .outer.Headers headers = 4;</code>
+     * @return Whether the headers field is set.
+     */
+    fun hasHeaders(): kotlin.Boolean {
+      return _builder.hasHeaders()
+    }
+    val WebSocketConnectionKt.Dsl.headersOrNull: com.dogu.protocol.generated.outer.HttpWs.Headers?
+      get() = _builder.headersOrNull
   }
 }
 @kotlin.jvm.JvmSynthetic
@@ -96,4 +122,7 @@ inline fun com.dogu.protocol.generated.outer.HttpWs.WebSocketConnection.copy(blo
 
 val com.dogu.protocol.generated.outer.HttpWs.WebSocketConnectionOrBuilder.queryOrNull: com.google.protobuf.Struct?
   get() = if (hasQuery()) getQuery() else null
+
+val com.dogu.protocol.generated.outer.HttpWs.WebSocketConnectionOrBuilder.headersOrNull: com.dogu.protocol.generated.outer.HttpWs.Headers?
+  get() = if (hasHeaders()) getHeaders() else null
 

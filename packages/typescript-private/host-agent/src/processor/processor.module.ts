@@ -1,5 +1,6 @@
 import { HttpModule } from '@nestjs/axios';
 import { forwardRef, Module } from '@nestjs/common';
+import { DeviceAuthModule } from '../device-auth/device-auth.module';
 import { DeviceClientModule } from '../device-client/device-client.module';
 import { DeviceJobModule } from '../device-job/device-job.module';
 import { ActionProcessor } from './action.processor';
@@ -16,6 +17,7 @@ import { UpdateProcessor } from './update.processor';
     }),
     forwardRef(() => DeviceJobModule),
     DeviceClientModule,
+    DeviceAuthModule,
   ],
   providers: [ActionProcessor, CommandProcessRegistry, DeviceJobStepProcessor, RoutineWorkspace, UpdateProcessor, DockerActionProcessor],
   exports: [ActionProcessor, CommandProcessRegistry, DeviceJobStepProcessor, RoutineWorkspace, UpdateProcessor, DockerActionProcessor],

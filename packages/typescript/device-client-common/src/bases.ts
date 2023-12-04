@@ -1,8 +1,10 @@
 import { Closable, ConsoleLogger, fillOptionsSync, Printable, PromiseOrValue } from '@dogu-tech/common';
 import {
   DeviceHostUploadFileSendMessage,
+  DeviceServerToken,
   HttpRequest,
   HttpResponse,
+  Serial,
   WebSocketCloseEvent,
   WebSocketConnection,
   WebSocketErrorEvent,
@@ -44,6 +46,11 @@ export class DeviceClientOptions {
   @IsNumber()
   @Type(() => Number)
   timeout?: number;
+
+  /**
+   * @default empty
+   */
+  tokenGetter?: () => DeviceServerToken;
 }
 
 export function fillDeviceClientOptions(options?: DeviceClientOptions): Required<DeviceClientOptions> {
@@ -53,6 +60,9 @@ export function fillDeviceClientOptions(options?: DeviceClientOptions): Required
       deviceServerUrl: 'http://127.0.0.1:5001',
       printable: ConsoleLogger.instance,
       timeout: 60000,
+      tokenGetter: () => {
+        return { value: '' };
+      },
     },
     options,
   );
@@ -60,7 +70,7 @@ export function fillDeviceClientOptions(options?: DeviceClientOptions): Required
 
 export interface DeviceService {
   httpRequest(request: HttpRequest, options: Required<DeviceClientOptions>): PromiseOrValue<HttpResponse>;
-  connectWebSocket(connection: WebSocketConnection, options: Required<DeviceClientOptions>, listener?: DeviceWebSocketListener): DeviceWebSocket;
+  connectWebSocket(connection: WebSocketConnection, serial: Serial | undefined, options: Required<DeviceClientOptions>, listener?: DeviceWebSocketListener): DeviceWebSocket;
 }
 
 export class HostFileUploader {

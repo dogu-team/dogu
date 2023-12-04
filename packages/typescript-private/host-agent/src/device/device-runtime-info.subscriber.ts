@@ -6,6 +6,7 @@ import { Injectable } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import WebSocket from 'ws';
 import { ConsoleClientService } from '../console-client/console-client.service';
+import { DeviceAuthService } from '../device-auth/device-auth.service';
 import { env } from '../env';
 import { DoguLogger } from '../logger/logger';
 import { DeviceWebSocketMap } from '../types';
@@ -14,7 +15,12 @@ import { DeviceRegistry } from './device.registry';
 
 @Injectable()
 export class DeviceRuntimeInfoSubscriber {
-  constructor(private readonly logger: DoguLogger, private readonly consoleClientService: ConsoleClientService, private readonly deviceRegistry: DeviceRegistry) {}
+  constructor(
+    private readonly logger: DoguLogger,
+    private readonly consoleClientService: ConsoleClientService,
+    private readonly deviceRegistry: DeviceRegistry,
+    private readonly authService: DeviceAuthService,
+  ) {}
 
   @OnEvent(OnDeviceRegisteredEvent.key)
   onDeviceRegistered(value: Instance<typeof OnDeviceRegisteredEvent.value>): void {
@@ -32,7 +38,7 @@ export class DeviceRuntimeInfoSubscriber {
   }
 
   private subscribeRuntimeInfo(organizationId: OrganizationId, deviceId: DeviceId, serial: Serial): WebSocket {
-    const webSocket = new WebSocket(`ws://${env.DOGU_DEVICE_SERVER_HOST_PORT}${DeviceRuntimeInfoSubscribe.path}`);
+    const webSocket = new WebSocket(`ws://${env.DOGU_DEVICE_SERVER_HOST_PORT}${DeviceRuntimeInfoSubscribe.path}`, { headers: this.authService.makeAuthHeader() });
     webSocket.on('open', () => {
       this.logger.debug('deviceRuntimeInfoSubscribe.open');
       const sendMessage: Instance<typeof DeviceRuntimeInfoSubscribe.sendMessage> = {

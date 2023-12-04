@@ -3430,6 +3430,17 @@ public final class HttpWs {
      * @return The query.
      */
     com.google.protobuf.Struct getQuery();
+
+    /**
+     * <code>optional .outer.Headers headers = 4;</code>
+     * @return Whether the headers field is set.
+     */
+    boolean hasHeaders();
+    /**
+     * <code>optional .outer.Headers headers = 4;</code>
+     * @return The headers.
+     */
+    com.dogu.protocol.generated.outer.HttpWs.Headers getHeaders();
   }
   /**
    * Protobuf type {@code outer.WebSocketConnection}
@@ -3590,6 +3601,52 @@ public final class HttpWs {
      */
     private void clearQuery() {  query_ = null;
       bitField0_ = (bitField0_ & ~0x00000002);
+    }
+
+    public static final int HEADERS_FIELD_NUMBER = 4;
+    private com.dogu.protocol.generated.outer.HttpWs.Headers headers_;
+    /**
+     * <code>optional .outer.Headers headers = 4;</code>
+     */
+    @java.lang.Override
+    public boolean hasHeaders() {
+      return ((bitField0_ & 0x00000004) != 0);
+    }
+    /**
+     * <code>optional .outer.Headers headers = 4;</code>
+     */
+    @java.lang.Override
+    public com.dogu.protocol.generated.outer.HttpWs.Headers getHeaders() {
+      return headers_ == null ? com.dogu.protocol.generated.outer.HttpWs.Headers.getDefaultInstance() : headers_;
+    }
+    /**
+     * <code>optional .outer.Headers headers = 4;</code>
+     */
+    private void setHeaders(com.dogu.protocol.generated.outer.HttpWs.Headers value) {
+      value.getClass();
+  headers_ = value;
+      bitField0_ |= 0x00000004;
+      }
+    /**
+     * <code>optional .outer.Headers headers = 4;</code>
+     */
+    @java.lang.SuppressWarnings({"ReferenceEquality"})
+    private void mergeHeaders(com.dogu.protocol.generated.outer.HttpWs.Headers value) {
+      value.getClass();
+  if (headers_ != null &&
+          headers_ != com.dogu.protocol.generated.outer.HttpWs.Headers.getDefaultInstance()) {
+        headers_ =
+          com.dogu.protocol.generated.outer.HttpWs.Headers.newBuilder(headers_).mergeFrom(value).buildPartial();
+      } else {
+        headers_ = value;
+      }
+      bitField0_ |= 0x00000004;
+    }
+    /**
+     * <code>optional .outer.Headers headers = 4;</code>
+     */
+    private void clearHeaders() {  headers_ = null;
+      bitField0_ = (bitField0_ & ~0x00000004);
     }
 
     public static com.dogu.protocol.generated.outer.HttpWs.WebSocketConnection parseFrom(
@@ -3840,6 +3897,53 @@ public final class HttpWs {
         return this;
       }
 
+      /**
+       * <code>optional .outer.Headers headers = 4;</code>
+       */
+      @java.lang.Override
+      public boolean hasHeaders() {
+        return instance.hasHeaders();
+      }
+      /**
+       * <code>optional .outer.Headers headers = 4;</code>
+       */
+      @java.lang.Override
+      public com.dogu.protocol.generated.outer.HttpWs.Headers getHeaders() {
+        return instance.getHeaders();
+      }
+      /**
+       * <code>optional .outer.Headers headers = 4;</code>
+       */
+      public Builder setHeaders(com.dogu.protocol.generated.outer.HttpWs.Headers value) {
+        copyOnWrite();
+        instance.setHeaders(value);
+        return this;
+        }
+      /**
+       * <code>optional .outer.Headers headers = 4;</code>
+       */
+      public Builder setHeaders(
+          com.dogu.protocol.generated.outer.HttpWs.Headers.Builder builderForValue) {
+        copyOnWrite();
+        instance.setHeaders(builderForValue.build());
+        return this;
+      }
+      /**
+       * <code>optional .outer.Headers headers = 4;</code>
+       */
+      public Builder mergeHeaders(com.dogu.protocol.generated.outer.HttpWs.Headers value) {
+        copyOnWrite();
+        instance.mergeHeaders(value);
+        return this;
+      }
+      /**
+       * <code>optional .outer.Headers headers = 4;</code>
+       */
+      public Builder clearHeaders() {  copyOnWrite();
+        instance.clearHeaders();
+        return this;
+      }
+
       // @@protoc_insertion_point(builder_scope:outer.WebSocketConnection)
     }
     @java.lang.Override
@@ -3860,10 +3964,11 @@ public final class HttpWs {
               "protocolDomain_",
               "path_",
               "query_",
+              "headers_",
             };
             java.lang.String info =
-                "\u0000\u0003\u0000\u0001\u0001\u0003\u0003\u0000\u0000\u0000\u0001\u1208\u0000\u0002" +
-                "\u0208\u0003\u1009\u0001";
+                "\u0000\u0004\u0000\u0001\u0001\u0004\u0004\u0000\u0000\u0000\u0001\u1208\u0000\u0002" +
+                "\u0208\u0003\u1009\u0001\u0004\u1009\u0002";
             return newMessageInfo(DEFAULT_INSTANCE, info, objects);
         }
         // fall through
@@ -3950,6 +4055,17 @@ public final class HttpWs {
      */
     com.google.protobuf.ByteString getBytesValue();
 
+    /**
+     * <code>.outer.WebSocketConnection connection = 3;</code>
+     * @return Whether the connection field is set.
+     */
+    boolean hasConnection();
+    /**
+     * <code>.outer.WebSocketConnection connection = 3;</code>
+     * @return The connection.
+     */
+    com.dogu.protocol.generated.outer.HttpWs.WebSocketConnection getConnection();
+
     public com.dogu.protocol.generated.outer.HttpWs.WebSocketMessage.ValueCase getValueCase();
   }
   /**
@@ -3967,6 +4083,7 @@ public final class HttpWs {
     public enum ValueCase {
       STRING_VALUE(1),
       BYTES_VALUE(2),
+      CONNECTION(3),
       VALUE_NOT_SET(0);
       private final int value;
       private ValueCase(int value) {
@@ -3984,6 +4101,7 @@ public final class HttpWs {
         switch (value) {
           case 1: return STRING_VALUE;
           case 2: return BYTES_VALUE;
+          case 3: return CONNECTION;
           case 0: return VALUE_NOT_SET;
           default: return null;
         }
@@ -4103,6 +4221,56 @@ public final class HttpWs {
      */
     private void clearBytesValue() {
       if (valueCase_ == 2) {
+        valueCase_ = 0;
+        value_ = null;
+      }
+    }
+
+    public static final int CONNECTION_FIELD_NUMBER = 3;
+    /**
+     * <code>.outer.WebSocketConnection connection = 3;</code>
+     */
+    @java.lang.Override
+    public boolean hasConnection() {
+      return valueCase_ == 3;
+    }
+    /**
+     * <code>.outer.WebSocketConnection connection = 3;</code>
+     */
+    @java.lang.Override
+    public com.dogu.protocol.generated.outer.HttpWs.WebSocketConnection getConnection() {
+      if (valueCase_ == 3) {
+         return (com.dogu.protocol.generated.outer.HttpWs.WebSocketConnection) value_;
+      }
+      return com.dogu.protocol.generated.outer.HttpWs.WebSocketConnection.getDefaultInstance();
+    }
+    /**
+     * <code>.outer.WebSocketConnection connection = 3;</code>
+     */
+    private void setConnection(com.dogu.protocol.generated.outer.HttpWs.WebSocketConnection value) {
+      value.getClass();
+  value_ = value;
+      valueCase_ = 3;
+    }
+    /**
+     * <code>.outer.WebSocketConnection connection = 3;</code>
+     */
+    private void mergeConnection(com.dogu.protocol.generated.outer.HttpWs.WebSocketConnection value) {
+      value.getClass();
+  if (valueCase_ == 3 &&
+          value_ != com.dogu.protocol.generated.outer.HttpWs.WebSocketConnection.getDefaultInstance()) {
+        value_ = com.dogu.protocol.generated.outer.HttpWs.WebSocketConnection.newBuilder((com.dogu.protocol.generated.outer.HttpWs.WebSocketConnection) value_)
+            .mergeFrom(value).buildPartial();
+      } else {
+        value_ = value;
+      }
+      valueCase_ = 3;
+    }
+    /**
+     * <code>.outer.WebSocketConnection connection = 3;</code>
+     */
+    private void clearConnection() {
+      if (valueCase_ == 3) {
         valueCase_ = 0;
         value_ = null;
       }
@@ -4308,6 +4476,54 @@ public final class HttpWs {
         return this;
       }
 
+      /**
+       * <code>.outer.WebSocketConnection connection = 3;</code>
+       */
+      @java.lang.Override
+      public boolean hasConnection() {
+        return instance.hasConnection();
+      }
+      /**
+       * <code>.outer.WebSocketConnection connection = 3;</code>
+       */
+      @java.lang.Override
+      public com.dogu.protocol.generated.outer.HttpWs.WebSocketConnection getConnection() {
+        return instance.getConnection();
+      }
+      /**
+       * <code>.outer.WebSocketConnection connection = 3;</code>
+       */
+      public Builder setConnection(com.dogu.protocol.generated.outer.HttpWs.WebSocketConnection value) {
+        copyOnWrite();
+        instance.setConnection(value);
+        return this;
+      }
+      /**
+       * <code>.outer.WebSocketConnection connection = 3;</code>
+       */
+      public Builder setConnection(
+          com.dogu.protocol.generated.outer.HttpWs.WebSocketConnection.Builder builderForValue) {
+        copyOnWrite();
+        instance.setConnection(builderForValue.build());
+        return this;
+      }
+      /**
+       * <code>.outer.WebSocketConnection connection = 3;</code>
+       */
+      public Builder mergeConnection(com.dogu.protocol.generated.outer.HttpWs.WebSocketConnection value) {
+        copyOnWrite();
+        instance.mergeConnection(value);
+        return this;
+      }
+      /**
+       * <code>.outer.WebSocketConnection connection = 3;</code>
+       */
+      public Builder clearConnection() {
+        copyOnWrite();
+        instance.clearConnection();
+        return this;
+      }
+
       // @@protoc_insertion_point(builder_scope:outer.WebSocketMessage)
     }
     @java.lang.Override
@@ -4326,10 +4542,11 @@ public final class HttpWs {
             java.lang.Object[] objects = new java.lang.Object[] {
               "value_",
               "valueCase_",
+              com.dogu.protocol.generated.outer.HttpWs.WebSocketConnection.class,
             };
             java.lang.String info =
-                "\u0000\u0002\u0001\u0000\u0001\u0002\u0002\u0000\u0000\u0000\u0001\u023b\u0000\u0002" +
-                "=\u0000";
+                "\u0000\u0003\u0001\u0000\u0001\u0003\u0003\u0000\u0000\u0000\u0001\u023b\u0000\u0002" +
+                "=\u0000\u0003<\u0000";
             return newMessageInfo(DEFAULT_INSTANCE, info, objects);
         }
         // fall through
@@ -4734,580 +4951,6 @@ public final class HttpWs {
     private static volatile com.google.protobuf.Parser<WebSocketClose> PARSER;
 
     public static com.google.protobuf.Parser<WebSocketClose> parser() {
-      return DEFAULT_INSTANCE.getParserForType();
-    }
-  }
-
-  public interface WebSocketParamOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:outer.WebSocketParam)
-      com.google.protobuf.MessageLiteOrBuilder {
-
-    /**
-     * <code>.outer.WebSocketConnection connection = 1;</code>
-     * @return Whether the connection field is set.
-     */
-    boolean hasConnection();
-    /**
-     * <code>.outer.WebSocketConnection connection = 1;</code>
-     * @return The connection.
-     */
-    com.dogu.protocol.generated.outer.HttpWs.WebSocketConnection getConnection();
-
-    /**
-     * <code>.outer.WebSocketMessage message = 2;</code>
-     * @return Whether the message field is set.
-     */
-    boolean hasMessage();
-    /**
-     * <code>.outer.WebSocketMessage message = 2;</code>
-     * @return The message.
-     */
-    com.dogu.protocol.generated.outer.HttpWs.WebSocketMessage getMessage();
-
-    /**
-     * <code>.outer.WebSocketClose close = 3;</code>
-     * @return Whether the close field is set.
-     */
-    boolean hasClose();
-    /**
-     * <code>.outer.WebSocketClose close = 3;</code>
-     * @return The close.
-     */
-    com.dogu.protocol.generated.outer.HttpWs.WebSocketClose getClose();
-
-    public com.dogu.protocol.generated.outer.HttpWs.WebSocketParam.ValueCase getValueCase();
-  }
-  /**
-   * Protobuf type {@code outer.WebSocketParam}
-   */
-  public  static final class WebSocketParam extends
-      com.google.protobuf.GeneratedMessageLite<
-          WebSocketParam, WebSocketParam.Builder> implements
-      // @@protoc_insertion_point(message_implements:outer.WebSocketParam)
-      WebSocketParamOrBuilder {
-    private WebSocketParam() {
-    }
-    private int valueCase_ = 0;
-    private java.lang.Object value_;
-    public enum ValueCase {
-      CONNECTION(1),
-      MESSAGE(2),
-      CLOSE(3),
-      VALUE_NOT_SET(0);
-      private final int value;
-      private ValueCase(int value) {
-        this.value = value;
-      }
-      /**
-       * @deprecated Use {@link #forNumber(int)} instead.
-       */
-      @java.lang.Deprecated
-      public static ValueCase valueOf(int value) {
-        return forNumber(value);
-      }
-
-      public static ValueCase forNumber(int value) {
-        switch (value) {
-          case 1: return CONNECTION;
-          case 2: return MESSAGE;
-          case 3: return CLOSE;
-          case 0: return VALUE_NOT_SET;
-          default: return null;
-        }
-      }
-      public int getNumber() {
-        return this.value;
-      }
-    };
-
-    @java.lang.Override
-    public ValueCase
-    getValueCase() {
-      return ValueCase.forNumber(
-          valueCase_);
-    }
-
-    private void clearValue() {
-      valueCase_ = 0;
-      value_ = null;
-    }
-
-    public static final int CONNECTION_FIELD_NUMBER = 1;
-    /**
-     * <code>.outer.WebSocketConnection connection = 1;</code>
-     */
-    @java.lang.Override
-    public boolean hasConnection() {
-      return valueCase_ == 1;
-    }
-    /**
-     * <code>.outer.WebSocketConnection connection = 1;</code>
-     */
-    @java.lang.Override
-    public com.dogu.protocol.generated.outer.HttpWs.WebSocketConnection getConnection() {
-      if (valueCase_ == 1) {
-         return (com.dogu.protocol.generated.outer.HttpWs.WebSocketConnection) value_;
-      }
-      return com.dogu.protocol.generated.outer.HttpWs.WebSocketConnection.getDefaultInstance();
-    }
-    /**
-     * <code>.outer.WebSocketConnection connection = 1;</code>
-     */
-    private void setConnection(com.dogu.protocol.generated.outer.HttpWs.WebSocketConnection value) {
-      value.getClass();
-  value_ = value;
-      valueCase_ = 1;
-    }
-    /**
-     * <code>.outer.WebSocketConnection connection = 1;</code>
-     */
-    private void mergeConnection(com.dogu.protocol.generated.outer.HttpWs.WebSocketConnection value) {
-      value.getClass();
-  if (valueCase_ == 1 &&
-          value_ != com.dogu.protocol.generated.outer.HttpWs.WebSocketConnection.getDefaultInstance()) {
-        value_ = com.dogu.protocol.generated.outer.HttpWs.WebSocketConnection.newBuilder((com.dogu.protocol.generated.outer.HttpWs.WebSocketConnection) value_)
-            .mergeFrom(value).buildPartial();
-      } else {
-        value_ = value;
-      }
-      valueCase_ = 1;
-    }
-    /**
-     * <code>.outer.WebSocketConnection connection = 1;</code>
-     */
-    private void clearConnection() {
-      if (valueCase_ == 1) {
-        valueCase_ = 0;
-        value_ = null;
-      }
-    }
-
-    public static final int MESSAGE_FIELD_NUMBER = 2;
-    /**
-     * <code>.outer.WebSocketMessage message = 2;</code>
-     */
-    @java.lang.Override
-    public boolean hasMessage() {
-      return valueCase_ == 2;
-    }
-    /**
-     * <code>.outer.WebSocketMessage message = 2;</code>
-     */
-    @java.lang.Override
-    public com.dogu.protocol.generated.outer.HttpWs.WebSocketMessage getMessage() {
-      if (valueCase_ == 2) {
-         return (com.dogu.protocol.generated.outer.HttpWs.WebSocketMessage) value_;
-      }
-      return com.dogu.protocol.generated.outer.HttpWs.WebSocketMessage.getDefaultInstance();
-    }
-    /**
-     * <code>.outer.WebSocketMessage message = 2;</code>
-     */
-    private void setMessage(com.dogu.protocol.generated.outer.HttpWs.WebSocketMessage value) {
-      value.getClass();
-  value_ = value;
-      valueCase_ = 2;
-    }
-    /**
-     * <code>.outer.WebSocketMessage message = 2;</code>
-     */
-    private void mergeMessage(com.dogu.protocol.generated.outer.HttpWs.WebSocketMessage value) {
-      value.getClass();
-  if (valueCase_ == 2 &&
-          value_ != com.dogu.protocol.generated.outer.HttpWs.WebSocketMessage.getDefaultInstance()) {
-        value_ = com.dogu.protocol.generated.outer.HttpWs.WebSocketMessage.newBuilder((com.dogu.protocol.generated.outer.HttpWs.WebSocketMessage) value_)
-            .mergeFrom(value).buildPartial();
-      } else {
-        value_ = value;
-      }
-      valueCase_ = 2;
-    }
-    /**
-     * <code>.outer.WebSocketMessage message = 2;</code>
-     */
-    private void clearMessage() {
-      if (valueCase_ == 2) {
-        valueCase_ = 0;
-        value_ = null;
-      }
-    }
-
-    public static final int CLOSE_FIELD_NUMBER = 3;
-    /**
-     * <code>.outer.WebSocketClose close = 3;</code>
-     */
-    @java.lang.Override
-    public boolean hasClose() {
-      return valueCase_ == 3;
-    }
-    /**
-     * <code>.outer.WebSocketClose close = 3;</code>
-     */
-    @java.lang.Override
-    public com.dogu.protocol.generated.outer.HttpWs.WebSocketClose getClose() {
-      if (valueCase_ == 3) {
-         return (com.dogu.protocol.generated.outer.HttpWs.WebSocketClose) value_;
-      }
-      return com.dogu.protocol.generated.outer.HttpWs.WebSocketClose.getDefaultInstance();
-    }
-    /**
-     * <code>.outer.WebSocketClose close = 3;</code>
-     */
-    private void setClose(com.dogu.protocol.generated.outer.HttpWs.WebSocketClose value) {
-      value.getClass();
-  value_ = value;
-      valueCase_ = 3;
-    }
-    /**
-     * <code>.outer.WebSocketClose close = 3;</code>
-     */
-    private void mergeClose(com.dogu.protocol.generated.outer.HttpWs.WebSocketClose value) {
-      value.getClass();
-  if (valueCase_ == 3 &&
-          value_ != com.dogu.protocol.generated.outer.HttpWs.WebSocketClose.getDefaultInstance()) {
-        value_ = com.dogu.protocol.generated.outer.HttpWs.WebSocketClose.newBuilder((com.dogu.protocol.generated.outer.HttpWs.WebSocketClose) value_)
-            .mergeFrom(value).buildPartial();
-      } else {
-        value_ = value;
-      }
-      valueCase_ = 3;
-    }
-    /**
-     * <code>.outer.WebSocketClose close = 3;</code>
-     */
-    private void clearClose() {
-      if (valueCase_ == 3) {
-        valueCase_ = 0;
-        value_ = null;
-      }
-    }
-
-    public static com.dogu.protocol.generated.outer.HttpWs.WebSocketParam parseFrom(
-        java.nio.ByteBuffer data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, data);
-    }
-    public static com.dogu.protocol.generated.outer.HttpWs.WebSocketParam parseFrom(
-        java.nio.ByteBuffer data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, data, extensionRegistry);
-    }
-    public static com.dogu.protocol.generated.outer.HttpWs.WebSocketParam parseFrom(
-        com.google.protobuf.ByteString data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, data);
-    }
-    public static com.dogu.protocol.generated.outer.HttpWs.WebSocketParam parseFrom(
-        com.google.protobuf.ByteString data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, data, extensionRegistry);
-    }
-    public static com.dogu.protocol.generated.outer.HttpWs.WebSocketParam parseFrom(byte[] data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, data);
-    }
-    public static com.dogu.protocol.generated.outer.HttpWs.WebSocketParam parseFrom(
-        byte[] data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, data, extensionRegistry);
-    }
-    public static com.dogu.protocol.generated.outer.HttpWs.WebSocketParam parseFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, input);
-    }
-    public static com.dogu.protocol.generated.outer.HttpWs.WebSocketParam parseFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, input, extensionRegistry);
-    }
-    public static com.dogu.protocol.generated.outer.HttpWs.WebSocketParam parseDelimitedFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      return parseDelimitedFrom(DEFAULT_INSTANCE, input);
-    }
-    public static com.dogu.protocol.generated.outer.HttpWs.WebSocketParam parseDelimitedFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return parseDelimitedFrom(DEFAULT_INSTANCE, input, extensionRegistry);
-    }
-    public static com.dogu.protocol.generated.outer.HttpWs.WebSocketParam parseFrom(
-        com.google.protobuf.CodedInputStream input)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, input);
-    }
-    public static com.dogu.protocol.generated.outer.HttpWs.WebSocketParam parseFrom(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, input, extensionRegistry);
-    }
-
-    public static Builder newBuilder() {
-      return (Builder) DEFAULT_INSTANCE.createBuilder();
-    }
-    public static Builder newBuilder(com.dogu.protocol.generated.outer.HttpWs.WebSocketParam prototype) {
-      return (Builder) DEFAULT_INSTANCE.createBuilder(prototype);
-    }
-
-    /**
-     * Protobuf type {@code outer.WebSocketParam}
-     */
-    public static final class Builder extends
-        com.google.protobuf.GeneratedMessageLite.Builder<
-          com.dogu.protocol.generated.outer.HttpWs.WebSocketParam, Builder> implements
-        // @@protoc_insertion_point(builder_implements:outer.WebSocketParam)
-        com.dogu.protocol.generated.outer.HttpWs.WebSocketParamOrBuilder {
-      // Construct using com.dogu.protocol.generated.outer.HttpWs.WebSocketParam.newBuilder()
-      private Builder() {
-        super(DEFAULT_INSTANCE);
-      }
-
-      @java.lang.Override
-      public ValueCase
-          getValueCase() {
-        return instance.getValueCase();
-      }
-
-      public Builder clearValue() {
-        copyOnWrite();
-        instance.clearValue();
-        return this;
-      }
-
-
-      /**
-       * <code>.outer.WebSocketConnection connection = 1;</code>
-       */
-      @java.lang.Override
-      public boolean hasConnection() {
-        return instance.hasConnection();
-      }
-      /**
-       * <code>.outer.WebSocketConnection connection = 1;</code>
-       */
-      @java.lang.Override
-      public com.dogu.protocol.generated.outer.HttpWs.WebSocketConnection getConnection() {
-        return instance.getConnection();
-      }
-      /**
-       * <code>.outer.WebSocketConnection connection = 1;</code>
-       */
-      public Builder setConnection(com.dogu.protocol.generated.outer.HttpWs.WebSocketConnection value) {
-        copyOnWrite();
-        instance.setConnection(value);
-        return this;
-      }
-      /**
-       * <code>.outer.WebSocketConnection connection = 1;</code>
-       */
-      public Builder setConnection(
-          com.dogu.protocol.generated.outer.HttpWs.WebSocketConnection.Builder builderForValue) {
-        copyOnWrite();
-        instance.setConnection(builderForValue.build());
-        return this;
-      }
-      /**
-       * <code>.outer.WebSocketConnection connection = 1;</code>
-       */
-      public Builder mergeConnection(com.dogu.protocol.generated.outer.HttpWs.WebSocketConnection value) {
-        copyOnWrite();
-        instance.mergeConnection(value);
-        return this;
-      }
-      /**
-       * <code>.outer.WebSocketConnection connection = 1;</code>
-       */
-      public Builder clearConnection() {
-        copyOnWrite();
-        instance.clearConnection();
-        return this;
-      }
-
-      /**
-       * <code>.outer.WebSocketMessage message = 2;</code>
-       */
-      @java.lang.Override
-      public boolean hasMessage() {
-        return instance.hasMessage();
-      }
-      /**
-       * <code>.outer.WebSocketMessage message = 2;</code>
-       */
-      @java.lang.Override
-      public com.dogu.protocol.generated.outer.HttpWs.WebSocketMessage getMessage() {
-        return instance.getMessage();
-      }
-      /**
-       * <code>.outer.WebSocketMessage message = 2;</code>
-       */
-      public Builder setMessage(com.dogu.protocol.generated.outer.HttpWs.WebSocketMessage value) {
-        copyOnWrite();
-        instance.setMessage(value);
-        return this;
-      }
-      /**
-       * <code>.outer.WebSocketMessage message = 2;</code>
-       */
-      public Builder setMessage(
-          com.dogu.protocol.generated.outer.HttpWs.WebSocketMessage.Builder builderForValue) {
-        copyOnWrite();
-        instance.setMessage(builderForValue.build());
-        return this;
-      }
-      /**
-       * <code>.outer.WebSocketMessage message = 2;</code>
-       */
-      public Builder mergeMessage(com.dogu.protocol.generated.outer.HttpWs.WebSocketMessage value) {
-        copyOnWrite();
-        instance.mergeMessage(value);
-        return this;
-      }
-      /**
-       * <code>.outer.WebSocketMessage message = 2;</code>
-       */
-      public Builder clearMessage() {
-        copyOnWrite();
-        instance.clearMessage();
-        return this;
-      }
-
-      /**
-       * <code>.outer.WebSocketClose close = 3;</code>
-       */
-      @java.lang.Override
-      public boolean hasClose() {
-        return instance.hasClose();
-      }
-      /**
-       * <code>.outer.WebSocketClose close = 3;</code>
-       */
-      @java.lang.Override
-      public com.dogu.protocol.generated.outer.HttpWs.WebSocketClose getClose() {
-        return instance.getClose();
-      }
-      /**
-       * <code>.outer.WebSocketClose close = 3;</code>
-       */
-      public Builder setClose(com.dogu.protocol.generated.outer.HttpWs.WebSocketClose value) {
-        copyOnWrite();
-        instance.setClose(value);
-        return this;
-      }
-      /**
-       * <code>.outer.WebSocketClose close = 3;</code>
-       */
-      public Builder setClose(
-          com.dogu.protocol.generated.outer.HttpWs.WebSocketClose.Builder builderForValue) {
-        copyOnWrite();
-        instance.setClose(builderForValue.build());
-        return this;
-      }
-      /**
-       * <code>.outer.WebSocketClose close = 3;</code>
-       */
-      public Builder mergeClose(com.dogu.protocol.generated.outer.HttpWs.WebSocketClose value) {
-        copyOnWrite();
-        instance.mergeClose(value);
-        return this;
-      }
-      /**
-       * <code>.outer.WebSocketClose close = 3;</code>
-       */
-      public Builder clearClose() {
-        copyOnWrite();
-        instance.clearClose();
-        return this;
-      }
-
-      // @@protoc_insertion_point(builder_scope:outer.WebSocketParam)
-    }
-    @java.lang.Override
-    @java.lang.SuppressWarnings({"unchecked", "fallthrough"})
-    protected final java.lang.Object dynamicMethod(
-        com.google.protobuf.GeneratedMessageLite.MethodToInvoke method,
-        java.lang.Object arg0, java.lang.Object arg1) {
-      switch (method) {
-        case NEW_MUTABLE_INSTANCE: {
-          return new com.dogu.protocol.generated.outer.HttpWs.WebSocketParam();
-        }
-        case NEW_BUILDER: {
-          return new Builder();
-        }
-        case BUILD_MESSAGE_INFO: {
-            java.lang.Object[] objects = new java.lang.Object[] {
-              "value_",
-              "valueCase_",
-              com.dogu.protocol.generated.outer.HttpWs.WebSocketConnection.class,
-              com.dogu.protocol.generated.outer.HttpWs.WebSocketMessage.class,
-              com.dogu.protocol.generated.outer.HttpWs.WebSocketClose.class,
-            };
-            java.lang.String info =
-                "\u0000\u0003\u0001\u0000\u0001\u0003\u0003\u0000\u0000\u0000\u0001<\u0000\u0002<" +
-                "\u0000\u0003<\u0000";
-            return newMessageInfo(DEFAULT_INSTANCE, info, objects);
-        }
-        // fall through
-        case GET_DEFAULT_INSTANCE: {
-          return DEFAULT_INSTANCE;
-        }
-        case GET_PARSER: {
-          com.google.protobuf.Parser<com.dogu.protocol.generated.outer.HttpWs.WebSocketParam> parser = PARSER;
-          if (parser == null) {
-            synchronized (com.dogu.protocol.generated.outer.HttpWs.WebSocketParam.class) {
-              parser = PARSER;
-              if (parser == null) {
-                parser =
-                    new DefaultInstanceBasedParser<com.dogu.protocol.generated.outer.HttpWs.WebSocketParam>(
-                        DEFAULT_INSTANCE);
-                PARSER = parser;
-              }
-            }
-          }
-          return parser;
-      }
-      case GET_MEMOIZED_IS_INITIALIZED: {
-        return (byte) 1;
-      }
-      case SET_MEMOIZED_IS_INITIALIZED: {
-        return null;
-      }
-      }
-      throw new UnsupportedOperationException();
-    }
-
-
-    // @@protoc_insertion_point(class_scope:outer.WebSocketParam)
-    private static final com.dogu.protocol.generated.outer.HttpWs.WebSocketParam DEFAULT_INSTANCE;
-    static {
-      WebSocketParam defaultInstance = new WebSocketParam();
-      // New instances are implicitly immutable so no need to make
-      // immutable.
-      DEFAULT_INSTANCE = defaultInstance;
-      com.google.protobuf.GeneratedMessageLite.registerDefaultInstance(
-        WebSocketParam.class, defaultInstance);
-    }
-
-    public static com.dogu.protocol.generated.outer.HttpWs.WebSocketParam getDefaultInstance() {
-      return DEFAULT_INSTANCE;
-    }
-
-    private static volatile com.google.protobuf.Parser<WebSocketParam> PARSER;
-
-    public static com.google.protobuf.Parser<WebSocketParam> parser() {
       return DEFAULT_INSTANCE.getParserForType();
     }
   }

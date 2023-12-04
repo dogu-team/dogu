@@ -3,6 +3,7 @@ from typing import List, Optional
 import requests
 from dogu.device.common.device_http_response import DeviceHttpResponse
 from dogu.device.logger import create_logger
+from dogu.device.common.const import DOGU_DEVICE_AUTHORIZATION_HEADER_KEY
 
 
 @dataclass(frozen=True)
@@ -66,12 +67,13 @@ class EnsureBrowserAndDriverResult:
 
 
 class DeviceHostClient:
-    def __init__(self, device_server_url: str, timeout: int = 10):
+    def __init__(self, device_server_url: str, token: str, timeout: int = 10):
         self.device_server_url = (
             device_server_url
             if device_server_url[-1] != "/"
             else device_server_url[:-1]
         )
+        self._token = token
         self.timeout = timeout
         self._logger = create_logger(__name__)
 
@@ -80,7 +82,12 @@ class DeviceHostClient:
             excludes = []
         full_path = f"{self.device_server_url}/device-host/free-port"
         param = GetFreePortQuery(excludes=excludes, offset=0)
-        res = requests.get(full_path, json=asdict(param), timeout=self.timeout)
+        headers = {}
+        headers[DOGU_DEVICE_AUTHORIZATION_HEADER_KEY] = self._token
+
+        res = requests.get(
+            full_path, json=asdict(param), timeout=self.timeout, headers=headers
+        )
         res.raise_for_status()
         device_res = DeviceHttpResponse(res)
         if device_res.error()[0]:
@@ -94,7 +101,12 @@ class DeviceHostClient:
         self, options: EnsureBrowserAndDriverOptions
     ) -> EnsureBrowserAndDriverResult:
         full_path = f"{self.device_server_url}/device-host/ensure-browser-and-driver"
-        res = requests.post(full_path, json=asdict(options), timeout=self.timeout)
+        headers = {}
+        headers[DOGU_DEVICE_AUTHORIZATION_HEADER_KEY] = self._token
+
+        res = requests.post(
+            full_path, json=asdict(options), timeout=self.timeout, headers=headers
+        )
         res.raise_for_status()
         device_res = DeviceHttpResponse(res)
         if device_res.error()[0]:
