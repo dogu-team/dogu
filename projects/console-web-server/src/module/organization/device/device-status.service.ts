@@ -124,6 +124,8 @@ export class DeviceStatusService {
       })
       .leftJoinAndSelect(`device.${DevicePropCamel.deviceRunners}`, 'deviceRunner')
       .where('organization.organization_id = :organizationId', { organizationId })
+      // for cookapps
+      .andWhere(dto.excludeHostIds.length > 0 ? `device.${DevicePropCamel.hostId} NOT IN (:...hostIds)` : '1=1', { hostIds: dto.excludeHostIds })
       .andWhere('device.name ILIKE :name', { name: `%${dto.deviceName}%` })
       .andWhere(projectIdFilterClause, { projectIds: dto.projectIds })
       .andWhere(hostIdFilterClause, { hostId: dto.hostId })

@@ -46,6 +46,7 @@ import { Device, DeviceAndDeviceTag, DeviceTag, ProjectAndDevice, RoutineJob, Ro
 import { RoutinePipeline } from '../../../db/entity/pipeline.entity';
 import { Routine } from '../../../db/entity/routine.entity';
 import { RoutineStep } from '../../../db/entity/step.entity';
+import { COOKAPPS_DOGU_HOST_1_ID, COOKAPPS_DOGU_HOST_2_ID } from '../../../utils/temp';
 import { Page } from '../../common/dto/pagination/page';
 import { ProjectFileService } from '../../file/project-file.service';
 import { YamlLoaderService } from '../../init/yaml-loader/yaml-loader.service';
@@ -318,9 +319,14 @@ export class PipelineService {
             )
             .andWhere(
               new Brackets((builder) => {
-                builder
-                  .where(`${Device.name}.${DevicePropCamel.name} = :${DevicePropCamel.name}`, { name: pickable })
-                  .orWhere(`${DeviceTag.name}.${DeviceTagPropCamel.name} = :${DeviceTagPropCamel.name}`, { name: pickable, organizationId });
+                builder.where(`${Device.name}.${DevicePropCamel.name} = :${DevicePropCamel.name}`, { name: pickable }).orWhere(
+                  new Brackets((builder) => {
+                    builder
+                      // for cookapps
+                      .where(`${DeviceTag.name}.${DeviceTagPropCamel.name} = :${DeviceTagPropCamel.name}`, { name: pickable, organizationId })
+                      .andWhere(`${Device.name}.${DevicePropCamel.hostId} NOT IN (${COOKAPPS_DOGU_HOST_1_ID},${COOKAPPS_DOGU_HOST_2_ID})`, { name: pickable, organizationId });
+                  }),
+                );
               }),
             );
 
@@ -374,9 +380,14 @@ export class PipelineService {
               )
               .andWhere(
                 new Brackets((builder) => {
-                  builder
-                    .where(`${Device.name}.${DevicePropCamel.name} = :${DevicePropCamel.name}`, { name: pickable })
-                    .orWhere(`${DeviceTag.name}.${DeviceTagPropCamel.name} = :${DeviceTagPropCamel.name}`, { name: pickable, organizationId });
+                  builder.where(`${Device.name}.${DevicePropCamel.name} = :${DevicePropCamel.name}`, { name: pickable }).orWhere(
+                    new Brackets((builder) => {
+                      builder
+                        // for cookapps
+                        .where(`${DeviceTag.name}.${DeviceTagPropCamel.name} = :${DeviceTagPropCamel.name}`, { name: pickable, organizationId })
+                        .andWhere(`${Device.name}.${DevicePropCamel.hostId} NOT IN (${COOKAPPS_DOGU_HOST_1_ID},${COOKAPPS_DOGU_HOST_2_ID})`, { name: pickable, organizationId });
+                    }),
+                  );
                 }),
               );
 
@@ -429,9 +440,14 @@ export class PipelineService {
                 )
                 .andWhere(
                   new Brackets((builder) => {
-                    builder
-                      .where(`${Device.name}.${DevicePropCamel.name} = :${DevicePropCamel.name}`, { name: pickable })
-                      .orWhere(`${DeviceTag.name}.${DeviceTagPropCamel.name} = :${DeviceTagPropCamel.name}`, { name: pickable, organizationId });
+                    builder.where(`${Device.name}.${DevicePropCamel.name} = :${DevicePropCamel.name}`, { name: pickable }).orWhere(
+                      new Brackets((builder) => {
+                        builder
+                          // for cookapps
+                          .where(`${DeviceTag.name}.${DeviceTagPropCamel.name} = :${DeviceTagPropCamel.name}`, { name: pickable, organizationId })
+                          .andWhere(`${Device.name}.${DevicePropCamel.hostId} NOT IN (${COOKAPPS_DOGU_HOST_1_ID},${COOKAPPS_DOGU_HOST_2_ID})`, { name: pickable, organizationId });
+                      }),
+                    );
                   }),
                 )
                 .getOne();
@@ -479,7 +495,9 @@ export class PipelineService {
                   .orWhere(`${ProjectAndDevice.name}.${ProjectAndDevicePropCamel.projectId} = :${ProjectAndDevicePropCamel.projectId}`, { projectId });
               }),
             )
-            .andWhere(`${DeviceTag.name}.${DeviceTagPropCamel.name} = :${DeviceTagPropCamel.name}`, { name: pickable, organizationId });
+            .andWhere(`${DeviceTag.name}.${DeviceTagPropCamel.name} = :${DeviceTagPropCamel.name}`, { name: pickable, organizationId })
+            // for cookapps
+            .andWhere(`${Device.name}.${DevicePropCamel.hostId} NOT IN (${COOKAPPS_DOGU_HOST_1_ID},${COOKAPPS_DOGU_HOST_2_ID})`, { name: pickable, organizationId });
 
           if (reservedDeviceIds.length > 0) {
             devicesQuery.andWhere(`${Device.name}.${DevicePropCamel.deviceId} NOT IN (:...reservedDeviceIds)`, { reservedDeviceIds });

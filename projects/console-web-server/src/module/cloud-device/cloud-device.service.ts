@@ -5,7 +5,9 @@ import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 
 import { Device } from '../../db/entity/device.entity';
+import { env } from '../../env';
 import { retinaDisplayRatio } from '../../resources/retina-display-ratio';
+import { COOKAPPS_DOGU_HOST_1_ID, COOKAPPS_DOGU_HOST_2_ID } from '../../utils/temp';
 import { Page } from '../common/dto/pagination/page';
 import { FindCloudDevicesDto } from './cloud-device.dto';
 
@@ -31,6 +33,8 @@ export class CloudDeviceService {
       .andWhere(`(${modelFilterClause} OR ${modelNameFilterClause} OR ${manufacturerFilterClause})`, { keyword: `.*${keyword}.*` })
       .andWhere(platformFilterClause, { platform })
       .andWhere(versionFilterClause, { version: `${version}%` })
+      // for cookapps
+      .andWhere(env.DOGU_RUN_TYPE === 'production' ? `device.${DevicePropCamel.hostId} IN (${COOKAPPS_DOGU_HOST_1_ID},${COOKAPPS_DOGU_HOST_2_ID})` : '1=1')
       .getMany();
 
     const deviceInfoMap = new Map<string, { device: Device; versions: Set<string> }>();

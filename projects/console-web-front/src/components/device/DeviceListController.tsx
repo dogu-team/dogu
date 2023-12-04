@@ -246,7 +246,8 @@ const DeviceListController = () => {
           filterValue.name
         }&tagNames=${filterValue.tags.join()}&connectionStates=${filterValue.states.join()}&projectIds=${filterValue.projects
           .map((item) => item.projectId)
-          .join()}`
+          // for cookapps
+          .join()}&excludeHostIds=2c9d15d3-6852-4c34-abaa-a574ef3ce937,31b8aaab-2f73-4ab4-a908-f14642bc893e`
       : null,
     {
       skipQuestionMark: true,

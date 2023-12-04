@@ -9,6 +9,7 @@ import { Device } from '../../../db/entity/device.entity';
 import { Host } from '../../../db/entity/host.entity';
 import { DeviceAndDeviceTag, ProjectAndDevice } from '../../../db/entity/index';
 import { Token } from '../../../db/entity/token.entity';
+import { COOKAPPS_DOGU_HOST_1_ID, COOKAPPS_DOGU_HOST_2_ID } from '../../../utils/temp';
 import { Page } from '../../common/dto/pagination/page';
 import { DoguLogger } from '../../logger/logger';
 import { TokenService } from '../../token/token.service';
@@ -46,6 +47,8 @@ export class HostService {
           qb.where(`device.${DevicePropSnake.organization_id} = :organizationId`, { organizationId }).orWhere(`device.${DevicePropSnake.device_id} IS NULL`);
         }),
       )
+      // for cookapps
+      .andWhere(`host.${HostPropCamel.hostId} NOT IN (${COOKAPPS_DOGU_HOST_1_ID},${COOKAPPS_DOGU_HOST_2_ID})`)
       .orderBy(`host.${HostPropCamel.connectionState}`, 'DESC')
       .addOrderBy(`host.${HostPropCamel.name}`, 'ASC')
       .take(dto.getDBLimit())
