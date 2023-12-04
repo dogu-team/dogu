@@ -1,7 +1,6 @@
 import { DeviceAuthSubscribe } from '@dogu-private/dost-children';
 import { OnWebSocketClose, OnWebSocketMessage, WebSocketGatewayBase, WebSocketRegistryValueAccessor, WebSocketService } from '@dogu-private/nestjs-common';
-import { closeWebSocketWithTruncateReason, delay, errorify, Instance } from '@dogu-tech/common';
-import { Interval } from '@nestjs/schedule';
+import { closeWebSocketWithTruncateReason, delay, Instance } from '@dogu-tech/common';
 import { IncomingMessage } from 'http';
 import WebSocket from 'ws';
 import { DeviceAuthService } from '../device-auth/device-auth.service';
@@ -28,28 +27,6 @@ export class DeviceAuthSubscribeService
   }
 
   onWebSocketClose(webSocket: WebSocket, event: WebSocket.CloseEvent, valueAccessor: WebSocketRegistryValueAccessor<Value>): void {}
-
-  @Interval(6000)
-  refresh(): void {
-    try {
-      this.webSockets.forEach((value, webSocket) => {
-        const { validated } = value;
-        if (!validated) {
-          return;
-        }
-        const receiveMessage: Instance<typeof DeviceAuthSubscribe.receiveMessage> = {
-          value: {
-            kind: 'DeviceAuthSubscribeReceiveMessageTryRefreshedValue',
-          },
-        };
-        webSocket.send(JSON.stringify(receiveMessage));
-      });
-    } catch (error) {
-      this.logger.error('Failed to update refresh', {
-        error: errorify(error),
-      });
-    }
-  }
 
   async onWebSocketMessage(webSocket: WebSocket, message: Instance<typeof DeviceAuthSubscribe.sendMessage>, valueAccessor: WebSocketRegistryValueAccessor<Value>): Promise<void> {
     const { authService } = this;
