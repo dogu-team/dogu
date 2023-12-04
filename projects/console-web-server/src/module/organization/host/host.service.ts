@@ -273,7 +273,10 @@ export class HostService {
   async isHostIdle(manager: EntityManager, hostId: HostId): Promise<boolean> {
     const devices = await manager.getRepository(Device).find({ where: { hostId } });
     for (const device of devices) {
-      if (device.connectionState !== DeviceConnectionState.DEVICE_CONNECTION_STATE_CONNECTED || device.usageState === DeviceUsageState.IN_USE) {
+      if (device.connectionState !== DeviceConnectionState.DEVICE_CONNECTION_STATE_CONNECTED) {
+        return false;
+      }
+      if (device.usageState === DeviceUsageState.IN_USE) {
         return false;
       }
 
