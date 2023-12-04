@@ -1,3 +1,4 @@
+import { QuestionCircleFilled } from '@ant-design/icons';
 import { OrganizationId, ProjectId } from '@dogu-private/types';
 import { Alert, Button, Form, Modal, Space } from 'antd';
 import { isAxiosError } from 'axios';
@@ -75,6 +76,14 @@ const RoutineGitIntegrationAlert = () => {
         okText={'Save'}
         onOk={saveGitIntegration}
         confirmLoading={loading}
+        title={
+          <>
+            Git Integration{' '}
+            <a href="https://docs.dogutech.io/management/project/git-integration/" target="_blank">
+              <QuestionCircleFilled style={{ color: '#000' }} />
+            </a>
+          </>
+        }
       >
         <GitIntegrationForm form={form} />
       </Modal>

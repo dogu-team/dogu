@@ -9,8 +9,8 @@ import {
   UpdateProjectDtoBase,
 } from '@dogu-private/console';
 import { DeviceConnectionState, Platform, ProjectId, PROJECT_DESC_MAX_LENGTH, PROJECT_NAME_MAX_LENGTH, PROJECT_NAME_MIN_LENGTH, PROJECT_TYPE, UserId } from '@dogu-private/types';
-import { Type } from 'class-transformer';
-import { IsEnum, IsIn, IsISO8601, IsNotEmpty, IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
+import { Transform, Type } from 'class-transformer';
+import { IsArray, IsEnum, IsIn, IsISO8601, IsNotEmpty, IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
 import { PageDto } from '../../../module/common/dto/pagination/page.dto';
 
 export class CreateProjectDto implements CreateProjectDtoBase {
@@ -66,6 +66,18 @@ export class FindProjectDeviceDto extends PageDto implements FindProjectDeviceDt
   @IsEnum(DeviceConnectionState)
   @IsOptional()
   connectionState?: DeviceConnectionState;
+
+  // for cookapps
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  @Transform(({ value }: { value: string }) => {
+    return value
+      .trim()
+      .split(',')
+      .map((s) => s.trim());
+  })
+  excludeHostIds: string[] = [];
 }
 
 export class FindUsersByProjectIdDto extends PageDto implements FindUsersByProjectIdDtoBase {
