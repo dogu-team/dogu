@@ -4,8 +4,8 @@ import RecordTesting from '../../../../../../../enterprise/components/studio/Rec
 import { getStudioTestingLayout, StudioTestingPageProps } from '../../../../../../../enterprise/pages/studio';
 import { NextPageWithLayout } from '../../../../../../_app';
 
-const RecordTestingPage: NextPageWithLayout<StudioTestingPageProps> = ({ organization, project, me, device }) => {
-  return <RecordTesting organization={organization} project={project} device={device} me={me} />;
+const RecordTestingPage: NextPageWithLayout<StudioTestingPageProps> = ({ organization, me, device }) => {
+  return <RecordTesting organization={organization} device={device} me={me} />;
 };
 
 RecordTestingPage.getLayout = getStudioTestingLayout;
