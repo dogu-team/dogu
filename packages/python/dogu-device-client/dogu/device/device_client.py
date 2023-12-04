@@ -70,7 +70,7 @@ class DeviceClient:
             success = msg_json["value"]["success"]
             if not success:
                 raise Exception(
-                    f"Failed to forward. error: {msg_json['value']['error']}"
+                    f"Failed to forward. error: {msg_json['value']['reason']}"
                 )
             break
         return DeviceCloser(conn)
@@ -89,7 +89,7 @@ class DeviceClient:
             success = msg_json["value"]["success"]
             if not success:
                 raise Exception(
-                    f"Failed to run_appium_server. error: {msg_json['value']['error']}"
+                    f"Failed to run_appium_server. error: {msg_json['value']['reason']}"
                 )
             break
         return AppiumServerContext(
