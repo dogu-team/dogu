@@ -103,16 +103,16 @@ export class OrganizationApplicationService {
     return new Page(dto.page, dto.offset, count, projectApplicationList);
   }
 
-  async getApplicationDownladUrl(id: string, organizationId: OrganizationId): Promise<string> {
+  async getApplicationDownladUrl(organizationApplicationId: string, organizationId: OrganizationId): Promise<string> {
     const application = await this.dataSource.getRepository(OrganizationApplication).findOne({
       where: {
-        organizationApplicationId: id,
-        organizationId: organizationId,
+        organizationApplicationId,
+        organizationId,
       },
     });
 
     if (application === null) {
-      throw new Error(`Application not found: ${id}`);
+      throw new Error(`Application not found: ${organizationApplicationId}`);
     }
 
     const appFileType = convertExtToOrganizationAppType(application.fileExtension);

@@ -1,7 +1,7 @@
 import { errorify, FilledPrintable, LogLevel, PromiseOrValue } from '@dogu-tech/common';
 import { DeviceClient, DeviceClients, DeviceClientsFactory, DeviceHostClient } from '@dogu-tech/device-client';
 import { Logger } from '@dogu-tech/node';
-import { DeviceServerToken, OrganizationId, ProjectId } from '@dogu-tech/types';
+import { DeviceServerToken, OrganizationId } from '@dogu-tech/types';
 import { ActionConfig } from './config/config';
 import { ActionInputAccessor } from './config/input-accessor';
 import { ActionConfigLoader } from './config/loader';
@@ -40,7 +40,7 @@ export class ActionKit {
         DOGU_REQUEST_TIMEOUT,
         DOGU_API_BASE_URL,
         DOGU_ORGANIZATION_ID,
-        DOGU_PROJECT_ID,
+        DOGU_REPOSITORY,
         DOGU_ACTION_INPUTS,
         DOGU_HOST_TOKEN,
         DOGU_DEVICE_TOKEN,
@@ -50,7 +50,7 @@ export class ActionKit {
       const actionInputAccessor = new ActionInputAccessor(actionConfig, DOGU_ACTION_INPUTS);
       const deviceClients = this.createDeviceClients(ActionLogger, DOGU_DEVICE_SERVER_URL, DOGU_DEVICE_TOKEN, DOGU_REQUEST_TIMEOUT);
       const { deviceClient, deviceHostClient } = deviceClients;
-      const consoleActionClient = this.createConsoleActionClient(ActionLogger, DOGU_API_BASE_URL, DOGU_ORGANIZATION_ID, DOGU_PROJECT_ID, DOGU_HOST_TOKEN);
+      const consoleActionClient = this.createConsoleActionClient(ActionLogger, DOGU_API_BASE_URL, DOGU_ORGANIZATION_ID, DOGU_REPOSITORY, DOGU_HOST_TOKEN);
       await onRun({ options: filledOptions, logger: ActionLogger, config: actionConfig, input: actionInputAccessor, deviceClient, deviceHostClient, consoleActionClient });
     })().catch((e) => {
       ActionLogger.error('ActionKit.run failed', { error: errorify(e) });
@@ -69,22 +69,22 @@ export class ActionKit {
     printable: FilledPrintable,
     DOGU_API_BASE_URL: string,
     DOGU_ORGANIZATION_ID: OrganizationId,
-    DOGU_PROJECT_ID: ProjectId,
+    DOGU_REPOSITORY: string,
     DOGU_HOST_TOKEN: string,
   ): ConsoleActionClient {
-    if (!DOGU_API_BASE_URL || !DOGU_ORGANIZATION_ID || !DOGU_PROJECT_ID) {
+    if (!DOGU_API_BASE_URL || !DOGU_ORGANIZATION_ID || !DOGU_REPOSITORY) {
       printable.error('ConsoleActionClient is not created because of missing environment variables', {
         DOGU_API_BASE_URL,
         DOGU_ORGANIZATION_ID,
-        DOGU_PROJECT_ID,
+        DOGU_REPOSITORY,
       });
       throw new Error('ConsoleActionClient is not created because of missing environment variables');
     }
-    const client = new ConsoleActionClient(printable, DOGU_API_BASE_URL, DOGU_ORGANIZATION_ID, DOGU_PROJECT_ID, DOGU_HOST_TOKEN);
+    const client = new ConsoleActionClient(printable, DOGU_API_BASE_URL, DOGU_ORGANIZATION_ID, DOGU_HOST_TOKEN, DOGU_REPOSITORY);
     printable.verbose('ConsoleActionClient is created', {
       DOGU_API_BASE_URL,
       DOGU_ORGANIZATION_ID,
-      DOGU_PROJECT_ID,
+      DOGU_REPOSITORY,
     });
     return client;
   }

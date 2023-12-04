@@ -1,6 +1,7 @@
 import { OrganizationScmRespository, UpdateOrganizationScmDto } from '@dogu-private/console';
 import { OrganizationId } from '@dogu-private/types';
-import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { stringify } from '@dogu-tech/common';
+import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { v4 } from 'uuid';
@@ -120,7 +121,7 @@ export class OrganizationScmService {
         }
       }
       default: {
-        throw new BadRequestException(`Unknown SCM type: ${scm.serviceType}`);
+        throw new BadRequestException(`Unknown SCM type: ${stringify(scm.serviceType)}`);
       }
     }
   }
@@ -174,6 +175,21 @@ export class OrganizationScmService {
       default:
         throw new BadRequestException('Invalid repository type');
     }
+  }
+
+  async getGitUrlWithAuth(organizationId: OrganizationId, repository: string): Promise<string> {
+    const scm = await this.dataSource.getRepository(OrganizationScm).findOne({ where: { organizationId } });
+    if (!scm) {
+      throw new NotFoundException(`This Organization does not have scm: ${organizationId}`);
+    }
+    const url = new URL(scm.url);
+    const host = url.host;
+    const protocol = url.protocol;
+    const parts: string[] = url.pathname.split('/');
+    const org: string = parts[1];
+    const token = await EncryptService.decryptToken(this.dataSource.manager, organizationId, scm.token);
+    const gitUrlWithAuth = `${protocol}//oauth2:${token}@${host}/${org}/${repository}.git`;
+    return gitUrlWithAuth;
   }
 
   private getGitInformationFromUrl(scmUrl: string): { url: URL; org: string } {

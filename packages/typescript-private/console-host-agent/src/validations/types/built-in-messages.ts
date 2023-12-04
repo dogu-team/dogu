@@ -312,6 +312,9 @@ export class RunStep extends Kindable<'RunStep'> implements Pick<RoutineStep, 'r
   @IsString()
   cwd!: string;
 
+  @IsFilledString()
+  repository!: string;
+
   @ValidateNested()
   @TransformByKind(RunStepValue)
   value!: RunStepValue;

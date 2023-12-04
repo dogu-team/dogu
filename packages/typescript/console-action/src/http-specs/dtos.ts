@@ -2,6 +2,11 @@ import { IsFilledString, TransformBooleanString } from '@dogu-tech/common';
 import { Type } from 'class-transformer';
 import { IsBoolean, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
 
+export class GetGitUrlQuery {
+  @IsFilledString()
+  repository!: string;
+}
+
 export class GetGitUrlResponse {
   @IsFilledString()
   url!: string;
@@ -21,8 +26,26 @@ export class GetApplicationListQuery {
   extension!: string;
 }
 
+export class GetApplicationsWithUniquePackageQuery {
+  @IsFilledString()
+  packageName!: string;
+
+  @IsOptional()
+  @IsString()
+  version?: string;
+
+  @IsOptional()
+  @IsBoolean()
+  @TransformBooleanString()
+  latestOnly?: boolean;
+
+  @IsOptional()
+  @IsString()
+  extension?: string;
+}
+
 export class Application {
-  @IsNumber()
+  @IsFilledString()
   id!: string;
 
   @IsFilledString()

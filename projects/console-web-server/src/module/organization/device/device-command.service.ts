@@ -21,7 +21,10 @@ import { DeviceStreamingOfferDto } from './dto/device.dto';
 
 @Injectable()
 export class DeviceCommandService {
-  constructor(private readonly deviceMessageRelayer: DeviceMessageRelayer, private readonly logger: DoguLogger) {}
+  constructor(
+    private readonly deviceMessageRelayer: DeviceMessageRelayer,
+    private readonly logger: DoguLogger,
+  ) {}
 
   async *startDeviceStreamingWithTrickle(offer: DeviceStreamingOfferDto): AsyncGenerator<StreamingAnswerDto | WebSocketProxyReceiveClose> {
     const { organizationId, deviceId, serial, ...rest } = offer;
@@ -85,6 +88,7 @@ export class DeviceCommandService {
     this.logger.info(`DeviceCommandService.reset. reset sent`, { deviceId, serial });
     try {
       for await (const _ of resetProxy.receive()) {
+        // noop
       }
     } catch (error) {
       this.logger.error(`DeviceCommandService.reset. reset failed `, { deviceId, serial, error });

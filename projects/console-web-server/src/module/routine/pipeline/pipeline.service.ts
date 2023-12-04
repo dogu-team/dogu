@@ -175,6 +175,7 @@ export class PipelineService {
     routineId: RoutineId | null,
     creatorId: UserId | null,
     creatorType: CREATOR_TYPE,
+    repository: string,
   ): Promise<RoutinePipeline> {
     // create pipeline by instanct routine
     if (!routineId) {
@@ -185,6 +186,7 @@ export class PipelineService {
         status: PIPELINE_STATUS.WAITING,
         creatorType,
         index: 0,
+        repository,
       });
       const rv = await manager.getRepository(RoutinePipeline).save(pipeline);
       return rv;
@@ -203,6 +205,7 @@ export class PipelineService {
         status: PIPELINE_STATUS.WAITING,
         creatorType,
         index,
+        repository,
       });
 
       await manager.getRepository(Routine).save(Object.assign(routine, { lastIndex: index }));
@@ -708,7 +711,8 @@ export class PipelineService {
     creatorType: CREATOR_TYPE,
   ): Promise<RoutinePipeline> {
     const pipeline = await this.dataSource.transaction(async (manager: EntityManager): Promise<RoutinePipeline> => {
-      const pipeline = await this.createPipeline(manager, projectId, routineId, creatorId, creatorType);
+      const repository = routineSchema.repository;
+      const pipeline = await this.createPipeline(manager, projectId, routineId, creatorId, creatorType, repository);
 
       const jobs = await this.createJobs(manager, routineSchema, pipeline);
       if (jobs.length === 0) {
@@ -825,6 +829,7 @@ export class PipelineService {
       jobs: {
         instant: job,
       },
+      repository: '',
     };
 
     const pipeline = await this.createPipelineData(routine, organizationId, projectId, null, creatorId, CREATOR_TYPE.USER);

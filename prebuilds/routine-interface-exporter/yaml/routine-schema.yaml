@@ -27,6 +27,7 @@ required:
   - jobs
   - name
   - 'on'
+  - repository
 definitions:
   Job:
     title: JobSchema

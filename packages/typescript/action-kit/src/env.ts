@@ -24,6 +24,7 @@ export class ActionKitEnv
       | 'DOGU_STEP_WORKING_PATH'
       | 'DOGU_BROWSER_NAME'
       | 'DOGU_BROWSER_VERSION'
+      | 'DOGU_REPOSITORY'
     >,
     Pick<ActionContextEnv, 'DOGU_ACTION_INPUTS'>
 {
@@ -116,6 +117,13 @@ export class ActionKitEnv
    */
   @IsString()
   DOGU_BROWSER_VERSION!: string;
+
+  /**
+   * @requires process.env.DOGU_REPOSITORY
+   * @default ''
+   */
+  @IsFilledString()
+  DOGU_REPOSITORY!: string;
 
   /**
    * @requires process.env.DOGU_HOST_PLATFORM

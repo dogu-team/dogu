@@ -25,7 +25,7 @@ export interface RoutineSchema {
   /**
    * The repository to run the pipeline on.
    */
-  repository?: string;
+  repository: string;
 }
 /**
  * This interface was referenced by `RoutineSchema`'s JSON-Schema

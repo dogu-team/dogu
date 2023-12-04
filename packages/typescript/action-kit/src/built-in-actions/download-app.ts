@@ -38,6 +38,7 @@ export async function downloadApp(
   if (by.appPackageName) {
     const { applications: apps } = await consoleActionClient.getApplicationsWithUniquePackage({
       extension,
+      packageName: by.appPackageName,
     });
     application = apps.find((app) => app.packageName === by.appPackageName);
   } else if (by.appVersion) {

@@ -30,6 +30,7 @@ function defaultActionKitOptions(): FilledActionKitOptions {
     DOGU_STEP_WORKING_PATH: '',
     DOGU_BROWSER_NAME: '',
     DOGU_BROWSER_VERSION: '',
+    DOGU_REPOSITORY: '',
   };
 }
 

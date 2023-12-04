@@ -66,6 +66,7 @@ export interface RoutinePipeline {
   index: number;
   status: PIPELINE_STATUS;
   creatorType: CREATOR_TYPE;
+  repository: string;
   creatorId: UserId | null;
   cancelerId: UserId | null;
   createdAt: Date;
@@ -74,9 +75,3 @@ export interface RoutinePipeline {
   inProgressAt: Date | null;
   completedAt: Date | null;
 }
-// export function isExitable(state: PIPELINE_STATUS): boolean {
-//   return (
-//     state === PIPELINE_STATUS.IN_PROGRESS || //
-//     state === PIPELINE_STATUS.CANCEL_REQUESTED
-//   );
-// }

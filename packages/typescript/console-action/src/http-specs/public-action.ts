@@ -1,6 +1,6 @@
 import { ControllerMethodSpec, ControllerSpec } from '@dogu-tech/common';
-import { OrganizationId, ProjectId } from '@dogu-tech/types';
-import { GetApplicationListQuery, GetApplicationListResponse, GetApplicationUrlResponse, GetGitUrlResponse } from './dtos';
+import { OrganizationId } from '@dogu-tech/types';
+import { GetApplicationListQuery, GetApplicationListResponse, GetApplicationsWithUniquePackageQuery, GetApplicationUrlResponse, GetGitUrlQuery, GetGitUrlResponse } from './dtos';
 
 const PublicActionController = new ControllerSpec({
   path: '/public/organizations/:organizationId',
@@ -12,13 +12,11 @@ export const PublicAction = {
   getGitUrl: new ControllerMethodSpec({
     controllerSpec: PublicActionController,
     method: 'GET',
-    path: '/projects/:projectId/git-url',
+    path: '/git-url',
     pathProvider: class {
-      constructor(
-        readonly organizationId: OrganizationId,
-        readonly projectId: ProjectId,
-      ) {}
+      constructor(readonly organizationId: OrganizationId) {}
     },
+    query: GetGitUrlQuery,
     responseBody: GetGitUrlResponse,
   }),
 
@@ -40,18 +38,18 @@ export const PublicAction = {
     pathProvider: class {
       constructor(readonly organizationId: OrganizationId) {}
     },
-    query: GetApplicationListQuery,
+    query: GetApplicationsWithUniquePackageQuery,
     responseBody: GetApplicationListResponse,
   }),
 
   getApplicationDownloadUrl: new ControllerMethodSpec({
     controllerSpec: PublicActionController,
     method: 'GET',
-    path: '/applications/:applicationId/url',
+    path: '/applications/:organizationApplicationId/url',
     pathProvider: class {
       constructor(
         readonly organizationId: OrganizationId,
-        readonly applicationId: string,
+        readonly organizationApplicationId: string,
       ) {}
     },
     responseBody: GetApplicationUrlResponse,
