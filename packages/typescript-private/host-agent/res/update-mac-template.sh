@@ -11,7 +11,7 @@ cd $work_dir
 echo Download app...
 curl -o $zip_file -L $file_url
 
-sleep 5
+sleep 10
 
 
 echo Check File Size...

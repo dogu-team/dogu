@@ -17,7 +17,11 @@ import { CommandProcessRegistry } from './command.process-registry';
 export class UpdateProcessor {
   private lock = new AsyncLock({ timeout: 5000 });
 
-  constructor(private readonly commandProcessRegistry: CommandProcessRegistry, private readonly deviceClientService: DeviceClientService, private readonly logger: DoguLogger) {}
+  constructor(
+    private readonly commandProcessRegistry: CommandProcessRegistry,
+    private readonly deviceClientService: DeviceClientService,
+    private readonly logger: DoguLogger,
+  ) {}
 
   async update(msg: { url: string; fileSize: number }): Promise<ErrorResult> {
     try {
@@ -37,11 +41,16 @@ export class UpdateProcessor {
           const child = await this.detachShell(msg.url, msg.fileSize, downloadPath);
 
           // quit app
-          setTimeout(async () => {
-            const pid = env.DOGU_ROOT_PID ?? process.pid;
-            this.logger.info(`UpdateProcessor.update. quit app pid: ${pid}`);
-            const pids = child.pid ? [...(await getChildProcessIds(child.pid, this.logger)), child.pid] : [];
-            killProcessIgnore(pid, pids, this.logger);
+          setTimeout(() => {
+            (async (): Promise<void> => {
+              const pid = env.DOGU_ROOT_PID ?? process.pid;
+              this.logger.info(`UpdateProcessor.update. quit app pid: ${pid}`);
+              const pids = child.pid ? [...(await getChildProcessIds(child.pid, this.logger)), child.pid] : [];
+              killProcessIgnore(pid, pids, this.logger);
+            })().catch((e) => {
+              const error = errorify(e);
+              this.logger.error(`UpdateProcessor.update. quit app error: ${error.message}`);
+            });
           }, 2000);
         })
         .catch((e) => {
@@ -76,7 +85,7 @@ export class UpdateProcessor {
     }
   }
 
-  async detachShell(url: string, fileSize: number, downloadPath: string): Promise<ChildProcess> {
+  private async detachShell(url: string, fileSize: number, downloadPath: string): Promise<ChildProcess> {
     if (process.platform === 'darwin') {
       return this.detachShellMacos(url, fileSize, downloadPath);
     }
@@ -86,7 +95,7 @@ export class UpdateProcessor {
     throw new Error(`Update failed. not supported platform ${process.platform}`);
   }
 
-  async detachShellMacos(url: string, fileSize: number, downloadPath: string): Promise<ChildProcess> {
+  private async detachShellMacos(url: string, fileSize: number, downloadPath: string): Promise<ChildProcess> {
     const dirname = path.dirname(downloadPath);
     const filename = path.basename(downloadPath);
     if (!downloadPath.endsWith('.zip')) {
@@ -120,7 +129,7 @@ export class UpdateProcessor {
     return child;
   }
 
-  async detachShellWindows(url: string, fileSize: number, downloadPath: string): Promise<ChildProcess> {
+  private async detachShellWindows(url: string, fileSize: number, downloadPath: string): Promise<ChildProcess> {
     const dirname = path.dirname(downloadPath);
     const filename = path.basename(downloadPath);
     if (!downloadPath.endsWith('.exe')) {
