@@ -12,8 +12,11 @@ echo Download app...
 curl -o "%installer%" -L "%file_url%"
 
 echo Waiting...
-ping 127.0.0.1 -n 10 > nul
+ping 127.0.0.1 -n 5 > nul
 
+taskkill /F /IM Dogu-Agent.exe > nul
+
+ping 127.0.0.1 -n 5 > nul
 
 echo Running installer...
 start "" "%installer%"

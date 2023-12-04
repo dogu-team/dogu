@@ -11,7 +11,11 @@ cd $work_dir
 echo Download app...
 curl -o $zip_file -L $file_url
 
-sleep 10
+sleep 5
+
+killall Dogu-Agent
+
+sleep 5
 
 
 echo Check File Size...
