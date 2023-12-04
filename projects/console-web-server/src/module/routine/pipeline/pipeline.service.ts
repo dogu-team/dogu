@@ -37,7 +37,7 @@ import {
   UserId,
 } from '@dogu-private/types';
 import { notEmpty, stringify } from '@dogu-tech/common';
-import { HttpException, HttpStatus, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import lodash from 'lodash';
 import { Brackets, DataSource, EntityManager } from 'typeorm';
@@ -275,13 +275,19 @@ export class PipelineService {
     manager: EntityManager,
     routineJob: RoutineJob,
     jobSchema: JobSchema,
+    cloud: boolean,
     record: number,
     routineDeviceJobs: RoutineDeviceJob[],
     reservedDeviceRunnerIds: DeviceRunnerId[],
   ): Promise<void> {
-    const { deviceModel, deviceVersion } = jobSchema;
-    if (!deviceModel) {
-      throw new Error(`Internal error: deviceModel is null`);
+    const jobName = routineJob.name;
+    const runsOn = parseRunsOn(jobName, cloud, jobSchema['runs-on']);
+    const { type, pickables } = runsOn;
+    if (type === 'pickAll') {
+      throw new InternalServerErrorException({
+        reason: 'Not supported pickAll type',
+        jobName,
+      });
     }
 
     const create = async (deviceRunner: DeviceRunner): Promise<void> => {
@@ -305,79 +311,83 @@ export class PipelineService {
       routineDeviceJobs.push(routineDeviceJob);
     };
 
-    const notInUse = await manager.getRepository(DeviceRunner).findOne({
-      where: {
-        isInUse: 0,
-        device: {
-          model: deviceModel,
-          version: deviceVersion !== undefined ? deviceVersion.toString() : undefined,
-          connectionState: DeviceConnectionState.DEVICE_CONNECTION_STATE_CONNECTED,
-          usageState: DeviceUsageState.AVAILABLE,
-          organization: {
-            shareable: true,
+    for (const pickable of pickables) {
+      const deviceModel = pickable;
+      const notInUse = await manager.getRepository(DeviceRunner).findOne({
+        where: {
+          isInUse: 0,
+          device: {
+            model: deviceModel,
+            connectionState: DeviceConnectionState.DEVICE_CONNECTION_STATE_CONNECTED,
+            usageState: DeviceUsageState.AVAILABLE,
+            organization: {
+              shareable: true,
+            },
           },
         },
-      },
-      relations: {
-        device: {
-          organization: true,
-        },
-      },
-    });
-
-    if (notInUse) {
-      await create(notInUse);
-      return;
-    }
-
-    const preparing = await manager.getRepository(DeviceRunner).findOne({
-      where: {
-        isInUse: 0,
-        device: {
-          model: deviceModel,
-          version: deviceVersion !== undefined ? deviceVersion.toString() : undefined,
-          usageState: DeviceUsageState.PREPARING,
-          organization: {
-            shareable: true,
+        relations: {
+          device: {
+            organization: true,
           },
         },
-      },
-      relations: {
-        device: {
-          organization: true,
-        },
-      },
-    });
+      });
 
-    if (preparing) {
-      await create(preparing);
-      return;
-    }
+      if (notInUse) {
+        await create(notInUse);
+        continue;
+      }
 
-    const inUse = await manager.getRepository(DeviceRunner).findOne({
-      where: {
-        device: {
-          model: deviceModel,
-          version: deviceVersion !== undefined ? deviceVersion.toString() : undefined,
-          connectionState: DeviceConnectionState.DEVICE_CONNECTION_STATE_CONNECTED,
-          organization: {
-            shareable: true,
+      const preparing = await manager.getRepository(DeviceRunner).findOne({
+        where: {
+          isInUse: 0,
+          device: {
+            model: deviceModel,
+            usageState: DeviceUsageState.PREPARING,
+            organization: {
+              shareable: true,
+            },
           },
         },
-      },
-      relations: {
-        device: {
-          organization: true,
+        relations: {
+          device: {
+            organization: true,
+          },
         },
-      },
-    });
+      });
 
-    if (inUse) {
-      await create(inUse);
-      return;
+      if (preparing) {
+        await create(preparing);
+        continue;
+      }
+
+      const inUse = await manager.getRepository(DeviceRunner).findOne({
+        where: {
+          device: {
+            model: deviceModel,
+            connectionState: DeviceConnectionState.DEVICE_CONNECTION_STATE_CONNECTED,
+            organization: {
+              shareable: true,
+            },
+          },
+        },
+        relations: {
+          device: {
+            organization: true,
+          },
+        },
+      });
+
+      if (inUse) {
+        await create(inUse);
+        continue;
+      }
+
+      throw new NotFoundException({
+        reason: 'Not available device model',
+        jobName,
+        deviceModel,
+      });
     }
-
-    throw new NotFoundException(`not available model: ${deviceModel} version: ${deviceVersion}`);
   }
 
   private static async createDeviceJobFromSelfDevice(
@@ -386,11 +396,12 @@ export class PipelineService {
     projectId: ProjectId,
     routineJob: RoutineJob,
     jobSchema: JobSchema,
+    cloud: boolean,
     record: number,
     routineDeviceJobs: RoutineDeviceJob[],
     reservedDeviceRunnerIds: DeviceRunnerId[],
   ): Promise<void> {
-    const runsOn = parseRunsOn(routineJob.name, jobSchema['runs-on']);
+    const runsOn = parseRunsOn(routineJob.name, cloud, jobSchema['runs-on']);
     const { type, pickables } = runsOn;
 
     /**
@@ -634,10 +645,11 @@ export class PipelineService {
     for (const routineJob of routineJobs) {
       const jobSchema = routineSchema.jobs[routineJob.name];
       const record = jobSchema.record ? 1 : 0;
-      if (jobSchema.deviceModel) {
-        await PipelineService.createDeviceJobsFromShareable(manager, routineJob, jobSchema, record, routineDeviceJobs, reservedDeviceRunnerIds);
+      const cloud = jobSchema.cloud ?? false;
+      if (cloud) {
+        await PipelineService.createDeviceJobsFromShareable(manager, routineJob, jobSchema, cloud, record, routineDeviceJobs, reservedDeviceRunnerIds);
       } else {
-        await PipelineService.createDeviceJobFromSelfDevice(manager, organizationId, projectId, routineJob, jobSchema, record, routineDeviceJobs, reservedDeviceRunnerIds);
+        await PipelineService.createDeviceJobFromSelfDevice(manager, organizationId, projectId, routineJob, jobSchema, cloud, record, routineDeviceJobs, reservedDeviceRunnerIds);
       }
     }
 

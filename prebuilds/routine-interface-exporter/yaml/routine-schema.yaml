@@ -38,6 +38,8 @@ definitions:
               type: string
       record:
         type: boolean
+      cloud:
+        type: boolean
       browserName:
         type: string
       browserVersion:
@@ -58,12 +60,6 @@ definitions:
             patternProperties:
               ^[a-z]+$:
                 type: string
-      deviceVersion:
-        anyOf:
-          - type: number
-          - type: string
-      deviceModel:
-        type: string
       runs-on:
         anyOf:
           - type: object

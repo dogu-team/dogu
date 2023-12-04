@@ -27,7 +27,7 @@ export class ParseRunsOnError extends Error {
   }
 }
 
-export function parseRunsOn(jobName: string, runsOnRaw: JobSchema['runs-on']): RunsOn {
+export function parseRunsOn(jobName: string, cloud: boolean, runsOnRaw: JobSchema['runs-on']): RunsOn {
   if (typeof runsOnRaw === 'string' || Array.isArray(runsOnRaw)) {
     const pickables = typeof runsOnRaw === 'string' ? [runsOnRaw] : runsOnRaw;
     if (_.uniq(pickables).length !== pickables.length) {
@@ -35,6 +35,10 @@ export function parseRunsOn(jobName: string, runsOnRaw: JobSchema['runs-on']): R
     }
 
     return { type: 'pickOne', pickables };
+  }
+
+  if (cloud) {
+    throw new ParseRunsOnError(`Does not allow runs-on "group" on cloud job [${jobName}]`, jobName, runsOnRaw);
   }
 
   if (typeof runsOnRaw === 'object') {

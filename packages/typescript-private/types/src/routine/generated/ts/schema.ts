@@ -30,6 +30,7 @@ export interface RoutineSchema {
 export interface JobSchema {
   needs?: string | string[];
   record?: boolean;
+  cloud?: boolean;
   browserName?: string;
   browserVersion?: string;
   appVersion?:
@@ -50,8 +51,6 @@ export interface JobSchema {
          */
         [k: string]: string;
       };
-  deviceVersion?: number | string;
-  deviceModel?: string;
   'runs-on'?:
     | {
         group: string | string[];

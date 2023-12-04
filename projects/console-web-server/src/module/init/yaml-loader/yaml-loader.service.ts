@@ -50,11 +50,7 @@ export class YamlLoaderService {
 
   public routineYamlToObject(yamlRaw: string): RoutineSchema {
     const parsedYaml = this.loadYamlRaw<RoutineSchema>(yamlRaw);
-    if (FeatureConfig.get('licenseModule') === 'cloud') {
-      this.validateDeviceModelAndRunOn(parsedYaml);
-    } else {
-      this.validateRunsOn(parsedYaml);
-    }
+    this.validateRunsOn(parsedYaml);
     this.validateRoutineJob(parsedYaml);
     this.validateRoutineStep(parsedYaml);
     this.validateRoutineYaml(parsedYaml);
@@ -90,45 +86,13 @@ export class YamlLoaderService {
     }
   }
 
-  private validateDeviceModelAndRunOn(parsedYaml: RoutineSchema): void {
-    const { jobs } = parsedYaml;
-    const errors = _.entries(jobs)
-      .map(([jobName, jobValue]) => {
-        const { deviceModel } = jobValue;
-        const runsOn = jobValue['runs-on'];
-        if (deviceModel && runsOn) {
-          return new Error(`Cannot specify both deviceModel and runs-on on job [${jobName}]`);
-        }
-
-        if (!deviceModel && !runsOn) {
-          return new Error(`Specify either deviceModel or runs-on on job [${jobName}]`);
-        }
-
-        if (!deviceModel && runsOn) {
-          try {
-            parseRunsOn(jobName, runsOn);
-            return null;
-          } catch (error) {
-            return error;
-          }
-        }
-
-        return null;
-      })
-      .filter((error): error is Error => !!error);
-
-    if (errors.length > 0) {
-      throw new HttpException(errors.map((error) => error.message).join(', '), HttpStatus.BAD_REQUEST);
-    }
-  }
-
   private validateRunsOn(parsedYaml: RoutineSchema): void {
     const { jobs } = parsedYaml;
     const errors = _.entries(jobs)
-      .map(([jobName, jobValue]) => ({ jobName, runsOn: jobValue['runs-on'] }))
-      .map(({ jobName, runsOn }) => {
+      .map(([jobName, jobValue]) => ({ jobName, cloud: jobValue['cloud'] ?? false, runsOn: jobValue['runs-on'] }))
+      .map(({ jobName, cloud, runsOn }) => {
         try {
-          parseRunsOn(jobName, runsOn);
+          parseRunsOn(jobName, cloud, runsOn);
           return null;
         } catch (error) {
           return error;
