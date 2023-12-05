@@ -1,3 +1,4 @@
+import { LoadingOutlined } from '@ant-design/icons';
 import { CloudLicenseResponse, SelfHostedLicenseResponse, UserBase } from '@dogu-private/console';
 import { OrganizationId } from '@dogu-private/types';
 import { GetServerSideProps } from 'next';
@@ -29,6 +30,21 @@ interface BillingPageProps {
 const BillingPage: NextPageWithLayout<BillingPageProps> = ({ me, license }) => {
   const { t } = useTranslation('billing');
   const storedLicense = useLicenseStore((state) => state.license);
+
+  if (!storedLicense) {
+    return (
+      <>
+        <Head>
+          <title>Plans & Pricing | Dogu</title>
+        </Head>
+        <Box>
+          <div>
+            <LoadingOutlined />
+          </div>
+        </Box>
+      </>
+    );
+  }
 
   const paymentMethod = (storedLicense as CloudLicenseResponse | null)?.billingOrganization?.billingMethodNice;
 
