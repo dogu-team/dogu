@@ -60,8 +60,8 @@ const RoutineCreator = ({ project }: Props) => {
       setChanged(false);
       const { routineId } = await createRoutine(project.organizationId, project.projectId, file);
       router.push({
-        pathname: router.pathname.replace(/\/\[pipelineId\](.+)?$/, ''),
-        query: { orgId: router.query.orgId, pid: router.query.pid, routineId },
+        pathname: router.pathname.replace(/\/creator?$/, ''),
+        query: { orgId: router.query.orgId, pid: router.query.pid, routine: routineId },
       });
       sendSuccessNotification(t('routine:createRoutineSuccessMessage'));
     } catch (error) {

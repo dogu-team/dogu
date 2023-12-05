@@ -57,8 +57,8 @@ const RoutineUpdator = (props: Props) => {
 
       await updateRoutine(props.project.organizationId, props.project.projectId, props.routineId, file);
       router.push({
-        pathname: router.pathname.replace(/\/\[pipelineId\](.+)?$/, ''),
-        query: { orgId: router.query.orgId, pid: router.query.pid, routineId: props.routineId },
+        pathname: router.pathname.replace(/\/editor(.+)?$/, ''),
+        query: { orgId: router.query.orgId, pid: router.query.pid, routine: props.routineId },
       });
 
       sendSuccessNotification(t('routine:updateRoutineSuccessMessage'));
