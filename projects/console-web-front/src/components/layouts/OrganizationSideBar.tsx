@@ -219,7 +219,7 @@ const OrganizationSideBar = () => {
           icon: collapsed ? (
             <StyledIconLink
               selected={router.asPath.startsWith(`/dashboard/${organization?.organizationId}/device-farm`)}
-              href={`/dashboard/${organization?.organizationId}/device-farm/hosts`}
+              href={`/dashboard/${organization?.organizationId}/device-farm/devices`}
             >
               <ClusterOutlined />
             </StyledIconLink>
@@ -229,7 +229,7 @@ const OrganizationSideBar = () => {
           ) : (
             <SideBarMenu
               icon={<ClusterOutlined style={{ fontSize: '1.2rem' }} />}
-              path={`/dashboard/${organization?.organizationId}/device-farm/hosts`}
+              path={`/dashboard/${organization?.organizationId}/device-farm/devices`}
               text={t('organization:deviceFarmPageTitle')}
               startWith={`/dashboard/${organization?.organizationId}/device-farm`}
               accessId="side-bar-device-farm"
