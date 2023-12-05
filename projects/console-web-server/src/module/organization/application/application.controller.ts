@@ -8,8 +8,8 @@ import { DataSource } from 'typeorm';
 import { OrganizationApplication } from '../../../db/entity/organization-application.entity';
 
 import { applicationFileParser } from '../../../utils/file';
-import { ORGANIZATION_ROLE, PROJECT_ROLE } from '../../auth/auth.types';
-import { OrganizationPermission, ProjectPermission, User } from '../../auth/decorators';
+import { ORGANIZATION_ROLE } from '../../auth/auth.types';
+import { OrganizationPermission, User } from '../../auth/decorators';
 import { Page } from '../../common/dto/pagination/page';
 import { UploadSampleAppDto } from '../../project/application/dto/application.dto';
 import { FindOrganizationApplicationByPackageNameDto, FindOrganizationApplicationDto } from './application.dto';
@@ -49,7 +49,7 @@ export class OrganizationApplicationController {
   }
 
   @Get('/:applicationId/url')
-  @ProjectPermission(PROJECT_ROLE.READ)
+  @OrganizationPermission(ORGANIZATION_ROLE.MEMBER)
   async getApplicationUrl(@Param('applicationId') id: string, @Param('organizationId') organizationId: OrganizationId): Promise<string> {
     const applicationDownloadUrl = await this.applicationService.getApplicationDownladUrl(id, organizationId);
     return applicationDownloadUrl;
@@ -69,7 +69,7 @@ export class OrganizationApplicationController {
   }
 
   @Put('/samples')
-  @ProjectPermission(PROJECT_ROLE.WRITE)
+  @OrganizationPermission(ORGANIZATION_ROLE.MEMBER)
   async uploadSampleApp(@User() userPayload: UserPayload, @Param('organizationId') organizationId: OrganizationId, @Body() uploadSmapleAppDto: UploadSampleAppDto): Promise<void> {
     await this.dataSource.transaction(async (manager) => {
       let appFilePath: string;
@@ -89,13 +89,13 @@ export class OrganizationApplicationController {
   }
 
   @Delete('/packages/:packageName')
-  @ProjectPermission(PROJECT_ROLE.WRITE)
+  @OrganizationPermission(ORGANIZATION_ROLE.MEMBER)
   async deleteApplicationByPackage(@Param('packageName') packageName: string, @Param('organizationId') organizationId: OrganizationId): Promise<void> {
     await this.applicationService.deleteApplicationByPackage(organizationId, packageName);
   }
 
   @Delete('/:applicationId')
-  @ProjectPermission(PROJECT_ROLE.WRITE)
+  @OrganizationPermission(ORGANIZATION_ROLE.MEMBER)
   async deleteApplication(@Param('applicationId') id: string, @Param('organizationId') organizationId: OrganizationId): Promise<void> {
     await this.applicationService.deleteApplication(id, organizationId);
   }
