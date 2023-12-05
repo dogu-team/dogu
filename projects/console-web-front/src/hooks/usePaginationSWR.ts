@@ -1,6 +1,6 @@
 import { PageBase } from '@dogu-private/console';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import useSWR, { Key, SWRConfiguration } from 'swr';
+import useSWR, { SWRConfiguration } from 'swr';
 
 import { swrAuthFetcher } from 'src/api';
 
@@ -17,9 +17,13 @@ const getPaginationQuery = (page: number, offset: number = 10) => {
   return sp.toString();
 };
 
-const usePaginationSWR = <D>(key: Key, option?: PaginationSWROption, swrConfig?: SWRConfiguration<PageBase<D>>) => {
+const usePaginationSWR = <D>(
+  key: string | null,
+  option?: PaginationSWROption,
+  swrConfig?: SWRConfiguration<PageBase<D>>,
+) => {
   const [page, setPage] = useState(1);
-  const [swrKey, setSWRKey] = useState<Key>();
+  const [swrKey, setSWRKey] = useState<string | null>();
   const pageQuery = useMemo(() => getPaginationQuery(page, option?.offset), [page, option?.offset]);
   const { data, error, mutate, isLoading, isValidating } = useSWR<PageBase<D>>(swrKey, swrAuthFetcher, {
     keepPreviousData: true,

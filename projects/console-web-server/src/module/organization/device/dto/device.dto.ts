@@ -86,18 +86,6 @@ export class FindDevicesByOrganizationIdDto extends PageDto implements FindDevic
   @IsOptional()
   @IsString()
   hostId?: string;
-
-  // for cookapps
-  @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
-  @Transform(({ value }: { value: string }) => {
-    return value
-      .trim()
-      .split(',')
-      .map((s) => s.trim());
-  })
-  excludeHostIds: string[] = [];
 }
 
 export class FindAddableDevicesByOrganizationIdDto extends PageDto implements FindAddableDevicesByOrganizationIdDtoBase {

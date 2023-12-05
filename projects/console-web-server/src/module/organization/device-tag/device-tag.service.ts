@@ -7,7 +7,6 @@ import { DataSource, EntityManager } from 'typeorm';
 import { DeviceTag } from '../../../db/entity/device-tag.entity';
 import { Device } from '../../../db/entity/device.entity';
 import { DeviceAndDeviceTag } from '../../../db/entity/relations/device-and-device-tag.entity';
-import { COOKAPPS_DOGU_HOST_1_ID, COOKAPPS_DOGU_HOST_2_ID } from '../../../utils/temp';
 import { EMPTY_PAGE, Page } from '../../common/dto/pagination/page';
 import { DeviceStatusService } from '../device/device-status.service';
 import { CreateDeviceTagDto, FindDeviceTagsByOrganizationIdDto, UpdateDeviceTagDto } from './dto/device-tag.dto';
@@ -35,7 +34,7 @@ export class DeviceTagService {
         `deviceAndDeviceTags.${DeviceAndDeviceTagPropSnake.device_id} NOT IN (:...disableHostdeviceIds)`,
         { disableHostdeviceIds },
       )
-      .leftJoinAndSelect(`deviceAndDeviceTags.${DeviceAndDeviceTagPropCamel.device}`, 'device', `device.hostId NOT IN (${COOKAPPS_DOGU_HOST_1_ID},${COOKAPPS_DOGU_HOST_2_ID})`)
+      .leftJoinAndSelect(`deviceAndDeviceTags.${DeviceAndDeviceTagPropCamel.device}`, 'device')
       .where(`tag.${DeviceTagPropSnake.organization_id} = :${DeviceTagPropCamel.organizationId}`, { organizationId })
       .andWhere(`tag.${DeviceTagPropSnake.name} ILIKE :keyword`, { keyword: `%${dto.keyword}%` })
       .orderBy(`tag.${DeviceTagPropCamel.createdAt}`, 'DESC')

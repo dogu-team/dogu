@@ -33,7 +33,6 @@ import { v4 } from 'uuid';
 import { Device, Project, RoutinePipeline, Token, User } from '../../db/entity';
 import { ProjectAccessToken } from '../../db/entity/project-access-token.entity';
 import { EMPTY_PAGE, Page } from '../../module/common/dto/pagination/page';
-import { COOKAPPS_DOGU_HOST_1_ID, COOKAPPS_DOGU_HOST_2_ID } from '../../utils/temp';
 import { ORGANIZATION_ROLE } from '../auth/auth.types';
 import { UserPermission } from '../auth/guard/common';
 // import { GitlabService } from '../gitlab/gitlab.service';
@@ -364,8 +363,6 @@ export class ProjectService {
     const rawPagedDevicesQuery = qb
       .where(`device.${DevicePropSnake.device_id} IN ${enabledProjectDeviceSubQuery.getQuery()}`)
       .andWhere(connectionStateFilterClause, { connectionState: dto.connectionState })
-      // for cookapps
-      .andWhere(`device.${DevicePropSnake.host_id} NOT IN (${COOKAPPS_DOGU_HOST_1_ID},${COOKAPPS_DOGU_HOST_2_ID})`)
       .andWhere(platformFilterClause, { platform: dto.platform })
       .andWhere(
         new Brackets((qb) => {

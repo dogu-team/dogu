@@ -90,9 +90,7 @@ const LiveTestingCloudDeviceList: React.FC<Props> = () => {
   const router = useRouter();
   const { keyword, platform, version } = useCloudDeviceFilterStore((state) => state.filterValue, shallow);
   const { data, error, isLoading, mutate, page, updatePage } = usePaginationSWR<CloudDeviceMetadataBase>(
-    // for cookapps
-    router.query.orgId === '3d5baa08-0a4a-4e64-b4da-42679b74c207' &&
-      `/cloud-devices?keyword=${keyword}${platform ? `&platform=${platform}` : ''}&version=${version}`,
+    `/cloud-devices?keyword=${keyword}${platform ? `&platform=${platform}` : ''}&version=${version}`,
     { skipQuestionMark: true, offset: 12 },
     { keepPreviousData: true, refreshInterval: 10000 },
   );
@@ -114,14 +112,7 @@ const LiveTestingCloudDeviceList: React.FC<Props> = () => {
       </Header>
       <List<CloudDeviceMetadataBase>
         loading={isLoading}
-        dataSource={
-          // for cookapps
-          process.env.NEXT_PUBLIC_ENV === 'production'
-            ? router.query.orgId === '3d5baa08-0a4a-4e64-b4da-42679b74c207'
-              ? data?.items
-              : []
-            : data?.items
-        }
+        dataSource={data?.items}
         renderItem={(device) => <DeviceItem device={device} />}
         rowKey={(device) => device.model}
         pagination={{
