@@ -45,7 +45,7 @@ export class UpdateProcessor {
             (async (): Promise<void> => {
               const pid = env.DOGU_ROOT_PID ?? process.pid;
               this.logger.info(`UpdateProcessor.update. quit app pid: ${pid}`);
-              const pids = child.pid ? [...(await getChildProcessIds(child.pid, this.logger)), child.pid] : [];
+              const pids = updateShChild.pid ? [...(await getChildProcessIds(updateShChild.pid, this.logger)), updateShChild.pid] : [];
               killProcessIgnore(pid, pids, this.logger);
             })().catch((e) => {
               const error = errorify(e);
