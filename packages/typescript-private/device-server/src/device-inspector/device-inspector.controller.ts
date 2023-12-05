@@ -1,5 +1,5 @@
 import { Serial } from '@dogu-private/types';
-import { errorify, Instance } from '@dogu-tech/common';
+import { Instance } from '@dogu-tech/common';
 import { DeviceInspector, GetHitPointQuery, SwitchContextRequest, TryConnectGamiumInspectorRequest } from '@dogu-tech/device-client-common';
 import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { DevicePermission } from '../auth/decorators';
@@ -135,27 +135,11 @@ export class DeviceInspectorController {
     if (!channel) {
       return deviceNotFoundError(serial);
     }
-    const { gamiumContext } = channel;
     const appiumContext = await channel.getAppiumContext();
     if (!appiumContext) {
       return appiumContextNotFoundError(serial);
     }
     const contextPageSources = await appiumContext.getContextPageSources();
-    if (gamiumContext) {
-      if (gamiumContext.connected) {
-        try {
-          const gamiumContextPageSource = await gamiumContext.getContextPageSource();
-          const mergedGamiumContextPageSource = {
-            ...gamiumContextPageSource,
-            screenSize: await appiumContext.getScreenSize(),
-            android: await appiumContext.getAndroid(),
-          };
-          contextPageSources.push(mergedGamiumContextPageSource);
-        } catch (error) {
-          this.logger.error('Failed to get gamium context page source', { error: errorify(error) });
-        }
-      }
-    }
     return {
       value: {
         $case: 'data',
@@ -192,7 +176,9 @@ export class DeviceInspectorController {
           },
         };
       } else {
-        await gamiumContext.reconnect();
+        if (!gamiumContext.connected) {
+          await gamiumContext.reconnect();
+        }
         return {
           value: {
             $case: 'data',
