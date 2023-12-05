@@ -58,7 +58,10 @@ export class GamiumContext {
     return this.gamiumClient?.connected ?? false;
   }
 
-  constructor(private readonly channel: DeviceChannel, options?: GamiumContextOptions) {
+  constructor(
+    private readonly channel: DeviceChannel,
+    options?: GamiumContextOptions,
+  ) {
     this.logger = createGamiumLogger(channel.serial);
     this.options = lodash.merge(this.options, options);
   }
@@ -148,7 +151,8 @@ export class GamiumContext {
   }
 
   async getPageSource(): Promise<string> {
-    return this.gamiumClient?.inspector().getPageSource() ?? '';
+    await Promise.resolve();
+    return '';
   }
 
   private createContextPageSource(pageSource: string): GamiumContextPageSource {
