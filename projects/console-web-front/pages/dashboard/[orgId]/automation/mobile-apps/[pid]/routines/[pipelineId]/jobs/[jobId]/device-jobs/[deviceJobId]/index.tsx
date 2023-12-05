@@ -23,7 +23,7 @@ import useAuthStore from 'src/stores/auth';
 import useLivePipelineStore from 'src/stores/live-pipeline';
 import { getErrorMessageFromAxios } from 'src/utils/error';
 import { isPipelineInProgress } from 'src/utils/pipeline';
-import { NextPageWithLayout } from '../../../../../../../../../_app';
+import { NextPageWithLayout } from '../../../../../../../../../../../_app';
 
 const DeviceJobPage: NextPageWithLayout<ProjectServerSideProps> = ({ organization, project }) => {
   const router = useRouter();

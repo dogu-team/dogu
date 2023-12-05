@@ -5,7 +5,7 @@ import PipelineJobLayout from 'src/components/layouts/PipelineJobLayout';
 import PipelineDeviceGrid from 'src/components/pipelines/PipelineDeviceGrid';
 import { getProjectPageServerSideProps, ProjectServerSideProps } from 'src/ssr/project';
 import useLivePipelineStore from 'src/stores/live-pipeline';
-import { NextPageWithLayout } from '../../../../../_app';
+import { NextPageWithLayout } from '../../../../../../../_app';
 
 const PipelineDeviceViewPage: NextPageWithLayout<ProjectServerSideProps> = ({ organization, project }) => {
   const router = useRouter();

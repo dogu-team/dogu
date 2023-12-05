@@ -21,7 +21,7 @@ import useLivePipelineStore from 'src/stores/live-pipeline';
 import { getErrorMessageFromAxios } from 'src/utils/error';
 import { pipelineJobEmptyText } from 'src/utils/mapper';
 import { isPipelineEmptyLogStatus } from 'src/utils/pipeline';
-import { NextPageWithLayout } from '../../../../../../../_app';
+import { NextPageWithLayout } from '../../../../../../../../../_app';
 
 const JobSummaryPage: NextPageWithLayout<ProjectServerSideProps> = ({ organization, project }) => {
   const router = useRouter();
