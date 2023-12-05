@@ -121,7 +121,9 @@ class RoutineDestReporter(PyTestHandler):
         unit_info = _get_routine_unit_info(item)
 
         if unit_info.finished_at is None:
-            print(f"[dogu] nodeid: {nodeid} routine_dest_id: {unit_info.routine_dest_id} does not have finished_at. set now")
+            print(
+                f"[dogu] nodeid: {nodeid} routine_dest_id: {unit_info.routine_dest_id} does not have finished_at. set now"
+            )
             unit_info.finished_at = datetime.now()
 
         self._client.update_routine_dest_state(
@@ -133,7 +135,9 @@ class RoutineDestReporter(PyTestHandler):
         job_info = _get_routine_job_info(item)
         if all(child.state.is_completed() for child in job_info.children):
             if job_info.finished_at is None:
-                print(f"[dogu] nodeid: {nodeid} routine_dest_id: {job_info.routine_dest_id} does not have finished_at. set now")
+                print(
+                    f"[dogu] nodeid: {nodeid} routine_dest_id: {job_info.routine_dest_id} does not have finished_at. set now"
+                )
                 job_info.finished_at = datetime.now()
 
             self._client.update_routine_dest_state(
