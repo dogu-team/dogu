@@ -49,7 +49,7 @@ export const DeviceAuth = {
   createToken: new DeviceServerControllerMethodSpec({
     controllerSpec: DeviceAuthController,
     method: 'POST',
-    path: '/:serial//token',
+    path: '/:serial/token',
     pathProvider: class {
       constructor(readonly serial: Serial) {}
     },
