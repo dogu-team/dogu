@@ -1,5 +1,5 @@
 import { PrivateDeviceJob, WriteDeviceJobLogsRequestBody } from '@dogu-private/console-host-agent';
-import { createConsoleApiAuthHeader, DeviceId, DeviceJobLog, OrganizationId, RoutineDeviceJobId } from '@dogu-private/types';
+import { createConsoleApiAuthHeader, DeviceJobLog, OrganizationId, RoutineDeviceJobId } from '@dogu-private/types';
 import { DefaultHttpOptions, errorify, Instance, Retry, stringify } from '@dogu-tech/common';
 import { Injectable } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
@@ -14,17 +14,19 @@ import { OnDeviceJobLoggedEvent } from './device-job.events';
 export class DeviceJobLogger {
   private readonly buffers = new Map<string, DeviceJobLog[]>();
 
-  constructor(private readonly consoleClientService: ConsoleClientService, private readonly logger: DoguLogger) {}
+  constructor(
+    private readonly consoleClientService: ConsoleClientService,
+    private readonly logger: DoguLogger,
+  ) {}
 
   @Interval(1000)
   flush(): void {
     try {
       for (const [key, buffer] of this.buffers) {
-        const [organizationId, deviceId, routineDeviceJobId] = this.parseKey(key);
-        this.sendDeviceJobLog(organizationId, deviceId, routineDeviceJobId, { logs: buffer }).catch((error) => {
+        const [organizationId, routineDeviceJobId] = this.parseKey(key);
+        this.sendDeviceJobLog(organizationId, routineDeviceJobId, { logs: buffer }).catch((error) => {
           this.logger.error('Failed to send device job log', {
             organizationId,
-            deviceId,
             routineDeviceJobId,
             body: { logs: buffer },
             error: stringify(error),
@@ -41,7 +43,7 @@ export class DeviceJobLogger {
 
   @OnEvent(OnDeviceJobLoggedEvent.key)
   onDeviceJobLoggedEvent(value: Instance<typeof OnDeviceJobLoggedEvent.value>): void {
-    const key = this.createKey(value.organizationId, value.deviceId, value.routineDeviceJobId);
+    const key = this.createKey(value.executorOrganizationId, value.routineDeviceJobId);
     const buffer = this.buffers.get(key);
     if (buffer === undefined) {
       this.buffers.set(key, [value.log]);
@@ -52,8 +54,8 @@ export class DeviceJobLogger {
   }
 
   @Retry({ printable: logger })
-  private async sendDeviceJobLog(organizationId: OrganizationId, deviceId: DeviceId, routineDeviceJobId: RoutineDeviceJobId, body: WriteDeviceJobLogsRequestBody): Promise<void> {
-    const pathProvider = new PrivateDeviceJob.writeDeviceJobLogs.pathProvider(organizationId, deviceId, routineDeviceJobId);
+  private async sendDeviceJobLog(organizationId: OrganizationId, routineDeviceJobId: RoutineDeviceJobId, body: WriteDeviceJobLogsRequestBody): Promise<void> {
+    const pathProvider = new PrivateDeviceJob.writeDeviceJobLogs.pathProvider(organizationId, routineDeviceJobId);
     const path = PrivateDeviceJob.writeDeviceJobLogs.resolvePath(pathProvider);
     await this.consoleClientService.client
       .post(path, body, {
@@ -63,7 +65,6 @@ export class DeviceJobLogger {
       .catch((error) => {
         this.logger.error('Failed to send device job log', {
           organizationId,
-          deviceId,
           routineDeviceJobId,
           body,
           error: errorify(error),
@@ -72,12 +73,12 @@ export class DeviceJobLogger {
       });
   }
 
-  private createKey(organizationId: OrganizationId, deviceId: DeviceId, routineDeviceJobId: RoutineDeviceJobId): string {
-    return `${organizationId}:${deviceId}:${routineDeviceJobId}`;
+  private createKey(organizationId: OrganizationId, routineDeviceJobId: RoutineDeviceJobId): string {
+    return `${organizationId}:${routineDeviceJobId}`;
   }
 
-  private parseKey(key: string): [OrganizationId, DeviceId, RoutineDeviceJobId] {
-    const [organizationId, deviceId, routineDeviceJobId] = key.split(':');
-    return [organizationId, deviceId, Number(routineDeviceJobId)];
+  private parseKey(key: string): [OrganizationId, RoutineDeviceJobId] {
+    const [organizationId, routineDeviceJobId] = key.split(':');
+    return [organizationId, Number(routineDeviceJobId)];
   }
 }

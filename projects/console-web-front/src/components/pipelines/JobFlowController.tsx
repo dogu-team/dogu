@@ -25,7 +25,10 @@ const NodeItem = ({ job }: NodeItemProps) => {
 
   return (
     <ItemBox
-      href={`/dashboard/${router.query.orgId}/projects/${router.query.pid}/routines/${router.query.pipelineId}/jobs/${job.routineJobId}`}
+      href={{
+        pathname: router.pathname.replace(/\/\[pipelineId\](.+)?$/, '/[pipelineId]/jobs/[jobId]'),
+        query: { ...router.query, jobId: job.routineJobId },
+      }}
     >
       <JobStatusIcon status={job.status} />
       <p>{job.name}</p>

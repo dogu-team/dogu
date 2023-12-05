@@ -6,6 +6,7 @@ import styled from 'styled-components';
 import useSelect from '../../../../hooks/useSelect';
 import { flexRowBaseStyle } from '../../../../styles/box';
 import PlatformIcon from '../../../device/PlatformIcon';
+import OrganizationApplicationSelector from '../../../organization-application/OrganizationApplicationSelector';
 import ProjectApplicationSelector from '../../../project-application/ProjectApplicationSelector';
 
 interface Props {
@@ -39,11 +40,10 @@ const PlatformAppPcakageNameSelector = ({ packageName, platform, onReset, onChan
       </PlatformName>
 
       <div style={{ width: '200px' }}>
-        <ProjectApplicationSelector
+        <OrganizationApplicationSelector
           defaultValue={packageName}
           value={packageName}
           organizationId={router.query.orgId as OrganizationId}
-          projectId={router.query.pid as ProjectId}
           onSelectApp={(packageName, app) => onChange(platform, packageName)}
           placeholder="Select app"
           extension={getExtension()}

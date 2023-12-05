@@ -21,36 +21,9 @@ object DataChannelProtocolDeviceWebSocketKt {
     @kotlin.jvm.JvmSynthetic
     @kotlin.PublishedApi
     internal fun _build(): com.dogu.protocol.generated.inner.types.CfGdcDa.DataChannelProtocolDeviceWebSocket = _builder.build()
-
-    /**
-     * <code>.outer.WebSocketConnection connection = 1;</code>
-     */
-    var connection: com.dogu.protocol.generated.outer.HttpWs.WebSocketConnection
-      @JvmName("getConnection")
-      get() = _builder.getConnection()
-      @JvmName("setConnection")
-      set(value) {
-        _builder.setConnection(value)
-      }
-    /**
-     * <code>.outer.WebSocketConnection connection = 1;</code>
-     */
-    fun clearConnection() {
-      _builder.clearConnection()
-    }
-    /**
-     * <code>.outer.WebSocketConnection connection = 1;</code>
-     * @return Whether the connection field is set.
-     */
-    fun hasConnection(): kotlin.Boolean {
-      return _builder.hasConnection()
-    }
   }
 }
 @kotlin.jvm.JvmSynthetic
 inline fun com.dogu.protocol.generated.inner.types.CfGdcDa.DataChannelProtocolDeviceWebSocket.copy(block: com.dogu.protocol.generated.inner.types.DataChannelProtocolDeviceWebSocketKt.Dsl.() -> kotlin.Unit): com.dogu.protocol.generated.inner.types.CfGdcDa.DataChannelProtocolDeviceWebSocket =
   com.dogu.protocol.generated.inner.types.DataChannelProtocolDeviceWebSocketKt.Dsl._create(this.toBuilder()).apply { block() }._build()
-
-val com.dogu.protocol.generated.inner.types.CfGdcDa.DataChannelProtocolDeviceWebSocketOrBuilder.connectionOrNull: com.dogu.protocol.generated.outer.HttpWs.WebSocketConnection?
-  get() = if (hasConnection()) getConnection() else null
 

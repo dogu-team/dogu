@@ -1,9 +1,10 @@
 import { WebSocketProxyConnect, WebSocketProxyId, WebSocketProxySendClose, WebSocketProxySendMessage } from '@dogu-private/console-host-agent';
-import { DeviceId, OrganizationId } from '@dogu-private/types';
+import { DeviceId, DOGU_DEVICE_AUTHORIZATION_HEADER_KEY, OrganizationId } from '@dogu-private/types';
 import { closeWebSocketWithTruncateReason, errorify, Instance, stringify, validateAndEmitEventAsync } from '@dogu-tech/common';
 import { Injectable } from '@nestjs/common';
 import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import WebSocket from 'ws';
+import { DeviceAuthService } from '../device-auth/device-auth.service';
 import { env } from '../env';
 import { OnHostDisconnectedEvent } from '../host/host.events';
 import { DoguLogger } from '../logger/logger';
@@ -21,7 +22,11 @@ interface WebSocketProxyInfo {
 export class WebSocketProxyProcessRegistry {
   private readonly webSockets = new Map<WebSocketProxyId, WebSocketProxyInfo>();
 
-  constructor(private readonly logger: DoguLogger, private readonly eventEmitter: EventEmitter2) {}
+  constructor(
+    private readonly logger: DoguLogger,
+    private readonly eventEmitter: EventEmitter2,
+    private readonly authService: DeviceAuthService,
+  ) {}
 
   @OnEvent(OnHostDisconnectedEvent.key)
   onHostDisconnected(value: Instance<typeof OnHostDisconnectedEvent.value>): void {
@@ -33,9 +38,12 @@ export class WebSocketProxyProcessRegistry {
   }
 
   async connect(param: WebSocketProxyConnect, context: MessageContext): Promise<void> {
-    const { webSocketProxyId, path, headers } = param;
+    const { webSocketProxyId, path } = param;
     const { info, eventHandler } = context;
     const { deviceId, organizationId } = info;
+    const headers = param.headers ?? {};
+    headers[DOGU_DEVICE_AUTHORIZATION_HEADER_KEY] = this.authService.makeAuthHeader()[DOGU_DEVICE_AUTHORIZATION_HEADER_KEY];
+
     const webSocket = new WebSocket(`ws://${env.DOGU_DEVICE_SERVER_HOST_PORT}${path}`, { headers });
     const webSocketProxyInfo: WebSocketProxyInfo = { webSocket, organizationId, deviceId, webSocketProxyId };
     if (this.webSockets.has(webSocketProxyId)) {

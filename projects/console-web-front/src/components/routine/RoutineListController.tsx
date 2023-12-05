@@ -44,7 +44,7 @@ const RoutineListController = ({ organizationId, projectId }: Props) => {
   return (
     <Box>
       <ProjectSidebarItem
-        href={`/dashboard/${organizationId}/projects/${projectId}/routines`}
+        href={{ query: { orgId: router.query.orgId, pid: router.query.pid } }}
         selected={router.query.routine === undefined && router.query.routineId === undefined}
       >
         {t('routine:routineSidebarAllMenuTitle')}
@@ -54,7 +54,7 @@ const RoutineListController = ({ organizationId, projectId }: Props) => {
         return (
           <ProjectSidebarItem
             key={`project-${projectId}-${item.routineId}`}
-            href={`/dashboard/${organizationId}/projects/${projectId}/routines?routine=${item.routineId}`}
+            href={{ query: { ...router.query, routine: item.routineId } }}
             selected={router.query.routine === item.routineId || router.query.routineId === item.routineId}
           >
             {item.name}

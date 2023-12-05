@@ -2,6 +2,7 @@ import { Code, DeviceFoldRequestDto, GeoLocationDto, LocaleCodeDto, Platform, pl
 import { Instance } from '@dogu-tech/common';
 import { CreateLocalDeviceDetectTokenRequest, Device, DeviceConfigDto } from '@dogu-tech/device-client-common';
 import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
+import { DevicePermission } from '../auth/decorators';
 import { ConfigService } from '../config/config.service';
 import { toErrorResultDto } from '../device-webdriver/device-webdriver.controller';
 import { AdbSerial } from '../internal/externals/index';
@@ -46,7 +47,23 @@ export class DeviceController {
     };
   }
 
+  @Get(Device.getHeartbeat.path)
+  @DevicePermission({ allowAdmin: true, allowTemporary: 'serial' })
+  getHeartbeat(@Param('serial') serial: Serial): Instance<typeof Device.getHeartbeat.responseBody> {
+    const device = this.scanService.findChannel(serial);
+    if (device === null) {
+      return deviceNotFoundError(serial);
+    }
+    return {
+      value: {
+        $case: 'data',
+        data: {},
+      },
+    };
+  }
+
   @Get(Device.getDeviceSystemInfo.path)
+  @DevicePermission({ allowAdmin: true, allowTemporary: 'serial' })
   getDeviceSystemInfo(@Param('serial') serial: Serial): Instance<typeof Device.getDeviceSystemInfo.responseBody> {
     const device = this.scanService.findChannel(serial);
     if (device === null) {
@@ -61,6 +78,7 @@ export class DeviceController {
   }
 
   @Patch(Device.updateDeviceConfig.path)
+  @DevicePermission({ allowAdmin: true, allowTemporary: 'serial' })
   async updateDeviceConfig(@Param('serial') serial: Serial, @Body() deviceConfig: DeviceConfigDto): Promise<Instance<typeof Device.updateDeviceConfig.responseBody>> {
     const device = this.scanService.findChannel(serial);
     if (device === null) {
@@ -76,6 +94,7 @@ export class DeviceController {
   }
 
   @Post(Device.rebootDevice.path)
+  @DevicePermission({ allowAdmin: true, allowTemporary: 'serial' })
   async reboot(@Param('serial') serial: Serial): Promise<Instance<typeof Device.rebootDevice.responseBody>> {
     const device = this.scanService.findChannel(serial);
     if (device === null) {
@@ -120,6 +139,7 @@ export class DeviceController {
   }
 
   @Get(Device.getAppiumContextInfo.path)
+  @DevicePermission({ allowAdmin: true, allowTemporary: 'serial' })
   async getAppiumContextInfo(@Param('serial') serial: Serial): Promise<Instance<typeof Device.getAppiumContextInfo.responseBody>> {
     const channel = this.scanService.findChannel(serial);
     if (channel === null) {
@@ -156,6 +176,7 @@ export class DeviceController {
   }
 
   @Get(Device.getAppiumCapabilities.path)
+  @DevicePermission({ allowAdmin: true, allowTemporary: 'serial' })
   async getAppiumCapabilities(@Param('serial') serial: Serial): Promise<Instance<typeof Device.getAppiumCapabilities.responseBody>> {
     const channel = this.scanService.findChannel(serial);
     if (channel === null) {
@@ -180,6 +201,7 @@ export class DeviceController {
   }
 
   @Get(Device.getSystemBarVisibility.path)
+  @DevicePermission({ allowAdmin: true, allowTemporary: 'serial' })
   async getSystemBarVisibility(@Param('serial') serial: Serial): Promise<Instance<typeof Device.getSystemBarVisibility.responseBody>> {
     const channel = this.scanService.findChannel(serial);
     if (channel === null) {
@@ -228,6 +250,7 @@ export class DeviceController {
   }
 
   @Get(Device.getLocale.path)
+  @DevicePermission({ allowAdmin: true, allowTemporary: 'serial' })
   async getLocale(@Param('serial') serial: Serial): Promise<Instance<typeof Device.getLocale.responseBody>> {
     const channel = this.scanService.findChannel(serial);
     if (channel === null) {
@@ -246,6 +269,7 @@ export class DeviceController {
   }
 
   @Post(Device.setLocale.path)
+  @DevicePermission({ allowAdmin: true, allowTemporary: 'serial' })
   async setLocale(@Param('serial') serial: Serial, @Body() localeCodeDto: LocaleCodeDto): Promise<Instance<typeof Device.setLocale.responseBody>> {
     const device = this.scanService.findChannel(serial);
     if (device === null) {
@@ -264,6 +288,7 @@ export class DeviceController {
   }
 
   @Get(Device.getGeoLocation.path)
+  @DevicePermission({ allowAdmin: true, allowTemporary: 'serial' })
   async getGeoLocation(@Param('serial') serial: Serial): Promise<Instance<typeof Device.getGeoLocation.responseBody>> {
     const channel = this.scanService.findChannel(serial);
     if (channel === null) {
@@ -282,6 +307,7 @@ export class DeviceController {
   }
 
   @Post(Device.setGeoLocation.path)
+  @DevicePermission({ allowAdmin: true, allowTemporary: 'serial' })
   async setGeoLocation(@Param('serial') serial: Serial, @Body() geoLocationDto: GeoLocationDto): Promise<Instance<typeof Device.setGeoLocation.responseBody>> {
     const device = this.scanService.findChannel(serial);
     if (device === null) {
@@ -300,6 +326,7 @@ export class DeviceController {
   }
 
   @Get(Device.getScreenshot.path)
+  @DevicePermission({ allowAdmin: true, allowTemporary: 'serial' })
   async getScreenshot(@Param('serial') serial: Serial): Promise<Instance<typeof Device.getScreenshot.responseBody>> {
     const channel = this.scanService.findChannel(serial);
     if (channel === null) {
@@ -318,6 +345,7 @@ export class DeviceController {
   }
 
   @Get(Device.getFoldStatus.path)
+  @DevicePermission({ allowAdmin: true, allowTemporary: 'serial' })
   async getFoldStatus(@Param('serial') serial: Serial): Promise<Instance<typeof Device.getFoldStatus.responseBody>> {
     const device = this.scanService.findChannel(serial);
     if (device === null) {
@@ -337,6 +365,7 @@ export class DeviceController {
   }
 
   @Post(Device.fold.path)
+  @DevicePermission({ allowAdmin: true, allowTemporary: 'serial' })
   async fold(@Param('serial') serial: Serial, @Body() requestDto: DeviceFoldRequestDto): Promise<Instance<typeof Device.fold.responseBody>> {
     const device = this.scanService.findChannel(serial);
     if (device === null) {

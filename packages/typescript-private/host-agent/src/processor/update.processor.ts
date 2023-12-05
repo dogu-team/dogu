@@ -38,7 +38,7 @@ export class UpdateProcessor {
           }
 
           this.logger.info(`UpdateProcessor.update. detach shell ${downloadPath}`);
-          const child = await this.detachShell(msg.url, msg.fileSize, downloadPath);
+          const updateShChild = await this.detachShell(msg.url, msg.fileSize, downloadPath);
 
           // quit app
           setTimeout(() => {

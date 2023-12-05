@@ -614,17 +614,6 @@ public final class CfGdcDa {
   public interface DataChannelProtocolDeviceWebSocketOrBuilder extends
       // @@protoc_insertion_point(interface_extends:inner.types.DataChannelProtocolDeviceWebSocket)
       com.google.protobuf.MessageLiteOrBuilder {
-
-    /**
-     * <code>.outer.WebSocketConnection connection = 1;</code>
-     * @return Whether the connection field is set.
-     */
-    boolean hasConnection();
-    /**
-     * <code>.outer.WebSocketConnection connection = 1;</code>
-     * @return The connection.
-     */
-    com.dogu.protocol.generated.outer.HttpWs.WebSocketConnection getConnection();
   }
   /**
    * Protobuf type {@code inner.types.DataChannelProtocolDeviceWebSocket}
@@ -636,52 +625,6 @@ public final class CfGdcDa {
       DataChannelProtocolDeviceWebSocketOrBuilder {
     private DataChannelProtocolDeviceWebSocket() {
     }
-    public static final int CONNECTION_FIELD_NUMBER = 1;
-    private com.dogu.protocol.generated.outer.HttpWs.WebSocketConnection connection_;
-    /**
-     * <code>.outer.WebSocketConnection connection = 1;</code>
-     */
-    @java.lang.Override
-    public boolean hasConnection() {
-      return connection_ != null;
-    }
-    /**
-     * <code>.outer.WebSocketConnection connection = 1;</code>
-     */
-    @java.lang.Override
-    public com.dogu.protocol.generated.outer.HttpWs.WebSocketConnection getConnection() {
-      return connection_ == null ? com.dogu.protocol.generated.outer.HttpWs.WebSocketConnection.getDefaultInstance() : connection_;
-    }
-    /**
-     * <code>.outer.WebSocketConnection connection = 1;</code>
-     */
-    private void setConnection(com.dogu.protocol.generated.outer.HttpWs.WebSocketConnection value) {
-      value.getClass();
-  connection_ = value;
-      
-      }
-    /**
-     * <code>.outer.WebSocketConnection connection = 1;</code>
-     */
-    @java.lang.SuppressWarnings({"ReferenceEquality"})
-    private void mergeConnection(com.dogu.protocol.generated.outer.HttpWs.WebSocketConnection value) {
-      value.getClass();
-  if (connection_ != null &&
-          connection_ != com.dogu.protocol.generated.outer.HttpWs.WebSocketConnection.getDefaultInstance()) {
-        connection_ =
-          com.dogu.protocol.generated.outer.HttpWs.WebSocketConnection.newBuilder(connection_).mergeFrom(value).buildPartial();
-      } else {
-        connection_ = value;
-      }
-      
-    }
-    /**
-     * <code>.outer.WebSocketConnection connection = 1;</code>
-     */
-    private void clearConnection() {  connection_ = null;
-      
-    }
-
     public static com.dogu.protocol.generated.inner.types.CfGdcDa.DataChannelProtocolDeviceWebSocket parseFrom(
         java.nio.ByteBuffer data)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -777,53 +720,6 @@ public final class CfGdcDa {
       }
 
 
-      /**
-       * <code>.outer.WebSocketConnection connection = 1;</code>
-       */
-      @java.lang.Override
-      public boolean hasConnection() {
-        return instance.hasConnection();
-      }
-      /**
-       * <code>.outer.WebSocketConnection connection = 1;</code>
-       */
-      @java.lang.Override
-      public com.dogu.protocol.generated.outer.HttpWs.WebSocketConnection getConnection() {
-        return instance.getConnection();
-      }
-      /**
-       * <code>.outer.WebSocketConnection connection = 1;</code>
-       */
-      public Builder setConnection(com.dogu.protocol.generated.outer.HttpWs.WebSocketConnection value) {
-        copyOnWrite();
-        instance.setConnection(value);
-        return this;
-        }
-      /**
-       * <code>.outer.WebSocketConnection connection = 1;</code>
-       */
-      public Builder setConnection(
-          com.dogu.protocol.generated.outer.HttpWs.WebSocketConnection.Builder builderForValue) {
-        copyOnWrite();
-        instance.setConnection(builderForValue.build());
-        return this;
-      }
-      /**
-       * <code>.outer.WebSocketConnection connection = 1;</code>
-       */
-      public Builder mergeConnection(com.dogu.protocol.generated.outer.HttpWs.WebSocketConnection value) {
-        copyOnWrite();
-        instance.mergeConnection(value);
-        return this;
-      }
-      /**
-       * <code>.outer.WebSocketConnection connection = 1;</code>
-       */
-      public Builder clearConnection() {  copyOnWrite();
-        instance.clearConnection();
-        return this;
-      }
-
       // @@protoc_insertion_point(builder_scope:inner.types.DataChannelProtocolDeviceWebSocket)
     }
     @java.lang.Override
@@ -839,11 +735,8 @@ public final class CfGdcDa {
           return new Builder();
         }
         case BUILD_MESSAGE_INFO: {
-            java.lang.Object[] objects = new java.lang.Object[] {
-              "connection_",
-            };
-            java.lang.String info =
-                "\u0000\u0001\u0000\u0000\u0001\u0001\u0001\u0000\u0000\u0000\u0001\t";
+            java.lang.Object[] objects = null;java.lang.String info =
+                "\u0000\u0000";
             return newMessageInfo(DEFAULT_INSTANCE, info, objects);
         }
         // fall through

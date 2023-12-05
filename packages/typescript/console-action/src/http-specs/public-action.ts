@@ -1,9 +1,9 @@
 import { ControllerMethodSpec, ControllerSpec } from '@dogu-tech/common';
-import { OrganizationId, ProjectApplicationId, ProjectId } from '@dogu-tech/types';
-import { GetApplicationListQuery, GetApplicationListResponse, GetApplicationUrlResponse, GetGitUrlResponse } from './dtos';
+import { OrganizationId } from '@dogu-tech/types';
+import { GetApplicationListQuery, GetApplicationListResponse, GetApplicationsWithUniquePackageQuery, GetApplicationUrlResponse, GetGitUrlQuery, GetGitUrlResponse } from './dtos';
 
 const PublicActionController = new ControllerSpec({
-  path: '/public/organizations/:organizationId/projects',
+  path: '/public/organizations/:organizationId',
 });
 
 export const PublicAction = {
@@ -12,19 +12,20 @@ export const PublicAction = {
   getGitUrl: new ControllerMethodSpec({
     controllerSpec: PublicActionController,
     method: 'GET',
-    path: '/:projectId/git-url',
+    path: '/git-url',
     pathProvider: class {
-      constructor(readonly organizationId: OrganizationId, readonly projectId: ProjectId) {}
+      constructor(readonly organizationId: OrganizationId) {}
     },
+    query: GetGitUrlQuery,
     responseBody: GetGitUrlResponse,
   }),
 
   getApplicationList: new ControllerMethodSpec({
     controllerSpec: PublicActionController,
     method: 'GET',
-    path: '/:projectId/applications',
+    path: '/applications',
     pathProvider: class {
-      constructor(readonly organizationId: OrganizationId, readonly projectId: ProjectId) {}
+      constructor(readonly organizationId: OrganizationId) {}
     },
     query: GetApplicationListQuery,
     responseBody: GetApplicationListResponse,
@@ -33,20 +34,23 @@ export const PublicAction = {
   getApplicationsWithUniquePackage: new ControllerMethodSpec({
     controllerSpec: PublicActionController,
     method: 'GET',
-    path: '/:projectId/applications/packages',
+    path: '/applications/packages',
     pathProvider: class {
-      constructor(readonly organizationId: OrganizationId, readonly projectId: ProjectId) {}
+      constructor(readonly organizationId: OrganizationId) {}
     },
-    query: GetApplicationListQuery,
+    query: GetApplicationsWithUniquePackageQuery,
     responseBody: GetApplicationListResponse,
   }),
 
   getApplicationDownloadUrl: new ControllerMethodSpec({
     controllerSpec: PublicActionController,
     method: 'GET',
-    path: '/:projectId/applications/:projectApplicationId/download-url',
+    path: '/applications/:organizationApplicationId/url',
     pathProvider: class {
-      constructor(readonly organizationId: OrganizationId, readonly projectId: ProjectId, readonly projectApplicationId: ProjectApplicationId) {}
+      constructor(
+        readonly organizationId: OrganizationId,
+        readonly organizationApplicationId: string,
+      ) {}
     },
     responseBody: GetApplicationUrlResponse,
   }),

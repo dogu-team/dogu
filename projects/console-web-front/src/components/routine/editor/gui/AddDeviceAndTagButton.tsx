@@ -1,5 +1,5 @@
 import { MobileOutlined, TagOutlined } from '@ant-design/icons';
-import { PageBase, DeviceTagBase, DeviceBase } from '@dogu-private/console';
+import { PageBase, DeviceTagBase, DeviceBase, CloudDeviceMetadataBase } from '@dogu-private/console';
 import { Platform } from '@dogu-private/types';
 import { Tabs } from 'antd';
 import useTranslation from 'next-translate/useTranslation';
@@ -22,23 +22,37 @@ enum TabMenu {
 }
 
 interface Props {
+  isCloud: boolean;
   onSelect: (value: string) => void;
   group: boolean;
   devicePlatform?: Platform;
 }
 
-const AddDeviceAndTagButton = ({ onSelect, group, devicePlatform }: Props) => {
+const AddDeviceAndTagButton = ({ isCloud, onSelect, group, devicePlatform }: Props) => {
   const [selectable, setSelectable] = useState(false);
   const [currentTab, setCurrentTab] = useState<TabMenu>(group ? TabMenu.DEVICE_TAG : TabMenu.DEVICE);
   const { debouncedValue, handleChangeValues } = useDebouncedInputValues();
   const router = useRouter();
   const { t } = useTranslation();
   const {
+    data: cloudDevices,
+    error: cloudDevicesError,
+    isLoading: isCloudDevicesLoading,
+  } = useSWR<PageBase<CloudDeviceMetadataBase>>(
+    selectable && isCloud && `/cloud-devices${devicePlatform !== undefined ? `?platform=${devicePlatform}` : ''}`,
+    swrAuthFetcher,
+    {
+      keepPreviousData: true,
+      revalidateOnFocus: false,
+    },
+  );
+  const {
     data: tags,
     isLoading: tagsLoading,
     error: tagError,
   } = useSWR<PageBase<DeviceTagBase>>(
     selectable &&
+      !isCloud &&
       currentTab === TabMenu.DEVICE_TAG &&
       `/organizations/${router.query.orgId}/tags?keyword=${debouncedValue}`,
     swrAuthFetcher,
@@ -53,6 +67,7 @@ const AddDeviceAndTagButton = ({ onSelect, group, devicePlatform }: Props) => {
     error: deviceError,
   } = useSWR<PageBase<DeviceBase>>(
     selectable &&
+      !isCloud &&
       !group &&
       currentTab === TabMenu.DEVICE &&
       `/organizations/${router.query.orgId}/projects/${router.query.pid}/devices?keyword=${debouncedValue}${
@@ -74,7 +89,21 @@ const AddDeviceAndTagButton = ({ onSelect, group, devicePlatform }: Props) => {
   return (
     <AddWithSelect
       options={
-        currentTab === TabMenu.DEVICE_TAG
+        isCloud
+          ? cloudDevices?.items.map((item) => {
+              return {
+                value: item.model,
+                label: (
+                  <div>
+                    <FlexRow>
+                      <PlatformIcon platform={item.platform} />
+                      <DeviceName>{item.modelName ?? item.model}</DeviceName>
+                    </FlexRow>
+                  </div>
+                ),
+              };
+            })
+          : currentTab === TabMenu.DEVICE_TAG
           ? tags?.items.map((item) => ({ value: item.name, label: item.name }))
           : devices?.items.map((item) => ({
               value: item.name,
@@ -93,34 +122,36 @@ const AddDeviceAndTagButton = ({ onSelect, group, devicePlatform }: Props) => {
       onSelect={onSelect}
       selectable={selectable}
       onSelectableChange={setSelectable}
-      loading={currentTab === TabMenu.DEVICE_TAG ? tagsLoading : devicesLoading}
+      loading={isCloud ? isCloudDevicesLoading : currentTab === TabMenu.DEVICE_TAG ? tagsLoading : devicesLoading}
       showSearch
       onSearch={handleChangeValues}
-      placeholder={t('routine:routineGuiEditorJobDeviceTagSelectorPlaceholder')}
+      placeholder={isCloud ? 'Device' : t('routine:routineGuiEditorJobDeviceTagSelectorPlaceholder')}
       dropdownRender={(menu) => {
         return (
           <>
-            <Tabs
-              activeKey={currentTab}
-              onChange={(e) => {
-                setCurrentTab(e as TabMenu);
-                handleChangeValues('');
-              }}
-              items={[
-                ...(group
-                  ? []
-                  : [
-                      {
-                        key: TabMenu.DEVICE,
-                        label: 'Device',
-                      },
-                    ]),
-                {
-                  key: TabMenu.DEVICE_TAG,
-                  label: 'Device tag',
-                },
-              ]}
-            />
+            {!isCloud && (
+              <Tabs
+                activeKey={currentTab}
+                onChange={(e) => {
+                  setCurrentTab(e as TabMenu);
+                  handleChangeValues('');
+                }}
+                items={[
+                  ...(group
+                    ? []
+                    : [
+                        {
+                          key: TabMenu.DEVICE,
+                          label: 'Device',
+                        },
+                      ]),
+                  {
+                    key: TabMenu.DEVICE_TAG,
+                    label: 'Device tag',
+                  },
+                ]}
+              />
+            )}
             <div>{menu}</div>
           </>
         );
@@ -133,7 +164,9 @@ const AddDeviceAndTagButton = ({ onSelect, group, devicePlatform }: Props) => {
             <MobileOutlined style={{ fontSize: '3rem', marginBottom: '1rem' }} />
           )}
           <EmptyText>
-            {currentTab === TabMenu.DEVICE_TAG ? (
+            {isCloud ? (
+              <>No cloud device.</>
+            ) : currentTab === TabMenu.DEVICE_TAG ? (
               <>
                 No device tag.
                 <br />

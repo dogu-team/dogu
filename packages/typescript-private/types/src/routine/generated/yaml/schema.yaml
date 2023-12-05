@@ -20,10 +20,14 @@ properties:
       type:
         - string
         - 'null'
+  repository:
+    type: string
+    description: The repository to run the pipeline on.
 required:
   - jobs
   - name
   - 'on'
+  - repository
 definitions:
   Job:
     title: JobSchema
@@ -37,6 +41,8 @@ definitions:
             items:
               type: string
       record:
+        type: boolean
+      cloud:
         type: boolean
       browserName:
         type: string
@@ -80,7 +86,6 @@ definitions:
         items:
           '$ref': '#/definitions/Step'
     required:
-      - runs-on
       - steps
   Step:
     title: StepSchema

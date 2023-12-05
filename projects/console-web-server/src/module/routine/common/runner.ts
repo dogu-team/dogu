@@ -18,33 +18,6 @@ export function someInStatus(entities: PipelineEntity[], status: PIPELINE_STATUS
   return entities.some((entity) => entity.status === status);
 }
 
-// export async function setStatus(manager: EntityManager, entity: PipelineEntity, state: PIPELINE_STATUS, localTimeStamp: Date = new Date()): Promise<void> {
-//   entity.status = state;
-//   if (entity.status === PIPELINE_STATUS.IN_PROGRESS) {
-//     entity.inProgressAt = localTimeStamp;
-//     if (entity instanceof RoutineDeviceJob) {
-//       entity.heartbeat = localTimeStamp;
-//     }
-//   } else if (isCompleted(entity.status)) {
-//     entity.completedAt = localTimeStamp;
-//   }
-
-//   await manager.getRepository(entity.constructor.name).save(entity);
-// }
-
-// export async function setDestState(manager: EntityManager, entity: DestBase, status: DEST_STATE, serverTimeStamp: Date, localTimeStamp: Date | null): Promise<void> {
-//   entity.state = status;
-//   if (status === DEST_STATE.RUNNING) {
-//     entity.localInProgressAt = localTimeStamp;
-//     entity.inProgressAt = serverTimeStamp;
-//   } else if (isDestCompleted(status)) {
-//     entity.completedAt = serverTimeStamp;
-//     entity.localCompletedAt = localTimeStamp;
-//   }
-
-//   await manager.getRepository(entity.constructor.name).save(entity);
-// }
-
 export function validateStatusTransition(curStatus: PIPELINE_STATUS, nextStatus: PIPELINE_STATUS): boolean {
   switch (curStatus) {
     case PIPELINE_STATUS.WAITING: {
@@ -99,19 +72,3 @@ export function validateDestStateTransition(curStatus: DEST_STATE, nextStatus: D
       return false;
   }
 }
-
-// export function checkEntitiesCondition(
-//   entities: PipelineEntity[], //
-//   conditions: { isEvery: boolean; condition: (entity: PipelineEntity) => boolean }[],
-// ): boolean[] {
-//   const result: boolean[] = [];
-//   result.fill(false, 0, conditions.length);
-// }
-// const results = checkEntitiesCondition(
-//   [new Pipeline(), new Pipeline()],
-//   [
-//     { isEvery: true, condition: (e) => e.status === PIPELINE_STATUS.IN_PROGRESS },
-//     { isEvery: false, condition: (e) => e.status === PIPELINE_STATUS.FAILURE },
-//     { isEvery: false, condition: (e) => e.status === PIPELINE_STATUS.CANCELLED },
-//   ],
-// );

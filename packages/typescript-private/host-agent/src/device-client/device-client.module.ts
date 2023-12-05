@@ -1,5 +1,6 @@
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
+import { DeviceAuthModule } from '../device-auth/device-auth.module';
 import { env } from '../env';
 import { DeviceClientService } from './device-client.service';
 
@@ -10,6 +11,7 @@ import { DeviceClientService } from './device-client.service';
         baseURL: `http://${env.DOGU_DEVICE_SERVER_HOST_PORT}`,
       }),
     }),
+    DeviceAuthModule,
   ],
   providers: [DeviceClientService],
   exports: [DeviceClientService],

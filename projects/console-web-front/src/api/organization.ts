@@ -2,9 +2,11 @@ import {
   CreateOrganizationDtoBase,
   InviteEmailDtoBase,
   OrganizationBase,
+  OrganizationScmBase,
   UpdateOrganizationDtoBase,
   UpdateOrganizationOwnerDtoBase,
   UpdateOrganizationRoleDtoBase,
+  UpdateOrganizationScmDto,
   UserBase,
 } from '@dogu-private/console';
 import { OrganizationId, UserId } from '@dogu-private/types';
@@ -108,20 +110,14 @@ export const regenerateOrganizationAccessToken = async (orgId: OrganizationId) =
   return data;
 };
 
-export const uploadDeviceApp = async (
+export const updateOrganizationScm = async (
   orgId: OrganizationId,
-  file: File,
-  progress?: (e: AxiosProgressEvent) => void,
-) => {
-  const formData = new FormData();
-  formData.append('app', file);
-
-  const { data } = await api.post<string>(`/organizations/${orgId}/apps`, formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
-    onUploadProgress: progress,
-  });
-
+  dto: UpdateOrganizationScmDto,
+): Promise<OrganizationScmBase> => {
+  const { data } = await api.patch<OrganizationScmBase>(`/organizations/${orgId}/scm`, dto);
   return data;
+};
+
+export const disconnectOrganizationScm = async (orgId: OrganizationId): Promise<void> => {
+  await api.delete(`/organizations/${orgId}/scm`);
 };

@@ -12,6 +12,7 @@ import { Device } from './device.entity';
 import { Host } from './host.entity';
 import { DeviceTag, OrganizationAndUserAndOrganizationRole, OrganizationAndUserAndTeam, Team, User } from './index';
 import { LiveSession } from './live-session.entity';
+import { OrganizationScm } from './organization-scm.entity';
 import { OrganizationSlack } from './organization-slack.entity';
 import { Project } from './project.entity';
 import { UserAndInvitationToken } from './relations/user-and-invitation-token.entity';
@@ -86,4 +87,7 @@ export class Organization extends BaseEntity implements OrganizationBase {
 
   @OneToMany(() => LiveSession, (liveSession) => liveSession.organization, { cascade: ['soft-remove'] })
   liveSessions?: LiveSession[];
+
+  @OneToMany(() => OrganizationScm, (organizationScm) => organizationScm.organization, { cascade: ['soft-remove'] })
+  organizationScms?: OrganizationScm[];
 }

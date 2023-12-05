@@ -13,6 +13,7 @@ const useRoutineEditorStore = create<RoutineEditorStore>((set) => ({
   yaml: '',
   schema: {
     name: '',
+    repository: '',
     on: {},
     jobs: {},
   },

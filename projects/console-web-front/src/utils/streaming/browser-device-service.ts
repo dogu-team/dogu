@@ -1,8 +1,11 @@
 import {
+  DOGU_DEVICE_AUTHORIZATION_HEADER_KEY,
+  DOGU_DEVICE_SERIAL_HEADER_KEY,
   HttpRequest,
   HttpRequestParam,
   HttpRequestWebSocketResult,
   HttpResponse,
+  Serial,
   WebSocketConnection,
   WebSocketMessage,
 } from '@dogu-private/types';
@@ -127,7 +130,7 @@ export class BrowserDeviceService implements DeviceService {
 
   constructor(
     httpChannel: RTCDataChannel,
-    readonly wsChannelCreator: (connection: WebSocketConnection) => {
+    readonly wsChannelCreator: () => {
       name: string;
       channel: RTCDataChannel;
     },
@@ -193,7 +196,7 @@ export class BrowserDeviceService implements DeviceService {
 
       // timeout handle
       const timeout = setTimeout(() => {
-        console.error(`DeviceServerBrowserService. request timeout: ${sequenceId}`);
+        console.error(`BrowserDeviceService. request timeout: ${sequenceId}`);
         reject(new Error('device http request timeout'));
       }, options.timeout);
 
@@ -229,7 +232,7 @@ export class BrowserDeviceService implements DeviceService {
         }
         const { response } = httpRequestResultValue;
         console.debug(
-          `DeviceServerBrowserService. request: ${sequenceId} responsed ${
+          `BrowserDeviceService. request: ${sequenceId} responsed ${
             response.body?.value?.$case === 'stringValue'
               ? response.body?.value?.stringValue.length
               : response?.body?.value?.bytesValue.length
@@ -249,17 +252,18 @@ export class BrowserDeviceService implements DeviceService {
         sendBuffer.push(buffer);
       }
       this.requestFlushSendBuffer();
-      console.debug(`DeviceServerBrowserService. request: ${JSON.stringify(httpRequestParam).substring(0, 300)} >> `);
+      console.debug(`BrowserDeviceService. request: ${JSON.stringify(httpRequestParam).substring(0, 300)} >> `);
     });
   }
 
   connectWebSocket(
     connection: WebSocketConnection,
+    serial: Serial | undefined,
     options: Required<DeviceClientOptions>,
     listener?: DeviceWebSocketListener,
   ): DeviceWebSocket {
     console.log('connectWebSocket', connection.path);
-    const { name, channel } = this.wsChannelCreator(connection);
+    const { name, channel } = this.wsChannelCreator();
     this.addChannel(name, channel);
     const channelInfo = this.channels.get(name);
     if (!channelInfo) {
@@ -269,14 +273,14 @@ export class BrowserDeviceService implements DeviceService {
 
     // timeout handle
     const openTimeout = setTimeout(() => {
-      console.error(`DeviceServerBrowserService. websocket timeout: ${name}, ${sequenceId}`);
+      console.error(`BrowserDeviceService. websocket timeout: ${name}, ${sequenceId}`);
       this.removeChannel(name);
     }, options.timeout);
 
     // complete handle
     resultEmitter.on(sequenceId.toString(), (result: HttpRequestWebSocketResult) => {
       const clearAndRemove = (message: string) => {
-        console.log(`DeviceServerBrowserService. close ${name}. ${message}`);
+        console.log(`BrowserDeviceService. close ${name}. ${message}`);
         clearTimeout(openTimeout);
         this.removeChannel(name);
       };
@@ -333,6 +337,33 @@ export class BrowserDeviceService implements DeviceService {
       }
       this.requestFlushSendBuffer();
     };
+
+    channel.addEventListener('open', () => {
+      console.log(`BrowserDeviceService. websocket open: ${name}`);
+      if (!connection.headers) {
+        connection.headers = {
+          values: [],
+        };
+      }
+      connection.headers.values.push({
+        key: DOGU_DEVICE_AUTHORIZATION_HEADER_KEY,
+        value: options.tokenGetter().value,
+      });
+      if (serial) {
+        connection.headers.values.push({
+          key: DOGU_DEVICE_SERIAL_HEADER_KEY,
+          value: serial,
+        });
+      }
+
+      sendInternal({
+        value: {
+          $case: 'connection',
+          connection,
+        },
+      });
+    });
+
     return new BrowserDeviceWebSocket(
       name,
       () => {

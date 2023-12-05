@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConsoleClientModule } from '../console-client/console-client.module';
+import { DeviceAuthModule } from '../device-auth/device-auth.module';
 import { ProcessorModule } from '../processor/processor.module';
 import { DeviceJobContextRegistry } from './device-job.context-registry';
 import { DeviceJobLogProcessRegistry } from './device-job.device-log-process-registry';
@@ -11,7 +12,7 @@ import { DeviceJobUpdater } from './device-job.updater';
 import { DeviceJobWindowsProcessRegistry } from './device-job.windows-process-registry';
 
 @Module({
-  imports: [ConsoleClientModule, ProcessorModule],
+  imports: [ConsoleClientModule, ProcessorModule, DeviceAuthModule],
   providers: [
     DeviceJobHeartbeater,
     DeviceJobUpdater,

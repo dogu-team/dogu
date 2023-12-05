@@ -1,5 +1,5 @@
 import { UpdateDeviceJobStatusRequestBody, UpdateStepStatusRequestBody } from '@dogu-private/console-host-agent';
-import { DestId, DeviceId, OrganizationId, ProjectId, RemoteDestId, RoutineDeviceJobId, RoutinePipelineId, RoutineStepId, UserId } from '@dogu-private/types';
+import { DestId, OrganizationId, ProjectId, RemoteDestId, RoutineDeviceJobId, RoutinePipelineId, RoutineStepId, UserId } from '@dogu-private/types';
 import { UpdateDestStatusRequestBody } from '@dogu-tech/console-dest';
 import { UpdateRemoteDestStateRequestBody } from '@dogu-tech/console-remote-dest';
 import { Injectable } from '@nestjs/common';
@@ -10,7 +10,6 @@ export class UpdtaeRemoteDeviceJobEvent {}
 export class UpdateStepStatusEvent extends UpdatePipelineEvent {
   constructor(
     public readonly organizationId: OrganizationId,
-    public readonly deviceId: DeviceId,
     public readonly stepId: RoutineStepId,
     public readonly updateStepStatusRequestBody: UpdateStepStatusRequestBody,
   ) {
@@ -39,13 +38,19 @@ export class CancelPipelineEvent extends UpdatePipelineEvent {
 }
 
 export class UpdateDestStateEvent extends UpdatePipelineEvent {
-  constructor(public readonly destId: DestId, public readonly updateDestStatusRequestBody: UpdateDestStatusRequestBody) {
+  constructor(
+    public readonly destId: DestId,
+    public readonly updateDestStatusRequestBody: UpdateDestStatusRequestBody,
+  ) {
     super();
   }
 }
 
 export class UpdateRemoteDestStateEvent extends UpdtaeRemoteDeviceJobEvent {
-  constructor(public readonly remoteDestId: RemoteDestId, public readonly updateRemoteDestStateRequestBody: UpdateRemoteDestStateRequestBody) {
+  constructor(
+    public readonly remoteDestId: RemoteDestId,
+    public readonly updateRemoteDestStateRequestBody: UpdateRemoteDestStateRequestBody,
+  ) {
     super();
   }
 }

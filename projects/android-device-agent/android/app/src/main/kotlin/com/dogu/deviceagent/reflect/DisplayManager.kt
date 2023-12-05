@@ -21,7 +21,7 @@ class DisplayManager(private val manager: IInterface) {
             val flags = cls.getDeclaredField("flags").getInt(displayInfo)
             DisplayInfo(displayId, Size(width, height), rotation, layerStack, flags)
         } catch (e: Exception) {
-            throw AssertionError(e)
+            throw e
         }
     }
 
@@ -29,7 +29,7 @@ class DisplayManager(private val manager: IInterface) {
         get() = try {
             manager.javaClass.getMethod("getDisplayIds").invoke(manager) as IntArray
         } catch (e: Exception) {
-            throw AssertionError(e)
+            throw e
         }
 
 }

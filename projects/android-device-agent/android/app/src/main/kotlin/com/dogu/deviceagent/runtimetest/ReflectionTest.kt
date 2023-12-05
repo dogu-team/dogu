@@ -50,7 +50,7 @@ class ReflectionTest {
                 Logger.v( "ActivityManagerNative.totlaMem $totlaMem")
 
             } catch (e: Exception) {
-                throw AssertionError(e);
+                throw e;
             }
         }
 

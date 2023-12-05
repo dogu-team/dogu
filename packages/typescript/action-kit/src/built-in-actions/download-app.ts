@@ -4,6 +4,7 @@ import { HostPaths } from '@dogu-tech/node';
 import { PlatformType } from '@dogu-tech/types';
 import fs from 'fs';
 import path from 'path';
+
 import { Application } from '..';
 import { ConsoleActionClient } from '../console-action-client';
 
@@ -37,6 +38,7 @@ export async function downloadApp(
   if (by.appPackageName) {
     const { applications: apps } = await consoleActionClient.getApplicationsWithUniquePackage({
       extension,
+      packageName: by.appPackageName,
     });
     application = apps.find((app) => app.packageName === by.appPackageName);
   } else if (by.appVersion) {

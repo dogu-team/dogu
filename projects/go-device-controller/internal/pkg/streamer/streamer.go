@@ -7,6 +7,7 @@ import (
 
 	"go-device-controller/internal/pkg/device/surface"
 	log "go-device-controller/internal/pkg/log"
+	"go-device-controller/internal/pkg/streamer/labeled_datachannel"
 
 	"go-device-controller/internal/pkg/device"
 
@@ -26,7 +27,7 @@ type Streamer struct {
 	param             *streaming.StreamingOffer_StartStreaming
 	onTrickleListener func(*streaming.StreamingAnswer)
 	devices           *device.Devices
-	labeledChannels   []LabeledDatachannel
+	labeledChannels   []labeled_datachannel.LabeledDatachannel
 	isClosed          bool
 
 	// monitor
@@ -114,7 +115,7 @@ func (s *Streamer) onWebRTCPeerDisconnected() {
 }
 
 func (s *Streamer) onDataChannel(d *webrtc.DataChannel) {
-	newLabeledDatachannel := newLabeledDatachannel(d, s.devices, s.serial, s.deviceServerPort)
+	newLabeledDatachannel := labeled_datachannel.NewLabeledDatachannel(d, s.devices, s.serial, s.deviceServerPort)
 	if newLabeledDatachannel == nil {
 		return
 	}

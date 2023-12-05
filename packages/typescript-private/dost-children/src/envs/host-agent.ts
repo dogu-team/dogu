@@ -36,4 +36,7 @@ export class HostAgentEnv extends PreloadHostAgentEnv {
   @IsBoolean()
   @TransformBooleanString()
   DOGU_USE_SENTRY = false;
+
+  @IsFilledString()
+  DOGU_SECRET_INITIAL_ADMIN_TOKEN = '';
 }

@@ -55,26 +55,20 @@ message WebSocketConnection {
   optional string protocol_domain = 1;
   string path = 2;
   optional google.protobuf.Struct query = 3;
+  optional Headers headers = 4;
 }
 
 message WebSocketMessage {
   oneof value {
     string string_value = 1;
     bytes bytes_value = 2;
+    WebSocketConnection connection = 3;
   }
 }
 
 message WebSocketClose {
   sfixed32 code = 1;
   string reason = 2;
-}
-
-message WebSocketParam {
-  oneof value {
-    outer.WebSocketConnection connection = 1;
-    WebSocketMessage message = 2;
-    WebSocketClose close = 3;
-  }
 }
 
 message WebSocketOpenEvent {

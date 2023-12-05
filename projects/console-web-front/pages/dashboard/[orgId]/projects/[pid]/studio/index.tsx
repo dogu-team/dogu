@@ -48,7 +48,7 @@ const StudioEntryPage: NextPage<StudioEntryServerSideProps> = ({ organization, p
             <StudioDeviceSelector
               selectedDevice={undefined}
               organizationId={organization.organizationId}
-              projectId={project.projectId}
+              // projectId={project.projectId}
               onSelectedDeviceChanged={(device) => {
                 if (device) {
                   router.push(

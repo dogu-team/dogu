@@ -64,7 +64,7 @@ const ConsoleLayout = ({
             <PaddingBox style={{ padding }}>
               {(title ?? titleI18nKey) && (
                 <TitleBox>
-                  {title ?? <H4>{titleI18nKey ? t(titleI18nKey) : ''}</H4>}
+                  {title ?? <StyledH4>{titleI18nKey ? t(titleI18nKey) : ''}</StyledH4>}
                   <StyledHr />
                 </TitleBox>
               )}
@@ -77,6 +77,14 @@ const ConsoleLayout = ({
     </OrganizationContext.Provider>
   );
 };
+
+export default ConsoleLayout;
+
+const StyledH4 = styled.h4`
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.5;
+`;
 
 const StyledHr = styled.hr`
   display: block;
@@ -100,7 +108,7 @@ const StyledLayoutContent = styled(Layout.Content)`
 
 const TitleBox = styled.div`
   display: flex;
-  min-height: 3rem;
+  min-height: 2.75rem;
   flex-direction: column;
   width: 100%;
   justify-content: space-between;
@@ -125,5 +133,3 @@ const ContentBox = styled.div`
   margin-top: 1rem;
   flex: 1;
 `;
-
-export default ConsoleLayout;

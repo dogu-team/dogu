@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ScheduleModule } from '@nestjs/schedule';
 import { AppiumModule } from '../appium/appium.module';
+import { AuthModule } from '../auth/auth.module';
 import { BootstrapModule } from '../bootstrap/bootstrap.module';
 import { BrowserManagerModule } from '../browser-manager/browser-manager.module';
 import { ConfigModule } from '../config/config.module';
@@ -32,6 +33,7 @@ import { AppService } from './app.service';
     UpdateTriggerModule,
     WsModule,
     DeviceModule,
+    AuthModule,
     LoggerModule,
     DeviceHostModule,
     BootstrapModule,

@@ -41,7 +41,10 @@ const JobListController = ({ orgId, projectId, pipelineId }: Props) => {
     <Box>
       {livePipeline && livePipeline.status === PIPELINE_STATUS.IN_PROGRESS && (
         <ProjectSidebarItem
-          href={`/dashboard/${orgId}/projects/${projectId}/routines/${pipelineId}/devices`}
+          href={{
+            pathname: router.pathname.replace(/\/\[pipelineId\](.+)?$/, '/[pipelineId]/devices'),
+            query: { orgId, pid: projectId, pipelineId: pipelineId },
+          }}
           selected={router.query.jobId === undefined && router.pathname.includes('devices')}
         >
           <BsRecord2Fill style={{ color: 'red' }} />
@@ -50,7 +53,10 @@ const JobListController = ({ orgId, projectId, pipelineId }: Props) => {
         </ProjectSidebarItem>
       )}
       <ProjectSidebarItem
-        href={`/dashboard/${orgId}/projects/${projectId}/routines/${pipelineId}`}
+        href={{
+          pathname: router.pathname.replace(/\/\[pipelineId\](.+)?$/, '/[pipelineId]'),
+          query: { orgId, pid: projectId, pipelineId: pipelineId },
+        }}
         selected={router.query.jobId === undefined && !router.pathname.includes('devices')}
       >
         {t('routine:jobSummaryText')}

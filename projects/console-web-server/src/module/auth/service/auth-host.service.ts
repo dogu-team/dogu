@@ -1,5 +1,6 @@
 import { DevicePropCamel, HostPropCamel, ProjectPropCamel, ProjectPropSnake } from '@dogu-private/console';
 import { DeviceId, HostId, HostPayload, OrganizationId, ProjectId } from '@dogu-private/types';
+import { assertUnreachable } from '@dogu-tech/common';
 import { ExecutionContext, HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { Request } from 'express';
@@ -8,6 +9,7 @@ import { Device } from '../../../db/entity/device.entity';
 import { Host } from '../../../db/entity/host.entity';
 import { Project } from '../../../db/entity/project.entity';
 import { Token } from '../../../db/entity/token.entity';
+import { FeatureConfig } from '../../../feature.config';
 import { DoguLogger } from '../../logger/logger';
 import { TokenService } from '../../token/token.service';
 import { HOST_ACTION_TYPE } from '../auth.types';
@@ -70,9 +72,8 @@ export class AuthHostService {
         return rv;
       }
       default:
-        const _exhaustiveCheck: never = type;
+        assertUnreachable(type);
     }
-    return { hostId };
   }
 
   private async validateHostToken(hostToken: string): Promise<Host> {
@@ -96,8 +97,10 @@ export class AuthHostService {
   private async validateHostApi(organizationId: OrganizationId, hostToken: string): Promise<HostPayload> {
     const host = await this.validateHostToken(hostToken);
 
-    if (host.organizationId !== organizationId) {
-      throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
+    if (FeatureConfig.get('licenseModule') === 'self-hosted') {
+      if (host.organizationId !== organizationId) {
+        throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
+      }
     }
 
     return { hostId: host.hostId };
@@ -151,8 +154,14 @@ export class AuthHostService {
       throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
     }
 
-    if (project.organizationId !== organizationId || organization.organizationId !== organizationId || host.organizationId !== organizationId) {
+    if (project.organizationId !== organizationId || organization.organizationId !== organizationId) {
       throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
+    }
+
+    if (FeatureConfig.get('licenseModule') === 'self-hosted') {
+      if (host.organizationId !== organizationId) {
+        throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
+      }
     }
 
     return { hostId: host.hostId };

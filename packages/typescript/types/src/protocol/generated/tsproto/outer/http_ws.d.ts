@@ -50,6 +50,7 @@ export interface WebSocketConnection {
     query?: {
         [key: string]: any;
     } | undefined;
+    headers?: Headers | undefined;
 }
 export interface WebSocketMessage {
     value?: {
@@ -58,23 +59,14 @@ export interface WebSocketMessage {
     } | {
         $case: 'bytesValue';
         bytesValue: Uint8Array;
+    } | {
+        $case: 'connection';
+        connection: WebSocketConnection;
     };
 }
 export interface WebSocketClose {
     code: number;
     reason: string;
-}
-export interface WebSocketParam {
-    value?: {
-        $case: 'connection';
-        connection: WebSocketConnection;
-    } | {
-        $case: 'message';
-        message: WebSocketMessage;
-    } | {
-        $case: 'close';
-        close: WebSocketClose;
-    };
 }
 export interface WebSocketOpenEvent {
 }
@@ -649,6 +641,12 @@ export declare const WebSocketConnection: {
         query?: {
             [x: string]: any;
         } | undefined;
+        headers?: {
+            values?: {
+                key?: string | undefined;
+                value?: string | undefined;
+            }[] | undefined;
+        } | undefined;
     } & {
         protocolDomain?: string | undefined;
         path?: string | undefined;
@@ -657,7 +655,27 @@ export declare const WebSocketConnection: {
         } & {
             [x: string]: any;
         } & { [K in Exclude<keyof I["query"], string | number>]: never; }) | undefined;
-    } & { [K_1 in Exclude<keyof I, keyof WebSocketConnection>]: never; }>(object: I): WebSocketConnection;
+        headers?: ({
+            values?: {
+                key?: string | undefined;
+                value?: string | undefined;
+            }[] | undefined;
+        } & {
+            values?: ({
+                key?: string | undefined;
+                value?: string | undefined;
+            }[] & ({
+                key?: string | undefined;
+                value?: string | undefined;
+            } & {
+                key?: string | undefined;
+                value?: string | undefined;
+            } & { [K_1 in Exclude<keyof I["headers"]["values"][number], keyof HeaderValue>]: never; })[] & { [K_2 in Exclude<keyof I["headers"]["values"], keyof {
+                key?: string | undefined;
+                value?: string | undefined;
+            }[]>]: never; }) | undefined;
+        } & { [K_3 in Exclude<keyof I["headers"], "values">]: never; }) | undefined;
+    } & { [K_4 in Exclude<keyof I, keyof WebSocketConnection>]: never; }>(object: I): WebSocketConnection;
 };
 export declare const WebSocketMessage: {
     encode(message: WebSocketMessage, writer?: _m0.Writer): _m0.Writer;
@@ -673,6 +691,22 @@ export declare const WebSocketMessage: {
             bytesValue?: Uint8Array | undefined;
         } & {
             $case: "bytesValue";
+        }) | ({
+            connection?: {
+                protocolDomain?: string | undefined;
+                path?: string | undefined;
+                query?: {
+                    [x: string]: any;
+                } | undefined;
+                headers?: {
+                    values?: {
+                        key?: string | undefined;
+                        value?: string | undefined;
+                    }[] | undefined;
+                } | undefined;
+            } | undefined;
+        } & {
+            $case: "connection";
         }) | undefined;
     } & {
         value?: ({
@@ -689,8 +723,67 @@ export declare const WebSocketMessage: {
         } & {
             bytesValue?: Uint8Array | undefined;
             $case: "bytesValue";
-        } & { [K_1 in Exclude<keyof I["value"], "$case" | "bytesValue">]: never; }) | undefined;
-    } & { [K_2 in Exclude<keyof I, "value">]: never; }>(object: I): WebSocketMessage;
+        } & { [K_1 in Exclude<keyof I["value"], "$case" | "bytesValue">]: never; }) | ({
+            connection?: {
+                protocolDomain?: string | undefined;
+                path?: string | undefined;
+                query?: {
+                    [x: string]: any;
+                } | undefined;
+                headers?: {
+                    values?: {
+                        key?: string | undefined;
+                        value?: string | undefined;
+                    }[] | undefined;
+                } | undefined;
+            } | undefined;
+        } & {
+            $case: "connection";
+        } & {
+            connection?: ({
+                protocolDomain?: string | undefined;
+                path?: string | undefined;
+                query?: {
+                    [x: string]: any;
+                } | undefined;
+                headers?: {
+                    values?: {
+                        key?: string | undefined;
+                        value?: string | undefined;
+                    }[] | undefined;
+                } | undefined;
+            } & {
+                protocolDomain?: string | undefined;
+                path?: string | undefined;
+                query?: ({
+                    [x: string]: any;
+                } & {
+                    [x: string]: any;
+                } & { [K_2 in Exclude<keyof I["value"]["connection"]["query"], string | number>]: never; }) | undefined;
+                headers?: ({
+                    values?: {
+                        key?: string | undefined;
+                        value?: string | undefined;
+                    }[] | undefined;
+                } & {
+                    values?: ({
+                        key?: string | undefined;
+                        value?: string | undefined;
+                    }[] & ({
+                        key?: string | undefined;
+                        value?: string | undefined;
+                    } & {
+                        key?: string | undefined;
+                        value?: string | undefined;
+                    } & { [K_3 in Exclude<keyof I["value"]["connection"]["headers"]["values"][number], keyof HeaderValue>]: never; })[] & { [K_4 in Exclude<keyof I["value"]["connection"]["headers"]["values"], keyof {
+                        key?: string | undefined;
+                        value?: string | undefined;
+                    }[]>]: never; }) | undefined;
+                } & { [K_5 in Exclude<keyof I["value"]["connection"]["headers"], "values">]: never; }) | undefined;
+            } & { [K_6 in Exclude<keyof I["value"]["connection"], keyof WebSocketConnection>]: never; }) | undefined;
+            $case: "connection";
+        } & { [K_7 in Exclude<keyof I["value"], "$case" | "connection">]: never; }) | undefined;
+    } & { [K_8 in Exclude<keyof I, "value">]: never; }>(object: I): WebSocketMessage;
 };
 export declare const WebSocketClose: {
     encode(message: WebSocketClose, writer?: _m0.Writer): _m0.Writer;
@@ -704,134 +797,6 @@ export declare const WebSocketClose: {
         code?: number | undefined;
         reason?: string | undefined;
     } & { [K in Exclude<keyof I, keyof WebSocketClose>]: never; }>(object: I): WebSocketClose;
-};
-export declare const WebSocketParam: {
-    encode(message: WebSocketParam, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): WebSocketParam;
-    fromJSON(object: any): WebSocketParam;
-    toJSON(message: WebSocketParam): unknown;
-    fromPartial<I extends {
-        value?: ({
-            connection?: {
-                protocolDomain?: string | undefined;
-                path?: string | undefined;
-                query?: {
-                    [x: string]: any;
-                } | undefined;
-            } | undefined;
-        } & {
-            $case: "connection";
-        }) | ({
-            message?: {
-                value?: ({
-                    stringValue?: string | undefined;
-                } & {
-                    $case: "stringValue";
-                }) | ({
-                    bytesValue?: Uint8Array | undefined;
-                } & {
-                    $case: "bytesValue";
-                }) | undefined;
-            } | undefined;
-        } & {
-            $case: "message";
-        }) | ({
-            close?: {
-                code?: number | undefined;
-                reason?: string | undefined;
-            } | undefined;
-        } & {
-            $case: "close";
-        }) | undefined;
-    } & {
-        value?: ({
-            connection?: {
-                protocolDomain?: string | undefined;
-                path?: string | undefined;
-                query?: {
-                    [x: string]: any;
-                } | undefined;
-            } | undefined;
-        } & {
-            $case: "connection";
-        } & {
-            connection?: ({
-                protocolDomain?: string | undefined;
-                path?: string | undefined;
-                query?: {
-                    [x: string]: any;
-                } | undefined;
-            } & {
-                protocolDomain?: string | undefined;
-                path?: string | undefined;
-                query?: ({
-                    [x: string]: any;
-                } & {
-                    [x: string]: any;
-                } & { [K in Exclude<keyof I["value"]["connection"]["query"], string | number>]: never; }) | undefined;
-            } & { [K_1 in Exclude<keyof I["value"]["connection"], keyof WebSocketConnection>]: never; }) | undefined;
-            $case: "connection";
-        } & { [K_2 in Exclude<keyof I["value"], "$case" | "connection">]: never; }) | ({
-            message?: {
-                value?: ({
-                    stringValue?: string | undefined;
-                } & {
-                    $case: "stringValue";
-                }) | ({
-                    bytesValue?: Uint8Array | undefined;
-                } & {
-                    $case: "bytesValue";
-                }) | undefined;
-            } | undefined;
-        } & {
-            $case: "message";
-        } & {
-            message?: ({
-                value?: ({
-                    stringValue?: string | undefined;
-                } & {
-                    $case: "stringValue";
-                }) | ({
-                    bytesValue?: Uint8Array | undefined;
-                } & {
-                    $case: "bytesValue";
-                }) | undefined;
-            } & {
-                value?: ({
-                    stringValue?: string | undefined;
-                } & {
-                    $case: "stringValue";
-                } & {
-                    stringValue?: string | undefined;
-                    $case: "stringValue";
-                } & { [K_3 in Exclude<keyof I["value"]["message"]["value"], "stringValue" | "$case">]: never; }) | ({
-                    bytesValue?: Uint8Array | undefined;
-                } & {
-                    $case: "bytesValue";
-                } & {
-                    bytesValue?: Uint8Array | undefined;
-                    $case: "bytesValue";
-                } & { [K_4 in Exclude<keyof I["value"]["message"]["value"], "$case" | "bytesValue">]: never; }) | undefined;
-            } & { [K_5 in Exclude<keyof I["value"]["message"], "value">]: never; }) | undefined;
-            $case: "message";
-        } & { [K_6 in Exclude<keyof I["value"], "$case" | "message">]: never; }) | ({
-            close?: {
-                code?: number | undefined;
-                reason?: string | undefined;
-            } | undefined;
-        } & {
-            $case: "close";
-        } & {
-            close?: ({
-                code?: number | undefined;
-                reason?: string | undefined;
-            } & {
-                code?: number | undefined;
-                reason?: string | undefined;
-            } & { [K_7 in Exclude<keyof I["value"]["close"], keyof WebSocketClose>]: never; }) | undefined;
-            $case: "close";
-        } & { [K_8 in Exclude<keyof I["value"], "$case" | "close">]: never; }) | undefined;
-    } & { [K_9 in Exclude<keyof I, "value">]: never; }>(object: I): WebSocketParam;
 };
 export declare const WebSocketOpenEvent: {
     encode(_: WebSocketOpenEvent, writer?: _m0.Writer): _m0.Writer;

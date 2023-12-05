@@ -1,4 +1,5 @@
 import { BrowserName, isAllowedBrowserName, JobSchema, Platform, platformTypeFromPlatform } from '@dogu-private/types';
+import { stringify } from '@dogu-tech/common';
 import _ from 'lodash';
 
 export type Pickable = string;
@@ -16,40 +17,53 @@ export interface RunOnPickAll {
 export type RunsOn = RunsOnPickOne | RunOnPickAll;
 
 export class ParseRunsOnError extends Error {
-  constructor(message: string, readonly jobName: string, readonly runsOnRaw: JobSchema['runs-on'], options?: ErrorOptions) {
+  constructor(
+    message: string,
+    readonly jobName: string,
+    readonly runsOnRaw: JobSchema['runs-on'],
+    options?: ErrorOptions,
+  ) {
     super(message, options);
   }
 }
 
-export function parseRunsOn(jobName: string, runsOnRaw: JobSchema['runs-on']): RunsOn {
+export function parseRunsOn(jobName: string, cloud: boolean, runsOnRaw: JobSchema['runs-on']): RunsOn {
   if (typeof runsOnRaw === 'string' || Array.isArray(runsOnRaw)) {
     const pickables = typeof runsOnRaw === 'string' ? [runsOnRaw] : runsOnRaw;
     if (_.uniq(pickables).length !== pickables.length) {
-      throw new ParseRunsOnError(`Duplicated pickables [${pickables}] on job [${jobName}]`, jobName, runsOnRaw);
+      throw new ParseRunsOnError(`Duplicated pickables [${stringify(pickables)}] on job [${jobName}]`, jobName, runsOnRaw);
     }
 
     return { type: 'pickOne', pickables };
   }
 
+  if (cloud) {
+    throw new ParseRunsOnError(`Does not allow runs-on "group" on cloud job [${jobName}]`, jobName, runsOnRaw);
+  }
+
   if (typeof runsOnRaw === 'object') {
     if (!('group' in runsOnRaw)) {
-      throw new ParseRunsOnError(`Missing group on runs-on [${runsOnRaw}] on job [${jobName}]`, jobName, runsOnRaw);
+      throw new ParseRunsOnError(`Missing group on runs-on [${stringify(runsOnRaw)}] on job [${jobName}]`, jobName, runsOnRaw);
     }
 
     if (_.keys(runsOnRaw).filter((key) => key !== 'group').length > 0) {
-      throw new ParseRunsOnError(`Unknown keys [${_.keys(runsOnRaw).filter((key) => key !== 'group')}] on runs-on [${runsOnRaw}] on job [${jobName}]`, jobName, runsOnRaw);
+      throw new ParseRunsOnError(
+        `Unknown keys [${stringify(_.keys(runsOnRaw).filter((key) => key !== 'group'))}] on runs-on [${stringify(runsOnRaw)}] on job [${jobName}]`,
+        jobName,
+        runsOnRaw,
+      );
     }
 
     const { group } = runsOnRaw;
     const pickables = typeof group === 'string' ? [group] : group;
     if (_.uniq(pickables).length !== pickables.length) {
-      throw new ParseRunsOnError(`Duplicated pickables [${pickables}] on job [${jobName}]`, jobName, runsOnRaw);
+      throw new ParseRunsOnError(`Duplicated pickables [${stringify(pickables)}] on job [${jobName}]`, jobName, runsOnRaw);
     }
 
     return { type: 'pickAll', pickables };
   }
 
-  throw new ParseRunsOnError(`Invalid runs-on [${runsOnRaw}] on job [${jobName}]`, jobName, runsOnRaw);
+  throw new ParseRunsOnError(`Invalid runs-on [${stringify(runsOnRaw)}] on job [${jobName}]`, jobName, runsOnRaw);
 }
 
 export function parseAppVersion(appVersionRaw: JobSchema['appVersion'], platform: Platform): string | null {

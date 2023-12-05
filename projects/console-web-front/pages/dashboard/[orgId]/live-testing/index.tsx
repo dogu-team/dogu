@@ -23,7 +23,6 @@ import CloudDeviceFilter from '../../../../src/components/cloud/CloudDeviceFilte
 import LiveTestingSessionList from '../../../../src/components/cloud/LiveTestingSessionList';
 import { swrAuthFetcher } from '../../../../src/api';
 import useRefresh from '../../../../src/hooks/useRefresh';
-import H4 from '../../../../src/components/common/headings/H4';
 import LiveTestingFeedbackModal, {
   LIVE_TESTING_FEEDBACK_LOCAL_STORAGE_KEY,
 } from '../../../../src/components/cloud/LiveTestingFeedbackModal';
@@ -158,9 +157,9 @@ OrganizationLiveTestingPage.getLayout = (page) => {
         <div style={{ marginBottom: '.5rem' }}>
           <LiveTestingFreeTierTopBanner />
 
-          <H4>
+          <StyledH4>
             <Trans i18nKey="organization:liveTestingPageTitle" />
-          </H4>
+          </StyledH4>
           <div style={{ marginTop: '.25rem' }}>
             <LiveTestingSessionCounter />
           </div>
@@ -183,6 +182,12 @@ export const getServerSideProps: GetServerSideProps<OrganizationServerSideProps>
 };
 
 export default OrganizationLiveTestingPage;
+
+const StyledH4 = styled.h4`
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.5;
+`;
 
 const FlexSpaceBetweenBox = styled.div`
   ${flexRowSpaceBetweenStyle}

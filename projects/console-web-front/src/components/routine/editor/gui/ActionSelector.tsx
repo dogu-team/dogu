@@ -34,16 +34,6 @@ const ActionSelector = (props: SelectProps) => {
       title: 'Checkout',
       value: CHECKOUT_ACTION_NAME,
     },
-    {
-      label: (
-        <OptionBox>
-          <b>Prepare</b>
-          <p>{t('routine:routineGuiEditorPrepareActionDescription')}</p>
-        </OptionBox>
-      ),
-      title: 'Prepare',
-      value: PREPARE_ACTION_NAME,
-    },
   ];
   const isInvalid = !!props.value && !actions.find((action) => action.value === props.value);
 

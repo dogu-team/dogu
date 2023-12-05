@@ -22,6 +22,7 @@ import useModal from '../../../src/hooks/useModal';
 import { UpgradeDevicePlanBannerModal, UpgradeBrowserPlanModal } from '../license/UpgradePlanBannerModal';
 import TimeoutDocsModal from '../license/TimeoutDocsModal';
 import { isDesktop } from '../../../src/utils/device';
+import ProjectTypeIcon from '../../../src/components/projects/ProjectTypeIcon';
 
 interface Props {
   device: DeviceBase;
@@ -156,7 +157,7 @@ const EditDeviceProjectModal = ({ device, isOpen, close, isGlobal: isGlobalProp 
                       key={`add-project-${item.projectId}`}
                       onMouseDown={() => handleAddProject(item.projectId)}
                     >
-                      {item.name}
+                      <ProjectTypeIcon type={item.type} style={{ marginRight: '.25rem' }} /> {item.name}
                     </ResultItem>
                   );
                 })}
@@ -173,7 +174,12 @@ const EditDeviceProjectModal = ({ device, isOpen, close, isGlobal: isGlobalProp 
                     key={`device-${device.deviceId}-${item.projectId}`}
                     closable
                     onClose={() => handleDeleteProject(item.projectId)}
+                    style={{ display: 'inline-flex', alignItems: 'center' }}
                   >
+                    <ProjectTypeIcon
+                      type={item.type}
+                      style={{ marginRight: '.25rem', width: '12px', height: '12px' }}
+                    />{' '}
                     {item.name}
                   </Tag>
                 );
@@ -255,7 +261,6 @@ const ResultItem = styled.button`
   background-color: #ffffff;
   color: #000;
   padding: 0.5rem 1rem;
-  justify-content: space-between;
   align-items: center;
   transition: all 0.2s;
 

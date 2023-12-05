@@ -5,4 +5,5 @@ export const deviceLookupClientKey = instanceKeys<IDeviceLookupClient>('deviceLo
 
 export interface IDeviceLookupClient {
   getSubscribeMessages(): Promise<DeviceConnectionSubscribeReceiveMessage[]>;
+  generateDeviceToken(serial: string): Promise<string>;
 }

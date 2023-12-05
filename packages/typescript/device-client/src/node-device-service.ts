@@ -1,6 +1,16 @@
 import { closeWebSocketWithTruncateReason, FilledPrintable, PrefixLogger, Printable, setAxiosErrorFilterToIntercepter, stringify } from '@dogu-tech/common';
 import { DeviceClientOptions, DeviceServerResponseDto, DeviceService, DeviceWebSocket, DeviceWebSocketListener } from '@dogu-tech/device-client-common';
-import { Headers, HeaderValue, HttpRequest, HttpResponse, WebSocketConnection } from '@dogu-tech/types';
+import { parseHttpUrl, parseWsUrlFromHttpUrl } from '@dogu-tech/node';
+import {
+  DOGU_DEVICE_AUTHORIZATION_HEADER_KEY,
+  DOGU_DEVICE_SERIAL_HEADER_KEY,
+  Headers,
+  HeaderValue,
+  HttpRequest,
+  HttpResponse,
+  Serial,
+  WebSocketConnection,
+} from '@dogu-tech/types';
 import axios from 'axios';
 import { WebSocket } from 'ws';
 
@@ -38,11 +48,11 @@ export class NodeDeviceService implements DeviceService {
   }
 
   async httpRequest(request: HttpRequest, options: Required<DeviceClientOptions>): Promise<HttpResponse> {
-    const { port, timeout, printable } = options;
+    const { deviceServerUrl, timeout, printable } = options;
     const logger = new PrefixLogger(printable, '[NodeDeviceService.httpRequest]');
     const { method, path, query } = request;
     const headersParsed = Object.fromEntries(request.headers?.values.map((value) => [value.key, value.value]) || []);
-    let bodyParsed: any | undefined = undefined;
+    let bodyParsed: unknown = undefined;
     if (!request.body) {
       bodyParsed = undefined;
     } else {
@@ -65,7 +75,9 @@ export class NodeDeviceService implements DeviceService {
         bodyParsed = JSON.parse(stringValueParsed);
       }
     }
-    const url = `http://127.0.0.1:${port}${path}`;
+    const urlObj = parseHttpUrl(deviceServerUrl);
+    const { hostname, port, protocol } = urlObj;
+    const url = `${protocol}//${hostname}:${port}${path}`;
     const headers = headersParsed;
     const params = query;
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -109,12 +121,20 @@ export class NodeDeviceService implements DeviceService {
     return returningResponse;
   }
 
-  connectWebSocket(connection: WebSocketConnection, options: Required<DeviceClientOptions>, listener?: DeviceWebSocketListener): DeviceWebSocket {
-    const { port, printable } = options;
+  connectWebSocket(connection: WebSocketConnection, serial: Serial | undefined, options: Required<DeviceClientOptions>, listener?: DeviceWebSocketListener): DeviceWebSocket {
+    const { deviceServerUrl, printable } = options;
     const logger = new PrefixLogger(printable, '[NodeDeviceService.connectWebSocket]');
     const { path } = connection;
-    const url = `ws://127.0.0.1:${port}${path}`;
-    const webSocket = new WebSocket(url);
+    const urlObj = parseWsUrlFromHttpUrl(deviceServerUrl);
+    const { hostname, port, protocol } = urlObj;
+    const url = `${protocol}//${hostname}:${port}${path}`;
+    const headers: Record<string, string> = { [DOGU_DEVICE_AUTHORIZATION_HEADER_KEY]: options.tokenGetter().value };
+    if (serial) {
+      headers[DOGU_DEVICE_SERIAL_HEADER_KEY] = serial;
+    }
+    const webSocket = new WebSocket(url, {
+      headers,
+    });
     webSocket.on('open', () => {
       logger.verbose('open', { url });
       listener?.onOpen?.({});

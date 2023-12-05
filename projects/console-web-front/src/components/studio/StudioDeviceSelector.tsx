@@ -11,17 +11,17 @@ import useDebouncedInputValues from 'src/hooks/useDebouncedInputValues';
 
 interface Props {
   organizationId: OrganizationId;
-  projectId: ProjectId;
+  // projectId: ProjectId;
   selectedDevice: DeviceBase | undefined;
   onSelectedDeviceChanged: (device: DeviceBase | undefined) => void;
 }
 
-const StudioDeviceSelector = ({ organizationId, projectId, onSelectedDeviceChanged, selectedDevice }: Props) => {
+const StudioDeviceSelector = ({ organizationId, onSelectedDeviceChanged, selectedDevice }: Props) => {
   const [open, setOpen] = useState(false);
   const { debouncedValue, handleChangeValues } = useDebouncedInputValues();
   const { data, isLoading, error } = useSWR<PageBase<DeviceBase>>(
     open &&
-      `/organizations/${organizationId}/projects/${projectId}/devices?keyword=${debouncedValue}&connectionState=${DeviceConnectionState.DEVICE_CONNECTION_STATE_CONNECTED}&offset=99`,
+      `/organizations/${organizationId}/devices?keyword=${debouncedValue}&connectionState=${DeviceConnectionState.DEVICE_CONNECTION_STATE_CONNECTED}&offset=99`,
     swrAuthFetcher,
     { revalidateOnFocus: false },
   );

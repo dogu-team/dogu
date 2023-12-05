@@ -7,7 +7,15 @@
   "deviceFarmPageTitle": "디바이스 팜",
   "organizationSettingPageTitle": "설정",
   "teamPageTitle": "팀",
+  "appsPageTitle": "앱",
+  "webAutomationPageTitle": "웹 자동화",
+  "mobileAppAutomationPageTitle": "모바일 앱 자동화",
+  "mobileGameAutomationPageTitle": "모바일 게임 자동화",
   "docs": "가이드",
+
+  "sidebarWebAutomation": "웹",
+  "sidebarMobileAppAutomation": "모바일 앱",
+  "sidebarMobileGameAutomation": "모바일 게임",
 
   "addNewProject": "새 프로젝트 생성",
   "newProjectModalProjectType": "프로젝트 템플릿",

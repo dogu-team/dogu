@@ -2,6 +2,7 @@ import {
   Action,
   BatchHttpProxyRequest,
   BatchHttpProxyResponse,
+  DockerAction,
   ErrorResult,
   EventParam,
   EventParamValue,
@@ -24,6 +25,7 @@ import { MessageContext } from '../message/message.types';
 import { ActionProcessor } from '../processor/action.processor';
 import { CommandProcessRegistry } from '../processor/command.process-registry';
 import { DeviceJobStepProcessor } from '../processor/device-job-step.processor';
+import { DockerActionProcessor } from '../processor/docker-action.processor';
 import { UpdateProcessor } from '../processor/update.processor';
 import { StepMessageContext } from '../step/step.types';
 import { OnConsoleMessage } from '../types';
@@ -36,6 +38,7 @@ export class MessageRequestResponseController {
     private readonly commandProcessRegistry: CommandProcessRegistry,
     private readonly actionProcessor: ActionProcessor,
     private readonly updateProcessor: UpdateProcessor,
+    private readonly dockerActionProcessor: DockerActionProcessor,
   ) {}
 
   @OnConsoleMessage(RequestParam, ResponseResult)
@@ -99,5 +102,10 @@ export class MessageRequestResponseController {
   @OnConsoleMessage(UpdateHostAppRequest, ErrorResult)
   async onUpdateHost(@Payload() param: UpdateHostAppRequest, @Ctx() context: MessageContext): Promise<ErrorResult> {
     return this.updateProcessor.update(param);
+  }
+
+  @OnConsoleMessage(DockerAction, ErrorResult)
+  async onDockerAction(@Payload() param: DockerAction, @Ctx() context: MessageContext): Promise<ErrorResult> {
+    return this.dockerActionProcessor.run(context, param);
   }
 }

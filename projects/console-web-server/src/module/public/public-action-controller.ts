@@ -1,45 +1,43 @@
-import { OrganizationPropCamel, ProjectApplicationPropCamel, ProjectPropCamel } from '@dogu-private/console';
-import { OrganizationId, ProjectApplicationId, ProjectId } from '@dogu-private/types';
+import { OrganizationApplicationPropCamel, OrganizationPropCamel } from '@dogu-private/console';
+import { OrganizationId } from '@dogu-private/types';
 import { Instance, transform } from '@dogu-tech/common';
-import { Application, GetApplicationListQuery, PublicAction } from '@dogu-tech/console-action';
-import { Controller, Get, Inject, Param, ParseIntPipe, Query } from '@nestjs/common';
+import { Application, GetApplicationListQuery, GetApplicationsWithUniquePackageQuery, GetGitUrlQuery, PublicAction } from '@dogu-tech/console-action';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 import { HOST_ACTION_TYPE } from '../auth/auth.types';
 import { HostPermission } from '../auth/decorators';
-import { ApplicationService } from '../project/application/application.service';
-import { FindProjectApplicationDto } from '../project/application/dto/application.dto';
-import { ProjectScmService } from '../project/project-scm/project-scm.service';
+import { FindOrganizationApplicationDto } from '../organization/application/application.dto';
+import { OrganizationApplicationService } from '../organization/application/application.service';
+import { OrganizationScmService } from '../organization/scm/scm.service';
 
 @Controller(PublicAction.controller.path)
 export class PublicActionController {
   constructor(
-    @Inject(ProjectScmService)
-    private readonly projectScmService: ProjectScmService,
-    private readonly applicationService: ApplicationService,
+    private readonly organizationScmService: OrganizationScmService,
+    private readonly applicationService: OrganizationApplicationService,
   ) {}
 
   @Get(PublicAction.getGitUrl.path)
-  @HostPermission(HOST_ACTION_TYPE.PROJECT_ACTION_API)
+  // @HostPermission(HOST_ACTION_TYPE.HOST_API)
   async getGitUrl(
     @Param(OrganizationPropCamel.organizationId) organizationId: OrganizationId, //
-    @Param(ProjectPropCamel.projectId) projectId: ProjectId,
+    @Query() dto: GetGitUrlQuery,
   ): Promise<Instance<typeof PublicAction.getGitUrl.responseBody>> {
-    const url = await this.projectScmService.getGitUrlWithAuth(organizationId, projectId);
+    const url = await this.organizationScmService.getGitUrlWithAuth(organizationId, dto.repository);
     return { url };
   }
 
   @Get(PublicAction.getApplicationList.path)
-  @HostPermission(HOST_ACTION_TYPE.PROJECT_ACTION_API)
+  @HostPermission(HOST_ACTION_TYPE.HOST_API)
   async getApplicationList(
     @Param(OrganizationPropCamel.organizationId) organizationId: OrganizationId, //
-    @Param(ProjectPropCamel.projectId) projectId: ProjectId,
     @Query() query: GetApplicationListQuery,
   ): Promise<Instance<typeof PublicAction.getApplicationList.responseBody>> {
-    const dto = transform(FindProjectApplicationDto, query);
-    const applicationListSource = await this.applicationService.getApplicationList(organizationId, projectId, dto);
+    const dto = transform(FindOrganizationApplicationDto, query);
+    const applicationListSource = await this.applicationService.findApplications(organizationId, dto);
     const { items } = applicationListSource;
-    const applicationList = items.map(({ projectApplicationId, name, fileName, fileSize, package: packageName }) => {
+    const applicationList = items.map(({ organizationApplicationId, name, fileName, fileSize, package: packageName }) => {
       const application: Instance<typeof Application> = {
-        id: projectApplicationId,
+        id: organizationApplicationId,
         name,
         fileName,
         packageName,
@@ -53,17 +51,17 @@ export class PublicActionController {
   }
 
   @Get(PublicAction.getApplicationsWithUniquePackage.path)
-  @HostPermission(HOST_ACTION_TYPE.PROJECT_ACTION_API)
+  @HostPermission(HOST_ACTION_TYPE.HOST_API)
   async getApplicationsWithUniquePackage(
     @Param(OrganizationPropCamel.organizationId) organizationId: OrganizationId, //
-    @Param(ProjectPropCamel.projectId) projectId: ProjectId,
-    @Query() query: GetApplicationListQuery,
+    @Query() query: GetApplicationsWithUniquePackageQuery,
   ): Promise<Instance<typeof PublicAction.getApplicationList.responseBody>> {
-    const dto = transform(FindProjectApplicationDto, query);
-    const applicationListSource = await this.applicationService.getApplicationWithUniquePackage(organizationId, projectId, dto);
-    const applicationList = applicationListSource.map(({ projectApplicationId, name, fileName, fileSize, package: packageName }) => {
+    const { packageName } = query;
+    const dto = transform(FindOrganizationApplicationDto, query);
+    const applicationListSource = await this.applicationService.findApplicationsByPackageName(organizationId, packageName, dto);
+    const applicationList = applicationListSource.items.map(({ organizationApplicationId, name, fileName, fileSize, package: packageName }) => {
       const application: Instance<typeof Application> = {
-        id: projectApplicationId,
+        id: organizationApplicationId,
         name,
         fileName,
         packageName,
@@ -77,13 +75,12 @@ export class PublicActionController {
   }
 
   @Get(PublicAction.getApplicationDownloadUrl.path)
-  @HostPermission(HOST_ACTION_TYPE.PROJECT_ACTION_API)
+  @HostPermission(HOST_ACTION_TYPE.HOST_API)
   async getApplicationDownloadUrl(
-    @Param(ProjectApplicationPropCamel.projectApplicationId, ParseIntPipe) projectApplicationId: ProjectApplicationId,
+    @Param(OrganizationApplicationPropCamel.organizationApplicationId) organizationApplicationId: string,
     @Param(OrganizationPropCamel.organizationId) organizationId: OrganizationId, //
-    @Param(ProjectPropCamel.projectId) projectId: ProjectId,
   ): Promise<Instance<typeof PublicAction.getApplicationDownloadUrl.responseBody>> {
-    const url = await this.applicationService.getApplicationDownladUrl(projectApplicationId, organizationId, projectId);
+    const url = await this.applicationService.getApplicationDownladUrl(organizationApplicationId, organizationId);
     return { url };
   }
 }

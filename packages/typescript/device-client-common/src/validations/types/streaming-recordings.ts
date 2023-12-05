@@ -1,5 +1,6 @@
 import { Caseable, Instance, IsFilledString, TransformByCase } from '@dogu-tech/common';
 import {
+  DeviceServerToken,
   ErrorResultDto,
   Platform,
   ProtoRTCIceCandidateInit,
@@ -9,11 +10,12 @@ import {
   ScreenRecordOption,
   Serial,
   StartStreaming,
+  StreamingAnswer,
   StreamingOffer,
   StreamingOption,
 } from '@dogu-tech/types';
 import { Type } from 'class-transformer';
-import { IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsNumber, IsObject, IsOptional, IsString, ValidateNested } from 'class-validator';
 
 export class ScreenCaptureOptionDto implements ScreenCaptureOption {
   @IsNumber()
@@ -127,7 +129,9 @@ export class StartStreamingValue extends Caseable<'startStreaming'> {
 }
 
 export const StreamingOfferValue = [RTCIceCandidateInitValue, StartStreamingValue] as const;
-export type StreamingOfferValue = Instance<(typeof StreamingOfferValue)[number]>;
+type _StreamingOfferValue = Instance<(typeof StreamingOfferValue)[number]>;
+type StreamingOfferCases = Required<StreamingOffer>['value']['$case'];
+export type StreamingOfferValue = StreamingOfferCases extends _StreamingOfferValue['$case'] ? _StreamingOfferValue : { ___ERROR___: 0 };
 
 export class StreamingOfferDto implements StreamingOffer {
   @IsString()
@@ -164,13 +168,22 @@ export class ErrorResultValue extends Caseable<'errorResult'> {
   errorResult!: ErrorResultDto;
 }
 
+export class DeviceServerTokenValue extends Caseable<'deviceServerToken'> {
+  static override $case = 'deviceServerToken';
+
+  @IsObject()
+  deviceServerToken!: DeviceServerToken;
+}
+
 export const DeviceStreamingTypes = ['ANSWER', 'USER_INFO'] as const;
 export type DeviceStreamingType = (typeof DeviceStreamingTypes)[number];
 
-export const StreamingAnswerValue = [PeerDescriptionValue, IceCandidateValue, ErrorResultValue] as const;
-export type StreamingAnswerValue = Instance<(typeof StreamingAnswerValue)[number]>;
+export const StreamingAnswerValue = [PeerDescriptionValue, IceCandidateValue, ErrorResultValue, DeviceServerTokenValue] as const;
+type _StreamingAnswerValue = Instance<(typeof StreamingAnswerValue)[number]>;
+type StreamingAnswerCases = Required<StreamingAnswer>['value']['$case'];
+export type StreamingAnswerValue = StreamingAnswerCases extends _StreamingAnswerValue['$case'] ? _StreamingAnswerValue : { ___ERROR___: 0 };
 
-export class StreamingAnswerDto {
+export class StreamingAnswerDto implements StreamingAnswer {
   @ValidateNested()
   @TransformByCase(StreamingAnswerValue)
   @IsNotEmpty()

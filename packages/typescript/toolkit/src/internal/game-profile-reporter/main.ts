@@ -21,10 +21,10 @@ function main(): void {
     if (!gamium) {
       throw new Error('Gamium options are required.');
     }
-    const { logLevel, deviceServerPort, requestTimeout, deviceSerial: deviceSerialFromArg, devicePlatform } = dogu;
+    const { logLevel, deviceServerUrl, requestTimeout, deviceSerial: deviceSerialFromArg, devicePlatform } = dogu;
     const { enginePort, retryCount, retryInterval } = gamium;
     logger.setLogLevel(logLevel);
-    const { deviceClient, deviceHostClient } = await createDeviceClients({ port: deviceServerPort, timeout: requestTimeout, printable: logger });
+    const { deviceClient, deviceHostClient } = await createDeviceClients({ deviceServerUrl, timeout: requestTimeout, printable: logger });
     let deviceSerial = deviceSerialFromArg;
     if (!deviceSerial) {
       deviceSerial = await findDevice(deviceClient, devicePlatform);

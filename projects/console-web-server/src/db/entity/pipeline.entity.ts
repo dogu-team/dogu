@@ -27,6 +27,9 @@ export class RoutinePipeline extends BaseEntity implements RoutinePipelineBase {
   @Column({ type: 'smallint', name: RoutinePipelinePropSnake.creator_type, default: CREATOR_TYPE.UNSPECIFIED, nullable: false })
   creatorType!: CREATOR_TYPE;
 
+  @Column({ type: 'text', name: RoutinePipelinePropSnake.repository, nullable: false, default: '' })
+  repository!: string;
+
   @ColumnTemplate.RelationUuid(RoutinePipelinePropSnake.creator_id, true)
   creatorId!: UserId | null;
 

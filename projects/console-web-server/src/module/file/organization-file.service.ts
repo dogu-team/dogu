@@ -2,6 +2,7 @@ import { OrganizationId } from '@dogu-private/types';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import path from 'path';
 import { FeatureFileService } from '../feature/file/feature-file.service';
+import { OrganizaitonAppType, OrganizationAppDirectory } from './organization-app-file';
 
 @Injectable()
 export class OrganizationFileService {
@@ -46,5 +47,9 @@ export class OrganizationFileService {
       expires: 60,
     });
     return rv.url;
+  }
+
+  getAppDirectory(organizationId: OrganizationId, type: OrganizaitonAppType) {
+    return new OrganizationAppDirectory(organizationId, type, this.featureFileService);
   }
 }

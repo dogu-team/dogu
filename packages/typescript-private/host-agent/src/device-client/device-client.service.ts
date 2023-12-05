@@ -2,6 +2,7 @@ import { setAxiosErrorFilterToIntercepter } from '@dogu-tech/common';
 import { DeviceClient, DeviceClientsFactory, DeviceHostClient } from '@dogu-tech/device-client';
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import axios, { AxiosInstance } from 'axios';
+import { DeviceAuthService } from '../device-auth/device-auth.service';
 import { env } from '../env';
 import { DoguLogger } from '../logger/logger';
 
@@ -11,7 +12,10 @@ export class DeviceClientService implements OnModuleInit {
   private _deviceClient: DeviceClient | null = null;
   private _deviceHostClient: DeviceHostClient | null = null;
 
-  constructor(private readonly logger: DoguLogger) {
+  constructor(
+    private readonly authService: DeviceAuthService,
+    private readonly logger: DoguLogger,
+  ) {
     this._axiosClient = axios.create({
       baseURL: `http://${env.DOGU_DEVICE_SERVER_HOST_PORT}`,
     });
@@ -19,14 +23,8 @@ export class DeviceClientService implements OnModuleInit {
   }
 
   onModuleInit(): void {
-    const hostPort = env.DOGU_DEVICE_SERVER_HOST_PORT;
-    const hostAndPort = hostPort.split(':');
-    if (hostAndPort.length !== 2) {
-      throw new Error(`Invalid host and port: ${hostPort}`);
-    }
-    this.logger.info('hello');
     const factory = new DeviceClientsFactory({
-      port: Number(hostAndPort[1]),
+      deviceServerUrl: `http://${env.DOGU_DEVICE_SERVER_HOST_PORT}`,
       printable: {
         warn: this.logger.warn.bind(this.logger),
         debug: this.logger.debug.bind(this.logger),
@@ -34,6 +32,7 @@ export class DeviceClientService implements OnModuleInit {
         info: this.logger.info.bind(this.logger),
         error: this.logger.error.bind(this.logger),
       },
+      tokenGetter: () => this.authService.adminToken,
     });
     const { deviceClient, deviceHostClient } = factory.create();
     this._deviceClient = deviceClient;

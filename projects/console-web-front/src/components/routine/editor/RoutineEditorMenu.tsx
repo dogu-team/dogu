@@ -1,6 +1,6 @@
 import { BookOutlined } from '@ant-design/icons';
 import { PROJECT_TYPE } from '@dogu-private/types';
-import { Button, Radio } from 'antd';
+import { Button, Radio, Space } from 'antd';
 import useTranslation from 'next-translate/useTranslation';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -57,16 +57,14 @@ const RoutineEditorMenu = ({ projectType, saveButtonText, onSave, mode, onChange
           </div>
         )}
       </FlexRow>
-      <div>
-        <Button
-          type="primary"
-          loading={loading}
-          onClick={handleSave}
-          access-id={process.env.NEXT_PUBLIC_ENV !== 'production' ? 'save-routine-btn' : undefined}
-        >
+      <Space>
+        <Button loading={loading} onClick={() => router.back()} access-id={'cancel-routine-btn'}>
+          {t('common:cancel')}
+        </Button>
+        <Button type="primary" loading={loading} onClick={handleSave} access-id={'save-routine-btn'}>
           {saveButtonText}
         </Button>
-      </div>
+      </Space>
     </MenuBar>
   );
 };

@@ -23,6 +23,7 @@ interface ProjectItemProps {
 
 const ProjectItem = ({ project }: ProjectItemProps) => {
   const { t, lang } = useTranslation();
+  const router = useRouter();
 
   const getTypeText = (type: PROJECT_TYPE) => {
     switch (type) {
@@ -43,17 +44,15 @@ const ProjectItem = ({ project }: ProjectItemProps) => {
     <Item>
       <ItemInner>
         <TwoSpan>
-          <StyledLink href={`/dashboard/${project.organizationId}/projects/${project.projectId}/remotes`}>
-            {project.name}
-          </StyledLink>
+          <StyledLink href={`${router.asPath}/${project.projectId}/routines`}>{project.name}</StyledLink>
         </TwoSpan>
-        <OneSpan>
+        {/* <OneSpan>
           <FlexRow>
             <ProjectTypeIcon type={project.type} style={{ fontSize: '1.1rem', marginRight: '.25rem' }} />
             <p>{getTypeText(project.type)}</p>
           </FlexRow>
-        </OneSpan>
-        <TwoSpan>
+        </OneSpan> */}
+        {/* <TwoSpan>
           <Avatar.Group>
             {project.members?.map((item) => {
               if (instanceOfUserBase(item)) {
@@ -90,7 +89,7 @@ const ProjectItem = ({ project }: ProjectItemProps) => {
             )}
           </Avatar.Group>
         </TwoSpan>
-        <OneSpan>{getLocaleFormattedDate(lang, new Date(project.updatedAt))}</OneSpan>
+        <OneSpan>{getLocaleFormattedDate(lang, new Date(project.updatedAt))}</OneSpan> */}
       </ItemInner>
     </Item>
   );
@@ -98,12 +97,14 @@ const ProjectItem = ({ project }: ProjectItemProps) => {
 
 interface Props {
   organizationId: OrganizationId;
+  projectType?: PROJECT_TYPE;
 }
 
-const ProjectListController = ({ organizationId }: Props) => {
+const ProjectListController = ({ organizationId, projectType }: Props) => {
   const router = useRouter();
   const { data, isLoading, error, mutate, page, updatePage } = usePaginationSWR<ProjectBase>(
-    `/organizations/${organizationId}/projects`,
+    `/organizations/${organizationId}/projects${projectType !== undefined ? `?type=${projectType}` : ''}`,
+    { skipQuestionMark: projectType !== undefined },
   );
   const { t } = useTranslation();
 
@@ -118,9 +119,9 @@ const ProjectListController = ({ organizationId }: Props) => {
       <Header>
         <ItemInner>
           <TwoSpan>{t('project:projectTableNameColumn')}</TwoSpan>
-          <OneSpan>{t('project:projectTableTemplateColumn')}</OneSpan>
-          <TwoSpan>{t('project:projectTableMembersColumn')}</TwoSpan>
-          <OneSpan>{t('project:projectTableLastUpdatedColumn')}</OneSpan>
+          {/* <OneSpan>{t('project:projectTableTemplateColumn')}</OneSpan> */}
+          {/* <TwoSpan>{t('project:projectTableMembersColumn')}</TwoSpan>
+          <OneSpan>{t('project:projectTableLastUpdatedColumn')}</OneSpan> */}
         </ItemInner>
       </Header>
       <List<ProjectBase>

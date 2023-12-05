@@ -6,9 +6,9 @@ import { Code } from '@dogu-private/types';
 import { errorify } from '@dogu-tech/common';
 import { NestFactory } from '@nestjs/core';
 import { ExpressAdapter } from '@nestjs/platform-express';
+import { WsAdapter } from '@nestjs/platform-ws';
 import * as Sentry from '@sentry/node';
 import express from 'express';
-import http from 'http';
 import { WinstonModule } from 'nest-winston';
 import { AppModule } from './app/app.module';
 import { env } from './env';
@@ -45,7 +45,8 @@ export async function bootstrap(): Promise<void> {
     strategy: messageMicroService,
     logger: winstonModuleLogger,
   });
-  app.useGlobalFilters(new AllExceptionsFilter(app.getHttpAdapter()));
+
+  app.useWebSocketAdapter(new WsAdapter(app)).useGlobalFilters(new AllExceptionsFilter(app.getHttpAdapter()));
 
   const messagePuller = app.get(MessagePuller);
 
@@ -53,14 +54,7 @@ export async function bootstrap(): Promise<void> {
   await app.startAllMicroservices();
 
   try {
-    await app.init();
-    const httpServer = http.createServer({ noDelay: true, keepAlive: true }, server);
-    httpServer.headersTimeout = 5000;
-    httpServer.timeout = 10000;
-    httpServer.listen({
-      port: env.DOGU_HOST_AGENT_PORT,
-      backlog: 10,
-    });
+    await app.listen(env.DOGU_HOST_AGENT_PORT);
   } catch (error) {
     const casted = errorify(error);
     throw new ChildError(Code.CODE_HOST_AGENT_PORT_IN_USE, casted.message, undefined, { cause: casted });

@@ -1,8 +1,10 @@
 import { Closable, ConsoleLogger, fillOptionsSync, Printable, PromiseOrValue } from '@dogu-tech/common';
 import {
   DeviceHostUploadFileSendMessage,
+  DeviceServerToken,
   HttpRequest,
   HttpResponse,
+  Serial,
   WebSocketCloseEvent,
   WebSocketConnection,
   WebSocketErrorEvent,
@@ -10,7 +12,7 @@ import {
   WebSocketOpenEvent,
 } from '@dogu-tech/types';
 import { Type } from 'class-transformer';
-import { IsNumber, IsObject } from 'class-validator';
+import { IsNumber, IsObject, IsString } from 'class-validator';
 
 export interface DeviceWebSocketListener {
   onOpen?(ev: WebSocketOpenEvent): void;
@@ -26,11 +28,10 @@ export interface DeviceWebSocket {
 
 export class DeviceClientOptions {
   /**
-   * @default 0
+   * @default 'http://127.0.0.1:5001'
    */
-  @IsNumber()
-  @Type(() => Number)
-  port?: number;
+  @IsString()
+  deviceServerUrl?: string;
 
   /**
    * @default ConsoleLogger.instance
@@ -45,15 +46,23 @@ export class DeviceClientOptions {
   @IsNumber()
   @Type(() => Number)
   timeout?: number;
+
+  /**
+   * @default empty
+   */
+  tokenGetter?: () => DeviceServerToken;
 }
 
 export function fillDeviceClientOptions(options?: DeviceClientOptions): Required<DeviceClientOptions> {
   return fillOptionsSync(
     DeviceClientOptions,
     {
-      port: 0,
+      deviceServerUrl: 'http://127.0.0.1:5001',
       printable: ConsoleLogger.instance,
       timeout: 60000,
+      tokenGetter: () => {
+        return { value: '' };
+      },
     },
     options,
   );
@@ -61,7 +70,7 @@ export function fillDeviceClientOptions(options?: DeviceClientOptions): Required
 
 export interface DeviceService {
   httpRequest(request: HttpRequest, options: Required<DeviceClientOptions>): PromiseOrValue<HttpResponse>;
-  connectWebSocket(connection: WebSocketConnection, options: Required<DeviceClientOptions>, listener?: DeviceWebSocketListener): DeviceWebSocket;
+  connectWebSocket(connection: WebSocketConnection, serial: Serial | undefined, options: Required<DeviceClientOptions>, listener?: DeviceWebSocketListener): DeviceWebSocket;
 }
 
 export class HostFileUploader {

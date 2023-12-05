@@ -1,7 +1,16 @@
-import { DevicePropCamel, RoutineDeviceJobPropCamel, RoutineDeviceJobPropSnake, RoutineJobPropCamel, RoutinePipelinePropSnake, RoutineStepPropCamel } from '@dogu-private/console';
+import {
+  DevicePropCamel,
+  DeviceUsageState,
+  RoutineDeviceJobPropCamel,
+  RoutineDeviceJobPropSnake,
+  RoutineJobPropCamel,
+  RoutinePipelinePropCamel,
+  RoutinePipelinePropSnake,
+  RoutineStepPropCamel,
+} from '@dogu-private/console';
 import { PIPELINE_STATUS } from '@dogu-private/types';
 import { errorify } from '@dogu-tech/common';
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import _ from 'lodash';
 import { Brackets, DataSource } from 'typeorm';
@@ -107,6 +116,7 @@ export class DeviceJobUpdater {
         { deviceJobsStatus: PIPELINE_STATUS.IN_PROGRESS },
       )
       .innerJoinAndSelect(`job.${RoutineJobPropCamel.routinePipeline}`, 'pipeline')
+      .innerJoinAndSelect(`pipeline.${RoutinePipelinePropSnake.project}`, 'project')
       .orderBy(`deviceJob.${RoutineDeviceJobPropCamel.routineDeviceJobId}`, 'ASC')
       .orderBy(`step.${RoutineStepPropCamel.routineStepId}`, 'ASC')
       .where({ status: PIPELINE_STATUS.WAITING })
@@ -121,14 +131,33 @@ export class DeviceJobUpdater {
     for (const deviceId of deviceIds) {
       const waitingRoutineDeviceJobsByDeviceId = deviceJobGroups[deviceId];
       const sortedWaitingDeviceJobs = waitingRoutineDeviceJobsByDeviceId.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
-      const deviceRunners = await this.dataSource.getRepository(DeviceRunner).find({ where: { deviceId, isInUse: 0 } });
+      const deviceRunners = await this.dataSource.getRepository(DeviceRunner).find({ where: { deviceId, isInUse: 0 }, relations: { device: { organization: true } } });
       const promises = _.zip(deviceRunners, sortedWaitingDeviceJobs).map(async ([deviceRunner, deviceJob]) => {
         if (!deviceRunner || !deviceJob) {
           return;
         }
 
+        if (!deviceRunner.device) {
+          throw new InternalServerErrorException({
+            reason: 'device must not be null',
+            deviceRunnerId: deviceRunner.deviceRunnerId,
+          });
+        }
+
+        const deviceRunnerDevice = deviceRunner.device;
+        if (deviceRunnerDevice.organization.shareable && deviceRunnerDevice.usageState !== DeviceUsageState.AVAILABLE) {
+          return;
+        }
+
         const { device } = deviceJob;
-        const { deviceId, organizationId } = device!;
+        if (!device) {
+          throw new InternalServerErrorException({
+            reason: 'device must not be null',
+            routineDeviceJobId: deviceJob.routineDeviceJobId,
+          });
+        }
+
+        const { deviceId, organizationId } = device;
         const steps = deviceJob.routineSteps;
         if (!steps || steps.length === 0) {
           throw new Error(`deviceJob ${deviceJob.routineDeviceJobId} has no steps`);
@@ -140,6 +169,10 @@ export class DeviceJobUpdater {
           await manager.getRepository(DeviceRunner).update({ deviceRunnerId: deviceRunner.deviceRunnerId }, { isInUse: 1 });
           deviceJob.deviceRunnerId = deviceRunner.deviceRunnerId;
           await this.deviceJobRunner.setStatus(manager, deviceJob, PIPELINE_STATUS.IN_PROGRESS, new Date());
+          if (deviceRunnerDevice.organization.shareable) {
+            deviceRunnerDevice.usageState = DeviceUsageState.IN_USE;
+            await manager.save(deviceRunnerDevice);
+          }
         });
 
         this.deviceJobRunner.sendRunDeviceJob(organizationId, deviceId, deviceJob).catch((error) => {
@@ -147,7 +180,11 @@ export class DeviceJobUpdater {
         });
       });
 
-      await Promise.allSettled(promises);
+      const results = await Promise.allSettled(promises);
+      const rejectedResults = results.filter((result) => result.status === 'rejected');
+      if (rejectedResults.length > 0) {
+        this.logger.error('checkWaitingDeviceJobsWithInProgressJob process error', { rejectedResults });
+      }
     }
   }
 
@@ -184,7 +221,8 @@ export class DeviceJobUpdater {
       .innerJoinAndSelect(`deviceJob.${RoutineDeviceJobPropCamel.routineJob}`, 'job')
       .innerJoinAndSelect(`deviceJob.${RoutineDeviceJobPropCamel.device}`, 'device')
       .innerJoinAndSelect(`job.${RoutineJobPropCamel.routinePipeline}`, 'pipeline')
-      .where(`pipeline.${RoutinePipelinePropSnake.status} = :pipelineStatus`, { pipelineStatus: PIPELINE_STATUS.CANCEL_REQUESTED })
+      .innerJoinAndSelect(`pipeline.${RoutinePipelinePropCamel.project}`, 'project')
+      .where(`pipeline.${RoutinePipelinePropCamel.status} = :pipelineStatus`, { pipelineStatus: PIPELINE_STATUS.CANCEL_REQUESTED })
       .andWhere(
         new Brackets((qb) => {
           qb.where(`deviceJob.${RoutineDeviceJobPropSnake.heartbeat} IS NOT NULL`);
@@ -208,8 +246,28 @@ export class DeviceJobUpdater {
       this.logger.info(`cancel_requested device-job heartbeat is alive. cancel request to HA. deviceJobId: ${deviceJobId}`);
       await this.deviceJobRunner.setStatus(this.dataSource.manager, deviceJob, PIPELINE_STATUS.CANCEL_REQUESTED, new Date());
 
+      const { routineJob } = deviceJob;
+      if (!routineJob) {
+        this.logger.error(`routineJob is null. deviceJobId: ${deviceJobId}`);
+        continue;
+      }
+
+      const { routinePipeline } = routineJob;
+      if (!routinePipeline) {
+        this.logger.error(`routinePipeline is null. deviceJobId: ${deviceJobId}`);
+        continue;
+      }
+
+      const { project } = routinePipeline;
+      if (!project) {
+        this.logger.error(`project is null. deviceJobId: ${deviceJobId}`);
+        continue;
+      }
+
+      const { organizationId: executorOrganizationId } = project;
+
       try {
-        await this.deviceJobRunner.sendCancelDeviceJob(device.organizationId, deviceId, deviceJob);
+        await this.deviceJobRunner.sendCancelDeviceJob(device.organizationId, deviceId, executorOrganizationId, deviceJob);
       } catch (error) {
         this.logger.error(`sendCancelDeviceJob error. deviceJobId: ${deviceJobId}, error: ${util.inspect(error)}`);
       }

@@ -13,6 +13,7 @@ import { logger, rendererLogger } from './log/logger.instance';
   });
 })();
 
+import { DeviceAuthService } from '@dogu-private/dogu-agent-core/app';
 import { errorify, stringify } from '@dogu-tech/common';
 import { killSelfProcess, maxLogPeriod, openDeleteOldFiles } from '@dogu-tech/node';
 import * as Sentry from '@sentry/electron/main';
@@ -77,6 +78,8 @@ app
     await openDeleteOldLogs();
 
     await AppStatusService.instance.openServices(async () => {
+      const authService = new DeviceAuthService(logger);
+
       RendererLogService.open();
       ThemeService.open();
 
@@ -86,8 +89,8 @@ app
       WindowService.open();
       StdLogCallbackService.open(WindowService.instance);
       await ExternalService.open(DotEnvConfigService.instance, StdLogCallbackService.instance, AppConfigService.instance, WindowService.instance);
-      ChildService.open(AppConfigService.instance, FeatureConfigService.instance, ExternalService.instance);
-      await DeviceLookupService.open(ChildService.instance, AppConfigService.instance);
+      ChildService.open(AppConfigService.instance, FeatureConfigService.instance, ExternalService.instance, authService);
+      await DeviceLookupService.open(ChildService.instance, AppConfigService.instance, authService);
       const token = await AppConfigService.instance.get<string>('DOGU_HOST_TOKEN');
       if (token && token.length > 0) {
         ChildService.instance.connect(token).catch((e) => logger.error('main connect error', { error: errorify(e) }));

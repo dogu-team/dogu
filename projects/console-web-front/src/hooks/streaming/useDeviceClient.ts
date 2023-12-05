@@ -1,4 +1,6 @@
-import { PrivateProtocol, WebSocketConnection } from '@dogu-private/types';
+import { DeviceBase } from '@dogu-private/console';
+import { DeviceTemporaryToken, PrivateProtocol } from '@dogu-private/types';
+import { time } from '@dogu-tech/common';
 import { DeviceClient, DeviceHostClient } from '@dogu-tech/device-client-common';
 import { RefObject, useEffect, useRef } from 'react';
 import { v4 as uuidv4 } from 'uuid';
@@ -9,14 +11,20 @@ import { createDataChannel } from '../../utils/streaming/web-rtc';
 
 type DataChannelLabel = PrivateProtocol.DataChannelLabel;
 
-const useDeviceClient = (peerConnectionRef: RefObject<RTCPeerConnection | undefined>, sendThrottleMs: number) => {
+const useDeviceClient = (
+  device: DeviceBase | undefined,
+  peerConnectionRef: RefObject<RTCPeerConnection | undefined>,
+  deviceToken: DeviceTemporaryToken | undefined,
+  sendThrottleMs: number,
+) => {
   const deviceClientRef = useRef<DeviceClient | undefined>(undefined);
   const deviceHostClientRef = useRef<DeviceHostClient | undefined>(undefined);
   const deviceChannelRef = useRef<RTCDataChannel | undefined>(undefined);
   const deviceInspectorRef = useRef<BrowserDeviceInspector | undefined>(undefined);
+  const heartbeatTimer = useRef<NodeJS.Timer | undefined>(undefined);
 
   useEffect(() => {
-    if (peerConnectionRef.current) {
+    if (device && peerConnectionRef.current && deviceToken) {
       const deviceHttpDcLabel: DataChannelLabel = {
         name: 'device-http',
         protocol: {
@@ -31,34 +39,43 @@ const useDeviceClient = (peerConnectionRef: RefObject<RTCPeerConnection | undefi
       });
       deviceHttpDc.bufferedAmountLowThreshold = 65535;
 
-      const deviceServerWsDcCreator = (connection: WebSocketConnection) => {
+      const deviceServerWsDcCreator = () => {
         const name = `device-ws-${uuidv4()}`;
         const deviceWsDcLabel: DataChannelLabel = {
           name,
           protocol: {
             $case: 'deviceWebSocket',
-            deviceWebSocket: {
-              connection,
-            },
+            deviceWebSocket: {},
           },
         };
         const channel = createDataChannel(peerConnectionRef.current!, deviceWsDcLabel, {
           ordered: true,
           maxRetransmits: 5,
         });
+
         deviceChannelRef.current = channel;
         channel.bufferedAmountLowThreshold = 65535;
         return { name, channel };
       };
       const deviceService = new BrowserDeviceService(deviceHttpDc, deviceServerWsDcCreator, sendThrottleMs);
+      const tokenGetter = () => deviceToken;
 
-      const dc = new DeviceClient(deviceService);
-      const dhc = new DeviceHostClient(deviceService);
-      const di = new BrowserDeviceInspector(deviceService);
+      const dc = new DeviceClient(deviceService, { tokenGetter });
+      const dhc = new DeviceHostClient(deviceService, { tokenGetter });
+      const di = new BrowserDeviceInspector(deviceService, { tokenGetter });
+      const timer = setInterval(
+        () => {
+          dc.getHearbeat(device.serial).catch((e) => {
+            console.error('heartbeat error', e);
+          });
+        },
+        time({ minutes: 1 }),
+      );
 
       deviceClientRef.current = dc;
       deviceHostClientRef.current = dhc;
       deviceInspectorRef.current = di;
+      heartbeatTimer.current = timer;
     }
 
     return () => {
@@ -67,9 +84,13 @@ const useDeviceClient = (peerConnectionRef: RefObject<RTCPeerConnection | undefi
       deviceClientRef.current = undefined;
       deviceHostClientRef.current = undefined;
       deviceChannelRef.current = undefined;
+      if (heartbeatTimer.current) {
+        clearInterval(heartbeatTimer.current);
+      }
+      heartbeatTimer.current = undefined;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sendThrottleMs]);
+  }, [sendThrottleMs, deviceToken]);
 
   return {
     deviceClientRef,

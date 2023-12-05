@@ -4,6 +4,7 @@ import { errorify } from './utilities/functions';
 export class FilteredAxiosError extends Error {
   readonly code?: string;
   readonly responseStatus?: number;
+  readonly responseData?: unknown;
   readonly details?: unknown;
 
   constructor(axiosError: AxiosError) {
@@ -12,6 +13,7 @@ export class FilteredAxiosError extends Error {
     this.name = 'FilteredAxiosError';
     this.code = axiosError.code;
     this.responseStatus = axiosError.response?.status;
+    this.responseData = axiosError.response?.data;
     this.details = axiosError.toJSON();
   }
 }

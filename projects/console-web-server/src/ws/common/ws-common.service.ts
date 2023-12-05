@@ -164,7 +164,7 @@ export class WsCommonService {
     organizationId: OrganizationId,
     deviceId: DeviceId,
     liveSessionId: LiveSessionId | null,
-  ) {
+  ): Promise<ValidationResult> {
     if (liveSessionId) {
       return await this.validateCloudDeviceAccessPermission(incomingMessage, dataSource, organizationId, liveSessionId);
     } else {
