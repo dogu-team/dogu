@@ -246,16 +246,17 @@ class ZombieIdaXCTest implements Zombieable {
     if (config.externalIosDeviceAgent.use) {
       return;
     }
+
+    await delay(3000);
+
     if (!(await this.isHealth())) {
       this.healthFailCount++;
       if (this.healthFailCount > 5) {
         ZombieServiceInstance.notifyDie(this, `health check failed ${this.healthFailCount}`);
       }
       return;
-    } else {
-      this.healthFailCount = 0;
     }
-    await delay(3000);
+    this.healthFailCount = 0;
   }
 
   onDie(reason: string): void {
