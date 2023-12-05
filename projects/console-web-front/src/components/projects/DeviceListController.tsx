@@ -185,8 +185,7 @@ interface Props {
 
 const DeviceListController = ({ organizationId, projectId }: Props) => {
   const { data, isLoading, error, mutate, updatePage, page } = usePaginationSWR<DeviceBase>(
-    // for cookapps
-    `/organizations/${organizationId}/projects/${projectId}/devices?excludeHostIds=2c9d15d3-6852-4c34-abaa-a574ef3ce937,31b8aaab-2f73-4ab4-a908-f14642bc893e`,
+    `/organizations/${organizationId}/projects/${projectId}/devices?excludeHostIds=acb5ae68-51e2-4995-949c-da711c13bf3a`,
     {
       skipQuestionMark: true,
     },
