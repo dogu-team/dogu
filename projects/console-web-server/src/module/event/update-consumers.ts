@@ -29,7 +29,6 @@ export class UpdateConsumer {
     private readonly recordPipelineSystemProcessor: RecordPipelineSystemProcessor,
     @Inject(LicenseSystemProcessor)
     private readonly licenseSystemProcessor: LicenseSystemProcessor,
-
     private readonly logger: DoguLogger,
   ) {}
 

@@ -55,6 +55,7 @@ export const config = {
       updateConnection: 'update-connection',
       updateLiveSession: 'update-live-session',
       updateMonitoring: 'update-monitoring',
+      updateHostApp: 'update-host-app',
       WebSocketProxyReceive: (organizationId: OrganizationId, deviceId: DeviceId, webSocketProxyId: WebSocketProxyId): string =>
         `/organizations/${organizationId}/devices/${deviceId}/webSocketProxies/${webSocketProxyId}/receives`,
       liveSessionParticipantsCount: (liveSessionId: string): string => `/live-sessions/${liveSessionId}/participants-count`,

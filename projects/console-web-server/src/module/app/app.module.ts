@@ -4,6 +4,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { dataSourceConfig } from '../../config';
+import { EnterpriseEventModule } from '../../enterprise/module/event/enterprise-event.module';
 import { HostAppModule } from '../../enterprise/module/host-app/host-app.module';
 import { SlackModule } from '../../enterprise/module/integration/slack/slack.module';
 import { LicenseModule } from '../../enterprise/module/license/license.module';
@@ -98,6 +99,7 @@ const BASE_MODULES = [
   RedisModule,
   BillingModule,
   TestExecutorModule,
+  EnterpriseEventModule,
 ];
 
 @Module({

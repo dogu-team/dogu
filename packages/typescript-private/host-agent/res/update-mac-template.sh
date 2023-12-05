@@ -13,6 +13,10 @@ curl -o $zip_file -L $file_url
 
 sleep 5
 
+killall Dogu-Agent
+
+sleep 5
+
 
 echo Check File Size...
 local_file_size=$(stat -f "%z" "$zip_file")
