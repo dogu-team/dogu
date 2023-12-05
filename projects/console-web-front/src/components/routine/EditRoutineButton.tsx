@@ -23,7 +23,7 @@ const EditRoutineButton = ({ orgId, projectId, routine }: Props) => {
     <Link
       href={{
         pathname: router.pathname + '/editor',
-        query: { orgId, pid: projectId, routineId: routine.routineId },
+        query: { orgId, pid: projectId, routine: routine.routineId },
       }}
     >
       <Button type="primary" style={{ marginRight: '.5rem' }}>

@@ -32,7 +32,7 @@ const JobListSideBar = ({ pipeline }: Props) => {
         <BackButton
           href={{
             pathname: router.pathname.replace(/\/\[pipelineId\](.+)?$/, ''),
-            query: { orgId, pid: projectId, routineId: pipeline.routineId },
+            query: { orgId, pid: projectId, routine: pipeline.routineId },
           }}
         >
           <ArrowLeftOutlined />

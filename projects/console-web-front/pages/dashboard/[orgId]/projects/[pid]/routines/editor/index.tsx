@@ -19,7 +19,7 @@ const ProjectRoutineEditorPage: NextPageWithLayout<ProjectServerSideProps> = ({
 }) => {
   const store = useGitIntegrationStore();
   const router = useRouter();
-  const routineId = router.query.routineId as string | undefined;
+  const routineId = router.query.routine as string | undefined;
   const { data } = useSWR<string>(
     routineId &&
       `/organizations/${organization.organizationId}/projects/${project.projectId}/routines/file/${routineId}`,
