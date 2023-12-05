@@ -21,7 +21,7 @@ export class HostAppUpdateProcessor implements OnModuleInit, OnModuleDestroy {
       redis,
       logger,
       key: config.redis.key.updateHostApp,
-      produceInterval: time({ minutes: 10 }),
+      produceInterval: time({ minutes: 5 }),
       eventExpireTimeout: 60 * 1000,
       onProduce: async (): Promise<string> => {
         return Promise.resolve('0');
