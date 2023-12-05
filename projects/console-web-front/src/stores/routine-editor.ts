@@ -15,6 +15,7 @@ const useRoutineEditorStore = create<RoutineEditorStore>((set) => ({
     name: '',
     on: {},
     jobs: {},
+    repository: '',
   },
   updateYaml: (yaml) => {
     try {
