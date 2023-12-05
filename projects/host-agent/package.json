@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "host-agent",
-  "version": "2.6.23",
+  "version": "2.7.0",
   "license": "SEE LICENSE IN https://github.com/dogu-team/dogu/blob/main/LICENSE.md",
   "author": "Dogu Technologies",
   "main": "./build/src/index.js",
