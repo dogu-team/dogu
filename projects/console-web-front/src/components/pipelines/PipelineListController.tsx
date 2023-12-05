@@ -41,7 +41,10 @@ const PipelineItem = ({ pipeline }: ItemProps) => {
           </IconWrapper>
           <div>
             <Link
-              href={`/dashboard/${router.query.orgId}/projects/${router.query.pid}/routines/${pipeline.routinePipelineId}`}
+              href={{
+                pathname: router.pathname + `/[pipelineId]`,
+                query: { orgId: router.query.orgId, pid: router.query.pid, pipelineId: pipeline.routinePipelineId },
+              }}
             >
               <Name>
                 {`${pipeline.routine?.name}`}&nbsp;

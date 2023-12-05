@@ -4,6 +4,7 @@ import { RoutineJobId, OrganizationId, RoutinePipelineId, Platform, ProjectId } 
 import { Button } from 'antd';
 import { isAxiosError } from 'axios';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import styled from 'styled-components';
 import useSWR from 'swr';
 import { swrAuthFetcher } from '../../api';
@@ -28,6 +29,7 @@ const DeviceJobListController = ({ orgId, projectId, pipelineId, jobId }: Props)
     `/organizations/${orgId}/projects/${projectId}/pipelines/${pipelineId}/jobs/${jobId}/device-jobs`,
     swrAuthFetcher,
   );
+  const router = useRouter();
   const liveDeviceJobs = useLivePipelineStore(
     (state) => state.pipeline?.routineJobs?.find((job) => job.routineJobId === jobId)?.routineDeviceJobs,
   );
@@ -57,7 +59,19 @@ const DeviceJobListController = ({ orgId, projectId, pipelineId, jobId }: Props)
         return (
           <Item
             key={`drj-${item.routineDeviceJobId}`}
-            href={`/dashboard/${orgId}/projects/${projectId}/routines/${pipelineId}/jobs/${jobId}/device-jobs/${item.routineDeviceJobId}`}
+            href={{
+              pathname: router.pathname.replace(
+                /\/\[pipelineId\](.+)?$/,
+                '/[pipelineId]/jobs/[jobId]/device-jobs/[deviceJobId]',
+              ),
+              query: {
+                orgId,
+                pid: projectId,
+                pipelineId: pipelineId,
+                jobId,
+                deviceJobId: item.routineDeviceJobId,
+              },
+            }}
           >
             <NameCell>
               <JobStatusIcon status={item.status} />

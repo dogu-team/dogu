@@ -1,5 +1,12 @@
-import { JobSchema, Platform, PROJECT_TYPE, ROUTINE_JOB_NAME_MAX_LENGTH, StepSchema } from '@dogu-private/types';
-import { Checkbox, Switch, Tag } from 'antd';
+import {
+  DeviceModels,
+  JobSchema,
+  Platform,
+  PROJECT_TYPE,
+  ROUTINE_JOB_NAME_MAX_LENGTH,
+  StepSchema,
+} from '@dogu-private/types';
+import { Checkbox, Radio, Switch, Tag } from 'antd';
 import { useCallback, useContext } from 'react';
 import { move, update } from 'ramda';
 import styled from 'styled-components';
@@ -51,11 +58,12 @@ const Needs = ({ needs, onDelete }: NeedsProps) => {
 };
 
 interface RunsOnProps {
+  isCloud: boolean;
   runsOn: JobSchema['runs-on'];
   onDelete: (tag: string) => void;
 }
 
-const RunsOn = ({ runsOn, onDelete }: RunsOnProps) => {
+const RunsOn = ({ isCloud, runsOn, onDelete }: RunsOnProps) => {
   if (runsOn === undefined) {
     return null;
   }
@@ -63,7 +71,7 @@ const RunsOn = ({ runsOn, onDelete }: RunsOnProps) => {
   if (typeof runsOn === 'string') {
     return (
       <Tag color="pink" closable onClose={() => onDelete(runsOn)}>
-        {runsOn}
+        {isCloud ? DeviceModels[runsOn] : runsOn}
       </Tag>
     );
   }
@@ -95,7 +103,7 @@ const RunsOn = ({ runsOn, onDelete }: RunsOnProps) => {
       {runsOn.map((tag) => {
         return (
           <Tag key={tag} color="pink" closable onClose={() => onDelete(tag)}>
-            {tag}
+            {isCloud ? DeviceModels[tag] : tag}
           </Tag>
         );
       })}
@@ -399,6 +407,22 @@ const JobContainer = ({ name, job, updateJob, updateJobName, deleteJob, updateJo
         <div>
           <FlexRow style={{ marginBottom: '.25rem' }}>
             <ContentTitle style={{ marginBottom: '0' }}>{t('routine:routineGuiEditorJobDeviceLabel')}</ContentTitle>
+          </FlexRow>
+          <Radio.Group
+            defaultValue={false}
+            value={job.cloud}
+            onChange={(e) => {
+              if (e.target.value) {
+                updateJob({ ...job, cloud: true, 'runs-on': [] }, name);
+              } else {
+                updateJob({ ...job, cloud: false, 'runs-on': { group: [] } }, name);
+              }
+            }}
+          >
+            <Radio value={true}>Cloud devices</Radio>
+            <Radio value={false}>Self devices</Radio>
+          </Radio.Group>
+          {!job.cloud && (
             <Checkbox
               checked={isGroupRun}
               style={{ marginLeft: '.75rem' }}
@@ -418,9 +442,11 @@ const JobContainer = ({ name, job, updateJob, updateJobName, deleteJob, updateJo
             >
               {t('routine:routineGuiEditorJobDeviceGroupLabel')}
             </Checkbox>
-          </FlexRow>
+          )}
           <ContentDesc>
-            {isGroupRun ? (
+            {job.cloud ? (
+              'Run on cloud devices'
+            ) : isGroupRun ? (
               <Trans
                 i18nKey="routine:routineGuiEditorJobDeviceGroupDescription"
                 components={{ b: <b style={{ fontWeight: '600' }} /> }}
@@ -431,8 +457,9 @@ const JobContainer = ({ name, job, updateJob, updateJobName, deleteJob, updateJo
           </ContentDesc>
         </div>
         <ContentInner>
-          <RunsOn runsOn={job['runs-on']} onDelete={handleRemoveRunsOn} />
+          <RunsOn isCloud={!!job.cloud} runsOn={job['runs-on']} onDelete={handleRemoveRunsOn} />
           <AddDeviceAndTagButton
+            isCloud={!!job.cloud}
             group={isGroupRun}
             onSelect={handleAddRunsOn}
             devicePlatform={getPlatformByAppPackageName()}

@@ -61,7 +61,10 @@ const JobExpandableSidebarButton = ({ job, orgId, pipelineId, projectId, expanda
         </Button>
       ) : (
         <ProjectSidebarItem
-          href={`/dashboard/${orgId}/projects/${projectId}/routines/${pipelineId}/jobs/${job.routineJobId}`}
+          href={{
+            pathname: router.pathname.replace(/\/\[pipelineId\](.+)?$/, '/[pipelineId]/jobs/[jobId]'),
+            query: { orgId, pid: projectId, pipelineId: pipelineId, jobId: job.routineJobId },
+          }}
           selected={Number(router.query.jobId) === job.routineJobId && router.query.deviceJobId === undefined}
         >
           <JobStatusIcon status={jobStatus} />
@@ -73,7 +76,10 @@ const JobExpandableSidebarButton = ({ job, orgId, pipelineId, projectId, expanda
         <DeviceJobContainer>
           <ProjectSidebarItem
             key={`job-${job.routineJobId}-summary`}
-            href={`/dashboard/${orgId}/projects/${projectId}/routines/${pipelineId}/jobs/${job.routineJobId}`}
+            href={{
+              pathname: router.pathname.replace(/\/\[pipelineId\](.+)?$/, '/[pipelineId]/jobs/[jobId]'),
+              query: { orgId, pid: projectId, pipelineId: pipelineId, jobId: job.routineJobId },
+            }}
             selected={Number(router.query.jobId) === job.routineJobId && router.query.deviceJobId === undefined}
           >
             {t('routine:jobSummaryText')}
@@ -87,7 +93,19 @@ const JobExpandableSidebarButton = ({ job, orgId, pipelineId, projectId, expanda
             return (
               <ProjectSidebarItem
                 key={`job-${job.routineJobId}-drj-${item.routineDeviceJobId}`}
-                href={`/dashboard/${orgId}/projects/${projectId}/routines/${pipelineId}/jobs/${job.routineJobId}/device-jobs/${item.routineDeviceJobId}`}
+                href={{
+                  pathname: router.pathname.replace(
+                    /\/\[pipelineId\](.+)?$/,
+                    '/[pipelineId]/jobs/[jobId]/device-jobs/[deviceJobId]',
+                  ),
+                  query: {
+                    orgId,
+                    pid: projectId,
+                    pipelineId: pipelineId,
+                    jobId: job.routineJobId,
+                    deviceJobId: item.routineDeviceJobId,
+                  },
+                }}
                 selected={Number(router.query.deviceJobId) === item.routineDeviceJobId}
               >
                 <JobStatusIcon status={deviceJobStatus ?? PIPELINE_STATUS.UNSPECIFIED} />
