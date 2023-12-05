@@ -185,10 +185,8 @@ interface Props {
 
 const DeviceListController = ({ organizationId, projectId }: Props) => {
   const { data, isLoading, error, mutate, updatePage, page } = usePaginationSWR<DeviceBase>(
-    `/organizations/${organizationId}/projects/${projectId}/devices?excludeHostIds=acb5ae68-51e2-4995-949c-da711c13bf3a`,
-    {
-      skipQuestionMark: true,
-    },
+    `/organizations/${organizationId}/projects/${projectId}/devices`,
+    undefined,
     {
       keepPreviousData: true,
     },

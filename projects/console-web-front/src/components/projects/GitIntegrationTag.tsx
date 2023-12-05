@@ -1,4 +1,4 @@
-import { CheckCircleOutlined, ExclamationCircleOutlined, QuestionCircleFilled } from '@ant-design/icons';
+import { CheckCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { OrganizationId, ProjectId } from '@dogu-private/types';
 import { Form, Modal, Tag, Tooltip } from 'antd';
 import { isAxiosError } from 'axios';
@@ -87,14 +87,7 @@ const GitIntegrationTag = ({ isGitIntegrated }: Props) => {
         okText={'Save'}
         onOk={saveGitIntegration}
         confirmLoading={loading}
-        title={
-          <>
-            Git Integration{' '}
-            <a href="https://docs.dogutech.io/management/project/git-integration/" target="_blank">
-              <QuestionCircleFilled style={{ color: '#000' }} />
-            </a>
-          </>
-        }
+        title="Git Integration"
       >
         <GitIntegrationForm form={form} />
       </Modal>
