@@ -38,7 +38,10 @@ const RoutineInfoContainer = ({ orgId, projectId, routine }: Props) => {
       await deleteRoutine(orgId, projectId, routine.routineId);
       sendSuccessNotification(t('routine:deleteRoutineSuccessMsg'));
       fireEvent('onRoutineDeleted');
-      router.push(`/dashboard/${orgId}/projects/${projectId}/routines`);
+      router.push({
+        pathname: router.pathname,
+        query: { orgId, pid: projectId },
+      });
     } catch (e) {
       if (e instanceof AxiosError) {
         sendErrorNotification(t('routine:deleteRoutineFailureMsg', { reason: getErrorMessageFromAxios(e) }));

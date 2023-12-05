@@ -63,7 +63,10 @@ const PipelineItem = ({ pipeline }: ItemProps) => {
           {pipeline.status === PIPELINE_STATUS.IN_PROGRESS && (
             <div style={{ marginRight: '1rem' }}>
               <Link
-                href={`/dashboard/${router.query.orgId}/projects/${router.query.pid}/routines/${pipeline.routinePipelineId}/devices`}
+                href={{
+                  pathname: router.pathname.replace(/\/\[pipelineId\](.+)?$/, '/[pipelineId]/devices'),
+                  query: { orgId: router.query.orgId, pid: router.query.pid, pipelineId: pipeline.routinePipelineId },
+                }}
               >
                 <Button
                   style={{ display: 'flex', alignItems: 'center' }}

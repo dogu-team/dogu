@@ -84,9 +84,9 @@ const ProjectItem = ({ item }: ProjectItemProps) => {
     <Item>
       <FlexRowBase>
         <NameCell>
-          <StyledLink href={`/dashboard/${orgId}/projects/${item.projectId}`}>
-            <ProjectName>{item.project?.name}</ProjectName>
-          </StyledLink>
+          {/* <StyledLink href={`/dashboard/${orgId}/projects/${item.projectId}`}> */}
+          <ProjectName>{item.project?.name}</ProjectName>
+          {/* </StyledLink> */}
         </NameCell>
         <PermissionCell>
           <PermissionSelector
@@ -189,7 +189,7 @@ const MenuCell = styled.div`
 `;
 
 const ProjectName = styled.p`
-  ${listActiveNameStyle}
+  /* ${listActiveNameStyle} */
 `;
 
 const StyledLink = styled(Link)`
