@@ -36,7 +36,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
         with:
-          sparse-checkout: scripts/parse-inputs.mjs
+          sparse-checkout: scripts
           clean: true
 
       - name: Setup Node.js
