@@ -71,7 +71,7 @@ jobs:
         with:
           token_format: access_token
           credentials_json: '${{steps.parse-variables.outputs.GCP_CICD_SA_KEY}}'
-          access_token_lifetime: 600s
+          access_token_lifetime: 3600s
 
       - name: Login to Artifact Registry
         uses: docker/login-action@v2
