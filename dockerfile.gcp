@@ -1,8 +1,8 @@
-FROM ubuntu:22.04 AS base
-
 ARG DEBIAN_FRONTEND=noninteractive
 ARG NODE_VERSION=16.20.2
-ARG DOGU_RUN_TYPE=development
+ARG DOGU_RUN_TYPE=""
+
+FROM ubuntu:22.04 AS base
 
 SHELL ["/bin/bash", "-c"]
 ENV SHELL=/bin/bash
