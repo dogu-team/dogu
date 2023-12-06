@@ -130,7 +130,7 @@ jobs:
         uses: 'google-github-actions/auth@v1'
         with:
           token_format: access_token
-          credentials_json: ${{env.GCP_CICD_SA_KEY}}
+          credentials_json: '${{env.GCP_CICD_SA_KEY}}'
           access_token_lifetime: 300s
         env:
           GCP_CICD_SA_KEY: ${{needs.parse-inputs.outputs.gcp_cicd_sa_key}}
