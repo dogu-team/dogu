@@ -89,8 +89,12 @@ jobs:
           push: true
           tags: ${{steps.parse-variables.outputs.DOCKER_TAG}}
           file: dockerfile.gcp
-          build-args: DOGU_RUN_TYPE=${{github.event.inputs.run_type}}
+          build-args: |
+            DOGU_RUN_TYPE=${{github.event.inputs.run_type}}
+            DOGU_ENV_SERVICE_ACCOUNT_KEY=${{env.DOGU_ENV_SERVICE_ACCOUNT_KEY}}
           target: ${{github.event.inputs.project_type}}
+        env:
+          DOGU_ENV_SERVICE_ACCOUNT_KEY: ${{secrets.DOGU_ENV_SERVICE_ACCOUNT_KEY}}
 
   release:
     needs:
