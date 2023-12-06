@@ -38,37 +38,45 @@ jobs:
       GCP_PROD_CICD_SA_KEY: ${{secrets.GCP_PROD_CICD_SA_KEY}}
       GCP_DEV_PRIVATE_SSH_KEY: ${{secrets.GCP_DEV_PRIVATE_SSH_KEY}}
       GCP_PROD_PRIVATE_SSH_KEY: ${{secrets.GCP_PROD_PRIVATE_SSH_KEY}}
+      DOGU_RUN_TYPE: ${{github.event.inputs.run_type}}
+      DOGU_PROJECT_TYPE: ${{github.event.inputs.project_type}}
     outputs:
       gcp-sa-key: ${{steps.parse-gcp-sa-key.outputs.gcp-sa-key}}
       gcp-private-ssh-key: ${{steps.parse-gcp-private-ssh-key.outputs.gcp-private-ssh-key}}
       docker-tag: ${{steps.parse-docker-tag.outputs.docker-tag}}
     steps:
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 16
+
       - name: Validate inputs
         run: |
-          if [ "${{github.event.inputs.run_type}}" != "development" ] &&
-            [ "${{github.event.inputs.run_type}}" != "production" ]; then
-            echo -e "${RED}run_type is not valid${NC}"
-            exit 1
-          fi
+          echo "
+            const validRunType = ['evelopment', 'production'];
+            const validProjectType = ['console-web-front', 'console-web-server'];
+            if (!validRunType.includes('${{github.event.inputs.run_type}}')) {
+              throw new Error('run_type is not valid');
+            }
 
-          if [ "${{github.event.inputs.project_type}}" != "console-web-front" ] &&
-            [ "${{github.event.inputs.project_type}}" != "console-web-server" ]; then
-            echo -e "${RED}project_type is not valid${NC}"
-            exit 1
-          fi
+            if (!validProjectType.includes('${{github.event.inputs.project_type}}')) {
+              throw new Error('project_type is not valid');
+            }
+          " > validate.mjs
+          node validate.mjs
 
       - id: parse-gcp-sa-key
         name: Parse GCP SA Key
         run: |
           if [ "${{github.event.inputs.run_type}}" = "development" ]; then
-            echo "gcp-sa-key<<EOF" >> $GITHUB_OUTPUT
-            echo "$GCP_DEV_CICD_SA_KEY" >> $GITHUB_OUTPUT
-            echo "EOF" >> $GITHUB_OUTPUT
+            echo "gcp-sa-key<<EOF" >> "$GITHUB_OUTPUT"
+            echo "$GCP_DEV_CICD_SA_KEY" >> "$GITHUB_OUTPUT"
+            echo "EOF" >> "$GITHUB_OUTPUT"
 
           elif [ "${{github.event.inputs.run_type}}" = "production" ]; then
-            echo "gcp-sa-key<<EOF" >> $GITHUB_OUTPUT
-            echo "$GCP_PROD_CICD_SA_KEY" >> $GITHUB_OUTPUT
-            echo "EOF" >> $GITHUB_OUTPUT
+            echo "gcp-sa-key<<EOF" >> "$GITHUB_OUTPUT"
+            echo "$GCP_PROD_CICD_SA_KEY" >> "$GITHUB_OUTPUT"
+            echo "EOF" >> "$GITHUB_OUTPUT"
 
           else
             echo -e "${RED}run_type is not valid${NC}"
@@ -79,14 +87,14 @@ jobs:
         name: Parse GCP Private SSH Key
         run: |
           if [ "${{github.event.inputs.run_type}}" = "development" ]; then
-            echo "gcp-private-ssh-key<<EOF" >> $GITHUB_OUTPUT
-            echo "$GCP_DEV_PRIVATE_SSH_KEY" >> $GITHUB_OUTPUT
-            echo "EOF" >> $GITHUB_OUTPUT
+            echo "gcp-private-ssh-key<<EOF" >> "$GITHUB_OUTPUT"
+            echo "$GCP_DEV_PRIVATE_SSH_KEY" >> "$GITHUB_OUTPUT"
+            echo "EOF" >> "$GITHUB_OUTPUT"
 
           elif [ "${{github.event.inputs.run_type}}" = "production" ]; then
-            echo "gcp-private-ssh-key<<EOF" >> $GITHUB_OUTPUT
-            echo "$GCP_PROD_PRIVATE_SSH_KEY" >> $GITHUB_OUTPUT
-            echo "EOF" >> $GITHUB_OUTPUT
+            echo "gcp-private-ssh-key<<EOF" >> "$GITHUB_OUTPUT"
+            echo "$GCP_PROD_PRIVATE_SSH_KEY" >> "$GITHUB_OUTPUT"
+            echo "EOF" >> "$GITHUB_OUTPUT"
 
           else
             echo -e "${RED}run_type is not valid${NC}"
@@ -97,10 +105,10 @@ jobs:
         name: Parse docker-tag
         run: |
           if [ "${{github.event.inputs.run_type}}" = "development" ]; then
-            echo "docker-tag=$DEV_DOGU_DOCKER_TAG" >> $GITHUB_OUTPUT
+            echo "docker-tag=$DEV_DOGU_DOCKER_TAG" >> "$GITHUB_OUTPUT"
 
           elif [ "${{github.event.inputs.run_type}}" = "production" ]; then
-            echo "docker-tag=$PROD_DOGU_DOCKER_TAG" >> $GITHUB_OUTPUT
+            echo "docker-tag=$PROD_DOGU_DOCKER_TAG" >> "$GITHUB_OUTPUT"
 
           else
             echo -e "${RED}run_type is not valid${NC}"
