@@ -24,34 +24,25 @@ permissions:
 
 env:
   DOGU_GCP_REGION: asia-northeast3
-  DEV_DOGU_DOCKER_TAG: asia-northeast3-docker.pkg.dev/${{secrets.GCP_DEV_PROJECT_ID}}/projects/${{github.event.inputs.project_type}}:${{github.ref_name}}
-  PROD_DOGU_DOCKER_TAG: asia-northeast3-docker.pkg.dev/${{secrets.GCP_PROD_PROJECT_ID}}/projects/${{github.event.inputs.project_type}}:${{github.ref_name}}
-  RED: '\033[0;31m'
-  GREEN: '\033[0;32m'
-  NC: '\033[0m'
-
-  # for echo multi-line string to file
-  # GCP_DEV_PRIVATE_SSH_KEY: ${{secrets.GCP_DEV_PRIVATE_SSH_KEY}}
-  # GCP_PROD_PRIVATE_SSH_KEY: ${{secrets.GCP_PROD_PRIVATE_SSH_KEY}}
-  # GCP_DEV_CICD_SA_KEY: ${{secrets.GCP_DEV_CICD_SA_KEY}}
-  # GCP_PROD_CICD_SA_KEY: ${{secrets.GCP_PROD_CICD_SA_KEY}}
 
 jobs:
   parse-inputs:
-    runs-on: henry-macbook
+    runs-on: ubuntu-latest
+    env:
+      RED: '\033[0;31m'
+      GREEN: '\033[0;32m'
+      NC: '\033[0m'
+      DEV_DOGU_DOCKER_TAG: asia-northeast3-docker.pkg.dev/${{secrets.GCP_DEV_PROJECT_ID}}/projects/${{github.event.inputs.project_type}}:${{github.ref_name}}
+      PROD_DOGU_DOCKER_TAG: asia-northeast3-docker.pkg.dev/${{secrets.GCP_PROD_PROJECT_ID}}/projects/${{github.event.inputs.project_type}}:${{github.ref_name}}
+      GCP_DEV_CICD_SA_KEY: ${{secrets.GCP_DEV_CICD_SA_KEY}}
+      GCP_PROD_CICD_SA_KEY: ${{secrets.GCP_PROD_CICD_SA_KEY}}
+      GCP_DEV_PRIVATE_SSH_KEY: ${{secrets.GCP_DEV_PRIVATE_SSH_KEY}}
+      GCP_PROD_PRIVATE_SSH_KEY: ${{secrets.GCP_PROD_PRIVATE_SSH_KEY}}
     outputs:
-      gcp_cicd_sa_key: ${{steps.parse_gcp_cicd_sa_key.outputs.gcp_cicd_sa_key}}
-      gcp_private_ssh_key: ${{steps.parse_gcp_private_ssh_key.outputs.gcp_private_ssh_key}}
-      docker_tag: ${{steps.parse_docker_tag.outputs.docker_tag}}
+      gcp-sa-key: ${{steps.parse-gcp-sa-key.outputs.gcp-sa-key}}
+      gcp-private-ssh-key: ${{steps.parse-gcp-private-ssh-key.outputs.gcp-private-ssh-key}}
+      docker-tag: ${{steps.parse-docker-tag.outputs.docker-tag}}
     steps:
-      - name: Print inputs
-        run: |
-          echo "$GCP_DEV_CICD_SA_KEY" > $HOME/gcp_dev_cicd_sa_key.json
-          echo "$GCP_DEV_PRIVATE_SSH_KEY" > $HOME/gcp_dev_private_ssh_key
-        env:
-          GCP_DEV_CICD_SA_KEY: ${{secrets.GCP_DEV_CICD_SA_KEY}}
-          GCP_DEV_PRIVATE_SSH_KEY: ${{secrets.GCP_DEV_PRIVATE_SSH_KEY}}
-
       - name: Validate inputs
         run: |
           if [ "${{github.event.inputs.run_type}}" != "development" ] &&
@@ -66,42 +57,50 @@ jobs:
             exit 1
           fi
 
-      - id: parse_gcp_cicd_sa_key
-        name: Parse gcp_cicd_sa_key
+      - id: parse-gcp-sa-key
+        name: Parse GCP SA Key
         run: |
           if [ "${{github.event.inputs.run_type}}" = "development" ]; then
-            printf "gcp_cicd_sa_key<<EOF\n%s\nEOF\n" "$GCP_DEV_CICD_SA_KEY" >> $GITHUB_OUTPUT
+            echo "gcp-sa-key<<EOF" >> $GITHUB_OUTPUT
+            echo "$GCP_DEV_CICD_SA_KEY" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
 
           elif [ "${{github.event.inputs.run_type}}" = "production" ]; then
-            printf "gcp_cicd_sa_key<<EOF\n%s\nEOF\n" "$GCP_PROD_CICD_SA_KEY" >> $GITHUB_OUTPUT
+            echo "gcp-sa-key<<EOF" >> $GITHUB_OUTPUT
+            echo "$GCP_PROD_CICD_SA_KEY" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
 
           else
             echo -e "${RED}run_type is not valid${NC}"
             exit 1
           fi
 
-      - id: parse_gcp_private_ssh_key
-        name: Parse gcp_private_ssh_key
+      - id: parse-gcp-private-ssh-key
+        name: Parse GCP Private SSH Key
         run: |
           if [ "${{github.event.inputs.run_type}}" = "development" ]; then
-            printf "gcp_private_ssh_key<<EOF\n%s\nEOF\n" "$GCP_DEV_PRIVATE_SSH_KEY" >> $GITHUB_OUTPUT
+            echo "gcp-private-ssh-key<<EOF" >> $GITHUB_OUTPUT
+            echo "$GCP_DEV_PRIVATE_SSH_KEY" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
 
           elif [ "${{github.event.inputs.run_type}}" = "production" ]; then
-            printf "gcp_private_ssh_key<<EOF\n%s\nEOF\n" "$GCP_PROD_PRIVATE_SSH_KEY" >> $GITHUB_OUTPUT
+            echo "gcp-private-ssh-key<<EOF" >> $GITHUB_OUTPUT
+            echo "$GCP_PROD_PRIVATE_SSH_KEY" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
 
           else
             echo -e "${RED}run_type is not valid${NC}"
             exit 1
           fi
 
-      - id: parse_docker_tag
-        name: Parse docker_tag
+      - id: parse-docker-tag
+        name: Parse docker-tag
         run: |
           if [ "${{github.event.inputs.run_type}}" = "development" ]; then
-            echo "docker_tag=$DEV_DOGU_DOCKER_TAG" >> $GITHUB_OUTPUT
+            echo "docker-tag=$DEV_DOGU_DOCKER_TAG" >> $GITHUB_OUTPUT
 
           elif [ "${{github.event.inputs.run_type}}" = "production" ]; then
-            echo "docker_tag=$PROD_DOGU_DOCKER_TAG" >> $GITHUB_OUTPUT
+            echo "docker-tag=$PROD_DOGU_DOCKER_TAG" >> $GITHUB_OUTPUT
 
           else
             echo -e "${RED}run_type is not valid${NC}"
@@ -110,18 +109,18 @@ jobs:
 
   publish:
     needs: parse-inputs
-    runs-on: ubuntu-latest
+    runs-on: henry-macbook
 
     steps:
       - name: Print inputs
         run: |
-          echo "$GCP_CICD_SA_KEY" > $HOME/gcp_cicd_sa_key.json
-          echo "$GCP_PRIVATE_SSH_KEY" > $HOME/gcp_private_ssh_key
-          echo "$DOCKER_TAG" > $HOME/docker_tag
+          echo "$GCP_CICD_SA_KEY" > $HOME/1.txt
+          echo "$GCP_PRIVATE_SSH_KEY" > $HOME/2.txt
+          echo "$DOCKER_TAG" > $HOME/3.txt
         env:
-          GCP_CICD_SA_KEY: ${{needs.parse-inputs.outputs.gcp_cicd_sa_key}}
-          GCP_PRIVATE_SSH_KEY: ${{needs.parse-inputs.outputs.gcp_private_ssh_key}}
-          DOCKER_TAG: ${{needs.parse-inputs.outputs.docker_tag}}
+          GCP_CICD_SA_KEY: ${{needs.parse-inputs.outputs.gcp-sa-key}}
+          GCP_PRIVATE_SSH_KEY: ${{needs.parse-inputs.outputs.gcp-private-ssh-key}}
+          DOCKER_TAG: ${{needs.parse-inputs.outputs.docker-tag}}
 
       - name: Checkout
         uses: actions/checkout@v3
@@ -151,7 +150,7 @@ jobs:
           credentials_json: '${{env.GCP_CICD_SA_KEY}}'
           access_token_lifetime: 300s
         env:
-          GCP_CICD_SA_KEY: ${{needs.parse-inputs.outputs.gcp_cicd_sa_key}}
+          GCP_CICD_SA_KEY: ${{needs.parse-inputs.outputs.gcp-sa-key}}
 
       - name: Login to Artifact Registry
         uses: docker/login-action@v2
@@ -165,7 +164,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{needs.parse-inputs.outputs.docker_tag}}
+          tags: ${{needs.parse-inputs.outputs.docker-tag}}
           file: dockerfile.gcp
           build-args: DOGU_RUN_TYPE=${{github.event.inputs.run_type}}
           target: ${{github.event.inputs.project_type}}
@@ -185,20 +184,20 @@ jobs:
       - name: Authenticate with Google Cloud
         uses: 'google-github-actions/auth@v1'
         with:
-          credentials_json: '${{needs.parse-inputs.outputs.gcp_cicd_sa_key}}'
+          credentials_json: '${{needs.parse-inputs.outputs.gcp-sa-key}}'
 
       - name: Rlease to Google Cloud Compute Engine
         uses: 'google-github-actions/ssh-compute@v0'
         with:
           instance_name: ${{github.event.inputs.project_type}}
           zone: ${{env.DOGU_GCP_REGION}}-a
-          ssh_private_key: '${{needs.parse-inputs.outputs.gcp_private_ssh_key}}'
+          ssh_private_key: '${{needs.parse-inputs.outputs.gcp-private-ssh-key}}'
           command: |
             gcloud auth configure-docker ${{env.DOGU_GCP_REGION}}-docker.pkg.dev --quiet && \
             docker ps -qa | xargs -r docker rm -f && \
             docker system prune --volumes -a -f && \
-            docker pull ${{needs.parse-inputs.outputs.docker_tag}} && \
-            DOGU_DOCKER_TAG=${{needs.parse-inputs.outputs.docker_tag}} docker compose -f docker-compose-gcp.yml --verbose up -d ${{github.event.inputs.project_type}} && \
+            docker pull ${{needs.parse-inputs.outputs.docker-tag}} && \
+            DOGU_DOCKER_TAG=${{needs.parse-inputs.outputs.docker-tag}} docker compose -f docker-compose-gcp.yml --verbose up -d ${{github.event.inputs.project_type}} && \
             docker image prune -a -f
 
   send-slack:
