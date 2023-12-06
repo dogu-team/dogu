@@ -80,7 +80,12 @@ const InspectorToolbar = ({ onRefresh, onReset, selectDisabled }: Props) => {
       <ButtonWrapper>
         {inspectorType === InspectorType.GAME && (
           <Tooltip title="Reconnect">
-            <StyledButton onClick={onReset}>
+            <StyledButton
+              onClick={() => {
+                onReset();
+                refreshAndClearTimer();
+              }}
+            >
               <DisconnectOutlined style={{ fontSize: '.75rem' }} />
             </StyledButton>
           </Tooltip>

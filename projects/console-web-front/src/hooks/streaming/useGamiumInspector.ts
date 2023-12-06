@@ -134,8 +134,6 @@ const useGamiumInspector = (
 
   const handleInspectWithId = useCallback(
     async (objectId: string) => {
-      console.warn('handleInspectWithId', objectId);
-
       if (!gamiumRef.current) {
         return;
       }
@@ -145,7 +143,6 @@ const useGamiumInspector = (
           .inspector()
           .inspect(objectId)
           .catch((e) => {
-            console.warn(e);
             return undefined;
           });
         const screenSize = await gamiumRef.current.screen();
