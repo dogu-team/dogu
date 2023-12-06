@@ -3,7 +3,6 @@ FROM ubuntu:22.04 AS base
 ARG DEBIAN_FRONTEND=noninteractive
 ARG NODE_VERSION=16.20.2
 ARG DOGU_RUN_TYPE=""
-ARG DOGU_ENV_SERVICE_ACCOUNT_KEY=""
 
 SHELL ["/bin/bash", "-c"]
 ENV SHELL=/bin/bash
@@ -38,8 +37,8 @@ COPY packages/typescript-private ./packages/typescript-private
 COPY packages/typescript-dev-private ./packages/typescript-dev-private
 COPY scripts ./scripts
 COPY nm-space/projects/env-generator/bin ./nm-space/projects/env-generator/bin
-RUN mkdir -p ${HOME}/.dogu_secret && \
-    echo "${DOGU_ENV_SERVICE_ACCOUNT_KEY}" > ${HOME}/.dogu_secret/service-account-key.json
+RUN mkdir -p /root/.dogu_secret
+COPY ${HOME}/.dogu_secret/service-account-key.json /root/.dogu_secret/service-account-key.json
 
 FROM base AS console-web-front
 COPY projects/console-web-front ./projects/console-web-front

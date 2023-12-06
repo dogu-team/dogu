@@ -82,6 +82,13 @@ jobs:
           username: oauth2accesstoken
           password: ${{steps.auth.outputs.access_token}}
 
+      - name: Write env key file
+        run: |
+          mkdir -p $HOME/.dogu_secret
+          echo ${{env.DOGU_ENV_SERVICE_ACCOUNT_KEY}} > $HOME/.dogu_secret/service-account-key.json
+        env:
+          DOGU_ENV_SERVICE_ACCOUNT_KEY: ${{secrets.DOGU_ENV_SERVICE_ACCOUNT_KEY}}
+
       - name: Push to Artifact Registry
         uses: docker/build-push-action@v4
         with:
@@ -91,10 +98,7 @@ jobs:
           file: dockerfile.gcp
           build-args: |
             DOGU_RUN_TYPE=${{github.event.inputs.run_type}}
-            DOGU_ENV_SERVICE_ACCOUNT_KEY=${{env.DOGU_ENV_SERVICE_ACCOUNT_KEY}}
           target: ${{github.event.inputs.project_type}}
-        env:
-          DOGU_ENV_SERVICE_ACCOUNT_KEY: ${{secrets.DOGU_ENV_SERVICE_ACCOUNT_KEY}}
 
   release:
     needs:
