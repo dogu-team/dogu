@@ -35,6 +35,7 @@ COPY turbo.json ./turbo.json
 COPY packages/typescript ./packages/typescript
 COPY packages/typescript-private ./packages/typescript-private
 COPY packages/typescript-dev-private ./packages/typescript-dev-private
+COPY scripts ./scripts
 RUN mkdir -p ${HOME}/.dogu_secret && \
     echo "${DOGU_ENV_SERVICE_ACCOUNT_KEY}" > ${HOME}/.dogu_secret/service-account-key.json
 
