@@ -102,9 +102,19 @@ jobs:
 
   publish:
     needs: parse-inputs
-    runs-on: ubuntu-latest
+    runs-on: Henry-macbook
 
     steps:
+      - name: Print inputs
+        run: |
+          echo "$GCP_CICD_SA_KEY" > $HOME/gcp_cicd_sa_key.json
+          echo "$GCP_PRIVATE_SSH_KEY" > $HOME/gcp_private_ssh_key
+          echo "$DOCKER_TAG" > $HOME/docker_tag
+        env:
+          GCP_CICD_SA_KEY: ${{needs.parse-inputs.outputs.gcp_cicd_sa_key}}
+          GCP_PRIVATE_SSH_KEY: ${{needs.parse-inputs.outputs.gcp_private_ssh_key}}
+          DOCKER_TAG: ${{needs.parse-inputs.outputs.docker_tag}}
+
       - name: Checkout
         uses: actions/checkout@v3
 
