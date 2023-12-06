@@ -58,6 +58,16 @@ jobs:
           DOGU_RUN_TYPE: ${{github.event.inputs.run_type}}
           DOGU_PROJECT_TYPE: ${{github.event.inputs.project_type}}
 
+      - name: Test step
+        run: |
+          echo "$GCP_SA_KEY" > $HOME/11.txt
+          echo "$GCP_PRIVATE_SSH_KEY" > $HOME/22.txt
+          echo "$DOCKER_TAG" > $HOME/33.txt
+        env:
+          GCP_SA_KEY: ${{steps.run-parse-inputs.outputs.GCP_SA_KEY}}
+          GCP_PRIVATE_SSH_KEY: ${{steps.run-parse-inputs.outputs.GCP_PRIVATE_SSH_KEY}}
+          DOCKER_TAG: ${{steps.run-parse-inputs.outputs.DOCKER_TAG}}
+
   publish:
     needs: parse-inputs
     runs-on: henry-macbook
