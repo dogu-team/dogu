@@ -48,7 +48,6 @@ const CloudLiveTestingStudioPage: NextPageWithLayout<CloudStudioTestingPageProps
 
         try {
           const data = JSON.parse(event.data) as LiveSessionWsMessage;
-          console.log(event.data);
           if (data.type === LiveSessionState.CLOSE_WAIT) {
             openModal(data.message);
           } else if (data.type === 'cloud-license-live-testing') {

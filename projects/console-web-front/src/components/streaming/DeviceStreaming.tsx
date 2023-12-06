@@ -8,11 +8,12 @@ import useDeviceAlert from '../../hooks/streaming/useDeviceAlert';
 import useDeviceClient from '../../hooks/streaming/useDeviceClient';
 import { DeviceStreamingContext } from '../../hooks/streaming/useDeviceStreamingContext';
 import useGamiumClient from '../../hooks/streaming/useGamiumClient';
+import useGamiumInspector from '../../hooks/streaming/useGamiumInspector';
 import useInspector from '../../hooks/streaming/useInspector';
 import useLocalDeviceDetect from '../../hooks/streaming/useLocalDeviceDetect';
 import useRTCConnection from '../../hooks/streaming/useRTCConnection';
 import { StreamingMode } from '../../types/device';
-import { StreamingErrorType } from '../../types/streaming';
+import { InspectorType, StreamingErrorType } from '../../types/streaming';
 import ErrorBox from '../common/boxes/ErrorBox';
 import ApplicationUploader from './ApplicationUploader';
 import DeviceControlToolbar from './DeviceControlToolbar';
@@ -32,6 +33,7 @@ const THROTTLE_MS = 33;
 
 const DeviceStreaming = ({ device, children, pid, isCloudDevice, isAdmin }: Props) => {
   const [mode, setMode] = useState<StreamingMode>('input');
+  const [inspectorType, setInspectorType] = useState<InspectorType>(InspectorType.APP);
   const isSelf = useLocalDeviceDetect(device);
   const { loading, deviceRTCCallerRef, peerConnectionRef, videoRef, deviceToken, error } = useRTCConnection(
     { device, pid, isCloudDevice },
@@ -45,7 +47,18 @@ const DeviceStreaming = ({ device, children, pid, isCloudDevice, isAdmin }: Prop
     deviceService.deviceClientRef,
     THROTTLE_MS,
   );
-  const inspector = useInspector(deviceService.deviceInspectorRef, device ?? null, videoRef);
+  const inspector = useInspector(
+    deviceService.deviceInspectorRef,
+    gamiumService.gamiumClientRef,
+    device ?? null,
+    videoRef,
+  );
+  const gamiumInspector = useGamiumInspector(
+    deviceService.deviceInspectorRef,
+    gamiumService.gamiumClientRef,
+    device ?? null,
+    videoRef,
+  );
   const { imageBase64 } = useDeviceAlert(deviceService.deviceClientRef, device ?? null);
   const { t } = useTranslation();
 
@@ -119,6 +132,7 @@ const DeviceStreaming = ({ device, children, pid, isCloudDevice, isAdmin }: Prop
     <DeviceStreamingContext.Provider
       value={{
         mode,
+        inspectorType,
         loading,
         deviceRTCCaller: deviceRTCCallerRef.current ?? null,
         peerConnection: peerConnectionRef.current ?? null,
@@ -129,7 +143,9 @@ const DeviceStreaming = ({ device, children, pid, isCloudDevice, isAdmin }: Prop
         isSelf,
         videoRef,
         inspector,
+        gamiumInspector,
         updateMode: setMode,
+        updateInspectorType: setInspectorType,
         isCloudDevice,
         deviceScreenshotBase64: imageBase64,
         isAdmin,

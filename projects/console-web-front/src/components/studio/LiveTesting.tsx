@@ -23,7 +23,7 @@ const DeviceStreamingLayout = dynamic<DeviceStreamingLayoutProps>(() => import('
 
 const LiveTestingMenu = () => {
   const router = useRouter();
-  const { device, deviceService, inspector, isCloudDevice } = useDeviceStreamingContext();
+  const { device, deviceService, inspector, isCloudDevice, gamiumInspector } = useDeviceStreamingContext();
   const runtimeInfos = useDeviceStreamingProfile(deviceService?.deviceClientRef, device ?? null);
   const { t } = useTranslation();
   const { deviceLogs, isLogStopped, logFilterValue, togglePlay, handleChangeFilterValue, clearLog } = useDeviceLog(
@@ -105,7 +105,9 @@ const LiveTestingMenu = () => {
         </TabContent>
         {tabMenus.includes(StreamingTabMenuKey.INSPECTOR) && tab === StreamingTabMenuKey.INSPECTOR && (
           <TabContent isSelected={tab === StreamingTabMenuKey.INSPECTOR}>
-            {device && inspector ? <DeviceStreaming.Inspector inspector={inspector} /> : null}
+            {device && inspector && gamiumInspector ? (
+              <DeviceStreaming.Inspector inspector={inspector} gamiumInspector={gamiumInspector} />
+            ) : null}
           </TabContent>
         )}
         {tabMenus.includes(StreamingTabMenuKey.PROFILE) && (

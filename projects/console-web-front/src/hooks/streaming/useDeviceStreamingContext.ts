@@ -3,14 +3,16 @@ import { DeviceRTCCaller } from '@dogu-private/webrtc';
 import React, { useContext } from 'react';
 
 import { StreamingMode } from '../../types/device';
-import { StreamingError } from '../../types/streaming';
+import { InspectorType, StreamingError } from '../../types/streaming';
 import useDeviceClient from './useDeviceClient';
 import useGamiumClient from './useGamiumClient';
+import useGamiumInspector from './useGamiumInspector';
 import useInspector from './useInspector';
 
 export interface StreamingContextValue {
   device: DeviceBase | null;
   mode: StreamingMode;
+  inspectorType: InspectorType;
   loading: boolean;
   deviceRTCCaller: DeviceRTCCaller | null;
   peerConnection: RTCPeerConnection | null;
@@ -20,7 +22,9 @@ export interface StreamingContextValue {
   isSelf: boolean;
   videoRef: React.RefObject<HTMLVideoElement> | null;
   inspector: ReturnType<typeof useInspector> | null;
+  gamiumInspector: ReturnType<typeof useGamiumInspector> | null;
   updateMode: (mode: StreamingMode) => void;
+  updateInspectorType: (type: InspectorType) => void;
   isCloudDevice?: boolean;
   deviceScreenshotBase64: string | null;
   isAdmin: boolean;
@@ -28,6 +32,7 @@ export interface StreamingContextValue {
 
 const defaultContextValue: StreamingContextValue = {
   mode: 'input',
+  inspectorType: InspectorType.APP,
   loading: true,
   deviceRTCCaller: null,
   peerConnection: null,
@@ -38,7 +43,9 @@ const defaultContextValue: StreamingContextValue = {
   isSelf: false,
   videoRef: null,
   inspector: null,
+  gamiumInspector: null,
   updateMode: () => {},
+  updateInspectorType: () => {},
   isCloudDevice: undefined,
   deviceScreenshotBase64: null,
   isAdmin: false,
