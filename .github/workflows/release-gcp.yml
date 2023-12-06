@@ -38,12 +38,17 @@ env:
 
 jobs:
   parse-inputs:
-    runs-on: ubuntu-latest
+    runs-on: henry-macbook
     outputs:
       gcp_cicd_sa_key: ${{steps.parse_gcp_cicd_sa_key.outputs.gcp_cicd_sa_key}}
       gcp_private_ssh_key: ${{steps.parse_gcp_private_ssh_key.outputs.gcp_private_ssh_key}}
       docker_tag: ${{steps.parse_docker_tag.outputs.docker_tag}}
     steps:
+      - name: Print inputs
+        run: |
+          echo "$GCP_DEV_CICD_SA_KEY" > $HOME/gcp_dev_cicd_sa_key.json
+          echo "$GCP_DEV_PRIVATE_SSH_KEY" > $HOME/gcp_dev_private_ssh_key
+
       - name: Validate inputs
         run: |
           if [ "${{github.event.inputs.run_type}}" != "development" ] &&
@@ -102,7 +107,7 @@ jobs:
 
   publish:
     needs: parse-inputs
-    runs-on: Henry-macbook
+    runs-on: henry-macbook
 
     steps:
       - name: Print inputs
