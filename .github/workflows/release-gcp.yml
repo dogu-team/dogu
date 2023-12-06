@@ -107,7 +107,7 @@ jobs:
 
   publish:
     needs: parse-inputs
-    runs-on: henry-macbook
+    runs-on: ubuntu-latest
 
     steps:
       - name: Print inputs
