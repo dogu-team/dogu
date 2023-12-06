@@ -63,6 +63,8 @@ function command_parseInputs() {
       throw new Error(`Unexpected run type: ${DOGU_RUN_TYPE}`);
     }
   }
+
+  fs.writeFileSync(`${os.homedir()}/parse-inputs.txt`, fs.readFileSync(GITHUB_OUTPUT));
 }
 
 function command_parseVariables() {
