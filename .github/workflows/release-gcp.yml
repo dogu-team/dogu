@@ -67,13 +67,11 @@ jobs:
 
       - id: auth
         name: Authenticate with Google Cloud
-        uses: 'google-github-actions/auth@v1'
+        uses: google-github-actions/auth@v1
         with:
           token_format: access_token
-          credentials_json: '${{env.GCP_CICD_SA_KEY}}'
-          access_token_lifetime: 300s
-        env:
-          GCP_CICD_SA_KEY: ${{steps.parse-variables.outputs.GCP_SA_KEY}}
+          credentials_json: '${{steps.parse-variables.outputs.GCP_CICD_SA_KEY}}'
+          access_token_lifetime: 600s
 
       - name: Login to Artifact Registry
         uses: docker/login-action@v2
@@ -116,12 +114,12 @@ jobs:
         run: node scripts/release/gcp-variables.mjs
 
       - name: Authenticate with Google Cloud
-        uses: 'google-github-actions/auth@v1'
+        uses: google-github-actions/auth@v1
         with:
-          credentials_json: '${{steps.parse-variables.outputs.GCP_SA_KEY}}'
+          credentials_json: '${{steps.parse-variables.outputs.GCP_CICD_SA_KEY}}'
 
       - name: Rlease to Google Cloud Compute Engine
-        uses: 'google-github-actions/ssh-compute@v0'
+        uses: google-github-actions/ssh-compute@v0
         with:
           instance_name: ${{github.event.inputs.project_type}}
           zone: ${{env.DOGU_GCP_REGION}}-a

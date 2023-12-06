@@ -45,7 +45,7 @@ function parse() {
 
   switch (DOGU_RUN_TYPE) {
     case 'development': {
-      fs.appendFileSync(GITHUB_OUTPUT, `GCP_SA_KEY<<EOF${os.EOL}`);
+      fs.appendFileSync(GITHUB_OUTPUT, `GCP_CICD_SA_KEY<<EOF${os.EOL}`);
       fs.appendFileSync(GITHUB_OUTPUT, `${GCP_DEV_CICD_SA_KEY}${os.EOL}`);
       fs.appendFileSync(GITHUB_OUTPUT, `EOF${os.EOL}`);
 
@@ -57,7 +57,7 @@ function parse() {
       break;
     }
     case 'production': {
-      fs.appendFileSync(GITHUB_OUTPUT, `GCP_SA_KEY<<EOF${os.EOL}`);
+      fs.appendFileSync(GITHUB_OUTPUT, `GCP_CICD_SA_KEY<<EOF${os.EOL}`);
       fs.appendFileSync(GITHUB_OUTPUT, `${GCP_PROD_CICD_SA_KEY}${os.EOL}`);
       fs.appendFileSync(GITHUB_OUTPUT, `EOF${os.EOL}`);
 
