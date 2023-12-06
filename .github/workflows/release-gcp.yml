@@ -94,7 +94,10 @@ jobs:
       - name: Download env
         run: yarn env-generator gen ${{github.event.inputs.run_type}} ${{github.event.inputs.project_type}} --cwd projects/${{github.event.inputs.project_type}}
 
-      - name: Build
+      - name: Build packages
+        run: yarn build:packages
+
+      - name: Build ${{github.event.inputs.project_type}}
         run: yarn build
         working-directory: projects/${{github.event.inputs.project_type}}
 
