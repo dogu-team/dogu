@@ -24,44 +24,17 @@ permissions:
 
 env:
   DOGU_GCP_REGION: asia-northeast3
+  DEV_DOCKER_TAG: asia-northeast3-docker.pkg.dev/${{secrets.GCP_DEV_PROJECT_ID}}/projects/${{github.event.inputs.project_type}}:${{github.ref_name}}
+  PROD_DOCKER_TAG: asia-northeast3-docker.pkg.dev/${{secrets.GCP_PROD_PROJECT_ID}}/projects/${{github.event.inputs.project_type}}:${{github.ref_name}}
+  GCP_DEV_CICD_SA_KEY: ${{secrets.GCP_DEV_CICD_SA_KEY}}
+  GCP_PROD_CICD_SA_KEY: 'NEED_TO_SET'
+  GCP_DEV_PRIVATE_SSH_KEY: ${{secrets.GCP_DEV_PRIVATE_SSH_KEY}}
+  GCP_PROD_PRIVATE_SSH_KEY: 'NEED_TO_SET'
+  DOGU_RUN_TYPE: ${{github.event.inputs.run_type}}
+  DOGU_PROJECT_TYPE: ${{github.event.inputs.project_type}}
 
 jobs:
-  parse-inputs:
-    runs-on: henry-macbook
-
-    # set from parse-inputs
-    outputs:
-      GCP_SA_KEY_BASE64: ${{steps.parse-inputs.outputs.GCP_SA_KEY_BASE64}}
-      GCP_PRIVATE_SSH_KEY_BASE64: ${{steps.parse-inputs.outputs.GCP_PRIVATE_SSH_KEY_BASE64}}
-      DOCKER_TAG_BASE64: ${{steps.parse-inputs.outputs.DOCKER_TAG_BASE64}}
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          sparse-checkout: scripts/release
-          clean: true
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 16
-
-      - id: parse-inputs
-        name: Parse inputs
-        run: node scripts/release/gcp.mjs parse-inputs
-        env:
-          DEV_DOCKER_TAG: asia-northeast3-docker.pkg.dev/${{secrets.GCP_DEV_PROJECT_ID}}/projects/${{github.event.inputs.project_type}}:${{github.ref_name}}
-          PROD_DOCKER_TAG: asia-northeast3-docker.pkg.dev/${{secrets.GCP_PROD_PROJECT_ID}}/projects/${{github.event.inputs.project_type}}:${{github.ref_name}}
-          GCP_DEV_CICD_SA_KEY: ${{secrets.GCP_DEV_CICD_SA_KEY}}
-          GCP_PROD_CICD_SA_KEY: 'NEED_TO_SET'
-          GCP_DEV_PRIVATE_SSH_KEY: ${{secrets.GCP_DEV_PRIVATE_SSH_KEY}}
-          GCP_PROD_PRIVATE_SSH_KEY: 'NEED_TO_SET'
-          DOGU_RUN_TYPE: ${{github.event.inputs.run_type}}
-          DOGU_PROJECT_TYPE: ${{github.event.inputs.project_type}}
-
   publish:
-    needs: parse-inputs
     runs-on: henry-macbook
     steps:
       - name: Checkout
@@ -71,11 +44,7 @@ jobs:
 
       - id: parse-variables
         name: Parse variables
-        run: node scripts/release/gcp.mjs parse-variables
-        env:
-          GCP_SA_KEY_BASE64: ${{needs.parse-inputs.outputs.GCP_SA_KEY_BASE64}}
-          GCP_PRIVATE_SSH_KEY_BASE64: ${{needs.parse-inputs.outputs.GCP_PRIVATE_SSH_KEY_BASE64}}
-          DOCKER_TAG_BASE64: ${{needs.parse-inputs.outputs.DOCKER_TAG_BASE64}}
+        run: node scripts/release/gcp-variables.mjs
 
       - name: Cache Yarn Unplugged
         uses: actions/cache@v3
@@ -123,7 +92,6 @@ jobs:
 
   release:
     needs:
-      - parse-inputs
       - publish
     runs-on: ubuntu-latest
     steps:
@@ -137,11 +105,7 @@ jobs:
 
       - id: parse-variables
         name: Parse variables
-        run: node scripts/release/gcp.mjs parse-variables
-        env:
-          GCP_SA_KEY_BASE64: ${{needs.parse-inputs.outputs.GCP_SA_KEY_BASE64}}
-          GCP_PRIVATE_SSH_KEY_BASE64: ${{needs.parse-inputs.outputs.GCP_PRIVATE_SSH_KEY_BASE64}}
-          DOCKER_TAG_BASE64: ${{needs.parse-inputs.outputs.DOCKER_TAG_BASE64}}
+        run: node scripts/release/gcp-variables.mjs
 
       - name: Authenticate with Google Cloud
         uses: 'google-github-actions/auth@v1'
