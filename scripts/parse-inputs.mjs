@@ -66,5 +66,3 @@ switch (DOGU_RUN_TYPE) {
     throw new Error(`Unexpected run type: ${DOGU_RUN_TYPE}`);
   }
 }
-
-fs.writeFileSync(`${os.homedir()}/test.txt`, fs.readFileSync(GITHUB_OUTPUT));
