@@ -26,47 +26,71 @@ env:
   DOGU_GCP_REGION: asia-northeast3
   DEV_DOGU_DOCKER_TAG: asia-northeast3-docker.pkg.dev/${{secrets.GCP_DEV_PROJECT_ID}}/projects/${{github.event.inputs.project_type}}:${{github.ref_name}}
   PROD_DOGU_DOCKER_TAG: asia-northeast3-docker.pkg.dev/${{secrets.GCP_PROD_PROJECT_ID}}/projects/${{github.event.inputs.project_type}}:${{github.ref_name}}
+  RED: '\033[0;31m'
+  GREEN: '\033[0;32m'
+  NC: '\033[0m'
 
 jobs:
   parse-inputs:
     runs-on: ubuntu-latest
     outputs:
-      gcp_cicd_sa_key: ${{steps.input-validation.outputs.gcp_cicd_sa_key}}
-      gcp_private_ssh_key: ${{steps.input-validation.outputs.gcp_private_ssh_key}}
-      docker_tag: ${{steps.input-validation.outputs.docker_tag}}
+      gcp_cicd_sa_key: ${{steps.parse_gcp_cicd_sa_key.outputs.gcp_cicd_sa_key}}
+      gcp_private_ssh_key: ${{steps.parse_gcp_private_ssh_key.outputs.gcp_private_ssh_key}}
+      docker_tag: ${{steps.parse_docker_tag.outputs.docker_tag}}
     steps:
-      - id: input-validation
-        name: input validation
+      - name: Validate inputs
         run: |
-          RED='\033[0;31m'
-          GREEN='\033[0;32m'
-          NC='\033[0m'
+          if [ "${{github.event.inputs.run_type}}" != "development" ] &&
+            [ "${{github.event.inputs.run_type}}" != "production" ]; then
+            echo -e "${RED}run_type is not valid${NC}"
+            exit 1
+          fi
 
-          run_type=${{github.event.inputs.run_type}}
-          if [ "$run_type" = "development" ]; then
-            echo "run_type is development"
+          if [ "${{github.event.inputs.project_type}}" != "console-web-front" ] &&
+            [ "${{github.event.inputs.project_type}}" != "console-web-server" ]; then
+            echo -e "${RED}project_type is not valid${NC}"
+            exit 1
+          fi
+
+      - id: parse_gcp_cicd_sa_key
+        name: Parse gcp_cicd_sa_key
+        run: |
+          if [ "${{github.event.inputs.run_type}}" = "development" ]; then
             echo gcp_cicd_sa_key=${{secrets.GCP_DEV_CICD_SA_KEY}} >> $GITHUB_OUTPUT
-            echo gcp_private_ssh_key=${{secrets.GCP_DEV_PRIVATE_SSH_KEY}} >> $GITHUB_OUTPUT
-            echo docker_tag=${{env.DEV_DOGU_DOCKER_TAG}} >> $GITHUB_OUTPUT
 
-          elif [ "$run_type" = "production" ]; then
-            echo "run_type is production"
+          elif [ "${{github.event.inputs.run_type}}" = "production" ]; then
             echo gcp_cicd_sa_key=${{secrets.GCP_PROD_CICD_SA_KEY}} >> $GITHUB_OUTPUT
-            echo gcp_private_ssh_key=${{secrets.GCP_PROD_PRIVATE_SSH_KEY}} >> $GITHUB_OUTPUT
-            echo docker_tag=${{env.PROD_DOGU_DOCKER_TAG}} >> $GITHUB_OUTPUT
 
           else
             echo -e "${RED}run_type is not valid${NC}"
             exit 1
           fi
 
-          project_type=${{github.event.inputs.project_type}}
-          if [ "$project_type" = "console-web-front" ]; then
-            echo "project_type is console-web-front"
-          elif [ "$project_type" = "console-web-server" ]; then
-            echo "project_type is console-web-server"
+      - id: parse_gcp_private_ssh_key
+        name: Parse gcp_private_ssh_key
+        run: |
+          if [ "${{github.event.inputs.run_type}}" = "development" ]; then
+            echo gcp_private_ssh_key=${{secrets.GCP_DEV_PRIVATE_SSH_KEY}} >> $GITHUB_OUTPUT
+
+          elif [ "${{github.event.inputs.run_type}}" = "production" ]; then
+            echo gcp_private_ssh_key=${{secrets.GCP_PROD_PRIVATE_SSH_KEY}} >> $GITHUB_OUTPUT
+
           else
-            echo -e "${RED}project_type is not valid${NC}"
+            echo -e "${RED}run_type is not valid${NC}"
+            exit 1
+          fi
+
+      - id: parse_docker_tag
+        name: Parse docker_tag
+        run: |
+          if [ "${{github.event.inputs.run_type}}" = "development" ]; then
+            echo docker_tag=${{env.DEV_DOGU_DOCKER_TAG}} >> $GITHUB_OUTPUT
+
+          elif [ "${{github.event.inputs.run_type}}" = "production" ]; then
+            echo docker_tag=${{env.PROD_DOGU_DOCKER_TAG}} >> $GITHUB_OUTPUT
+
+          else
+            echo -e "${RED}run_type is not valid${NC}"
             exit 1
           fi
 
