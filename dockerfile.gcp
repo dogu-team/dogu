@@ -40,9 +40,9 @@ RUN mkdir -p ${HOME}/.dogu_secret && \
 
 FROM base AS console-web-front
 COPY projects/console-web-front ./projects/console-web-front
+RUN yarn env-generator gen ${DOGU_RUN_TYPE} console-web-front --cwd projects/console-web-front
 RUN yarn run newbie:cicd && \
     yarn run build:packages
 WORKDIR /dogu/projects/console-web-front
 RUN yarn run build
-RUN yarn env-generator gen ${DOGU_RUN_TYPE} console-web-front
 CMD ["yarn", "run", "start"]
