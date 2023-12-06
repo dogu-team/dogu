@@ -31,10 +31,10 @@ env:
   NC: '\033[0m'
 
   # for echo multi-line string to file
-  GCP_DEV_PRIVATE_SSH_KEY: ${{secrets.GCP_DEV_PRIVATE_SSH_KEY}}
-  GCP_PROD_PRIVATE_SSH_KEY: ${{secrets.GCP_PROD_PRIVATE_SSH_KEY}}
-  GCP_DEV_CICD_SA_KEY: ${{secrets.GCP_DEV_CICD_SA_KEY}}
-  GCP_PROD_CICD_SA_KEY: ${{secrets.GCP_PROD_CICD_SA_KEY}}
+  # GCP_DEV_PRIVATE_SSH_KEY: ${{secrets.GCP_DEV_PRIVATE_SSH_KEY}}
+  # GCP_PROD_PRIVATE_SSH_KEY: ${{secrets.GCP_PROD_PRIVATE_SSH_KEY}}
+  # GCP_DEV_CICD_SA_KEY: ${{secrets.GCP_DEV_CICD_SA_KEY}}
+  # GCP_PROD_CICD_SA_KEY: ${{secrets.GCP_PROD_CICD_SA_KEY}}
 
 jobs:
   parse-inputs:
@@ -46,8 +46,11 @@ jobs:
     steps:
       - name: Print inputs
         run: |
-          echo "${{secrets.GCP_DEV_CICD_SA_KEY}}" > $HOME/gcp_dev_cicd_sa_key.json
-          echo "${{secrets.GCP_DEV_PRIVATE_SSH_KEY}}" > $HOME/gcp_dev_private_ssh_key
+          echo "$GCP_DEV_CICD_SA_KEY" > $HOME/gcp_dev_cicd_sa_key.json
+          echo "$GCP_DEV_PRIVATE_SSH_KEY" > $HOME/gcp_dev_private_ssh_key
+        env:
+          GCP_DEV_CICD_SA_KEY: ${{secrets.GCP_DEV_CICD_SA_KEY}}
+          GCP_DEV_PRIVATE_SSH_KEY: ${{secrets.GCP_DEV_PRIVATE_SSH_KEY}}
 
       - name: Validate inputs
         run: |
