@@ -85,37 +85,8 @@ jobs:
           tags: |
             ${{needs.input-validation.outputs.temp_repo}}:${{needs.input-validation.outputs.tag}}-amd64
 
-  publish-arm64:
-    needs: input-validation
-    runs-on: dogu-build-arm
-
-    steps:
-      - name: docker init
-        run: docker system prune --volumes -a -f
-
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          file: ./dockerfile
-          push: true
-          target: dogu-console
-          platforms: linux/arm64
-          no-cache: true
-          tags: |
-            ${{needs.input-validation.outputs.temp_repo}}:${{needs.input-validation.outputs.tag}}-arm64
-
   publish-menifest:
-    needs: [input-validation, publish-arm64, publish-amd64]
+    needs: [input-validation, publish-amd64]
     runs-on: ubuntu-latest
     outputs:
       tag: ${{ steps.input-validation.outputs.tag }}
@@ -132,8 +103,7 @@ jobs:
       - name: Create and push manifest images
         run: |
           docker manifest create ${{needs.input-validation.outputs.upload_repo}}:${{needs.input-validation.outputs.tag}} \
-          ${{needs.input-validation.outputs.temp_repo}}:${{needs.input-validation.outputs.tag}}-amd64 \
-          ${{needs.input-validation.outputs.temp_repo}}:${{needs.input-validation.outputs.tag}}-arm64
+          ${{needs.input-validation.outputs.temp_repo}}:${{needs.input-validation.outputs.tag}}-amd64
           docker manifest push ${{needs.input-validation.outputs.upload_repo}}:${{needs.input-validation.outputs.tag}}
 
   send-slack:
