@@ -83,9 +83,7 @@ jobs:
           password: ${{steps.auth.outputs.access_token}}
 
       - name: Write env key file
-        run: |
-          mkdir -p $HOME/.dogu_secret
-          echo "$DOGU_ENV_SERVICE_ACCOUNT_KEY" > $HOME/.dogu_secret/service-account-key.json
+        run: echo "$DOGU_ENV_SERVICE_ACCOUNT_KEY" > service-account-key.json
         env:
           DOGU_ENV_SERVICE_ACCOUNT_KEY: ${{secrets.DOGU_ENV_SERVICE_ACCOUNT_KEY}}
 

@@ -38,7 +38,7 @@ COPY packages/typescript-dev-private ./packages/typescript-dev-private
 COPY scripts ./scripts
 COPY nm-space/projects/env-generator/bin ./nm-space/projects/env-generator/bin
 RUN mkdir -p /root/.dogu_secret
-COPY ${HOME}/.dogu_secret/service-account-key.json /root/.dogu_secret/service-account-key.json
+COPY service-account-key.json /root/.dogu_secret/service-account-key.json
 
 FROM base AS console-web-front
 COPY projects/console-web-front ./projects/console-web-front
