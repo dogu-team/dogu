@@ -103,6 +103,32 @@ export class EnvGenerator {
         throw new Error('Invalid local credential found');
       }
     }
+
+    // validate service account key
+    if (this.isDeploy) {
+      if (!fs.existsSync(this.serviceAccountKeyPath)) {
+        throw new Error(`Service account key file not found. file path: ${this.serviceAccountKeyPath}`);
+      }
+
+      let content = '';
+      try {
+        content = await fs.promises.readFile(this.serviceAccountKeyPath, { encoding: 'utf-8' });
+      } catch (e) {
+        logger.error(e);
+        throw new Error(`Service account key file reading failed. file path: ${this.serviceAccountKeyPath}`);
+      }
+
+      if (content.length === 0) {
+        throw new Error(`Service account key file is empty. file path: ${this.serviceAccountKeyPath}`);
+      }
+
+      try {
+        JSON.parse(content);
+      } catch (e) {
+        logger.error(e);
+        throw new Error(`Service account key file is not json. file path: ${this.serviceAccountKeyPath}`);
+      }
+    }
   }
 
   private printInfo(): void {
