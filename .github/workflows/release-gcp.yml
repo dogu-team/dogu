@@ -29,14 +29,14 @@ jobs:
   parse-inputs:
     runs-on: henry-macbook
     outputs:
-      GCP_SA_KEY: ${{steps.run-parse-inputs.outputs.GCP_SA_KEY}}
-      GCP_PRIVATE_SSH_KEY: ${{steps.run-parse-inputs.outputs.GCP_PRIVATE_SSH_KEY}}
-      DOCKER_TAG: ${{steps.run-parse-inputs.outputs.DOCKER_TAG}}
+      GCP_SA_KEY_BASE64: ${{steps.parse-inputs.outputs.GCP_SA_KEY_BASE64}}
+      GCP_PRIVATE_SSH_KEY_BASE64: ${{steps.parse-inputs.outputs.GCP_PRIVATE_SSH_KEY_BASE64}}
+      DOCKER_TAG_BASE64: ${{steps.parse-inputs.outputs.DOCKER_TAG_BASE64}}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
         with:
-          sparse-checkout: scripts
+          sparse-checkout: scripts/release
           clean: true
 
       - name: Setup Node.js
@@ -44,10 +44,9 @@ jobs:
         with:
           node-version: 16
 
-      - id: run-parse-inputs
-        name: Run parse-inputs
-        run: |
-          node scripts/parse-inputs.mjs
+      - id: parse-inputs
+        name: Parse inputs
+        run: node scripts/release/gcp.mjs parse-inputs
         env:
           DEV_DOCKER_TAG: asia-northeast3-docker.pkg.dev/${{secrets.GCP_DEV_PROJECT_ID}}/projects/${{github.event.inputs.project_type}}:${{github.ref_name}}
           PROD_DOCKER_TAG: asia-northeast3-docker.pkg.dev/${{secrets.GCP_PROD_PROJECT_ID}}/projects/${{github.event.inputs.project_type}}:${{github.ref_name}}
@@ -58,35 +57,19 @@ jobs:
           DOGU_RUN_TYPE: ${{github.event.inputs.run_type}}
           DOGU_PROJECT_TYPE: ${{github.event.inputs.project_type}}
 
-      - name: Test step
-        run: |
-          echo "$GCP_SA_KEY" > $HOME/11.txt
-          echo "$GCP_PRIVATE_SSH_KEY" > $HOME/22.txt
-          echo "$DOCKER_TAG" > $HOME/33.txt
-        env:
-          GCP_SA_KEY: ${{steps.run-parse-inputs.outputs.GCP_SA_KEY}}
-          GCP_PRIVATE_SSH_KEY: ${{steps.run-parse-inputs.outputs.GCP_PRIVATE_SSH_KEY}}
-          DOCKER_TAG: ${{steps.run-parse-inputs.outputs.DOCKER_TAG}}
-
   publish:
     needs: parse-inputs
     runs-on: henry-macbook
 
     steps:
-      - name: Print inputs
-        run: |
-          echo "$GCP_SA_KEY" > $HOME/1.txt
-          echo "$GCP_PRIVATE_SSH_KEY" > $HOME/2.txt
-          echo "$DOCKER_TAG" > $HOME/3.txt
-        env:
-          GCP_SA_KEY: ${{needs.parse-inputs.outputs.GCP_SA_KEY}}
-          GCP_PRIVATE_SSH_KEY: ${{needs.parse-inputs.outputs.GCP_PRIVATE_SSH_KEY}}
-          DOCKER_TAG: ${{needs.parse-inputs.outputs.DOCKER_TAG}}
-
       - name: Checkout
         uses: actions/checkout@v3
         with:
           clean: true
+
+      - id: parse-variables
+        name: Parse variables
+        run: node scripts/release/gcp.mjs parse-variables
 
       - name: Cache Yarn Unplugged
         uses: actions/cache@v3
@@ -113,7 +96,7 @@ jobs:
           credentials_json: '${{env.GCP_CICD_SA_KEY}}'
           access_token_lifetime: 300s
         env:
-          GCP_CICD_SA_KEY: ${{needs.parse-inputs.outputs.GCP_SA_KEY}}
+          GCP_CICD_SA_KEY: ${{steps.parse-variables.outputs.GCP_SA_KEY}}
 
       - name: Login to Artifact Registry
         uses: docker/login-action@v2
@@ -127,7 +110,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{needs.parse-inputs.outputs.DOCKER_TAG}}
+          tags: ${{steps.parse-variables.outputs.DOCKER_TAG}}
           file: dockerfile.gcp
           build-args: DOGU_RUN_TYPE=${{github.event.inputs.run_type}}
           target: ${{github.event.inputs.project_type}}
@@ -142,26 +125,32 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
         with:
-          sparse-checkout: docker-compose-gcp.yml
+          sparse-checkout: |
+            scripts/release
+            docker-compose-gcp.yml
           clean: true
+
+      - id: parse-variables
+        name: Parse variables
+        run: node scripts/release/gcp.mjs parse-variables
 
       - name: Authenticate with Google Cloud
         uses: 'google-github-actions/auth@v1'
         with:
-          credentials_json: '${{needs.parse-inputs.outputs.GCP_SA_KEY}}'
+          credentials_json: '${{steps.parse-variables.outputs.GCP_SA_KEY}}'
 
       - name: Rlease to Google Cloud Compute Engine
         uses: 'google-github-actions/ssh-compute@v0'
         with:
           instance_name: ${{github.event.inputs.project_type}}
           zone: ${{env.DOGU_GCP_REGION}}-a
-          ssh_private_key: '${{needs.parse-inputs.outputs.GCP_PRIVATE_SSH_KEY}}'
+          ssh_private_key: '${{steps.parse-variables.outputs.GCP_PRIVATE_SSH_KEY}}'
           command: |
             gcloud auth configure-docker ${{env.DOGU_GCP_REGION}}-docker.pkg.dev --quiet && \
             docker ps -qa | xargs -r docker rm -f && \
             docker system prune --volumes -a -f && \
-            docker pull ${{needs.parse-inputs.outputs.DOCKER_TAG}} && \
-            DOGU_DOCKER_TAG=${{needs.parse-inputs.outputs.DOCKER_TAG}} docker compose -f docker-compose-gcp.yml --verbose up -d ${{github.event.inputs.project_type}} && \
+            docker pull ${{steps.parse-variables.outputs.DOCKER_TAG}} && \
+            DOGU_DOCKER_TAG=${{steps.parse-variables.outputs.DOCKER_TAG}} docker compose -f docker-compose-gcp.yml --verbose up -d ${{github.event.inputs.project_type}} && \
             docker image prune -a -f
 
   send-slack:
