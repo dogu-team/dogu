@@ -47,7 +47,6 @@ const useGamiumInspector = (
 
     try {
       const connectResult = await connectGamium();
-      console.log('connectResult', connectResult);
       if (connectResult === 'connected') {
         const result = await gamiumRef.current.inspector().dumpHierarchy('', 0);
         worker.postMessage(result);
