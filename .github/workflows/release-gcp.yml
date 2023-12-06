@@ -28,9 +28,12 @@ env:
   PROD_DOGU_DOCKER_TAG: asia-northeast3-docker.pkg.dev/${{secrets.GCP_PROD_PROJECT_ID}}/projects/${{github.event.inputs.project_type}}:${{github.ref_name}}
 
 jobs:
-  input-validation:
+  parse-inputs:
     runs-on: ubuntu-latest
-
+    outputs:
+      gcp_cicd_sa_key: ${{steps.input-validation.outputs.gcp_cicd_sa_key}}
+      gcp_private_ssh_key: ${{steps.input-validation.outputs.gcp_private_ssh_key}}
+      docker_tag: ${{steps.input-validation.outputs.docker_tag}}
     steps:
       - id: input-validation
         name: input validation
@@ -42,8 +45,16 @@ jobs:
           run_type=${{github.event.inputs.run_type}}
           if [ "$run_type" = "development" ]; then
             echo "run_type is development"
+            echo gcp_cicd_sa_key=${{secrets.GCP_DEV_CICD_SA_KEY}} >> $GITHUB_OUTPUT
+            echo gcp_private_ssh_key=${{secrets.GCP_DEV_PRIVATE_SSH_KEY}} >> $GITHUB_OUTPUT
+            echo docker_tag=${{env.DEV_DOGU_DOCKER_TAG}} >> $GITHUB_OUTPUT
+
           elif [ "$run_type" = "production" ]; then
             echo "run_type is production"
+            echo gcp_cicd_sa_key=${{secrets.GCP_PROD_CICD_SA_KEY}} >> $GITHUB_OUTPUT
+            echo gcp_private_ssh_key=${{secrets.GCP_PROD_PRIVATE_SSH_KEY}} >> $GITHUB_OUTPUT
+            echo docker_tag=${{env.PROD_DOGU_DOCKER_TAG}} >> $GITHUB_OUTPUT
+
           else
             echo -e "${RED}run_type is not valid${NC}"
             exit 1
@@ -60,7 +71,7 @@ jobs:
           fi
 
   publish:
-    needs: input-validation
+    needs: parse-inputs
     runs-on: ubuntu-latest
 
     steps:
@@ -84,119 +95,60 @@ jobs:
       - name: 'Set up Cloud SDK'
         uses: 'google-github-actions/setup-gcloud@v1'
 
-      ##############
-      # development
-      ##############
-      - if: github.event.inputs.run_type == 'development'
-        id: dev-auth
-        name: '[dev] Authenticate with Google Cloud'
+      - id: auth
+        name: Authenticate with Google Cloud
         uses: 'google-github-actions/auth@v1'
         with:
           token_format: access_token
-          credentials_json: ${{secrets.GCP_DEV_CICD_SA_KEY}}
+          credentials_json: '${{needs.parse-inputs.outputs.gcp_cicd_sa_key}}'
           access_token_lifetime: 300s
 
-      - if: github.event.inputs.run_type == 'development'
-        name: '[dev] Login to Artifact Registry'
+      - name: Login to Artifact Registry
         uses: docker/login-action@v2
         with:
           registry: ${{env.DOGU_GCP_REGION}}-docker.pkg.dev
           username: oauth2accesstoken
-          password: ${{steps.dev-auth.outputs.access_token}}
+          password: ${{steps.auth.outputs.access_token}}
 
-      - if: github.event.inputs.run_type == 'development'
-        name: '[dev] Push to Artifact Registry'
+      - name: Push to Artifact Registry
         uses: docker/build-push-action@v4
         with:
           context: .
           push: true
-          tags: ${{env.DEV_DOGU_DOCKER_TAG}}
-          file: dockerfile.gcp
-          build-args: DOGU_RUN_TYPE=${{github.event.inputs.run_type}}
-          target: ${{github.event.inputs.project_type}}
-
-      #############
-      # production
-      #############
-      - if: github.event.inputs.run_type == 'production'
-        id: prod-auth
-        name: '[prod] Authenticate with Google Cloud'
-        uses: 'google-github-actions/auth@v1'
-        with:
-          token_format: access_token
-          credentials_json: ${{secrets.GCP_PROD_CICD_SA_KEY}}
-          access_token_lifetime: 300s
-
-      - if: github.event.inputs.run_type == 'production'
-        name: '[prod] Login to Artifact Registry'
-        uses: docker/login-action@v2
-        with:
-          registry: ${{env.DOGU_GCP_REGION}}-docker.pkg.dev
-          username: oauth2accesstoken
-          password: ${{steps.prod-auth.outputs.access_token}}
-
-      - if: github.event.inputs.run_type == 'production'
-        name: '[prod] Push to Artifact Registry'
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          push: true
-          tags: ${{env.PROD_DOGU_DOCKER_TAG}}
+          tags: ${{needs.parse-inputs.outputs.docker_tag}}
           file: dockerfile.gcp
           build-args: DOGU_RUN_TYPE=${{github.event.inputs.run_type}}
           target: ${{github.event.inputs.project_type}}
 
   release:
     runs-on: ubuntu-latest
-    needs: publish
+    needs:
+      - parse-inputs
+      - publish
 
     steps:
-      ##############
-      # development
-      ##############
-      - if: github.event.inputs.run_type == 'development'
-        name: '[dev] Authenticate with Google Cloud'
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          sparse-checkout: docker-compose-gcp.yml
+
+      - name: Authenticate with Google Cloud
         uses: 'google-github-actions/auth@v1'
         with:
-          credentials_json: '${{secrets.GCP_DEV_CICD_SA_KEY}}'
+          credentials_json: '${{needs.parse-inputs.outputs.gcp_cicd_sa_key}}'
 
-      - if: github.event.inputs.run_type == 'development'
-        name: '[dev] Rlease to Google Cloud Compute Engine'
+      - name: Rlease to Google Cloud Compute Engine
         uses: 'google-github-actions/ssh-compute@v0'
         with:
           instance_name: ${{github.event.inputs.project_type}}
           zone: ${{env.DOGU_GCP_REGION}}-a
-          ssh_private_key: '${{secrets.GCP_DEV_PRIVATE_SSH_KEY}}'
+          ssh_private_key: '${{needs.parse-inputs.outputs.gcp_private_ssh_key}}'
           command: |
             gcloud auth configure-docker ${{env.DOGU_GCP_REGION}}-docker.pkg.dev --quiet && \
             docker ps -qa | xargs -r docker rm -f && \
             docker system prune --volumes -a -f && \
-            docker pull ${{env.DEV_DOGU_DOCKER_TAG}} && \
-            DOGU_DOCKER_TAG=${{env.DEV_DOGU_DOCKER_TAG}} docker compose -f docker-compose-gcp.yml --verbose up -d ${{github.event.inputs.project_type}} && \
-            docker image prune -a -f
-
-      #############
-      # production
-      #############
-      - if: github.event.inputs.run_type == 'production'
-        name: '[prod] Authenticate with Google Cloud'
-        uses: 'google-github-actions/auth@v1'
-        with:
-          credentials_json: '${{secrets.GCP_PROD_CICD_SA_KEY}}'
-
-      - if: github.event.inputs.run_type == 'production'
-        name: '[prod] Rlease to Google Cloud Compute Engine'
-        uses: 'google-github-actions/ssh-compute@v0'
-        with:
-          instance_name: ${{github.event.inputs.project_type}}
-          zone: ${{env.DOGU_GCP_REGION}}-a
-          ssh_private_key: '${{secrets.GCP_PROD_PRIVATE_SSH_KEY}}'
-          command: |
-            gcloud auth configure-docker ${{env.DOGU_GCP_REGION}}-docker.pkg.dev --quiet && \
-            docker ps -qa | xargs -r docker rm -f && \
-            docker system prune --volumes -a -f && \
-            docker pull ${{env.PROD_DOGU_DOCKER_TAG}} && \
-            DOGU_DOCKER_TAG=${{env.PROD_DOGU_DOCKER_TAG}} docker compose -f docker-compose-gcp.yml --verbose up -d ${{github.event.inputs.project_type}}
+            docker pull ${{needs.parse-inputs.outputs.docker_tag}} && \
+            DOGU_DOCKER_TAG=${{needs.parse-inputs.outputs.docker_tag}} docker compose -f docker-compose-gcp.yml --verbose up -d ${{github.event.inputs.project_type}} && \
             docker image prune -a -f
 
   send-slack:
