@@ -1,0 +1,47 @@
+FROM ubuntu:22.04 AS base
+
+ARG DEBIAN_FRONTEND=noninteractive
+ARG NODE_VERSION=16.20.2
+ARG DOGU_RUN_TYPE=development
+
+SHELL ["/bin/bash", "-c"]
+ENV SHELL=/bin/bash
+
+RUN apt-get clean \
+    && apt-get update \
+    && apt-get install -y \
+    ca-certificates \
+    curl \
+    gnupg \
+    openjdk-17-jre \
+    vim \
+    aapt \
+    && rm -rf /var/lib/apt/lists/*
+
+# install node
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash
+ENV PATH="/root/.nvm/versions/node/v${NODE_VERSION}/bin:${PATH}"
+
+RUN source ~/.nvm/nvm.sh && \
+    nvm install ${NODE_VERSION} && \
+    corepack enable
+
+WORKDIR /dogu
+ENV NODE_OPTIONS="--max-old-space-size=8192 ${NODE_OPTIONS}"
+COPY .dogu-workspace ./.dogu-workspace
+COPY .yarnrc.yml yarn.lock .pnp.cjs .pnp.loader.mjs package.json tsconfig.json tsconfig.eslint.json ./
+COPY .yarn ./.yarn
+COPY turbo.json ./turbo.json
+COPY packages/typescript ./packages/typescript
+COPY packages/typescript-private ./packages/typescript-private
+RUN mkdir -p ${HOME}/.dogu_secret && \
+    echo "${DOGU_ENV_SERVICE_ACCOUNT_KEY}" > ${HOME}/.dogu_secret/service-account-key.json
+
+FROM base AS console-web-front
+COPY projects/console-web-front ./projects/console-web-front
+RUN yarn run newbie:cicd && \
+    yarn run build:packages
+WORKDIR /dogu/projects/console-web-front
+RUN yarn run build
+RUN yarn env-generator gen ${DOGU_RUN_TYPE} console-web-front
+CMD ["yarn", "run", "start"]
