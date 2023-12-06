@@ -62,10 +62,10 @@ jobs:
         name: Parse gcp_cicd_sa_key
         run: |
           if [ "${{github.event.inputs.run_type}}" = "development" ]; then
-            echo gcp_cicd_sa_key="$GCP_DEV_CICD_SA_KEY" >> $GITHUB_OUTPUT
+            echo "gcp_cicd_sa_key=$GCP_DEV_CICD_SA_KEY" >> $GITHUB_OUTPUT
 
           elif [ "${{github.event.inputs.run_type}}" = "production" ]; then
-            echo gcp_cicd_sa_key="$GCP_PROD_CICD_SA_KEY" >> $GITHUB_OUTPUT
+            echo "gcp_cicd_sa_key=$GCP_PROD_CICD_SA_KEY" >> $GITHUB_OUTPUT
 
           else
             echo -e "${RED}run_type is not valid${NC}"
@@ -76,10 +76,10 @@ jobs:
         name: Parse gcp_private_ssh_key
         run: |
           if [ "${{github.event.inputs.run_type}}" = "development" ]; then
-            echo gcp_private_ssh_key="$GCP_DEV_PRIVATE_SSH_KEY" >> $GITHUB_OUTPUT
+            echo "gcp_private_ssh_key=$GCP_DEV_PRIVATE_SSH_KEY" >> $GITHUB_OUTPUT
 
           elif [ "${{github.event.inputs.run_type}}" = "production" ]; then
-            echo gcp_private_ssh_key="$GCP_PROD_PRIVATE_SSH_KEY" >> $GITHUB_OUTPUT
+            echo "gcp_private_ssh_key=$GCP_PROD_PRIVATE_SSH_KEY" >> $GITHUB_OUTPUT
 
           else
             echo -e "${RED}run_type is not valid${NC}"
@@ -90,10 +90,10 @@ jobs:
         name: Parse docker_tag
         run: |
           if [ "${{github.event.inputs.run_type}}" = "development" ]; then
-            echo docker_tag="$DEV_DOGU_DOCKER_TAG" >> $GITHUB_OUTPUT
+            echo "docker_tag=$DEV_DOGU_DOCKER_TAG" >> $GITHUB_OUTPUT
 
           elif [ "${{github.event.inputs.run_type}}" = "production" ]; then
-            echo docker_tag="$PROD_DOGU_DOCKER_TAG" >> $GITHUB_OUTPUT
+            echo "docker_tag=$PROD_DOGU_DOCKER_TAG" >> $GITHUB_OUTPUT
 
           else
             echo -e "${RED}run_type is not valid${NC}"
