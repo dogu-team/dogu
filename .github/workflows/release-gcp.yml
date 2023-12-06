@@ -63,13 +63,6 @@ jobs:
   publish:
     needs: parse-inputs
     runs-on: henry-macbook
-
-    # use from parse-variables
-    env:
-      GCP_SA_KEY_BASE64: ${{needs.parse-inputs.outputs.GCP_SA_KEY_BASE64}}
-      GCP_PRIVATE_SSH_KEY_BASE64: ${{needs.parse-inputs.outputs.GCP_PRIVATE_SSH_KEY_BASE64}}
-      DOCKER_TAG_BASE64: ${{needs.parse-inputs.outputs.DOCKER_TAG_BASE64}}
-
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -79,6 +72,10 @@ jobs:
       - id: parse-variables
         name: Parse variables
         run: node scripts/release/gcp.mjs parse-variables
+        env:
+          GCP_SA_KEY_BASE64: ${{needs.parse-inputs.outputs.GCP_SA_KEY_BASE64}}
+          GCP_PRIVATE_SSH_KEY_BASE64: ${{needs.parse-inputs.outputs.GCP_PRIVATE_SSH_KEY_BASE64}}
+          DOCKER_TAG_BASE64: ${{needs.parse-inputs.outputs.DOCKER_TAG_BASE64}}
 
       - name: Cache Yarn Unplugged
         uses: actions/cache@v3
@@ -129,13 +126,6 @@ jobs:
       - parse-inputs
       - publish
     runs-on: ubuntu-latest
-
-    # use from parse-variables
-    env:
-      GCP_SA_KEY_BASE64: ${{needs.parse-inputs.outputs.GCP_SA_KEY_BASE64}}
-      GCP_PRIVATE_SSH_KEY_BASE64: ${{needs.parse-inputs.outputs.GCP_PRIVATE_SSH_KEY_BASE64}}
-      DOCKER_TAG_BASE64: ${{needs.parse-inputs.outputs.DOCKER_TAG_BASE64}}
-
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -148,6 +138,10 @@ jobs:
       - id: parse-variables
         name: Parse variables
         run: node scripts/release/gcp.mjs parse-variables
+        env:
+          GCP_SA_KEY_BASE64: ${{needs.parse-inputs.outputs.GCP_SA_KEY_BASE64}}
+          GCP_PRIVATE_SSH_KEY_BASE64: ${{needs.parse-inputs.outputs.GCP_PRIVATE_SSH_KEY_BASE64}}
+          DOCKER_TAG_BASE64: ${{needs.parse-inputs.outputs.DOCKER_TAG_BASE64}}
 
       - name: Authenticate with Google Cloud
         uses: 'google-github-actions/auth@v1'
