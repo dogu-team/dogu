@@ -38,16 +38,22 @@ const InspectorToolbar = ({ onRefresh, onReset, selectDisabled }: Props) => {
 
   const refreshAndClearTimer = useCallback(async () => {
     await handleRefresh();
+    if (inspectorType === InspectorType.GAME) {
+      return;
+    }
     clearInterval(timer.current);
     const t = setInterval(() => {
       handleRefresh();
     }, 5000);
     timer.current = t;
-  }, [handleRefresh]);
+  }, [handleRefresh, inspectorType]);
 
   useEffect(() => {
     if (refreshEnabled) {
       handleRefresh();
+      if (inspectorType === InspectorType.GAME) {
+        return;
+      }
       const t = setInterval(() => {
         handleRefresh();
       }, 5000);
@@ -57,13 +63,13 @@ const InspectorToolbar = ({ onRefresh, onReset, selectDisabled }: Props) => {
     return () => {
       clearInterval(timer.current);
     };
-  }, [handleRefresh, refreshEnabled]);
+  }, [handleRefresh, refreshEnabled, inspectorType]);
 
   useEffect(() => {
-    if (mode === 'inspect') {
+    if (mode === 'inspect' && inspectorType === InspectorType.APP) {
       refreshAndClearTimer();
     }
-  }, [mode, refreshAndClearTimer]);
+  }, [mode, refreshAndClearTimer, inspectorType]);
 
   return (
     <Box>

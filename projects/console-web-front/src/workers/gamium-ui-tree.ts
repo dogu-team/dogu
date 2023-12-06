@@ -2,7 +2,9 @@ import { DataNode } from 'antd/es/tree';
 import { ObjectHierarchyNode, ObjectsHierarchy } from 'gamium/common';
 
 const convertRoot = (root: ObjectsHierarchy[]) => {
-  const converted = root.map((item) => ({ key: `${item.name}`, title: `${item.name}`, children: item.children }));
+  const converted = root
+    .map((item) => ({ key: `${item.name}`, title: `${item.name}`, children: item.children }))
+    .filter((item) => !!item.key);
   return converted;
 };
 
