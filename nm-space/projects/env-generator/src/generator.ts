@@ -205,7 +205,7 @@ export class EnvGenerator {
     }
     const getResRetry = async () => {
       let lastError: unknown;
-      for (let i = 0; i < 5; i++) {
+      for (let i = 0; i < 10; i++) {
         try {
           const sheets = google.sheets({ version: 'v4', auth });
           const res = await sheets.spreadsheets.values.get({
@@ -216,7 +216,7 @@ export class EnvGenerator {
         } catch (e) {
           logger.error(`Error getDotEnvData. e: ${e}, retry: ${i}`);
           lastError = e;
-          await new Promise((resolve) => setTimeout(resolve, 1000));
+          await new Promise((resolve) => setTimeout(resolve, 3000));
         }
       }
       throw lastError;
