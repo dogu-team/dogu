@@ -65,20 +65,12 @@ jobs:
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v1
 
-      - id: auth
-        name: Authenticate with Google Cloud
-        uses: google-github-actions/auth@v1
-        with:
-          token_format: access_token
-          credentials_json: '${{steps.parse-variables.outputs.GCP_CICD_SA_KEY}}'
-          access_token_lifetime: 3600s
-
       - name: Login to Artifact Registry
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           registry: ${{env.DOGU_GCP_REGION}}-docker.pkg.dev
-          username: oauth2accesstoken
-          password: ${{steps.auth.outputs.access_token}}
+          username: _json_key
+          password: ${{steps.parse-variables.outputs.GCP_CICD_SA_KEY}}
 
       - name: Write env key file
         run: echo "$DOGU_ENV_SERVICE_ACCOUNT_KEY" > service-account-key.json
