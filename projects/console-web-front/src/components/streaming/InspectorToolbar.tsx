@@ -36,6 +36,13 @@ const InspectorToolbar = ({ onRefresh, onReset, selectDisabled }: Props) => {
     setLoading(false);
   }, [onRefresh]);
 
+  const handleReset = useCallback(async () => {
+    setLoading(true);
+    await onReset();
+    setRefreshTime(moment().format('LTS'));
+    setLoading(false);
+  }, [onReset]);
+
   const refreshAndClearTimer = useCallback(async () => {
     await handleRefresh();
     if (inspectorType === InspectorType.GAME) {
@@ -80,12 +87,7 @@ const InspectorToolbar = ({ onRefresh, onReset, selectDisabled }: Props) => {
       <ButtonWrapper>
         {inspectorType === InspectorType.GAME && (
           <Tooltip title="Reconnect">
-            <StyledButton
-              onClick={() => {
-                onReset();
-                refreshAndClearTimer();
-              }}
-            >
+            <StyledButton onClick={handleReset} disabled={loading}>
               <DisconnectOutlined style={{ fontSize: '.75rem' }} />
             </StyledButton>
           </Tooltip>

@@ -1,7 +1,7 @@
 import { DeviceBase } from '@dogu-private/console';
 import useTranslation from 'next-translate/useTranslation';
 import Link from 'next/link';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 import useDeviceAlert from '../../hooks/streaming/useDeviceAlert';
@@ -61,6 +61,12 @@ const DeviceStreaming = ({ device, children, pid, isCloudDevice, isAdmin }: Prop
   );
   const { imageBase64 } = useDeviceAlert(deviceService.deviceClientRef, device ?? null);
   const { t } = useTranslation();
+
+  useEffect(() => {
+    return () => {
+      gamiumService.destroyGamiumClient();
+    };
+  }, []);
 
   if (error) {
     if (error.type === StreamingErrorType.CONNECTION_REFUSED) {

@@ -102,9 +102,10 @@ const Inspector = ({ inspector, gamiumInspector }: Props) => {
         <Inner h={55}>
           <InspectorToolbar
             onRefresh={handleRefresh}
-            onReset={() => {
+            onReset={async () => {
               gamiumService?.destroyGamiumClient();
-              gamiumService?.initializeGamiumClient();
+              await gamiumService?.initializeGamiumClient();
+              await new Promise((resolve) => setTimeout(resolve, 3500));
             }}
             selectDisabled={inspectorType === InspectorType.GAME ? undefined : !isContextSelected}
           />
