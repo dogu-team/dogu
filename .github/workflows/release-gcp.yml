@@ -46,8 +46,8 @@ jobs:
     steps:
       - name: Print inputs
         run: |
-          echo "$GCP_DEV_CICD_SA_KEY" > $HOME/gcp_dev_cicd_sa_key.json
-          echo "$GCP_DEV_PRIVATE_SSH_KEY" > $HOME/gcp_dev_private_ssh_key
+          echo "${{secrets.GCP_DEV_CICD_SA_KEY}}" > $HOME/gcp_dev_cicd_sa_key.json
+          echo "${{secrets.GCP_DEV_PRIVATE_SSH_KEY}}" > $HOME/gcp_dev_private_ssh_key
 
       - name: Validate inputs
         run: |
