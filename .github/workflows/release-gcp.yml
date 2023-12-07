@@ -26,7 +26,7 @@ permissions:
 env:
   DOGU_GCP_REGION: asia-northeast3
 
-  # use from scripts/release/gcp-variables.mjs
+  # use from scripts/release-gcp/variables.mjs
   DEV_DOCKER_TAG: asia-northeast3-docker.pkg.dev/${{secrets.GCP_DEV_PROJECT_ID}}/projects/${{github.event.inputs.project_type}}:${{github.ref_name}}
   PROD_DOCKER_TAG: asia-northeast3-docker.pkg.dev/${{secrets.GCP_PROD_PROJECT_ID}}/projects/${{github.event.inputs.project_type}}:${{github.ref_name}}
   GCP_DEV_CICD_SA_KEY: ${{secrets.GCP_DEV_CICD_SA_KEY}}
@@ -47,7 +47,7 @@ jobs:
 
       - id: parse-variables
         name: Parse variables
-        run: node scripts/release/gcp-variables.mjs
+        run: node scripts/release-gcp/variables.mjs
 
       - name: Cache Yarn Unplugged
         uses: actions/cache@v3
@@ -98,12 +98,12 @@ jobs:
         uses: actions/checkout@v3
         with:
           sparse-checkout: |
-            scripts/release
+            scripts/release-gcp
           clean: true
 
       - id: parse-variables
         name: Parse variables
-        run: node scripts/release/gcp-variables.mjs
+        run: node scripts/release-gcp/variables.mjs
 
       - name: Authenticate with Google Cloud
         uses: google-github-actions/auth@v1
