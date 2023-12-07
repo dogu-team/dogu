@@ -2,7 +2,6 @@ import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { RoutineDeviceJob } from '../../db/entity/device-job.entity';
 import { Device } from '../../db/entity/device.entity';
-import { DoguLicense } from '../../db/entity/dogu-license.enitiy';
 import { Host } from '../../db/entity/host.entity';
 import { Organization, RoutineJobEdge } from '../../db/entity/index';
 import { RoutineJob } from '../../db/entity/job.entity';
@@ -66,7 +65,6 @@ import { UpdateProducer } from './update-producer';
       RecordDeviceJob,
       RecordCaseAction,
       RecordStepAction,
-      DoguLicense,
     ]), //
     DeviceMessageModule,
     forwardRef(() => PipelineModule),
