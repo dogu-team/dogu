@@ -79,6 +79,7 @@ FROM redis:7.2.3-bookworm AS dogu-redis
 COPY --from=base /dogu /dogu
 COPY --from=base /root/.dogu_secret /root/.dogu_secret
 COPY --from=base /root/.nvm /root/.nvm
+COPY --from=base /root/.nvmrc /root/.nvmrc
 ENV PATH="/root/.nvm/versions/node/v${NODE_VERSION}/bin:${PATH}"
 RUN . /root/.nvm/nvm.sh && \
     nvm install ${NODE_VERSION} && \
@@ -94,6 +95,7 @@ FROM influxdb:2.6.1 AS dogu-influxdb
 COPY --from=base /dogu /dogu
 COPY --from=base /root/.dogu_secret /root/.dogu_secret
 COPY --from=base /root/.nvm /root/.nvm
+COPY --from=base /root/.nvmrc /root/.nvmrc
 ENV PATH="/root/.nvm/versions/node/v${NODE_VERSION}/bin:${PATH}"
 RUN . /root/.nvm/nvm.sh && \
     nvm install ${NODE_VERSION} && \
@@ -109,6 +111,7 @@ FROM coturn/coturn:4.5.2-debian AS dogu-coturn
 COPY --from=base /dogu /dogu
 COPY --from=base /root/.dogu_secret /root/.dogu_secret
 COPY --from=base /root/.nvm /root/.nvm
+COPY --from=base /root/.nvmrc /root/.nvmrc
 ENV PATH="/root/.nvm/versions/node/v${NODE_VERSION}/bin:${PATH}"
 RUN . /root/.nvm/nvm.sh && \
     nvm install ${NODE_VERSION} && \
