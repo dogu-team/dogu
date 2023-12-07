@@ -33,9 +33,9 @@ env:
   DEV_DOCKER_PUBLISH_TAG: asia-northeast3-docker.pkg.dev/${{secrets.GCP_DEV_PROJECT_ID}}/projects/${{github.event.inputs.project_type}}:${{github.ref_name}}
   PROD_DOCKER_PUBLISH_TAG: asia-northeast3-docker.pkg.dev/${{secrets.GCP_PROD_PROJECT_ID}}/projects/${{github.event.inputs.project_type}}:${{github.ref_name}}
   GCP_DEV_CICD_SA_KEY: ${{secrets.GCP_DEV_CICD_SA_KEY}}
-  GCP_PROD_CICD_SA_KEY: 'NEED_TO_SET'
+  GCP_PROD_CICD_SA_KEY: ${{secrets.GCP_PROD_CICD_SA_KEY}}
   GCP_DEV_PRIVATE_SSH_KEY: ${{secrets.GCP_DEV_PRIVATE_SSH_KEY}}
-  GCP_PROD_PRIVATE_SSH_KEY: 'NEED_TO_SET'
+  GCP_PROD_PRIVATE_SSH_KEY: ${{secrets.GCP_PROD_PRIVATE_SSH_KEY}}
   DOGU_RUN_TYPE: ${{github.event.inputs.run_type}}
   DOGU_PROJECT_TYPE: ${{github.event.inputs.project_type}}
   DEV_DOGU_TURN_SERVER_HOST: ${{secrets.DEV_DOGU_TURN_SERVER_HOST}}
