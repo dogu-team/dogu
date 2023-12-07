@@ -26,6 +26,7 @@ RUN source ~/.nvm/nvm.sh && \
     nvm install ${NODE_VERSION} && \
     corepack enable
 
+# common
 WORKDIR /dogu
 ENV NODE_OPTIONS="--max-old-space-size=8192 ${NODE_OPTIONS}"
 COPY .dogu-workspace ./.dogu-workspace
