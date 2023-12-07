@@ -19,6 +19,8 @@ on:
           - console-web-server
           - billing-server
           - dogu-redis
+          - dogu-influxdb
+          - dogu-coturn
 
 permissions:
   id-token: write
