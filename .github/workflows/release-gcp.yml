@@ -18,6 +18,7 @@ on:
           - console-web-front
           - console-web-server
           - billing-server
+          - dogu-redis
 
 permissions:
   id-token: write

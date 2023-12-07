@@ -73,3 +73,12 @@ WORKDIR /dogu/projects/billing-server
 RUN yarn run build
 EXPOSE 4001
 CMD ["node", "scripts/entrypoint.mjs"]
+
+# dogu-redis
+FROM redis:7.2.3-bookworm AS dogu-redis
+COPY --from=base /dogu /dogu
+COPY --from=base /root/.dogu_secret /root/.dogu_secret
+WORKDIR /dogu
+RUN yarn env-generator gen ${DOGU_RUN_TYPE} console-web-server
+EXPOSE 6379
+CMD ["node", "scripts/entrypoints/dogu-redis.mjs"]

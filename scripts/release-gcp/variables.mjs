@@ -2,7 +2,7 @@ import fs from 'fs';
 import os from 'os';
 
 const validRunTypes = ['development', 'production'];
-const validProjectTypes = ['console-web-front', 'console-web-server', 'billing-server'];
+const validProjectTypes = ['console-web-front', 'console-web-server', 'billing-server', 'dogu-redis'];
 
 function parseEnv(key) {
   const value = process.env[key];
@@ -70,6 +70,11 @@ function parseBy_DOGU_PROJECT_TYPE(options) {
     case 'billing-server': {
       return {
         DOCKER_RUN_COMMAND: `docker run -d --name billing-server -p 4001:4001 --restart always ${DOCKER_TAG}`,
+      };
+    }
+    case 'dogu-redis': {
+      return {
+        DOCKER_RUN_COMMAND: `docker run -d --name dogu-redis -p 6379:6379 --restart always ${DOCKER_TAG}`,
       };
     }
     default: {
