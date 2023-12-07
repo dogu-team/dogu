@@ -80,7 +80,7 @@ COPY --from=base /dogu /dogu
 COPY --from=base /root/.dogu_secret /root/.dogu_secret
 COPY --from=base /root/.nvm /root/.nvm
 ENV PATH="/root/.nvm/versions/node/v${NODE_VERSION}/bin:${PATH}"
-RUN source ~/.nvm/nvm.sh && \
+RUN . /root/.nvm/nvm.sh && \
     nvm install ${NODE_VERSION} && \
     corepack enable
 ENV NODE_OPTIONS="--max-old-space-size=8192 ${NODE_OPTIONS}"
@@ -95,7 +95,7 @@ COPY --from=base /dogu /dogu
 COPY --from=base /root/.dogu_secret /root/.dogu_secret
 COPY --from=base /root/.nvm /root/.nvm
 ENV PATH="/root/.nvm/versions/node/v${NODE_VERSION}/bin:${PATH}"
-RUN source ~/.nvm/nvm.sh && \
+RUN . /root/.nvm/nvm.sh && \
     nvm install ${NODE_VERSION} && \
     corepack enable
 ENV NODE_OPTIONS="--max-old-space-size=8192 ${NODE_OPTIONS}"
@@ -110,7 +110,7 @@ COPY --from=base /dogu /dogu
 COPY --from=base /root/.dogu_secret /root/.dogu_secret
 COPY --from=base /root/.nvm /root/.nvm
 ENV PATH="/root/.nvm/versions/node/v${NODE_VERSION}/bin:${PATH}"
-RUN source ~/.nvm/nvm.sh && \
+RUN . /root/.nvm/nvm.sh && \
     nvm install ${NODE_VERSION} && \
     corepack enable
 ENV NODE_OPTIONS="--max-old-space-size=8192 ${NODE_OPTIONS}"
