@@ -2,7 +2,7 @@ import fs from 'fs';
 import os from 'os';
 
 const validRunTypes = ['development', 'production'];
-const validProjectTypes = ['console-web-front', 'console-web-server'];
+const validProjectTypes = ['console-web-front', 'console-web-server', 'billing-server'];
 
 function parseEnv(key) {
   const value = process.env[key];
