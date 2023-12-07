@@ -87,7 +87,7 @@ jobs:
         env:
           DOGU_ENV_SERVICE_ACCOUNT_KEY: ${{secrets.DOGU_ENV_SERVICE_ACCOUNT_KEY}}
 
-      - if: ${{steps.parse-variables.outputs.NEED_PUBLISH}} == 'true'
+      - if: ${{steps.parse-variables.outputs.NEED_PUBLISH == 'true'}}
         name: Push to Artifact Registry
         uses: docker/build-push-action@v4
         with:
