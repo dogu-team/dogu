@@ -64,6 +64,14 @@ const BlockAppList: BlockAppInfo[] = [
     packageName: 'com.samsung.android.app.telephonyui',
     runtime: true,
   },
+  {
+    vender: 'samsung',
+    category: 'dial',
+    keyword: 'com.samsung.android.messaging', // block emergency alert
+    packageName: 'com.samsung.android.messaging',
+    disable: true,
+    runtime: true,
+  },
   /*
    * Block account
    */
