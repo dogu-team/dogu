@@ -1,5 +1,5 @@
 name: 🚀release-gcp
-run-name: 🚀release-gcp 💥${{github.event.inputs.run_type}} ✨${{github.event.inputs.project_type}}@${{github.ref_name}}
+run-name: 🚀release-gcp 💥${{github.event.inputs.run_type}} 🔥${{github.event.inputs.project_type}}@${{github.ref_name}}
 
 on:
   workflow_dispatch:
