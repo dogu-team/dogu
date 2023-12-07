@@ -127,6 +127,9 @@ function parseBy_DOGU_PROJECT_TYPE(options) {
         '-p',
         '5349:5349/udp',
         '-p',
+        /**
+         * @note A wide range of ports can cause docker execution to fail
+         */
         '49160-49300:49160-49300/udp',
         '--restart',
         'always',
