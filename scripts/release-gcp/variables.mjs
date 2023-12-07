@@ -2,7 +2,7 @@ import fs from 'fs';
 import os from 'os';
 
 const validRunTypes = ['development', 'production'];
-const validProjectTypes = ['console-web-front', 'console-web-server', 'billing-server', 'dogu-redis', 'dogu-inflluxdb', 'dogu-coturn'];
+const validProjectTypes = ['console-web-front', 'console-web-server', 'billing-server', 'dogu-redis', 'dogu-influxdb', 'dogu-coturn'];
 
 function parseEnv(key) {
   const value = process.env[key];
