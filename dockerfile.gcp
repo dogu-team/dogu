@@ -48,3 +48,12 @@ RUN yarn run newbie:cicd && \
 WORKDIR /dogu/projects/console-web-front
 RUN yarn run build
 CMD ["yarn", "run", "start"]
+
+FROM base AS console-web-server
+COPY projects/console-web-server ./projects/console-web-server
+RUN yarn env-generator gen ${DOGU_RUN_TYPE} console-web-server --cwd projects/console-web-server
+RUN yarn run newbie:cicd && \
+    yarn run build:packages
+WORKDIR /dogu/projects/console-web-server
+RUN yarn run build
+CMD ["yarn", "run", "start"]
