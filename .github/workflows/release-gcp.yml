@@ -110,6 +110,10 @@ jobs:
         with:
           credentials_json: '${{steps.parse-variables.outputs.GCP_CICD_SA_KEY}}'
 
+      - name: Copy compose file to compute engine
+        run: |
+          gcloud compute scp docker-compose-gcp.yml ${{github.event.inputs.project_type}}:/home/dogu-dev-cicd/docker-compose-gcp.yml --zone ${{env.DOGU_GCP_REGION}}-a --quiet
+
       - name: Rlease to Google Cloud Compute Engine
         uses: google-github-actions/ssh-compute@v0
         with:
@@ -121,7 +125,7 @@ jobs:
             docker ps -qa | xargs -r docker rm -f && \
             docker system prune --volumes -a -f && \
             docker pull ${{steps.parse-variables.outputs.DOCKER_TAG}} && \
-            DOGU_DOCKER_TAG=${{steps.parse-variables.outputs.DOCKER_TAG}} docker compose -f docker-compose-gcp.yml --verbose up -d ${{github.event.inputs.project_type}} && \
+            DOGU_DOCKER_TAG=${{steps.parse-variables.outputs.DOCKER_TAG}} docker compose -f /home/dogu-dev-cicd/docker-compose-gcp.yml --verbose up -d ${{github.event.inputs.project_type}} && \
             docker image prune -a -f
 
   send-slack:
