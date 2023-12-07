@@ -67,6 +67,11 @@ function parseBy_DOGU_PROJECT_TYPE(options) {
         DOCKER_RUN_COMMAND: `docker run -d --name console-web-server -p 4000:4000 --restart always ${DOCKER_TAG}`,
       };
     }
+    case 'billing-server': {
+      return {
+        DOCKER_RUN_COMMAND: `docker run -d --name billing-server -p 4001:4001 --restart always ${DOCKER_TAG}`,
+      };
+    }
     default: {
       throw new Error(`Unexpected project type: ${DOGU_PROJECT_TYPE}`);
     }
