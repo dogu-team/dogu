@@ -1,11 +1,8 @@
-FROM ubuntu:22.04 AS base
-
-ARG DEBIAN_FRONTEND=noninteractive
-ARG NODE_VERSION=16.20.2
 ARG DOGU_RUN_TYPE=""
 
-SHELL ["/bin/bash", "-c"]
-ENV SHELL=/bin/bash
+FROM debian:11.8 AS base
+ARG DEBIAN_FRONTEND=noninteractive
+ARG NODE_VERSION=16.20.2
 
 RUN apt-get clean \
     && apt-get update \
@@ -18,11 +15,16 @@ RUN apt-get clean \
     aapt \
     && rm -rf /var/lib/apt/lists/*
 
-# install node
-RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash
-ENV PATH="/root/.nvm/versions/node/v${NODE_VERSION}/bin:${PATH}"
+SHELL ["/bin/bash", "-c"]
+ENV SHELL=/bin/bash
 
-RUN source ~/.nvm/nvm.sh && \
+# install node
+ENV NVM_DIR="/nvm"
+RUN mkdir -p ${NVM_DIR}
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash
+ENV PATH="${NVM_DIR}/versions/node/v${NODE_VERSION}/bin:${PATH}"
+
+RUN source ${NVM_DIR}/nvm.sh && \
     nvm install ${NODE_VERSION} && \
     corepack enable
 
@@ -76,14 +78,15 @@ CMD ["node", "scripts/entrypoint.mjs"]
 
 # dogu-redis
 FROM redis:7.2.3-bookworm AS dogu-redis
+ARG DEBIAN_FRONTEND=noninteractive
+ARG NODE_VERSION=16.20.2
 COPY --from=base /dogu /dogu
 COPY --from=base /root/.dogu_secret /root/.dogu_secret
-COPY --from=base /root/.nvm /root/.nvm
-COPY --from=base /root/.nvmrc /root/.nvmrc
-ENV PATH="/root/.nvm/versions/node/v${NODE_VERSION}/bin:${PATH}"
-RUN . /root/.nvm/nvm.sh && \
-    nvm install ${NODE_VERSION} && \
-    corepack enable
+COPY --from=base /nvm /nvm
+SHELL ["/bin/bash", "-c"]
+ENV SHELL=/bin/bash
+ENV NVM_DIR="/nvm"
+ENV PATH="${NVM_DIR}/versions/node/v${NODE_VERSION}/bin:${PATH}"
 ENV NODE_OPTIONS="--max-old-space-size=8192 ${NODE_OPTIONS}"
 WORKDIR /dogu
 RUN yarn env-generator gen ${DOGU_RUN_TYPE} console-web-server
@@ -92,14 +95,15 @@ CMD ["node", "scripts/entrypoints/dogu-redis.mjs"]
 
 # dogu-influxdb
 FROM influxdb:2.6.1 AS dogu-influxdb
+ARG DEBIAN_FRONTEND=noninteractive
+ARG NODE_VERSION=16.20.2
 COPY --from=base /dogu /dogu
 COPY --from=base /root/.dogu_secret /root/.dogu_secret
-COPY --from=base /root/.nvm /root/.nvm
-COPY --from=base /root/.nvmrc /root/.nvmrc
-ENV PATH="/root/.nvm/versions/node/v${NODE_VERSION}/bin:${PATH}"
-RUN . /root/.nvm/nvm.sh && \
-    nvm install ${NODE_VERSION} && \
-    corepack enable
+COPY --from=base /nvm /nvm
+SHELL ["/bin/bash", "-c"]
+ENV SHELL=/bin/bash
+ENV NVM_DIR="/nvm"
+ENV PATH="${NVM_DIR}/versions/node/v${NODE_VERSION}/bin:${PATH}"
 ENV NODE_OPTIONS="--max-old-space-size=8192 ${NODE_OPTIONS}"
 WORKDIR /dogu
 RUN yarn env-generator gen ${DOGU_RUN_TYPE} console-web-server
@@ -108,14 +112,15 @@ CMD ["node", "scripts/entrypoints/dogu-influxdb.mjs"]
 
 # dogu-coturn
 FROM coturn/coturn:4.5.2-debian AS dogu-coturn
+ARG DEBIAN_FRONTEND=noninteractive
+ARG NODE_VERSION=16.20.2
 COPY --from=base /dogu /dogu
 COPY --from=base /root/.dogu_secret /root/.dogu_secret
-COPY --from=base /root/.nvm /root/.nvm
-COPY --from=base /root/.nvmrc /root/.nvmrc
-ENV PATH="/root/.nvm/versions/node/v${NODE_VERSION}/bin:${PATH}"
-RUN . /root/.nvm/nvm.sh && \
-    nvm install ${NODE_VERSION} && \
-    corepack enable
+COPY --from=base /nvm /nvm
+SHELL ["/bin/bash", "-c"]
+ENV SHELL=/bin/bash
+ENV NVM_DIR="/nvm"
+ENV PATH="${NVM_DIR}/versions/node/v${NODE_VERSION}/bin:${PATH}"
 ENV NODE_OPTIONS="--max-old-space-size=8192 ${NODE_OPTIONS}"
 WORKDIR /dogu
 RUN yarn env-generator gen ${DOGU_RUN_TYPE} console-web-server
