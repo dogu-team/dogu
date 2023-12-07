@@ -1,8 +1,7 @@
-ARG DOGU_RUN_TYPE=""
-
 FROM debian:11.8 AS base
 ARG DEBIAN_FRONTEND=noninteractive
 ARG NODE_VERSION=16.20.2
+ARG DOGU_RUN_TYPE=""
 
 RUN apt-get clean \
     && apt-get update \
@@ -80,6 +79,7 @@ CMD ["node", "scripts/entrypoint.mjs"]
 FROM redis:7.2.3-bookworm AS dogu-redis
 ARG DEBIAN_FRONTEND=noninteractive
 ARG NODE_VERSION=16.20.2
+ARG DOGU_RUN_TYPE=""
 COPY --from=base /dogu /dogu
 COPY --from=base /root/.dogu_secret /root/.dogu_secret
 COPY --from=base /nvm /nvm
@@ -97,6 +97,7 @@ CMD ["node", "scripts/entrypoints/dogu-redis.mjs"]
 FROM influxdb:2.6.1 AS dogu-influxdb
 ARG DEBIAN_FRONTEND=noninteractive
 ARG NODE_VERSION=16.20.2
+ARG DOGU_RUN_TYPE=""
 COPY --from=base /dogu /dogu
 COPY --from=base /root/.dogu_secret /root/.dogu_secret
 COPY --from=base /nvm /nvm
@@ -114,6 +115,7 @@ CMD ["node", "scripts/entrypoints/dogu-influxdb.mjs"]
 FROM coturn/coturn:4.5.2-debian AS dogu-coturn
 ARG DEBIAN_FRONTEND=noninteractive
 ARG NODE_VERSION=16.20.2
+ARG DOGU_RUN_TYPE=""
 COPY --from=base /dogu /dogu
 COPY --from=base /root/.dogu_secret /root/.dogu_secret
 COPY --from=base /nvm /nvm
