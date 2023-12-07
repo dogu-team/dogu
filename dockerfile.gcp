@@ -40,6 +40,7 @@ COPY nm-space/projects/env-generator/bin ./nm-space/projects/env-generator/bin
 RUN mkdir -p /root/.dogu_secret
 COPY service-account-key.json /root/.dogu_secret/service-account-key.json
 
+# console-web-front
 FROM base AS console-web-front
 COPY projects/console-web-front ./projects/console-web-front
 RUN yarn env-generator gen ${DOGU_RUN_TYPE} console-web-front --cwd projects/console-web-front
@@ -47,8 +48,10 @@ RUN yarn run newbie:cicd && \
     yarn run build:packages
 WORKDIR /dogu/projects/console-web-front
 RUN yarn run build
+EXPOSE 3001
 CMD ["yarn", "run", "start"]
 
+# console-web-server
 FROM base AS console-web-server
 COPY projects/console-web-server ./projects/console-web-server
 RUN yarn env-generator gen ${DOGU_RUN_TYPE} console-web-server --cwd projects/console-web-server
@@ -56,4 +59,16 @@ RUN yarn run newbie:cicd && \
     yarn run build:packages
 WORKDIR /dogu/projects/console-web-server
 RUN yarn run build
+EXPOSE 4000
 CMD ["yarn", "run", "start"]
+
+# billing-server
+FROM base AS billing-server
+COPY projects/billing-server ./projects/billing-server
+RUN yarn env-generator gen ${DOGU_RUN_TYPE} billing-server --cwd projects/billing-server
+RUN yarn run newbie:cicd && \
+    yarn run build:packages
+WORKDIR /dogu/projects/billing-server
+RUN yarn run build
+EXPOSE 4001
+CMD ["node", "scripts/entrypoint.mjs"]

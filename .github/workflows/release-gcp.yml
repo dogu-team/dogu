@@ -17,6 +17,7 @@ on:
         options:
           - console-web-front
           - console-web-server
+          - billing-server
 
 permissions:
   id-token: write
