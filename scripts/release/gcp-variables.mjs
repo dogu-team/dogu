@@ -86,7 +86,7 @@ function main() {
     throw new Error(`Invalid project type: ${DOGU_PROJECT_TYPE}`);
   }
 
-  const { DOCKER_TAG, GCP_CICD_SA_KEY, GCP_PRIVATE_SSH_KEY } = parseBy_DOGU_RUN_TYPE(DOGU_RUN_TYPE);
+  const { DOCKER_TAG, GCP_CICD_SA_KEY, GCP_PRIVATE_SSH_KEY } = parseBy_DOGU_RUN_TYPE({ DOGU_RUN_TYPE });
   fs.appendFileSync(GITHUB_OUTPUT, `GCP_CICD_SA_KEY<<EOF${os.EOL}`);
   fs.appendFileSync(GITHUB_OUTPUT, `${GCP_CICD_SA_KEY}${os.EOL}`);
   fs.appendFileSync(GITHUB_OUTPUT, `EOF${os.EOL}`);
@@ -97,7 +97,7 @@ function main() {
 
   fs.appendFileSync(GITHUB_OUTPUT, `DOCKER_TAG=${DOCKER_TAG}${os.EOL}`);
 
-  const { DOCKER_RUN_COMMAND } = parseBy_DOGU_PROJECT_TYPE(DOGU_PROJECT_TYPE, DOCKER_TAG);
+  const { DOCKER_RUN_COMMAND } = parseBy_DOGU_PROJECT_TYPE({ DOGU_PROJECT_TYPE, DOCKER_TAG });
   fs.appendFileSync(GITHUB_OUTPUT, `DOCKER_RUN_COMMAND=${DOCKER_RUN_COMMAND}${os.EOL}`);
 }
 
