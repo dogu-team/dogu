@@ -43,8 +43,11 @@ function parse() {
     throw new Error(`Invalid project type: ${DOGU_PROJECT_TYPE}`);
   }
 
+  let DOCKER_TAG = '';
   switch (DOGU_RUN_TYPE) {
     case 'development': {
+      DOCKER_TAG = DEV_DOCKER_TAG;
+
       fs.appendFileSync(GITHUB_OUTPUT, `GCP_CICD_SA_KEY<<EOF${os.EOL}`);
       fs.appendFileSync(GITHUB_OUTPUT, `${GCP_DEV_CICD_SA_KEY}${os.EOL}`);
       fs.appendFileSync(GITHUB_OUTPUT, `EOF${os.EOL}`);
@@ -53,10 +56,12 @@ function parse() {
       fs.appendFileSync(GITHUB_OUTPUT, `${GCP_DEV_PRIVATE_SSH_KEY}${os.EOL}`);
       fs.appendFileSync(GITHUB_OUTPUT, `EOF${os.EOL}`);
 
-      fs.appendFileSync(GITHUB_OUTPUT, `DOCKER_TAG=${DEV_DOCKER_TAG}${os.EOL}`);
+      fs.appendFileSync(GITHUB_OUTPUT, `DOCKER_TAG=${DOCKER_TAG}${os.EOL}`);
       break;
     }
     case 'production': {
+      DOCKER_TAG = PROD_DOCKER_TAG;
+
       fs.appendFileSync(GITHUB_OUTPUT, `GCP_CICD_SA_KEY<<EOF${os.EOL}`);
       fs.appendFileSync(GITHUB_OUTPUT, `${GCP_PROD_CICD_SA_KEY}${os.EOL}`);
       fs.appendFileSync(GITHUB_OUTPUT, `EOF${os.EOL}`);
@@ -65,7 +70,7 @@ function parse() {
       fs.appendFileSync(GITHUB_OUTPUT, `${GCP_PROD_PRIVATE_SSH_KEY}${os.EOL}`);
       fs.appendFileSync(GITHUB_OUTPUT, `EOF${os.EOL}`);
 
-      fs.appendFileSync(GITHUB_OUTPUT, `DOCKER_TAG=${PROD_DOCKER_TAG}${os.EOL}`);
+      fs.appendFileSync(GITHUB_OUTPUT, `DOCKER_TAG=${DOCKER_TAG}${os.EOL}`);
       break;
     }
     default: {
