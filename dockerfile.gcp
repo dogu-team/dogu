@@ -12,6 +12,7 @@ RUN apt-get clean \
     openjdk-17-jre \
     vim \
     aapt \
+    telnet \
     && rm -rf /var/lib/apt/lists/*
 
 SHELL ["/bin/bash", "-c"]
