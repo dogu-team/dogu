@@ -130,7 +130,7 @@ jobs:
             gcloud auth configure-docker ${{env.DOGU_GCP_REGION}}-docker.pkg.dev --quiet && \
             docker ps -qa | xargs -r docker rm -f && \
             docker system prune --volumes -a -f && \
-            docker pull ${{steps.parse-variables.outputs.DOCKER_TAG}} || \
+            docker pull ${{steps.parse-variables.outputs.DOCKER_TAG}} && \
             ${{steps.parse-variables.outputs.DOCKER_RUN_COMMAND}} && \
             docker image prune -a -f
 
