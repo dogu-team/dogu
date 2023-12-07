@@ -103,3 +103,22 @@ WORKDIR /dogu
 RUN yarn env-generator gen ${DOGU_RUN_TYPE} console-web-server
 EXPOSE 8086
 CMD ["node", "scripts/entrypoints/dogu-influxdb.mjs"]
+
+# dogu-coturn
+FROM coturn/coturn:4.5.2-debian AS dogu-coturn
+COPY --from=base /dogu /dogu
+COPY --from=base /root/.dogu_secret /root/.dogu_secret
+COPY --from=base /root/.nvm /root/.nvm
+ENV PATH="/root/.nvm/versions/node/v${NODE_VERSION}/bin:${PATH}"
+RUN source ~/.nvm/nvm.sh && \
+    nvm install ${NODE_VERSION} && \
+    corepack enable
+ENV NODE_OPTIONS="--max-old-space-size=8192 ${NODE_OPTIONS}"
+WORKDIR /dogu
+RUN yarn env-generator gen ${DOGU_RUN_TYPE} console-web-server
+EXPOSE 3478
+EXPOSE 3478/udp
+EXPOSE 5349
+EXPOSE 5349/udp
+EXPOSE 49152-65535/udp
+CMD ["node", "scripts/entrypoints/dogu-coturn.mjs"]

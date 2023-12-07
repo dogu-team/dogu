@@ -19,5 +19,4 @@ import os from 'os';
 // console.log('Start Redis');
 // execSync(`redis-server --requirepass ${DOGU_REDIS_PASSWORD}`, { stdio: 'inherit' });
 
-console.log('Start InfluxDB');
-// execSync(`influxd`, { stdio: 'inherit' });
+console.log('Start Coturn');

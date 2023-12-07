@@ -2,7 +2,7 @@ import fs from 'fs';
 import os from 'os';
 
 const validRunTypes = ['development', 'production'];
-const validProjectTypes = ['console-web-front', 'console-web-server', 'billing-server', 'dogu-redis'];
+const validProjectTypes = ['console-web-front', 'console-web-server', 'billing-server', 'dogu-redis', 'dogu-inflluxdb', 'dogu-coturn'];
 
 function parseEnv(key) {
   const value = process.env[key];
@@ -75,6 +75,16 @@ function parseBy_DOGU_PROJECT_TYPE(options) {
     case 'dogu-redis': {
       return {
         DOCKER_RUN_COMMAND: `docker run -d --name dogu-redis -p 6379:6379 --restart always ${DOCKER_TAG}`,
+      };
+    }
+    case 'dogu-influxdb': {
+      return {
+        DOCKER_RUN_COMMAND: `docker run -d --name dogu-influxdb -p 8086:8086 --restart always ${DOCKER_TAG}`,
+      };
+    }
+    case 'dogu-coturn': {
+      return {
+        DOCKER_RUN_COMMAND: `docker run -d --name dogu-coturn -p 3478:3478 --restart always ${DOCKER_TAG}`,
       };
     }
     default: {
