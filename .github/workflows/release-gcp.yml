@@ -38,6 +38,12 @@ env:
   GCP_PROD_PRIVATE_SSH_KEY: 'NEED_TO_SET'
   DOGU_RUN_TYPE: ${{github.event.inputs.run_type}}
   DOGU_PROJECT_TYPE: ${{github.event.inputs.project_type}}
+  DEV_DOGU_TURN_SERVER_HOST: ${{secrets.DEV_DOGU_TURN_SERVER_HOST}}
+  DEV_DOGU_TURN_SERVER_USERNAME: ${{secrets.DEV_DOGU_TURN_SERVER_USERNAME}}
+  DEV_DOGU_TURN_SERVER_PASSWORD: ${{secrets.DEV_DOGU_TURN_SERVER_PASSWORD}}
+  PROD_DOGU_TURN_SERVER_HOST: ${{secrets.PROD_DOGU_TURN_SERVER_HOST}}
+  PROD_DOGU_TURN_SERVER_USERNAME: ${{secrets.PROD_DOGU_TURN_SERVER_USERNAME}}
+  PROD_DOGU_TURN_SERVER_PASSWORD: ${{secrets.PROD_DOGU_TURN_SERVER_PASSWORD}}
 
 jobs:
   publish:
@@ -81,7 +87,8 @@ jobs:
         env:
           DOGU_ENV_SERVICE_ACCOUNT_KEY: ${{secrets.DOGU_ENV_SERVICE_ACCOUNT_KEY}}
 
-      - name: Push to Artifact Registry
+      - if: ${{steps.parse-variables.outputs.NEED_PUBLISH}} == 'true'
+        name: Push to Artifact Registry
         uses: docker/build-push-action@v4
         with:
           context: .
