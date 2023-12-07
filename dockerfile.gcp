@@ -13,6 +13,8 @@ RUN apt-get clean \
     vim \
     aapt \
     telnet \
+    # use from "tree-kill" node module
+    procps \
     && rm -rf /var/lib/apt/lists/*
 
 SHELL ["/bin/bash", "-c"]
