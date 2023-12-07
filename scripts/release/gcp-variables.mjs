@@ -72,6 +72,16 @@ function parse() {
       throw new Error(`Unexpected run type: ${DOGU_RUN_TYPE}`);
     }
   }
+
+  switch (DOGU_PROJECT_TYPE) {
+    case 'console-web-front': {
+      fs.appendFileSync(GITHUB_OUTPUT, `DOCKER_RUN_COMMAND=docker run -d --name console-web-front -p 3001:3001 --restart always ${DOCKER_TAG}${os.EOL}`);
+      break;
+    }
+    default: {
+      throw new Error(`Unexpected project type: ${DOGU_PROJECT_TYPE}`);
+    }
+  }
 }
 
 parse();
