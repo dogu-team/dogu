@@ -60,7 +60,7 @@ RUN yarn run newbie:cicd && \
 WORKDIR /dogu/projects/console-web-server
 RUN yarn run build
 EXPOSE 4000
-CMD ["yarn", "run", "start"]
+CMD ["node", "scripts/entrypoint.mjs"]
 
 # billing-server
 FROM base AS billing-server
