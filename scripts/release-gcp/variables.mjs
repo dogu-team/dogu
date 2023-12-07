@@ -119,7 +119,7 @@ function parseBy_DOGU_PROJECT_TYPE(options) {
         '49152-65535:49152-65535/udp',
         '--restart',
         'always',
-        DOCKER_TAG,
+        'coturn/coturn:4.5.2',
         '--log-file=stdout',
         '--total-quota=100',
         `--user=${DOGU_TURN_SERVER_USERNAME}:${DOGU_TURN_SERVER_PASSWORD}`,
