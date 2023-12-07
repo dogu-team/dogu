@@ -30,8 +30,8 @@ env:
   DOGU_GCP_REGION: asia-northeast3
 
   # use from scripts/release-gcp/variables.mjs
-  DEV_DOCKER_TAG: asia-northeast3-docker.pkg.dev/${{secrets.GCP_DEV_PROJECT_ID}}/projects/${{github.event.inputs.project_type}}:${{github.ref_name}}
-  PROD_DOCKER_TAG: asia-northeast3-docker.pkg.dev/${{secrets.GCP_PROD_PROJECT_ID}}/projects/${{github.event.inputs.project_type}}:${{github.ref_name}}
+  DEV_DOCKER_PUBLISH_TAG: asia-northeast3-docker.pkg.dev/${{secrets.GCP_DEV_PROJECT_ID}}/projects/${{github.event.inputs.project_type}}:${{github.ref_name}}
+  PROD_DOCKER_PUBLISH_TAG: asia-northeast3-docker.pkg.dev/${{secrets.GCP_PROD_PROJECT_ID}}/projects/${{github.event.inputs.project_type}}:${{github.ref_name}}
   GCP_DEV_CICD_SA_KEY: ${{secrets.GCP_DEV_CICD_SA_KEY}}
   GCP_PROD_CICD_SA_KEY: 'NEED_TO_SET'
   GCP_DEV_PRIVATE_SSH_KEY: ${{secrets.GCP_DEV_PRIVATE_SSH_KEY}}
@@ -130,11 +130,7 @@ jobs:
             gcloud auth configure-docker ${{env.DOGU_GCP_REGION}}-docker.pkg.dev --quiet && \
             docker ps -qa | xargs -r docker rm -f && \
             docker system prune --volumes -a -f && \
-
-            [ "${{steps.parse-variables.outputs.NEED_PUBLISH}}" = "true" ] && \
             docker pull ${{steps.parse-variables.outputs.DOCKER_TAG}} || \
-            echo "No need to pull image" && \
-
             ${{steps.parse-variables.outputs.DOCKER_RUN_COMMAND}} && \
             docker image prune -a -f
 

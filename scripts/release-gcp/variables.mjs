@@ -23,8 +23,8 @@ function ensure_GITHUB_OUTPUT() {
 function parseBy_DOGU_RUN_TYPE(options) {
   const { DOGU_RUN_TYPE } = options;
 
-  const DEV_DOCKER_TAG = parseEnv('DEV_DOCKER_TAG');
-  const PROD_DOCKER_TAG = parseEnv('PROD_DOCKER_TAG');
+  const DEV_DOCKER_PUBLISH_TAG = parseEnv('DEV_DOCKER_PUBLISH_TAG');
+  const PROD_DOCKER_PUBLISH_TAG = parseEnv('PROD_DOCKER_PUBLISH_TAG');
 
   const GCP_DEV_CICD_SA_KEY = parseEnv('GCP_DEV_CICD_SA_KEY');
   const GCP_PROD_CICD_SA_KEY = parseEnv('GCP_PROD_CICD_SA_KEY');
@@ -42,7 +42,7 @@ function parseBy_DOGU_RUN_TYPE(options) {
   switch (DOGU_RUN_TYPE) {
     case 'development': {
       return {
-        DOCKER_TAG: DEV_DOCKER_TAG,
+        DOCKER_PUBLISH_TAG: DEV_DOCKER_PUBLISH_TAG,
         GCP_CICD_SA_KEY: GCP_DEV_CICD_SA_KEY,
         GCP_PRIVATE_SSH_KEY: GCP_DEV_PRIVATE_SSH_KEY,
         DOGU_TURN_SERVER_HOST: DEV_DOGU_TURN_SERVER_HOST,
@@ -52,7 +52,7 @@ function parseBy_DOGU_RUN_TYPE(options) {
     }
     case 'production': {
       return {
-        DOCKER_TAG: PROD_DOCKER_TAG,
+        DOCKER_PUBLISH_TAG: PROD_DOCKER_PUBLISH_TAG,
         GCP_CICD_SA_KEY: GCP_PROD_CICD_SA_KEY,
         GCP_PRIVATE_SSH_KEY: GCP_PROD_PRIVATE_SSH_KEY,
         DOGU_TURN_SERVER_HOST: PROD_DOGU_TURN_SERVER_HOST,
@@ -67,40 +67,51 @@ function parseBy_DOGU_RUN_TYPE(options) {
 }
 
 function parseBy_DOGU_PROJECT_TYPE(options) {
-  const { DOGU_PROJECT_TYPE, DOCKER_TAG, DOGU_TURN_SERVER_HOST, DOGU_TURN_SERVER_USERNAME, DOGU_TURN_SERVER_PASSWORD } = options;
+  const { DOGU_PROJECT_TYPE, DOCKER_PUBLISH_TAG, DOGU_TURN_SERVER_HOST, DOGU_TURN_SERVER_USERNAME, DOGU_TURN_SERVER_PASSWORD } = options;
 
   switch (DOGU_PROJECT_TYPE) {
     case 'console-web-front': {
+      const DOCKER_TAG = DOCKER_PUBLISH_TAG;
       return {
         DOCKER_RUN_COMMAND: `docker run -d --name console-web-front -p 3001:3001 --restart always ${DOCKER_TAG}`,
         NEED_PUBLISH: 'true',
+        DOCKER_TAG,
       };
     }
     case 'console-web-server': {
+      const DOCKER_TAG = DOCKER_PUBLISH_TAG;
       return {
         DOCKER_RUN_COMMAND: `docker run -d --name console-web-server -p 4000:4000 --restart always ${DOCKER_TAG}`,
         NEED_PUBLISH: 'true',
+        DOCKER_TAG,
       };
     }
     case 'billing-server': {
+      const DOCKER_TAG = DOCKER_PUBLISH_TAG;
       return {
         DOCKER_RUN_COMMAND: `docker run -d --name billing-server -p 4001:4001 --restart always ${DOCKER_TAG}`,
         NEED_PUBLISH: 'true',
+        DOCKER_TAG,
       };
     }
     case 'dogu-redis': {
+      const DOCKER_TAG = DOCKER_PUBLISH_TAG;
       return {
         DOCKER_RUN_COMMAND: `docker run -d --name dogu-redis -p 6379:6379 --restart always ${DOCKER_TAG}`,
         NEED_PUBLISH: 'true',
+        DOCKER_TAG,
       };
     }
     case 'dogu-influxdb': {
+      const DOCKER_TAG = DOCKER_PUBLISH_TAG;
       return {
         DOCKER_RUN_COMMAND: `docker run -d --name dogu-influxdb -p 8086:8086 --restart always ${DOCKER_TAG}`,
         NEED_PUBLISH: 'true',
+        DOCKER_TAG,
       };
     }
     case 'dogu-coturn': {
+      const DOCKER_TAG = 'coturn/coturn:4.5.2';
       const commands = [
         'docker',
         'run',
@@ -119,7 +130,7 @@ function parseBy_DOGU_PROJECT_TYPE(options) {
         '49152-65535:49152-65535/udp',
         '--restart',
         'always',
-        'coturn/coturn:4.5.2',
+        DOCKER_TAG,
         '--log-file=stdout',
         '--total-quota=100',
         `--user=${DOGU_TURN_SERVER_USERNAME}:${DOGU_TURN_SERVER_PASSWORD}`,
@@ -139,6 +150,7 @@ function parseBy_DOGU_PROJECT_TYPE(options) {
       return {
         DOCKER_RUN_COMMAND: commands.join(' '),
         NEED_PUBLISH: 'false',
+        DOCKER_TAG,
       };
     }
     default: {
@@ -160,9 +172,17 @@ function main() {
     throw new Error(`Invalid project type: ${DOGU_PROJECT_TYPE}`);
   }
 
-  const { DOCKER_TAG, GCP_CICD_SA_KEY, GCP_PRIVATE_SSH_KEY, DOGU_TURN_SERVER_HOST, DOGU_TURN_SERVER_USERNAME, DOGU_TURN_SERVER_PASSWORD } = parseBy_DOGU_RUN_TYPE({
+  const { DOCKER_PUBLISH_TAG, GCP_CICD_SA_KEY, GCP_PRIVATE_SSH_KEY, DOGU_TURN_SERVER_HOST, DOGU_TURN_SERVER_USERNAME, DOGU_TURN_SERVER_PASSWORD } = parseBy_DOGU_RUN_TYPE({
     DOGU_RUN_TYPE,
   });
+  const { DOCKER_RUN_COMMAND, NEED_PUBLISH, DOCKER_TAG } = parseBy_DOGU_PROJECT_TYPE({
+    DOGU_PROJECT_TYPE,
+    DOCKER_PUBLISH_TAG,
+    DOGU_TURN_SERVER_HOST,
+    DOGU_TURN_SERVER_USERNAME,
+    DOGU_TURN_SERVER_PASSWORD,
+  });
+
   fs.appendFileSync(GITHUB_OUTPUT, `GCP_CICD_SA_KEY<<EOF${os.EOL}`);
   fs.appendFileSync(GITHUB_OUTPUT, `${GCP_CICD_SA_KEY}${os.EOL}`);
   fs.appendFileSync(GITHUB_OUTPUT, `EOF${os.EOL}`);
@@ -172,14 +192,6 @@ function main() {
   fs.appendFileSync(GITHUB_OUTPUT, `EOF${os.EOL}`);
 
   fs.appendFileSync(GITHUB_OUTPUT, `DOCKER_TAG=${DOCKER_TAG}${os.EOL}`);
-
-  const { DOCKER_RUN_COMMAND, NEED_PUBLISH } = parseBy_DOGU_PROJECT_TYPE({
-    DOGU_PROJECT_TYPE,
-    DOCKER_TAG,
-    DOGU_TURN_SERVER_HOST,
-    DOGU_TURN_SERVER_USERNAME,
-    DOGU_TURN_SERVER_PASSWORD,
-  });
   fs.appendFileSync(GITHUB_OUTPUT, `DOCKER_RUN_COMMAND=${DOCKER_RUN_COMMAND}${os.EOL}`);
   fs.appendFileSync(GITHUB_OUTPUT, `NEED_PUBLISH=${NEED_PUBLISH}${os.EOL}`);
 }
