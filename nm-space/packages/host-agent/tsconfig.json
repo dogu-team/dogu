@@ -10,34 +10,5 @@
   },
   "exclude": ["node_modules", "test", "build", "**/*spec.ts"],
   "include": ["src", "scripts"],
-  "references": [
-    {
-      "path": "../../typescript/action-kit"
-    },
-    {
-      "path": "../../typescript/common"
-    },
-    {
-      "path": "../../typescript/env-tools"
-    },
-    {
-      "path": "../../typescript/node"
-    },
-    {
-      "path": "../../typescript/types"
-    },
-    {
-      "path": "../../typescript/device-client"
-    },
-    {
-      "path": "../../typescript-private/console-host-agent"
-    },
-    {
-      "path": "../../typescript-private/dost-children"
-    },
-
-    {
-      "path": "../../typescript-dev-private/build-tools"
-    }
-  ]
+  "references": []
 }

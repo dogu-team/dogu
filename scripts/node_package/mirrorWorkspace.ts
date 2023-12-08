@@ -18,6 +18,14 @@ interface WatchOption {
   copyOnly?: boolean;
 }
 
+interface PackageCopyContext {
+  name: string;
+  originPath: string;
+  copyDestPath: string;
+}
+
+type PackageCopyContextMap = Map<string, PackageCopyContext>;
+
 function scanPackage(packagesPaths: string[], packageName: string): string {
   for (const packagesPath of packagesPaths) {
     const dirs = fs.readdirSync(packagesPath);
@@ -67,7 +75,14 @@ function copyPacakgeJson(srcPath: string, destPath: string, returningWatchs: Wat
   });
 }
 
-function copyDependentPackages(outputWorkspace: string, packageJson: PackageJson, packagesPaths: string[], outputPackagesPath: string, returningWatchs: Watch[]): void {
+function copyDependentPackages(
+  context: PackageCopyContextMap,
+  outputWorkspace: string,
+  packageJson: PackageJson,
+  packagesPaths: string[],
+  outputPackagesPath: string,
+  returningWatchs: Watch[],
+): void {
   const deps = [...packageJson.getDependencies(), ...packageJson.getDevDependencies()];
   for (const { name, value } of deps) {
     if (!value.startsWith('workspace:')) {
@@ -75,8 +90,10 @@ function copyDependentPackages(outputWorkspace: string, packageJson: PackageJson
     }
 
     const packagePath = scanPackage(packagesPaths, name);
-    const packageName = name.replaceAll('/', '-');
-    const destPath = path.resolve(outputPackagesPath, packageName);
+    const destPath = context.get(name)?.copyDestPath;
+    if (!destPath) {
+      throw new Error(`[mirror] ${name} not found in context`);
+    }
     // packageJson.setDependency(name, `file:${outputPackagesPath}/${packageName}`);
     if (fs.existsSync(destPath)) {
       continue;
@@ -84,7 +101,7 @@ function copyDependentPackages(outputWorkspace: string, packageJson: PackageJson
     copyPacakgeJson(packagePath, destPath, returningWatchs);
 
     const depPackageJson = new PackageJson(path.resolve(destPath, 'package.json'));
-    copyDependentPackages(outputWorkspace, depPackageJson, packagesPaths, path.resolve(outputWorkspace, 'packages'), returningWatchs);
+    copyDependentPackages(context, outputWorkspace, depPackageJson, packagesPaths, path.resolve(outputWorkspace, 'packages'), returningWatchs);
   }
 
   // const devdeps = packageJson.getDevDependencies();
@@ -135,25 +152,37 @@ export async function mirrorWorkspace(spacePath: string, option: WatchOption = {
   handleShellString(shelljs.rm('-rf', outputPackagesPath));
   handleShellString(shelljs.mkdir('-p', outputPackagesPath));
 
-  const returningWatchs: Watch[] = [];
+  const contexts: PackageCopyContextMap = new Map();
+
   for (const tsPackageRoot of packagesPaths) {
     const dirs = fs.readdirSync(tsPackageRoot);
     for (const dir of dirs) {
       const srcPackagePath = path.resolve(tsPackageRoot, dir);
+      const tsPackageIntermidiateName = path.relative(path.resolve(workspacePath, 'packages'), srcPackagePath);
       const srcPath = path.resolve(tsPackageRoot, dir, 'src');
       if (!fs.existsSync(srcPath)) continue;
 
       const srcPackageJson = new PackageJson(path.resolve(tsPackageRoot, dir, 'package.json'));
       if (skipPackages.includes(srcPackageJson.getName())) continue;
+      const packageName = srcPackageJson.getName();
 
-      const packageName = srcPackageJson.getName().replaceAll('/', '-');
-      const destPackagePath = path.resolve(outputPackagesPath, packageName);
-      copyPacakgeJson(srcPackagePath, destPackagePath, returningWatchs);
-
-      const packageJson = new PackageJson(path.resolve(destPackagePath, 'package.json'));
-      copyDependentPackages(outputWorkspace, packageJson, packagesPaths, outputPackagesPath, returningWatchs);
+      contexts.set(packageName, {
+        name: packageName,
+        originPath: srcPackagePath,
+        copyDestPath: path.resolve(outputPackagesPath, tsPackageIntermidiateName),
+      });
     }
   }
+
+  const returningWatchs: Watch[] = [];
+
+  for (const context of contexts.values()) {
+    copyPacakgeJson(context.originPath, context.copyDestPath, returningWatchs);
+
+    const packageJson = new PackageJson(path.resolve(context.copyDestPath, 'package.json'));
+    copyDependentPackages(contexts, outputWorkspace, packageJson, packagesPaths, outputPackagesPath, returningWatchs);
+  }
+
   // make returningWatchs src unique
   const uniqueReturningWatchs: Watch[] = [];
   returningWatchs.forEach((watch) => {

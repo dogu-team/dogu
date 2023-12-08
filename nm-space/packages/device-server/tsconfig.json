@@ -13,26 +13,7 @@
   "include": ["src/**/*.ts", "scripts/**/*.ts"],
   "references": [
     {
-      "path": "../../typescript-private/dost-children"
-    },
-
-    {
-      "path": "../../typescript-private/nestjs-common"
-    },
-    {
-      "path": "../../typescript/common"
-    },
-    {
-      "path": "../../typescript/env-tools"
-    },
-    {
-      "path": "../../typescript/node"
-    },
-    {
-      "path": "../../typescript-dev-private/build-tools"
-    },
-    {
-      "path": "../../typescript/device-client-common"
+      "path": "../dost-children"
     }
   ]
 }

@@ -1,6 +1,6 @@
 {
   "verbose": true,
-  "watch": ["./public", "./electron", "../../mirror/packages"],
+  "watch": ["./public", "./electron", "../../mirror/packages", "../../packages"],
   "exec": "yarn start",
   "ext": "ts,tsx,js,json",
   "delay": 3000

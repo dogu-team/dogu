@@ -10,12 +10,5 @@
   },
   "exclude": ["node_modules", "test", "build", "**/*spec.ts"],
   "include": ["src", "scripts"],
-  "references": [
-    {
-      "path": "../../typescript-private/types"
-    },
-    {
-      "path": "../../typescript/common"
-    }
-  ]
+  "references": []
 }
