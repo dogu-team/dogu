@@ -63,7 +63,8 @@ export class HostAppService {
       throw new Error('updatable app not found');
     }
     if (app.version === host.agentVersion) {
-      throw new Error('already latest version');
+      this.logger.verbose('already latest version', { hostId, agentVersion: host.agentVersion });
+      return;
     }
     const result = await this.deviceMessageRelayer.sendParam(organizationId, deviceId, {
       kind: 'RequestParam',
