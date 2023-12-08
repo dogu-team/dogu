@@ -37,16 +37,29 @@ if (!DOGU_INFLUX_DB_PASSWORD) {
   throw new Error('Environment variable DOGU_INFLUX_DB_PASSWORD is not set');
 }
 
+setTimeout(() => {
+  console.log('Setup InfluxDB');
+  execSync(
+    [
+      'influx',
+      'setup',
+      '--username',
+      DOGU_INFLUX_DB_USERNAME,
+      '--password',
+      DOGU_INFLUX_DB_PASSWORD,
+      '--org',
+      DOGU_INFLUX_DB_ORG,
+      '--bucket',
+      DOGU_INFLUX_DB_BUCKET,
+      '--force',
+    ].join(' '),
+    {
+      stdio: 'inherit',
+    },
+  );
+}, 10000);
+
 console.log('Start InfluxDB');
 execSync(`influxd`, {
   stdio: 'inherit',
-  env: {
-    ...process.env,
-    DOCKER_INFLUXDB_INIT_MODE: 'setup',
-    DOCKER_INFLUXDB_INIT_USERNAME: DOGU_INFLUX_DB_USERNAME,
-    DOCKER_INFLUXDB_INIT_PASSWORD: DOGU_INFLUX_DB_PASSWORD,
-    DOCKER_INFLUXDB_INIT_ORG: DOGU_INFLUX_DB_ORG,
-    DOCKER_INFLUXDB_INIT_BUCKET: DOGU_INFLUX_DB_BUCKET,
-    DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: DOGU_INFLUX_DB_TOKEN,
-  },
 });
