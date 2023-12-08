@@ -4231,9 +4231,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@dogu-private/device-server@workspace:^, @dogu-private/device-server@workspace:packages/device-server":
+"@dogu-private/device-server@workspace:^, @dogu-private/device-server@workspace:mirror/packages/@dogu-private-device-server":
   version: 0.0.0-use.local
-  resolution: "@dogu-private/device-server@workspace:packages/device-server"
+  resolution: "@dogu-private/device-server@workspace:mirror/packages/@dogu-private-device-server"
   dependencies:
     "@dogu-dev-private/build-tools": "workspace:^"
     "@dogu-private/dost-children": "workspace:^"
@@ -4307,9 +4307,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@dogu-private/dogu-agent-core@workspace:^, @dogu-private/dogu-agent-core@workspace:packages/dogu-agent-core":
+"@dogu-private/dogu-agent-core@workspace:^, @dogu-private/dogu-agent-core@workspace:mirror/packages/@dogu-private-dogu-agent-core":
   version: 0.0.0-use.local
-  resolution: "@dogu-private/dogu-agent-core@workspace:packages/dogu-agent-core"
+  resolution: "@dogu-private/dogu-agent-core@workspace:mirror/packages/@dogu-private-dogu-agent-core"
   dependencies:
     "@dogu-private/device-server": "workspace:^"
     "@dogu-private/dost-children": "workspace:^"
@@ -4345,9 +4345,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@dogu-private/dost-children@workspace:^, @dogu-private/dost-children@workspace:packages/dost-children":
+"@dogu-private/dost-children@workspace:^, @dogu-private/dost-children@workspace:mirror/packages/@dogu-private-dost-children":
   version: 0.0.0-use.local
-  resolution: "@dogu-private/dost-children@workspace:packages/dost-children"
+  resolution: "@dogu-private/dost-children@workspace:mirror/packages/@dogu-private-dost-children"
   dependencies:
     "@dogu-private/types": "workspace:^"
     "@dogu-tech/common": "workspace:^"
@@ -4363,9 +4363,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@dogu-private/host-agent@workspace:^, @dogu-private/host-agent@workspace:packages/host-agent":
+"@dogu-private/host-agent@workspace:^, @dogu-private/host-agent@workspace:mirror/packages/@dogu-private-host-agent":
   version: 0.0.0-use.local
-  resolution: "@dogu-private/host-agent@workspace:packages/host-agent"
+  resolution: "@dogu-private/host-agent@workspace:mirror/packages/@dogu-private-host-agent"
   dependencies:
     "@dogu-dev-private/build-tools": "workspace:^"
     "@dogu-private/console-host-agent": "workspace:^"
