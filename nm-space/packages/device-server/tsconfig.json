@@ -1,0 +1,38 @@
+{
+  "extends": "../../../tsconfig.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "rootDirs": ["."],
+    "baseUrl": ".",
+    "outDir": "build",
+    "incremental": true,
+    "removeComments": true,
+    "types": ["webdriverio/async"]
+  },
+  "exclude": ["node_modules", "test", "build", "**/*spec.ts"],
+  "include": ["src/**/*.ts", "scripts/**/*.ts"],
+  "references": [
+    {
+      "path": "../../typescript-private/dost-children"
+    },
+
+    {
+      "path": "../../typescript-private/nestjs-common"
+    },
+    {
+      "path": "../../typescript/common"
+    },
+    {
+      "path": "../../typescript/env-tools"
+    },
+    {
+      "path": "../../typescript/node"
+    },
+    {
+      "path": "../../typescript-dev-private/build-tools"
+    },
+    {
+      "path": "../../typescript/device-client-common"
+    }
+  ]
+}
