@@ -12,6 +12,7 @@ RUN apt-get clean \
     openjdk-17-jre \
     vim \
     telnet \
+    aapt \
     # use from "tree-kill" node module
     procps \
     && rm -rf /var/lib/apt/lists/*
