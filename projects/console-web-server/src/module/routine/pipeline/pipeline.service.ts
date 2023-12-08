@@ -320,6 +320,7 @@ export class PipelineService {
         where: {
           isInUse: 0,
           device: {
+            isGlobal: 1,
             model: deviceModel,
             usageState: DeviceUsageState.AVAILABLE,
             organization: {
@@ -343,6 +344,7 @@ export class PipelineService {
         where: {
           isInUse: 0,
           device: {
+            isGlobal: 1,
             model: deviceModel,
             usageState: DeviceUsageState.PREPARING,
             organization: {
@@ -366,6 +368,7 @@ export class PipelineService {
         where: {
           isInUse: 1,
           device: {
+            isGlobal: 1,
             model: deviceModel,
             organization: {
               shareable: true,
