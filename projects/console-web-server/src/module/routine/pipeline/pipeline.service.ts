@@ -321,7 +321,6 @@ export class PipelineService {
           isInUse: 0,
           device: {
             model: deviceModel,
-            connectionState: DeviceConnectionState.DEVICE_CONNECTION_STATE_CONNECTED,
             usageState: DeviceUsageState.AVAILABLE,
             organization: {
               shareable: true,
@@ -365,9 +364,9 @@ export class PipelineService {
 
       const inUse = await manager.getRepository(DeviceRunner).findOne({
         where: {
+          isInUse: 1,
           device: {
             model: deviceModel,
-            connectionState: DeviceConnectionState.DEVICE_CONNECTION_STATE_CONNECTED,
             organization: {
               shareable: true,
             },
