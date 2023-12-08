@@ -12,10 +12,14 @@ import { DoguWsException } from '../common/ws-exception';
 
 @WebSocketGateway({ path: PrivateDeviceWs.pullDeviceParamDatas.path })
 export class PrivateDeviceWsGateway implements OnGatewayConnection {
-  constructor(private readonly wsCommonService: WsCommonService, private readonly deviceMessageQueue: DeviceMessageQueue, private readonly logger: DoguLogger) {}
+  constructor(
+    private readonly wsCommonService: WsCommonService,
+    private readonly deviceMessageQueue: DeviceMessageQueue,
+    private readonly logger: DoguLogger,
+  ) {}
 
   async handleConnection(webSocket: WebSocket, incomingMessage: IncomingMessage): Promise<void> {
-    this.logger.info('PrivateDeviceWsGateway.handleConnection', { remoteAddress: incomingMessage.socket.remoteAddress });
+    this.logger.verbose('PrivateDeviceWsGateway.handleConnection', { remoteAddress: incomingMessage.socket.remoteAddress });
 
     this.wsCommonService.sendPing(webSocket, 'PrivateDeviceWsGateway');
 
@@ -38,7 +42,7 @@ export class PrivateDeviceWsGateway implements OnGatewayConnection {
     webSocket.on('close', (event) => {
       this.logger.verbose('PrivateDeviceWsGateway.close');
     });
-    webSocket.on('message', async (event: MessageEvent<ArrayBuffer>) => {
+    webSocket.on('message', (event: MessageEvent<ArrayBuffer>) => {
       this.logger.verbose('PrivateDeviceWsGateway.message');
     });
   }
