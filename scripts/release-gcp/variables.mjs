@@ -103,10 +103,10 @@ function parseBy_DOGU_PROJECT_TYPE(options) {
       };
     }
     case 'dogu-influxdb': {
-      const DOCKER_TAG = DOCKER_PUBLISH_TAG;
+      const DOCKER_TAG = 'influxdb:2.6.1';
       return {
         DOCKER_RUN_COMMAND: `docker run -d --name dogu-influxdb -p 8086:8086 -v /opt/dogu/influxdb:/var/lib/influxdb2:rw --restart always ${DOCKER_TAG}`,
-        NEED_PUBLISH: 'true',
+        NEED_PUBLISH: 'false',
         DOCKER_TAG,
       };
     }
