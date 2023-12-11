@@ -9,8 +9,7 @@ on:
 
 jobs:
   new-job-1:
-    runs-on:
-      group: []
+    runs-on: []
     appPackageName:
     record: true
     cloud: true
