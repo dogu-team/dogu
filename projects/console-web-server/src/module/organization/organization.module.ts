@@ -12,8 +12,12 @@ import { ProjectModule } from '../project/project.module';
 import { RoutineModule } from '../routine/routine.module';
 import { UserInvitationModule } from '../user-invitation/user-invitation.module';
 import { UserModule } from '../user/user.module';
+import { OrganizationApplicationController } from './application/application.controller';
+import { OrganizationApplicationService } from './application/application.service';
 import { OrganizationController } from './organization.controller';
 import { OrganizationService } from './organization.service';
+import { OrganizationScmController } from './scm/scm.controller';
+import { OrganizationScmService } from './scm/scm.service';
 
 @Module({
   imports: [
@@ -27,8 +31,8 @@ import { OrganizationService } from './organization.service';
     RoutineModule,
     LicenseModule,
   ],
-  exports: [OrganizationService],
-  providers: [OrganizationService],
-  controllers: [OrganizationController],
+  exports: [OrganizationService, OrganizationApplicationService, OrganizationScmService],
+  providers: [OrganizationService, OrganizationApplicationService, OrganizationScmService],
+  controllers: [OrganizationController, OrganizationApplicationController, OrganizationScmController],
 })
 export class OrganizationModule {}

@@ -1,4 +1,3 @@
-export * from './controller-handler.entity';
 export * from './dest.entity';
 export * from './device-browser-installation.entity';
 export * from './device-job.entity';

@@ -1,6 +1,6 @@
-import { MobileOutlined } from '@ant-design/icons';
+import { ExclamationCircleOutlined, MobileOutlined } from '@ant-design/icons';
 import { DeviceBase } from '@dogu-private/console';
-import { List, MenuProps } from 'antd';
+import { List, MenuProps, Tooltip } from 'antd';
 import { AxiosError, isAxiosError } from 'axios';
 import useTranslation from 'next-translate/useTranslation';
 import Link from 'next/link';
@@ -9,6 +9,7 @@ import styled from 'styled-components';
 import { DeviceConnectionState, OrganizationId, Platform } from '@dogu-private/types';
 import { useCallback } from 'react';
 import Trans from 'next-translate/Trans';
+import { PiMonitorPlayBold } from 'react-icons/pi';
 
 import usePaginationSWR from 'src/hooks/usePaginationSWR';
 import useRefresh from 'src/hooks/useRefresh';
@@ -17,14 +18,7 @@ import DeviceConnectionStateTag from './DeviceConnectionStateTag';
 import DeviceDetailModal from './DeviceDetailModal';
 import useDeviceFilterStore from 'src/stores/device-filter';
 import { getErrorMessageFromAxios } from 'src/utils/error';
-import {
-  flexRowBaseStyle,
-  flexRowSpaceBetweenStyle,
-  listItemStyle,
-  tableCellStyle,
-  tableHeaderStyle,
-} from '../../styles/box';
-import { menuItemButtonStyles } from '../../styles/button';
+import { flexRowBaseStyle, listItemStyle, tableCellStyle, tableHeaderStyle } from '../../styles/box';
 import useModal from '../../hooks/useModal';
 import MenuButton from '../buttons/MenuButton';
 import MenuItemButton from '../buttons/MenuItemButton';
@@ -64,6 +58,8 @@ const DeviceItem = ({ device }: DeviceItemProps) => {
     (device.platform === Platform.PLATFORM_ANDROID || device.platform === Platform.PLATFORM_IOS) &&
     device.connectionState === DeviceConnectionState.DEVICE_CONNECTION_STATE_CONNECTED;
   const isGlobalDevice = device.isGlobal === 1;
+  const isConnected = device.connectionState === DeviceConnectionState.DEVICE_CONNECTION_STATE_CONNECTED;
+  const studioDisabled = !isConnected || device.displayError !== null;
 
   const handleClickStop = async () => {
     try {
@@ -187,16 +183,47 @@ const DeviceItem = ({ device }: DeviceItemProps) => {
             </DeviceInfo>
           </PlatformCell>
           <InfoCell>
-            <FlexSpaceBetweenBox>
-              <DeviceTagAndProject
-                tagCount={device.deviceTags?.length}
-                projectCount={isGlobalDevice ? undefined : device.projects?.length}
-                onProjectClick={handleClickDetail}
-                onTagClick={handleClickDetail}
-              />
-              <MenuButton menu={{ items }} />
-            </FlexSpaceBetweenBox>
+            <DeviceTagAndProject
+              tagCount={device.deviceTags?.length}
+              projectCount={isGlobalDevice ? undefined : device.projects?.length}
+              onProjectClick={handleClickDetail}
+              onTagClick={handleClickDetail}
+            />
           </InfoCell>
+          <Cell style={{ flex: 1 }}>
+            <Tooltip title={device.displayError} open={isConnected && device.displayError ? undefined : false}>
+              <StudioLinkButton
+                href={`/dashboard/${orgId}/device-farm/live-testing/${device.deviceId}`}
+                target="_blank"
+                disabled={studioDisabled}
+                onClick={(e) => {
+                  if (studioDisabled) {
+                    e.preventDefault();
+                  }
+                }}
+                onAuxClick={(e) => {
+                  if (studioDisabled) {
+                    e.preventDefault();
+                  }
+                }}
+                onContextMenu={(e) => {
+                  if (studioDisabled) {
+                    e.preventDefault();
+                  }
+                }}
+              >
+                {isConnected && device.displayError ? (
+                  <ExclamationCircleOutlined style={{ color: '#ff4d4f', marginRight: '.25rem' }} />
+                ) : (
+                  <PiMonitorPlayBold style={{ marginRight: '.25rem' }} />
+                )}
+                Live testing
+              </StudioLinkButton>
+            </Tooltip>
+          </Cell>
+          <MenuWrapper>
+            <MenuButton menu={{ items }} />
+          </MenuWrapper>
         </DeviceItemInner>
         {isDesktop(device) && (
           <RunnerWrapper>
@@ -290,6 +317,8 @@ const DeviceListController = () => {
           <StatusCell>{t('device-farm:deviceTableRunningStatusColumn')}</StatusCell>
           <PlatformCell>{t('device-farm:deviceTablePlatformAndModalColumn')}</PlatformCell>
           <InfoCell>{t('device-farm:deviceTableTagsAndProjectsColumn')}</InfoCell>
+          <Cell style={{ flex: 1 }} />
+          <MenuWrapper />
         </DeviceItemInner>
       </Header>
       <List<DeviceBase>
@@ -373,10 +402,6 @@ const DeviceItemInner = styled.div`
   ${flexRowBaseStyle}
 `;
 
-const FlexSpaceBetweenBox = styled.div`
-  ${flexRowSpaceBetweenStyle}
-`;
-
 const DeviceInfo = styled.p`
   display: flex;
   align-items: center;
@@ -384,20 +409,28 @@ const DeviceInfo = styled.p`
   margin: 0.4rem 0;
 `;
 
-const PrimaryLinkButton = styled(Link)<{ disabled: boolean }>`
-  display: block;
-  ${menuItemButtonStyles}
-  width: 100%;
-  color: ${(props) => (props.disabled ? '#00000040' : props.theme.colorPrimary)} !important;
-  background-color: ${(props) => (props.disabled ? '#0000000a' : '#fff')};
+const StudioLinkButton = styled(Link)<{ disabled: boolean }>`
+  display: inline-flex;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  background-color: ${(props) => (props.disabled ? props.theme.main.colors.gray5 : props.theme.colorPrimary)};
+  color: #fff !important;
+  text-align: center;
+  align-items: center;
   cursor: ${(props) => (props.disabled ? 'not-allowed' : 'pointer')};
 
   &:hover {
-    background-color: ${(props) => (props.disabled ? '#0000000a' : props.theme.colorPrimary)};
-    color: ${(props) => (props.disabled ? '#00000040' : '#fff')} !important;
+    color: #fff;
+    background-color: ${(props) => (props.disabled ? props.theme.main.colors.gray5 : `${props.theme.colorPrimary}bb`)};
   }
 `;
 
 const RunnerWrapper = styled.div`
   padding-left: 1rem;
+`;
+
+const MenuWrapper = styled.div`
+  display: flex;
+  width: 48px;
+  justify-content: flex-end;
 `;

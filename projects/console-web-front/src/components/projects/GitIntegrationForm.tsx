@@ -1,12 +1,12 @@
 import { GithubFilled, GitlabOutlined } from '@ant-design/icons';
-import { PROJECT_SCM_TYPE } from '@dogu-private/types';
+import { OrganizationScmServiceType } from '@dogu-private/console';
 import { Form, FormInstance, Input, Radio } from 'antd';
 import { IoLogoBitbucket } from 'react-icons/io5';
 
 export type GitIntegrationFormValues = {
-  git: PROJECT_SCM_TYPE;
+  git: OrganizationScmServiceType;
+  url: string;
   token: string;
-  repo: string;
 };
 
 interface Props {
@@ -20,25 +20,30 @@ const GitIntegrationForm = ({ form, hideType }: Props) => {
       {!hideType && (
         <Form.Item label="Git service" name="git" required rules={[{ required: true, message: 'Select service' }]}>
           <Radio.Group buttonStyle="solid">
-            <Radio.Button value={PROJECT_SCM_TYPE.GITHUB}>
+            <Radio.Button value={OrganizationScmServiceType[0]}>
               <GithubFilled />
               &nbsp;GitHub
             </Radio.Button>
-            <Radio.Button value={PROJECT_SCM_TYPE.GITLAB}>
-              <GitlabOutlined />
-              &nbsp;GitLab
-            </Radio.Button>
-            <Radio.Button value={PROJECT_SCM_TYPE.BITBUCKET}>
+            <Radio.Button value={OrganizationScmServiceType[1]}>
               <IoLogoBitbucket />
               &nbsp;Bitbucket
+            </Radio.Button>
+            <Radio.Button value={OrganizationScmServiceType[2]}>
+              <GitlabOutlined />
+              &nbsp;GitLab
             </Radio.Button>
           </Radio.Group>
         </Form.Item>
       )}
-      <Form.Item label="Repository URL" name="repo" required rules={[{ required: true, message: 'Input repository' }]}>
-        <Input placeholder="https://github.com/dogu-team/example.git" required />
+      <Form.Item
+        label="Organization(personal) url"
+        name="url"
+        required
+        rules={[{ required: true, message: 'Please enter valid url', type: 'url' }]}
+      >
+        <Input placeholder="https://github.com/dogu-team" required type="url" />
       </Form.Item>
-      <Form.Item label="Token" name="token" required rules={[{ required: true, message: 'Input token' }]}>
+      <Form.Item label="Token" name="token" required rules={[{ required: true, message: 'Please enter token' }]}>
         <Input placeholder="ghp_1234567890abcd" required />
       </Form.Item>
     </Form>

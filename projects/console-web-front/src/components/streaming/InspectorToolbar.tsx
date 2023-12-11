@@ -13,6 +13,7 @@ import styled from 'styled-components';
 
 import useDeviceStreamingContext from '../../hooks/streaming/useDeviceStreamingContext';
 import { flexRowBaseStyle, flexRowCenteredStyle } from '../../styles/box';
+import { InspectorType } from '../../types/streaming';
 
 interface Props {
   onRefresh: () => void | Promise<void>;
@@ -21,7 +22,7 @@ interface Props {
 }
 
 const InspectorToolbar = ({ onRefresh, onReset, selectDisabled }: Props) => {
-  const { mode, updateMode } = useDeviceStreamingContext();
+  const { mode, updateMode, inspectorType } = useDeviceStreamingContext();
   const [refreshTime, setRefreshTime] = useState(moment().format('LTS'));
   const [refreshEnabled, setRefreshEnabled] = useState(true);
   const [loading, setLoading] = useState(false);
@@ -35,18 +36,31 @@ const InspectorToolbar = ({ onRefresh, onReset, selectDisabled }: Props) => {
     setLoading(false);
   }, [onRefresh]);
 
+  const handleReset = useCallback(async () => {
+    setLoading(true);
+    await onReset();
+    setRefreshTime(moment().format('LTS'));
+    setLoading(false);
+  }, [onReset]);
+
   const refreshAndClearTimer = useCallback(async () => {
     await handleRefresh();
+    if (inspectorType === InspectorType.GAME) {
+      return;
+    }
     clearInterval(timer.current);
     const t = setInterval(() => {
       handleRefresh();
     }, 5000);
     timer.current = t;
-  }, [handleRefresh]);
+  }, [handleRefresh, inspectorType]);
 
   useEffect(() => {
     if (refreshEnabled) {
       handleRefresh();
+      if (inspectorType === InspectorType.GAME) {
+        return;
+      }
       const t = setInterval(() => {
         handleRefresh();
       }, 5000);
@@ -56,13 +70,13 @@ const InspectorToolbar = ({ onRefresh, onReset, selectDisabled }: Props) => {
     return () => {
       clearInterval(timer.current);
     };
-  }, [handleRefresh, refreshEnabled]);
+  }, [handleRefresh, refreshEnabled, inspectorType]);
 
   useEffect(() => {
-    if (mode === 'inspect') {
+    if (mode === 'inspect' && inspectorType === InspectorType.APP) {
       refreshAndClearTimer();
     }
-  }, [mode, refreshAndClearTimer]);
+  }, [mode, refreshAndClearTimer, inspectorType]);
 
   return (
     <Box>
@@ -71,11 +85,13 @@ const InspectorToolbar = ({ onRefresh, onReset, selectDisabled }: Props) => {
       </p>
 
       <ButtonWrapper>
-        <Tooltip title="Reconnect">
-          <StyledButton onClick={onReset}>
-            <DisconnectOutlined style={{ fontSize: '.75rem' }} />
-          </StyledButton>
-        </Tooltip>
+        {inspectorType === InspectorType.GAME && (
+          <Tooltip title="Reconnect">
+            <StyledButton onClick={handleReset} disabled={loading}>
+              <DisconnectOutlined style={{ fontSize: '.75rem' }} />
+            </StyledButton>
+          </Tooltip>
+        )}
         <StyledButton onClick={() => setRefreshEnabled((prev) => !prev)}>
           {refreshEnabled ? (
             <PauseOutlined style={{ fontSize: '.75rem' }} />

@@ -9,6 +9,7 @@ import {
   GetAppiumContextInfoResponse,
   GetDeviceFoldStatusResponse,
   GetDeviceGeoLocationResponse,
+  GetDeviceHeartBeatResponse,
   GetDeviceLocaleResponse,
   GetDevicePlatformSerialsResponse,
   GetDeviceScreenshotResponse,
@@ -39,6 +40,21 @@ export const Device = {
     pathProvider: DefaultPathProvider,
     responseBody: DeviceServerResponseDto,
     responseBodyData: GetDevicePlatformSerialsResponse,
+  }),
+
+  /*
+   * Used for prevent token timeout
+   */
+  getHeartbeat: new DeviceServerControllerMethodSpec({
+    controllerSpec: DeviceController,
+    method: 'GET',
+    path: '/:serial/heartbeat',
+    pathProvider: class {
+      constructor(readonly serial: Serial) {}
+    },
+    responseBody: DeviceServerResponseDto<GetDeviceHeartBeatResponse>,
+    responseBodyData: GetDeviceHeartBeatResponse,
+    responseBodyError: DeviceNotFoundErrorDetails,
   }),
 
   getDeviceSystemInfo: new DeviceServerControllerMethodSpec({

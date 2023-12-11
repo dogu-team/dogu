@@ -137,13 +137,38 @@ const StepItem = React.memo(({ step, deviceId }: ItemProps) => {
             setIsOpen((prev) => {
               if (prev) {
                 router.push(
-                  `/dashboard/${router.query.orgId}/projects/${router.query.pid}/routines/${router.query.pipelineId}/jobs/${router.query.jobId}/device-jobs/${router.query.deviceJobId}`,
+                  {
+                    pathname: router.pathname.replace(
+                      /\/\[pipelineId\](.+)?$/,
+                      '/[pipelineId]/jobs/[jobId]/device-jobs/[deviceJobId]',
+                    ),
+                    query: {
+                      orgId: router.query.orgId,
+                      pid: router.query.pid,
+                      pipelineId: router.query.pipelineId,
+                      jobId: router.query.jobId,
+                      deviceJobId: router.query.deviceJobId,
+                    },
+                  },
                   undefined,
                   { shallow: true, scroll: false },
                 );
               } else {
                 router.push(
-                  `/dashboard/${router.query.orgId}/projects/${router.query.pid}/routines/${router.query.pipelineId}/jobs/${router.query.jobId}/device-jobs/${router.query.deviceJobId}?step=${step.routineStepId}`,
+                  {
+                    pathname: router.pathname.replace(
+                      /\/\[pipelineId\](.+)?$/,
+                      '/[pipelineId]/jobs/[jobId]/device-jobs/[deviceJobId]',
+                    ),
+                    query: {
+                      orgId: router.query.orgId,
+                      pid: router.query.pid,
+                      pipelineId: router.query.pipelineId,
+                      jobId: router.query.jobId,
+                      deviceJobId: router.query.deviceJobId,
+                      step: step.routineStepId,
+                    },
+                  },
                   undefined,
                   { shallow: true, scroll: false },
                 );

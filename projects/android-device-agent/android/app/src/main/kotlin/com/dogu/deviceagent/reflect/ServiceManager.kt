@@ -41,7 +41,8 @@ class ServiceManager {
                     }
                     displayManager
                 } catch (e: Exception) {
-                    throw AssertionError(e)
+                    Logger.e("DisplayManager failed $e")
+                    null
                 }
             }
             return field
@@ -50,14 +51,12 @@ class ServiceManager {
         get() {
             if (field == null) {
                 field = try {
-                    Logger.v("dssssss get 1")
-
                     val service = getService("device_state", "android.hardware.devicestate.IDeviceStateManager")
                     val obj = ReflectObject("android.hardware.devicestate.IDeviceStateManager", service)
                     DeviceStateManager(obj)
                 } catch (e: Exception) {
-                    Logger.v("dssssss get 5 $e")
-                    throw AssertionError(e)
+                    Logger.e("DeviceStateManager failed $e")
+                    null
                 }
             }
             return field
@@ -81,12 +80,9 @@ class ServiceManager {
                         InputManager(im)
                     }
                     inputManagerTried
-                } catch (e: NoSuchMethodException) {
-                    throw AssertionError(e)
-                } catch (e: IllegalAccessException) {
-                    throw AssertionError(e)
-                } catch (e: InvocationTargetException) {
-                    throw AssertionError(e)
+                } catch (e: Exception) {
+                    Logger.e("InputManager failed $e")
+                    null
                 }
             }
             return field
@@ -138,17 +134,10 @@ class ServiceManager {
             )
             asInterfaceMethod.invoke(null, binder) as IInterface
         } catch (e: Exception) {
-            throw AssertionError(e)
+            throw e
         }
     }
 
-    private fun getServiceBinder(service: String): IBinder {
-        return try {
-            getServiceMethod!!.invoke(null, service) as IBinder
-        } catch (e: Exception) {
-            throw AssertionError(e)
-        }
-    }
 
     companion object {
         const val PACKAGE_NAME = "com.android.shell"
@@ -162,7 +151,7 @@ class ServiceManager {
                 String::class.java
             )
         } catch (e: Exception) {
-            throw AssertionError(e)
+            throw e
         }
     }
 }

@@ -56,9 +56,10 @@ const RoutineUpdator = (props: Props) => {
       setChanged(false);
 
       await updateRoutine(props.project.organizationId, props.project.projectId, props.routineId, file);
-      router.push(
-        `/dashboard/${props.project.organizationId}/projects/${props.project.projectId}/routines?routine=${props.routineId}`,
-      );
+      router.push({
+        pathname: router.pathname.replace(/\/editor(.+)?$/, ''),
+        query: { orgId: router.query.orgId, pid: router.query.pid, routine: props.routineId },
+      });
 
       sendSuccessNotification(t('routine:updateRoutineSuccessMessage'));
     } catch (error) {

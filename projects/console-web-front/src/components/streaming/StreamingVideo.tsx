@@ -287,6 +287,7 @@ const InputWrapper = styled.div<{ canDisplay: boolean; ratio: number; videoWidth
   background-color: #000;
   ${(props) => (props.ratio > 1 ? `` : props.videoWidth ? `width: ${props.videoWidth}px;` : 'width: auto;')}
   overflow: hidden;
+  border-radius: 1rem;
 `;
 
 const StyledVideo = styled.video<{ boxHeight: number }>`

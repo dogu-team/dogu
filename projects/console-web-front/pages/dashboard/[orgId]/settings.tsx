@@ -30,6 +30,7 @@ import AccessTokenButton from '../../../src/components/common/AccessTokenButton'
 import SlackButton from '../../../enterprise/components/integration/SlackConnectButton';
 import SettingTitleDivider from '../../../src/components/common/SettingTitleDivider';
 import useOrganizationContext from '../../../src/hooks/context/useOrganizationContext';
+import ScmIntegrationButton from '../../../src/components/integration/ScmIntegrationButton';
 
 const OrganizationSettingPage: NextPageWithLayout<OrganizationServerSideProps> = ({ organization }) => {
   const [editingOrganization, setEditingOrganization] = useState<OrganizationBase>(organization);
@@ -192,6 +193,8 @@ const OrganizationSettingPage: NextPageWithLayout<OrganizationServerSideProps> =
             isConnected={organization!.organizationSlack!.length === 1}
             organizationId={organization.organizationId}
           />
+          <div style={{ marginTop: '.5rem' }} />
+          <ScmIntegrationButton />
         </Content>
 
         <div style={{ marginTop: '3rem' }}>

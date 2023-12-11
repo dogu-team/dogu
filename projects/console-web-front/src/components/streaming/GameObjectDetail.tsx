@@ -4,10 +4,11 @@ import useTranslation from 'next-translate/useTranslation';
 import styled from 'styled-components';
 
 import { flexRowBaseStyle } from '../../styles/box';
+import { ResizedObjectInfo } from '../../types/streaming';
 import InspectObjectAttribute from './InspectObjectAttribute';
 
 interface Props {
-  node: ParsedNode<GamiumNodeAttributes> | undefined;
+  node: ResizedObjectInfo | undefined;
   hitPoint: HitPoint | undefined;
 }
 
@@ -33,13 +34,17 @@ const GameObjectDetail = ({ node, hitPoint }: Props) => {
         <StyledTitle>Attributes</StyledTitle>
         {node ? (
           <div>
-            <InspectObjectAttribute title="XPath" values={node.attributes.path} />
-            {Object.entries(node.attributes).map(([key, value]) => {
+            <InspectObjectAttribute title="XPath" values={node.origin.path} />
+            {Object.entries(node.origin).map(([key, value]) => {
               if (key === 'path') {
                 return null;
               }
 
               if (value === undefined) {
+                return null;
+              }
+
+              if (key === 'tag') {
                 return null;
               }
 
@@ -53,7 +58,7 @@ const GameObjectDetail = ({ node, hitPoint }: Props) => {
                           label: k,
                           value: v,
                         }))
-                      : value
+                      : value.toString()
                   }
                 />
               );

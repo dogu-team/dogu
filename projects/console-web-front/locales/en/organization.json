@@ -7,7 +7,15 @@
   "deviceFarmPageTitle": "Device Farm",
   "organizationSettingPageTitle": "Settings",
   "teamPageTitle": "Teams",
+  "appsPageTitle": "Apps",
+  "webAutomationPageTitle": "Web Automation",
+  "mobileAppAutomationPageTitle": "Mobile App Automation",
+  "mobileGameAutomationPageTitle": "Mobile Game Automation",
   "docs": "Guides",
+
+  "sidebarWebAutomation": "Web",
+  "sidebarMobileAppAutomation": "Mobile App",
+  "sidebarMobileGameAutomation": "Mobile Game",
 
   "addNewProject": "Add new project",
   "newProjectModalProjectType": "Project template",

@@ -8,11 +8,12 @@
   "type": "commonjs",
   "scripts": {
     "build": "yarn workspaces foreach --exclude '@dogu**/*'  --jobs unlimited -ptvi run build",
+    "build:packages": "yarn workspaces foreach --include '@dogu-private/device-server' --include '@dogu-private/dogu-agent-core' --include '@dogu-private/dost-children' --include '@dogu-private/host-agent' --jobs unlimited -ptvi run build",
     "clean": "yarn workspaces foreach --exclude '@dogu**/*'  --jobs unlimited -ptvi run clean"
   },
   "workspaces": [
     "projects/*",
-    "mirror/packages/*",
+    "mirror/packages/**/*",
     "samples/*",
     "packages/*"
   ],

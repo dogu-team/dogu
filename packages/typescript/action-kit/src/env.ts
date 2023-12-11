@@ -1,7 +1,7 @@
 import { IsFilledString, LogLevel, TransformBooleanString } from '@dogu-tech/common';
 import { ActionContextEnv, DeviceId, OrganizationId, PlatformType, ProjectId, Serial, StepContextEnv } from '@dogu-tech/types';
 import { Type } from 'class-transformer';
-import { IsBoolean, IsIn, IsJSON, IsNumber, IsNumberString, IsOptional, IsString, IsUUID } from 'class-validator';
+import { IsBoolean, IsIn, IsJSON, IsNumber, IsOptional, IsString, IsUUID } from 'class-validator';
 
 export class ActionKitEnv
   implements
@@ -13,7 +13,8 @@ export class ActionKitEnv
       | 'DOGU_DEVICE_WORKSPACE_PATH'
       | 'DOGU_ROUTINE_WORKSPACE_PATH'
       | 'DOGU_DEVICE_SERIAL'
-      | 'DOGU_DEVICE_SERVER_PORT'
+      | 'DOGU_DEVICE_TOKEN'
+      | 'DOGU_DEVICE_SERVER_URL'
       | 'DOGU_HOST_PLATFORM'
       | 'DOGU_HOST_WORKSPACE_PATH'
       | 'DOGU_LOG_LEVEL'
@@ -23,6 +24,7 @@ export class ActionKitEnv
       | 'DOGU_STEP_WORKING_PATH'
       | 'DOGU_BROWSER_NAME'
       | 'DOGU_BROWSER_VERSION'
+      | 'DOGU_REPOSITORY'
     >,
     Pick<ActionContextEnv, 'DOGU_ACTION_INPUTS'>
 {
@@ -68,11 +70,18 @@ export class ActionKitEnv
   DOGU_DEVICE_SERIAL!: Serial;
 
   /**
-   * @requires process.env.DOGU_DEVICE_SERVER_PORT
+   * @requires process.env.DOGU_DEVICE_TOKEN
    * @default ''
    */
-  @IsNumberString()
-  DOGU_DEVICE_SERVER_PORT!: string;
+  @IsFilledString()
+  DOGU_DEVICE_TOKEN!: Serial;
+
+  /**
+   * @requires process.env.DOGU_DEVICE_SERVER_URL
+   * @default ''
+   */
+  @IsFilledString()
+  DOGU_DEVICE_SERVER_URL!: string;
 
   /**
    * @requires process.env.DOGU_DEVICE_WORKSPACE_PATH
@@ -108,6 +117,13 @@ export class ActionKitEnv
    */
   @IsString()
   DOGU_BROWSER_VERSION!: string;
+
+  /**
+   * @requires process.env.DOGU_REPOSITORY
+   * @default ''
+   */
+  @IsFilledString()
+  DOGU_REPOSITORY!: string;
 
   /**
    * @requires process.env.DOGU_HOST_PLATFORM

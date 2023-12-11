@@ -148,6 +148,7 @@ expose('featureConfigClient', {
 
 expose('deviceLookupClient', {
   getSubscribeMessages: () => ipcRenderer.invoke(deviceLookupClientKey.getSubscribeMessages),
+  generateDeviceToken: (serial: string) => ipcRenderer.invoke(deviceLookupClientKey.generateDeviceToken, serial),
 });
 
 expose('appStatusClient', {

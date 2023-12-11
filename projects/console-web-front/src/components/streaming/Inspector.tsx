@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { useCallback, useEffect } from 'react';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import Link from 'next/link';
-import { GamiumNodeAttributes, GAMIUM_CONTEXT_KEY, ParsedNode } from '@dogu-private/console';
+import { Radio } from 'antd';
 
 import useDeviceStreamingContext from '../../hooks/streaming/useDeviceStreamingContext';
 import GameObjectDetail from './GameObjectDetail';
@@ -12,13 +12,18 @@ import InspectorToolbar from './InspectorToolbar';
 import InspectorContextMenu from './InspectorContextMenu';
 import useInspector from '../../hooks/streaming/useInspector';
 import NativeObjectDetail from './NativeObjectDetail';
+import useGamiumInspector from '../../hooks/streaming/useGamiumInspector';
+import { InspectorType } from '../../types/streaming';
+import GamiumInspectorUITree from './GamiumInspectorUITree';
 
 interface Props {
   inspector: ReturnType<typeof useInspector>;
+  gamiumInspector: ReturnType<typeof useGamiumInspector>;
 }
 
-const Inspector = ({ inspector }: Props) => {
-  const { mode, peerConnection, loading, updateMode } = useDeviceStreamingContext();
+const Inspector = ({ inspector, gamiumInspector }: Props) => {
+  const { mode, inspectorType, updateInspectorType, peerConnection, loading, updateMode, gamiumService } =
+    useDeviceStreamingContext();
   const node = inspector.contextAndNodes?.find((item) => item.context === inspector.selectedContextKey)?.node;
   const isContextSelected = inspector.selectedContextKey !== undefined;
 
@@ -29,7 +34,7 @@ const Inspector = ({ inspector }: Props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inspector.connectGamium, peerConnection?.connectionState, loading]);
 
-  const handleClickNode = useCallback(
+  const handleClickAppNode = useCallback(
     (key: string) => {
       inspector.updateSelectedNode(key);
       updateMode('input');
@@ -38,16 +43,44 @@ const Inspector = ({ inspector }: Props) => {
     [inspector.updateSelectedNode, updateMode],
   );
 
+  const handleClickGameNode = useCallback(
+    (key: string) => {
+      gamiumInspector.updateSelectedNodeByXPath(key);
+      updateMode('input');
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [gamiumInspector.updateSelectedNodeByXPath, updateMode],
+  );
+
+  const handleRefresh = useCallback(async () => {
+    if (inspectorType === InspectorType.APP) {
+      await inspector.updateSources();
+    } else {
+      await gamiumInspector.handleDumpHierarchy();
+    }
+  }, [inspectorType, inspector.updateSources, gamiumInspector.handleDumpHierarchy]);
+
   return (
     <Box>
-      <InspectorContextMenu
-        contexts={inspector.contextAndNodes?.map((item) => item.context) ?? []}
-        selectedContext={inspector.selectedContextKey}
-        onContextChange={inspector.updateSelectedContextKey}
-      />
+      <Radio.Group
+        value={inspectorType}
+        onChange={(e) => updateInspectorType(e.target.value)}
+        style={{ marginBottom: '.5rem' }}
+      >
+        <Radio.Button value={InspectorType.APP}>Native UI</Radio.Button>
+        <Radio.Button value={InspectorType.GAME}>Game UI</Radio.Button>
+      </Radio.Group>
+
+      {inspectorType === InspectorType.APP && (
+        <InspectorContextMenu
+          contexts={inspector.contextAndNodes?.map((item) => item.context) ?? []}
+          selectedContext={inspector.selectedContextKey}
+          onContextChange={inspector.updateSelectedContextKey}
+        />
+      )}
 
       <FlexInner>
-        {!isContextSelected && (
+        {inspectorType === InspectorType.APP && !isContextSelected && (
           <EmptyContextBox>
             <div>
               <InfoCircleOutlined style={{ fontSize: '3rem' }} />
@@ -68,36 +101,44 @@ const Inspector = ({ inspector }: Props) => {
         )}
         <Inner h={55}>
           <InspectorToolbar
-            onRefresh={inspector.updateSources}
-            onReset={() => {
-              inspector.clearInspectingNode();
-              inspector.clearSelectedNode();
-              inspector.updateSources();
-              inspector.connectGamium();
-              inspector.updateSelectedContextKey(undefined);
+            onRefresh={handleRefresh}
+            onReset={async () => {
+              gamiumService?.destroyGamiumClient();
+              await gamiumService?.initializeGamiumClient();
+              await new Promise((resolve) => setTimeout(resolve, 3500));
             }}
-            selectDisabled={!isContextSelected}
+            selectDisabled={inspectorType === InspectorType.GAME ? undefined : !isContextSelected}
           />
           <Content>
             <TreeWrapper>
-              <InspectorUITree
-                isInspecting={mode === 'inspect'}
-                treeData={node ? [node] : ([] as DataNode[])}
-                inspectingNode={inspector.inspectingNode}
-                selectedNode={inspector.selectedNode}
-                onClickNode={handleClickNode}
-                onHoverNode={inspector.updateInspectingNodeByKey}
-                onLeaveNode={inspector.clearInspectingNode}
-              />
+              {inspectorType === InspectorType.APP && (
+                <InspectorUITree
+                  isInspecting={mode === 'inspect'}
+                  treeData={node ? [node] : ([] as DataNode[])}
+                  inspectingNode={inspector.inspectingNode}
+                  selectedNode={inspector.selectedNode}
+                  onClickNode={handleClickAppNode}
+                  onHoverNode={inspector.updateInspectingNodeByKey}
+                  onLeaveNode={inspector.clearInspectingNode}
+                />
+              )}
+              {inspectorType === InspectorType.GAME && (
+                <GamiumInspectorUITree
+                  isInspecting={mode === 'inspect'}
+                  treeData={gamiumInspector.gamiumTreeNode ?? []}
+                  inspectingNode={gamiumInspector.gamiumInspectingNode}
+                  selectedNode={gamiumInspector.gamiumSelectedNode}
+                  onClickNode={handleClickGameNode}
+                  onHoverNode={gamiumInspector.updateInspectingNodeByXPath}
+                  onLeaveNode={gamiumInspector.clearInspectingNode}
+                />
+              )}
             </TreeWrapper>
           </Content>
         </Inner>
         <Inner h={45} style={{ overflow: 'auto' }}>
-          {inspector.selectedContextKey === GAMIUM_CONTEXT_KEY ? (
-            <GameObjectDetail
-              node={inspector.selectedNode?.node as ParsedNode<GamiumNodeAttributes> | undefined}
-              hitPoint={inspector.hitPoint}
-            />
+          {inspectorType === InspectorType.GAME ? (
+            <GameObjectDetail node={gamiumInspector.gamiumSelectedNode} hitPoint={gamiumInspector.hitPoint} />
           ) : (
             <NativeObjectDetail node={inspector.selectedNode?.node} />
           )}

@@ -3,6 +3,7 @@ from typing import List, Optional
 import requests
 from dogu.device.common.device_http_response import DeviceHttpResponse
 from dogu.device.logger import create_logger
+from dogu.device.common.const import DOGU_DEVICE_AUTHORIZATION_HEADER_KEY
 
 
 @dataclass(frozen=True)
@@ -66,19 +67,27 @@ class EnsureBrowserAndDriverResult:
 
 
 class DeviceHostClient:
-    def __init__(self, host: str, port: int, timeout: int = 10):
-        self.host = host
-        self.port = port
-        self._host_and_port = f"{self.host}:{self.port}"
+    def __init__(self, device_server_url: str, token: str, timeout: int = 10):
+        self.device_server_url = (
+            device_server_url
+            if device_server_url[-1] != "/"
+            else device_server_url[:-1]
+        )
+        self._token = token
         self.timeout = timeout
         self._logger = create_logger(__name__)
 
     def get_free_port(self, excludes: Optional[List[int]] = None) -> int:
         if not excludes:
             excludes = []
-        full_path = f"http://{self._host_and_port}/device-host/free-port"
+        full_path = f"{self.device_server_url}/device-host/free-port"
         param = GetFreePortQuery(excludes=excludes, offset=0)
-        res = requests.get(full_path, json=asdict(param), timeout=self.timeout)
+        headers = {}
+        headers[DOGU_DEVICE_AUTHORIZATION_HEADER_KEY] = self._token
+
+        res = requests.get(
+            full_path, json=asdict(param), timeout=self.timeout, headers=headers
+        )
         res.raise_for_status()
         device_res = DeviceHttpResponse(res)
         if device_res.error()[0]:
@@ -91,10 +100,13 @@ class DeviceHostClient:
     def ensure_browser_and_driver(
         self, options: EnsureBrowserAndDriverOptions
     ) -> EnsureBrowserAndDriverResult:
-        full_path = (
-            f"http://{self._host_and_port}/device-host/ensure-browser-and-driver"
+        full_path = f"{self.device_server_url}/device-host/ensure-browser-and-driver"
+        headers = {}
+        headers[DOGU_DEVICE_AUTHORIZATION_HEADER_KEY] = self._token
+
+        res = requests.post(
+            full_path, json=asdict(options), timeout=self.timeout, headers=headers
         )
-        res = requests.post(full_path, json=asdict(options), timeout=self.timeout)
         res.raise_for_status()
         device_res = DeviceHttpResponse(res)
         if device_res.error()[0]:

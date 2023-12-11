@@ -14,7 +14,7 @@ export class PublicDeviceController {
   ) {}
 
   @Post(PublicDevice.writeGameRunTimeInfos.path)
-  @HostPermission(HOST_ACTION_TYPE.DEVICE_API)
+  @HostPermission(HOST_ACTION_TYPE.HOST_API)
   async writeGameRunTimeInfos(
     @Param(OrganizationPropCamel.organizationId) organizationId: OrganizationId,
     @Param(DevicePropCamel.deviceId) deviceId: DeviceId,

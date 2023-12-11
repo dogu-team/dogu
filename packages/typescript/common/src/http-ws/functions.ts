@@ -38,5 +38,13 @@ export function closeWebSocketWithTruncateReason(webSocket: WebSocketCloseable, 
   if (webSocket.readyState === WebSocket.CLOSING || webSocket.readyState === WebSocket.CLOSED) {
     return;
   }
-  webSocket.close(code, stringify(reason)?.slice(0, 30));
+
+  if (reason instanceof Error) {
+    reason = reason.message;
+  }
+  // https://developer.mozilla.org/en-US/docs/Web/API/WebSocket/close#reason
+  const message = stringify(reason);
+  const uint8Array = new TextEncoder().encode(message);
+  const truncatedMessage = new TextDecoder().decode(uint8Array.slice(0, 123));
+  webSocket.close(code, truncatedMessage);
 }

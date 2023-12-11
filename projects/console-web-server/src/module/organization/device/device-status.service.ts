@@ -30,7 +30,6 @@ import {
   validateMaxParallelJobs,
 } from '@dogu-private/types';
 import { notEmpty } from '@dogu-tech/common';
-import { BrowserInstallation } from '@dogu-tech/device-client-common';
 import { ForbiddenException, forwardRef, HttpException, HttpStatus, Inject, Injectable, NotFoundException, NotImplementedException } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { BaseEntity, Brackets, DataSource, EntityManager, In, IsNull, Not, SelectQueryBuilder } from 'typeorm';
@@ -792,40 +791,6 @@ export class DeviceStatusService {
 
     const enabledMobildDevices = [...globalDevices, ...projectDevices];
     return enabledMobildDevices;
-  }
-
-  static async updateDeviceBrowserInstallations(manager: EntityManager, deviceId: DeviceId, browserInstallations: BrowserInstallation[]): Promise<void> {
-    const olds = await manager.getRepository(DeviceBrowserInstallation).find({ where: { deviceId } });
-    const news = browserInstallations;
-    const minLength = Math.min(olds.length, news.length);
-    for (let i = 0; i < minLength; i++) {
-      const old = olds[i];
-      const newOne = news[i];
-      await manager.getRepository(DeviceBrowserInstallation).update(
-        { deviceBrowserInstallationId: old.deviceBrowserInstallationId },
-        {
-          browserName: newOne.browserName,
-          browserVersion: newOne.browserVersion,
-          deviceId,
-        },
-      );
-    }
-
-    if (news.length > olds.length) {
-      const addeds = news.slice(olds.length);
-      const createds = manager.getRepository(DeviceBrowserInstallation).create(
-        addeds.map((v) => ({
-          deviceBrowserInstallationId: v4(),
-          browserName: v.browserName,
-          browserVersion: v.browserVersion,
-          deviceId,
-        })),
-      );
-      await manager.getRepository(DeviceBrowserInstallation).save(createds);
-    } else if (news.length < olds.length) {
-      const deleteds = olds.slice(news.length);
-      await manager.getRepository(DeviceBrowserInstallation).softDelete(deleteds.map((v) => v.deviceBrowserInstallationId));
-    }
   }
 
   static async updateDeviceRunners(manager: EntityManager, deviceId: DeviceId): Promise<void> {

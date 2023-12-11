@@ -18,6 +18,17 @@ export module Gitlab {
     });
   }
 
+  export async function findAllRepositories(url: string, token: string) {
+    const gitlab = createSession(url, token);
+    const rv = await gitlab.Projects.all({
+      membership: true,
+      owned: true,
+      simple: true,
+    });
+
+    return rv;
+  }
+
   function getLastPage(headerLink: string): number {
     /**
      * example - '<https://gitlab.dev.dogutech.io/api/v4/projects/24/repository/tree?id=24&page=1&pagination=keyset&path=test&per_page=100&recursive=true>; rel="first", <https://gitlab.dev.dogutech.io/api/v4/projects/24/repository/tree?id=24&page=1&pagination=keyset&path=test&per_page=100&recursive=true>; rel="last"';

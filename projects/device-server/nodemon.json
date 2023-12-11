@@ -1,7 +1,0 @@
-{
-  "verbose": true,
-  "watch": ["./src", "../../packages/typescript-private/device-server/src"],
-  "exec": "tsc -b && node -r tsconfig-paths/register -r ts-node/register build/src/main",
-  "ext": "ts",
-  "delay": 3000
-}

@@ -1,0 +1,151 @@
+name: 🚀release-gcp
+run-name: 🚀release-gcp 💥${{github.event.inputs.run_type}} 🔥${{github.event.inputs.project_type}} 🚩${{github.ref_name}}
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_type:
+        type: choice
+        description: Select run type
+        options:
+          - development
+          - production
+
+      project_type:
+        type: choice
+        description: Select project type
+        options:
+          - console-web-front
+          - console-web-server
+          - billing-server
+          - dogu-redis
+          - dogu-influxdb
+          - dogu-coturn
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  DOGU_GCP_REGION: asia-northeast3
+
+  # use from scripts/release-gcp/variables.mjs
+  DEV_DOCKER_PUBLISH_TAG: asia-northeast3-docker.pkg.dev/${{secrets.GCP_DEV_PROJECT_ID}}/projects/${{github.event.inputs.project_type}}:${{github.ref_name}}
+  PROD_DOCKER_PUBLISH_TAG: asia-northeast3-docker.pkg.dev/${{secrets.GCP_PROD_PROJECT_ID}}/projects/${{github.event.inputs.project_type}}:${{github.ref_name}}
+  GCP_DEV_CICD_SA_KEY: ${{secrets.GCP_DEV_CICD_SA_KEY}}
+  GCP_PROD_CICD_SA_KEY: ${{secrets.GCP_PROD_CICD_SA_KEY}}
+  GCP_DEV_PRIVATE_SSH_KEY: ${{secrets.GCP_DEV_PRIVATE_SSH_KEY}}
+  GCP_PROD_PRIVATE_SSH_KEY: ${{secrets.GCP_PROD_PRIVATE_SSH_KEY}}
+  DOGU_RUN_TYPE: ${{github.event.inputs.run_type}}
+  DOGU_PROJECT_TYPE: ${{github.event.inputs.project_type}}
+  DEV_DOGU_TURN_SERVER_HOST: ${{secrets.DEV_DOGU_TURN_SERVER_HOST}}
+  DEV_DOGU_TURN_SERVER_USERNAME: ${{secrets.DEV_DOGU_TURN_SERVER_USERNAME}}
+  DEV_DOGU_TURN_SERVER_PASSWORD: ${{secrets.DEV_DOGU_TURN_SERVER_PASSWORD}}
+  PROD_DOGU_TURN_SERVER_HOST: ${{secrets.PROD_DOGU_TURN_SERVER_HOST}}
+  PROD_DOGU_TURN_SERVER_USERNAME: ${{secrets.PROD_DOGU_TURN_SERVER_USERNAME}}
+  PROD_DOGU_TURN_SERVER_PASSWORD: ${{secrets.PROD_DOGU_TURN_SERVER_PASSWORD}}
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          clean: true
+
+      - id: parse-variables
+        name: Parse variables
+        run: node scripts/release-gcp/variables.mjs
+
+      - name: Cache Yarn Unplugged
+        uses: actions/cache@v3
+        id: cache_yarn_unplugged
+        env:
+          cache-name: cache-yarn-unplugged
+        with:
+          path: ${{github.workspace}}/.yarn/unplugged
+          key: ${{runner.os}}-${{env.cache-name}}-${{hashFiles('yarn.lock')}}
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: yarn
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+
+      - name: Login to Artifact Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{env.DOGU_GCP_REGION}}-docker.pkg.dev
+          username: _json_key
+          password: ${{steps.parse-variables.outputs.GCP_CICD_SA_KEY}}
+
+      - name: Write env key file
+        run: echo "$DOGU_ENV_SERVICE_ACCOUNT_KEY" > service-account-key.json
+        env:
+          DOGU_ENV_SERVICE_ACCOUNT_KEY: ${{secrets.DOGU_ENV_SERVICE_ACCOUNT_KEY}}
+
+      - if: ${{steps.parse-variables.outputs.NEED_PUBLISH == 'true'}}
+        name: Push to Artifact Registry
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: true
+          tags: ${{steps.parse-variables.outputs.DOCKER_TAG}}
+          file: dockerfile.gcp
+          build-args: |
+            DOGU_RUN_TYPE=${{github.event.inputs.run_type}}
+          target: ${{github.event.inputs.project_type}}
+
+  release:
+    needs:
+      - publish
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          sparse-checkout: |
+            scripts/release-gcp
+          clean: true
+
+      - id: parse-variables
+        name: Parse variables
+        run: node scripts/release-gcp/variables.mjs
+
+      - name: Authenticate with Google Cloud
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: '${{steps.parse-variables.outputs.GCP_CICD_SA_KEY}}'
+
+      - name: Release to Google Cloud Compute Engine
+        uses: google-github-actions/ssh-compute@v0
+        with:
+          instance_name: ${{github.event.inputs.project_type}}
+          zone: ${{env.DOGU_GCP_REGION}}-a
+          ssh_private_key: '${{steps.parse-variables.outputs.GCP_PRIVATE_SSH_KEY}}'
+          command: |
+            gcloud auth configure-docker ${{env.DOGU_GCP_REGION}}-docker.pkg.dev --quiet && \
+            docker ps -qa | xargs -r docker rm -f && \
+            docker system prune --volumes -a -f && \
+            docker pull ${{steps.parse-variables.outputs.DOCKER_TAG}} && \
+            ${{steps.parse-variables.outputs.DOCKER_RUN_COMMAND}} && \
+            docker image prune -a -f
+
+  send-slack:
+    runs-on: ubuntu-latest
+    needs: release
+    if: ${{always()}}
+
+    steps:
+      - name: Send Slack
+        uses: dogu-team/slack@v1.0
+        with:
+          template: 'CD'
+          slack-channel-id: 'C057ML9UH34'
+          result-status: ${{needs.release.result}}
+          ignore-notify: false
+        env:
+          SLACK_BOT_TOKEN: ${{secrets.SLACK_BOT_TOKEN}}

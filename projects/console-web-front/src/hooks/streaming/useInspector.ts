@@ -10,7 +10,8 @@ import {
   NodeWithPosition,
   ParsedNode,
 } from '@dogu-private/console';
-import { HitPoint, ScreenSize } from '@dogu-tech/device-client-common';
+import { ScreenSize } from '@dogu-tech/device-client-common';
+import { GamiumClient } from 'gamium/common';
 import { throttle } from 'lodash';
 import React, { RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
@@ -19,18 +20,21 @@ import { BrowserDeviceInspector } from '../../utils/streaming/browser-device-ins
 
 const useInspector = (
   deviceInspector: RefObject<BrowserDeviceInspector | undefined>,
+  gamiumRef: RefObject<GamiumClient | undefined>,
   device: DeviceBase | null,
   videoRef: RefObject<HTMLVideoElement> | null,
 ) => {
   const [contextAndNodes, setContextAndNodes] = useState<ContextNode<NodeAttributes>[]>();
   const [selectedContextKey, setSelectedContextKey] = useState<string>();
-  const [hitPoint, setHitPoint] = useState<HitPoint>();
+  // const [hitPoint, setHitPoint] = useState<HitPoint>();
   const [selectedNode, setSelectedNode] = useState<NodeWithPosition<NodeAttributes>>();
   const [inspectingNode, setInspectingNode] = useState<NodeWithPosition<NodeAttributes>>();
   const inspectorModule = useRef<NodeUtilizer<NodeAttributes>>();
 
   const worker = useMemo(() => new Worker(new URL('../../workers/native-ui-tree.ts', import.meta.url)), []);
-  const selectedContextAndNode = contextAndNodes?.find((c) => c.context === selectedContextKey);
+  const selectedContextAndNode: ContextNode<NodeAttributes> | undefined = contextAndNodes?.find(
+    (c) => c.context === selectedContextKey,
+  );
   const isGamium = selectedContextKey === GAMIUM_CONTEXT_KEY;
 
   useEffect(() => {
@@ -42,10 +46,24 @@ const useInspector = (
     }
   }, [selectedContextAndNode, isGamium, device?.platform]);
 
+  const connectGamium = useCallback(async () => {
+    if (!deviceInspector.current || !device) {
+      return;
+    }
+
+    try {
+      const result = await deviceInspector.current.tryConnectGamiumInspector(device.serial);
+      return result;
+    } catch (e) {
+      console.error(e);
+    }
+  }, [device]);
+
   const getRawSources = useCallback(async () => {
     if (deviceInspector.current && device) {
       const result = await deviceInspector.current.getContextPageSources(device.serial);
-      return result;
+      const resultWithoutGmaium = result.filter((r) => r.context !== GAMIUM_CONTEXT_KEY);
+      return resultWithoutGmaium;
     }
 
     throw new Error('deviceInspector or device is undefined');
@@ -162,7 +180,7 @@ const useInspector = (
   );
 
   const getNodeByPos = useCallback(
-    (e: React.MouseEvent): NodeWithPosition<NodeAttributes> | undefined => {
+    async (e: React.MouseEvent): Promise<NodeWithPosition<NodeAttributes> | undefined> => {
       if (!selectedContextAndNode || !videoRef?.current || !device || !inspectorModule.current) {
         return;
       }
@@ -271,7 +289,7 @@ const useInspector = (
 
       return { node: smallestNode, position };
     },
-    [getScreenPosition, selectedContextAndNode, videoRef, device],
+    [getScreenPosition, selectedContextAndNode, videoRef, device, selectedContextKey],
   );
 
   const updateInspectingNodeByKey = useCallback(
@@ -285,8 +303,8 @@ const useInspector = (
   );
 
   const updateInspectingNodeByPos = useMemo(() => {
-    return throttle((e: React.MouseEvent) => {
-      const nodeAndPosition = getNodeByPos(e);
+    return throttle(async (e: React.MouseEvent) => {
+      const nodeAndPosition = await getNodeByPos(e);
       if (nodeAndPosition) {
         setInspectingNode(nodeAndPosition);
       }
@@ -316,68 +334,56 @@ const useInspector = (
 
   const updateSelectedNodeFromInspectingNode = useCallback(() => {
     setSelectedNode(inspectingNode);
-  }, [inspectingNode]);
+    clearInspectingNode();
+  }, [inspectingNode, clearInspectingNode]);
 
   const clearSelectedNode = useCallback(() => {
     setSelectedNode(undefined);
   }, []);
 
-  const connectGamium = useCallback(async () => {
-    if (!deviceInspector.current || !device) {
-      return;
-    }
+  // const updateHitPoint = useCallback(
+  //   async (e: React.MouseEvent) => {
+  //     if (isGamium && device?.serial && deviceInspector.current && videoRef?.current) {
+  //       const mouseX = e.nativeEvent.offsetX;
+  //       const mouseY = e.nativeEvent.offsetY;
 
-    try {
-      const result = await deviceInspector.current.tryConnectGamiumInspector(device.serial);
-      return result;
-    } catch (e) {
-      console.error(e);
-    }
-  }, [device]);
+  //       const deviceSize = inspectorModule.current?.getDeviceScreenSize();
 
-  const updateHitPoint = useCallback(
-    async (e: React.MouseEvent) => {
-      if (isGamium && device?.serial && deviceInspector.current && videoRef?.current) {
-        const mouseX = e.nativeEvent.offsetX;
-        const mouseY = e.nativeEvent.offsetY;
+  //       if (!deviceSize) {
+  //         return;
+  //       }
 
-        const deviceSize = inspectorModule.current?.getDeviceScreenSize();
+  //       const videoWidth = videoRef.current.offsetWidth;
+  //       const videoHeight = videoRef.current.offsetHeight;
+  //       const deviceWidthRatio = videoWidth / deviceSize.width;
+  //       const deviceHeightRatio = videoHeight / deviceSize.height;
+  //       const deviceX = mouseX / deviceWidthRatio;
+  //       const deviceY = mouseY / deviceHeightRatio;
 
-        if (!deviceSize) {
-          return;
-        }
-
-        const videoWidth = videoRef.current.offsetWidth;
-        const videoHeight = videoRef.current.offsetHeight;
-        const deviceWidthRatio = videoWidth / deviceSize.width;
-        const deviceHeightRatio = videoHeight / deviceSize.height;
-        const deviceX = mouseX / deviceWidthRatio;
-        const deviceY = mouseY / deviceHeightRatio;
-
-        try {
-          const hitpoint = await deviceInspector.current.getHitPoint(
-            device.serial,
-            {
-              x: deviceX,
-              y: deviceY,
-            },
-            deviceSize,
-          );
-          setHitPoint(hitpoint);
-        } catch (e) {
-          console.debug('error get hitpoint', e);
-        }
-      }
-    },
-    [isGamium, device?.serial, videoRef],
-  );
+  //       try {
+  //         const hitpoint = await deviceInspector.current.getHitPoint(
+  //           device.serial,
+  //           {
+  //             x: deviceX,
+  //             y: deviceY,
+  //           },
+  //           deviceSize,
+  //         );
+  //         setHitPoint(hitpoint);
+  //       } catch (e) {
+  //         console.debug('error get hitpoint', e);
+  //       }
+  //     }
+  //   },
+  //   [isGamium, device?.serial, videoRef],
+  // );
 
   return {
     contextAndNodes,
     selectedContextKey,
     inspectingNode,
     selectedNode,
-    hitPoint,
+    // hitPoint,
     updateSources,
     updateInspectingNodeByKey,
     updateInspectingNodeByPos,
@@ -387,7 +393,7 @@ const useInspector = (
     updateSelectedNodeFromInspectingNode,
     clearSelectedNode,
     connectGamium,
-    updateHitPoint,
+    // updateHitPoint,
   };
 };
 

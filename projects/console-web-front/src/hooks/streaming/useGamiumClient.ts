@@ -104,7 +104,7 @@ const useGamiumClient = (
 
       gamiumClientRef.current = gamiumClient;
     }, 3000);
-  }, [peerConnectionRef, device, forward, sendThrottleMs]);
+  }, [device, forward, sendThrottleMs]);
 
   const destroyGamiumClient = useCallback(() => {
     console.debug('gamium client closer', closer.current);
@@ -114,12 +114,14 @@ const useGamiumClient = (
   }, []);
 
   useEffect(() => {
+    if (device?.serial && peerConnectionRef.current?.connectionState === 'connected') {
+      initializeGamiumClient();
+    }
+
     return () => {
-      if (device) {
-        destroyGamiumClient();
-      }
+      destroyGamiumClient();
     };
-  }, [device]);
+  }, [device?.serial, peerConnectionRef.current?.connectionState, initializeGamiumClient, destroyGamiumClient]);
 
   return { gamiumClientRef, initializeGamiumClient, destroyGamiumClient };
 };

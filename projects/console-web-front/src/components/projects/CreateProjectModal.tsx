@@ -23,9 +23,10 @@ interface Props {
   isOpen: boolean;
   close: () => void;
   onCreate: (result: ProjectBase) => void;
+  projectType?: PROJECT_TYPE;
 }
 
-const CreateProjectModal = ({ isOpen, close, onCreate }: Props) => {
+const CreateProjectModal = ({ isOpen, close, onCreate, projectType }: Props) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
   const router = useRouter();
@@ -43,7 +44,7 @@ const CreateProjectModal = ({ isOpen, close, onCreate }: Props) => {
     const desc = form.getFieldValue('desc');
     const type = form.getFieldValue('type');
 
-    const createProjectBody = { name, description: desc, type };
+    const createProjectBody = { name, description: desc, type: projectType ?? type };
 
     setLoading(true);
     if (name) {
@@ -70,14 +71,16 @@ const CreateProjectModal = ({ isOpen, close, onCreate }: Props) => {
       okText={t('common:add')}
       form={
         <Form form={form} id="new-project" layout="vertical" onFinish={handleCreate}>
-          <Form.Item
-            label={t('organization:newProjectModalProjectType')}
-            name="type"
-            rules={[{ required: true, message: 'Select your project template' }]}
-            initialValue={PROJECT_TYPE.WEB}
-          >
-            <ProjectTypeRadio />
-          </Form.Item>
+          {projectType === undefined && (
+            <Form.Item
+              label={t('organization:newProjectModalProjectType')}
+              name="type"
+              rules={[{ required: true, message: 'Select your project template' }]}
+              initialValue={PROJECT_TYPE.WEB}
+            >
+              <ProjectTypeRadio />
+            </Form.Item>
+          )}
           <Form.Item
             label={t('organization:newProjectModalInputName')}
             name="name"

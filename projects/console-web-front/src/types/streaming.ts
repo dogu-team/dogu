@@ -34,3 +34,8 @@ export enum StreamingTabMenuKey {
   INSTALL = 'install',
   LOGS = 'logs',
 }
+
+export enum InspectorType {
+  APP = 'app',
+  GAME = 'game',
+}

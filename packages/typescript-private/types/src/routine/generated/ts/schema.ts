@@ -22,6 +22,10 @@ export interface RoutineSchema {
   on: {
     [k: string]: string | null;
   };
+  /**
+   * The repository to run the pipeline on.
+   */
+  repository: string;
 }
 /**
  * This interface was referenced by `RoutineSchema`'s JSON-Schema
@@ -30,6 +34,7 @@ export interface RoutineSchema {
 export interface JobSchema {
   needs?: string | string[];
   record?: boolean;
+  cloud?: boolean;
   browserName?: string;
   browserVersion?: string;
   appVersion?:
@@ -50,7 +55,7 @@ export interface JobSchema {
          */
         [k: string]: string;
       };
-  'runs-on':
+  'runs-on'?:
     | {
         group: string | string[];
       }

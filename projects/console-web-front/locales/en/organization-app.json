@@ -1,0 +1,38 @@
+{
+  "appTableNameColumn": "Name",
+  "appTableVersionColumn": "Version",
+  "appTableVersionCodeColumn": "Build version",
+  "appTableExtensionColumn": "Extension",
+  "appTableUploader": "Uploader",
+  "appTableUploadDateColumn": "Uploaded",
+  "appTableSizeColumn": "Size",
+  "appTablePackageNameColumn": "Package name",
+
+  "appEmptyDescription": "No application.<br></br>Upload your application and use it for live testing or automation testing.<br></br><br></br><link>Click here</link> for more information",
+
+  "appPackageItemDeleteMenuTitle": "Delete all apps",
+  "appItemDownloadMenuTitle": "Download",
+  "appItemDeleteMenuTitle": "Delete",
+
+  "appItemDownloadFailureMessage": "Failed to download\n{{reason}}",
+
+  "appPackageItemDeleteConfirmModalTitle": "Delete all applications",
+  "appPackageItemDeleteConfirmModalDescription": "Are you sure to delete all applications with {{packageName}}?\nThis action may effect tests that use these applications.",
+  "appPackageItemDeleteConfirmModalConfirmButtonTitle": "Confirm and delete",
+  "appPackageItemDeleteSuccessMessage": "Deleted!",
+  "appPackageItemDeleteFailureMessage": "Failed to delete\n{{reason}}",
+
+  "appItemDeleteConfirmModalTitle": "Delete application",
+  "appItemDeleteConfirmModalDescription": "Are you sure to delete the application?\nThis action may effect tests that use this application.",
+  "appItemDeleteConfirmModalConfirmButtonTitle": "Confirm and delete",
+  "appItemDeleteSuccessMessage": "Deleted!",
+  "appItemDeleteFailureMessage": "Failed to delete\n{{reason}}",
+
+  "uploadAppButtonTitle": "Upload app",
+  "uploadAppModalTitle": "Upload an application",
+  "uploadAppDescriptionText": "Upload an application",
+  "uploadAppDescriptionHintText": "You can upload an application by dragging it here or clicking on the button.<br></br>Only <code>.apk .ipa</code> files are supported.",
+  "uploadAppLatestCheckboxText": "Upload as latest version",
+  "uploadAppSuccessMessage": "Uploaded successfully.",
+  "uploadAppFailureMessage": "Failed to upload.\n{{reason}}"
+}

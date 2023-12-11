@@ -15,26 +15,27 @@ const DeviceStreamingLayout = dynamic<DeviceStreamingLayoutProps>(
 
 interface Props {
   organization: OrganizationBase;
-  project: ProjectBase;
   device: DeviceBase;
   me: UserBase;
 }
 
-const RecordTesting = ({ organization, me, project, device }: Props) => {
+const RecordTesting = ({ organization, me, device }: Props) => {
   const router = useRouter();
   const caseId = router.query.caseId as RecordTestCaseId | undefined;
   const stepId = router.query.step as RecordTestStepId | undefined;
 
-  return (
-    <DeviceStreamingLayout
-      organization={organization}
-      device={device}
-      right={caseId ? <RecordTestingEditor /> : <RecordTestingEntry project={project} />}
-      screenViewer={<RecordTestingScreenViewer project={project} caseId={caseId} stepId={stepId} />}
-      hideDeviceSelector
-      userId={me.userId}
-    />
-  );
+  // return (
+  //   <DeviceStreamingLayout
+  //     organization={organization}
+  //     device={device}
+  //     right={caseId ? <RecordTestingEditor /> : <RecordTestingEntry project={project} />}
+  //     screenViewer={<RecordTestingScreenViewer project={project} caseId={caseId} stepId={stepId} />}
+  //     hideDeviceSelector
+  //     userId={me.userId}
+  //   />
+  // );
+
+  return <div />;
 };
 
 export default RecordTesting;

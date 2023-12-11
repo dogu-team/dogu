@@ -46,23 +46,3 @@ function isCircularDependency(schema: RoutineSchema, jobName: string, seedJobNam
   const isCircular = needs.some((need) => need === seedJobName || isCircularDependency(schema, need, seedJobName));
   return isCircular;
 }
-
-function emptyCheckRunsOn(jobSchema: JobSchema): void {
-  if (!jobSchema['runs-on']) {
-    // error
-  }
-
-  const runsOn = jobSchema['runs-on'];
-  if (typeof runsOn === 'string') {
-    if (runsOn === '') {
-      // error
-    }
-    if (Array.isArray(runsOn)) {
-      if (runsOn.length === 0) {
-        // error
-      }
-    }
-
-    // group check
-  }
-}

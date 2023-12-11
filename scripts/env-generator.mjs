@@ -14,7 +14,9 @@ function getBinaryPath() {
   }
 }
 
-if (shell.exec(`${getBinaryPath()} ${args.join(' ')}`).code !== 0) {
+const binaryPath = getBinaryPath();
+shell.chmod('+x', binaryPath);
+if (shell.exec(`${binaryPath} ${args.join(' ')}`).code !== 0) {
   shell.echo('Error: env-generator failed');
   shell.exit(1);
 }

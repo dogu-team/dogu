@@ -1,0 +1,38 @@
+{
+  "appTableNameColumn": "이름",
+  "appTableVersionColumn": "버전",
+  "appTableVersionCodeColumn": "빌드버전",
+  "appTableExtensionColumn": "확장자",
+  "appTableUploader": "업로더",
+  "appTableUploadDateColumn": "업로드 날짜",
+  "appTableSizeColumn": "크기",
+  "appTablePackageNameColumn": "패키지 이름",
+
+  "appEmptyDescription": "업로드한 앱이 없습니다.<br></br>앱을 업로드하고 라이브 테스트 또는 테스트 자동화에서 사용해보세요.<br></br><br></br><link>여기를 눌러</link> 더 많은 정보 보기",
+
+  "appPackageItemDeleteMenuTitle": "모든 앱 삭제",
+  "appItemDownloadMenuTitle": "다운로드",
+  "appItemDeleteMenuTitle": "삭제",
+
+  "appItemDownloadFailureMessage": "다운로드 실패\n{{reason}}",
+
+  "appPackageItemDeleteConfirmModalTitle": "모든 앱 삭제하기",
+  "appPackageItemDeleteConfirmModalDescription": "{{packageName}}의 모든 앱을 정말 삭제할까요?\n해당 앱을 쓰는 테스트는 작동하지 않게 됩니다.",
+  "appPackageItemDeleteConfirmModalConfirmButtonTitle": "확인 및 삭제",
+  "appPackageItemDeleteSuccessMessage": "삭제됨",
+  "appPackageItemDeleteFailureMessage": "삭제 실패\n{{reason}}",
+
+  "appItemDeleteConfirmModalTitle": "앱 삭제하기",
+  "appItemDeleteConfirmModalDescription": "이 앱을 정말 삭제할까요?\n해당 앱을 쓰는 테스트는 작동하지 않게 됩니다.",
+  "appItemDeleteConfirmModalConfirmButtonTitle": "확인 및 삭제",
+  "appItemDeleteSuccessMessage": "삭제됨",
+  "appItemDeleteFailureMessage": "삭제 실패\n{{reason}}",
+
+  "uploadAppButtonTitle": "앱 업로드",
+  "uploadAppModalTitle": "앱 업로드",
+  "uploadAppDescriptionText": "앱을 업로드하세요.",
+  "uploadAppDescriptionHintText": "앱을 여기로 드래그 하거나 여기를 클릭해 업로드 할 수 있습니다.<br></br><code>.apk .ipa</code> 파일 형식만 지원됩니다.",
+  "uploadAppSuccessMessage": "업로드 성공",
+  "uploadAppLatestCheckboxText": "최신 버전으로 업로드하기",
+  "uploadAppFailureMessage": "업로드 실패\n{{reason}}"
+}

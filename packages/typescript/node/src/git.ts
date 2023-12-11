@@ -95,18 +95,16 @@ function mergeGitPullOptions(options?: GitPullOptions): Required<GitPullOptions>
 }
 
 export class GitCommandBuilder {
-  constructor(private readonly executablePath: string, private readonly workingPath: string) {}
-
-  private async validateExecutablePath(): Promise<void> {
-    await fs.promises.access(this.executablePath, fs.constants.X_OK);
-  }
+  constructor(
+    private readonly executablePath: string,
+    private readonly workingPath: string,
+  ) {}
 
   private async ensureWorkingPath(): Promise<void> {
     await fs.promises.mkdir(this.workingPath, { recursive: true });
   }
 
   private async ensurePaths(): Promise<void> {
-    await this.validateExecutablePath();
     await this.ensureWorkingPath();
   }
 

@@ -51,6 +51,9 @@ const ToolbarButton = ({
       color="#fff"
       destroyTooltipOnHide={destroyTooltipOnHide}
       overlayInnerStyle={tooltipStyle}
+      overlayStyle={{
+        maxWidth: '400px',
+      }}
     >
       <StyledToolbarButton tabIndex={-1} {...props}>
         <SpaceBetween>

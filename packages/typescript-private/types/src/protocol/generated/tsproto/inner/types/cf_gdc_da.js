@@ -7,7 +7,6 @@ exports.CfGdcDaControlResult = exports.CfGdcDaControlParam = exports.DataChannel
 /* eslint-disable */
 const minimal_1 = __importDefault(require("protobufjs/minimal"));
 const errors_1 = require("../../outer/errors");
-const http_ws_1 = require("../../outer/http_ws");
 const device_control_1 = require("./device_control");
 function createBaseDataChannelProtocolDefault() {
     return {};
@@ -117,13 +116,10 @@ exports.DataChannelProtocolDeviceHttp = {
     },
 };
 function createBaseDataChannelProtocolDeviceWebSocket() {
-    return { connection: undefined };
+    return {};
 }
 exports.DataChannelProtocolDeviceWebSocket = {
-    encode(message, writer = minimal_1.default.Writer.create()) {
-        if (message.connection !== undefined) {
-            http_ws_1.WebSocketConnection.encode(message.connection, writer.uint32(10).fork()).ldelim();
-        }
+    encode(_, writer = minimal_1.default.Writer.create()) {
         return writer;
     },
     decode(input, length) {
@@ -133,9 +129,6 @@ exports.DataChannelProtocolDeviceWebSocket = {
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
-                case 1:
-                    message.connection = http_ws_1.WebSocketConnection.decode(reader, reader.uint32());
-                    break;
                 default:
                     reader.skipType(tag & 7);
                     break;
@@ -143,17 +136,15 @@ exports.DataChannelProtocolDeviceWebSocket = {
         }
         return message;
     },
-    fromJSON(object) {
-        return { connection: isSet(object.connection) ? http_ws_1.WebSocketConnection.fromJSON(object.connection) : undefined };
+    fromJSON(_) {
+        return {};
     },
-    toJSON(message) {
+    toJSON(_) {
         const obj = {};
-        message.connection !== undefined && (obj.connection = message.connection ? http_ws_1.WebSocketConnection.toJSON(message.connection) : undefined);
         return obj;
     },
-    fromPartial(object) {
+    fromPartial(_) {
         const message = createBaseDataChannelProtocolDeviceWebSocket();
-        message.connection = object.connection !== undefined && object.connection !== null ? http_ws_1.WebSocketConnection.fromPartial(object.connection) : undefined;
         return message;
     },
 };

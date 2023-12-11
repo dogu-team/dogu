@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "dogu",
-  "version": "2.6.23",
+  "version": "2.7.3",
   "license": "SEE LICENSE IN https://github.com/dogu-team/dogu/blob/main/LICENSE.md",
   "author": "Dogu Technologies",
   "repository": "https://github.com/dogu-team/dogu.git",
@@ -21,7 +21,7 @@
     "newbie": "yarn run newbie:localdev && yarn run newbie:cicd && yarn run newbie:nm-space && yarn run newbie:python",
     "newbie:cicd": "yarn set version 3.3.1 && yarn install",
     "newbie:localdev": "husky install",
-    "newbie:nm-space": "ts-node scripts/nm-space/mirrorCopyOnly && ts-node scripts/nm-space/run run 'yarn install --no-immutable'",
+    "newbie:nm-space": "ts-node scripts/nm-space/mirrorCopyOnly && ts-node scripts/nm-space/run run 'yarn install --no-immutable && yarn run build:packages'",
     "newbie:python": "turbo run newbie:python",
     "publish:github:dev": "cross-env DOGU_RUN_TYPE=development yarn workspaces foreach -tvi --jobs unlimited run publish:github",
     "publish:github:prod": "cross-env DOGU_RUN_TYPE=production yarn workspaces foreach -tvi --jobs unlimited run publish:github",

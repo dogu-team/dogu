@@ -1,8 +1,12 @@
+import { OrganizationApplicationBase } from '@dogu-private/console';
 import { OrganizationId, Serial } from '@dogu-private/types';
 import { DeviceClient, DeviceHostClient } from '@dogu-tech/device-client-common';
 import { RefObject, useCallback, useState } from 'react';
 import { v4 } from 'uuid';
-import { uploadDeviceApp } from '../../api/organization';
+import {
+  getOrganizationApplicationDownloadUrl,
+  uploadOrganizationApplication,
+} from '../../api/organization-application';
 
 const useDeviceAppInstall = (
   serial: Serial | undefined,
@@ -10,7 +14,7 @@ const useDeviceAppInstall = (
   deviceClientRef: RefObject<DeviceClient | undefined> | undefined,
   option: { isCloudDevice: boolean },
 ) => {
-  const [app, setApp] = useState<File>();
+  const [app, setApp] = useState<File | OrganizationApplicationBase>();
   const [progress, setProgress] = useState<number>();
   const [isInstalling, setIsInstalling] = useState(false);
   const [result, setResult] = useState<{
@@ -24,6 +28,60 @@ const useDeviceAppInstall = (
     setResult(undefined);
     setApp(undefined);
   }, []);
+
+  const installApp = useCallback(
+    async (app: OrganizationApplicationBase) => {
+      if (!deviceHostClientRef?.current || !serial) {
+        return;
+      }
+
+      setApp(app);
+
+      try {
+        const appDownloadUrl = await getOrganizationApplicationDownloadUrl(
+          app.organizationId,
+          app.organizationApplicationId,
+        );
+
+        const uuid = v4();
+        const basePath = await deviceHostClientRef.current.getTempPath();
+        const hostFilePath = `${basePath}/${uuid}/${app.name}.${app.fileExtension}`;
+
+        setIsInstalling(true);
+        await deviceHostClientRef.current.downloadSharedResource(hostFilePath, appDownloadUrl, app.fileSize);
+        // resign app for ios
+        if (option.isCloudDevice && app.name.endsWith('.ipa')) {
+          await deviceHostClientRef.current.resignApp({ filePath: hostFilePath });
+        }
+        await deviceClientRef?.current?.installApp(serial, hostFilePath);
+        await deviceClientRef?.current?.runApp(serial, hostFilePath);
+
+        setIsInstalling(false);
+        setResult({
+          isSuccess: true,
+        });
+        setTimeout(() => reset(), 2000);
+
+        deviceHostClientRef.current
+          .removeTemp({
+            pathUnderTemp: `${uuid}/${app.name}.${app.fileExtension}`,
+          })
+          .catch((e) => {
+            console.error(`Temp application removal failed`, e);
+          });
+      } catch (e) {
+        console.error(e);
+        setResult({
+          isSuccess: false,
+          failType: 'install',
+          error: new Error('Install failed'),
+        });
+        setTimeout(() => reset(), 2000);
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [serial, reset],
+  );
 
   const uploadAndInstallApp = useCallback(
     async (organizationId: OrganizationId, file: File) => {
@@ -42,39 +100,14 @@ const useDeviceAppInstall = (
       setApp(file);
 
       try {
-        const path = await uploadDeviceApp(organizationId, file, (e) => {
+        const app = await uploadOrganizationApplication(organizationId, file, (e) => {
           if (e.total) {
             setProgress((e.loaded / e.total) * 100);
           }
         });
         setProgress(undefined);
 
-        const uuid = v4();
-        const basePath = await deviceHostClientRef.current.getTempPath();
-        const hostFilePath = `${basePath}/${uuid}/${file.name}`;
-
-        setIsInstalling(true);
-        await deviceHostClientRef.current.downloadSharedResource(hostFilePath, path, file.size);
-        // resign app for ios
-        if (option.isCloudDevice && file.name.endsWith('.ipa')) {
-          await deviceHostClientRef.current.resignApp({ filePath: hostFilePath });
-        }
-        await deviceClientRef?.current?.installApp(serial, hostFilePath);
-        await deviceClientRef?.current?.runApp(serial, hostFilePath);
-
-        setIsInstalling(false);
-        setResult({
-          isSuccess: true,
-        });
-        setTimeout(() => reset(), 2000);
-
-        deviceHostClientRef.current
-          .removeTemp({
-            pathUnderTemp: `${uuid}/${file.name}`,
-          })
-          .catch((e) => {
-            console.error(`Temp application removal failed`, e);
-          });
+        await installApp(app);
       } catch (e) {
         setResult({
           isSuccess: false,
@@ -84,10 +117,10 @@ const useDeviceAppInstall = (
         setTimeout(() => reset(), 2000);
       }
     },
-    [serial, reset],
+    [installApp, reset, serial],
   );
 
-  return { isInstalling, progress, app, result, uploadAndInstallApp };
+  return { isInstalling, progress, app, result, uploadAndInstallApp, installApp };
 };
 
 export default useDeviceAppInstall;

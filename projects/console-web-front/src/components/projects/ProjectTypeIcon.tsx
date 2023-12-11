@@ -1,8 +1,10 @@
 import { PROJECT_TYPE } from '@dogu-private/types';
-import { MdWeb, MdOutlineGamepad } from 'react-icons/md';
+import { GoBrowser } from 'react-icons/go';
 import { LiaToolsSolid } from 'react-icons/lia';
 import { MobileOutlined } from '@ant-design/icons';
-import { Tooltip } from 'antd';
+import Image from 'next/image';
+
+import resources from '../../resources';
 
 interface Props {
   type: PROJECT_TYPE;
@@ -14,11 +16,15 @@ const ProjectTypeIcon = ({ type, style }: Props) => {
     case PROJECT_TYPE.CUSTOM:
       return <LiaToolsSolid style={style} />;
     case PROJECT_TYPE.WEB:
-      return <MdWeb style={style} />;
+      return <GoBrowser style={style} />;
     case PROJECT_TYPE.APP:
       return <MobileOutlined style={style} />;
     case PROJECT_TYPE.GAME:
-      return <MdOutlineGamepad style={style} />;
+      return (
+        <span style={{ display: 'inline-flex', position: 'relative', width: '1rem', height: '1rem', ...style }}>
+          <Image src={resources.icons.mobileGame} fill alt="mobile-game" />
+        </span>
+      );
     default:
       return null;
   }

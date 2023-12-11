@@ -1,8 +1,8 @@
 import { DeviceBase, OrganizationBase, UserBase } from '@dogu-private/console';
 import { useRouter } from 'next/router';
 import styled from 'styled-components';
-import useEventStore from '../../stores/events';
 
+import useEventStore from '../../stores/events';
 import { flexRowCenteredStyle } from '../../styles/box';
 import ErrorBox from '../common/boxes/ErrorBox';
 import DeviceControlToolbar from '../streaming/DeviceControlToolbar';

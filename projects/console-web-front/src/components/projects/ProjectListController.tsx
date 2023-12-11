@@ -1,21 +1,25 @@
 import useTranslation from 'next-translate/useTranslation';
-import { LoadingOutlined, ProjectOutlined } from '@ant-design/icons';
-import { instanceOfUserBase, ProjectBase, TeamBase, UserBase } from '@dogu-private/console';
+import { CopyOutlined, LoadingOutlined, ProjectOutlined } from '@ant-design/icons';
+import { ProjectBase } from '@dogu-private/console';
 import { useRouter } from 'next/router';
 import styled from 'styled-components';
-import { Avatar, List, Tooltip } from 'antd';
+import { List, MenuProps, message } from 'antd';
 import { OrganizationId, PROJECT_TYPE } from '@dogu-private/types';
 import Link from 'next/link';
 import Trans from 'next-translate/Trans';
+import { isAxiosError } from 'axios';
 
 import useRefresh from '../../hooks/useRefresh';
 import usePaginationSWR from '../../hooks/usePaginationSWR';
 import { flexRowBaseStyle, listItemStyle, tableCellStyle, tableHeaderStyle } from '../../styles/box';
 import { listActiveNameStyle } from '../../styles/text';
-import ProfileImage from '../ProfileImage';
 import ListEmpty from '../common/boxes/ListEmpty';
-import { getLocaleFormattedDate } from '../../utils/locale';
-import ProjectTypeIcon from './ProjectTypeIcon';
+import MenuButton from '../buttons/MenuButton';
+import MenuItemButton from '../buttons/MenuItemButton';
+import { deleteProject } from '../../api/project';
+import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd';
+import { getErrorMessageFromAxios } from '../../utils/error';
+import useEventStore from 'src/stores/events';
 
 interface ProjectItemProps {
   project: ProjectBase;
@@ -23,6 +27,8 @@ interface ProjectItemProps {
 
 const ProjectItem = ({ project }: ProjectItemProps) => {
   const { t, lang } = useTranslation();
+  const router = useRouter();
+  const fireEvent = useEventStore((state) => state.fireEvent);
 
   const getTypeText = (type: PROJECT_TYPE) => {
     switch (type) {
@@ -39,21 +45,76 @@ const ProjectItem = ({ project }: ProjectItemProps) => {
     }
   };
 
+  const copyProjectId = async () => {
+    try {
+      await navigator.clipboard.writeText(project.projectId);
+      message.success(t('common:copyClipboard'));
+    } catch (e) {
+      message.error(t('common:copyClipboardFailed'));
+    }
+  };
+
+  const handleDeleteProject = async () => {
+    try {
+      await deleteProject(project.organizationId, project.projectId);
+      sendSuccessNotification('Deleted!');
+      fireEvent('onProjectDeleted');
+    } catch (e) {
+      if (isAxiosError(e)) {
+        sendErrorNotification(`Failed to delete project.\n${getErrorMessageFromAxios(e)}`);
+      }
+    }
+  };
+
+  const items: MenuProps['items'] = [
+    // {
+    //   label: (
+    //     <MenuItemButton danger={false} onClick={copyProjectId}>
+    //       Copy project ID
+    //     </MenuItemButton>
+    //   ),
+    //   key: 'copy-id',
+    // },
+    // {
+    //   type: 'divider',
+    // },
+    {
+      label: (
+        <MenuItemButton
+          danger
+          modalTitle="Delete project"
+          modalButtonTitle="Confirm & Delete"
+          modalContent={'Are you sure to delete this project? This cannot be undone.'}
+          onConfirm={handleDeleteProject}
+        >
+          Delete
+        </MenuItemButton>
+      ),
+      key: 'delete',
+    },
+  ];
+
   return (
     <Item>
       <ItemInner>
         <TwoSpan>
-          <StyledLink href={`/dashboard/${project.organizationId}/projects/${project.projectId}/remotes`}>
-            {project.name}
-          </StyledLink>
+          <StyledLink href={`${router.asPath}/${project.projectId}/routines`}>{project.name}</StyledLink>
         </TwoSpan>
-        <OneSpan>
+        <TwoSpan>
+          <StyledProjectId onClick={copyProjectId}>
+            {project.projectId}{' '}
+            <i>
+              <CopyOutlined />
+            </i>
+          </StyledProjectId>
+        </TwoSpan>
+        {/* <OneSpan>
           <FlexRow>
             <ProjectTypeIcon type={project.type} style={{ fontSize: '1.1rem', marginRight: '.25rem' }} />
             <p>{getTypeText(project.type)}</p>
           </FlexRow>
-        </OneSpan>
-        <TwoSpan>
+        </OneSpan> */}
+        {/* <TwoSpan>
           <Avatar.Group>
             {project.members?.map((item) => {
               if (instanceOfUserBase(item)) {
@@ -90,7 +151,10 @@ const ProjectItem = ({ project }: ProjectItemProps) => {
             )}
           </Avatar.Group>
         </TwoSpan>
-        <OneSpan>{getLocaleFormattedDate(lang, new Date(project.updatedAt))}</OneSpan>
+        <OneSpan>{getLocaleFormattedDate(lang, new Date(project.updatedAt))}</OneSpan> */}
+        <ButtonWrapper>
+          <MenuButton menu={{ items }} />
+        </ButtonWrapper>
       </ItemInner>
     </Item>
   );
@@ -98,16 +162,18 @@ const ProjectItem = ({ project }: ProjectItemProps) => {
 
 interface Props {
   organizationId: OrganizationId;
+  projectType?: PROJECT_TYPE;
 }
 
-const ProjectListController = ({ organizationId }: Props) => {
+const ProjectListController = ({ organizationId, projectType }: Props) => {
   const router = useRouter();
   const { data, isLoading, error, mutate, page, updatePage } = usePaginationSWR<ProjectBase>(
-    `/organizations/${organizationId}/projects`,
+    `/organizations/${organizationId}/projects${projectType !== undefined ? `?type=${projectType}` : ''}`,
+    { skipQuestionMark: projectType !== undefined },
   );
   const { t } = useTranslation();
 
-  useRefresh(['onProjectCreated', 'onRefreshClicked'], () => mutate());
+  useRefresh(['onProjectCreated', 'onRefreshClicked', 'onProjectDeleted'], () => mutate());
 
   if (isLoading) {
     return <LoadingOutlined style={{ fontSize: '2rem' }} />;
@@ -118,9 +184,10 @@ const ProjectListController = ({ organizationId }: Props) => {
       <Header>
         <ItemInner>
           <TwoSpan>{t('project:projectTableNameColumn')}</TwoSpan>
-          <OneSpan>{t('project:projectTableTemplateColumn')}</OneSpan>
-          <TwoSpan>{t('project:projectTableMembersColumn')}</TwoSpan>
-          <OneSpan>{t('project:projectTableLastUpdatedColumn')}</OneSpan>
+          <TwoSpan>ID</TwoSpan>
+          {/* <TwoSpan>{t('project:projectTableMembersColumn')}</TwoSpan>
+          <OneSpan>{t('project:projectTableLastUpdatedColumn')}</OneSpan> */}
+          <ButtonWrapper />
         </ItemInner>
       </Header>
       <List<ProjectBase>
@@ -197,4 +264,24 @@ const StyledLink = styled(Link)`
 
 const FlexRow = styled.div`
   ${flexRowBaseStyle}
+`;
+
+const ButtonWrapper = styled.div`
+  ${flexRowBaseStyle}
+  width: 48px;
+  justify-content: flex-end;
+  flex-shrink: 0;
+`;
+
+const StyledProjectId = styled.span`
+  cursor: pointer;
+
+  i {
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  &:hover i {
+    opacity: 1;
+  }
 `;

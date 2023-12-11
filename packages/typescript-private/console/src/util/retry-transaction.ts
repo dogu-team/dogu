@@ -17,7 +17,7 @@ export interface RetryTransactionOptions {
 
 export function defaultRetryTransactionOptions(): Required<RetryTransactionOptions> {
   return {
-    retryCount: 3,
+    retryCount: 5,
     retryInterval: 300,
   };
 }

@@ -1,6 +1,5 @@
 import { DoguConfig } from '@dogu-private/console';
 import { DOGU_CONFIG_FILE_NAME } from '@dogu-private/types';
-
 import axios from 'axios';
 import { Bitbucket as BitbucketClient } from 'bitbucket';
 import { Schema } from 'bitbucket/lib/bitbucket';
@@ -13,6 +12,20 @@ export module Bitbucket {
         token,
       },
     });
+  }
+
+  export async function findAllRepositories(token: string, workspace: string): Promise<Schema.PaginatedRepositories> {
+    const bitbucketClient = createSession('https://api.bitbucket.org/2.0', token);
+    const rv = await bitbucketClient.repositories.list({
+      workspace,
+      pagelen: 100,
+    });
+
+    if (rv.status === 200) {
+      return rv.data;
+    } else {
+      throw new Error(`Failed to get repositories. status: ${rv.status}, message: ${rv.data}`);
+    }
   }
 
   export async function getDefaultBranch(token: string, workspace: string, repo: string): Promise<string> {

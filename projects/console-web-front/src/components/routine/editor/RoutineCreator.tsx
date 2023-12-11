@@ -59,7 +59,10 @@ const RoutineCreator = ({ project }: Props) => {
     try {
       setChanged(false);
       const { routineId } = await createRoutine(project.organizationId, project.projectId, file);
-      router.push(`/dashboard/${project.organizationId}/projects/${project.projectId}/routines?routine=${routineId}`);
+      router.push({
+        pathname: router.pathname.replace(/\/creator?$/, ''),
+        query: { orgId: router.query.orgId, pid: router.query.pid, routine: routineId },
+      });
       sendSuccessNotification(t('routine:createRoutineSuccessMessage'));
     } catch (error) {
       if (error instanceof AxiosError) {

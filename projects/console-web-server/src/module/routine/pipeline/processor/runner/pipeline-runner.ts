@@ -97,10 +97,6 @@ export class PipelineRunner {
       this.logger.info(`Pipeline [${pipelineId}] is completed. transition ${PIPELINE_STATUS[status]} to ${PIPELINE_STATUS.CANCELLED}...`);
       return PIPELINE_STATUS.CANCELLED;
     }
-
-    // const completeState = this.getCompleteStateFromJobsState(pipeline, jobs);
-    // this.logger.info(`Pipeline [${pipeline.routinePipelineId}] is completed. transition ${PIPELINE_STATUS[status]} to ${PIPELINE_STATUS[completeState]}...`);
-    // return completeState;
   }
 
   public async postProcess(manager: EntityManager, pipeline: RoutinePipeline): Promise<boolean> {
@@ -231,7 +227,7 @@ export class PipelineRunner {
 
       let executorName = 'API';
       if (pipeline.creatorId) {
-        const user = await manager.getRepository(User).findOne({ where: { userId: pipeline.creatorId! } });
+        const user = await manager.getRepository(User).findOne({ where: { userId: pipeline.creatorId } });
         if (user === null) {
           throw new Error(`User [${pipeline.creatorId}] not found.`);
         }

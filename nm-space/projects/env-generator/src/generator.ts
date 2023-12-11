@@ -103,6 +103,32 @@ export class EnvGenerator {
         throw new Error('Invalid local credential found');
       }
     }
+
+    // validate service account key
+    if (this.isDeploy) {
+      if (!fs.existsSync(this.serviceAccountKeyPath)) {
+        throw new Error(`Service account key file not found. file path: ${this.serviceAccountKeyPath}`);
+      }
+
+      let content = '';
+      try {
+        content = await fs.promises.readFile(this.serviceAccountKeyPath, { encoding: 'utf-8' });
+      } catch (e) {
+        logger.error(e);
+        throw new Error(`Service account key file reading failed. file path: ${this.serviceAccountKeyPath}`);
+      }
+
+      if (content.length === 0) {
+        throw new Error(`Service account key file is empty. file path: ${this.serviceAccountKeyPath}`);
+      }
+
+      try {
+        JSON.parse(content);
+      } catch (e) {
+        logger.error(e);
+        throw new Error(`Service account key file is not json. file path: ${this.serviceAccountKeyPath}`);
+      }
+    }
   }
 
   private printInfo(): void {
@@ -203,11 +229,11 @@ export class EnvGenerator {
     if (auth instanceof ExternalAccountAuthorizedUserClient) {
       throw new Error('ExternalAccountAuthorizedUserClient is not supported');
     }
-    const sheets = google.sheets({ version: 'v4', auth });
     const getResRetry = async () => {
       let lastError: unknown;
       for (let i = 0; i < 5; i++) {
         try {
+          const sheets = google.sheets({ version: 'v4', auth });
           const res = await sheets.spreadsheets.values.get({
             spreadsheetId: this.spreadsheetId,
             range: this.range,
@@ -216,13 +242,14 @@ export class EnvGenerator {
         } catch (e) {
           logger.error(`Error getDotEnvData. e: ${e}, retry: ${i}`);
           lastError = e;
+          await new Promise((resolve) => setTimeout(resolve, 3000));
         }
       }
+      5;
       throw lastError;
     };
 
     const res = await getResRetry();
-
     const rows = res.data.values;
     if (!rows || rows.length === 0) {
       logger.error(`No data found. spreadsheetId: ${this.spreadsheetId}, range: ${this.range}`);

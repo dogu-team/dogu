@@ -1,6 +1,6 @@
 import { Printable, PromiseOrValue, stringify } from '@dogu-tech/common';
 import { DeviceClient, DeviceClientOptions, DeviceClients, DeviceClientsFactory } from '@dogu-tech/device-client';
-import { Logger, LoggerFactory } from '@dogu-tech/node';
+import { Logger, LoggerFactory, parseHttpUrl } from '@dogu-tech/node';
 import { PlatformType } from '@dogu-tech/types';
 
 export function createLogger(category: string): Logger {
@@ -9,10 +9,11 @@ export function createLogger(category: string): Logger {
 
 export async function createDeviceClients(options: DeviceClientOptions): Promise<DeviceClients> {
   const factory = new DeviceClientsFactory(options);
-  const { port, printable } = factory.options;
+  const { deviceServerUrl, printable } = factory.options;
+  const { hostname, port } = parseHttpUrl(deviceServerUrl);
   const isPortReachableModule = await import('is-port-reachable');
   const isPortReachable = isPortReachableModule.default;
-  const isPortReachableResult = await isPortReachable(port, { host: '127.0.0.1' });
+  const isPortReachableResult = await isPortReachable(Number(port), { host: hostname });
   if (!isPortReachableResult) {
     throw new Error(`Device server is not reachable at port ${port}. Please check DOGU_DEVICE_SERVER_PORT and Device Server is running.`);
   }

@@ -1,5 +1,5 @@
 import { Class, Instance, PathProviderType as PathProviderType_, stringify, transformAndValidate } from '@dogu-tech/common';
-import { Body, DOGU_PROTOCOL_VERSION, Headers } from '@dogu-tech/types';
+import { Body, DOGU_DEVICE_AUTHORIZATION_HEADER_KEY, DOGU_PROTOCOL_VERSION, Headers } from '@dogu-tech/types';
 import { DeviceClientOptions, DeviceService, fillDeviceClientOptions } from './bases';
 import { DeviceServerControllerMethodSpec } from './specs/types';
 import { DeviceServerResponseDto } from './validations/types/responses';
@@ -7,7 +7,10 @@ import { DeviceServerResponseDto } from './validations/types/responses';
 export class DeviceHttpClient {
   protected readonly options: Required<DeviceClientOptions>;
 
-  constructor(protected readonly deviceService: DeviceService, options?: DeviceClientOptions) {
+  constructor(
+    protected readonly deviceService: DeviceService,
+    options?: DeviceClientOptions,
+  ) {
     this.options = fillDeviceClientOptions(options);
     const { printable } = this.options;
     printable.info('dogu protocol version', { DOGU_PROTOCOL_VERSION });
@@ -29,8 +32,12 @@ export class DeviceHttpClient {
     const path = httpSpec.resolvePath(pathProvider);
     const method = httpSpec.method;
     const headers: Headers = {
-      values: requestBody ? [{ key: 'Content-Type', value: 'application/json' }] : [],
+      values: [{ key: DOGU_DEVICE_AUTHORIZATION_HEADER_KEY, value: this.options.tokenGetter().value }],
     };
+    if (requestBody) {
+      headers.values.push({ key: 'Content-Type', value: 'application/json' });
+    }
+
     const body: Body | undefined = requestBody
       ? {
           value: {

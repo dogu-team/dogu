@@ -17,8 +17,8 @@ const WorkingDirectoryContainer = ({ value, onChange }: Props) => {
     <WorkingDirectorySelector
       value={value}
       onChange={onChange}
-      organizationId={router.query.orgId as OrganizationId}
-      projectId={router.query.pid as ProjectId}
+      // organizationId={router.query.orgId as OrganizationId}
+      // projectId={router.query.pid as ProjectId}
       placeholder="workingDirPaths in dogu.config.json"
     />
   );

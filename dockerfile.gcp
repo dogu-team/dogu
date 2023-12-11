@@ -1,0 +1,97 @@
+FROM debian:11.8 AS base
+ARG DEBIAN_FRONTEND=noninteractive
+ARG NODE_VERSION=16.20.2
+ARG DOGU_RUN_TYPE=""
+
+RUN apt-get clean \
+    && apt-get update \
+    && apt-get install -y \
+    ca-certificates \
+    curl \
+    gnupg \
+    openjdk-17-jre \
+    vim \
+    telnet \
+    aapt \
+    # use from "tree-kill" node module
+    procps \
+    && rm -rf /var/lib/apt/lists/*
+
+SHELL ["/bin/bash", "-c"]
+ENV SHELL=/bin/bash
+
+# install node
+ENV NVM_DIR="/nvm"
+RUN mkdir -p ${NVM_DIR}
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash
+ENV PATH="${NVM_DIR}/versions/node/v${NODE_VERSION}/bin:${PATH}"
+
+RUN source ${NVM_DIR}/nvm.sh && \
+    nvm install ${NODE_VERSION} && \
+    corepack enable
+
+# common
+WORKDIR /dogu
+ENV NODE_OPTIONS="--max-old-space-size=8192 ${NODE_OPTIONS}"
+COPY .dogu-workspace ./.dogu-workspace
+COPY .yarnrc.yml yarn.lock .pnp.cjs .pnp.loader.mjs package.json tsconfig.json tsconfig.eslint.json ./
+COPY .yarn ./.yarn
+COPY turbo.json ./turbo.json
+COPY packages/typescript ./packages/typescript
+COPY packages/typescript-private ./packages/typescript-private
+COPY packages/typescript-dev-private ./packages/typescript-dev-private
+COPY scripts ./scripts
+COPY nm-space/projects/env-generator/bin ./nm-space/projects/env-generator/bin
+RUN mkdir -p /root/.dogu_secret
+COPY service-account-key.json /root/.dogu_secret/service-account-key.json
+
+# console-web-front
+FROM base AS console-web-front
+COPY projects/console-web-front ./projects/console-web-front
+RUN yarn env-generator gen ${DOGU_RUN_TYPE} console-web-front --cwd projects/console-web-front
+RUN yarn run newbie:cicd && \
+    yarn run build:packages
+WORKDIR /dogu/projects/console-web-front
+RUN yarn run build
+EXPOSE 3001
+CMD ["yarn", "run", "start"]
+
+# console-web-server
+FROM base AS console-web-server
+COPY projects/console-web-server ./projects/console-web-server
+RUN yarn env-generator gen ${DOGU_RUN_TYPE} console-web-server --cwd projects/console-web-server
+RUN yarn run newbie:cicd && \
+    yarn run build:packages
+WORKDIR /dogu/projects/console-web-server
+RUN yarn run build
+EXPOSE 4000
+CMD ["node", "scripts/entrypoint.mjs"]
+
+# billing-server
+FROM base AS billing-server
+COPY projects/billing-server ./projects/billing-server
+RUN yarn env-generator gen ${DOGU_RUN_TYPE} billing-server --cwd projects/billing-server
+RUN yarn run newbie:cicd && \
+    yarn run build:packages
+WORKDIR /dogu/projects/billing-server
+RUN yarn run build
+EXPOSE 4001
+CMD ["node", "scripts/entrypoint.mjs"]
+
+# dogu-redis
+FROM redis:7.2.3-bookworm AS dogu-redis
+ARG DEBIAN_FRONTEND=noninteractive
+ARG NODE_VERSION=16.20.2
+ARG DOGU_RUN_TYPE=""
+COPY --from=base /dogu /dogu
+COPY --from=base /root/.dogu_secret /root/.dogu_secret
+COPY --from=base /nvm /nvm
+SHELL ["/bin/bash", "-c"]
+ENV SHELL=/bin/bash
+ENV NVM_DIR="/nvm"
+ENV PATH="${NVM_DIR}/versions/node/v${NODE_VERSION}/bin:${PATH}"
+ENV NODE_OPTIONS="--max-old-space-size=8192 ${NODE_OPTIONS}"
+WORKDIR /dogu
+RUN yarn env-generator gen ${DOGU_RUN_TYPE} console-web-server
+EXPOSE 6379
+CMD ["node", "scripts/entrypoints/dogu-redis.mjs"]

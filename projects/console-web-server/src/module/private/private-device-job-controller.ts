@@ -41,7 +41,7 @@ export class PrivateDeviceJobController {
 
   @Post(PrivateDeviceJob.uploadDeviceJobRecord.path)
   @UseInterceptors(FileInterceptor('record'))
-  @HostPermission(HOST_ACTION_TYPE.DEVICE_API)
+  @HostPermission(HOST_ACTION_TYPE.HOST_API)
   async uploadDeviceJobRecord(
     @UploadedFile(recordFileParser) record: Express.Multer.File,
     @Param(OrganizationPropCamel.organizationId, IsOrganizationExist) organizationId: OrganizationId,
@@ -51,18 +51,18 @@ export class PrivateDeviceJobController {
   }
 
   @Patch(PrivateDeviceJob.updateDeviceJobStatus.path)
-  @HostPermission(HOST_ACTION_TYPE.DEVICE_API)
-  async updateDeviceJobStatus(
+  @HostPermission(HOST_ACTION_TYPE.HOST_API)
+  updateDeviceJobStatus(
     @Param(OrganizationPropCamel.organizationId, IsOrganizationExist) organizationId: OrganizationId,
     @Param('deviceJobId', IsDeviceJobExist) deviceJobId: RoutineDeviceJobId,
     @Body() body: UpdateDeviceJobStatusRequestBody,
-  ): Promise<void> {
+  ): void {
     const updateEvent: UpdateDeviceJobStatusEvent = new UpdateDeviceJobStatusEvent(organizationId, deviceJobId, body);
     this.updateDeviceJobStatusQueue.enqueue(updateEvent);
   }
 
   @Patch(PrivateDeviceJob.updateDeviceJobLocalStartedAt.path)
-  @HostPermission(HOST_ACTION_TYPE.DEVICE_API)
+  @HostPermission(HOST_ACTION_TYPE.HOST_API)
   async updateDeviceJobLocalStartedAt(
     @Param(OrganizationPropCamel.organizationId, IsOrganizationExist) organizationId: OrganizationId,
     @Param('deviceJobId', IsDeviceJobExist) deviceJobId: RoutineDeviceJobId,
@@ -76,7 +76,7 @@ export class PrivateDeviceJobController {
   }
 
   @Patch(PrivateDeviceJob.updateDeviceJobHeartbeatNow.path)
-  @HostPermission(HOST_ACTION_TYPE.DEVICE_API)
+  @HostPermission(HOST_ACTION_TYPE.HOST_API)
   async updateDeviceJobHeartbeatNow(
     @Param(OrganizationPropCamel.organizationId, IsOrganizationExist) organizationId: OrganizationId,
     @Param('deviceJobId', IsDeviceJobExist) deviceJobId: RoutineDeviceJobId,
@@ -90,7 +90,7 @@ export class PrivateDeviceJobController {
   }
 
   @Post(PrivateDeviceJob.writeDeviceJobLogs.path)
-  @HostPermission(HOST_ACTION_TYPE.DEVICE_API)
+  @HostPermission(HOST_ACTION_TYPE.HOST_API)
   async writeDeviceJobLogs(
     @Param(OrganizationPropCamel.organizationId) organizationId: OrganizationId,
     @Param(DevicePropCamel.deviceId) deviceId: DeviceId,
@@ -101,7 +101,7 @@ export class PrivateDeviceJobController {
   }
 
   @Patch(PrivateDeviceJob.updateDeviceJobWindow.path)
-  @HostPermission(HOST_ACTION_TYPE.DEVICE_API)
+  @HostPermission(HOST_ACTION_TYPE.HOST_API)
   async updateDeviceJobWindow(
     @Param(OrganizationPropCamel.organizationId, IsOrganizationExist) organizationId: OrganizationId,
     @Param('deviceJobId', IsDeviceJobExist) deviceJobId: RoutineDeviceJobId,

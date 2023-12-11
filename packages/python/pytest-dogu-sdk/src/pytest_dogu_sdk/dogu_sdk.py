@@ -26,7 +26,7 @@ class DoguSdk:
                 client_impl = self.client.on_setup(self.config)
                 if not client_impl:
                     raise Exception("dogu client is not initialized on setup")
-                self.client.impl = client_impl        
+                self.client.impl = client_impl
                 remote_dest_reporter = RemoteDestReporterFactory(
                     self.config,
                     self.client,

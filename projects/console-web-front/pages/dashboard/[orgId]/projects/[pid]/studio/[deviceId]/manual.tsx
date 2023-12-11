@@ -9,7 +9,7 @@ import {
   StudioTestingPageProps,
 } from 'enterprise/pages/studio';
 
-const StudioManualPage: NextPageWithLayout<StudioTestingPageProps> = ({ organization, project, me, device }) => {
+const StudioManualPage: NextPageWithLayout<StudioTestingPageProps> = ({ organization, me, device }) => {
   return (
     <Box>
       <ManualTesting organization={organization} device={device} me={me} />

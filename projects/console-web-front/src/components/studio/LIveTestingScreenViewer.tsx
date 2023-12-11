@@ -5,14 +5,16 @@ import styled from 'styled-components';
 
 import useDeviceInput from '../../hooks/streaming/useDeviceInput';
 import useDeviceStreamingContext from '../../hooks/streaming/useDeviceStreamingContext';
-import { StreamingTabMenuKey } from '../../types/streaming';
+import { InspectorType, StreamingTabMenuKey } from '../../types/streaming';
 import DeviceStreaming from '../streaming/DeviceStreaming';
+import GamiumInspectorSelectedNode from '../streaming/GamiumInspectorSelectedNode';
 import InspectorSelectedNode from '../streaming/InspectorSelectedNode';
 import { VideoSize } from '../streaming/StreamingVideo';
 
 const LiveTestingScreenViewer: React.FC = () => {
   const router = useRouter();
-  const { mode, inspector, deviceRTCCaller, device, updateMode } = useDeviceStreamingContext();
+  const { mode, inspectorType, inspector, gamiumInspector, deviceRTCCaller, device, updateMode } =
+    useDeviceStreamingContext();
   const tab = (router.query.tab as StreamingTabMenuKey | undefined) ?? StreamingTabMenuKey.INFO;
   const {
     handleDoubleClick,
@@ -30,34 +32,58 @@ const LiveTestingScreenViewer: React.FC = () => {
   const handleMouseDownVideo = useCallback(
     (e: React.MouseEvent<HTMLTextAreaElement>, videoSize: VideoSize) => {
       if (mode === 'inspect') {
-        inspector?.updateInspectingNodeByPos(e);
-        inspector?.updateSelectedNodeFromInspectingNode();
-        inspector?.updateHitPoint(e);
+        if (inspectorType === InspectorType.APP) {
+          // inspector?.updateInspectingNodeByPos(e);
+          inspector?.updateSelectedNodeFromInspectingNode();
+        } else {
+          // gamiumInspector?.throttleInpsectOnScreen(e);
+          gamiumInspector?.updateSelectedNodeFromInspectingNode();
+        }
         updateMode('input');
-        inspector?.clearInspectingNode();
       } else {
         handleMouseDown(e, videoSize);
       }
     },
-    [handleMouseDown, mode, inspector, updateMode],
+    [
+      handleMouseDown,
+      mode,
+      // inspector?.updateInspectingNodeByPos,
+      inspector?.updateSelectedNodeFromInspectingNode,
+      inspectorType,
+      gamiumInspector?.updateSelectedNodeFromInspectingNode,
+      // gamiumInspector?.throttleInpsectOnScreen,
+      updateMode,
+    ],
   );
 
   const handleMouseMoveVideo = useCallback(
     (e: React.MouseEvent<HTMLTextAreaElement>, videoSize: VideoSize) => {
       if (mode === 'inspect') {
-        inspector?.updateInspectingNodeByPos(e);
+        if (inspectorType === InspectorType.APP) {
+          inspector?.updateInspectingNodeByPos(e);
+          // inspector?.updateHitPoint(e);
+        } else {
+          gamiumInspector?.throttleInpsectOnScreen(e);
+        }
       }
       handleMouseMove(e, videoSize);
     },
-    [handleMouseMove, mode, inspector],
+    [
+      handleMouseMove,
+      mode,
+      inspector?.updateInspectingNodeByPos,
+      gamiumInspector?.throttleInpsectOnScreen,
+      inspectorType,
+    ],
   );
 
   const handleMouseLeaveVideo = useCallback(
     (e: React.MouseEvent<HTMLTextAreaElement>, videoSize: VideoSize) => {
       inspector?.clearInspectingNode();
+      gamiumInspector?.clearInspectingNode();
       handleMouseLeave(e, videoSize);
     },
-    [handleMouseLeave, inspector],
+    [handleMouseLeave, inspector?.clearInspectingNode, gamiumInspector?.clearInspectingNode],
   );
 
   return (
@@ -75,9 +101,14 @@ const LiveTestingScreenViewer: React.FC = () => {
         onFocus={handleFocus}
         onBlur={handleBlur}
       >
-        {tab === StreamingTabMenuKey.INSPECTOR && !!inspector && inspector.inspectingNode && (
+        {tab === StreamingTabMenuKey.INSPECTOR && inspectorType === InspectorType.APP && inspector?.inspectingNode && (
           <InspectorSelectedNode nodeInfo={inspector.inspectingNode} />
         )}
+        {tab === StreamingTabMenuKey.INSPECTOR &&
+          inspectorType === InspectorType.GAME &&
+          gamiumInspector?.gamiumInspectingNode && (
+            <GamiumInspectorSelectedNode nodeInfo={gamiumInspector.gamiumInspectingNode} />
+          )}
       </DeviceStreaming.Video>
     </VideoWrapper>
   );

@@ -159,6 +159,7 @@
 		A63686062AFA3A7B00129D32 /* Transform.swift in Sources */ = {isa = PBXBuildFile; fileRef = A63686052AFA3A7B00129D32 /* Transform.swift */; };
 		A64995C2299CCAEF00238E2A /* ControlResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = A64995C1299CCAEF00238E2A /* ControlResult.swift */; };
 		A65D24142AF275C2003A2149 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = A65D24132AF275C2003A2149 /* Constants.swift */; };
+		A6694DEF2B1F11E300F9CE87 /* outer_device_auth.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6694DEE2B1F11E300F9CE87 /* outer_device_auth.pb.swift */; };
 		A6818DD92AFE3BF20076CC8C /* SetClipboardStructures.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6818DD62AFE3BF20076CC8C /* SetClipboardStructures.swift */; };
 		A6818DDA2AFE3BF20076CC8C /* SetClipboardBroker.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6818DD72AFE3BF20076CC8C /* SetClipboardBroker.swift */; };
 		A6818DDB2AFE3BF20076CC8C /* SetClipboardControlPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6818DD82AFE3BF20076CC8C /* SetClipboardControlPlayer.swift */; };
@@ -736,6 +737,7 @@
 		A63686052AFA3A7B00129D32 /* Transform.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Transform.swift; sourceTree = "<group>"; };
 		A64995C1299CCAEF00238E2A /* ControlResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlResult.swift; sourceTree = "<group>"; };
 		A65D24132AF275C2003A2149 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		A6694DEE2B1F11E300F9CE87 /* outer_device_auth.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = outer_device_auth.pb.swift; sourceTree = "<group>"; };
 		A6818DD62AFE3BF20076CC8C /* SetClipboardStructures.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SetClipboardStructures.swift; sourceTree = "<group>"; };
 		A6818DD72AFE3BF20076CC8C /* SetClipboardBroker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SetClipboardBroker.swift; sourceTree = "<group>"; };
 		A6818DD82AFE3BF20076CC8C /* SetClipboardControlPlayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SetClipboardControlPlayer.swift; sourceTree = "<group>"; };
@@ -1383,6 +1385,7 @@
 				A6A9D6E12AA9DD6800D7FECD /* inner_types_dc_gdc.pb.swift */,
 				A6A9D6F12AA9DD6900D7FECD /* inner_types_dc_ida.pb.swift */,
 				A6A9D6ED2AA9DD6900D7FECD /* inner_types_device_control.pb.swift */,
+				A6694DEE2B1F11E300F9CE87 /* outer_device_auth.pb.swift */,
 				A6A9D6F92AA9DD6900D7FECD /* outer_device_server.pb.swift */,
 				A6A9D6EC2AA9DD6900D7FECD /* outer_errors.pb.swift */,
 				A6A9D6EF2AA9DD6900D7FECD /* outer_http_ws.pb.swift */,
@@ -2542,6 +2545,7 @@
 				A6A9D6D42AA9DD4400D7FECD /* Date+UnixTime.swift in Sources */,
 				A6A9D7052AA9DD6900D7FECD /* inner_params_dc_gdc.pb.swift in Sources */,
 				A6A9D6D22AA9DD4400D7FECD /* AsyncMPSCQueue.swift in Sources */,
+				A6694DEF2B1F11E300F9CE87 /* outer_device_auth.pb.swift in Sources */,
 				A6A9D6D82AA9DD4400D7FECD /* Platform.swift in Sources */,
 				A6A9D70C2AA9DD6900D7FECD /* inner_params_dc_ida.pb.swift in Sources */,
 				A60A189E2A83B51C0009FAEE /* Profiler.swift in Sources */,

@@ -30,8 +30,8 @@ function checkThirdPartyReadMe() {
 function checkMigrationFiles() {
   const migrationsPath = 'projects/console-web-server/src/db/migrations';
   if (!fs.existsSync(migrationsPath)) {
-    console.log(`missing ${migrationsPath} directory.`);
-    process.exit(1);
+    console.log(`no migration files.`);
+    return;
   }
 
   const runTypes = fs.readdirSync(migrationsPath);

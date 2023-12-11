@@ -19,7 +19,7 @@ const ProjectRoutineEditorPage: NextPageWithLayout<ProjectServerSideProps> = ({
 }) => {
   const store = useGitIntegrationStore();
   const router = useRouter();
-  const routineId = router.query.routineId as string | undefined;
+  const routineId = router.query.routine as string | undefined;
   const { data } = useSWR<string>(
     routineId &&
       `/organizations/${organization.organizationId}/projects/${project.projectId}/routines/file/${routineId}`,
@@ -44,11 +44,7 @@ const ProjectRoutineEditorPage: NextPageWithLayout<ProjectServerSideProps> = ({
         <title>Edit routine - {project.name} | Dogu</title>
       </Head>
       <Box>
-        {!store.isGitIntegrated && (
-          <div style={{ marginBottom: '1rem' }}>
-            <RoutineGitIntegrationAlert />
-          </div>
-        )}
+        {!store.isGitIntegrated && <div style={{ marginBottom: '1rem' }}>{/* <RoutineGitIntegrationAlert /> */}</div>}
         <RoutineUpdator project={project} routineId={routineId} value={data} />
       </Box>
     </>

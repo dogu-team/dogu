@@ -71,12 +71,6 @@ const OrganizationDeviceFarmLayout = ({ children, ...props }: Props) => {
 
   const tabs: MenuLinkTabProps['tabs'] = [
     {
-      href: `/dashboard/${orgId}/device-farm/hosts`,
-      icon: <DesktopOutlined />,
-      title: t('device-farm:hostMenuTitle'),
-      'access-id': 'org-host-list-tab',
-    },
-    {
       href: `/dashboard/${orgId}/device-farm/devices`,
       icon: <MobileOutlined />,
       title: t('device-farm:deviceListMenuTitle'),
@@ -88,6 +82,12 @@ const OrganizationDeviceFarmLayout = ({ children, ...props }: Props) => {
       ),
       href: `/dashboard/${orgId}/device-farm/standby-devices`,
       'access-id': 'org-add-device-tab',
+    },
+    {
+      href: `/dashboard/${orgId}/device-farm/hosts`,
+      icon: <DesktopOutlined />,
+      title: t('device-farm:hostMenuTitle'),
+      'access-id': 'org-host-list-tab',
     },
     {
       href: `/dashboard/${orgId}/device-farm/tags`,

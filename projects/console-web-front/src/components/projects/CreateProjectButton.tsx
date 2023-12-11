@@ -1,3 +1,4 @@
+import { PROJECT_TYPE } from '@dogu-private/types';
 import { Button } from 'antd';
 import useTranslation from 'next-translate/useTranslation';
 import { useRouter } from 'next/router';
@@ -5,7 +6,11 @@ import { useRouter } from 'next/router';
 import useModal from '../../hooks/useModal';
 import CreateProjectModal from './CreateProjectModal';
 
-const CreateProjectButton = () => {
+interface Props {
+  projectType?: PROJECT_TYPE;
+}
+
+const CreateProjectButton: React.FC<Props> = ({ projectType }: Props) => {
   const [isOpen, openModal, closeModal] = useModal();
   const { t } = useTranslation();
   const router = useRouter();
@@ -24,8 +29,12 @@ const CreateProjectButton = () => {
         isOpen={isOpen}
         close={closeModal}
         onCreate={(result) => {
-          router.push(`/dashboard/${result.organizationId}/projects/${result.projectId}`);
+          const moveTo = router.asPath.includes('?')
+            ? `${router.asPath.split('?')[0]}/${result.projectId}/routines`
+            : `${router.asPath}/${result.projectId}/routines`;
+          router.push(moveTo);
         }}
+        projectType={projectType}
       />
     </>
   );

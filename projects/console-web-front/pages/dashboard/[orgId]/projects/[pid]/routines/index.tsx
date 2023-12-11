@@ -119,7 +119,7 @@ ProjectRoutinePage.getLayout = (page) => {
   return (
     <ProjectLayoutWithSidebar
       {...page.props}
-      innerSidebar={<RoutineSideBar isGitIntegrated={page.props.isGitIntegrated} />}
+      // innerSidebar={<RoutineSideBar isGitIntegrated={page.props.isGitIntegrated} />}
       titleI18nKey="project:tabMenuRoutineTitle"
     >
       {page}

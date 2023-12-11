@@ -44,6 +44,8 @@ const BillingPage: NextPageWithLayout<BillingPageProps> = ({ me, license }) => {
     );
   }
 
+  const paymentMethod = (storedLicense as CloudLicenseResponse | null)?.billingOrganization?.billingMethodNice;
+
   return (
     <>
       <Head>

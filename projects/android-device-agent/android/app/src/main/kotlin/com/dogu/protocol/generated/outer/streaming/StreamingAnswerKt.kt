@@ -93,6 +93,30 @@ object StreamingAnswerKt {
     fun hasErrorResult(): kotlin.Boolean {
       return _builder.hasErrorResult()
     }
+
+    /**
+     * <code>.outer.DeviceServerToken device_server_token = 4;</code>
+     */
+    var deviceServerToken: com.dogu.protocol.generated.outer.DeviceAuth.DeviceServerToken
+      @JvmName("getDeviceServerToken")
+      get() = _builder.getDeviceServerToken()
+      @JvmName("setDeviceServerToken")
+      set(value) {
+        _builder.setDeviceServerToken(value)
+      }
+    /**
+     * <code>.outer.DeviceServerToken device_server_token = 4;</code>
+     */
+    fun clearDeviceServerToken() {
+      _builder.clearDeviceServerToken()
+    }
+    /**
+     * <code>.outer.DeviceServerToken device_server_token = 4;</code>
+     * @return Whether the deviceServerToken field is set.
+     */
+    fun hasDeviceServerToken(): kotlin.Boolean {
+      return _builder.hasDeviceServerToken()
+    }
     val valueCase: com.dogu.protocol.generated.outer.streaming.Streaming.StreamingAnswer.ValueCase
       @JvmName("getValueCase")
       get() = _builder.getValueCase()
@@ -114,4 +138,7 @@ val com.dogu.protocol.generated.outer.streaming.Streaming.StreamingAnswerOrBuild
 
 val com.dogu.protocol.generated.outer.streaming.Streaming.StreamingAnswerOrBuilder.errorResultOrNull: com.dogu.protocol.generated.outer.Errors.ErrorResult?
   get() = if (hasErrorResult()) getErrorResult() else null
+
+val com.dogu.protocol.generated.outer.streaming.Streaming.StreamingAnswerOrBuilder.deviceServerTokenOrNull: com.dogu.protocol.generated.outer.DeviceAuth.DeviceServerToken?
+  get() = if (hasDeviceServerToken()) getDeviceServerToken() else null
 

@@ -2,7 +2,7 @@
   "locales": ["en", "ko"],
   "defaultLocale": "en",
   "pages": {
-    "*": ["common", "billing"],
+    "*": ["common", "billing", "organization"],
     "/account": ["account"],
     "/account/reset-password": ["account"],
     "/signup": ["registery", "social-signin"],
@@ -16,25 +16,93 @@
 
     "/admin": ["admin"],
 
-    "/dashboard/[orgId]": ["organization"],
-    "/dashboard/[orgId]/get-started": ["organization", "tutorial", "project-app", "device-farm"],
-    "/dashboard/[orgId]/projects": ["organization", "project"],
-    "/dashboard/[orgId]/members": ["organization", "org-member"],
-    "/dashboard/[orgId]/members/invitations": ["organization", "org-member"],
-    "/dashboard/[orgId]/teams": ["organization", "team"],
-    "/dashboard/[orgId]/teams/[teamId]/members": ["organization", "team"],
-    "/dashboard/[orgId]/teams/[teamId]/projects": ["organization", "team"],
-    "/dashboard/[orgId]/teams/[teamId]/settings": ["organization", "team"],
-    "/dashboard/[orgId]/settings": ["organization"],
-    "/dashboard/[orgId]/device-farm/devices": ["organization", "device-farm"],
-    "/dashboard/[orgId]/device-farm/standby-devices": ["organization", "device-farm"],
-    "/dashboard/[orgId]/device-farm/hosts": ["organization", "device-farm"],
-    "/dashboard/[orgId]/device-farm/tags": ["organization", "device-farm"],
-    "/dashboard/[orgId]/live-testing": ["organization", "cloud-device"],
-    "/dashboard/[orgId]/live-testing/[sessionId]/[deviceId]": ["organization", "device-streaming"],
-    "/dashboard/[orgId]/web-responsive": ["organization", "web-responsive"],
-    "/dashboard/[orgId]/web-responsive/creator": ["organization"],
-    "/dashboard/[orgId]/web-responsive/[executorId]/viewer": ["organization"],
+    "/dashboard/[orgId]": [],
+    "/dashboard/[orgId]/apps": ["organization-app"],
+    "/dashboard/[orgId]/get-started": ["tutorial", "project-app", "device-farm"],
+    "/dashboard/[orgId]/projects": ["project"],
+    "/dashboard/[orgId]/members": ["org-member"],
+    "/dashboard/[orgId]/members/invitations": ["org-member"],
+    "/dashboard/[orgId]/teams": ["team"],
+    "/dashboard/[orgId]/teams/[teamId]/members": ["team"],
+    "/dashboard/[orgId]/teams/[teamId]/projects": ["team"],
+    "/dashboard/[orgId]/teams/[teamId]/settings": ["team"],
+    "/dashboard/[orgId]/settings": [],
+    "/dashboard/[orgId]/device-farm/devices": ["device-farm"],
+    "/dashboard/[orgId]/device-farm/standby-devices": ["device-farm"],
+    "/dashboard/[orgId]/device-farm/hosts": ["device-farm"],
+    "/dashboard/[orgId]/device-farm/tags": ["device-farm"],
+    "/dashboard/[orgId]/device-farm/live-testing/[deviceId]": ["device-streaming"],
+    "/dashboard/[orgId]/live-testing": ["cloud-device"],
+    "/dashboard/[orgId]/live-testing/[sessionId]/[deviceId]": ["device-streaming"],
+    "/dashboard/[orgId]/web-responsive": ["web-responsive"],
+    "/dashboard/[orgId]/web-responsive/creator": [],
+    "/dashboard/[orgId]/web-responsive/[executorId]/viewer": [],
+    "/dashboard/[orgId]/automation/mobile-apps": ["project"],
+    "/dashboard/[orgId]/automation/mobile-game": ["project"],
+    "/dashboard/[orgId]/automation/web": ["project"],
+    "/dashboard/[orgId]/automation/web/[pid]/routines": ["project", "routine"],
+    "/dashboard/[orgId]/automation/web/[pid]/routines/get-started": ["project", "tutorial", "routine", "project-app"],
+    "/dashboard/[orgId]/automation/web/[pid]/routines/creator": ["project", "routine"],
+    "/dashboard/[orgId]/automation/web/[pid]/routines/editor": ["project", "routine"],
+    "/dashboard/[orgId]/automation/web/[pid]/routines/[pipelineId]": ["project", "routine"],
+    "/dashboard/[orgId]/automation/web/[pid]/routines/[pipelineId]/devices": ["project", "routine", "device-streaming"],
+    "/dashboard/[orgId]/automation/web/[pid]/routines/[pipelineId]/jobs/[jobId]": ["project", "routine"],
+    "/dashboard/[orgId]/automation/web/[pid]/routines/[pipelineId]/jobs/[jobId]/device-jobs/[deviceJobId]": [
+      "project",
+      "routine"
+    ],
+    "/dashboard/[orgId]/automation/web/[pid]/routines/[pipelineId]/jobs/[jobId]/device-jobs/[deviceJobId]/profiles": [
+      "project",
+      "routine"
+    ],
+    "/dashboard/[orgId]/automation/mobile-apps/[pid]/routines": ["project", "routine"],
+    "/dashboard/[orgId]/automation/mobile-apps/[pid]/routines/get-started": [
+      "project",
+      "tutorial",
+      "routine",
+      "project-app"
+    ],
+    "/dashboard/[orgId]/automation/mobile-apps/[pid]/routines/creator": ["project", "routine"],
+    "/dashboard/[orgId]/automation/mobile-apps/[pid]/routines/editor": ["project", "routine"],
+    "/dashboard/[orgId]/automation/mobile-apps/[pid]/routines/[pipelineId]": ["project", "routine"],
+    "/dashboard/[orgId]/automation/mobile-apps/[pid]/routines/[pipelineId]/devices": [
+      "project",
+      "routine",
+      "device-streaming"
+    ],
+    "/dashboard/[orgId]/automation/mobile-apps/[pid]/routines/[pipelineId]/jobs/[jobId]": ["project", "routine"],
+    "/dashboard/[orgId]/automation/mobile-apps/[pid]/routines/[pipelineId]/jobs/[jobId]/device-jobs/[deviceJobId]": [
+      "project",
+      "routine"
+    ],
+    "/dashboard/[orgId]/automation/mobile-apps/[pid]/routines/[pipelineId]/jobs/[jobId]/device-jobs/[deviceJobId]/profiles": [
+      "project",
+      "routine"
+    ],
+    "/dashboard/[orgId]/automation/mobile-game/[pid]/routines": ["project", "routine"],
+    "/dashboard/[orgId]/automation/mobile-game/[pid]/routines/get-started": [
+      "project",
+      "tutorial",
+      "routine",
+      "project-app"
+    ],
+    "/dashboard/[orgId]/automation/mobile-game/[pid]/routines/creator": ["project", "routine"],
+    "/dashboard/[orgId]/automation/mobile-game/[pid]/routines/editor": ["project", "routine"],
+    "/dashboard/[orgId]/automation/mobile-game/[pid]/routines/[pipelineId]": ["project", "routine"],
+    "/dashboard/[orgId]/automation/mobile-game/[pid]/routines/[pipelineId]/devices": [
+      "project",
+      "routine",
+      "device-streaming"
+    ],
+    "/dashboard/[orgId]/automation/mobile-game/[pid]/routines/[pipelineId]/jobs/[jobId]": ["project", "routine"],
+    "/dashboard/[orgId]/automation/mobile-game/[pid]/routines/[pipelineId]/jobs/[jobId]/device-jobs/[deviceJobId]": [
+      "project",
+      "routine"
+    ],
+    "/dashboard/[orgId]/automation/mobile-game/[pid]/routines/[pipelineId]/jobs/[jobId]/device-jobs/[deviceJobId]/profiles": [
+      "project",
+      "routine"
+    ],
 
     "/dashboard/[orgId]/projects/[pid]": ["project"],
     "/dashboard/[orgId]/projects/[pid]/members": ["project", "project-member"],

@@ -155,7 +155,6 @@ export class PrivateDeviceController {
       device.usageState = DeviceUsageState.AVAILABLE;
       await manager.save(device);
 
-      await DeviceStatusService.updateDeviceBrowserInstallations(manager, deviceId, browserInstallations);
       await DeviceStatusService.updateDeviceRunners(manager, deviceId);
       return {
         needReset,
