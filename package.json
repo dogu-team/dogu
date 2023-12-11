@@ -6,7 +6,7 @@
   "author": "Dogu Technologies",
   "repository": "https://github.com/dogu-team/dogu.git",
   "scripts": {
-    "build": "turbo run build --filter='./packages/**' --filter='./projects/**'",
+    "build": "turbo run build --filter='./packages/**' --filter='./projects/**' --filter='./dogu-actions/**'",
     "build:actions": "turbo run build --filter='./dogu-actions/**'",
     "build:archive": "turbo run build:archive",
     "build:packages": "turbo run build --filter='./packages/typescript*/**/*'",
