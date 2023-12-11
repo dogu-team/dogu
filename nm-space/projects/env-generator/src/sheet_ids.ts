@@ -32,14 +32,6 @@ const projectNameToSheet: {
     path: 'projects/billing-server',
     sheets: [{ name: '.env.local', id: BILLING_SERVER_SPREADSHEET_ID }],
   },
-  'host-agent': {
-    path: 'projects/host-agent',
-    sheets: [{ name: '.env.local', id: HOST_AGENT_SPREADSHEET_ID }],
-  },
-  'device-server': {
-    path: 'projects/device-server',
-    sheets: [{ name: '.env.local', id: DEIVCE_SERVER_SPREADSHEET_ID }],
-  },
   'dogu-agent': {
     path: 'projects/dogu-agent',
     sheets: [

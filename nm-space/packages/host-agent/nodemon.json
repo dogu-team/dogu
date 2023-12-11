@@ -1,0 +1,18 @@
+{
+  "verbose": true,
+  "watch": [
+    "./src",
+    "../../typescript/action-kit/src",
+    "../../typescript/common/src",
+    "../../typescript/env-tools/src",
+    "../../typescript/node/src",
+    "../../typescript/types/src",
+    "../../typescript-private/console-host-agent/src",
+    "../../typescript-private/dost-children/src",
+    "../../typescript-dev-private/build-tools/src",
+    "../../typescript/device-client/src"
+  ],
+  "exec": "tsc -b",
+  "ext": "ts",
+  "delay": 3000
+}

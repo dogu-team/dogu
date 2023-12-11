@@ -1,0 +1,17 @@
+{
+  "verbose": true,
+  "watch": [
+    "./src",
+    "../../typescript-private/dost-children/src",
+    "../../typescript-private/nestjs-common/src",
+    "../../typescript/common/src",
+    "../../typescript/device-client-common/src",
+    "../../typescript/env-tools/src",
+    "../../typescript/node/src",
+    "../../typescript/types-public-device/src",
+    "../../typescript-dev-private/build-tools/src"
+  ],
+  "exec": "tsc -b",
+  "ext": "ts",
+  "delay": 3000
+}

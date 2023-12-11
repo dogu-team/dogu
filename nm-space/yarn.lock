@@ -4081,9 +4081,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@dogu-dev-private/base-build-tools@workspace:^, @dogu-dev-private/base-build-tools@workspace:mirror/packages/@dogu-dev-private-base-build-tools":
+"@dogu-dev-private/base-build-tools@workspace:^, @dogu-dev-private/base-build-tools@workspace:mirror/packages/typescript-dev-private/base-build-tools":
   version: 0.0.0-use.local
-  resolution: "@dogu-dev-private/base-build-tools@workspace:mirror/packages/@dogu-dev-private-base-build-tools"
+  resolution: "@dogu-dev-private/base-build-tools@workspace:mirror/packages/typescript-dev-private/base-build-tools"
   dependencies:
     "@types/assert": 1.5.6
     "@types/node": 18.15.11
@@ -4098,9 +4098,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@dogu-dev-private/build-tools@workspace:^, @dogu-dev-private/build-tools@workspace:mirror/packages/@dogu-dev-private-build-tools":
+"@dogu-dev-private/build-tools@workspace:^, @dogu-dev-private/build-tools@workspace:mirror/packages/typescript-dev-private/build-tools":
   version: 0.0.0-use.local
-  resolution: "@dogu-dev-private/build-tools@workspace:mirror/packages/@dogu-dev-private-build-tools"
+  resolution: "@dogu-dev-private/build-tools@workspace:mirror/packages/typescript-dev-private/build-tools"
   dependencies:
     "@dogu-dev-private/base-build-tools": "workspace:^"
     "@dogu-tech/common": "workspace:^"
@@ -4120,9 +4120,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@dogu-dev-private/publish-package@workspace:^, @dogu-dev-private/publish-package@workspace:mirror/packages/@dogu-dev-private-publish-package":
+"@dogu-dev-private/publish-package@workspace:^, @dogu-dev-private/publish-package@workspace:mirror/packages/typescript-dev-private/publish-package":
   version: 0.0.0-use.local
-  resolution: "@dogu-dev-private/publish-package@workspace:mirror/packages/@dogu-dev-private-publish-package"
+  resolution: "@dogu-dev-private/publish-package@workspace:mirror/packages/typescript-dev-private/publish-package"
   dependencies:
     "@types/node": 18.15.11
     "@types/semver": 7
@@ -4142,9 +4142,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@dogu-private/console-host-agent@workspace:^, @dogu-private/console-host-agent@workspace:mirror/packages/@dogu-private-console-host-agent":
+"@dogu-private/console-host-agent@workspace:^, @dogu-private/console-host-agent@workspace:mirror/packages/typescript-private/console-host-agent":
   version: 0.0.0-use.local
-  resolution: "@dogu-private/console-host-agent@workspace:mirror/packages/@dogu-private-console-host-agent"
+  resolution: "@dogu-private/console-host-agent@workspace:mirror/packages/typescript-private/console-host-agent"
   dependencies:
     "@dogu-private/types": "workspace:^"
     "@dogu-tech/common": "workspace:^"
@@ -4163,9 +4163,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@dogu-private/console-open-api@workspace:mirror/packages/@dogu-private-console-open-api":
+"@dogu-private/console-open-api@workspace:mirror/packages/typescript-private/console-open-api":
   version: 0.0.0-use.local
-  resolution: "@dogu-private/console-open-api@workspace:mirror/packages/@dogu-private-console-open-api"
+  resolution: "@dogu-private/console-open-api@workspace:mirror/packages/typescript-private/console-open-api"
   dependencies:
     "@dogu-private/console": "workspace:^"
     "@dogu-private/types": "workspace:^"
@@ -4186,9 +4186,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@dogu-private/console@workspace:^, @dogu-private/console@workspace:mirror/packages/@dogu-private-console":
+"@dogu-private/console@workspace:^, @dogu-private/console@workspace:mirror/packages/typescript-private/console":
   version: 0.0.0-use.local
-  resolution: "@dogu-private/console@workspace:mirror/packages/@dogu-private-console"
+  resolution: "@dogu-private/console@workspace:mirror/packages/typescript-private/console"
   dependencies:
     "@dogu-private/device-data": "workspace:^"
     "@dogu-private/types": "workspace:^"
@@ -4213,9 +4213,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@dogu-private/device-data@workspace:^, @dogu-private/device-data@workspace:mirror/packages/@dogu-private-device-data":
+"@dogu-private/device-data@workspace:^, @dogu-private/device-data@workspace:mirror/packages/typescript-private/device-data":
   version: 0.0.0-use.local
-  resolution: "@dogu-private/device-data@workspace:mirror/packages/@dogu-private-device-data"
+  resolution: "@dogu-private/device-data@workspace:mirror/packages/typescript-private/device-data"
   dependencies:
     "@dogu-private/types": "workspace:^"
     "@dogu-tech/common": "workspace:^"
@@ -4231,9 +4231,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@dogu-private/device-server@workspace:^, @dogu-private/device-server@workspace:mirror/packages/@dogu-private-device-server":
+"@dogu-private/device-server@workspace:^, @dogu-private/device-server@workspace:packages/device-server":
   version: 0.0.0-use.local
-  resolution: "@dogu-private/device-server@workspace:mirror/packages/@dogu-private-device-server"
+  resolution: "@dogu-private/device-server@workspace:packages/device-server"
   dependencies:
     "@dogu-dev-private/build-tools": "workspace:^"
     "@dogu-private/dost-children": "workspace:^"
@@ -4307,9 +4307,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@dogu-private/dogu-agent-core@workspace:^, @dogu-private/dogu-agent-core@workspace:mirror/packages/@dogu-private-dogu-agent-core":
+"@dogu-private/dogu-agent-core@workspace:^, @dogu-private/dogu-agent-core@workspace:packages/dogu-agent-core":
   version: 0.0.0-use.local
-  resolution: "@dogu-private/dogu-agent-core@workspace:mirror/packages/@dogu-private-dogu-agent-core"
+  resolution: "@dogu-private/dogu-agent-core@workspace:packages/dogu-agent-core"
   dependencies:
     "@dogu-private/device-server": "workspace:^"
     "@dogu-private/dost-children": "workspace:^"
@@ -4345,9 +4345,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@dogu-private/dost-children@workspace:^, @dogu-private/dost-children@workspace:mirror/packages/@dogu-private-dost-children":
+"@dogu-private/dost-children@workspace:^, @dogu-private/dost-children@workspace:packages/dost-children":
   version: 0.0.0-use.local
-  resolution: "@dogu-private/dost-children@workspace:mirror/packages/@dogu-private-dost-children"
+  resolution: "@dogu-private/dost-children@workspace:packages/dost-children"
   dependencies:
     "@dogu-private/types": "workspace:^"
     "@dogu-tech/common": "workspace:^"
@@ -4363,9 +4363,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@dogu-private/host-agent@workspace:^, @dogu-private/host-agent@workspace:mirror/packages/@dogu-private-host-agent":
+"@dogu-private/host-agent@workspace:^, @dogu-private/host-agent@workspace:packages/host-agent":
   version: 0.0.0-use.local
-  resolution: "@dogu-private/host-agent@workspace:mirror/packages/@dogu-private-host-agent"
+  resolution: "@dogu-private/host-agent@workspace:packages/host-agent"
   dependencies:
     "@dogu-dev-private/build-tools": "workspace:^"
     "@dogu-private/console-host-agent": "workspace:^"
@@ -4424,9 +4424,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@dogu-private/nestjs-common@workspace:^, @dogu-private/nestjs-common@workspace:mirror/packages/@dogu-private-nestjs-common":
+"@dogu-private/nestjs-common@workspace:^, @dogu-private/nestjs-common@workspace:mirror/packages/typescript-private/nestjs-common":
   version: 0.0.0-use.local
-  resolution: "@dogu-private/nestjs-common@workspace:mirror/packages/@dogu-private-nestjs-common"
+  resolution: "@dogu-private/nestjs-common@workspace:mirror/packages/typescript-private/nestjs-common"
   dependencies:
     "@dogu-private/types": "workspace:^"
     "@dogu-tech/common": "workspace:^"
@@ -4451,9 +4451,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@dogu-private/sdk@workspace:mirror/packages/@dogu-private-sdk":
+"@dogu-private/sdk@workspace:mirror/packages/typescript-private/sdk":
   version: 0.0.0-use.local
-  resolution: "@dogu-private/sdk@workspace:mirror/packages/@dogu-private-sdk"
+  resolution: "@dogu-private/sdk@workspace:mirror/packages/typescript-private/sdk"
   dependencies:
     "@dogu-private/types": "workspace:^"
     "@dogu-tech/common": "workspace:^"
@@ -4473,9 +4473,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@dogu-private/types@workspace:^, @dogu-private/types@workspace:mirror/packages/@dogu-private-types":
+"@dogu-private/types@workspace:^, @dogu-private/types@workspace:mirror/packages/typescript-private/types":
   version: 0.0.0-use.local
-  resolution: "@dogu-private/types@workspace:mirror/packages/@dogu-private-types"
+  resolution: "@dogu-private/types@workspace:mirror/packages/typescript-private/types"
   dependencies:
     "@dogu-tech/common": "workspace:^"
     "@dogu-tech/types": "workspace:^"
@@ -4495,9 +4495,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@dogu-private/webrtc@workspace:mirror/packages/@dogu-private-webrtc":
+"@dogu-private/webrtc@workspace:mirror/packages/typescript-private/webrtc":
   version: 0.0.0-use.local
-  resolution: "@dogu-private/webrtc@workspace:mirror/packages/@dogu-private-webrtc"
+  resolution: "@dogu-private/webrtc@workspace:mirror/packages/typescript-private/webrtc"
   dependencies:
     "@dogu-private/types": "workspace:^"
     "@dogu-tech/common": "workspace:^"
@@ -4511,9 +4511,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@dogu-tech/action-common@workspace:^, @dogu-tech/action-common@workspace:mirror/packages/@dogu-tech-action-common":
+"@dogu-tech/action-common@workspace:^, @dogu-tech/action-common@workspace:mirror/packages/typescript/action-common":
   version: 0.0.0-use.local
-  resolution: "@dogu-tech/action-common@workspace:mirror/packages/@dogu-tech-action-common"
+  resolution: "@dogu-tech/action-common@workspace:mirror/packages/typescript/action-common"
   dependencies:
     "@dogu-dev-private/publish-package": "workspace:^"
     "@dogu-tech/common": "workspace:^"
@@ -4530,9 +4530,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@dogu-tech/action-kit@workspace:^, @dogu-tech/action-kit@workspace:mirror/packages/@dogu-tech-action-kit":
+"@dogu-tech/action-kit@workspace:^, @dogu-tech/action-kit@workspace:mirror/packages/typescript/action-kit":
   version: 0.0.0-use.local
-  resolution: "@dogu-tech/action-kit@workspace:mirror/packages/@dogu-tech-action-kit"
+  resolution: "@dogu-tech/action-kit@workspace:mirror/packages/typescript/action-kit"
   dependencies:
     "@dogu-dev-private/publish-package": "workspace:^"
     "@dogu-tech/action-common": "workspace:^"
@@ -4559,9 +4559,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@dogu-tech/common@workspace:^, @dogu-tech/common@workspace:mirror/packages/@dogu-tech-common":
+"@dogu-tech/common@workspace:^, @dogu-tech/common@workspace:mirror/packages/typescript/common":
   version: 0.0.0-use.local
-  resolution: "@dogu-tech/common@workspace:mirror/packages/@dogu-tech-common"
+  resolution: "@dogu-tech/common@workspace:mirror/packages/typescript/common"
   dependencies:
     "@dogu-dev-private/publish-package": "workspace:^"
     "@types/lodash": 4.14.186
@@ -4580,9 +4580,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@dogu-tech/console-action@workspace:^, @dogu-tech/console-action@workspace:mirror/packages/@dogu-tech-console-action":
+"@dogu-tech/console-action@workspace:^, @dogu-tech/console-action@workspace:mirror/packages/typescript/console-action":
   version: 0.0.0-use.local
-  resolution: "@dogu-tech/console-action@workspace:mirror/packages/@dogu-tech-console-action"
+  resolution: "@dogu-tech/console-action@workspace:mirror/packages/typescript/console-action"
   dependencies:
     "@dogu-dev-private/publish-package": "workspace:^"
     "@dogu-tech/common": "workspace:^"
@@ -4599,9 +4599,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@dogu-tech/console-dest@workspace:^, @dogu-tech/console-dest@workspace:mirror/packages/@dogu-tech-console-dest":
+"@dogu-tech/console-dest@workspace:^, @dogu-tech/console-dest@workspace:mirror/packages/typescript/console-dest":
   version: 0.0.0-use.local
-  resolution: "@dogu-tech/console-dest@workspace:mirror/packages/@dogu-tech-console-dest"
+  resolution: "@dogu-tech/console-dest@workspace:mirror/packages/typescript/console-dest"
   dependencies:
     "@dogu-dev-private/publish-package": "workspace:^"
     "@dogu-tech/common": "workspace:^"
@@ -4618,9 +4618,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@dogu-tech/console-gamium@workspace:^, @dogu-tech/console-gamium@workspace:mirror/packages/@dogu-tech-console-gamium":
+"@dogu-tech/console-gamium@workspace:^, @dogu-tech/console-gamium@workspace:mirror/packages/typescript/console-gamium":
   version: 0.0.0-use.local
-  resolution: "@dogu-tech/console-gamium@workspace:mirror/packages/@dogu-tech-console-gamium"
+  resolution: "@dogu-tech/console-gamium@workspace:mirror/packages/typescript/console-gamium"
   dependencies:
     "@dogu-dev-private/publish-package": "workspace:^"
     "@dogu-tech/common": "workspace:^"
@@ -4637,9 +4637,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@dogu-tech/console-remote-dest@workspace:mirror/packages/@dogu-tech-console-remote-dest":
+"@dogu-tech/console-remote-dest@workspace:mirror/packages/typescript/console-remote-dest":
   version: 0.0.0-use.local
-  resolution: "@dogu-tech/console-remote-dest@workspace:mirror/packages/@dogu-tech-console-remote-dest"
+  resolution: "@dogu-tech/console-remote-dest@workspace:mirror/packages/typescript/console-remote-dest"
   dependencies:
     "@dogu-dev-private/publish-package": "workspace:^"
     "@dogu-tech/common": "workspace:^"
@@ -4655,9 +4655,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@dogu-tech/dest@workspace:^, @dogu-tech/dest@workspace:mirror/packages/@dogu-tech-dest":
+"@dogu-tech/dest@workspace:^, @dogu-tech/dest@workspace:mirror/packages/typescript/dest":
   version: 0.0.0-use.local
-  resolution: "@dogu-tech/dest@workspace:mirror/packages/@dogu-tech-dest"
+  resolution: "@dogu-tech/dest@workspace:mirror/packages/typescript/dest"
   dependencies:
     "@babel/cli": 7.19.3
     "@babel/core": 7.19.6
@@ -4697,9 +4697,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@dogu-tech/device-client-common@workspace:^, @dogu-tech/device-client-common@workspace:mirror/packages/@dogu-tech-device-client-common":
+"@dogu-tech/device-client-common@workspace:^, @dogu-tech/device-client-common@workspace:mirror/packages/typescript/device-client-common":
   version: 0.0.0-use.local
-  resolution: "@dogu-tech/device-client-common@workspace:mirror/packages/@dogu-tech-device-client-common"
+  resolution: "@dogu-tech/device-client-common@workspace:mirror/packages/typescript/device-client-common"
   dependencies:
     "@dogu-dev-private/publish-package": "workspace:^"
     "@dogu-tech/common": "workspace:^"
@@ -4721,9 +4721,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@dogu-tech/device-client@workspace:^, @dogu-tech/device-client@workspace:mirror/packages/@dogu-tech-device-client":
+"@dogu-tech/device-client@workspace:^, @dogu-tech/device-client@workspace:mirror/packages/typescript/device-client":
   version: 0.0.0-use.local
-  resolution: "@dogu-tech/device-client@workspace:mirror/packages/@dogu-tech-device-client"
+  resolution: "@dogu-tech/device-client@workspace:mirror/packages/typescript/device-client"
   dependencies:
     "@dogu-dev-private/publish-package": "workspace:^"
     "@dogu-tech/common": "workspace:^"
@@ -4747,9 +4747,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@dogu-tech/env-tools@workspace:^, @dogu-tech/env-tools@workspace:mirror/packages/@dogu-tech-env-tools":
+"@dogu-tech/env-tools@workspace:^, @dogu-tech/env-tools@workspace:mirror/packages/typescript/env-tools":
   version: 0.0.0-use.local
-  resolution: "@dogu-tech/env-tools@workspace:mirror/packages/@dogu-tech-env-tools"
+  resolution: "@dogu-tech/env-tools@workspace:mirror/packages/typescript/env-tools"
   dependencies:
     "@dogu-dev-private/publish-package": "workspace:^"
     "@dogu-tech/common": "workspace:^"
@@ -4769,9 +4769,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@dogu-tech/node@workspace:^, @dogu-tech/node@workspace:mirror/packages/@dogu-tech-node":
+"@dogu-tech/node@workspace:^, @dogu-tech/node@workspace:mirror/packages/typescript/node":
   version: 0.0.0-use.local
-  resolution: "@dogu-tech/node@workspace:mirror/packages/@dogu-tech-node"
+  resolution: "@dogu-tech/node@workspace:mirror/packages/typescript/node"
   dependencies:
     "@dogu-dev-private/publish-package": "workspace:^"
     "@dogu-tech/common": "workspace:^"
@@ -4853,9 +4853,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@dogu-tech/toolkit@workspace:mirror/packages/@dogu-tech-toolkit":
+"@dogu-tech/toolkit@workspace:mirror/packages/typescript/toolkit":
   version: 0.0.0-use.local
-  resolution: "@dogu-tech/toolkit@workspace:mirror/packages/@dogu-tech-toolkit"
+  resolution: "@dogu-tech/toolkit@workspace:mirror/packages/typescript/toolkit"
   dependencies:
     "@dogu-dev-private/publish-package": "workspace:^"
     "@dogu-tech/common": "workspace:^"
@@ -4887,9 +4887,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@dogu-tech/types@workspace:^, @dogu-tech/types@workspace:mirror/packages/@dogu-tech-types":
+"@dogu-tech/types@workspace:^, @dogu-tech/types@workspace:mirror/packages/typescript/types":
   version: 0.0.0-use.local
-  resolution: "@dogu-tech/types@workspace:mirror/packages/@dogu-tech-types"
+  resolution: "@dogu-tech/types@workspace:mirror/packages/typescript/types"
   dependencies:
     "@dogu-dev-private/publish-package": "workspace:^"
     "@dogu-tech/common": "workspace:^"
