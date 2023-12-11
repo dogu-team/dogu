@@ -1,6 +1,6 @@
 import { OrganizationScmRespository, UpdateOrganizationScmDto } from '@dogu-private/console';
 import { OrganizationId } from '@dogu-private/types';
-import { stringify } from '@dogu-tech/common';
+import { errorify, stringify } from '@dogu-tech/common';
 import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
@@ -11,10 +11,12 @@ import { Bitbucket } from '../../../sdk/git/bitbucket';
 import { Github } from '../../../sdk/git/github';
 import { Gitlab } from '../../../sdk/git/gitlab';
 import { EncryptService } from '../../encrypt/encrypt.service';
+import { DoguLogger } from '../../logger/logger';
 
 @Injectable()
 export class OrganizationScmService {
   constructor(
+    private readonly logger: DoguLogger,
     @InjectDataSource()
     private readonly dataSource: DataSource,
   ) {}
@@ -117,6 +119,7 @@ export class OrganizationScmService {
               return a.name.localeCompare(b.name);
             });
         } catch (e) {
+          this.logger.error('Failed to fetch repositories from gitlab.', { error: errorify(e) });
           throw new InternalServerErrorException(`Failed to fetch repositories from gitlab.`);
         }
       }
