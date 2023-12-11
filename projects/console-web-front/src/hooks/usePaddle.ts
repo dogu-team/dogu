@@ -12,7 +12,7 @@ const usePaddle = (): { paddleRef: MutableRefObject<Paddle | undefined>; loading
     initializePaddle({
       environment: process.env.NEXT_PUBLIC_PADDLE_ENVIRONMENT ?? 'sandbox',
       token: process.env.NEXT_PUBLIC_PADDLE_TOKEN,
-      debug: true,
+      debug: false,
     })
       .then((paddle) => {
         if (paddle) {
