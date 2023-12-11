@@ -5,6 +5,7 @@ import { Organization, OrganizationAndUserAndOrganizationRole, Token, User } fro
 import { OrganizationAccessToken } from '../../db/entity/organization-access-token.entity';
 import { UserAndInvitationToken } from '../../db/entity/relations/user-and-invitation-token.entity';
 import { LicenseModule } from '../../enterprise/module/license/license.module';
+import { BillingCaller } from '../billing/billing.caller';
 import { EmailModule } from '../email/email.module';
 import { FileModule } from '../file/file.module';
 import { GitlabModule } from '../gitlab/gitlab.module';
@@ -32,7 +33,7 @@ import { OrganizationScmService } from './scm/scm.service';
     LicenseModule,
   ],
   exports: [OrganizationService, OrganizationApplicationService, OrganizationScmService],
-  providers: [OrganizationService, OrganizationApplicationService, OrganizationScmService],
+  providers: [OrganizationService, OrganizationApplicationService, OrganizationScmService, BillingCaller],
   controllers: [OrganizationController, OrganizationApplicationController, OrganizationScmController],
 })
 export class OrganizationModule {}

@@ -14,6 +14,7 @@ import {
   RoutinePipelinePropCamel,
   RoutinePropCamel,
   RoutineStepPropCamel,
+  UpdateBillingEmailDto,
   UserAndInvitationTokenBase,
   UserAndInvitationTokenPropCamel,
   UserAndInvitationTokenPropSnake,
@@ -58,6 +59,7 @@ import { RoutineStep } from '../../db/entity/step.entity';
 import { SelfHostedLicenseService } from '../../enterprise/module/license/self-hosted-license.service';
 import { castEntity } from '../../types/entity-cast';
 import { ORGANIZATION_ROLE } from '../auth/auth.types';
+import { BillingCaller } from '../billing/billing.caller';
 import { EMPTY_PAGE, Page } from '../common/dto/pagination/page';
 import { EmailService } from '../email/email.service';
 import { OrganizationFileService } from '../file/organization-file.service';
@@ -79,6 +81,7 @@ export class OrganizationService {
     private readonly organizationFileService: OrganizationFileService,
     @Inject(UserInvitationService)
     private readonly invitationService: UserInvitationService,
+    private readonly billingCaller: BillingCaller,
     @Inject(ApplicationService)
     private readonly applicationService: ApplicationService,
     @Inject(ProjectService)
@@ -378,6 +381,15 @@ export class OrganizationService {
         }
       }
 
+      const updateBillingEmailDto: UpdateBillingEmailDto = {
+        organizationId,
+        email: user.email,
+      };
+      await this.billingCaller.callBillingApi<void>({
+        method: 'PUT',
+        path: 'billing/organizations/email',
+        body: updateBillingEmailDto,
+      });
       await manager.save(OrganizationAndUserAndOrganizationRole, Object.assign(originOwner, { organizationRoleId: ORGANIZATION_ROLE.ADMIN }));
       await manager.save(OrganizationAndUserAndOrganizationRole, Object.assign(newOwner, { organizationRoleId: ORGANIZATION_ROLE.OWNER }));
     });
