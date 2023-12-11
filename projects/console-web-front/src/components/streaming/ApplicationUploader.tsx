@@ -136,7 +136,7 @@ const ApplicationUploader = ({}: Props) => {
                           </p>
                         </div>
                       </div>
-                      {app.isLatest && <OrganizationApplicationLatestTag style={{ marginRight: '0' }} />}
+                      {app.isLatest === 1 && <OrganizationApplicationLatestTag style={{ marginRight: '0' }} />}
                     </StyledButton>
                   );
                 })
