@@ -7,7 +7,7 @@ import { BillingOrganizationController } from './billing-organization.controller
 import { BillingOrganizationService } from './billing-organization.service';
 
 @Module({
-  imports: [forwardRef(() => BillingMethodModule), BillingTokenModule, DateTimeSimulatorModule, PaddleModule],
+  imports: [forwardRef(() => BillingMethodModule), BillingTokenModule, DateTimeSimulatorModule, PaddleModule, forwardRef(() => BillingMethodModule)],
   controllers: [BillingOrganizationController],
   providers: [BillingOrganizationService],
   exports: [BillingOrganizationService],

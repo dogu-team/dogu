@@ -7,13 +7,14 @@ import { DateTimeSimulatorModule } from '../date-time-simulator/date-time-simula
 import { NiceModule } from '../nice/nice.module';
 import { PaddleModule } from '../paddle/paddle.module';
 import { BillingMethodNiceService } from './billing-method-nice.service';
+import { BillingMethodPaddleCustomerService } from './billing-method-paddle.customer-service';
 import { BillingMethodPaddleService } from './billing-method-paddle.service';
 import { BillingMethodController } from './billing-method.controller';
 
 @Module({
   imports: [BillingTokenModule, forwardRef(() => BillingOrganizationModule), BillingHistoryModule, DateTimeSimulatorModule, NiceModule, PaddleModule],
-  providers: [BillingMethodNiceService, BillingMethodPaddleService],
-  exports: [BillingMethodNiceService, BillingMethodPaddleService],
+  providers: [BillingMethodNiceService, BillingMethodPaddleService, BillingMethodPaddleCustomerService],
+  exports: [BillingMethodNiceService, BillingMethodPaddleService, BillingMethodPaddleCustomerService],
   controllers: [BillingMethodController],
 })
 export class BillingMethodModule {}

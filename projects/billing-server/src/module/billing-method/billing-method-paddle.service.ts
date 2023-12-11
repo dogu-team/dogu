@@ -7,6 +7,7 @@ import { BillingOrganization } from '../../db/entity/billing-organization.entity
 import { RetryTransaction } from '../../db/retry-transaction';
 import { DoguLogger } from '../logger/logger';
 import { PaddleCaller } from '../paddle/paddle.caller';
+import { BillingMethodPaddleCustomerService } from './billing-method-paddle.customer-service';
 
 export interface CreateOrUpdateMethodPaddleOptions {
   organizationId: string;
@@ -26,6 +27,7 @@ export class BillingMethodPaddleService {
     @InjectDataSource()
     private readonly dataSource: DataSource,
     private readonly paddleCaller: PaddleCaller,
+    private readonly billingMethodPaddleCustomerService: BillingMethodPaddleCustomerService,
   ) {
     this.retryTransaction = new RetryTransaction(this.logger, this.dataSource);
   }
@@ -47,7 +49,7 @@ export class BillingMethodPaddleService {
     });
 
     if (!billingMethodPaddle) {
-      const customer = await this.paddleCaller.createCustomer(options);
+      const customer = await this.billingMethodPaddleCustomerService.createCustomer(options);
       if (!customer.id) {
         throw new Error(`Paddle customer id is empty. customer: ${JSON.stringify(customer)}`);
       }
@@ -76,13 +78,15 @@ export class BillingMethodPaddleService {
     }
 
     const { customerId } = billingMethodPaddle;
-    const customer = await this.paddleCaller.getCustomer({
+    const customer = await this.billingMethodPaddleCustomerService.getCustomer({
       customerId,
+      organizationId,
     });
     if (customer.email !== email) {
-      await this.paddleCaller.updateCustomer({
+      await this.billingMethodPaddleCustomerService.updateCustomer({
         customerId,
         email,
+        organizationId,
       });
       return billingMethodPaddle;
     }

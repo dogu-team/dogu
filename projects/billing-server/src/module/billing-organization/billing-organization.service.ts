@@ -12,6 +12,7 @@ import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { BillingOrganization } from '../../db/entity/billing-organization.entity';
 import { RetryTransaction } from '../../db/retry-transaction';
+import { BillingMethodPaddleCustomerService } from '../billing-method/billing-method-paddle.customer-service';
 import { DoguLogger } from '../logger/logger';
 import { PaddleCaller } from '../paddle/paddle.caller';
 import { createBillingOrganization, findBillingOrganization } from './billing-organization.serializables';
@@ -25,6 +26,7 @@ export class BillingOrganizationService {
     @InjectDataSource()
     private readonly dataSource: DataSource,
     private readonly paddleCaller: PaddleCaller,
+    private readonly billingMethodPaddleCustomerService: BillingMethodPaddleCustomerService,
   ) {
     this.retryTransaction = new RetryTransaction(this.logger, this.dataSource);
   }
@@ -60,7 +62,7 @@ export class BillingOrganizationService {
       }
 
       const { customerId } = organization.billingMethodPaddle;
-      await this.paddleCaller.updateCustomer({ customerId, email });
+      await this.billingMethodPaddleCustomerService.updateCustomer({ customerId, email, organizationId });
     });
   }
 
