@@ -29,9 +29,10 @@ enum StepType {
 
 const StepContainer = ({ jobName, step, index, updateStep, deleteStep, moveStep }: Props) => {
   const { project } = useProjectContext();
-  const [type, setType] = useState<StepType | null>(
-    step.uses !== undefined ? StepType.ACTION : step.run !== undefined ? StepType.SHELL : null,
-  );
+  // const [type, setType] = useState<StepType | null>(
+  //   step.uses !== undefined ? StepType.ACTION : step.run !== undefined ? StepType.SHELL : null,
+  // );
+  // const type = StepType.ACTION;
 
   const updateStepName = useCallback(
     (value: string) => {
@@ -64,7 +65,7 @@ const StepContainer = ({ jobName, step, index, updateStep, deleteStep, moveStep 
         <NameEditor defaultValue={step.name} onSave={updateStepName} maxLength={ROUTINE_STEP_NAME_MAX_LENGTH} />
       </Content>
 
-      <Content>
+      {/* <Content>
         <ContentTitle>{t('routine:routineGuiEditorStepTypeLabel')}</ContentTitle>
         <div>
           <Radio.Group
@@ -75,16 +76,15 @@ const StepContainer = ({ jobName, step, index, updateStep, deleteStep, moveStep 
               } else if (e.target.value === StepType.SHELL) {
                 updateStep({ ...step, uses: undefined, run: '', with: undefined, cwd: undefined }, index);
               }
-              setType(e.target.value);
             }}
           >
             <Radio value={StepType.ACTION}>Action</Radio>
             <Radio value={StepType.SHELL}>Shell</Radio>
           </Radio.Group>
         </div>
-      </Content>
+      </Content> */}
 
-      {type === StepType.SHELL && (
+      {/* {type === StepType.SHELL && (
         <>
           <Content>
             <ContentTitle>Run</ContentTitle>
@@ -107,46 +107,46 @@ echo Dogu!`}
             </div>
           </Content>
         </>
+      )} */}
+
+      {/* {type === StepType.ACTION && (
+        <> */}
+      {/* <Content>
+        <ContentTitle>{t('routineGuiEditorStepActionLabel')}</ContentTitle>
+        <div>
+          <ActionSelector
+            value={step.uses}
+            optionLabelProp="title"
+            style={{ width: '200px' }}
+            onChange={updateAction}
+          />
+        </div>
+      </Content> */}
+
+      {step.uses === RUN_TEST_ACTION_NAME && (
+        <Content>
+          <ContentTitle>{t('routine:routineGuiEditorStepWorkingDirLabel')}</ContentTitle>
+          <ContentDesc>{t('routine:routineGuiEditorStepWorkingDirDescription')}</ContentDesc>
+          <SelectWrapper>
+            <WorkingDirectoryContainer
+              value={step.cwd}
+              onChange={(value) => updateStep({ ...step, cwd: value }, index)}
+            />
+          </SelectWrapper>
+        </Content>
       )}
 
-      {type === StepType.ACTION && (
-        <>
-          <Content>
-            <ContentTitle>{t('routineGuiEditorStepActionLabel')}</ContentTitle>
-            <div>
-              <ActionSelector
-                value={step.uses}
-                optionLabelProp="title"
-                style={{ width: '200px' }}
-                onChange={updateAction}
-              />
-            </div>
-          </Content>
-
-          {step.uses === RUN_TEST_ACTION_NAME && (
-            <Content>
-              <ContentTitle>{t('routine:routineGuiEditorStepWorkingDirLabel')}</ContentTitle>
-              <ContentDesc>{t('routine:routineGuiEditorStepWorkingDirDescription')}</ContentDesc>
-              <SelectWrapper>
-                <WorkingDirectoryContainer
-                  value={step.cwd}
-                  onChange={(value) => updateStep({ ...step, cwd: value }, index)}
-                />
-              </SelectWrapper>
-            </Content>
-          )}
-
-          <Content>
-            <ContentTitle>{t('routine:routineGuiEditorStepArgumentLabel')}</ContentTitle>
-            <div>
-              <StepActionArgumentContainer
-                step={step}
-                onUpdate={(stepWith) => updateStep({ ...step, with: stepWith }, index)}
-              />
-            </div>
-          </Content>
-        </>
-      )}
+      <Content>
+        <ContentTitle>{t('routine:routineGuiEditorStepArgumentLabel')}</ContentTitle>
+        <div>
+          <StepActionArgumentContainer
+            step={step}
+            onUpdate={(stepWith) => updateStep({ ...step, with: stepWith }, index)}
+          />
+        </div>
+      </Content>
+      {/* </>
+      )} */}
     </Box>
   );
 };

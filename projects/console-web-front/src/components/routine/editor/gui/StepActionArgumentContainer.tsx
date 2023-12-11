@@ -88,7 +88,7 @@ const StepActionArgumentContainer = ({ step, onUpdate }: Props) => {
   if (step.uses === RUN_TEST_ACTION_NAME) {
     return (
       <Box>
-        <KeyValueWrapper>
+        {/* <KeyValueWrapper>
           <Checkbox
             checked={(step.with?.checkout as boolean | undefined) ?? false}
             onChange={(e) => {
@@ -102,8 +102,8 @@ const StepActionArgumentContainer = ({ step, onUpdate }: Props) => {
           >
             <Key>checkout</Key>
           </Checkbox>
-        </KeyValueWrapper>
-        {!!step.with?.checkout && <CheckoutActionArgumentContainer step={step} updateArgs={handleUpdateArgs} />}
+        </KeyValueWrapper> */}
+        {/* {!!step.with?.checkout && <CheckoutActionArgumentContainer step={step} updateArgs={handleUpdateArgs} />} */}
         <KeyValueWrapper style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
           <Key style={{ marginBottom: '.25rem' }}>Environment</Key>
           <Select

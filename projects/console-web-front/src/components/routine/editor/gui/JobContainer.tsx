@@ -260,7 +260,10 @@ const JobContainer = ({ name, job, updateJob, updateJobName, deleteJob, updateJo
 
   const handleAddStep = useCallback(() => {
     const steps = job.steps;
-    const newSteps: StepSchema[] = [...steps, { name: 'New step', uses: RUN_TEST_ACTION_NAME }];
+    const newSteps: StepSchema[] = [
+      ...steps,
+      { name: 'New step', uses: RUN_TEST_ACTION_NAME, with: { checkout: true, clean: true } },
+    ];
     updateJob({ ...job, steps: newSteps }, name);
   }, [job, name, updateJob]);
 

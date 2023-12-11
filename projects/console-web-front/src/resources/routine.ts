@@ -13,11 +13,13 @@ jobs:
       group: []
     appPackageName:
     record: true
+    cloud: true
     steps:
       - name: run test
         uses: dogu-actions/run-test
         with:
           checkout: true
+          clean: true
           command:
         cwd:
 `;
@@ -32,11 +34,13 @@ jobs:
     runs-on: []
     browserName: chrome
     record: true
+    cloud: true
     steps:
       - name: run test
         uses: dogu-actions/run-test
         with:
           checkout: true
+          clean: true
           command:
         cwd:
 `;
@@ -57,6 +61,7 @@ jobs:
         uses: dogu-actions/run-test
         with:
           checkout: true
+          clean: true
           command:
         cwd:
 `;
