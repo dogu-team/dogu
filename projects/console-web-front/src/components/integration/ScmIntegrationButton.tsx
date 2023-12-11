@@ -120,7 +120,7 @@ const ScmIntegrationButton: React.FC<Props> = ({}) => {
           ) : (
             <>
               Integrate organizaiton with Git.{' '}
-              <Link href="https://docs.dogutech.io/management/project/git-integration" target="_blank">
+              <Link href="https://docs.dogutech.io/management/organization/git-integration" target="_blank">
                 Visit docs
               </Link>{' '}
               for learn more.
