@@ -10,7 +10,7 @@
   "signInSignUpLinkText": "Create an account",
 
   "signInFormEmailLabel": "Email",
-  "signInFormPasswordLabel": "Passoword",
+  "signInFormPasswordLabel": "Password",
   "signInFormEmailPlaceholder": "Email",
   "signInFormPasswordPlaceholder": "Password (8 ~ 28 characters)",
   "signInValidationFailErrorMsg": "Check your email or password.",
