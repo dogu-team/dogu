@@ -1,11 +1,11 @@
 import {
   BillingPlanGroupMap,
   BillingSubscriptionGroupType,
-  BillingSubscriptionPlanInfoResponse,
+  BillingPlanInfoResponse,
   CloudLicenseResponse,
   SelfHostedLicenseBase,
 } from '@dogu-private/console';
-import { Alert, List, MenuProps, Tag } from 'antd';
+import { Alert, List, MenuProps, Modal, Tag } from 'antd';
 import Trans from 'next-translate/Trans';
 import useTranslation from 'next-translate/useTranslation';
 import { useRouter } from 'next/router';
@@ -23,10 +23,11 @@ import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd
 import { getLocaleFormattedDate } from '../../utils/locale';
 import MenuButton from '../buttons/MenuButton';
 import MenuItemButton from '../buttons/MenuItemButton';
+import BillingPaymentMethodPaddle from './BillingPaymentMethodPaddle';
 import UpgradePlanModal from './UpgradePlanModal';
 
 interface OptionProps {
-  plan: BillingSubscriptionPlanInfoResponse;
+  plan: BillingPlanInfoResponse;
 }
 
 const PlanOption: React.FC<OptionProps> = ({ plan }) => {
@@ -55,7 +56,7 @@ const PlanOption: React.FC<OptionProps> = ({ plan }) => {
     }
 
     try {
-      const rv = await requestCancelChangePlan(plan.billingSubscriptionPlanInfoId, {
+      const rv = await requestCancelChangePlan(plan.billingPlanInfoId, {
         organizationId: license.organizationId,
       });
 
@@ -69,9 +70,9 @@ const PlanOption: React.FC<OptionProps> = ({ plan }) => {
         ...license,
         billingOrganization: {
           ...license.billingOrganization,
-          billingSubscriptionPlanInfos: [
-            ...license.billingOrganization.billingSubscriptionPlanInfos.filter(
-              (p) => p.billingSubscriptionPlanInfoId !== plan.billingSubscriptionPlanInfoId,
+          billingPlanInfos: [
+            ...license.billingOrganization.billingPlanInfos.filter(
+              (p) => p.billingPlanInfoId !== plan.billingPlanInfoId,
             ),
             rv.body,
           ],
@@ -125,7 +126,7 @@ const PlanOption: React.FC<OptionProps> = ({ plan }) => {
 };
 
 interface NextChargeProps {
-  plan: BillingSubscriptionPlanInfoResponse;
+  plan: BillingPlanInfoResponse;
 }
 
 const NextCharge: React.FC<NextChargeProps> = ({ plan }) => {
@@ -136,7 +137,7 @@ const NextCharge: React.FC<NextChargeProps> = ({ plan }) => {
     return (
       <div>
         {t('planNextChargeUnsubscribeRequestedText', {
-          date: getLocaleFormattedDate(router.locale, new Date((plan.monthlyExpiredAt || plan.yearlyExpiredAt)!), {
+          date: getLocaleFormattedDate(router.locale, new Date(plan.expiredAt!), {
             year: 'numeric',
             month: 'numeric',
             day: 'numeric',
@@ -149,8 +150,8 @@ const NextCharge: React.FC<NextChargeProps> = ({ plan }) => {
 
   return (
     <div>
-      {!!(plan.monthlyExpiredAt || plan.yearlyExpiredAt)
-        ? getLocaleFormattedDate(router.locale, new Date((plan.monthlyExpiredAt || plan.yearlyExpiredAt)!), {
+      {!!plan.expiredAt
+        ? getLocaleFormattedDate(router.locale, new Date(plan.expiredAt!), {
             year: 'numeric',
             month: 'numeric',
             day: 'numeric',
@@ -161,7 +162,7 @@ const NextCharge: React.FC<NextChargeProps> = ({ plan }) => {
 };
 
 interface StateProps {
-  plan: BillingSubscriptionPlanInfoResponse;
+  plan: BillingPlanInfoResponse;
 }
 
 const StateBadge: React.FC<StateProps> = ({ plan }) => {
@@ -184,7 +185,7 @@ const StateBadge: React.FC<StateProps> = ({ plan }) => {
     }
 
     try {
-      const rv = await requestCancelUnsubscribePlan(plan.billingSubscriptionPlanInfoId, {
+      const rv = await requestCancelUnsubscribePlan(plan.billingPlanInfoId, {
         organizationId: license.organizationId,
       });
 
@@ -197,9 +198,9 @@ const StateBadge: React.FC<StateProps> = ({ plan }) => {
         ...license,
         billingOrganization: {
           ...license.billingOrganization,
-          billingSubscriptionPlanInfos: [
-            ...license.billingOrganization.billingSubscriptionPlanInfos.filter(
-              (p) => p.billingSubscriptionPlanInfoId !== plan.billingSubscriptionPlanInfoId,
+          billingPlanInfos: [
+            ...license.billingOrganization.billingPlanInfos.filter(
+              (p) => p.billingPlanInfoId !== plan.billingPlanInfoId,
             ),
             rv.body,
           ],
@@ -220,6 +221,16 @@ const StateBadge: React.FC<StateProps> = ({ plan }) => {
         </div>
       );
     case 'unsubscribe-requested':
+      return (
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <Tag color="warning">{t('planStatusUnsubscribeRequestedText')}</Tag>
+          <StyledCancelUnsubscribeButton onClick={clickCancelUnsubscribe} disabled={loading}>
+            {t('planCancelUnsubscribeButtonText')}
+          </StyledCancelUnsubscribeButton>
+
+          <UpgradePlanModal isOpen={isOpen} close={closeModal} />
+        </div>
+      );
     case 'unsubscribed':
       return (
         <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -237,11 +248,12 @@ const StateBadge: React.FC<StateProps> = ({ plan }) => {
 };
 
 interface ItemProps {
-  plan: BillingSubscriptionPlanInfoResponse;
+  plan: BillingPlanInfoResponse;
 }
 
 const PlanItem: React.FC<ItemProps> = ({ plan }) => {
   const [license, updateLicense] = useLicenseStore((state) => [state.license, state.updateLicense], shallow);
+  const [isOpen, openModal, closeModal] = useModal();
   const { t } = useTranslation('billing');
 
   const description = planDescriptionInfoMap[plan.type];
@@ -252,7 +264,7 @@ const PlanItem: React.FC<ItemProps> = ({ plan }) => {
     }
 
     try {
-      const rv = await unsubscribePlan(plan.billingSubscriptionPlanInfoId, {
+      const rv = await unsubscribePlan(plan.billingPlanInfoId, {
         organizationId: license.organizationId as string,
       });
 
@@ -265,9 +277,9 @@ const PlanItem: React.FC<ItemProps> = ({ plan }) => {
         ...license,
         billingOrganization: {
           ...license.billingOrganization,
-          billingSubscriptionPlanInfos: [
-            ...license.billingOrganization.billingSubscriptionPlanInfos.filter(
-              (p) => p.billingSubscriptionPlanInfoId !== plan.billingSubscriptionPlanInfoId,
+          billingPlanInfos: [
+            ...license.billingOrganization.billingPlanInfos.filter(
+              (p) => p.billingPlanInfoId !== plan.billingPlanInfoId,
             ),
             rv.body!,
           ],
@@ -280,6 +292,16 @@ const PlanItem: React.FC<ItemProps> = ({ plan }) => {
   };
 
   const items: MenuProps['items'] = [
+    license?.billingOrganization.billingMethod === 'paddle'
+      ? {
+          label: (
+            <MenuItemButton danger={false} onClick={() => openModal()}>
+              {t('paymentMethodButtonText')}
+            </MenuItemButton>
+          ),
+          key: 'payment-method',
+        }
+      : null,
     {
       label: (
         <MenuItemButton
@@ -319,25 +341,31 @@ const PlanItem: React.FC<ItemProps> = ({ plan }) => {
   ];
 
   return (
-    <Item>
-      <ItemInner>
-        <Cell flex={1}>
-          <b>{t(description.titleI18nKey)}</b>
-        </Cell>
-        <Cell flex={1}>
-          <PlanOption plan={plan} />
-        </Cell>
-        <Cell flex={1}>
-          <StateBadge plan={plan} />
-        </Cell>
-        <Cell flex={1}>
-          <NextCharge plan={plan} />
-        </Cell>
-        <ButtonWrapper>
-          <MenuButton menu={{ items }} />
-        </ButtonWrapper>
-      </ItemInner>
-    </Item>
+    <>
+      <Item>
+        <ItemInner>
+          <Cell flex={1}>
+            <b>{t(description.titleI18nKey)}</b>
+          </Cell>
+          <Cell flex={1}>
+            <PlanOption plan={plan} />
+          </Cell>
+          <Cell flex={1}>
+            <StateBadge plan={plan} />
+          </Cell>
+          <Cell flex={1}>
+            <NextCharge plan={plan} />
+          </Cell>
+          <ButtonWrapper>
+            <MenuButton menu={{ items }} />
+          </ButtonWrapper>
+        </ItemInner>
+      </Item>
+
+      <Modal open={isOpen} centered footer={null} closable onCancel={closeModal} title={t('paymentMethodModalTitle')}>
+        <BillingPaymentMethodPaddle plan={plan} />
+      </Modal>
+    </>
   );
 };
 
@@ -354,7 +382,7 @@ const BillingSubscribedPlanList: React.FC<Props> = () => {
   }
 
   const cloudLicense = license as CloudLicenseResponse;
-  const subscribedPlans = cloudLicense.billingOrganization?.billingSubscriptionPlanInfos;
+  const subscribedPlans = cloudLicense.billingOrganization?.billingPlanInfos;
 
   if (!subscribedPlans || subscribedPlans.length === 0) {
     return (
@@ -383,7 +411,7 @@ const BillingSubscribedPlanList: React.FC<Props> = () => {
       <List
         dataSource={subscribedPlans}
         renderItem={(plan) => <PlanItem plan={plan} />}
-        rowKey={(plan) => plan.billingSubscriptionPlanInfoId}
+        rowKey={(plan) => plan.billingPlanInfoId}
       />
     </>
   );

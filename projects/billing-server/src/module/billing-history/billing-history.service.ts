@@ -4,7 +4,7 @@ import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { BillingHistory } from '../../db/entity/billing-history.entity';
 import { BillingOrganization } from '../../db/entity/billing-organization.entity';
-import { BillingSubscriptionPlanHistory } from '../../db/entity/billing-subscription-plan-history.entity';
+import { BillingPlanHistory } from '../../db/entity/billing-plan-history.entity';
 import { RetryTransaction } from '../../db/retry-transaction';
 import { DoguLogger } from '../logger/logger';
 
@@ -26,19 +26,24 @@ export class BillingHistoryService {
       const [histories, totalCount] = await manager
         .createQueryBuilder(BillingHistory, BillingHistory.name)
         .innerJoinAndSelect(`${BillingHistory.name}.${BillingHistoryProp.billingOrganization}`, BillingOrganization.name)
-        .leftJoinAndSelect(`${BillingHistory.name}.${BillingHistoryProp.billingSubscriptionPlanHistories}`, BillingSubscriptionPlanHistory.name)
+        .leftJoinAndSelect(`${BillingHistory.name}.${BillingHistoryProp.billingPlanHistories}`, BillingPlanHistory.name)
         .where(`${BillingOrganization.name}.${BillingOrganizationProp.organizationId} = :organizationId`, { organizationId })
         .orderBy(`${BillingHistory.name}.${BillingHistoryProp.createdAt}`, 'DESC')
         .skip((page - 1) * offset)
         .take(offset)
         .getManyAndCount();
 
+      const historiesWithoutBillingOrganization: BillingHistory[] = histories.map((history) => {
+        const { billingOrganization, ...rest } = history;
+        return rest;
+      });
+
       return {
         page,
         offset,
         totalCount,
         totalPage: Math.ceil(totalCount / offset),
-        items: histories,
+        items: historiesWithoutBillingOrganization,
       };
     });
   }

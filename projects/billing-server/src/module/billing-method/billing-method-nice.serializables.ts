@@ -12,10 +12,10 @@ import { v4 } from 'uuid';
 import { BillingMethodNice } from '../../db/entity/billing-method-nice.entity';
 import { BillingOrganization } from '../../db/entity/billing-organization.entity';
 import { RetryTransactionContext } from '../../db/retry-transaction';
-import { BillingMethodNiceCaller } from './billing-method-nice.caller';
+import { NiceCaller } from '../nice/nice.caller';
 
 export interface CreateOrUpdateMethodNiceOptions {
-  billingMethodNiceCaller: BillingMethodNiceCaller;
+  niceCaller: NiceCaller;
   dto: CreateOrUpdateMethodNiceDto;
   now: Date;
 }
@@ -24,7 +24,7 @@ export type CreateOrUpdateMethodNiceResult = BillingResult<BillingMethodNice, { 
 
 export async function createOrUpdateMethodNice(context: RetryTransactionContext, options: CreateOrUpdateMethodNiceOptions): Promise<CreateOrUpdateMethodNiceResult> {
   const { logger, manager, registerOnAfterRollback } = context;
-  const { billingMethodNiceCaller, dto, now } = options;
+  const { niceCaller, dto, now } = options;
   const { billingOrganizationId, subscribeRegist } = dto;
   const { registerCard } = subscribeRegist;
   const { cardNumber, expirationYear, expirationMonth } = registerCard;
@@ -33,7 +33,7 @@ export async function createOrUpdateMethodNice(context: RetryTransactionContext,
   const subscribeExpire = async (): Promise<void> => {
     if (bid) {
       try {
-        await billingMethodNiceCaller.subscribeExpire({ bid });
+        await niceCaller.subscribeExpire({ bid });
       } catch (e) {
         logger.error('BillingMethodNiceService.createOrUpdate.subscribeExpire failed', { bid, error: errorify(e) });
       } finally {
@@ -48,7 +48,7 @@ export async function createOrUpdateMethodNice(context: RetryTransactionContext,
   bid = billingMethodNice?.bid ?? null;
   await subscribeExpire();
 
-  const subscribeRegistResult = await billingMethodNiceCaller.subscribeRegist(subscribeRegist);
+  const subscribeRegistResult = await niceCaller.subscribeRegist(subscribeRegist);
   if (!subscribeRegistResult.ok) {
     return {
       ok: false,
@@ -100,11 +100,7 @@ export interface CreateNicePurchaseOptions {
 
 export type CreateNicePurchaseResult = BillingResult<NiceSubscribePaymentsResponse, { niceResultCode: string | null }>;
 
-export async function createPurchase(
-  context: RetryTransactionContext,
-  billingMethodNiceCaller: BillingMethodNiceCaller,
-  options: CreateNicePurchaseOptions,
-): Promise<CreateNicePurchaseResult> {
+export async function createPurchase(context: RetryTransactionContext, niceCaller: NiceCaller, options: CreateNicePurchaseOptions): Promise<CreateNicePurchaseResult> {
   const { manager, registerOnAfterRollback } = context;
   const { billingMethodNiceId, amount, goodsName } = options;
   const billingMethodNice = await manager.getRepository(BillingMethodNice).findOne({
@@ -134,7 +130,7 @@ export async function createPurchase(
     };
   }
 
-  const subscribePaymentsResult = await billingMethodNiceCaller.subscribePayments({
+  const subscribePaymentsResult = await niceCaller.subscribePayments({
     bid,
     amount,
     goodsName,
@@ -154,7 +150,7 @@ export async function createPurchase(
   const { value } = subscribePaymentsResult;
 
   registerOnAfterRollback(async () => {
-    await billingMethodNiceCaller.paymentsCancel({
+    await niceCaller.paymentsCancel({
       tid: value.tid,
       reason: `rollback tid: ${value.tid}`,
     });
@@ -167,14 +163,14 @@ export async function createPurchase(
 }
 
 export interface UpdateBillingMethodOptions {
-  billingMethodNiceCaller: BillingMethodNiceCaller;
+  niceCaller: NiceCaller;
   dto: UpdateMethodNiceDto;
   now: Date;
 }
 
 export async function updateBillingMethod(context: RetryTransactionContext, options: UpdateBillingMethodOptions): Promise<UpdateBillingMethodResponse> {
   const { manager } = context;
-  const { billingMethodNiceCaller, dto, now } = options;
+  const { niceCaller, dto, now } = options;
   const { registerCard } = dto;
 
   const billingOrganization = await manager.getRepository(BillingOrganization).findOne({
@@ -194,7 +190,7 @@ export async function updateBillingMethod(context: RetryTransactionContext, opti
   }
 
   const createOrUpdateMethodNiceResult = await createOrUpdateMethodNice(context, {
-    billingMethodNiceCaller,
+    niceCaller,
     dto: {
       billingOrganizationId: billingOrganization.billingOrganizationId,
       subscribeRegist: {
@@ -213,7 +209,6 @@ export async function updateBillingMethod(context: RetryTransactionContext, opti
 
   return {
     ok: true,
-    resultCode: resultCode('ok'),
-    method: createOrUpdateMethodNiceResult.value,
+    value: createOrUpdateMethodNiceResult.value,
   };
 }

@@ -7,8 +7,6 @@ import { DateTimeSimulator, DateTimeSimulatorProp, DateTimeSimulatorTableName } 
 import { getClient } from '../../db/retry-transaction';
 import { DoguLogger } from '../logger/logger';
 
-const EventChannelName = 'date_time_simulator_change_event';
-
 @Injectable()
 export class DateTimeSimulatorService implements OnModuleInit {
   private dateTimeSimulator = new DateTimeSimulator();
@@ -20,61 +18,11 @@ export class DateTimeSimulatorService implements OnModuleInit {
   ) {}
 
   async onModuleInit(): Promise<void> {
-    const client = await getClient(this.dataSource);
-    await client.query(`
-CREATE OR REPLACE FUNCTION notify_date_time_simulator_change() RETURNS TRIGGER AS $$
-DECLARE
-  payload TEXT;
-
-BEGIN
-  payload := json_build_object(
-    '${DateTimeSimulatorProp.dateTimeSimulatorId}', NEW."${DateTimeSimulatorProp.dateTimeSimulatorId}",
-    '${DateTimeSimulatorProp.yearsOffset}', NEW."${DateTimeSimulatorProp.yearsOffset}",
-    '${DateTimeSimulatorProp.monthsOffset}', NEW."${DateTimeSimulatorProp.monthsOffset}",
-    '${DateTimeSimulatorProp.daysOffset}', NEW."${DateTimeSimulatorProp.daysOffset}",
-    '${DateTimeSimulatorProp.hoursOffset}', NEW."${DateTimeSimulatorProp.hoursOffset}",
-    '${DateTimeSimulatorProp.minutesOffset}', NEW."${DateTimeSimulatorProp.minutesOffset}",
-    '${DateTimeSimulatorProp.secondsOffset}', NEW."${DateTimeSimulatorProp.secondsOffset}",
-    '${DateTimeSimulatorProp.millisecondsOffset}', NEW."${DateTimeSimulatorProp.millisecondsOffset}"
-  )::text;
-  PERFORM pg_notify('${EventChannelName}', payload);
-
-  RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE OR REPLACE TRIGGER date_time_simulator_after_insert
-AFTER INSERT ON "${DateTimeSimulatorTableName}"
-FOR EACH ROW EXECUTE FUNCTION notify_date_time_simulator_change();
-
-CREATE OR REPLACE TRIGGER date_time_simulator_after_update
-AFTER UPDATE ON "${DateTimeSimulatorTableName}"
-FOR EACH ROW EXECUTE FUNCTION notify_date_time_simulator_change();
-
-LISTEN ${EventChannelName};
-    `);
-
-    client.on('notification', (message) => {
-      if (message.channel !== EventChannelName) {
-        return;
-      }
-
-      if (!message.payload) {
-        return;
-      }
-
-      try {
-        const parsed = transformAndValidateSync(DateTimeSimulator, JSON.parse(message.payload));
-        this.update(parsed);
-      } catch (error) {
-        this.logger.error(`Failed to parse payload: ${message.payload}`);
-      }
-    });
-
     const repo = this.dataSource.getRepository(DateTimeSimulator);
     const found = await repo.findOne({
       where: {},
     });
+
     if (found) {
       this.update(found);
     } else {
@@ -83,7 +31,7 @@ LISTEN ${EventChannelName};
     }
   }
 
-  private update(dateTimeSimulator: DateTimeSimulator): void {
+  update(dateTimeSimulator: DateTimeSimulator): void {
     this.dateTimeSimulator = dateTimeSimulator;
     this.logger.warn('DateTimeSimulator updated', { dateTimeSimulator, now: this.now() });
   }

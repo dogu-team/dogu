@@ -23,6 +23,10 @@ export const config = {
     consoleUrl: env.DOGU_CONSOLE_DB_READ_URL,
     ssl: env.DOGU_BILLING_DB_SSL_CONNECTION ? { rejectUnauthorized: false } : false,
   },
+  paddle: {
+    apiKey: env.DOGU_PADDLE_API_KEY,
+    notificationKey: env.DOGU_PADDLE_NOTIFICATION_KEY,
+  },
 };
 
 export const dataSourceConfig: DataSourceOptions = {

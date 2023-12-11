@@ -1,23 +1,17 @@
-import { ArrowRightOutlined, CloseOutlined } from '@ant-design/icons';
+import { CloseOutlined } from '@ant-design/icons';
 import {
   BillingPlanGroupMap,
-  BillingPromotionCouponResponse,
   BillingSubscriptionGroupType,
-  CallBillingApiResponse,
   GetAvailableBillingCouponsDto,
 } from '@dogu-private/console';
 import useTranslation from 'next-translate/useTranslation';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import useSWR from 'swr';
 import { shallow } from 'zustand/shallow';
 
-import { swrAuthFetcher } from '../../api';
 import { usePromotionCouponSWR } from '../../api/billing';
 import { planDescriptionInfoMap } from '../../resources/plan';
-import useLicenseStore from '../../stores/license';
 import usePromotionStore from '../../stores/promotion';
-import { buildQueryPraramsByObject } from '../../utils/query';
 import UpgradePlanButton from './UpgradePlanButton';
 
 interface Props {
@@ -76,7 +70,7 @@ const PromotionBanner: React.FC = () => {
   ]);
   const dto: Omit<GetAvailableBillingCouponsDto, 'type' | 'organizationId'> = {
     category: process.env.NEXT_PUBLIC_ENV === 'self-hosted' ? 'self-hosted' : 'cloud',
-    subscriptionPlanType: currentPlanType ?? undefined,
+    planType: currentPlanType ?? undefined,
   };
   const { data } = usePromotionCouponSWR(isPromotionOpenablePage, dto);
   const { t } = useTranslation('billing');
@@ -104,13 +98,11 @@ const PromotionBanner: React.FC = () => {
   return (
     <AlertBanner>
       ✨ [{t(planDescription.titleI18nKey)}]{' '}
-      {promotion.monthlyApplyCount !== null
-        ? t(
-            promotion.monthlyApplyCount > 1
-              ? 'promotionBannerMonthPluralMessage'
-              : 'promotionBannerMonthSingularMessage',
-            { month: promotion.monthlyApplyCount, discount: promotion.monthlyDiscountPercent },
-          )
+      {promotion.applyCount !== null
+        ? t(promotion.applyCount > 1 ? 'promotionBannerMonthPluralMessage' : 'promotionBannerMonthSingularMessage', {
+            month: promotion.applyCount,
+            discount: promotion.discountPercent,
+          })
         : ''}
       <StyledButton groupType={planGroupType ?? null}>{t('promotionBannerButtonText')} 🚀</StyledButton>
       {!!expiredAt && <BannerTimer expiredAt={expiredAt} />}

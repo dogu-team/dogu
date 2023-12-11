@@ -2,7 +2,7 @@ import { BillingCurrency, BillingHistoryBase, BillingHistoryProp, BillingHistory
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryColumn } from 'typeorm';
 import { CreatedAt, DeletedAt, UpdatedAt } from '../decorators';
 import { BillingOrganization } from './billing-organization.entity';
-import { BillingSubscriptionPlanHistory } from './billing-subscription-plan-history.entity';
+import { BillingPlanHistory } from './billing-plan-history.entity';
 
 @Entity()
 export class BillingHistory implements BillingHistoryBase {
@@ -52,6 +52,15 @@ export class BillingHistory implements BillingHistoryBase {
   cardExpirationMonth!: string | null;
 
   @Column({ type: 'character varying', nullable: true })
+  paddleMethodType!: string | null;
+
+  @Column({ type: 'character varying', nullable: true })
+  paddleTransactionId!: string | null;
+
+  @Column({ type: 'jsonb', nullable: true })
+  paddleTransaction!: Record<string, unknown> | null;
+
+  @Column({ type: 'character varying', nullable: true })
   cancelReason!: string | null;
 
   @Column({ type: 'jsonb', nullable: true })
@@ -79,6 +88,6 @@ export class BillingHistory implements BillingHistoryBase {
   @JoinColumn({ name: BillingHistoryProp.billingOrganizationId })
   billingOrganization?: BillingOrganization;
 
-  @OneToMany(() => BillingSubscriptionPlanHistory, (billingSubscriptionPlanHistory) => billingSubscriptionPlanHistory.billingHistory)
-  billingSubscriptionPlanHistories?: BillingSubscriptionPlanHistory[];
+  @OneToMany(() => BillingPlanHistory, (billingPlanHistory) => billingPlanHistory.billingHistory)
+  billingPlanHistories?: BillingPlanHistory[];
 }

@@ -1,12 +1,14 @@
 import {
-  CreatePurchaseSubscriptionDto,
-  CreatePurchaseSubscriptionResponse,
-  CreatePurchaseSubscriptionWithNewCardDto,
-  CreatePurchaseSubscriptionWithNewCardResponse,
-  GetBillingSubscriptionPreviewDto,
-  GetBillingSubscriptionPreviewResponse,
+  CreatePurchaseDto,
+  CreatePurchaseResponse,
+  CreatePurchaseWithNewCardDto,
+  CreatePurchaseWithNewCardResponse,
+  GetBillingPrecheckoutDto,
+  GetBillingPrecheckoutResponse,
+  GetBillingPreviewDto,
+  GetBillingPreviewResponse,
   RefundFullDto,
-  RefundSubscriptionPlanDto,
+  RefundPlanDto,
 } from '@dogu-private/console';
 import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { BillingTokenPermission } from '../auth/guard/billing-token.guard';
@@ -18,31 +20,37 @@ export class BillingPurchaseController {
 
   @Get('/preview')
   @BillingTokenPermission()
-  async getSubscriptionPreview(@Query() dto: GetBillingSubscriptionPreviewDto): Promise<GetBillingSubscriptionPreviewResponse> {
-    return await this.billingPurchaseService.getSubscriptionPreview(dto);
+  async getPreview(@Query() dto: GetBillingPreviewDto): Promise<GetBillingPreviewResponse> {
+    return await this.billingPurchaseService.getPreview(dto);
   }
 
   @Post()
   @BillingTokenPermission()
-  async createPurchaseSubscription(@Body() dto: CreatePurchaseSubscriptionDto): Promise<CreatePurchaseSubscriptionResponse> {
-    return await this.billingPurchaseService.createPurchaseSubscription(dto);
+  async createPurchase(@Body() dto: CreatePurchaseDto): Promise<CreatePurchaseResponse> {
+    return await this.billingPurchaseService.createPurchase(dto);
   }
 
   @Post('/new-card')
   @BillingTokenPermission()
-  async createPurchaseSubscriptionWithNewCard(@Body() dto: CreatePurchaseSubscriptionWithNewCardDto): Promise<CreatePurchaseSubscriptionWithNewCardResponse> {
-    return await this.billingPurchaseService.createPurchaseSubscriptionWithNewCard(dto);
+  async createPurchaseWithNewCard(@Body() dto: CreatePurchaseWithNewCardDto): Promise<CreatePurchaseWithNewCardResponse> {
+    return await this.billingPurchaseService.createPurchaseWithNewCard(dto);
   }
 
-  @Post('/refund/subscription-plan')
+  @Post('/refund/plan')
   @BillingTokenPermission()
-  async refundPurchaseSubscription(@Body() dto: RefundSubscriptionPlanDto): Promise<void> {
-    return await this.billingPurchaseService.refundSubscriptionPlan(dto);
+  async refundPurchase(@Body() dto: RefundPlanDto): Promise<void> {
+    return await this.billingPurchaseService.refundPlan(dto);
   }
 
   @Post('/refund/full')
   @BillingTokenPermission()
   async refundFull(@Body() dto: RefundFullDto): Promise<void> {
     return await this.billingPurchaseService.refundFull(dto);
+  }
+
+  @Get('/precheckout')
+  @BillingTokenPermission()
+  async precheckout(@Query() dto: GetBillingPrecheckoutDto): Promise<GetBillingPrecheckoutResponse> {
+    return await this.billingPurchaseService.getPrecheckout(dto);
   }
 }

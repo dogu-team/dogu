@@ -11022,6 +11022,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
+      ["@paddle/paddle-js", [\
+        ["npm:0.5.1", {\
+          "packageLocation": "./.yarn/cache/@paddle-paddle-js-npm-0.5.1-26b8bb7f9d-91285f092f.zip/node_modules/@paddle/paddle-js/",\
+          "packageDependencies": [\
+            ["@paddle/paddle-js", "npm:0.5.1"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
       ["@pkgjs/parseargs", [\
         ["npm:0.11.0", {\
           "packageLocation": "./.yarn/cache/@pkgjs-parseargs-npm-0.11.0-cd2a3fe948-6ad6a00fc4.zip/node_modules/@pkgjs/parseargs/",\
@@ -13662,6 +13671,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["@types/is-stream", "npm:1.1.0"],\
             ["@types/node", "npm:18.15.13"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@types/iso-3166-1-alpha-2", [\
+        ["npm:1.0.2", {\
+          "packageLocation": "./.yarn/cache/@types-iso-3166-1-alpha-2-npm-1.0.2-15ad7defbc-435827b6a0.zip/node_modules/@types/iso-3166-1-alpha-2/",\
+          "packageDependencies": [\
+            ["@types/iso-3166-1-alpha-2", "npm:1.0.2"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -19651,6 +19669,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@dogu-tech/node", "workspace:packages/typescript/node"],\
             ["@emotion/is-prop-valid", "npm:1.2.0"],\
             ["@monaco-editor/react", "virtual:28b444ca65aca9f6532815a467e94245056189ac01976539aa2f4fb241137b45c9697a2074b54444c9d1c779b8e60e1a1140c79b811d2daaa176852048e428eb#npm:4.5.0-beta.0"],\
+            ["@paddle/paddle-js", "npm:0.5.1"],\
             ["@react-google-maps/api", "virtual:28b444ca65aca9f6532815a467e94245056189ac01976539aa2f4fb241137b45c9697a2074b54444c9d1c779b8e60e1a1140c79b811d2daaa176852048e428eb#npm:2.19.2"],\
             ["@sentry/nextjs", "virtual:28b444ca65aca9f6532815a467e94245056189ac01976539aa2f4fb241137b45c9697a2074b54444c9d1c779b8e60e1a1140c79b811d2daaa176852048e428eb#npm:7.50.0"],\
             ["@slack/web-api", "npm:6.9.0"],\
@@ -19658,6 +19677,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@swc/core", "npm:1.2.220"],\
             ["@types/cookie", "npm:0.5.1"],\
             ["@types/hoist-non-react-statics", "npm:3.3.1"],\
+            ["@types/iso-3166-1-alpha-2", "npm:1.0.2"],\
             ["@types/lodash", "npm:4.14.186"],\
             ["@types/node", "npm:18.15.11"],\
             ["@types/nprogress", "npm:0.2.0"],\
@@ -19693,6 +19713,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["flatbuffers", "npm:22.10.26"],\
             ["gamium", "npm:2.0.2"],\
             ["hoist-non-react-statics", "npm:3.3.2"],\
+            ["iso-3166-1-alpha-2", "npm:1.0.1"],\
             ["lodash", "npm:4.17.21"],\
             ["moment", "npm:2.29.4"],\
             ["monaco-editor", "npm:0.36.1"],\
@@ -26293,6 +26314,16 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
+      ["iso-3166-1-alpha-2", [\
+        ["npm:1.0.1", {\
+          "packageLocation": "./.yarn/cache/iso-3166-1-alpha-2-npm-1.0.1-6499c2502d-b8932aa55f.zip/node_modules/iso-3166-1-alpha-2/",\
+          "packageDependencies": [\
+            ["iso-3166-1-alpha-2", "npm:1.0.1"],\
+            ["mout", "npm:1.2.4"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
       ["isobject", [\
         ["npm:2.1.0", {\
           "packageLocation": "./.yarn/cache/isobject-npm-2.1.0-2798cf0d94-811c6f5a86.zip/node_modules/isobject/",\
@@ -31366,6 +31397,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/monaco-editor-npm-0.36.1-d2cfa44f8c-75e7cfbe03.zip/node_modules/monaco-editor/",\
           "packageDependencies": [\
             ["monaco-editor", "npm:0.36.1"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["mout", [\
+        ["npm:1.2.4", {\
+          "packageLocation": "./.yarn/cache/mout-npm-1.2.4-612ea5fd77-761801ab66.zip/node_modules/mout/",\
+          "packageDependencies": [\
+            ["mout", "npm:1.2.4"]\
           ],\
           "linkType": "HARD"\
         }]\

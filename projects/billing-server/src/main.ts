@@ -19,6 +19,10 @@ process.on('uncaughtException', (error, origin) => {
 });
 
 async function bootstrap(): Promise<void> {
+  if (env.DOGU_BILLING_RUN_TYPE === 'local') {
+    logger.addFileTransports();
+  }
+
   const app = await NestFactory.create(AppModule);
   const httpAdapterHost = app.get(HttpAdapterHost);
 

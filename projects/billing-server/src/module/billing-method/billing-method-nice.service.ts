@@ -6,7 +6,7 @@ import { DataSource } from 'typeorm';
 import { RetryTransaction } from '../../db/retry-transaction';
 import { DateTimeSimulatorService } from '../date-time-simulator/date-time-simulator.service';
 import { DoguLogger } from '../logger/logger';
-import { BillingMethodNiceCaller } from './billing-method-nice.caller';
+import { NiceCaller } from '../nice/nice.caller';
 import { updateBillingMethod } from './billing-method-nice.serializables';
 
 @Injectable()
@@ -16,7 +16,7 @@ export class BillingMethodNiceService {
   constructor(
     private readonly logger: DoguLogger,
     @InjectDataSource() private readonly dataSource: DataSource,
-    private readonly billingMethodNiceCaller: BillingMethodNiceCaller,
+    private readonly niceCaller: NiceCaller,
     private readonly dateTimeSimulatorService: DateTimeSimulatorService,
   ) {
     this.retryTransaction = new RetryTransaction(this.logger, this.dataSource);
@@ -26,7 +26,7 @@ export class BillingMethodNiceService {
     return await this.retryTransaction.serializable(async (context) => {
       const now = this.dateTimeSimulatorService.now();
       return await updateBillingMethod(context, {
-        billingMethodNiceCaller: this.billingMethodNiceCaller,
+        niceCaller: this.niceCaller,
         dto,
         now,
       });

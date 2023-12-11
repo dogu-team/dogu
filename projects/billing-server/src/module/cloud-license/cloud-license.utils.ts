@@ -1,8 +1,8 @@
 import { assertUnreachable } from '@dogu-tech/common';
-import { BillingSubscriptionPlanInfo } from '../../db/entity/billing-subscription-plan-info.entity';
+import { BillingPlanInfo } from '../../db/entity/billing-plan-info.entity';
 import { CloudLicense, DefaultLiveTestingParallelCount } from '../../db/entity/cloud-license.entity';
 
-export function applyCloudLicense(cloudLicense: CloudLicense, planInfo: BillingSubscriptionPlanInfo): void {
+export function applyCloudLicense(cloudLicense: CloudLicense, planInfo: BillingPlanInfo): void {
   const { type, option, state } = planInfo;
   const subscribed = state !== 'unsubscribed';
   switch (type) {

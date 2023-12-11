@@ -1,11 +1,12 @@
 import {
   BillingMethodNiceBase,
-  BillingSubscriptionPlanInfoResponse,
+  BillingPlanInfoResponse,
   CloudLicenseBase,
   SelfHostedLicenseBase,
 } from '@dogu-private/console';
 import { Button } from 'antd';
 import useTranslation from 'next-translate/useTranslation';
+import { useRouter } from 'next/router';
 import { shallow } from 'zustand/shallow';
 
 import { purchasePlanWithExistingCard, purchasePlanWithNewCard } from '../../api/billing';
@@ -14,7 +15,7 @@ import { niceErrorCodeMessageI18nKeyMap } from '../../resources/plan';
 import useBillingPlanPurchaseStore from '../../stores/billing-plan-purchase';
 import useEventStore from '../../stores/events';
 import useLicenseStore from '../../stores/license';
-import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd';
+import { sendSuccessNotification } from '../../utils/antd';
 import { checkShouldPurchase, parseNicePaymentMethodFormValues } from '../../utils/billing';
 import ErrorBox from '../common/boxes/ErrorBox';
 
@@ -26,8 +27,9 @@ const BillingPurchaseButton: React.FC = () => {
   const [purchaseWithExistingCardLoading, requestPurchaseWithExistingCard] = useRequest(purchasePlanWithExistingCard);
   const isAnnual = useBillingPlanPurchaseStore((state) => state.isAnnual);
   const couponCode = useBillingPlanPurchaseStore((state) => state.coupon);
-  const updatePurchaseErrorText = useBillingPlanPurchaseStore((state) => state.updatePurchaseErrorText);
   const [license, updateLicense] = useLicenseStore((state) => [state.license, state.updateLicense], shallow);
+  const router = useRouter();
+  const updatePurchaseErrorText = useBillingPlanPurchaseStore((state) => state.updatePurchaseErrorText);
   const fireEvent = useEventStore((state) => state.fireEvent);
   const { t } = useTranslation('billing');
 
@@ -43,7 +45,7 @@ const BillingPurchaseButton: React.FC = () => {
 
   const handleSuccess = (
     newLicense: CloudLicenseBase | SelfHostedLicenseBase | null,
-    plan: BillingSubscriptionPlanInfoResponse | null,
+    plan: BillingPlanInfoResponse | null,
     method: Partial<BillingMethodNiceBase> | null,
   ) => {
     sendSuccessNotification(shouldPurchase ? t('purchaseSuccessMessage') : t('changePlanSuccessMessage'));
@@ -55,9 +57,9 @@ const BillingPurchaseButton: React.FC = () => {
         ...newLicense,
         billingOrganization: {
           ...license.billingOrganization,
-          billingSubscriptionPlanInfos: plan
-            ? [...license.billingOrganization.billingSubscriptionPlanInfos.filter((p) => p.type !== plan.type), plan]
-            : license.billingOrganization.billingSubscriptionPlanInfos,
+          billingPlanInfos: plan
+            ? [...license.billingOrganization.billingPlanInfos.filter((p) => p.type !== plan.type), plan]
+            : license.billingOrganization.billingPlanInfos,
           billingMethodNice: Object.assign({}, license.billingOrganization.billingMethodNice, method ?? {}),
         },
       });
@@ -69,18 +71,42 @@ const BillingPurchaseButton: React.FC = () => {
       return;
     }
 
+    if (license.billingOrganization.billingMethod === 'paddle') {
+      const rv = await requestPurchaseWithExistingCard({
+        organizationId: license.organizationId,
+        billingPlanSourceId: selectedPlan.billingPlanSourceId,
+        couponCode: couponCode ?? undefined,
+        method: 'paddle',
+      });
+      if (rv.errorMessage || !rv.body?.ok) {
+        if (!rv.body?.ok) {
+          const niceCode = rv.body?.niceResultCode;
+          updatePurchaseErrorText(
+            niceCode && niceErrorCodeMessageI18nKeyMap[niceCode]
+              ? t(`${niceErrorCodeMessageI18nKeyMap[niceCode]}`)
+              : t('purchaseErrorMessage', { code: niceCode }),
+          );
+          return;
+        }
+        updatePurchaseErrorText(
+          shouldPurchase ? t('purchaseErrorMessage', { code: rv.errorMessage }) : t('changePlanErrorMessage'),
+        );
+        return;
+      }
+
+      router.push(`/billing/success?redirect=${router.asPath}`);
+      return;
+    }
+
     const values = await cardForm.validateFields();
     updatePurchaseErrorText(null);
     try {
       if (!withNewCard && Object.values(values).every((v) => !v)) {
         const rv = await requestPurchaseWithExistingCard({
           organizationId: license.organizationId,
-          category: selectedPlan.category,
-          type: selectedPlan.type,
-          option: selectedPlan.option,
-          currency: 'KRW',
-          period: isAnnual ? 'yearly' : 'monthly',
+          billingPlanSourceId: selectedPlan.billingPlanSourceId,
           couponCode: couponCode ?? undefined,
+          method: 'nice',
         });
 
         if (rv.errorMessage || !rv.body?.ok) {
@@ -103,13 +129,10 @@ const BillingPurchaseButton: React.FC = () => {
       } else {
         const rv = await requestPurchaseWithNewCard({
           organizationId: license.organizationId,
-          category: selectedPlan.category,
-          type: selectedPlan.type,
-          option: selectedPlan.option,
-          currency: 'KRW',
-          period: isAnnual ? 'yearly' : 'monthly',
+          billingPlanSourceId: selectedPlan.billingPlanSourceId,
           couponCode: couponCode ?? undefined,
           registerCard: parseNicePaymentMethodFormValues(values),
+          method: 'nice',
         });
 
         if (rv.errorMessage || !rv.body?.ok) {

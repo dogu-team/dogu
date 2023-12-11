@@ -3,10 +3,14 @@ import { Body, Controller, Put } from '@nestjs/common';
 
 import { BillingTokenPermission } from '../auth/guard/billing-token.guard';
 import { BillingMethodNiceService } from './billing-method-nice.service';
+import { BillingMethodPaddleService } from './billing-method-paddle.service';
 
 @Controller('billing/methods')
 export class BillingMethodController {
-  constructor(private readonly billingMethodNiceService: BillingMethodNiceService) {}
+  constructor(
+    private readonly billingMethodNiceService: BillingMethodNiceService,
+    private readonly billingMethodPaddleService: BillingMethodPaddleService,
+  ) {}
 
   @Put()
   @BillingTokenPermission()

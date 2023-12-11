@@ -1,10 +1,11 @@
 import { OrganizationId } from '@dogu-private/types';
 import { GetServerSideProps } from 'next';
-import { UserAndInvitationTokenBase } from '@dogu-private/console';
+import { CloudLicenseResponse, SelfHostedLicenseResponse, UserAndInvitationTokenBase } from '@dogu-private/console';
 import { Button } from 'antd';
 import { useRouter } from 'next/router';
 import styled from 'styled-components';
 import { AxiosError } from 'axios';
+import Head from 'next/head';
 
 import SmallBoxCenteredLayout from 'src/components/layouts/SmallBoxCenterLayout';
 import { checkLoginInServerSide, getServersideCookies } from 'src/utils/auth';
@@ -16,15 +17,16 @@ import useRequest from '../../src/hooks/useRequest';
 import { flexRowBaseStyle, flexRowCenteredStyle } from '../../src/styles/box';
 import { sendErrorNotification, sendSuccessNotification } from '../../src/utils/antd';
 import { getErrorMessageFromAxios } from '../../src/utils/error';
-import Head from 'next/head';
+import { getLicenseInServerSide } from '../../enterprise/api/license';
 
 interface Props {
   email: string;
   token: string;
   invitation: UserAndInvitationTokenBase;
+  license: CloudLicenseResponse | SelfHostedLicenseResponse;
 }
 
-const InviteConfirmPage: NextPageWithLayout<Props> = ({ email, token, invitation }) => {
+const InviteConfirmPage: NextPageWithLayout<Props> = ({ email, token, invitation, license }) => {
   const router = useRouter();
   const [loading, request] = useRequest(acceptInivitation);
 
@@ -46,6 +48,7 @@ const InviteConfirmPage: NextPageWithLayout<Props> = ({ email, token, invitation
       <Head>
         <title>Confirm inviation | Dogu</title>
       </Head>
+
       <div>
         <FlexColumnBox>
           <div>
@@ -81,8 +84,12 @@ InviteConfirmPage.getLayout = function (page) {
   return <SmallBoxCenteredLayout titleI18nKey="auth:confirmInvitationPageTitle">{page}</SmallBoxCenteredLayout>;
 };
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const { organizationId, email, token } = context.query;
+export const getServerSideProps: GetServerSideProps<Props> = async (context) => {
+  const { organizationId, email, token } = context.query as {
+    organizationId: string | undefined;
+    email: string | undefined;
+    token: string | undefined;
+  };
   const mainRedirect = {
     redirect: redirectWithLocale(context, '/', false),
   };
@@ -98,12 +105,18 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       return mainRedirect;
     }
 
-    const [me, invitation] = await Promise.all([
-      checkLoginInServerSide(context),
+    const me = await checkLoginInServerSide(context);
+
+    if (!me) {
+      return mainRedirect;
+    }
+
+    const [invitation, license] = await Promise.all([
       getInvitationServerSide(email as string, organizationId as OrganizationId, token as string, authToken),
+      getLicenseInServerSide(context),
     ]);
 
-    if (!me || !invitation) {
+    if (!invitation) {
       return mainRedirect;
     }
 
@@ -112,6 +125,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         email,
         token,
         invitation,
+        license,
       },
     };
   } catch (e) {

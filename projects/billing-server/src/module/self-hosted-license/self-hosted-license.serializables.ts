@@ -1,5 +1,5 @@
-import { CreateSelfHostedLicenseDto, SelfHostedLicenseResponse } from '@dogu-private/console';
-import { assertUnreachable, stringify } from '@dogu-tech/common';
+import { CreateSelfHostedLicenseDto } from '@dogu-private/console';
+import { stringify } from '@dogu-tech/common';
 import { ConflictException, NotFoundException } from '@nestjs/common';
 import { v4 } from 'uuid';
 
@@ -9,36 +9,24 @@ import { createBillingOrganization } from '../billing-organization/billing-organ
 import { LicenseKeyService } from '../common/license-key.service';
 import { FindSelfHostedLicenseQueryDto } from './self-hosted-license.dto';
 
-export async function findSelfHostedLicense(context: RetryTransactionContext, dto: FindSelfHostedLicenseQueryDto): Promise<SelfHostedLicenseResponse> {
+export async function findSelfHostedLicense(context: RetryTransactionContext, dto: FindSelfHostedLicenseQueryDto): Promise<SelfHostedLicense> {
   const { manager } = context;
   const { organizationId, licenseKey } = dto;
-  const license = await manager.getRepository(SelfHostedLicense).createQueryBuilder(SelfHostedLicense.name).where({ organizationId, licenseKey }).getOne();
+  const selfHostedLicense = await manager.getRepository(SelfHostedLicense).findOne({
+    where: {
+      organizationId,
+      licenseKey,
+    },
+    relations: {
+      billingOrganization: true,
+    },
+  });
 
-  if (!license) {
+  if (!selfHostedLicense) {
     throw new NotFoundException(`Organization does not have a self-hosted license. organizationId: ${organizationId}`);
   }
 
-  const response = license as SelfHostedLicenseResponse;
-  const monthlyExpiredAt = response.billingOrganization?.subscriptionMonthlyExpiredAt ?? null;
-  const yearlyExpiredAt = response.billingOrganization?.subscriptionYearlyExpiredAt ?? null;
-
-  response.billingOrganization?.billingSubscriptionPlanInfos?.forEach((info) => {
-    switch (info.period) {
-      case 'monthly': {
-        info.monthlyExpiredAt = monthlyExpiredAt;
-        return;
-      }
-      case 'yearly': {
-        info.yearlyExpiredAt = yearlyExpiredAt;
-        return;
-      }
-      default: {
-        assertUnreachable(info.period);
-      }
-    }
-  });
-
-  return response;
+  return selfHostedLicense;
 }
 
 export async function createSelfHostedLicense(context: RetryTransactionContext, dto: CreateSelfHostedLicenseDto, now: Date): Promise<SelfHostedLicense> {

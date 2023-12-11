@@ -1,4 +1,4 @@
-import { BillingGoodsName, BillingGracePeriodDays, BillingOrganizationProp, BillingPeriod, BillingSubscriptionPlanInfoProp } from '@dogu-private/console';
+import { BillingGoodsName, BillingGracePeriodDays, BillingOrganizationProp, BillingPeriod, BillingPlanInfoProp } from '@dogu-private/console';
 import { assertUnreachable, delay, errorify, stringify } from '@dogu-tech/common';
 import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
@@ -11,20 +11,16 @@ import { BillingCoupon } from '../../db/entity/billing-coupon.entity';
 import { BillingHistory } from '../../db/entity/billing-history.entity';
 import { BillingMethodNice } from '../../db/entity/billing-method-nice.entity';
 import { BillingOrganization, BillingOrganizationTableName } from '../../db/entity/billing-organization.entity';
-import { BillingSubscriptionPlanHistory } from '../../db/entity/billing-subscription-plan-history.entity';
-import { BillingSubscriptionPlanInfo } from '../../db/entity/billing-subscription-plan-info.entity';
+import { BillingPlanHistory } from '../../db/entity/billing-plan-history.entity';
+import { BillingPlanInfo } from '../../db/entity/billing-plan-info.entity';
 import { getClient, RetryTransaction } from '../../db/retry-transaction';
 import { env } from '../../env';
-import { BillingMethodNiceCaller } from '../billing-method/billing-method-nice.caller';
 import { invalidateBillingOrganization } from '../billing-organization/billing-organization.utils';
-import {
-  applySubscriptionPlanInfoState,
-  calculatePurchaseAmountAndApplyCouponCount,
-  invalidateSubscriptionPlanInfo,
-} from '../billing-subscription-plan-info/billing-subscription-plan-info.utils';
+import { applyPlanInfoState, calculatePurchaseAmountAndApplyCouponCount, invalidatePlanInfo } from '../billing-plan-info/billing-plan-info.utils';
 import { updateCloudLicense } from '../cloud-license/cloud-license.serializables';
 import { DateTimeSimulatorService } from '../date-time-simulator/date-time-simulator.service';
 import { DoguLogger } from '../logger/logger';
+import { NiceCaller } from '../nice/nice.caller';
 
 @Injectable()
 export class BillingUpdaterService implements OnModuleInit, OnModuleDestroy {
@@ -35,7 +31,7 @@ export class BillingUpdaterService implements OnModuleInit, OnModuleDestroy {
     private readonly logger: DoguLogger,
     @InjectDataSource()
     private readonly dataSource: DataSource,
-    private readonly billingMethodNiceCaller: BillingMethodNiceCaller,
+    private readonly niceCaller: NiceCaller,
     private readonly dateTimeSimulatorService: DateTimeSimulatorService,
   ) {
     this.retryTransaction = new RetryTransaction(this.logger, this.dataSource);
@@ -90,8 +86,8 @@ export class BillingUpdaterService implements OnModuleInit, OnModuleDestroy {
       const billingOrganization = await manager
         .getRepository(BillingOrganization)
         .createQueryBuilder(BillingOrganization.name)
-        .leftJoinAndSelect(`${BillingOrganization.name}.${BillingOrganizationProp.billingSubscriptionPlanInfos}`, BillingSubscriptionPlanInfo.name)
-        .leftJoinAndSelect(`${BillingSubscriptionPlanInfo.name}.${BillingSubscriptionPlanInfoProp.billingCoupon}`, BillingCoupon.name)
+        .leftJoinAndSelect(`${BillingOrganization.name}.${BillingOrganizationProp.billingPlanInfos}`, BillingPlanInfo.name)
+        .leftJoinAndSelect(`${BillingPlanInfo.name}.${BillingPlanInfoProp.billingCoupon}`, BillingCoupon.name)
         .leftJoinAndSelect(`${BillingOrganization.name}.${BillingOrganizationProp.billingMethodNice}`, BillingMethodNice.name)
         .where({
           billingOrganizationId,
@@ -124,13 +120,11 @@ export class BillingUpdaterService implements OnModuleInit, OnModuleDestroy {
       const invalidate = async (period: BillingPeriod): Promise<void> => {
         switch (period) {
           case 'monthly': {
-            billingOrganization.billingSubscriptionPlanInfos
-              ?.filter((planInfo) => planInfo.period === 'monthly')
-              .forEach((planInfo) => invalidateSubscriptionPlanInfo(planInfo, now));
+            billingOrganization.billingPlanInfos?.filter((planInfo) => planInfo.period === 'monthly').forEach((planInfo) => invalidatePlanInfo(planInfo, now));
             break;
           }
           case 'yearly': {
-            billingOrganization.billingSubscriptionPlanInfos?.forEach((planInfo) => invalidateSubscriptionPlanInfo(planInfo, now));
+            billingOrganization.billingPlanInfos?.forEach((planInfo) => invalidatePlanInfo(planInfo, now));
             break;
           }
           default: {
@@ -140,15 +134,20 @@ export class BillingUpdaterService implements OnModuleInit, OnModuleDestroy {
 
         invalidateBillingOrganization(billingOrganization, period);
         await manager.save(billingOrganization);
-        if (billingOrganization.billingSubscriptionPlanInfos) {
-          await manager.save(billingOrganization.billingSubscriptionPlanInfos);
+        if (billingOrganization.billingPlanInfos) {
+          await manager.save(billingOrganization.billingPlanInfos);
         }
       };
 
-      const { billingSubscriptionPlanInfos, billingMethodNice } = billingOrganization;
-      if (!billingSubscriptionPlanInfos) {
+      const { billingMethod, billingPlanInfos, billingMethodNice } = billingOrganization;
+      if (billingMethod !== 'nice') {
+        this.logger.info('BillingUpdaterService.update billingMethod is not nice. skipped', { billingOrganizationId, now });
+        return;
+      }
+
+      if (!billingPlanInfos) {
         await invalidate('yearly');
-        this.logger.error('BillingUpdaterService.update billingSubscriptionPlanInfos must not be null. invalidated', { billingOrganizationId, now });
+        this.logger.error('BillingUpdaterService.update billingPlanInfos must not be null. invalidated', { billingOrganizationId, now });
         return;
       }
 
@@ -216,17 +215,17 @@ export class BillingUpdaterService implements OnModuleInit, OnModuleDestroy {
       }
 
       // apply next plan infos
-      const monthlyPlanInfos = monthlyTriggered ? billingSubscriptionPlanInfos.filter((planInfo) => planInfo.period === 'monthly') : [];
-      const yearlyPlanInfos = yearlyTriggered ? billingSubscriptionPlanInfos.filter((planInfo) => planInfo.period === 'yearly') : [];
+      const monthlyPlanInfos = monthlyTriggered ? billingPlanInfos.filter((planInfo) => planInfo.period === 'monthly') : [];
+      const yearlyPlanInfos = yearlyTriggered ? billingPlanInfos.filter((planInfo) => planInfo.period === 'yearly') : [];
       const processingPlanInfos = [...monthlyPlanInfos, ...yearlyPlanInfos];
-      const appliedPlanInfos = processingPlanInfos.map((planInfo) => applySubscriptionPlanInfoState(planInfo, now));
+      const appliedPlanInfos = processingPlanInfos.map((planInfo) => applyPlanInfoState(planInfo, now));
 
       // next started at, expired at
       let subscriptionMonthlyStartedAt = billingOrganization.subscriptionMonthlyStartedAt;
       let subscriptionMonthlyExpiredAt = billingOrganization.subscriptionMonthlyExpiredAt;
       let subscriptionYearlyStartedAt = billingOrganization.subscriptionYearlyStartedAt;
       let subscriptionYearlyExpiredAt = billingOrganization.subscriptionYearlyExpiredAt;
-      const hasMonthlyPlanInfo = billingSubscriptionPlanInfos.some((planInfo) => planInfo.period === 'monthly' && planInfo.state === 'subscribed');
+      const hasMonthlyPlanInfo = billingPlanInfos.some((planInfo) => planInfo.period === 'monthly' && planInfo.state === 'subscribed');
       if (hasMonthlyPlanInfo) {
         if (subscriptionMonthlyExpiredAt !== null) {
           subscriptionMonthlyStartedAt = subscriptionMonthlyExpiredAt;
@@ -242,7 +241,7 @@ export class BillingUpdaterService implements OnModuleInit, OnModuleDestroy {
         subscriptionMonthlyExpiredAt = null;
       }
 
-      const hasYearlyPlanInfo = billingSubscriptionPlanInfos.some((planInfo) => planInfo.period === 'yearly' && planInfo.state === 'subscribed');
+      const hasYearlyPlanInfo = billingPlanInfos.some((planInfo) => planInfo.period === 'yearly' && planInfo.state === 'subscribed');
       if (hasYearlyPlanInfo) {
         subscriptionYearlyStartedAt = subscriptionYearlyExpiredAt;
         if (!subscriptionYearlyStartedAt) {
@@ -260,7 +259,7 @@ export class BillingUpdaterService implements OnModuleInit, OnModuleDestroy {
       const purchaseAmountInfos = purchasePlanInfos.map((planInfo) => calculatePurchaseAmountAndApplyCouponCount(planInfo));
       const totalPurchaseAmount = purchaseAmountInfos.reduce((acc, cur) => acc + cur.purchaseAmount, 0);
 
-      const paymentsResult = await this.billingMethodNiceCaller.subscribePayments({
+      const paymentsResult = await this.niceCaller.subscribePayments({
         bid,
         amount: totalPurchaseAmount,
         goodsName: BillingGoodsName,
@@ -299,7 +298,7 @@ export class BillingUpdaterService implements OnModuleInit, OnModuleDestroy {
       }
 
       registerOnAfterRollback(async (error) => {
-        await this.billingMethodNiceCaller.paymentsCancel({
+        await this.niceCaller.paymentsCancel({
           tid: paymentsResult.value.tid,
           reason: error.message,
         });
@@ -352,12 +351,12 @@ export class BillingUpdaterService implements OnModuleInit, OnModuleDestroy {
           throw new Error('currency must not be null');
         }
 
-        const planHistory = manager.getRepository(BillingSubscriptionPlanHistory).create({
-          billingSubscriptionPlanHistoryId: v4(),
+        const planHistory = manager.getRepository(BillingPlanHistory).create({
+          billingPlanHistoryId: v4(),
           billingOrganizationId: billingOrganization.billingOrganizationId,
           billingHistoryId: savedHistory.billingHistoryId,
           billingCouponId: planInfo.billingCouponId,
-          billingSubscriptionPlanSourceId: planInfo.billingSubscriptionPlanSourceId,
+          billingPlanSourceId: planInfo.billingPlanSourceId,
           discountedAmount: purchaseAmountInfo.discountedAmount,
           purchasedAmount: purchaseAmountInfo.purchaseAmount,
           startedAt,
@@ -383,8 +382,8 @@ export class BillingUpdaterService implements OnModuleInit, OnModuleDestroy {
       billingOrganization.subscriptionMonthlyExpiredAt = subscriptionMonthlyExpiredAt;
       billingOrganization.subscriptionYearlyStartedAt = subscriptionYearlyStartedAt;
       billingOrganization.subscriptionYearlyExpiredAt = subscriptionYearlyExpiredAt;
-      if (billingOrganization.billingSubscriptionPlanInfos) {
-        await manager.save(billingOrganization.billingSubscriptionPlanInfos);
+      if (billingOrganization.billingPlanInfos) {
+        await manager.save(billingOrganization.billingPlanInfos);
       }
       await manager.save(billingOrganization);
 

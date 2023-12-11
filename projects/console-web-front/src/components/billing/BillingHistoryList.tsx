@@ -37,12 +37,12 @@ const HistoryItem: React.FC<ItemProps> = ({ history }) => {
           })}
         </Cell>
         <Cell flex={2}>
-          {history.billingSubscriptionPlanHistories?.map((item) => {
+          {history.billingPlanHistories?.map((item) => {
             const isAnnual = item.period === 'yearly';
             const descriptionInfo = planDescriptionInfoMap[item.type];
 
             return (
-              <HistoryItemWrapper key={item.billingSubscriptionPlanHistoryId}>
+              <HistoryItemWrapper key={item.billingPlanHistoryId}>
                 <b>{t(descriptionInfo.titleI18nKey)}</b>
                 <span>
                   {`(${t(descriptionInfo.getOptionLabelI18nKey(item.option), {
@@ -54,7 +54,7 @@ const HistoryItem: React.FC<ItemProps> = ({ history }) => {
             );
           })}
         </Cell>
-        <Cell flex={1}>{getLocaleFormattedPrice('ko', 'KRW', getHistoryAmount(history))}</Cell>
+        <Cell flex={1}>{getLocaleFormattedPrice(router.locale, history.currency, getHistoryAmount(history))}</Cell>
         <ButtonWrapper>
           <Button type="link" onClick={() => openModal()}>
             {t('historySeeDetailButtonText')}

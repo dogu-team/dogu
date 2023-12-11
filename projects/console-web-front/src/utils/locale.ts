@@ -15,7 +15,7 @@ export const getLocaleFormattedDate = (
 };
 
 export const getLocaleFormattedPrice = (lang: string = 'en', currency: BillingCurrency, price: number): string => {
-  const locale = langToLocaleMapper[lang as keyof typeof langToLocaleMapper] ?? 'en-US';
+  const locale = currency === 'USD' ? 'en-US' : langToLocaleMapper[lang as keyof typeof langToLocaleMapper] ?? 'en-US';
   return new Intl.NumberFormat(locale, { style: 'currency', currency }).format(price);
 };
 

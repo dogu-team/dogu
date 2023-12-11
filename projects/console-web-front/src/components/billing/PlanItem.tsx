@@ -1,26 +1,39 @@
 import { CheckOutlined, LoadingOutlined } from '@ant-design/icons';
 import {
+  BillingCurrency,
   BillingPeriod,
   BillingPromotionCouponResponse,
-  BillingSubscriptionPlanOptionInfo,
-  BillingSubscriptionPlanType,
+  BillingPlanOptionInfo,
+  BillingPlanType,
 } from '@dogu-private/console';
 import { Button, Divider, Select, SelectProps } from 'antd';
 import useTranslation from 'next-translate/useTranslation';
+import { useRouter } from 'next/router';
 import { useState } from 'react';
 import styled from 'styled-components';
 import { shallow } from 'zustand/shallow';
-import { usePromotionCouponSWR } from '../../api/billing';
 
+import { precheckoutPurchase, usePromotionCouponSWR } from '../../api/billing';
 import { PlanDescriptionInfo } from '../../resources/plan';
 import useBillingPlanPurchaseStore from '../../stores/billing-plan-purchase';
 import useLicenseStore from '../../stores/license';
-import { getSubscriptionPlansFromLicense } from '../../utils/billing';
+import { getPaymentMethodFromLicense, getSubscriptionPlansFromLicense } from '../../utils/billing';
 import { getLocaleFormattedPrice } from '../../utils/locale';
+import usePaddle from '../../hooks/usePaddle';
+import useAuthStore from '../../stores/auth';
+import useRequest from '../../hooks/useRequest';
+import { sendErrorNotification } from '../../utils/antd';
+
+enum ButtonState {
+  UPGRADE,
+  CHANGE,
+  GO_ANNUAL,
+  CURRENT_PLAN,
+}
 
 interface Props {
-  planType: BillingSubscriptionPlanType;
-  planInfo: BillingSubscriptionPlanOptionInfo;
+  planType: BillingPlanType;
+  planInfo: BillingPlanOptionInfo;
   descriptionInfo: PlanDescriptionInfo;
 }
 
@@ -28,17 +41,28 @@ const CONTACT_US_OPTION_KEY = 'contact-us';
 
 const PlanItem: React.FC<Props> = ({ planType, planInfo, descriptionInfo }) => {
   const license = useLicenseStore((state) => state.license);
+  const me = useAuthStore((state) => state.me);
   const [isAnnual, updateIsAnnual] = useBillingPlanPurchaseStore(
     (state) => [state.isAnnual, state.updateIsAnnual],
     shallow,
   );
   const updateSelectedPlan = useBillingPlanPurchaseStore((state) => state.updateSelectedPlan);
   const { data, isLoading } = usePromotionCouponSWR(true, {
-    subscriptionPlanType: planType,
+    planType: planType,
     category: planInfo.category,
   });
+  const router = useRouter();
   const { t } = useTranslation('billing');
+  const { paddleRef, loading: paddleLoading } = usePaddle();
+  const [precheckoutLoading, requestPrecheckoutPurchase] = useRequest(precheckoutPurchase);
 
+  const currency: BillingCurrency = license
+    ? getPaymentMethodFromLicense(router.locale, license) === 'nice'
+      ? 'KRW'
+      : 'USD'
+    : router.locale === 'ko'
+    ? 'KRW'
+    : 'USD';
   const usingPlans = license ? getSubscriptionPlansFromLicense(license, [planType]) : [];
   const baseOptions: SelectProps<string | number>['options'] = Object.keys(planInfo.optionMap).map((optionKey) => {
     return {
@@ -65,18 +89,29 @@ const PlanItem: React.FC<Props> = ({ planType, planInfo, descriptionInfo }) => {
     text: string;
     disabled: boolean;
     shouldGoAnnual: boolean;
+    state: ButtonState;
   } => {
     const period: BillingPeriod = isAnnual ? 'yearly' : 'monthly';
     const plan = usingPlans[0];
 
     if (plan && plan.option === Number(selectedValue) && isAnnual && plan.period === 'yearly') {
-      return { text: t('currentPlanButtonTitle'), disabled: true, shouldGoAnnual: false };
+      return {
+        text: t('currentPlanButtonTitle'),
+        disabled: true,
+        shouldGoAnnual: false,
+        state: ButtonState.CURRENT_PLAN,
+      };
     }
 
     if (plan && plan.option === Number(selectedValue) && plan.period === 'monthly') {
       // annual plan is not available
       // return { text: t('goAnnualButtonTitle'), disabled: false, shouldGoAnnual: true };
-      return { text: t('currentPlanButtonTitle'), disabled: true, shouldGoAnnual: false };
+      return {
+        text: t('currentPlanButtonTitle'),
+        disabled: true,
+        shouldGoAnnual: false,
+        state: ButtonState.CURRENT_PLAN,
+      };
     }
 
     if (
@@ -85,23 +120,91 @@ const PlanItem: React.FC<Props> = ({ planType, planInfo, descriptionInfo }) => {
         (plan.period === period || (plan.period === 'monthly' && isAnnual)) &&
         plan.option < Number(selectedValue))
     ) {
-      return { text: t('upgradeButtonTitle'), disabled: false, shouldGoAnnual: false };
+      return { text: t('upgradeButtonTitle'), disabled: false, shouldGoAnnual: false, state: ButtonState.UPGRADE };
     }
 
-    return { text: t('changeButtonTitle'), disabled: false, shouldGoAnnual: false };
+    return { text: t('changeButtonTitle'), disabled: false, shouldGoAnnual: false, state: ButtonState.CHANGE };
   };
 
-  const { text: buttonText, disabled: buttonDisabled, shouldGoAnnual } = getButtonState();
+  const { text: buttonText, disabled: buttonDisabled, shouldGoAnnual, state: buttonState } = getButtonState();
 
-  const handleClickButton = () => {
-    updateSelectedPlan({
-      type: planType,
-      option: Number(selectedValue) ?? 0,
-      category: planInfo.category,
-    });
-    if (shouldGoAnnual) {
-      // annual plan is not available for now
-      // updateIsAnnual(true);
+  const handleClickButton = async () => {
+    if (!license) {
+      return;
+    }
+    const billingPlanSourceId = planInfo.optionMap[Number(selectedValue)][currency][isAnnual ? 'yearly' : 'monthly'].id;
+
+    if (getPaymentMethodFromLicense(router.locale, license) === 'nice') {
+      updateSelectedPlan({
+        type: planType,
+        option: Number(selectedValue) ?? 0,
+        category: planInfo.category,
+        billingPlanSourceId,
+      });
+      if (shouldGoAnnual) {
+        // annual plan is not available for now
+        // updateIsAnnual(true);
+      }
+    } else {
+      if (!license || !me) {
+        return;
+      }
+
+      if (usingPlans[0] && (buttonState === ButtonState.UPGRADE || buttonState === ButtonState.CHANGE)) {
+        updateSelectedPlan({
+          type: planType,
+          option: Number(selectedValue) ?? 0,
+          category: planInfo.category,
+          billingPlanSourceId,
+        });
+        return;
+      }
+
+      try {
+        const res = await requestPrecheckoutPurchase({
+          organizationId: license.organizationId,
+          billingPlanSourceId,
+        });
+
+        if (!res.body?.paddle) {
+          sendErrorNotification('Failed to get purchase data. Please contact us.');
+          return;
+        }
+
+        paddleRef.current?.Checkout.open({
+          settings: {
+            allowLogout: false,
+            displayMode: 'overlay',
+            successUrl: `${window.location.origin}/billing/success?redirect=${router.asPath}`,
+          },
+          items: [
+            {
+              priceId: res.body.paddle.priceId,
+            },
+          ],
+          customer: {
+            id: res.body.paddle.customerId,
+            address: res.body.paddle.addressId
+              ? {
+                  id: res.body.paddle.addressId,
+                }
+              : undefined,
+            business: res.body.paddle.businessId
+              ? {
+                  id: res.body.paddle.businessId,
+                }
+              : undefined,
+          },
+          discountId: res.body.paddle.discountId ?? undefined,
+          customData: {
+            // need to add billingPlanSourceId to customData for paddle webhook
+            organizationId: license.organizationId,
+            billingPlanSourceId,
+          },
+        });
+      } catch (e) {
+        sendErrorNotification('Failed to get purchase data. Please contact us.');
+      }
     }
   };
 
@@ -115,12 +218,15 @@ const PlanItem: React.FC<Props> = ({ planType, planInfo, descriptionInfo }) => {
 
   const promotionCoupon: BillingPromotionCouponResponse | undefined = data?.[0];
   const toFixed = (value: number): number => parseFloat(value.toFixed(2));
-  const couponFactor = promotionCoupon ? toFixed(1 - (promotionCoupon.monthlyDiscountPercent ?? 0) / 100) : 1;
+  const couponFactor = promotionCoupon ? toFixed(1 - (promotionCoupon.discountPercent ?? 0) / 100) : 1;
   const isDiscounted = couponFactor < 1;
+  const isContactUs = selectedValue === CONTACT_US_OPTION_KEY;
 
-  const monthlyPrice = isDiscounted
-    ? planInfo.optionMap[Number(selectedValue)].KRW.monthly * couponFactor
-    : planInfo.optionMap[Number(selectedValue)].KRW.monthly;
+  const monthlyPrice = isContactUs
+    ? 0
+    : isDiscounted
+    ? planInfo.optionMap[Number(selectedValue)][currency].monthly.originPrice * couponFactor
+    : planInfo.optionMap[Number(selectedValue)][currency].monthly.originPrice;
 
   return (
     <Box>
@@ -128,26 +234,26 @@ const PlanItem: React.FC<Props> = ({ planType, planInfo, descriptionInfo }) => {
         <div>
           <PricingTitle>{t(descriptionInfo.titleI18nKey)}</PricingTitle>
         </div>
-        {selectedValue === CONTACT_US_OPTION_KEY ? (
+        {isContactUs ? (
           <Content>Contact us</Content>
         ) : (
           <Content>
             {isDiscounted && (
               <p style={{ color: '#888', textDecoration: 'line-through' }}>
                 {getLocaleFormattedPrice(
-                  'ko',
-                  'KRW',
+                  router.locale,
+                  currency,
                   isAnnual
-                    ? planInfo.optionMap[Number(selectedValue)].KRW.yearly / 12
-                    : planInfo.optionMap[Number(selectedValue)].KRW.monthly,
+                    ? planInfo.optionMap[Number(selectedValue)][currency].yearly.originPrice / 12
+                    : planInfo.optionMap[Number(selectedValue)][currency].monthly.originPrice,
                 )}
               </p>
             )}
             <PricingPrice>
               {getLocaleFormattedPrice(
-                'ko',
-                'KRW',
-                isAnnual ? planInfo.optionMap[Number(selectedValue)].KRW.yearly / 12 : monthlyPrice,
+                router.locale,
+                currency,
+                isAnnual ? planInfo.optionMap[Number(selectedValue)][currency].yearly.originPrice / 12 : monthlyPrice,
               )}
             </PricingPrice>
             <PricingPeriod>
@@ -169,12 +275,18 @@ const PlanItem: React.FC<Props> = ({ planType, planInfo, descriptionInfo }) => {
         <div>
           {selectedValue === CONTACT_US_OPTION_KEY ? (
             <a href="https://dogutech.io/book-demo" target="_blank">
-              <Button type="primary" style={{ width: '100%' }}>
+              <Button type="primary" style={{ width: '100%' }} loading={paddleLoading || precheckoutLoading}>
                 {t('contactUs')}
               </Button>
             </a>
           ) : (
-            <Button type="primary" style={{ width: '100%' }} onClick={handleClickButton} disabled={buttonDisabled}>
+            <Button
+              type="primary"
+              style={{ width: '100%' }}
+              onClick={handleClickButton}
+              disabled={buttonDisabled}
+              loading={paddleLoading || precheckoutLoading}
+            >
               {buttonText}
             </Button>
           )}

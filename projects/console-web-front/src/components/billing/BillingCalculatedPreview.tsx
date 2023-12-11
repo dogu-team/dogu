@@ -1,8 +1,8 @@
 import {
-  BillingSubscriptionPlanMap,
+  BillingPlanMap,
   CallBillingApiResponse,
-  GetBillingSubscriptionPreviewDto,
-  GetBillingSubscriptionPreviewResponse,
+  GetBillingPreviewDto,
+  GetBillingPreviewResponse,
 } from '@dogu-private/console';
 import { Alert, Divider, Tag } from 'antd';
 import Trans from 'next-translate/Trans';
@@ -22,7 +22,7 @@ import { swrAuthFetcher } from '../../api';
 import { buildQueryPraramsByObject } from '../../utils/query';
 import useLicenseStore from '../../stores/license';
 import BillingPurchaseButton from './BillingPurchaseButton';
-import { checkShouldPurchase, getSubscriptionPlansFromLicense } from '../../utils/billing';
+import { checkShouldPurchase, getPaymentMethodFromLicense, getSubscriptionPlansFromLicense } from '../../utils/billing';
 import { LANDING_TEMRS_OF_USE_URL } from '../../utils/url';
 
 interface Props {}
@@ -34,16 +34,13 @@ const BillingCalculatedPreview: React.FC<Props> = ({}) => {
   const [license, updateLicense] = useLicenseStore((state) => [state.license, state.updateLicense], shallow);
   const router = useRouter();
 
-  const dto: GetBillingSubscriptionPreviewDto = {
+  const dto: GetBillingPreviewDto = {
     organizationId: license?.organizationId ?? '',
-    category: 'cloud',
-    period: isAnnual ? 'yearly' : 'monthly',
-    type: selectedPlan?.type ?? 'live-testing',
-    option: selectedPlan?.option ?? 1,
-    currency: 'KRW',
+    billingPlanSourceId: selectedPlan?.billingPlanSourceId ?? 0,
     couponCode: couponCode ?? undefined,
+    method: license ? getPaymentMethodFromLicense(router.locale, license) : 'nice',
   };
-  const { data, isLoading } = useSWR<CallBillingApiResponse<GetBillingSubscriptionPreviewResponse>>(
+  const { data, isLoading } = useSWR<CallBillingApiResponse<GetBillingPreviewResponse>>(
     !!license && selectedPlan && `/billing/purchase/preview?${buildQueryPraramsByObject(dto, { removeFalsy: true })}`,
     swrAuthFetcher,
     {
@@ -81,7 +78,7 @@ const BillingCalculatedPreview: React.FC<Props> = ({}) => {
   }
 
   if (!data?.body?.ok || data?.errorMessage) {
-    if (data?.body?.resultCode.reason === 'subscription-plan-duplicated') {
+    if (data?.body?.resultCode.reason === 'plan-duplicated') {
       return (
         <Box>
           <ErrorBox title="Oops" desc={t('samePlanSelectedErrorMessage')} />
@@ -95,9 +92,9 @@ const BillingCalculatedPreview: React.FC<Props> = ({}) => {
     );
   }
 
-  const shouldPurchase = checkShouldPurchase(license, { ...selectedPlan, period: data.body.subscriptionPlan.period });
+  const shouldPurchase = checkShouldPurchase(license, { ...selectedPlan, period: data.body.plan.period });
   const planDescription = planDescriptionInfoMap[selectedPlan.type];
-  const responseSubscriptionPlan = data.body.subscriptionPlan;
+  const responseSubscriptionPlan = data.body.plan;
   const isAnnualSubscription = responseSubscriptionPlan.period === 'yearly';
   const originPricePerMonth = isAnnualSubscription
     ? responseSubscriptionPlan.originPrice / 12
@@ -123,7 +120,7 @@ const BillingCalculatedPreview: React.FC<Props> = ({}) => {
           <PlanTitle>{t(planDescription.titleI18nKey)}</PlanTitle>
           <div>
             <MonthlyPrice>
-              {getLocaleFormattedPrice('ko', responseSubscriptionPlan.currency, originPricePerMonth)}
+              {getLocaleFormattedPrice(router.locale, responseSubscriptionPlan.currency, originPricePerMonth)}
             </MonthlyPrice>
             <PerMonthText> / {t('perMonthText')}</PerMonthText>
           </div>
@@ -137,12 +134,12 @@ const BillingCalculatedPreview: React.FC<Props> = ({}) => {
           <div style={{ marginTop: '.25rem' }}>
             <CalculatedPriceContent>
               <span>
-                {getLocaleFormattedPrice('ko', responseSubscriptionPlan.currency, originPricePerMonth)} *{' '}
+                {getLocaleFormattedPrice(router.locale, responseSubscriptionPlan.currency, originPricePerMonth)} *{' '}
                 {isAnnualSubscription ? t('monthCountPlural', { month: 12 }) : t('monthCountSingular', { month: 1 })}
               </span>
               <b>
                 {getLocaleFormattedPrice(
-                  'ko',
+                  router.locale,
                   responseSubscriptionPlan.currency,
                   originPricePerMonth * (isAnnualSubscription ? 12 : 1),
                 )}
@@ -151,109 +148,149 @@ const BillingCalculatedPreview: React.FC<Props> = ({}) => {
           </div>
         </div>
 
-        {(data.body.elapsedPlans.length > 0 || data.body.remainingPlans.length > 0) && (
-          <div style={{ margin: '.5rem 0' }}>
-            <CalculatedPriceContent>
-              <span>{t('subscriptionAdjustmentTitle')}</span>
-              <b className="minus">
-                {getLocaleFormattedPrice(
-                  'ko',
-                  responseSubscriptionPlan.currency,
-                  -(
-                    data.body.elapsedPlans.reduce((amount, plan) => amount + plan.elapsedDiscountedAmount, 0) +
-                    data.body.remainingPlans.reduce((amount, plan) => amount + plan.remainingDiscountedAmount, 0)
-                  ),
-                )}
-              </b>
-            </CalculatedPriceContent>
+        {license.billingOrganization.billingMethod !== 'paddle' &&
+          (data.body.elapsedPlans.length > 0 ||
+            data.body.remainingPlans.length > 0 ||
+            data.body.paddleElapsePlans.length > 0) && (
+            <div style={{ margin: '.5rem 0' }}>
+              <CalculatedPriceContent>
+                <span>{t('subscriptionAdjustmentTitle')}</span>
+                <b className="minus">
+                  {getLocaleFormattedPrice(
+                    router.locale,
+                    responseSubscriptionPlan.currency,
+                    -(
+                      data.body.elapsedPlans.reduce((amount, plan) => amount + plan.elapsedDiscountedAmount, 0) +
+                      data.body.remainingPlans.reduce((amount, plan) => amount + plan.remainingDiscountedAmount, 0) +
+                      data.body.paddleElapsePlans.reduce((amount, plan) => amount + plan.elapsedPurchaseAmount, 0)
+                    ),
+                  )}
+                </b>
+              </CalculatedPriceContent>
 
-            {/* elapsed */}
-            {data.body.elapsedPlans.length > 0 && (
-              <div style={{ marginTop: '.25rem' }}>
-                <p style={{ fontWeight: '500', color: '#888' }}>{t('refundElapsedTitle')}</p>
+              {/* elapsed */}
+              {data.body.elapsedPlans.length > 0 && (
+                <div style={{ marginTop: '.25rem' }}>
+                  <p style={{ fontWeight: '500', color: '#888' }}>{t('refundElapsedTitle')}</p>
 
-                {data.body.elapsedPlans.map((plan) => {
-                  return (
-                    <div key={plan.type} style={{ fontSize: '.8rem', marginBottom: '.25rem' }}>
-                      <CalculatedPriceContent style={{ fontSize: '.85rem' }}>
-                        <p style={{ fontWeight: '500' }}>{t(planDescriptionInfoMap[plan.type].titleI18nKey)}</p>
-                        <b className="minus">
-                          {getLocaleFormattedPrice('ko', plan.currency, -plan.elapsedDiscountedAmount)}
-                        </b>
-                      </CalculatedPriceContent>
-                      <CalculatedPriceContent>
-                        <OptionDescription style={{ fontSize: '.75rem' }}>
-                          {plan.period === 'yearly' ? `${t('billedAnnuallyText')} | ` : ''}
-                          {t(planDescriptionInfoMap[plan.type].getOptionLabelI18nKey(plan.option), {
-                            option: plan.option,
-                          })}
-                        </OptionDescription>
-                        <OptionDescription style={{ fontSize: '.75rem' }}>
-                          {t(plan.elapsedDays > 1 ? 'dayTextPlural' : 'dayTextSingular', { day: plan.elapsedDays })}
-                        </OptionDescription>
-                      </CalculatedPriceContent>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
+                  {data.body.elapsedPlans.map((plan) => {
+                    return (
+                      <div key={plan.type} style={{ fontSize: '.8rem', marginBottom: '.25rem' }}>
+                        <CalculatedPriceContent style={{ fontSize: '.85rem' }}>
+                          <p style={{ fontWeight: '500' }}>{t(planDescriptionInfoMap[plan.type].titleI18nKey)}</p>
+                          <b className="minus">
+                            {getLocaleFormattedPrice(router.locale, plan.currency, -plan.elapsedDiscountedAmount)}
+                          </b>
+                        </CalculatedPriceContent>
+                        <CalculatedPriceContent>
+                          <OptionDescription style={{ fontSize: '.75rem' }}>
+                            {plan.period === 'yearly' ? `${t('billedAnnuallyText')} | ` : ''}
+                            {t(planDescriptionInfoMap[plan.type].getOptionLabelI18nKey(plan.option), {
+                              option: plan.option,
+                            })}
+                          </OptionDescription>
+                          <OptionDescription style={{ fontSize: '.75rem' }}>
+                            {t(plan.elapsedDays > 1 ? 'dayTextPlural' : 'dayTextSingular', { day: plan.elapsedDays })}
+                          </OptionDescription>
+                        </CalculatedPriceContent>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
 
-            {/* remaining */}
-            {data.body.remainingPlans.length > 0 && (
-              <div style={{ marginTop: '.25rem' }}>
-                <p style={{ fontWeight: '500', color: '#888' }}>{t('refundRemainingTitle')}</p>
+              {data.body.paddleElapsePlans.length > 0 && (
+                <div style={{ marginTop: '.25rem' }}>
+                  <p style={{ fontWeight: '500', color: '#888' }}>{t('refundElapsedTitle')}</p>
 
-                {data.body.remainingPlans.map((plan) => {
-                  return (
-                    <div key={plan.type} style={{ fontSize: '.8rem', marginBottom: '.25rem' }}>
-                      <CalculatedPriceContent style={{ fontSize: '.85rem' }}>
-                        <p style={{ fontWeight: '500' }}>{t(planDescriptionInfoMap[plan.type].titleI18nKey)}</p>
-                        <b className="minus">
-                          {getLocaleFormattedPrice('ko', plan.currency, -plan.remainingDiscountedAmount)}
-                        </b>
-                      </CalculatedPriceContent>
-                      <CalculatedPriceContent>
-                        <OptionDescription style={{ fontSize: '.75rem' }}>
-                          {plan.period === 'yearly' ? `${t('billedAnnuallyText')} | ` : ''}
-                          {t(planDescriptionInfoMap[plan.type].getOptionLabelI18nKey(plan.option), {
-                            option: plan.option,
-                          })}
-                        </OptionDescription>
-                        <OptionDescription style={{ fontSize: '.75rem' }}>
-                          {t(plan.remainingDays > 1 ? 'dayTextPlural' : 'dayTextSingular', { day: plan.remainingDays })}
-                        </OptionDescription>
-                      </CalculatedPriceContent>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-        )}
+                  {data.body.paddleElapsePlans.map((plan) => {
+                    return (
+                      <div key={plan.type} style={{ fontSize: '.8rem', marginBottom: '.25rem' }}>
+                        <CalculatedPriceContent style={{ fontSize: '.85rem' }}>
+                          <p style={{ fontWeight: '500' }}>{t(planDescriptionInfoMap[plan.type].titleI18nKey)}</p>
+                          <b className="minus">
+                            {getLocaleFormattedPrice(router.locale, plan.currency, -plan.elapsedPurchaseAmount)}
+                          </b>
+                        </CalculatedPriceContent>
+                        <CalculatedPriceContent>
+                          <OptionDescription style={{ fontSize: '.75rem' }}>
+                            {plan.period === 'yearly' ? `${t('billedAnnuallyText')} | ` : ''}
+                            {t(planDescriptionInfoMap[plan.type].getOptionLabelI18nKey(plan.option), {
+                              option: plan.option,
+                            })}
+                          </OptionDescription>
+                          {/* <OptionDescription style={{ fontSize: '.75rem' }}>
+                          {t(plan. > 1 ? 'dayTextPlural' : 'dayTextSingular', { day: plan.elapsedDays })}
+                        </OptionDescription> */}
+                        </CalculatedPriceContent>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
+              {/* remaining */}
+              {data.body.remainingPlans.length > 0 && (
+                <div style={{ marginTop: '.25rem' }}>
+                  <p style={{ fontWeight: '500', color: '#888' }}>{t('refundRemainingTitle')}</p>
+
+                  {data.body.remainingPlans.map((plan) => {
+                    return (
+                      <div key={plan.type} style={{ fontSize: '.8rem', marginBottom: '.25rem' }}>
+                        <CalculatedPriceContent style={{ fontSize: '.85rem' }}>
+                          <p style={{ fontWeight: '500' }}>{t(planDescriptionInfoMap[plan.type].titleI18nKey)}</p>
+                          <b className="minus">
+                            {getLocaleFormattedPrice('ko', plan.currency, -plan.remainingDiscountedAmount)}
+                          </b>
+                        </CalculatedPriceContent>
+                        <CalculatedPriceContent>
+                          <OptionDescription style={{ fontSize: '.75rem' }}>
+                            {plan.period === 'yearly' ? `${t('billedAnnuallyText')} | ` : ''}
+                            {t(planDescriptionInfoMap[plan.type].getOptionLabelI18nKey(plan.option), {
+                              option: plan.option,
+                            })}
+                          </OptionDescription>
+                          <OptionDescription style={{ fontSize: '.75rem' }}>
+                            {t(plan.remainingDays > 1 ? 'dayTextPlural' : 'dayTextSingular', {
+                              day: plan.remainingDays,
+                            })}
+                          </OptionDescription>
+                        </CalculatedPriceContent>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          )}
 
         {!!data.body.coupon && (
           <div style={{ marginTop: '.5rem' }}>
             <CalculatedPriceContent>
               <span>{t(data.body.coupon.type === 'basic' ? 'couponLabelText' : 'promotionLabelText')}</span>
               <b className="minus">
-                {getLocaleFormattedPrice('ko', responseSubscriptionPlan.currency, -data.body.coupon.discountedAmount)}
+                {getLocaleFormattedPrice(
+                  router.locale,
+                  responseSubscriptionPlan.currency,
+                  -data.body.coupon.discountedAmount,
+                )}
               </b>
             </CalculatedPriceContent>
             <OptionDescription style={{ fontSize: '.75rem' }}>
               {isAnnualSubscription
                 ? t(
-                    data.body.coupon.yearlyApplyCount ?? 1 > 1
+                    data.body.coupon.applyCount ?? 1 > 1
                       ? 'couponOptionYearPluralText'
                       : 'couponOptionYearSingularText',
-                    { year: data.body.coupon.yearlyApplyCount ?? 1, discount: data.body.coupon.yearlyDiscountPercent },
+                    { year: data.body.coupon.applyCount ?? 1, discount: data.body.coupon.discountPercent },
                   )
                 : t(
-                    data.body.coupon.monthlyApplyCount ?? 1 > 1
+                    data.body.coupon.applyCount ?? 1 > 1
                       ? 'couponOptionMonthPluralText'
                       : 'couponOptionMonthSingularText',
                     {
-                      month: data.body.coupon.monthlyApplyCount ?? 1,
-                      discount: data.body.coupon.monthlyDiscountPercent,
+                      month: data.body.coupon.applyCount ?? 1,
+                      discount: data.body.coupon.discountPercent,
                     },
                   )}
             </OptionDescription>
@@ -263,7 +300,7 @@ const BillingCalculatedPreview: React.FC<Props> = ({}) => {
         <div style={{ marginTop: '.5rem' }}>
           <CalculatedPriceContent>
             <span>{t('taxLabelText')}</span>
-            <b>{data.body.tax}</b>
+            <b>{getLocaleFormattedPrice(router.locale, responseSubscriptionPlan.currency, data.body.tax)}</b>
           </CalculatedPriceContent>
         </div>
 
@@ -274,7 +311,7 @@ const BillingCalculatedPreview: React.FC<Props> = ({}) => {
             <CalculatedPriceContent>
               <TotalText>{t('totalLabelText')}</TotalText>
               <TotalText>
-                {getLocaleFormattedPrice('ko', responseSubscriptionPlan.currency, data.body.totalPrice)}
+                {getLocaleFormattedPrice(router.locale, responseSubscriptionPlan.currency, data.body.totalPrice)}
               </TotalText>
             </CalculatedPriceContent>
           </div>
@@ -311,6 +348,9 @@ const BillingCalculatedPreview: React.FC<Props> = ({}) => {
 
         {shouldPurchase && data.body.nextPurchaseTotalPrice !== data.body.totalPrice && (
           <div style={{ marginTop: '.5rem' }}>
+            <NextBillingText>
+              {data.body.paddleElapsePlans.length > 0 && '* A subscription adjustment has occurred.'}
+            </NextBillingText>
             <NextBillingText>
               <Trans
                 i18nKey="billing:nextPurchaseDescriptionText"
@@ -360,12 +400,12 @@ const BillingCalculatedPreview: React.FC<Props> = ({}) => {
                       {getLocaleFormattedPrice(
                         router.locale,
                         responseSubscriptionPlan.currency,
-                        (BillingSubscriptionPlanMap[responseSubscriptionPlan.type].optionMap[
-                          responseSubscriptionPlan.option
-                        ][responseSubscriptionPlan.currency].monthly -
-                          BillingSubscriptionPlanMap[responseSubscriptionPlan.type].optionMap[
-                            responseSubscriptionPlan.option
-                          ][responseSubscriptionPlan.currency].yearly /
+                        (BillingPlanMap[responseSubscriptionPlan.type].optionMap[responseSubscriptionPlan.option][
+                          responseSubscriptionPlan.currency
+                        ].monthly.originPrice -
+                          BillingPlanMap[responseSubscriptionPlan.type].optionMap[responseSubscriptionPlan.option][
+                            responseSubscriptionPlan.currency
+                          ].yearly.originPrice /
                             12) *
                           12,
                       )}

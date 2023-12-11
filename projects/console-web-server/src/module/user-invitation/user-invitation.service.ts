@@ -1,13 +1,16 @@
-import { OrganizationAndUserAndOrganizationRolePropCamel, UserAndInvitationTokenPropCamel, UserAndInvitationTokenPropSnake } from '@dogu-private/console';
+import { OrganizationAndUserAndOrganizationRolePropCamel, UpdateBillingEmailDto, UserAndInvitationTokenPropCamel, UserAndInvitationTokenPropSnake } from '@dogu-private/console';
 import { OrganizationId, UserId, USER_INVITATION_STATUS } from '@dogu-private/types';
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource, EntityManager, Not } from 'typeorm';
 
-import { OrganizationAndUserAndOrganizationRole } from '../../db/entity/index';
+import { OrganizationAndUserAndOrganizationRole, User } from '../../db/entity/index';
 import { UserAndInvitationToken } from '../../db/entity/relations/user-and-invitation-token.entity';
+import { CloudLicenseService } from '../../enterprise/module/license/cloud-license.service';
+import { FeatureConfig } from '../../feature.config';
 import { castEntity } from '../../types/entity-cast';
 import { ORGANIZATION_ROLE } from '../auth/auth.types';
+import { BillingCaller } from '../billing/billing.caller';
 import { TokenService } from '../token/token.service';
 import { AcceptUserInvitationDto } from './dto/user-invitation.dto';
 
@@ -16,6 +19,8 @@ export class UserInvitationService {
   constructor(
     @InjectDataSource()
     private readonly dataSource: DataSource,
+    private readonly cloudLicenseService: CloudLicenseService,
+    private readonly billingCaller: BillingCaller,
   ) {}
 
   async findInvitationWithAllRelations(manager: EntityManager, organizationId: OrganizationId, email: string, withDeleted: boolean): Promise<UserAndInvitationToken | null> {
@@ -49,6 +54,7 @@ export class UserInvitationService {
   async acceptInvitation(userId: UserId, dto: AcceptUserInvitationDto) {
     const { email, organizationId, token } = dto;
     const invitation = await this.findInvitation(email, organizationId, token);
+
     if (!invitation) {
       throw new NotFoundException('Invitation does not exist');
     }
@@ -73,11 +79,42 @@ export class UserInvitationService {
           const adminMember = members.find((member) => member.organizationRoleId === ORGANIZATION_ROLE.ADMIN);
           const member = adminMember || members[0];
 
+          const memberInfo = await entityManager.findOne(User, { where: { userId: member.userId } });
+
           await entityManager.update(
             OrganizationAndUserAndOrganizationRole,
             { organizationId: currentOrgRole.organizationId, userId: member.userId },
             { organizationRoleId: ORGANIZATION_ROLE.OWNER },
           );
+
+          const updateBillingEmailDto: UpdateBillingEmailDto = {
+            organizationId: currentOrgRole.organizationId,
+            email: memberInfo?.email ?? `${organizationId}@dogutech.io`,
+          };
+          await this.billingCaller.callBillingApi<void>({
+            method: 'PUT',
+            path: 'billing/organizations/email',
+            body: updateBillingEmailDto,
+          });
+        } else {
+          if (FeatureConfig.get('licenseModule') === 'cloud') {
+            const license = await this.cloudLicenseService.getLicenseInfo(organizationId);
+            const hasUsingPlan = license.billingOrganization?.billingPlanInfos?.some((plan) => plan.state === 'subscribed' || plan.state === 'change-option-or-period-requested');
+
+            if (hasUsingPlan) {
+              throw new BadRequestException('Plan subscription is in progress.');
+            }
+
+            const updateBillingEmailDto: UpdateBillingEmailDto = {
+              organizationId: currentOrgRole.organizationId,
+              email: `${organizationId}@dogutech.io`,
+            };
+            await this.billingCaller.callBillingApi<void>({
+              method: 'PUT',
+              path: 'billing/organizations/email',
+              body: updateBillingEmailDto,
+            });
+          }
         }
       }
 

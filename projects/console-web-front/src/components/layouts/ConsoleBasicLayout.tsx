@@ -8,7 +8,6 @@ import { ImPriceTag } from 'react-icons/im';
 import styled from 'styled-components';
 import { shallow } from 'zustand/shallow';
 
-import LicenseTag from '../../../enterprise/components/license/LicenseTag';
 import useAuthStore from '../../stores/auth';
 import useEventStore from '../../stores/events';
 import useLicenseStore from '../../stores/license';
@@ -59,7 +58,7 @@ const ConsoleBasicLayout = ({ children, user, license: licenseInfo }: Props) => 
         <PromotionBanner />
 
         <Header
-          links={!!me && !!license ? <LicenseTag licenseInfo={license} me={me} /> : null}
+          links={null}
           right={
             <FlexRow>
               {!!me && process.env.NEXT_PUBLIC_ENV !== 'self-hosted' && (

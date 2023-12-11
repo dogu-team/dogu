@@ -6,20 +6,18 @@ import useTranslation from 'next-translate/useTranslation';
 import Head from 'next/head';
 import styled from 'styled-components';
 
-import {
-  getCloudLicenseInServerSide,
-  getLicenseInServerSide,
-  getSelfHostedLicenseInServerSide,
-} from '../../enterprise/api/license';
+import { getLicenseInServerSide } from '../../enterprise/api/license';
 import BillingHistoryList from '../../src/components/billing/BillingHistoryList';
-import BillingPaymentMethod from '../../src/components/billing/BillingPaymentMethod';
+import BillingPaddleAddress from '../../src/components/billing/BillingPaddleAddress';
+import BillingPaddleBusiness from '../../src/components/billing/BillingPaddleBusiness';
+import BillingPaymentMethodNice from '../../src/components/billing/BillingPaymentMethodNice';
 import BillingSubscribedPlanList from '../../src/components/billing/BillingSubscribedPlanList';
 import UpgradePlanButton from '../../src/components/billing/UpgradePlanButton';
 import LiveChat from '../../src/components/external/livechat';
 import ConsoleBasicLayout from '../../src/components/layouts/ConsoleBasicLayout';
 import Footer from '../../src/components/layouts/Footer';
 import useLicenseStore from '../../src/stores/license';
-import { checkLoginInServerSide, checkUserVerifiedInServerSide } from '../../src/utils/auth';
+import { checkUserVerifiedInServerSide } from '../../src/utils/auth';
 import { NextPageWithLayout } from '../_app';
 
 interface BillingPageProps {
@@ -67,13 +65,33 @@ const BillingPage: NextPageWithLayout<BillingPageProps> = ({ me, license }) => {
             </ContentInner>
           </TitleWrapper>
         </Content>
-        {!!paymentMethod && (
+        {!!license.billingOrganization.billingMethod !== null && (
           <Content>
             <TitleWrapper>
-              <ContentTitle>{t('billingPaymentMethodTitle')}</ContentTitle>
+              <ContentTitle>
+                {t(
+                  license.billingOrganization.billingMethod === 'nice'
+                    ? 'billingPaymentMethodTitle'
+                    : 'billingInfomationTitle',
+                )}
+              </ContentTitle>
             </TitleWrapper>
             <ContentInner>
-              <BillingPaymentMethod method={paymentMethod} organizationId={license.organizationId as OrganizationId} />
+              {license.billingOrganization.billingMethod === 'nice' ? (
+                <BillingPaymentMethodNice
+                  method={license.billingOrganization.billingMethodNice!}
+                  organizationId={license.organizationId as OrganizationId}
+                />
+              ) : (
+                <div>
+                  <p style={{ fontSize: '.8rem', color: '#777' }}>* {t('changePaddlePaymentMethodInfoMessage')}</p>
+
+                  <BillingInfoWrapper>
+                    <BillingPaddleAddress />
+                    <BillingPaddleBusiness />
+                  </BillingInfoWrapper>
+                </div>
+              )}
             </ContentInner>
           </Content>
         )}
@@ -150,4 +168,10 @@ const ContentTitle = styled.h3`
 
 const ContentInner = styled.div`
   font-size: 0.9rem;
+`;
+
+const BillingInfoWrapper = styled.div`
+  display: flex;
+  margin-top: 0.5rem;
+  gap: 2rem;
 `;

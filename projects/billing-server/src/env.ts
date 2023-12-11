@@ -38,6 +38,12 @@ export class Env {
 
   @IsFilledString()
   DOGU_SLACK_BOT_TOKEN!: string;
+
+  @IsFilledString()
+  DOGU_PADDLE_API_KEY!: string;
+
+  @IsFilledString()
+  DOGU_PADDLE_NOTIFICATION_KEY!: string;
 }
 
 export const env = loadEnvLazySync(Env, { printable: logger });

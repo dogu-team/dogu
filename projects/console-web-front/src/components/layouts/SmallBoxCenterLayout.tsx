@@ -26,7 +26,7 @@ const SmallBoxCenteredLayout = (props: Props) => {
       <Inner>
         <NameWrapper>
           <H2>
-            <StyledLink href={`${process.env.NEXT_PUBLIC_LANDING_URL}${getLocaledLink(router.locale, '')}`}>
+            <StyledLink href={`https://dogutech.io${getLocaledLink(router.locale, '')}`}>
               <Image src={resources.icons.logo} width={48} height={48} alt="Dogu" style={{ marginRight: '.5rem' }} />
               <DoguText />
             </StyledLink>

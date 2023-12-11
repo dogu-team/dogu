@@ -15,10 +15,11 @@ import * as bcrypt from 'bcrypt';
 import { DateTime } from 'luxon';
 import { DataSource, EntityManager } from 'typeorm';
 
+import { BlockedDomain } from '../../db/entity/blacklist-domain.entity';
 import { Organization, OrganizationAndUserAndOrganizationRole, Token, User, UserEmailPreference } from '../../db/entity/index';
+import { PermittedDomain } from '../../db/entity/permitted-domain.entity';
 import { UserAndVerificationToken } from '../../db/entity/relations/user-and-verification-token.entity';
 import { UserSns } from '../../db/entity/user-sns.entity';
-import { WhitelistDomain } from '../../db/entity/whitelist-domain.entity';
 import { CloudLicenseService } from '../../enterprise/module/license/cloud-license.service';
 import { env } from '../../env';
 import { FeatureConfig } from '../../feature.config';
@@ -63,12 +64,19 @@ export class RegisteryService {
     const email = createUserDto.email.toLowerCase();
 
     const domain = email.split('@')[1];
-    const whitelist = await this.dataSource.getRepository(WhitelistDomain).findOne({
+    const permittedDomain = await this.dataSource.getRepository(PermittedDomain).findOne({
+      where: { domain },
+    });
+    const blockedDomain = await this.dataSource.getRepository(BlockedDomain).findOne({
       where: { domain },
     });
 
+    if (blockedDomain) {
+      throw new HttpException(`Unsupported email domain : ${domain}. If this error persist, please contact us.`, HttpStatus.BAD_REQUEST);
+    }
+
     // check email domain is valid
-    if (!whitelist) {
+    if (!permittedDomain) {
       try {
         const rv = await axios.get(`http://${domain}`, { timeout: 5000 });
         if (rv.status !== 200) {
@@ -131,7 +139,7 @@ export class RegisteryService {
       }
 
       if (FeatureConfig.get('licenseModule') === 'cloud') {
-        await this.cloudLicenseService.createLicense({ organizationId: organization.organizationId });
+        await this.cloudLicenseService.createLicense({ organizationId: organization.organizationId, email: user.email });
       }
 
       // create user email preference
@@ -235,6 +243,7 @@ export class RegisteryService {
 
   async signUpWithThirdParty(oauthPayload: OAuthPayLoad): Promise<RegisteryWithOrganizationIdResult> {
     const { email, userSnsId, snsType, name } = oauthPayload;
+
     const user = await this.dataSource.getRepository(User).findOne({ where: { email }, withDeleted: true, relations: [UserPropCamel.userAndVerificationToken] });
 
     if (user) {
@@ -262,6 +271,15 @@ export class RegisteryService {
       return tokenResponse;
     }
 
+    const domain = email.split('@')[1];
+    const blockedDomain = await this.dataSource.getRepository(BlockedDomain).findOne({
+      where: { domain },
+    });
+
+    if (blockedDomain) {
+      throw new HttpException(`Unsupported email domain : ${domain}. If this error persist, please contact us.`, HttpStatus.BAD_REQUEST);
+    }
+
     const password = null;
     const userName = name ?? email.split('@')[0];
     const tokenResponse = await this.dataSource.transaction(async (manager) => {
@@ -281,7 +299,7 @@ export class RegisteryService {
       const refreshToken = await this.authService.createRefreshToken(manager, user.userId);
 
       if (FeatureConfig.get('licenseModule') === 'cloud') {
-        await this.cloudLicenseService.createLicense({ organizationId: organization.organizationId });
+        await this.cloudLicenseService.createLicense({ organizationId: organization.organizationId, email: user.email });
       }
 
       const rv: RegisteryWithOrganizationIdResult = {

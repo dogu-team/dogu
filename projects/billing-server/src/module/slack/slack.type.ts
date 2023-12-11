@@ -1,4 +1,4 @@
-import { BillingCurrency, BillingSubscriptionPlanType } from '@dogu-private/console';
+import { BillingCurrency, BillingPlanType } from '@dogu-private/console';
 
 export interface SendPurchaseSuccessSlackMessageParam {
   isSucceeded: true;
@@ -9,7 +9,7 @@ export interface SendPurchaseSuccessSlackMessageParam {
   historyId: string;
   plans: {
     option: string | number;
-    type: BillingSubscriptionPlanType;
+    type: BillingPlanType;
   }[];
 }
 
@@ -19,7 +19,7 @@ export interface SendPurchaseFailSlackMessageParam {
   purchasedAt: Date;
   plans: {
     option: string | number;
-    type: BillingSubscriptionPlanType;
+    type: BillingPlanType;
   }[];
 }
 
@@ -29,6 +29,6 @@ export interface SendUnsubscribeSlackMessageParam {
   organizationId: string;
   plan: {
     option: string | number;
-    type: BillingSubscriptionPlanType;
+    type: BillingPlanType;
   };
 }

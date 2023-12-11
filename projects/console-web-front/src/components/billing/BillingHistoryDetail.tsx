@@ -18,7 +18,9 @@ const BillingHistoryDetail: React.FC<Props> = ({ history }) => {
   const router = useRouter();
   const { t } = useTranslation('billing');
 
-  if (!history.billingSubscriptionPlanHistories) {
+  const cardName = history.method === 'paddle' ? history.cardCode : history.cardName;
+
+  if (!history.billingPlanHistories) {
     return <ErrorBox title="Something went wrong" desc="No details for invoice" />;
   }
 
@@ -41,17 +43,18 @@ const BillingHistoryDetail: React.FC<Props> = ({ history }) => {
       <DetailInfo>
         <span>{t('historyDetailPaymentText')}</span>
         <label style={{ verticalAlign: 'sub' }}>**** **** **** </label>
-        {history.cardNumberLast4Digits} {`(${history.cardName?.replace(/\[|\]/g, '')})`}
+        {history.cardNumberLast4Digits}{' '}
+        <span style={{ textTransform: 'capitalize' }}>{`(${cardName?.replace(/\[|\]/g, '')})`}</span>
       </DetailInfo>
 
       <Divider style={{ margin: '.5rem 0' }} />
 
       <div>
-        {history.billingSubscriptionPlanHistories.map((planHistory) => {
+        {history.billingPlanHistories.map((planHistory) => {
           const descriptionInfo = planDescriptionInfoMap[planHistory.type];
 
           return (
-            <div key={planHistory.billingSubscriptionPlanHistoryId} style={{ margin: '.25rem 0' }}>
+            <div key={planHistory.billingPlanHistoryId} style={{ margin: '.25rem 0' }}>
               <FlexSpaceBetween>
                 <b style={{ fontWeight: '600' }}>{t(descriptionInfo.titleI18nKey)}</b>
                 <b style={{ fontWeight: '600' }}>

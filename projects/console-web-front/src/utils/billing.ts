@@ -1,9 +1,10 @@
 import {
   BillingHistoryBase,
+  BillingMethod,
   BillingPeriod,
-  BillingSubscriptionPlanHistoryBase,
-  BillingSubscriptionPlanInfoBase,
-  BillingSubscriptionPlanType,
+  BillingPlanHistoryBase,
+  BillingPlanInfoBase,
+  BillingPlanType,
   CloudLicenseBase,
   CloudLicenseResponse,
   RegisterCardDto,
@@ -15,14 +16,14 @@ import { SelectedPlan } from '../stores/billing-plan-purchase';
 
 export const getSubscriptionPlansFromLicense = (
   license: CloudLicenseBase | SelfHostedLicenseBase,
-  planTypes: BillingSubscriptionPlanType[] | null,
-): BillingSubscriptionPlanInfoBase[] => {
+  planTypes: BillingPlanType[] | null,
+): BillingPlanInfoBase[] => {
   if ('licenseKey' in license) {
     const selfHostedLicense = license;
     return [];
   } else {
     const cloudLicense = license;
-    const usingPlans = cloudLicense.billingOrganization?.billingSubscriptionPlanInfos?.filter(
+    const usingPlans = cloudLicense.billingOrganization?.billingPlanInfos?.filter(
       (plan) => plan.state !== 'unsubscribed',
     );
 
@@ -91,10 +92,21 @@ export const checkShouldPurchase = (
   }
 };
 
-export const getHistoryAmount = (history: BillingHistoryBase | BillingSubscriptionPlanHistoryBase): number => {
+export const getHistoryAmount = (history: BillingHistoryBase | BillingPlanHistoryBase): number => {
   if (history.purchasedAmount !== null) {
     return history.purchasedAmount;
   }
 
   return history.refundedAmount !== null ? -history.refundedAmount : 0;
+};
+
+export const getPaymentMethodFromLicense = (
+  routerLocale: string = 'en',
+  license: CloudLicenseResponse | SelfHostedLicenseResponse,
+): BillingMethod => {
+  if (license.billingOrganization.billingMethod) {
+    return license.billingOrganization.billingMethod;
+  }
+
+  return routerLocale === 'ko' ? 'nice' : 'paddle';
 };

@@ -1,8 +1,9 @@
+import { stringify } from '@dogu-tech/common';
+
 export const BillingResultCodeMap = {
   // common
   ok: 0,
   'unexpected-error': 1,
-  'division-by-zero': 2,
 
   // organization
   'organization-not-found': 100,
@@ -11,29 +12,31 @@ export const BillingResultCodeMap = {
   'organization-subscription-monthly-expired-at-not-found': 103,
   'organization-subscription-yearly-started-at-not-found': 105,
   'organization-subscription-yearly-expired-at-not-found': 106,
-  'organization-subscription-plan-infos-not-found': 107,
+  'organization-plan-infos-not-found': 107,
+  'organization-method-paddle-not-found': 108,
 
   // coupon
   'coupon-not-found': 200,
   'coupon-expired': 201,
   'coupon-already-used': 202,
   'coupon-all-used': 203,
-  'coupon-invalid-monthly-apply-count': 204,
-  'coupon-invalid-monthly-discount-percent': 205,
-  'coupon-invalid-yearly-apply-count': 206,
-  'coupon-invalid-yearly-discount-percent': 207,
-  'coupon-subscription-plan-type-not-matched': 208,
+  'coupon-invalid-discount-percent': 204,
+  'coupon-plan-type-not-matched': 205,
+  'coupon-period-not-matched': 206,
+  'coupon-invalid-apply-count': 207,
 
-  // subscription plan
-  'subscription-plan-not-found': 300,
-  'subscription-plan-currency-not-found': 301,
-  'subscription-plan-period-not-found': 302,
-  'subscription-plan-type-not-found': 303,
-  'subscription-plan-option-not-found': 304,
-  'subscription-plan-category-not-matched': 305,
-  'subscription-plan-currency-not-matched': 306,
-  'subscription-plan-duplicated': 307,
-  'subscription-plan-unsubscribed': 308,
+  // plan
+  'plan-not-found': 300,
+  'plan-currency-not-found': 301,
+  'plan-period-not-found': 302,
+  'plan-type-not-found': 303,
+  'plan-option-not-found': 304,
+  'plan-category-not-matched': 305,
+  'plan-currency-not-matched': 306,
+  'plan-duplicated': 307,
+  'plan-unsubscribed': 308,
+  'plan-price-source-not-found': 309,
+  'plan-source-not-found': 310,
 
   // cloud license
   'cloud-license-not-found': 400,
@@ -78,11 +81,37 @@ export interface BillingResultFailure {
   resultCode: BillingResultCode;
 }
 
+export type BillingResultFailureWithExtras<Extras extends Record<string, unknown>> = BillingResultFailure & Extras;
+
 export interface BillingResultSuccess<Value> {
   ok: true;
   value: Value;
 }
 
-export type BillingResult<Value, FailureExtras extends object = object, SuccessExtras extends object = object> =
-  | (BillingResultFailure & FailureExtras) //
-  | (BillingResultSuccess<Value> & SuccessExtras);
+export type BillingResultSuccessWithExtras<Value, Extras extends Record<string, unknown>> = BillingResultSuccess<Value> & Extras;
+
+export type BillingResult<
+  Value,
+  FailureExtras extends Record<string, unknown> = Record<string, unknown>,
+  SuccessExtras extends Record<string, unknown> = Record<string, unknown>,
+> = BillingResultFailureWithExtras<FailureExtras> | BillingResultSuccessWithExtras<Value, SuccessExtras>;
+
+export class BillingResultFailureError<Extras extends Record<string, unknown>> extends Error {
+  constructor(readonly failure: BillingResultFailureWithExtras<Extras>) {
+    super(`BillingResultFailure: ${stringify(failure)}`);
+  }
+}
+
+export function throwFailure<Extras extends Record<string, unknown>>(failure: BillingResultFailureWithExtras<Extras>): never {
+  throw new BillingResultFailureError(failure);
+}
+
+export function unwrap<Value, FailureExtras extends Record<string, unknown> = Record<string, unknown>, SuccessExtras extends Record<string, unknown> = Record<string, unknown>>(
+  result: BillingResult<Value, FailureExtras, SuccessExtras>,
+): Value {
+  if (!result.ok) {
+    throwFailure(result);
+  }
+
+  return result.value;
+}

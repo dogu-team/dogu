@@ -7,9 +7,9 @@ import { Client } from 'pg';
 import { BillingCurrency } from '@dogu-private/console';
 import { config } from '../../config';
 import { BillingHistory } from '../../db/entity/billing-history.entity';
-import { BillingSubscriptionPlanInfo } from '../../db/entity/billing-subscription-plan-info.entity';
+import { BillingPlanInfo } from '../../db/entity/billing-plan-info.entity';
 import { env } from '../../env';
-import { BillingSubscriptionPlanInfoCommonModule } from '../common/plan-info-common.module';
+import { BillingPlanInfoCommonModule } from '../common/plan-info-common.module';
 import { DoguLogger } from '../logger/logger';
 import { getPurcaseSuccessEmailTemplate } from './emails/purchase-success.tmpl';
 
@@ -37,7 +37,7 @@ export class ConsoleService {
     organizationId: OrganizationId,
     param: {
       planHistory: BillingHistory;
-      plan: BillingSubscriptionPlanInfo;
+      plan: BillingPlanInfo;
     },
   ): Promise<void> {
     const ownerUser = await this.consolePgClient.query<{ user_email: string }>(`SELECT u.email as user_email
@@ -59,11 +59,11 @@ AND ouor.organization_role_id = 1`);
       subject: '[Dogu] Payment has been successfully completed.',
       html: getPurcaseSuccessEmailTemplate({
         planHistoryId: planHistory.billingHistoryId,
-        planName: BillingSubscriptionPlanInfoCommonModule.planTypeDescriptionMap[plan.type],
+        planName: BillingPlanInfoCommonModule.planTypeDescriptionMap[plan.type],
         optionName:
           plan.option > 1
-            ? `${plan.option} ${BillingSubscriptionPlanInfoCommonModule.planOptionDescriptionMap[plan.type].plural}`
-            : `${plan.option} ${BillingSubscriptionPlanInfoCommonModule.planOptionDescriptionMap[plan.type].singular}`,
+            ? `${plan.option} ${BillingPlanInfoCommonModule.planOptionDescriptionMap[plan.type].plural}`
+            : `${plan.option} ${BillingPlanInfoCommonModule.planOptionDescriptionMap[plan.type].singular}`,
         months: plan.period === 'monthly' ? 1 : 12,
         cardLast4Digits: planHistory.cardNumberLast4Digits ?? '',
         cardName: planHistory.cardName ?? '',

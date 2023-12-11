@@ -1,11 +1,12 @@
 import { propertiesOf } from '@dogu-tech/common';
 import { Type } from 'class-transformer';
 import { IsIn, IsUUID, ValidateNested } from 'class-validator';
-import { BillingCategory, BillingCurrency } from './billing';
+import { BillingMethodPaddleBase, BillingMethodPaddleResponse } from '..';
+import { BillingCategory, BillingCurrency, BillingMethod } from './billing';
 import { BillingMethodNiceBase } from './billing-method-nice';
+import { BillingPlanInfoBase, BillingPlanInfoResponse } from './billing-plan-info';
+import { BillingPlanSourceBase } from './billing-plan-source';
 import { RegisterCardDto } from './billing-purchase';
-import { BillingSubscriptionPlanInfoBase, BillingSubscriptionPlanInfoResponse } from './billing-subscription-plan-info';
-import { BillingSubscriptionPlanSourceBase } from './billing-subscription-plan-source';
 
 export interface BillingOrganizationBase {
   billingOrganizationId: string;
@@ -18,17 +19,23 @@ export interface BillingOrganizationBase {
   subscriptionMonthlyExpiredAt: Date | null;
   graceExpiredAt: Date | null;
   graceNextPurchasedAt: Date | null;
+  billingMethod: BillingMethod | null;
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date | null;
-  billingSubscriptionPlanInfos?: BillingSubscriptionPlanInfoBase[];
-  billingSubscriptionPlanSources?: BillingSubscriptionPlanSourceBase[];
+  billingPlanInfos?: BillingPlanInfoBase[];
+  billingPlanSources?: BillingPlanSourceBase[];
   billingMethodNice?: BillingMethodNiceBase;
+  billingMethodPaddle?: BillingMethodPaddleBase;
 }
 
 export const BillingOrganizationProp = propertiesOf<BillingOrganizationBase>();
 
-export class FindBillingOrganizationDto {
+export type FindBillingOrganizationOptions = {
+  organizationId: string;
+};
+
+export class FindBillingOrganizationDto implements FindBillingOrganizationOptions {
   @IsUUID()
   organizationId!: string;
 }
@@ -54,5 +61,6 @@ export class CreateOrUpdateBillingOrganizationWithNiceDto {
 }
 
 export interface BillingOrganizationResponse extends BillingOrganizationBase {
-  billingSubscriptionPlanInfos: BillingSubscriptionPlanInfoResponse[];
+  billingPlanInfos: BillingPlanInfoResponse[];
+  billingMethodPaddle: BillingMethodPaddleResponse;
 }

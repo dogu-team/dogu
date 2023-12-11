@@ -3,8 +3,12 @@ import {
   BillingHistoryBase,
   BillingPromotionCouponResponse,
   CallBillingApiResponse,
-  CreatePurchaseSubscriptionWithNewCardResponse,
-  GetBillingSubscriptionPreviewResponse,
+  CreatePurchaseWithNewCardResponse,
+  GetBillingPrecheckoutResponse,
+  GetBillingPreviewResponse,
+  GetUpdatePaymentMethodTransactionResponse,
+  UpdateBillingAddressResponse,
+  UpdateBillingBusinessResponse,
   UpdateBillingMethodResponse,
   ValidateBillingCouponResponse,
 } from '@dogu-private/console';
@@ -14,14 +18,10 @@ import { ORGANIZATION_ROLE } from '../auth/auth.types';
 import { OrganizationPermission } from '../auth/decorators';
 import { Page } from '../common/dto/pagination/page';
 import { BillingCaller } from './billing.caller';
-import { BillingService } from './billing.service';
 
 @Controller('billing')
 export class BillingController {
-  constructor(
-    private readonly billingService: BillingService,
-    private readonly billingCaller: BillingCaller,
-  ) {}
+  constructor(private readonly billingCaller: BillingCaller) {}
 
   // coupon
   @Get('/coupons/validate')
@@ -51,8 +51,8 @@ export class BillingController {
   // purchase
   @Get('/purchase/preview')
   @OrganizationPermission(ORGANIZATION_ROLE.ADMIN)
-  async getSubscriptionPreview(@Query() query: object): Promise<CallBillingApiResponse<GetBillingSubscriptionPreviewResponse>> {
-    return await this.billingCaller.callBillingApi<GetBillingSubscriptionPreviewResponse>({
+  async getPreview(@Query() query: object): Promise<CallBillingApiResponse<GetBillingPreviewResponse>> {
+    return await this.billingCaller.callBillingApi<GetBillingPreviewResponse>({
       method: 'GET',
       path: 'billing/purchase/preview',
       query,
@@ -61,8 +61,8 @@ export class BillingController {
 
   @Post('/purchase')
   @OrganizationPermission(ORGANIZATION_ROLE.ADMIN)
-  async createPurchaseSubscription(@Query() query: object, @Body() body: object): Promise<CallBillingApiResponse<CreatePurchaseSubscriptionWithNewCardResponse>> {
-    return await this.billingCaller.callBillingApi<CreatePurchaseSubscriptionWithNewCardResponse>({
+  async createPurchase(@Query() query: object, @Body() body: object): Promise<CallBillingApiResponse<CreatePurchaseWithNewCardResponse>> {
+    return await this.billingCaller.callBillingApi<CreatePurchaseWithNewCardResponse>({
       method: 'POST',
       path: 'billing/purchase',
       query,
@@ -72,8 +72,8 @@ export class BillingController {
 
   @Post('/purchase/new-card')
   @OrganizationPermission(ORGANIZATION_ROLE.ADMIN)
-  async createPurchaseSubscriptionWithNewCard(@Query() query: object, @Body() body: object): Promise<CallBillingApiResponse<CreatePurchaseSubscriptionWithNewCardResponse>> {
-    return await this.billingCaller.callBillingApi<CreatePurchaseSubscriptionWithNewCardResponse>({
+  async createPurchaseWithNewCard(@Query() query: object, @Body() body: object): Promise<CallBillingApiResponse<CreatePurchaseWithNewCardResponse>> {
+    return await this.billingCaller.callBillingApi<CreatePurchaseWithNewCardResponse>({
       method: 'POST',
       path: 'billing/purchase/new-card',
       query,
@@ -104,49 +104,76 @@ export class BillingController {
     });
   }
 
+  @Patch('/address')
+  @OrganizationPermission(ORGANIZATION_ROLE.ADMIN)
+  async updateBillingAddress(@Body() body: object): Promise<CallBillingApiResponse<UpdateBillingAddressResponse>> {
+    return await this.billingCaller.callBillingApi<UpdateBillingAddressResponse>({
+      method: 'PATCH',
+      path: 'billing/organizations/address',
+      body,
+    });
+  }
+
+  @Patch('/business')
+  @OrganizationPermission(ORGANIZATION_ROLE.ADMIN)
+  async updateBillingBusiness(@Body() body: object): Promise<CallBillingApiResponse<UpdateBillingBusinessResponse>> {
+    return await this.billingCaller.callBillingApi<UpdateBillingBusinessResponse>({
+      method: 'PATCH',
+      path: 'billing/organizations/business',
+      body,
+    });
+  }
+
   // subscription plan info
-  @Patch('/subscription-plan-infos/:billingSubscriptionPlanInfoId/cancel-unsubscribe')
+  @Patch('/plan-infos/:billingPlanInfoId/cancel-unsubscribe')
   @OrganizationPermission(ORGANIZATION_ROLE.ADMIN)
-  async findSubscriptionPlans(
-    @Param('billingSubscriptionPlanInfoId') billingSubscriptionPlanInfoId: string,
-    @Body() body: object,
-    @Query() query: object,
-  ): Promise<CallBillingApiResponse<Page<BillingHistoryBase>>> {
-    return await this.billingCaller.callBillingApi<Page<BillingHistoryBase>>({
+  async findSubscriptionPlans(@Param('billingPlanInfoId') billingPlanInfoId: string, @Body() body: object, @Query() query: object): Promise<CallBillingApiResponse> {
+    return await this.billingCaller.callBillingApi({
       method: 'PATCH',
-      path: `billing/subscription-plan-infos/${billingSubscriptionPlanInfoId}/cancel-unsubscribe`,
+      path: `billing/plan-infos/${billingPlanInfoId}/cancel-unsubscribe`,
       query,
       body,
     });
   }
 
-  @Patch('/subscription-plan-infos/:billingSubscriptionPlanInfoId/cancel-change-option-or-period')
+  @Patch('/plan-infos/:billingPlanInfoId/cancel-change-option-or-period')
   @OrganizationPermission(ORGANIZATION_ROLE.ADMIN)
-  async cancelChangeOptionOrPeriod(
-    @Param('billingSubscriptionPlanInfoId') billingSubscriptionPlanInfoId: string,
-    @Body() body: object,
-    @Query() query: object,
-  ): Promise<CallBillingApiResponse<Page<BillingHistoryBase>>> {
-    return await this.billingCaller.callBillingApi<Page<BillingHistoryBase>>({
+  async cancelChangeOptionOrPeriod(@Param('billingPlanInfoId') billingPlanInfoId: string, @Body() body: object, @Query() query: object): Promise<CallBillingApiResponse> {
+    return await this.billingCaller.callBillingApi({
       method: 'PATCH',
-      path: `billing/subscription-plan-infos/${billingSubscriptionPlanInfoId}/cancel-change-option-or-period`,
+      path: `billing/plan-infos/${billingPlanInfoId}/cancel-change-option-or-period`,
       query,
       body,
     });
   }
 
-  @Patch('/subscription-plan-infos/:billingSubscriptionPlanInfoId/unsubscribe')
+  @Patch('/plan-infos/:billingPlanInfoId/unsubscribe')
   @OrganizationPermission(ORGANIZATION_ROLE.ADMIN)
-  async unsubscribe(
-    @Param('billingSubscriptionPlanInfoId') billingSubscriptionPlanInfoId: string,
-    @Body() body: object,
-    @Query() query: object,
-  ): Promise<CallBillingApiResponse<Page<BillingHistoryBase>>> {
-    return await this.billingCaller.callBillingApi<Page<BillingHistoryBase>>({
+  async unsubscribe(@Param('billingPlanInfoId') billingPlanInfoId: string, @Body() body: object, @Query() query: object): Promise<CallBillingApiResponse> {
+    return await this.billingCaller.callBillingApi({
       method: 'PATCH',
-      path: `billing/subscription-plan-infos/${billingSubscriptionPlanInfoId}/unsubscribe`,
+      path: `billing/plan-infos/${billingPlanInfoId}/unsubscribe`,
       query,
       body,
+    });
+  }
+
+  @Get('/plan-infos/:billingPlanInfoId/update-payment-method-transaction')
+  @OrganizationPermission(ORGANIZATION_ROLE.ADMIN)
+  async getUpdatePaymentMethodTransaction(@Param('billingPlanInfoId') billingPlanInfoId: string): Promise<CallBillingApiResponse<GetUpdatePaymentMethodTransactionResponse>> {
+    return await this.billingCaller.callBillingApi({
+      method: 'GET',
+      path: `billing/plan-infos/${billingPlanInfoId}/update-payment-method-transaction`,
+    });
+  }
+
+  @Get('/purchase/precheckout')
+  @OrganizationPermission(ORGANIZATION_ROLE.ADMIN)
+  async getSubscriptionPreviewPaddle(@Query() query: object): Promise<CallBillingApiResponse<GetBillingPrecheckoutResponse>> {
+    return await this.billingCaller.callBillingApi({
+      method: 'GET',
+      path: 'billing/purchase/precheckout',
+      query,
     });
   }
 }

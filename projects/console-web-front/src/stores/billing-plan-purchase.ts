@@ -1,11 +1,11 @@
-import { BillingSubscriptionGroupType, BillingSubscriptionPlanInfoBase } from '@dogu-private/console';
+import { BillingPlanInfoBase, BillingSubscriptionGroupType } from '@dogu-private/console';
 import { FormInstance } from 'antd';
 import { create } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
 
 import { BillingMethodRegistrationFormValues } from '../components/billing/BillingMethodRegistrationForm';
 
-export type SelectedPlan = Pick<BillingSubscriptionPlanInfoBase, 'category' | 'option' | 'type'>;
+export type SelectedPlan = Pick<BillingPlanInfoBase, 'category' | 'option' | 'type' | 'billingPlanSourceId'>;
 
 interface BillingPlanPurchaseStore {
   billingGroupType: BillingSubscriptionGroupType | null; // if null, show all group & plans

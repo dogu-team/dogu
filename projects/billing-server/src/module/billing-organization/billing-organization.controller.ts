@@ -1,5 +1,12 @@
-import { FindBillingOrganizationDto } from '@dogu-private/console';
-import { Controller, Get, NotFoundException, Query } from '@nestjs/common';
+import {
+  FindBillingOrganizationDto,
+  UpdateBillingAddressDto,
+  UpdateBillingAddressResponse,
+  UpdateBillingBusinessDto,
+  UpdateBillingBusinessResponse,
+  UpdateBillingEmailDto,
+} from '@dogu-private/console';
+import { Body, Controller, Get, NotFoundException, Patch, Put, Query } from '@nestjs/common';
 import { BillingOrganization } from '../../db/entity/billing-organization.entity';
 import { BillingTokenPermission } from '../auth/guard/billing-token.guard';
 import { BillingOrganizationService } from './billing-organization.service';
@@ -10,9 +17,9 @@ export class BillingOrganizationController {
 
   @Get()
   @BillingTokenPermission()
-  async findOrganizationWithMethod(@Query() dto: FindBillingOrganizationDto): Promise<BillingOrganization> {
+  async findOrganization(@Query() dto: FindBillingOrganizationDto): Promise<BillingOrganization> {
     const { organizationId } = dto;
-    const billingOrganization = await this.billingOrganizationService.findOrganizationWithMethod(dto);
+    const billingOrganization = await this.billingOrganizationService.findOrganization(dto);
     if (!billingOrganization) {
       throw new NotFoundException(`BillingOrganization not found by organizationId ${organizationId}`);
     }
@@ -20,27 +27,21 @@ export class BillingOrganizationController {
     return billingOrganization;
   }
 
-  @Get('/with-subscription-plans')
+  @Put('/email')
   @BillingTokenPermission()
-  async findOrganizationWithSubscriptionPlans(@Query() dto: FindBillingOrganizationDto): Promise<BillingOrganization> {
-    const { organizationId } = dto;
-    const billingOrganization = await this.billingOrganizationService.findOrganizationWithSubscriptionPlans(dto);
-    if (!billingOrganization) {
-      throw new NotFoundException(`BillingOrganization not found by organizationId ${organizationId}`);
-    }
-
-    return billingOrganization;
+  async updateBillingEmail(@Body() dto: UpdateBillingEmailDto): Promise<void> {
+    await this.billingOrganizationService.updateBillingEmail(dto);
   }
 
-  @Get('/with-method-and-subscription-plans')
+  @Patch('/address')
   @BillingTokenPermission()
-  async findOrganizationWithMethodAndSubscriptionPlans(@Query() dto: FindBillingOrganizationDto): Promise<BillingOrganization> {
-    const { organizationId } = dto;
-    const billingOrganization = await this.billingOrganizationService.findOrganizationWithMethodAndSubscriptionPlans(dto);
-    if (!billingOrganization) {
-      throw new NotFoundException(`BillingOrganization not found by organizationId ${organizationId}`);
-    }
+  async updateBillingAddress(@Body() dto: UpdateBillingAddressDto): Promise<UpdateBillingAddressResponse> {
+    return await this.billingOrganizationService.updateBillingAddress(dto);
+  }
 
-    return billingOrganization;
+  @Patch('/business')
+  @BillingTokenPermission()
+  async updateBillingBusiness(@Body() dto: UpdateBillingBusinessDto): Promise<UpdateBillingBusinessResponse> {
+    return await this.billingOrganizationService.updateBillingBusiness(dto);
   }
 }
