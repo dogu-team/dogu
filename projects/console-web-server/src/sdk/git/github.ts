@@ -34,17 +34,39 @@ export module Github {
 
   export async function findAllRepositories(token: string, owner: string) {
     const octokit = createSession(token);
-    const rv = await octokit.repos.listForOrg({
-      org: owner,
-      headers: {
-        'X-GitHub-Api-Version': GITHUB_API_VERSION,
-      },
-    });
 
-    if (rv.status === 200) {
-      return rv.data;
-    } else {
-      throw new Error(`Failed to get repositories. status: ${rv.status}, message: ${rv.data}`);
+    try {
+      const checkRv = await octokit.orgs.get({
+        org: owner,
+      });
+      const rv = await octokit.repos.listForOrg({
+        org: owner,
+        per_page: 500,
+        headers: {
+          'X-GitHub-Api-Version': GITHUB_API_VERSION,
+        },
+      });
+
+      if (rv.status === 200) {
+        return rv.data;
+      } else {
+        throw new Error(`Failed to get repositories. status: ${rv.status}, message: ${rv.data}`);
+      }
+    } catch (e) {
+      const rv = await octokit.repos.listForAuthenticatedUser({
+        username: owner,
+        type: 'owner',
+        per_page: 500,
+        headers: {
+          'X-GitHub-Api-Version': GITHUB_API_VERSION,
+        },
+      });
+
+      if (rv.status === 200) {
+        return rv.data;
+      } else {
+        throw new Error(`Failed to get repositories. status: ${rv.status}, message: ${rv.data}`);
+      }
     }
   }
 
