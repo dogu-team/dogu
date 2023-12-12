@@ -1,8 +1,7 @@
 import { LicenseErrorInfo } from '@dogu-private/console';
 import { Alert, Button } from 'antd';
 import useTranslation from 'next-translate/useTranslation';
-
-import { LICENSE_DOCS_URL } from '../../utils/license';
+import { DoguDocsUrl } from '../../../src/utils/url';
 
 interface Props {
   errorInfo: LicenseErrorInfo;
@@ -31,7 +30,7 @@ const LicenseErrorAlert: React.FC<Props> = ({ errorInfo }) => {
       action={
         errorInfo.isLicenseServerDisConnected ? (
           <>
-            <Button type="link" href={LICENSE_DOCS_URL} target="_blank">
+            <Button type="link" href={DoguDocsUrl['get-started'].installation['self-hosted'].license()} target="_blank">
               {t('visitGuide')}
             </Button>
             <Button type="link" href={`${process.env.NEXT_PUBLIC_LANDING_URL}/contact-us`} target="_blank">

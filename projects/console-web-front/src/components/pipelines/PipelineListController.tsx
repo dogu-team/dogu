@@ -19,6 +19,7 @@ import { menuItemButtonStyles } from '../../styles/button';
 import { listActiveNameStyle } from '../../styles/text';
 import { localizeDate } from '../../utils/date';
 import { getErrorMessageFromAxios } from '../../utils/error';
+import { DoguDocsUrl } from '../../utils/url';
 import ErrorBox from '../common/boxes/ErrorBox';
 import ListEmpty from '../common/boxes/ListEmpty';
 import PipelineCreatedTimer from './PipelineCreatedTimer';
@@ -176,7 +177,7 @@ const PipelineListController = ({ organizationId, projectId, hideEmpty }: Props)
                     i18nKey="routine:pipelineEmptyDescription"
                     components={{
                       br: <br />,
-                      link: <Link href="https://docs.dogutech.io/management/project/routine" target="_blank" />,
+                      link: <Link href={DoguDocsUrl.management.project.routine()} target="_blank" />,
                     }}
                   />
                 )

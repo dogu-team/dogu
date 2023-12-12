@@ -28,6 +28,7 @@ import {
   remoteTutorialSdkSupportInfo,
   seleniumRemoteTutorialGuideData,
 } from '../../../resources/tutorials/remote';
+import { DoguDocsUrl } from '../../../utils/url';
 
 const INTRODUCTION_ID = 'introduction';
 const PROJECT_SETUP_ID = 'project-setup';
@@ -148,7 +149,7 @@ const SeleniumRemoteTutorial = ({ organizationId, projectId }: RemoteTutorialPro
                   i18nKey="tutorial:remoteTestTutorialSetCapabilitiesDescription"
                   components={{
                     code: <StyledCode />,
-                    link: <a href="https://docs.dogutech.io/test-automation/selenium" target="_blank" />,
+                    link: <a href={DoguDocsUrl['test-automation'].selenium()} target="_blank" />,
                     br: <br />,
                   }}
                 />
@@ -181,7 +182,7 @@ const SeleniumRemoteTutorial = ({ organizationId, projectId }: RemoteTutorialPro
           />
 
           <div style={{ marginBottom: '2rem' }}>
-            <GuideBanner docsUrl="https://docs.dogutech.io/test-automation/appium" />
+            <GuideBanner docsUrl={DoguDocsUrl['test-automation'].appium()} />
           </div>
 
           <GuideStep

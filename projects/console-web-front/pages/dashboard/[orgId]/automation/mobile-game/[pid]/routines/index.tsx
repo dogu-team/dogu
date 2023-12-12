@@ -23,6 +23,7 @@ import SlackRoutineChannelButton from 'enterprise/components/slack/SlackRoutineC
 import AutomationLayout from '../../../../../../../src/components/layouts/AutomationLayout';
 import TutorialButton from '../../../../../../../src/components/buttons/TutorialButton';
 import { isOrganizationScmIntegrated } from '../../../../../../../src/utils/organization';
+import { DoguDocsUrl } from '../../../../../../../src/utils/url';
 
 const ProjectRoutinePage: NextPageWithLayout<ProjectServerSideProps> = ({ organization, project }) => {
   const router = useRouter();
@@ -81,7 +82,7 @@ const ProjectRoutinePage: NextPageWithLayout<ProjectServerSideProps> = ({ organi
                     {!routine && (
                       <>
                         <ExternalGuideLink
-                          href="https://docs.dogutech.io/integration/cicd/github-action"
+                          href={DoguDocsUrl.integration.cicd['github-action']()}
                           icon={
                             <Image
                               src="/resources/icons/github-action-logo.svg"
@@ -94,7 +95,7 @@ const ProjectRoutinePage: NextPageWithLayout<ProjectServerSideProps> = ({ organi
                           GitHub Action
                         </ExternalGuideLink>
                         <ExternalGuideLink
-                          href="https://docs.dogutech.io/integration/cicd/jenkins"
+                          href={DoguDocsUrl.integration.cicd.jenkins()}
                           icon={<Image src="/resources/icons/jenkins-logo.svg" alt="Jenkins" width={16} height={16} />}
                         >
                           Jenkins

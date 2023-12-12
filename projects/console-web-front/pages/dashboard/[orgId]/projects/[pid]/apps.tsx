@@ -13,6 +13,7 @@ import ProjectApplicationUploadButton from '../../../../../src/components/projec
 import { getProjectPageServerSideProps, ProjectServerSideProps } from '../../../../../src/ssr/project';
 import { flexRowSpaceBetweenStyle } from '../../../../../src/styles/box';
 import { NextPageWithLayout } from '../../../../_app';
+import { DoguDocsUrl } from '../../../../../src/utils/url';
 
 const ProjectAppPage: NextPageWithLayout<ProjectServerSideProps> = ({ project, organization }) => {
   const router = useRouter();
@@ -32,7 +33,7 @@ const ProjectAppPage: NextPageWithLayout<ProjectServerSideProps> = ({ project, o
               />
 
               <ExternalGuideLink
-                href="https://docs.dogutech.io/integration/cicd/github-action"
+                href={DoguDocsUrl.integration.cicd['github-action']()}
                 icon={
                   <Image src="/resources/icons/github-action-logo.svg" alt="Github Action" width={16} height={16} />
                 }
@@ -40,14 +41,14 @@ const ProjectAppPage: NextPageWithLayout<ProjectServerSideProps> = ({ project, o
                 GitHub Action
               </ExternalGuideLink>
               <ExternalGuideLink
-                href="https://docs.dogutech.io/integration/cicd/jenkins"
+                href={DoguDocsUrl.integration.cicd.jenkins()}
                 icon={<Image src="/resources/icons/jenkins-logo.svg" alt="Jenkins" width={16} height={16} />}
               >
                 Jenkins
               </ExternalGuideLink>
 
               <ExternalGuideLink
-                href="https://docs.dogutech.io/api/project/application#upload-application"
+                href={DoguDocsUrl.api.organization.application['upload-application']()}
                 icon={<ApiOutlined style={{ fontSize: '1rem', color: '#000' }} />}
               >
                 Upload API

@@ -17,6 +17,7 @@ import { listActiveNameStyle } from '../../styles/text';
 import MenuButton from '../buttons/MenuButton';
 import { menuItemButtonStyles } from '../../styles/button';
 import ListEmpty from '../common/boxes/ListEmpty';
+import { DoguDocsUrl } from '../../utils/url';
 
 interface TeamItemProps {
   team: TeamBase;
@@ -136,7 +137,7 @@ const TeamListController = () => {
                   i18nKey="team:teamEmptyDescription"
                   components={{
                     br: <br />,
-                    link: <Link href="https://docs.dogutech.io/management/organization/team" target="_blank" />,
+                    link: <Link href={DoguDocsUrl.management.organization.team()} target="_blank" />,
                   }}
                 />
               }

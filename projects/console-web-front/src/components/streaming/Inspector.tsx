@@ -15,6 +15,7 @@ import NativeObjectDetail from './NativeObjectDetail';
 import useGamiumInspector from '../../hooks/streaming/useGamiumInspector';
 import { InspectorType } from '../../types/streaming';
 import GamiumInspectorUITree from './GamiumInspectorUITree';
+import { DoguDocsUrl } from '../../utils/url';
 
 interface Props {
   inspector: ReturnType<typeof useInspector>;
@@ -90,7 +91,7 @@ const Inspector = ({ inspector, gamiumInspector }: Props) => {
               <br />
               <br />
               <Link
-                href="https://docs.dogutech.io/device-farm/device/streaming-and-remote-control/ui-inspector"
+                href={DoguDocsUrl['device-farm'].device['streaming-and-remote-control']['ui-inspector']()}
                 target="_blank"
               >
                 Click here

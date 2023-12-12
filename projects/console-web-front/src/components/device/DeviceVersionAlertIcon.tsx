@@ -4,6 +4,7 @@ import { Platform } from '@dogu-private/types';
 import { Tooltip } from 'antd';
 import Link from 'next/link';
 import styled from 'styled-components';
+import { DoguDocsUrl } from '../../utils/url';
 
 interface Props {
   device: DeviceBase;
@@ -14,10 +15,10 @@ const IOS_MINIMUM_VERSION = 14;
 const MACOS_MINIMUM_VERSION = 11;
 
 const docsLink: { [key in Platform]?: string } = {
-  [Platform.PLATFORM_ANDROID]: 'https://docs.dogutech.io/device-farm/device/settings',
-  [Platform.PLATFORM_IOS]: 'https://docs.dogutech.io/device-farm/device/settings',
-  [Platform.PLATFORM_WINDOWS]: 'https://docs.dogutech.io/device-farm/host/windows/installation',
-  [Platform.PLATFORM_MACOS]: 'https://docs.dogutech.io/device-farm/host/macos/installation',
+  [Platform.PLATFORM_ANDROID]: DoguDocsUrl['device-farm'].device.settings(),
+  [Platform.PLATFORM_IOS]: DoguDocsUrl['device-farm'].device.settings(),
+  [Platform.PLATFORM_WINDOWS]: DoguDocsUrl['device-farm'].host.windows.installation(),
+  [Platform.PLATFORM_MACOS]: DoguDocsUrl['device-farm'].host.macos.installation(),
 };
 
 const DeviceVersionAlertIcon = ({ device }: Props) => {
@@ -66,7 +67,7 @@ const DeviceVersionAlertIcon = ({ device }: Props) => {
             Device version is lower than the minimum version.
             <br />
             <Link
-              href={docsLink[device.platform] ?? 'https://docs.dogutech.io/device-farm'}
+              href={docsLink[device.platform] ?? DoguDocsUrl['device-farm']._index()}
               target="_blank"
               style={{ textDecoration: 'underline' }}
             >

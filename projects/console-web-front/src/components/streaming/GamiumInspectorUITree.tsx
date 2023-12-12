@@ -9,6 +9,7 @@ import { NodeAttributes, NodeWithPosition } from '@dogu-private/console';
 import { flexRowCenteredStyle } from '../../styles/box';
 import InspectorTreeTitle from './InspectorTreeTitle';
 import { ResizedObjectInfo } from '../../types/streaming';
+import { DoguDocsUrl } from '../../utils/url';
 
 interface Props {
   isInspecting: boolean;
@@ -84,7 +85,7 @@ const GamiumInspectorUITree = ({
                     br: <br />,
                     link: (
                       <Link
-                        href="https://docs.dogutech.io/device-farm/device/streaming-and-remote-control/ui-inspector"
+                        href={DoguDocsUrl['device-farm'].device['streaming-and-remote-control']['ui-inspector']()}
                         target="_blank"
                       />
                     ),

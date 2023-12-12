@@ -25,6 +25,7 @@ import OrganizationApplicationPackageList from './OrganizationApplicationPackage
 import { deleteOrganizationApplicationByPackageName } from '../../api/organization-application';
 import { useRouter } from 'next/router';
 import moment from 'moment';
+import { DoguDocsUrl } from '../../utils/url';
 
 interface ItemProps {
   application: OrganizationApplicationWithIcon;
@@ -183,7 +184,7 @@ const OrganizationApplicationListController = ({ organizationId }: Props) => {
                   i18nKey="organization-app:appEmptyDescription"
                   components={{
                     br: <br />,
-                    link: <Link href="https://docs.dogutech.io/management/project/app" target="_blank" />,
+                    link: <Link href={DoguDocsUrl.management.organization.app()} target="_blank" />,
                   }}
                 />
               }

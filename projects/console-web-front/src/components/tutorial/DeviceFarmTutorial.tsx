@@ -26,6 +26,7 @@ import TutorialDeviceList from '../../../enterprise/components/device/TutorialDe
 import CreateProjectModal from '../projects/CreateProjectModal';
 import DoguText from '../common/DoguText';
 import DownloadAgentButton from '../hosts/DownloadAgentButton';
+import { DoguDocsUrl } from '../../utils/url';
 
 const INTRODUCTION_ID = 'introduction';
 const CREATE_PROJECT_ID = 'create-project';
@@ -162,10 +163,8 @@ const DeviceFarmTutorial = () => {
                     <Trans
                       i18nKey="tutorial:deviceFarmTutorialIntroDetailDescription"
                       components={{
-                        dfLink: <Link href="https://docs.dogutech.io/device-farm/" target="_blank" />,
-                        dftLink: (
-                          <Link href="https://docs.dogutech.io/get-started/tutorials/device-farm" target="_blank" />
-                        ),
+                        dfLink: <Link href={DoguDocsUrl['device-farm']._index()} target="_blank" />,
+                        dftLink: <Link href={DoguDocsUrl['get-started'].tutorials['device-farm']()} target="_blank" />,
                       }}
                     />
                   </p>
@@ -231,7 +230,7 @@ const DeviceFarmTutorial = () => {
               <Trans
                 i18nKey="tutorial:deviceFarmTutorialConnectDeviceDescription"
                 components={{
-                  link: <Link href="https://docs.dogutech.io/device-farm/device/settings" target="_blank" />,
+                  link: <Link href={DoguDocsUrl['device-farm'].device.settings()} target="_blank" />,
                   br: <br />,
                 }}
               />
@@ -260,7 +259,7 @@ const DeviceFarmTutorial = () => {
                 )}
 
                 <MarginWrapper>
-                  <GuideBanner docsUrl="https://docs.dogutech.io/device-farm" />
+                  <GuideBanner docsUrl={DoguDocsUrl['device-farm']._index()} />
                 </MarginWrapper>
               </div>
             }

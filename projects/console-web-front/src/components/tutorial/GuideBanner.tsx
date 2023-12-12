@@ -6,6 +6,7 @@ import { SiSlack } from 'react-icons/si';
 import styled from 'styled-components';
 
 import { flexRowBaseStyle } from '../../styles/box';
+import { DoguDocsUrl } from '../../utils/url';
 
 interface Props {
   docsUrl?: string;
@@ -25,7 +26,7 @@ const GuideBanner = ({ docsUrl }: Props) => {
         >
           <StyledButton icon={<SiSlack />}>&nbsp;&nbsp;Slack Community</StyledButton>
         </Link>
-        <Link href={docsUrl ?? 'https://docs.dogutech.io'} target="_blank" style={{ textDecoration: 'none' }}>
+        <Link href={docsUrl ?? DoguDocsUrl._index()} target="_blank" style={{ textDecoration: 'none' }}>
           <StyledButton icon={<BookOutlined />}>Documentation</StyledButton>
         </Link>
       </ButtonWrapper>

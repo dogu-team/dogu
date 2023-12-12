@@ -19,6 +19,7 @@ import useTagFilterStore from '../../stores/tag-filter';
 import { flexRowBaseStyle, listItemStyle, tableCellStyle, tableHeaderStyle } from '../../styles/box';
 import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd';
 import { getErrorMessageFromAxios } from '../../utils/error';
+import { DoguDocsUrl } from '../../utils/url';
 import MenuButton from '../buttons/MenuButton';
 import MenuItemButton from '../buttons/MenuItemButton';
 import ListEmpty from '../common/boxes/ListEmpty';
@@ -169,7 +170,7 @@ const DeviceTagListController = ({ organizationId }: Props) => {
                     br: <br />,
                     link: (
                       <Link
-                        href="https://docs.dogutech.io/management/organization/device-farm/tag-management"
+                        href={DoguDocsUrl.management.organization['device-farm']['tag-management']()}
                         target="_blank"
                       />
                     ),

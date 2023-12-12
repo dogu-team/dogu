@@ -7,6 +7,7 @@ import styled from 'styled-components';
 
 import useDeviceStreamingContext from '../../hooks/streaming/useDeviceStreamingContext';
 import { flexRowCenteredStyle } from '../../styles/box';
+import { DoguDocsUrl } from '../../utils/url';
 
 export type VideoSize = { width: number; height: number };
 
@@ -162,7 +163,7 @@ const StreamingVideo = ({
                 i18nKey="device-streaming:deviceStreamingLoadingText"
                 components={{
                   br: <br />,
-                  link: <Link href="https://docs.dogutech.io/device-farm/device/trouble-shooting" target="_blank" />,
+                  link: <Link href={DoguDocsUrl['device-farm'].device['trouble-shooting']()} target="_blank" />,
                 }}
               />
             )}

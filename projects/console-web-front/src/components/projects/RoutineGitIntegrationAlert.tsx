@@ -1,6 +1,7 @@
 import { Alert, Button, Space } from 'antd';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
+import { DoguDocsUrl } from '../../utils/url';
 
 const RoutineGitIntegrationAlert: React.FC<{ isScmIntegrated: boolean }> = ({ isScmIntegrated }) => {
   const router = useRouter();
@@ -25,7 +26,7 @@ const RoutineGitIntegrationAlert: React.FC<{ isScmIntegrated: boolean }> = ({ is
             Integrate
           </Button>
           <Link
-            href="https://docs.dogutech.io/management/project/git-integration/"
+            href={DoguDocsUrl.management.organization['git-integration']._index()}
             target="_blank"
             style={{ textDecoration: 'none' }}
           >

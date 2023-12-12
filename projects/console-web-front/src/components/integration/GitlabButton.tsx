@@ -15,6 +15,7 @@ import GitIntegrationForm from '../projects/GitIntegrationForm';
 import IntegrationConnectButton from './ConnectButton';
 import DisconnectButton from './DisconnectButton';
 import IntegrationButton from './IntegrationCard';
+import { DoguDocsUrl } from '../../utils/url';
 
 interface Props extends ProjectIntegrationButtonProps {
   disabled: boolean;
@@ -74,7 +75,7 @@ function GitlabButton({ isConnected, disabled, organizationId, projectId, descri
           (disabled ? null : (
             <>
               Integrate project with GitLab.{' '}
-              <Link href="https://docs.dogutech.io/management/project/git-integration/gitlab" target="_blank">
+              <Link href={DoguDocsUrl.management.organization['git-integration'].gitlab()} target="_blank">
                 Visit docs
               </Link>{' '}
               for token generation.

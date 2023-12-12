@@ -31,6 +31,7 @@ import RemoteTestResultList from './RemoteTestResultList';
 import PythonVirtualEnvShell from '../PythonVirtualEnvShell';
 import useTutorialContext from '../../../hooks/context/useTutorialContext';
 import SampleApplicationUploadStep from '../SampleApplicationUploadStep';
+import { DoguDocsUrl } from '../../../utils/url';
 
 const INTRODUCTION_ID = 'introduction';
 const PROJECT_SETUP_ID = 'project-setup';
@@ -173,7 +174,7 @@ const AppiumRemoteTutorial = ({ organizationId, projectId }: RemoteTutorialProps
                   i18nKey="tutorial:remoteTestTutorialSetCapabilitiesDescription"
                   components={{
                     code: <StyledCode />,
-                    link: <a href="https://docs.dogutech.io/test-automation/appium" target="_blank" />,
+                    link: <a href={DoguDocsUrl['test-automation'].appium()} target="_blank" />,
                     br: <br />,
                   }}
                 />
@@ -208,7 +209,7 @@ const AppiumRemoteTutorial = ({ organizationId, projectId }: RemoteTutorialProps
           />
 
           <div style={{ marginBottom: '2rem' }}>
-            <GuideBanner docsUrl="https://docs.dogutech.io/test-automation/appium" />
+            <GuideBanner docsUrl={DoguDocsUrl['test-automation'].appium()} />
           </div>
 
           <GuideStep

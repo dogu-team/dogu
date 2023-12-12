@@ -26,6 +26,7 @@ import TutorialRoutineCreator from './TutorialRoutineCreator';
 import DoguText from '../../common/DoguText';
 import { IS_CLOUD } from '../../../../pages/_app';
 import { CLOUD_LINUX_DEVICE_NAME } from '../../../resources/routine';
+import { DoguDocsUrl } from '../../../utils/url';
 
 const INTRODUCTION_ID = 'introduction';
 const CLONE_GIT_ID = 'clone-git';
@@ -158,7 +159,11 @@ jobs:
                   showIcon
                   message={t('maxParallelJobCountGuideMessage')}
                   action={
-                    <Link href="https://docs.dogutech.io/management/organization/device-farm/device-management#update-device-settings">
+                    <Link
+                      href={DoguDocsUrl.management.organization['device-farm']['device-management']._heading[
+                        'update-device-settings'
+                      ]()}
+                    >
                       <Button>
                         Guide&nbsp;
                         <RiExternalLinkLine />

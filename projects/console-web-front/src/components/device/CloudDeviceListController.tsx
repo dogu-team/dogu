@@ -20,6 +20,7 @@ import ListEmpty from '../common/boxes/ListEmpty';
 import PlatformIcon from './PlatformIcon';
 import DevicePrefixTag from './DevicePrefixTag';
 import useEventStore from '../../stores/events';
+import { DoguDocsUrl } from '../../utils/url';
 
 interface DeviceItemProps {
   device: DeviceBase;
@@ -156,7 +157,7 @@ const CloudDeviceListController = () => {
                       components={{
                         link: (
                           <Link
-                            href={'https://docs.dogutech.io/management/organization/device-farm/device-management'}
+                            href={DoguDocsUrl.management.organization['device-farm']['device-management']._index()}
                             target="_blank"
                           />
                         ),

@@ -30,6 +30,7 @@ import {
 } from '../../../resources/tutorials/remote';
 import SampleApplicationUploadStep from '../SampleApplicationUploadStep';
 import Trans from 'next-translate/Trans';
+import { DoguDocsUrl } from '../../../utils/url';
 
 const INTRODUCTION_ID = 'introduction';
 const PROJECT_SETUP_ID = 'project-setup';
@@ -167,7 +168,7 @@ const WebdriverIoRemoteTutorial = ({ organizationId, projectId }: RemoteTutorial
                   i18nKey="tutorial:remoteTestTutorialSetCapabilitiesDescription"
                   components={{
                     code: <StyledCode />,
-                    link: <a href="https://docs.dogutech.io/test-automation/" target="_blank" />,
+                    link: <a href={DoguDocsUrl['test-automation']._index()} target="_blank" />,
                     br: <br />,
                   }}
                 />
@@ -218,7 +219,7 @@ const WebdriverIoRemoteTutorial = ({ organizationId, projectId }: RemoteTutorial
           />
 
           <div style={{ marginBottom: '2rem' }}>
-            <GuideBanner docsUrl="https://docs.dogutech.io/test-automation" />
+            <GuideBanner docsUrl={DoguDocsUrl['test-automation']._index()} />
           </div>
 
           <GuideStep

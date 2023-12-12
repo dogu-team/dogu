@@ -14,6 +14,7 @@ import OrganizationApplicationListController from '../../../src/components/organ
 import OrganizationApplicationUploadButton from '../../../src/components/organization-application/OrganizationApplicationUploadButton';
 import ExternalGuideLink from '../../../src/components/common/ExternalGuideLink';
 import { ApiOutlined } from '@ant-design/icons';
+import { DoguDocsUrl } from '../../../src/utils/url';
 
 const OrganizationAppPage: NextPageWithLayout<OrganizationServerSideProps> = ({ user, organization, license }) => {
   return (
@@ -28,7 +29,7 @@ const OrganizationAppPage: NextPageWithLayout<OrganizationServerSideProps> = ({ 
               <OrganizationApplicationUploadButton organizationId={organization.organizationId} />
 
               <ExternalGuideLink
-                href="https://docs.dogutech.io/integration/cicd/github-action"
+                href={DoguDocsUrl.integration.cicd['github-action']()}
                 icon={
                   <Image src="/resources/icons/github-action-logo.svg" alt="Github Action" width={16} height={16} />
                 }
@@ -36,14 +37,14 @@ const OrganizationAppPage: NextPageWithLayout<OrganizationServerSideProps> = ({ 
                 GitHub Action
               </ExternalGuideLink>
               <ExternalGuideLink
-                href="https://docs.dogutech.io/integration/cicd/jenkins"
+                href={DoguDocsUrl.integration.cicd.jenkins()}
                 icon={<Image src="/resources/icons/jenkins-logo.svg" alt="Jenkins" width={16} height={16} />}
               >
                 Jenkins
               </ExternalGuideLink>
 
               <ExternalGuideLink
-                href="https://docs.dogutech.io/api/project/application#upload-application"
+                href={DoguDocsUrl.api.organization.application['upload-application']()}
                 icon={<ApiOutlined style={{ fontSize: '1rem', color: '#000' }} />}
               >
                 Upload API

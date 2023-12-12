@@ -2,6 +2,7 @@ import { OrganizationId, SlackChannelItem } from '@dogu-private/types';
 import { Form, FormInstance, Select } from 'antd';
 import Link from 'next/link';
 import styled from 'styled-components';
+import { DoguDocsUrl } from '../../../src/utils/url';
 
 import SlackChannelList from './SlackChannelList';
 import SlackEventList from './SlackEventList';
@@ -52,7 +53,7 @@ const SlackChannelForm = (props: Props) => {
           >
             <p>Channel</p>
             <PrivateChannelGuideText
-              href="https://docs.dogutech.io/integration/notification/slack#private-channel"
+              href={DoguDocsUrl.integration.notification.slack._heading['private-channel']()}
               target="_blank"
             >
               {`Private channel isn't visible?`}
