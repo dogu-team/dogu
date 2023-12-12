@@ -15,7 +15,7 @@ import PlanItem from './PlanItem';
 interface Props {}
 
 const BillingSelectPlanStep: React.FC<Props> = ({}) => {
-  const [currentGroup, setCurrentGroup] = useState(BillingSubscriptionGroupType[0]);
+  const [currentGroup, setCurrentGroup] = useState<BillingSubscriptionGroupType>(BillingSubscriptionGroupType[0]);
   const license = useLicenseStore((state) => state.license);
   const groupType = useBillingPlanPurchaseStore((state) => state.billingGroupType);
   const { t } = useTranslation('billing');
