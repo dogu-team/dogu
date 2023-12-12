@@ -162,6 +162,8 @@
   "selfDeviceFarmMobileOptionSingular": "Up to {{option}} device",
   "selfDeviceFarmBrowserOptionPlural": "Up to {{option}} browsers",
   "selfDeviceFarmMobileOptionPlural": "Up to {{option}} devices",
+  "selfDeviceFarmBrowserMoreThanOption": "More than {{option}} browsers",
+  "selfDeviceFarmMobileMoreThanOption": "More than {{option}} devices",
 
   "cardNumberLabel": "Card number",
   "cardExpiryLabel": "Expiry (MM / YY)",

@@ -68,7 +68,7 @@ const UpgradePlanModal: React.FC<Props> = ({ isOpen, close }) => {
       footer={null}
       centered
       destroyOnClose
-      width="min(80vw, 720px)"
+      width="min(80vw, 800px)"
     >
       {!!selectedPlan ? <BillingPayStep /> : <BillingSelectPlanStep />}
     </Modal>

@@ -162,6 +162,8 @@
   "selfDeviceFarmMobileOptionSingular": "최대 {{option}}대 디바이스",
   "selfDeviceFarmBrowserOptionPlural": "최대 {{option}}개 브라우저",
   "selfDeviceFarmMobileOptionPlural": "최대 {{option}}대 디바이스",
+  "selfDeviceFarmBrowserMoreThanOption": "최대 {{option}}개 브라우저",
+  "selfDeviceFarmMobileMoreThanOption": "최대 {{option}}대 디바이스",
 
   "cardNumberLabel": "카드 번호",
   "cardExpiryLabel": "유효기간 (MM / YY)",

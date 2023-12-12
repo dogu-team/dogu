@@ -82,7 +82,7 @@ const BillingSelectPlanStep: React.FC<Props> = ({}) => {
           </PlanSidebar>
         )}
 
-        <PlanWrapper style={{ justifyContent: groupType ? 'center' : 'flex-start' }}>
+        <PlanWrapper style={{ justifyContent: groupType ? 'center' : 'flex-start', gap: '.5rem' }}>
           {planTypes.map((planType) => {
             const planInfo = BillingPlanMap[planType];
             const descriptionInfo = planDescriptionInfoMap[planType];
@@ -126,6 +126,7 @@ const PlanContent = styled.div`
 const PlanSidebar = styled.div`
   width: 10rem;
   margin-right: 1rem;
+  flex-shrink: 0;
 `;
 
 const PlanGroupButton = styled.button<{ isSelected: boolean }>`
@@ -136,6 +137,8 @@ const PlanGroupButton = styled.button<{ isSelected: boolean }>`
   margin-bottom: 0.5rem;
   background-color: #fff;
   cursor: pointer;
+  word-break: keep-all;
+  text-align: left;
 
   &:hover {
     background-color: ${(props) => props.theme.colorPrimary}22;

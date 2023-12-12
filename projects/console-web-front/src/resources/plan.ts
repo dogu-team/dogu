@@ -29,36 +29,36 @@ export const planDescriptionInfoMap: PlanDescriptionInfoMap = {
     featureI18nKeys: ['webTestAutomationFeature1', 'webTestAutomationFeature2'],
     getOptionLabelI18nKey: (optionKey: number | string) => {
       if (Number(optionKey) === 1) {
-        return 'webTestAutomationOptionSingular';
+        return 'parallelTestingOptionSingular';
       }
 
-      return `webTestAutomationOptionPlural`;
+      return `parallelTestingOptionPlural`;
     },
-    lastContactUsOptionKey: 'webTestAutomationMoreThanOption',
+    lastContactUsOptionKey: 'parallelTestingMoreThanOption',
   },
   'mobile-app-test-automation': {
     titleI18nKey: 'mobileAppTestAutomationPlanTitle',
     featureI18nKeys: ['mobileAppTestAutomationFeature1', 'mobileAppTestAutomationFeature2'],
     getOptionLabelI18nKey: (optionKey: number | string) => {
       if (Number(optionKey) === 1) {
-        return 'mobileAppTestAutomationOptionSingular';
+        return 'parallelTestingOptionSingular';
       }
 
-      return `mobileAppTestAutomationOptionPlural`;
+      return `parallelTestingOptionPlural`;
     },
-    lastContactUsOptionKey: 'mobileAppTestAutomationMoreThanOption',
+    lastContactUsOptionKey: 'parallelTestingMoreThanOption',
   },
   'mobile-game-test-automation': {
     titleI18nKey: 'mobileGameTestAutomationPlanTitle',
     featureI18nKeys: ['mobileGameTestAutomationFeature1', 'mobileGameTestAutomationFeature2'],
     getOptionLabelI18nKey: (optionKey: number | string) => {
       if (Number(optionKey) === 1) {
-        return 'mobileGameTestAutomationOptionSingular';
+        return 'parallelTestingOptionSingular';
       }
 
-      return `mobileGameTestAutomationOptionPlural`;
+      return `parallelTestingOptionPlural`;
     },
-    lastContactUsOptionKey: 'mobileGameTestAutomationMoreThanOption',
+    lastContactUsOptionKey: 'parallelTestingMoreThanOption',
   },
   'self-device-farm-browser': {
     titleI18nKey: 'selfDeviceFarmBrowserPlanTitle',
