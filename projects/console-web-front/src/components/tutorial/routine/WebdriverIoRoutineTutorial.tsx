@@ -86,7 +86,7 @@ jobs:
     appPackageName:
     record: true
     steps:
-      - name: run test
+      - name: Run test step
         uses: dogu-actions/run-test
         with:
           checkout: true
@@ -107,7 +107,7 @@ jobs:
     browserName: chrome
     record: true
     steps:
-      - name: run test
+      - name: Run test step
         uses: dogu-actions/run-test
         with:
           checkout: true

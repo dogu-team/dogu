@@ -34,7 +34,7 @@ const RoutineGUIEditor = ({ projectType, hideAddButton }: Props) => {
     // }
 
     return {
-      [`new-job-${index}`]: {
+      [`new-test-job-${index}`]: {
         'runs-on': projectType === PROJECT_TYPE.WEB ? [] : { group: [] },
         ...(projectType === PROJECT_TYPE.WEB ? { browserName: 'chrome' } : {}),
         steps: [{ name: 'run-test', uses: RUN_TEST_ACTION_NAME, with: {} }],
@@ -44,9 +44,9 @@ const RoutineGUIEditor = ({ projectType, hideAddButton }: Props) => {
 
   const handleAddJob = () => {
     const jobNames = Object.keys(schema.jobs);
-    const newJobNames = jobNames.filter((name) => name.match(/^new-job-[0-9]{1,}$/));
+    const newJobNames = jobNames.filter((name) => name.match(/^new-test-job-[0-9]{1,}$/));
     const newIndex =
-      newJobNames.length > 0 ? Math.max(...newJobNames.map((name) => Number(name.split('-')[2]))) + 1 : 1;
+      newJobNames.length > 0 ? Math.max(...newJobNames.map((name) => Number(name.split('-')[3]))) + 1 : 1;
 
     updateSchema({
       ...schema,

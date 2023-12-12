@@ -448,7 +448,7 @@ const JobContainer = ({ name, job, updateJob, updateJobName, deleteJob, updateJo
           )}
           <ContentDesc>
             {job.cloud ? (
-              'Run on cloud devices'
+              t('routine:routineGuiEditorJobCloudDevice')
             ) : isGroupRun ? (
               <Trans
                 i18nKey="routine:routineGuiEditorJobDeviceGroupDescription"

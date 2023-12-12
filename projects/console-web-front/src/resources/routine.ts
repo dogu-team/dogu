@@ -8,13 +8,13 @@ on:
   workflow_dispatch:
 
 jobs:
-  new-job-1:
+  new-test-job:
     runs-on: []
     appPackageName:
     record: true
     cloud: true
     steps:
-      - name: run test
+      - name: Run test step
         uses: dogu-actions/run-test
         with:
           checkout: true
@@ -29,13 +29,13 @@ on:
   workflow_dispatch:
 
 jobs:
-  new-job-1:
+  new-test-job:
     runs-on: []
     browserName: chrome
     record: true
     cloud: true
     steps:
-      - name: run test
+      - name: Run test step
         uses: dogu-actions/run-test
         with:
           checkout: true
@@ -50,13 +50,13 @@ on:
   workflow_dispatch:
 
 jobs:
-  new-job-1:
+  new-test-job:
     runs-on:
       group: []
     appPackageName:
     record: true
     steps:
-      - name: run test
+      - name: Run test step
         uses: dogu-actions/run-test
         with:
           checkout: true
@@ -71,12 +71,12 @@ on:
   workflow_dispatch:
 
 jobs:
-  new-job-1:
+  new-test-job:
     runs-on: ${CLOUD_LINUX_DEVICE_NAME}
     browserName: chrome
     record: true
     steps:
-      - name: run test
+      - name: Run test step
         uses: dogu-actions/run-test
         with:
           checkout: true

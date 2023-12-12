@@ -1,6 +1,7 @@
 import { InfoCircleOutlined, WarningFilled } from '@ant-design/icons';
 import { StepSchema } from '@dogu-private/types';
 import { Checkbox, Input, Select } from 'antd';
+import useTranslation from 'next-translate/useTranslation';
 import Image from 'next/image';
 import styled from 'styled-components';
 
@@ -43,6 +44,8 @@ enum Environment {
 }
 
 const StepActionArgumentContainer = ({ step, onUpdate }: Props) => {
+  const { t } = useTranslation('routine');
+
   const handleUpdateArgs = (partialWith: StepSchema['with']) => {
     onUpdate({ ...step.with, ...partialWith });
   };
@@ -105,7 +108,8 @@ const StepActionArgumentContainer = ({ step, onUpdate }: Props) => {
         </KeyValueWrapper> */}
         {/* {!!step.with?.checkout && <CheckoutActionArgumentContainer step={step} updateArgs={handleUpdateArgs} />} */}
         <KeyValueWrapper style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
-          <Key style={{ marginBottom: '.25rem' }}>Environment</Key>
+          <ContentTitle>{t('routine:routineGuiEditorStepScriptEnvironment')}</ContentTitle>
+          <ContentDesc>{t('routine:routineGuiEditorStepScriptEnvironmentDesc')}</ContentDesc>
           <Select
             value={step.with?.environment}
             options={[
@@ -143,7 +147,8 @@ const StepActionArgumentContainer = ({ step, onUpdate }: Props) => {
           )}
         </KeyValueWrapper>
         <KeyValueWrapper style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
-          <Key style={{ marginBottom: '.25rem' }}>command</Key>
+          <ContentTitle>{t('routine:routineGuiEditorStepCommand')}</ContentTitle>
+          <ContentDesc>{t('routine:routineGuiEditorStepCommandDesc')}</ContentDesc>
           <Input.TextArea
             style={{ marginTop: '.25rem' }}
             value={step.with?.command as string | undefined}
@@ -216,6 +221,18 @@ const Box = styled.div`
 
 const FlexRow = styled.div`
   ${flexRowBaseStyle}
+`;
+
+const ContentDesc = styled.p`
+  font-size: 0.8rem;
+  color: ${(props) => props.theme.main.colors.gray3};
+  margin-bottom: 0.25rem;
+`;
+
+const ContentTitle = styled.p`
+  font-size: 14px;
+  margin-top: 0.5rem;
+  margin-bottom: 0.25rem;
 `;
 
 const Description = styled.p`

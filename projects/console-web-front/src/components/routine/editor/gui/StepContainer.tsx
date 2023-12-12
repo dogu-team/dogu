@@ -137,7 +137,6 @@ echo Dogu!`}
       )}
 
       <Content>
-        <ContentTitle>{t('routine:routineGuiEditorStepArgumentLabel')}</ContentTitle>
         <div>
           <StepActionArgumentContainer
             step={step}
@@ -168,6 +167,8 @@ const Content = styled.div`
 `;
 
 const ContentTitle = styled.p`
+  font-size: 14px;
+  margin-top: 0.5rem;
   margin-bottom: 0.25rem;
 `;
 

@@ -75,7 +75,7 @@ jobs:
         with:
           appVersion: 2.0.0
           uninstallApp: true
-      - name: run test
+      - name: Run test step
         uses: dogu-actions/run-test
         with:
           script: test/samples/dogurpgsample.test.ts`;
