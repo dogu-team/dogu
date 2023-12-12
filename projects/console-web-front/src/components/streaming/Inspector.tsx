@@ -106,6 +106,7 @@ const Inspector = ({ inspector, gamiumInspector }: Props) => {
               gamiumService?.destroyGamiumClient();
               await gamiumService?.initializeGamiumClient();
               await new Promise((resolve) => setTimeout(resolve, 3500));
+              await handleRefresh();
             }}
             selectDisabled={inspectorType === InspectorType.GAME ? undefined : !isContextSelected}
           />
