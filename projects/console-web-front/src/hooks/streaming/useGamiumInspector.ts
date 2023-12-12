@@ -49,12 +49,14 @@ const useGamiumInspector = (
       const connectResult = await connectGamium();
       if (connectResult === 'connected') {
         const result = await gamiumRef.current.inspector().dumpHierarchy('', 0);
+        console.log('dumpResult', result);
         worker.postMessage(result);
         const convertedResult: DataNode[] = await new Promise((resolve) => {
           worker.onmessage = (e: MessageEvent<DataNode[]>) => {
             resolve(e.data);
           };
         });
+        console.log('convertedResult', convertedResult);
         setGamiumTreeNode(convertedResult);
       } else {
         setGamiumTreeNode(undefined);
