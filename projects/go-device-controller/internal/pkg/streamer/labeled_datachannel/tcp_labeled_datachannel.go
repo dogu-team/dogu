@@ -3,6 +3,7 @@ package labeled_datachannel
 import (
 	"fmt"
 	"net"
+	"time"
 
 	"go-device-controller/types/protocol/generated/proto/inner/types"
 
@@ -56,6 +57,8 @@ func (ldc *RelayTcpLabeledDatachannel) onOpen() {
 				ldc.channel.Close()
 				return
 			}
+			// I don't know why, but if I don't sleep, the data will be lost. when too many data is sent.
+			time.Sleep(3 * time.Millisecond)
 		}
 	}(conn)
 }
