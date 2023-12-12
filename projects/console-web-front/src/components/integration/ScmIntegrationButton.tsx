@@ -21,6 +21,7 @@ import useOrganizationContext from '../../hooks/context/useOrganizationContext';
 import { flexRowBaseStyle } from '../../styles/box';
 import { isOrganizationScmIntegrated } from '../../utils/organization';
 import GitIcon from 'public/resources/icons/git-logo.svg';
+import { DoguDocsUrl } from '../../utils/url';
 
 const ScmServiceType: React.FC<{ serviceType: OrganizationScmServiceType }> = ({ serviceType }) => {
   switch (serviceType) {
@@ -120,7 +121,7 @@ const ScmIntegrationButton: React.FC<Props> = ({}) => {
           ) : (
             <>
               Integrate organizaiton with Git.{' '}
-              <Link href="https://docs.dogutech.io/management/organization/git-integration" target="_blank">
+              <Link href={DoguDocsUrl.management.organization['git-integration']._index()} target="_blank">
                 Visit docs
               </Link>{' '}
               for learn more.

@@ -17,6 +17,7 @@ import useEventStore from '../../stores/events';
 import { flexRowBaseStyle, listItemStyle } from '../../styles/box';
 import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd';
 import { getErrorMessageFromAxios } from '../../utils/error';
+import { DoguDocsUrl } from '../../utils/url';
 import MenuButton from '../buttons/MenuButton';
 import MenuItemButton from '../buttons/MenuItemButton';
 import ErrorBox from '../common/boxes/ErrorBox';
@@ -167,7 +168,7 @@ const OrganizationListController = () => {
                   i18nKey="account:emptyOrganizationDescription"
                   components={{
                     br: <br />,
-                    link: <Link href="https://docs.dogutech.io/get-started" target="_blank" />,
+                    link: <Link href={DoguDocsUrl['get-started']._index()} target="_blank" />,
                   }}
                 />
               }

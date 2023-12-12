@@ -29,6 +29,7 @@ import PythonVirtualEnvShell from '../PythonVirtualEnvShell';
 import TutorialOptionSelectors from '../TutorialOptionSelectors';
 import RemoteTestResultList from './RemoteTestResultList';
 import SampleApplicationUploadStep from '../SampleApplicationUploadStep';
+import { DoguDocsUrl } from '../../../utils/url';
 
 const INTRODUCTION_ID = 'introduction';
 const PROJECT_SETUP_ID = 'project-setup';
@@ -152,7 +153,7 @@ const GamiumRemoteTutorial = ({ organizationId, projectId }: RemoteTutorialProps
                   i18nKey="tutorial:remoteTestTutorialSetCapabilitiesDescription"
                   components={{
                     code: <StyledCode />,
-                    link: <a href="https://docs.dogutech.io/test-automation/gamium" target="_blank" />,
+                    link: <a href={DoguDocsUrl['test-automation'].gamium()} target="_blank" />,
                     br: <br />,
                   }}
                 />
@@ -184,7 +185,7 @@ const GamiumRemoteTutorial = ({ organizationId, projectId }: RemoteTutorialProps
             }
           />
           <div style={{ marginBottom: '2rem' }}>
-            <GuideBanner docsUrl="https://docs.dogutech.io/test-automation/gamium" />
+            <GuideBanner docsUrl={DoguDocsUrl['test-automation'].gamium()} />
           </div>
 
           <GuideStep

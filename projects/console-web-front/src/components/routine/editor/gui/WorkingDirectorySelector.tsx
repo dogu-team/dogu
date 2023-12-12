@@ -9,6 +9,7 @@ import { flexRowCenteredStyle } from '../../../../styles/box';
 import { LoadingOutlined } from '@ant-design/icons';
 import useOrganizationContext from '../../../../hooks/context/useOrganizationContext';
 import useRoutineEditorStore from '../../../../stores/routine-editor';
+import { DoguDocsUrl } from '../../../../utils/url';
 
 interface Props extends Omit<SelectProps, 'options'> {}
 
@@ -49,7 +50,7 @@ const WorkingDirectorySelector = ({ ...props }: Props) => {
               No working directory found.
               <br />
               Check your git integration or{' '}
-              <a href="https://docs.dogutech.io/management/project/git-integration/#prerequisites" target="_blank">
+              <a href={DoguDocsUrl.management.organization['git-integration']._heading.prerequisites()} target="_blank">
                 dogu.config.json
               </a>{' '}
               file.

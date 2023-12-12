@@ -19,13 +19,14 @@ import useModal from '../../../src/hooks/useModal';
 import { sendErrorNotification, sendSuccessNotification } from '../../../src/utils/antd';
 import { getErrorMessageFromAxios } from '../../../src/utils/error';
 import { registerSelfHostedLicense } from '../../api/license';
-import { checkCommunityEdition, checkExpired, LICENSE_DOCS_URL } from '../../utils/license';
+import { checkCommunityEdition, checkExpired } from '../../utils/license';
 import { isTimeout } from '../../utils/error';
 import ProTag from '../common/ProTag';
 import LicenseSubmitForm, { LicenseSubmitFormValues } from './LicenseSubmitForm';
 import TimeoutDocsModal from './TimeoutDocsModal';
 import useEventStore from '../../../src/stores/events';
 import DoguText from '../../../src/components/common/DoguText';
+import { DoguDocsUrl } from '../../../src/utils/url';
 
 interface Props {
   license: SelfHostedLicenseResponse;
@@ -113,7 +114,12 @@ const SelfHostedLicenseContainer: React.FC<Props> = ({ license, organizationId }
               message={t('needHelpAlertMessage')}
               action={
                 <Space direction="vertical">
-                  <Button size="small" style={{ width: '100%' }} href={LICENSE_DOCS_URL} target="_blank">
+                  <Button
+                    size="small"
+                    style={{ width: '100%' }}
+                    href={DoguDocsUrl['get-started'].installation['self-hosted'].license()}
+                    target="_blank"
+                  >
                     {t('visitGuide')}
                   </Button>
 

@@ -18,6 +18,7 @@ import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd
 import FormControlModal from '../modals/FormControlModal';
 import TokenCopyInput from '../common/TokenCopyInput';
 import DownloadAgentButton from './DownloadAgentButton';
+import { DoguDocsUrl } from '../../utils/url';
 
 interface Props {
   isOpen: boolean;
@@ -70,7 +71,7 @@ const CreateHostModal = ({ isOpen, close }: Props) => {
                           link1: (
                             <DownloadAgentButton type="link" size="small" style={{ padding: '0', color: '#69b1ff' }} />
                           ),
-                          link2: <Link href="https://docs.dogutech.io/device-farm/host" target="_blank" />,
+                          link2: <Link href={DoguDocsUrl['device-farm'].host._index()} target="_blank" />,
                         }}
                       />
                     </p>

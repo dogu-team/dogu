@@ -36,6 +36,7 @@ import PlatformIcon from '../device/PlatformIcon';
 import TokenCopyInput from '../common/TokenCopyInput';
 import { menuItemButtonStyles } from '../../styles/button';
 import HostVesrsionBadge from '../../../enterprise/components/host/HostVersionBadge';
+import { DoguDocsUrl } from '../../utils/url';
 
 interface HostItemProps {
   host: HostBase;
@@ -133,7 +134,7 @@ const HostItem = ({ host }: HostItemProps) => {
                       i18nKey="device-farm:hostRevokeAfterDescription"
                       components={{
                         br: <br />,
-                        link: <Link href="https://docs.dogutech.io/device-farm/host" target="_blank" />,
+                        link: <Link href={DoguDocsUrl['device-farm'].host._index()} target="_blank" />,
                       }}
                     />
                   }
@@ -334,7 +335,7 @@ const HostListController = () => {
                     ),
                     link: (
                       <Link
-                        href="https://docs.dogutech.io/management/organization/device-farm/host-management"
+                        href={DoguDocsUrl.management.organization['device-farm']['host-management']()}
                         target="_blank"
                         style={{ whiteSpace: 'pre-wrap' }}
                       />

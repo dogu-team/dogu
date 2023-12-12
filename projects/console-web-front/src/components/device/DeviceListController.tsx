@@ -38,6 +38,7 @@ import HostDeviceRunnerSettingModal from '../../../enterprise/components/device/
 import { isDesktop } from '../../utils/device';
 import DeviceCounter from './DeviceCounter';
 import DeviceRunnerItem from './DeviceRuunerItem';
+import { DoguDocsUrl } from '../../utils/url';
 
 interface DeviceItemProps {
   device: DeviceBase;
@@ -351,7 +352,7 @@ const DeviceListController = () => {
                     tutorialLink: <Link href={`/dashboard/${router.query.orgId}/get-started`} />,
                     link: (
                       <Link
-                        href="https://docs.dogutech.io/management/organization/device-farm/device-management"
+                        href={DoguDocsUrl.management.organization['device-farm']['device-management']._index()}
                         target="_blank"
                       />
                     ),

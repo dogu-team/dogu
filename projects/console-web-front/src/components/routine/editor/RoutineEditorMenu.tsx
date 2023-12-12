@@ -10,6 +10,7 @@ import styled from 'styled-components';
 
 import { flexRowBaseStyle, flexRowSpaceBetweenStyle } from '../../../styles/box';
 import { RoutineEditMode } from '../../../types/routine';
+import { DoguDocsUrl } from '../../../utils/url';
 
 interface Props {
   projectType: PROJECT_TYPE;
@@ -51,7 +52,7 @@ const RoutineEditorMenu = ({ projectType, saveButtonText, onSave, mode, onChange
         )}
         {mode === RoutineEditMode.SCRIPT && (
           <div style={{ marginLeft: '.5rem' }}>
-            <a href="https://docs.dogutech.io/routine/routines/syntax" target="_blank">
+            <a href={DoguDocsUrl.routine.routines.syntax()} target="_blank">
               YAML guide <RiExternalLinkLine />
             </a>
           </div>

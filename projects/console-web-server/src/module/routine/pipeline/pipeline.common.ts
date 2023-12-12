@@ -31,7 +31,11 @@ export function parseRunsOn(jobName: string, cloud: boolean, runsOnRaw: JobSchem
   if (typeof runsOnRaw === 'string' || Array.isArray(runsOnRaw)) {
     const pickables = typeof runsOnRaw === 'string' ? [runsOnRaw] : runsOnRaw;
     if (_.uniq(pickables).length !== pickables.length) {
-      throw new ParseRunsOnError(`Duplicated pickables [${stringify(pickables)}] on job [${jobName}]`, jobName, runsOnRaw);
+      throw new ParseRunsOnError(`Duplicated devices [${stringify(pickables)}] on job [${jobName}]`, jobName, runsOnRaw);
+    }
+
+    if (pickables.length === 0) {
+      throw new ParseRunsOnError(`Empty devices on job [${jobName}]`, jobName, runsOnRaw);
     }
 
     return { type: 'pickOne', pickables };
@@ -57,7 +61,7 @@ export function parseRunsOn(jobName: string, cloud: boolean, runsOnRaw: JobSchem
     const { group } = runsOnRaw;
     const pickables = typeof group === 'string' ? [group] : group;
     if (_.uniq(pickables).length !== pickables.length) {
-      throw new ParseRunsOnError(`Duplicated pickables [${stringify(pickables)}] on job [${jobName}]`, jobName, runsOnRaw);
+      throw new ParseRunsOnError(`Duplicated devices [${stringify(pickables)}] on job [${jobName}]`, jobName, runsOnRaw);
     }
 
     return { type: 'pickAll', pickables };

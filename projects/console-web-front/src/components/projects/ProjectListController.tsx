@@ -23,6 +23,7 @@ import useEventStore from 'src/stores/events';
 import useModal from '../../hooks/useModal';
 import ProjectAccessTokenModal from './ProjectAccessTokenModal';
 import ProjectEditModal from './ProjectEditModal';
+import { DoguDocsUrl } from '../../utils/url';
 
 interface ProjectItemProps {
   project: ProjectBase;
@@ -191,7 +192,7 @@ const ProjectListController = ({ organizationId, projectType }: Props) => {
                   components={{
                     br: <br />,
                     tutorialLink: <Link href={`/dashboard/${router.query.orgId}/get-started`} />,
-                    link: <Link href="https://docs.dogutech.io/management/project" target="_blank" />,
+                    link: <Link href={DoguDocsUrl.management.project._index()} target="_blank" />,
                   }}
                 />
               }

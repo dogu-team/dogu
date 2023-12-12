@@ -31,6 +31,7 @@ import DeviceVersionAlertIcon from '../device/DeviceVersionAlertIcon';
 import DeviceUsageStatusBadge from '../device/DeviceUsageStatusBadge';
 import { isDesktop } from '../../utils/device';
 import DeviceRunnerItem from '../device/DeviceRuunerItem';
+import { DoguDocsUrl } from '../../utils/url';
 
 interface DeviceItemProps {
   device: DeviceBase;
@@ -229,7 +230,7 @@ const DeviceListController = ({ organizationId, projectId }: Props) => {
                   i18nKey="device-farm:projectEmptyDescription"
                   components={{
                     br: <br />,
-                    link: <Link href="https://docs.dogutech.io/management/project/device" target="_blank" />,
+                    link: <Link href={DoguDocsUrl.management.project.device()} target="_blank" />,
                   }}
                 />
               }

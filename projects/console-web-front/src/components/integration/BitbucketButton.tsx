@@ -15,6 +15,7 @@ import GitIntegrationForm from '../projects/GitIntegrationForm';
 import IntegrationConnectButton from './ConnectButton';
 import DisconnectButton from './DisconnectButton';
 import IntegrationButton from './IntegrationCard';
+import { DoguDocsUrl } from '../../utils/url';
 
 interface Props extends ProjectIntegrationButtonProps {
   disabled: boolean;
@@ -74,7 +75,7 @@ function BitbucketButton({ isConnected, disabled, organizationId, projectId, des
           (disabled ? null : (
             <>
               Integrate project with Bitbucket.{' '}
-              <Link href="https://docs.dogutech.io/management/project/git-integration/bitbucket" target="_blank">
+              <Link href={DoguDocsUrl.management.organization['git-integration'].bitbucket()} target="_blank">
                 Visit docs
               </Link>{' '}
               for token generation.

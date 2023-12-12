@@ -1,3 +1,4 @@
+import { DoguDocsUrl } from '../../../utils/url';
 import DocumentCard from '../DocumentCard';
 import GuideStep from '../GuideStep';
 
@@ -15,22 +16,22 @@ const DoneStep = ({ id }: Props) => {
           <DocumentCard
             title="📝 CI integration"
             description="Would you like to integrate routines with CI tools like GitHub Action and Jenkins?"
-            url="https://docs.dogutech.io/integration/cicd/github-action"
+            url={DoguDocsUrl.integration.cicd['github-action']()}
           />
           <DocumentCard
-            title="📝 About project"
-            description="Explore features for project. ie) Git integration, App management"
-            url="https://docs.dogutech.io/management/project"
+            title="📝 About organization"
+            description="Explore features for organization. ie) Git integration, App management"
+            url={DoguDocsUrl.management.organization._index()}
           />
           <DocumentCard
             title="📝 Test automation"
             description="More information about test automation"
-            url="https://docs.dogutech.io/test-automation"
+            url={DoguDocsUrl['test-automation']._index()}
           />
           <DocumentCard
             title="📝 Test report"
             description="More information about test report"
-            url="https://docs.dogutech.io/test-report"
+            url={DoguDocsUrl['test-report']._index()}
           />
         </div>
       }

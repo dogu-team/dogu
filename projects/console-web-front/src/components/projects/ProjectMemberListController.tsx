@@ -36,6 +36,7 @@ import MenuItemButton from '../buttons/MenuItemButton';
 import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd';
 import ListEmpty from '../common/boxes/ListEmpty';
 import Trans from 'next-translate/Trans';
+import { DoguDocsUrl } from '../../utils/url';
 
 interface MemberItemProps {
   item: MemberAndRoleGroupBase;
@@ -208,7 +209,7 @@ const ProjectMemberListController = ({ project }: Props) => {
                   i18nKey="project-member:projectMemberEmptyDescription"
                   components={{
                     br: <br />,
-                    link: <Link href="https://docs.dogutech.io/management/project/member" target="_blank" />,
+                    link: <Link href={DoguDocsUrl.management.project.member()} target="_blank" />,
                   }}
                 />
               }

@@ -26,6 +26,7 @@ import ProjectApplicationExtensionTag from './ProjectApplicationExtensionTag';
 import ProfileImage from '../../components/ProfileImage';
 import ProfileImageWithName from '../users/ProfileImageWithName';
 import ProjectApplicationLatestTag from './ProjectApplicationLatestTag';
+import { DoguDocsUrl } from '../../utils/url';
 
 interface ItemProps {
   application: ProjectApplicationWithIcon;
@@ -193,7 +194,7 @@ const ProjectApplicationListController = ({ organizationId, projectId }: Props) 
                   i18nKey="project-app:appEmptyDescription"
                   components={{
                     br: <br />,
-                    link: <Link href="https://docs.dogutech.io/management/project/app" target="_blank" />,
+                    link: <Link href={DoguDocsUrl.management.organization.app()} target="_blank" />,
                   }}
                 />
               }

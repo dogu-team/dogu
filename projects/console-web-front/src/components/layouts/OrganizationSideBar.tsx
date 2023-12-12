@@ -29,6 +29,7 @@ import CollpaseSidebarMenu from './CollapseSidebarMenu';
 import useRefresh from '../../hooks/useRefresh';
 import useOrganizationContext from '../../hooks/context/useOrganizationContext';
 import resources from '../../resources';
+import { DoguDocsUrl } from '../../utils/url';
 // import { IS_CLOUD } from '../../../pages/_app';
 
 type MenuItem = Required<MenuProps>['items'];
@@ -347,7 +348,7 @@ const OrganizationSideBar = () => {
     {
       key: 'tutorial',
       icon: collapsed ? (
-        <StyledIconLink selected={false} href="https://docs.dogutech.io" target="_blank">
+        <StyledIconLink selected={false} href={DoguDocsUrl._index()} target="_blank">
           <BookOutlined />
         </StyledIconLink>
       ) : undefined,
@@ -359,7 +360,7 @@ const OrganizationSideBar = () => {
       ) : (
         <SideBarMenu
           icon={<BookOutlined style={{ fontSize: '1.2rem' }} />}
-          path={'https://docs.dogutech.io'}
+          path={DoguDocsUrl._index()}
           text={t('organization:docs')}
           external
         />

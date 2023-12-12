@@ -20,6 +20,7 @@ import RoutineGUIEditor from '../../routine/editor/RoutineGUIEditor';
 import { ProjectContext } from '../../../hooks/context/useProjectContext';
 import Link from 'next/link';
 import { RiExternalLinkLine } from 'react-icons/ri';
+import { DoguDocsUrl } from '../../../utils/url';
 
 interface Props {
   project: ProjectBase;
@@ -65,7 +66,7 @@ const TutorialRoutineCreator = ({ project, sampleYaml }: Props) => {
     <ProjectContext.Provider value={{ project, mutate: null }}>
       {isCustom && (
         <div style={{ marginBottom: '1rem' }}>
-          <Link href="https://docs.dogutech.io/routine/routines/syntax" target="_blank">
+          <Link href={DoguDocsUrl.routine.routines.syntax()} target="_blank">
             <Button>
               YAML Guide
               <RiExternalLinkLine style={{ marginLeft: '.25rem' }} />

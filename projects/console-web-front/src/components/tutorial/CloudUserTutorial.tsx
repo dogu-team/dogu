@@ -14,6 +14,7 @@ import GuideStep from './GuideStep';
 import CreateProjectModal from '../projects/CreateProjectModal';
 import DoguText from '../common/DoguText';
 import { TUTORIAL_PROJECT_SESSION_KEY } from './DeviceFarmTutorial';
+import { DoguDocsUrl } from '../../utils/url';
 
 const INTRODUCTION_ID = 'introduction';
 const CREATE_PROJECT_ID = 'create-project';
@@ -64,10 +65,8 @@ const CloudUserTutorial = () => {
                     <Trans
                       i18nKey="tutorial:deviceFarmTutorialIntroDetailDescription"
                       components={{
-                        dfLink: <Link href="https://docs.dogutech.io/device-farm/" target="_blank" />,
-                        dftLink: (
-                          <Link href="https://docs.dogutech.io/get-started/tutorials/device-farm" target="_blank" />
-                        ),
+                        dfLink: <Link href={DoguDocsUrl['device-farm']._index()} target="_blank" />,
+                        dftLink: <Link href={DoguDocsUrl['get-started'].tutorials['device-farm']()} target="_blank" />,
                       }}
                     />
                   </p>
