@@ -18,6 +18,7 @@ export class BillingPlanInfoResponseBuilder {
       response.expiredAt = null;
     } else {
       switch (billingMethod) {
+        case null:
         case 'nice': {
           switch (response.period) {
             case 'monthly': {
@@ -46,9 +47,6 @@ export class BillingPlanInfoResponseBuilder {
             throw new Error(`Paddle subscription expiredAt not found. billingPlanInfoId: ${planInfo.billingPlanInfoId}`);
           }
           response.expiredAt = new Date(paddleSubscription.current_billing_period.ends_at);
-          break;
-        }
-        case null: {
           break;
         }
         default: {
