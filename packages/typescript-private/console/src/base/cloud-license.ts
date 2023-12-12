@@ -10,6 +10,14 @@ export interface CloudLicenseBase {
   organizationId: OrganizationId;
   liveTestingRemainingFreeSeconds: number;
   liveTestingParallelCount: number;
+  webTestAutomationRemainingFreeSeconds: number;
+  webTestAutomationParallelCount: number;
+  mobileAppTestAutomationRemainingFreeSeconds: number;
+  mobileAppTestAutomationParallelCount: number;
+  mobileGameTestAutomationRemainingFreeSeconds: number;
+  mobileGameTestAutomationParallelCount: number;
+  selfDeviceBrowserCount: number;
+  selfDeviceMobileCount: number;
   category: BillingCategory;
   createdAt: Date;
   updatedAt: Date;

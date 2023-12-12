@@ -26,6 +26,30 @@ export class CloudLicense implements CloudLicenseBase {
   @Column({ type: 'integer', default: DefaultLiveTestingParallelCount })
   liveTestingParallelCount!: number;
 
+  @Column({ type: 'integer', default: 60 * 60 })
+  webTestAutomationRemainingFreeSeconds!: number;
+
+  @Column({ type: 'integer', default: 1 })
+  webTestAutomationParallelCount!: number;
+
+  @Column({ type: 'integer', default: 60 * 60 })
+  mobileAppTestAutomationRemainingFreeSeconds!: number;
+
+  @Column({ type: 'integer', default: 1 })
+  mobileAppTestAutomationParallelCount!: number;
+
+  @Column({ type: 'integer', default: 60 * 60 })
+  mobileGameTestAutomationRemainingFreeSeconds!: number;
+
+  @Column({ type: 'integer', default: 1 })
+  mobileGameTestAutomationParallelCount!: number;
+
+  @Column({ type: 'integer', default: 1 })
+  selfDeviceBrowserCount!: number;
+
+  @Column({ type: 'integer', default: 1 })
+  selfDeviceMobileCount!: number;
+
   @CreatedAt()
   createdAt!: Date;
 
