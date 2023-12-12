@@ -132,6 +132,37 @@
   "liveTestingMoreThanOption": "More than {{option}} parallel sessions",
   "liveTestingFeature1": "Unlimited testing time",
 
+  "parallelTestingOptionSingular": "{{option}} parallel test",
+  "parallelTestingOptionPlural": "{{option}} parallel tests",
+  "parallelTestingMoreThanOption": "More than {{option}} parallel tests",
+
+  "webTestAutomationPlanGroupTitle": "Web test automation",
+  "webTestAutomationPlanTitle": "Browser",
+  "webTestAutomationFeature1": "Provides Chrome, Safari, Firefox, Edge",
+  "webTestAutomationFeature2": "Supports web test automation (Selenium)",
+
+  "mobileAppTestAutomationPlanGroupTitle": "App test automation",
+  "mobileAppTestAutomationPlanTitle": "Real mobile device",
+  "mobileAppTestAutomationFeature1": "Provides Real Android, iOS devices",
+  "mobileAppTestAutomationFeature2": "Supports parallel test automation",
+
+  "mobileGameTestAutomationPlanGroupTitle": "Game test automation",
+  "mobileGameTestAutomationPlanTitle": "Real mobile device",
+  "mobileGameTestAutomationFeature1": "Provides Real Android, iOS devices",
+  "mobileGameTestAutomationFeature2": "Supports parallel test automation",
+
+  "selfDeviceFarmPlanGroupTitle": "Self devices",
+  "selfDeviceFarmBrowserPlanTitle": "Self browser",
+  "selfDeviceFarmBrowserFeature1": "Supports parallel test automation",
+  "selfDeviceFarmBrowserFeature2": "Supports web test automation (Selenium)",
+  "selfDeviceFarmMobilePlanTitle": "Self mobile",
+  "selfDeviceFarmMobileFeature1": "Supports parallel test automation",
+  "selfDeviceFarmMobileFeature2": "Supports iOS, Android devices",
+  "selfDeviceFarmBrowserOptionSingular": "Up to {{option}} browser",
+  "selfDeviceFarmMobileOptionSingular": "Up to {{option}} device",
+  "selfDeviceFarmBrowserOptionPlural": "Up to {{option}} browsers",
+  "selfDeviceFarmMobileOptionPlural": "Up to {{option}} devices",
+
   "cardNumberLabel": "Card number",
   "cardExpiryLabel": "Expiry (MM / YY)",
   "updatePaymentMethodSuccessMessage": "Payment details updated successfully.",

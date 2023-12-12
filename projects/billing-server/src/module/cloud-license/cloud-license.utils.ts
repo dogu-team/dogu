@@ -14,6 +14,21 @@ export function applyCloudLicense(cloudLicense: CloudLicense, planInfo: BillingP
       }
       break;
     }
+    case 'web-test-automation': {
+      break;
+    }
+    case 'mobile-app-test-automation': {
+      break;
+    }
+    case 'mobile-game-test-automation': {
+      break;
+    }
+    case 'self-device-farm-browser': {
+      break;
+    }
+    case 'self-device-farm-mobile': {
+      break;
+    }
     default: {
       assertUnreachable(type);
     }

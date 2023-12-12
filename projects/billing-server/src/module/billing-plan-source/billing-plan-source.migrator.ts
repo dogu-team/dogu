@@ -110,18 +110,6 @@ function parsePlanSourceStatic(): PlanSourceStatic[] {
     idSet.add(planSource.id);
   }
 
-  // check id order
-  const ids = Array.from(idSet.values());
-  ids.sort((a, b) => a - b);
-  if (ids[0] !== 1) {
-    throw new Error(`Id should start with 1: ${ids[0]}`);
-  }
-  for (let i = 1; i < ids.length; i++) {
-    if (ids[i] !== ids[i - 1] + 1) {
-      throw new Error(`Id should increase by 1: ${ids[i - 1]} -> ${ids[i]}`);
-    }
-  }
-
   return planSources;
 }
 
@@ -148,7 +136,7 @@ export class BillingPlanSourceMigrator {
       });
 
       const results = _.zip(planSourceStatic, planSource).map(([origin, target], index) => {
-        const id = index + 1;
+        const id = origin?.id || index + 1;
         if (origin) {
           if (origin.id !== id) {
             throw new Error(`Invalid id: ${origin.id} -> ${id}`);

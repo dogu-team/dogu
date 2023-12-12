@@ -132,6 +132,37 @@
   "liveTestingMoreThanOption": "More than {{option}} parallel sessions",
   "liveTestingFeature1": "시간제한 없는 라이브 테스팅",
 
+  "parallelTestingOptionSingular": "{{option}}개 병렬 테스트",
+  "parallelTestingOptionPlural": "{{option}}개 병렬 테스트",
+  "parallelTestingMoreThanOption": "{{option}}개 이상의 병렬 테스트",
+
+  "webTestAutomationPlanGroupTitle": "웹 테스트 자동화",
+  "webTestAutomationPlanTitle": "브라우저",
+  "webTestAutomationFeature1": "Chrome, Safari, Firefox, Edge 제공",
+  "webTestAutomationFeature2": "웹 테스트 자동화 지원 (Selenium)",
+
+  "mobileAppTestAutomationPlanGroupTitle": "앱 테스트 자동화",
+  "mobileAppTestAutomationPlanTitle": "실제 모바일 기기",
+  "mobileAppTestAutomationFeature1": "실제 Android, iOS 모바일 기기 제공",
+  "mobileAppTestAutomationFeature2": "테스트 자동화 병렬 실행 지원",
+
+  "mobileGameTestAutomationPlanGroupTitle": "게임 테스트 자동화",
+  "mobileGameTestAutomationPlanTitle": "실제 모바일 기기",
+  "mobileGameTestAutomationFeature1": "실제 Android, iOS 모바일 기기 제공",
+  "mobileGameTestAutomationFeature2": "테스트 자동화 병렬 실행 지원",
+
+  "selfDeviceFarmPlanGroupTitle": "셀프 디바이스",
+  "selfDeviceFarmBrowserPlanTitle": "셀프 브라우저",
+  "selfDeviceFarmBrowserFeature1": "테스트 자동화 병렬 실행 지원",
+  "selfDeviceFarmBrowserFeature2": "웹 테스트 자동화 지원 (Selenium)",
+  "selfDeviceFarmMobilePlanTitle": "셀프 모바일 기기",
+  "selfDeviceFarmMobileFeature1": "Android, iOS 디바이스 지원",
+  "selfDeviceFarmMobileFeature2": "테스트 자동화 프레임워크 지원 (Appium)",
+  "selfDeviceFarmBrowserOptionSingular": "최대 {{option}}개 브라우저",
+  "selfDeviceFarmMobileOptionSingular": "최대 {{option}}대 디바이스",
+  "selfDeviceFarmBrowserOptionPlural": "최대 {{option}}개 브라우저",
+  "selfDeviceFarmMobileOptionPlural": "최대 {{option}}대 디바이스",
+
   "cardNumberLabel": "카드 번호",
   "cardExpiryLabel": "유효기간 (MM / YY)",
   "updatePaymentMethodSuccessMessage": "결제 정보가 변경되었습니다.",
