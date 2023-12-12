@@ -20,6 +20,9 @@ import { deleteProject } from '../../api/project';
 import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd';
 import { getErrorMessageFromAxios } from '../../utils/error';
 import useEventStore from 'src/stores/events';
+import useModal from '../../hooks/useModal';
+import ProjectAccessTokenModal from './ProjectAccessTokenModal';
+import ProjectEditModal from './ProjectEditModal';
 
 interface ProjectItemProps {
   project: ProjectBase;
@@ -29,6 +32,8 @@ const ProjectItem = ({ project }: ProjectItemProps) => {
   const { t, lang } = useTranslation();
   const router = useRouter();
   const fireEvent = useEventStore((state) => state.fireEvent);
+  const [isOpenTokenModal, openTokenModal, closeTokenModal] = useModal();
+  const [isOpenEditModal, openEditModal, clsoeEditModal] = useModal();
 
   const getTypeText = (type: PROJECT_TYPE) => {
     switch (type) {
@@ -67,17 +72,25 @@ const ProjectItem = ({ project }: ProjectItemProps) => {
   };
 
   const items: MenuProps['items'] = [
-    // {
-    //   label: (
-    //     <MenuItemButton danger={false} onClick={copyProjectId}>
-    //       Copy project ID
-    //     </MenuItemButton>
-    //   ),
-    //   key: 'copy-id',
-    // },
-    // {
-    //   type: 'divider',
-    // },
+    {
+      label: (
+        <MenuItemButton danger={false} onClick={() => openTokenModal()}>
+          Show access token
+        </MenuItemButton>
+      ),
+      key: 'access-token',
+    },
+    {
+      label: (
+        <MenuItemButton danger={false} onClick={() => openEditModal()}>
+          Edit
+        </MenuItemButton>
+      ),
+      key: 'Edit',
+    },
+    {
+      type: 'divider',
+    },
     {
       label: (
         <MenuItemButton
@@ -95,68 +108,34 @@ const ProjectItem = ({ project }: ProjectItemProps) => {
   ];
 
   return (
-    <Item>
-      <ItemInner>
-        <TwoSpan>
-          <StyledLink href={`${router.asPath}/${project.projectId}/routines`}>{project.name}</StyledLink>
-        </TwoSpan>
-        <TwoSpan>
-          <StyledProjectId onClick={copyProjectId}>
-            {project.projectId}{' '}
-            <i>
-              <CopyOutlined />
-            </i>
-          </StyledProjectId>
-        </TwoSpan>
-        {/* <OneSpan>
-          <FlexRow>
-            <ProjectTypeIcon type={project.type} style={{ fontSize: '1.1rem', marginRight: '.25rem' }} />
-            <p>{getTypeText(project.type)}</p>
-          </FlexRow>
-        </OneSpan> */}
-        {/* <TwoSpan>
-          <Avatar.Group>
-            {project.members?.map((item) => {
-              if (instanceOfUserBase(item)) {
-                return (
-                  <Tooltip
-                    key={`project-${project.projectId}-member-${(item as UserBase).userId}`}
-                    title={(item as UserBase).name}
-                  >
-                    <ProfileImage
-                      size={32}
-                      name={(item as UserBase).name}
-                      profileImageUrl={(item as UserBase).profileImageUrl}
-                    />
-                  </Tooltip>
-                );
-              }
+    <>
+      <Item>
+        <ItemInner>
+          <TwoSpan>
+            <StyledLink href={`${router.asPath}/${project.projectId}/routines`}>{project.name}</StyledLink>
+          </TwoSpan>
+          <TwoSpan>
+            <StyledProjectId onClick={copyProjectId}>
+              {project.projectId}{' '}
+              <i>
+                <CopyOutlined />
+              </i>
+            </StyledProjectId>
+          </TwoSpan>
+          <ButtonWrapper>
+            <MenuButton menu={{ items }} />
+          </ButtonWrapper>
+        </ItemInner>
+      </Item>
 
-              return (
-                <Tooltip
-                  key={`project-${project.projectId}-member-${(item as TeamBase).teamId}`}
-                  title={t('organization:projectTeamMemberTooltipTitle', {
-                    name: (item as TeamBase).name,
-                  })}
-                >
-                  <ProfileImage size={32} name={(item as TeamBase).name} profileImageUrl={null} />
-                </Tooltip>
-              );
-            })}
-
-            {!!project.members?.length && project.members?.length > 5 && (
-              <Avatar size={32} style={{ backgroundColor: '#40a9ff', fontSize: '0.9rem' }}>
-                +{project.members?.length - 5}
-              </Avatar>
-            )}
-          </Avatar.Group>
-        </TwoSpan>
-        <OneSpan>{getLocaleFormattedDate(lang, new Date(project.updatedAt))}</OneSpan> */}
-        <ButtonWrapper>
-          <MenuButton menu={{ items }} />
-        </ButtonWrapper>
-      </ItemInner>
-    </Item>
+      <ProjectAccessTokenModal
+        isOpen={isOpenTokenModal}
+        close={closeTokenModal}
+        organizationId={project.organizationId}
+        projectId={project.projectId}
+      />
+      <ProjectEditModal isOpen={isOpenEditModal} close={clsoeEditModal} project={project} />
+    </>
   );
 };
 
@@ -170,10 +149,11 @@ const ProjectListController = ({ organizationId, projectType }: Props) => {
   const { data, isLoading, error, mutate, page, updatePage } = usePaginationSWR<ProjectBase>(
     `/organizations/${organizationId}/projects${projectType !== undefined ? `?type=${projectType}` : ''}`,
     { skipQuestionMark: projectType !== undefined },
+    { revalidateOnFocus: false },
   );
   const { t } = useTranslation();
 
-  useRefresh(['onProjectCreated', 'onRefreshClicked', 'onProjectDeleted'], () => mutate());
+  useRefresh(['onProjectCreated', 'onRefreshClicked', 'onProjectDeleted', 'onProjectUpdated'], () => mutate());
 
   if (isLoading) {
     return <LoadingOutlined style={{ fontSize: '2rem' }} />;
@@ -185,8 +165,6 @@ const ProjectListController = ({ organizationId, projectType }: Props) => {
         <ItemInner>
           <TwoSpan>{t('project:projectTableNameColumn')}</TwoSpan>
           <TwoSpan>ID</TwoSpan>
-          {/* <TwoSpan>{t('project:projectTableMembersColumn')}</TwoSpan>
-          <OneSpan>{t('project:projectTableLastUpdatedColumn')}</OneSpan> */}
           <ButtonWrapper />
         </ItemInner>
       </Header>
