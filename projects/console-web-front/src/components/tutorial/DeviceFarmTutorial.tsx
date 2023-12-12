@@ -174,38 +174,6 @@ const DeviceFarmTutorial = () => {
             }
           />
           <GuideStep
-            id={CREATE_PROJECT_ID}
-            title={t('deviceFarmTutorialCreateProjectTitle')}
-            description={t('deviceFarmTutorialCreateProjectDescription')}
-            content={
-              <div>
-                {project ? (
-                  t('deviceFarmTutorialCreateProjectDoneDescription', { name: project.name })
-                ) : (
-                  <div>
-                    <Button
-                      type="primary"
-                      onClick={() => {
-                        openProjectModal();
-                      }}
-                    >
-                      {t('createProjectButtonTitle')}
-                    </Button>
-
-                    <CreateProjectModal
-                      isOpen={isProjectModalOpen}
-                      close={closeProjectModal}
-                      onCreate={(result) => {
-                        sessionStorage.setItem(TUTORIAL_PROJECT_SESSION_KEY, JSON.stringify(result));
-                        updateProject(result);
-                      }}
-                    />
-                  </div>
-                )}
-              </div>
-            }
-          />
-          <GuideStep
             id={INSTALL_DOGU_AGENT_ID}
             title={t('deviceFarmTutorialInstallDoguAgentTitle')}
             description={t('deviceFarmTutorialInstallDoguAgentDescription')}
@@ -213,23 +181,6 @@ const DeviceFarmTutorial = () => {
               <div>
                 <div>
                   <DownloadAgentButton type="primary">{t('downloadDoguAgentButtonTitle')}</DownloadAgentButton>
-                </div>
-
-                <div style={{ marginTop: '.5rem' }}>
-                  <p>{t('deviceFarmTutorialInstallDoguAgentTailDescription')}</p>
-                </div>
-
-                <div style={{ marginTop: '1rem' }}>
-                  <Alert
-                    type="info"
-                    showIcon
-                    message={t('deviceFarmTutorialInstallDoguAgentInfoMessage')}
-                    action={
-                      <Link href="https://docs.dogutech.io/get-started/tutorials/device-farm/host" target="_blank">
-                        <Button type="link">Visit Docs</Button>
-                      </Link>
-                    }
-                  />
                 </div>
               </div>
             }
@@ -244,17 +195,12 @@ const DeviceFarmTutorial = () => {
                   <HostTokenWrapper>
                     <p>{t('deviceFarmTutorialCreateHostDoneTokenTitle')}</p>
                     <TokenCopyInput value={token} />
-                    <p>{t('deviceFarmTutorialCreateHostDoneCopyMessage')}</p>
                   </HostTokenWrapper>
                 ) : (
                   <Button
                     type="primary"
                     onClick={() => {
-                      if (!project) {
-                        sendErrorNotification('Please create a project first.');
-                      } else {
-                        openHostModal();
-                      }
+                      openHostModal();
                     }}
                   >
                     {t('createHostButtonTitle')}
@@ -299,18 +245,14 @@ const DeviceFarmTutorial = () => {
             description={t('deviceFarmTutorialUseDeviceDescription')}
             content={
               <div>
-                {!!organization && !!project && !!host ? (
+                {!!organization && !!host ? (
                   <>
                     <FlexEnd>
                       <RefreshButton />
                     </FlexEnd>
 
                     <MarginWrapper>
-                      <TutorialDeviceList
-                        organizationId={organization.organizationId}
-                        projectId={project.projectId}
-                        hostId={host.hostId}
-                      />
+                      <TutorialDeviceList organizationId={organization.organizationId} hostId={host.hostId} />
                     </MarginWrapper>
                   </>
                 ) : (

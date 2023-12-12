@@ -75,38 +75,6 @@ const CloudUserTutorial = () => {
               </div>
             }
           />
-          <GuideStep
-            id={CREATE_PROJECT_ID}
-            title={t('deviceFarmTutorialCreateProjectTitle')}
-            description={t('deviceFarmTutorialCreateProjectDescription')}
-            content={
-              <div>
-                {project ? (
-                  t('deviceFarmTutorialCreateProjectDoneDescription', { name: project.name })
-                ) : (
-                  <div>
-                    <Button
-                      type="primary"
-                      onClick={() => {
-                        openProjectModal();
-                      }}
-                    >
-                      {t('createProjectButtonTitle')}
-                    </Button>
-
-                    <CreateProjectModal
-                      isOpen={isProjectModalOpen}
-                      close={closeProjectModal}
-                      onCreate={(result) => {
-                        sessionStorage.setItem(TUTORIAL_PROJECT_SESSION_KEY, JSON.stringify(result));
-                        updateProject(result);
-                      }}
-                    />
-                  </div>
-                )}
-              </div>
-            }
-          />
         </div>
       }
     />

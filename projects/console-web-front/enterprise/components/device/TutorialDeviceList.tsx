@@ -22,11 +22,10 @@ import { UpgradeDevicePlanBannerModal } from '../license/UpgradePlanBannerModal'
 
 interface Props {
   organizationId: OrganizationId;
-  projectId: ProjectId;
   hostId: HostId;
 }
 
-const TutorialDeviceList = ({ organizationId, projectId, hostId }: Props) => {
+const TutorialDeviceList = ({ organizationId, hostId }: Props) => {
   const {
     data: stanbyDevices,
     error: standbyDeviceError,
@@ -78,9 +77,7 @@ const TutorialDeviceList = ({ organizationId, projectId, hostId }: Props) => {
 
     setLoading(true);
     try {
-      await Promise.all(
-        targetKeys.map((deviceId) => enableDevice(organizationId, deviceId, { projectId, isGlobal: false })),
-      );
+      await Promise.all(targetKeys.map((deviceId) => enableDevice(organizationId, deviceId, { isGlobal: false })));
       mutateStandbyDevices();
       mutateUsingDevices();
       sendSuccessNotification('Successfully use devices!');
