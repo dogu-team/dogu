@@ -36,7 +36,7 @@ export class ProjectController {
   }
 
   @Get(':projectId/access-token')
-  @ProjectPermission(PROJECT_ROLE.ADMIN)
+  @OrganizationPermission(ORGANIZATION_ROLE.MEMBER)
   async findAccessToken(
     @User() userPayload: UserPayload, //
     @Param(ProjectPropCamel.projectId) projectId: ProjectId,
@@ -46,7 +46,8 @@ export class ProjectController {
   }
 
   @Post(':projectId/access-token')
-  @ProjectPermission(PROJECT_ROLE.ADMIN)
+  // @ProjectPermission(PROJECT_ROLE.ADMIN)
+  @OrganizationPermission(ORGANIZATION_ROLE.ADMIN)
   async regenerateAccessToken(
     @User() userPayload: UserPayload, //
     @Param(ProjectPropCamel.projectId) projectId: ProjectId,
@@ -76,7 +77,8 @@ export class ProjectController {
   }
 
   @Get(':projectId')
-  @ProjectPermission(PROJECT_ROLE.READ)
+  // @ProjectPermission(PROJECT_ROLE.READ)
+  @OrganizationPermission(ORGANIZATION_ROLE.MEMBER)
   async findProject(
     @Param(OrganizationPropCamel.organizationId) organizationId: OrganizationId, //
     @Param(ProjectPropCamel.projectId) projectId: ProjectId,
