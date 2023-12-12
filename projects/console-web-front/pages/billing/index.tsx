@@ -65,7 +65,7 @@ const BillingPage: NextPageWithLayout<BillingPageProps> = ({ me, license }) => {
             </ContentInner>
           </TitleWrapper>
         </Content>
-        {!!license.billingOrganization.billingMethod !== null && (
+        {license.billingOrganization.billingMethod !== null && (
           <Content>
             <TitleWrapper>
               <ContentTitle>
