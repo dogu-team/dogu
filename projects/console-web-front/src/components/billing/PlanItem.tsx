@@ -274,7 +274,7 @@ const PlanItem: React.FC<Props> = ({ planType, planInfo, descriptionInfo }) => {
         </Content>
         <div>
           {selectedValue === CONTACT_US_OPTION_KEY ? (
-            <a href="https://dogutech.io/book-demo" target="_blank">
+            <a href="https://dogutech.io/contact/us" target="_blank">
               <Button type="primary" style={{ width: '100%' }} loading={paddleLoading || precheckoutLoading}>
                 {t('contactUs')}
               </Button>
