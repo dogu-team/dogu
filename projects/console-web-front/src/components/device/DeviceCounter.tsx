@@ -17,7 +17,9 @@ const DeviceCounter: React.FC = () => {
     },
   );
 
-  useRefresh(['onDeviceAdded', 'onDeviceUpdated'], () => mutateCountInfo());
+  useRefresh(['onDeviceAdded', 'onDeviceUpdated', 'onDeviceStopped', 'onAddDeviceToProjectModalClosed'], () =>
+    mutateCountInfo(),
+  );
 
   if (!license) {
     return null;
