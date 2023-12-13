@@ -386,7 +386,7 @@ const NameCell = styled(Cell)`
 `;
 
 const StatusCell = styled(Cell)`
-  flex: 1.5;
+  flex: 1;
 `;
 
 const PlatformCell = styled(Cell)`
@@ -394,7 +394,7 @@ const PlatformCell = styled(Cell)`
 `;
 
 const InfoCell = styled(Cell)`
-  flex: 2;
+  flex: 1;
   margin-right: 0;
 `;
 
