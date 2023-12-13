@@ -12,6 +12,9 @@ import CreateProjectButton from '../../../../../src/components/projects/CreatePr
 import RefreshButton from '../../../../../src/components/buttons/RefreshButton';
 import LiveChat from '../../../../../src/components/external/livechat';
 import { flexRowSpaceBetweenStyle } from '../../../../../src/styles/box';
+import TitleWithBannerAndOption from '../../../../../src/components/layouts/TitleWithBannerAndOption';
+import WebTestAutomationFreeTierTopBanner from '../../../../../src/components/billing/WebTestAutomationFreeTierTopBanner';
+import { WebTestAutomationParallelCounter } from '../../../../../src/components/projects/AutomationParallelCounter';
 
 const WebAutomationPage: NextPageWithLayout<OrganizationServerSideProps> = ({ user, organization }) => {
   return (
@@ -41,7 +44,17 @@ const WebAutomationPage: NextPageWithLayout<OrganizationServerSideProps> = ({ us
 
 WebAutomationPage.getLayout = (page) => {
   return (
-    <ConsoleLayout {...page.props} sidebar={<OrganizationSideBar />} titleI18nKey="organization:webAutomationPageTitle">
+    <ConsoleLayout
+      {...page.props}
+      sidebar={<OrganizationSideBar />}
+      title={
+        <TitleWithBannerAndOption
+          titleKey="organization:webAutomationPageTitle"
+          banner={<WebTestAutomationFreeTierTopBanner />}
+          option={<WebTestAutomationParallelCounter />}
+        />
+      }
+    >
       {page}
     </ConsoleLayout>
   );

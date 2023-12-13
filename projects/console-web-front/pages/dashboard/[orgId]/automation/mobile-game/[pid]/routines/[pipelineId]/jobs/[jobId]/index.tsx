@@ -22,6 +22,9 @@ import { getErrorMessageFromAxios } from 'src/utils/error';
 import { pipelineJobEmptyText } from 'src/utils/mapper';
 import { isPipelineEmptyLogStatus } from 'src/utils/pipeline';
 import { NextPageWithLayout } from '../../../../../../../../../_app';
+import TitleWithBannerAndOption from '../../../../../../../../../../src/components/layouts/TitleWithBannerAndOption';
+import MobileGameTestAutomationFreeTierTopBanner from '../../../../../../../../../../src/components/billing/MobileGameTestAutomationFreeTierTopBanner';
+import { MobileGameTestAutomationParallelCounter } from '../../../../../../../../../../src/components/projects/AutomationParallelCounter';
 
 const JobSummaryPage: NextPageWithLayout<ProjectServerSideProps> = ({ organization, project }) => {
   const router = useRouter();
@@ -137,7 +140,16 @@ const JobSummaryPage: NextPageWithLayout<ProjectServerSideProps> = ({ organizati
 
 JobSummaryPage.getLayout = (page) => {
   return (
-    <PipelineJobLayout {...page.props} pageTitleKey="organization:mobileGameAutomationPageTitle">
+    <PipelineJobLayout
+      {...page.props}
+      title={
+        <TitleWithBannerAndOption
+          titleKey="organization:mobileGameAutomationPageTitle"
+          banner={<MobileGameTestAutomationFreeTierTopBanner />}
+          option={<MobileGameTestAutomationParallelCounter />}
+        />
+      }
+    >
       {page}
     </PipelineJobLayout>
   );

@@ -31,9 +31,10 @@ import ProjectLayoutWithSidebar from './ProjectLayoutWithSidebar';
 interface Props extends Omit<ProjectServerSideProps, 'isGitIntegrated'> {
   children: React.ReactNode;
   pageTitleKey?: string;
+  title?: React.ReactNode;
 }
 
-const PipelineJobLayout = ({ children, pageTitleKey, organization, project, user, license }: Props) => {
+const PipelineJobLayout = ({ children, pageTitleKey, organization, project, user, license, title }: Props) => {
   const router = useRouter();
   const orgId = router.query.orgId;
   const projectId = router.query.pid;
@@ -101,7 +102,8 @@ const PipelineJobLayout = ({ children, pageTitleKey, organization, project, user
       user={user}
       license={license}
       innerSidebar={<JobListSideBar pipeline={pipeline} />}
-      titleI18nKey={pageTitleKey ?? 'project:tabMenuRoutineTitle'}
+      titleI18nKey={pageTitleKey}
+      title={title}
     >
       <PipelineContainer>
         <PipelineHeadContainer>

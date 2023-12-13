@@ -12,6 +12,9 @@ import useGitIntegrationStore from '../../../../../../../../src/stores/git-integ
 import RoutineGitIntegrationAlert from '../../../../../../../../src/components/projects/RoutineGitIntegrationAlert';
 import AutomationLayout from '../../../../../../../../src/components/layouts/AutomationLayout';
 import { isOrganizationScmIntegrated } from '../../../../../../../../src/utils/organization';
+import TitleWithBannerAndOption from '../../../../../../../../src/components/layouts/TitleWithBannerAndOption';
+import MobileGameTestAutomationFreeTierTopBanner from '../../../../../../../../src/components/billing/MobileGameTestAutomationFreeTierTopBanner';
+import { MobileGameTestAutomationParallelCounter } from '../../../../../../../../src/components/projects/AutomationParallelCounter';
 
 const ProjectRoutineEditorPage: NextPageWithLayout<ProjectServerSideProps> = ({
   organization,
@@ -58,7 +61,16 @@ const ProjectRoutineEditorPage: NextPageWithLayout<ProjectServerSideProps> = ({
 
 ProjectRoutineEditorPage.getLayout = (page) => {
   return (
-    <AutomationLayout {...page.props} titleI18nKey="organization:mobileGameAutomationPageTitle">
+    <AutomationLayout
+      {...page.props}
+      title={
+        <TitleWithBannerAndOption
+          titleKey="organization:mobileGameAutomationPageTitle"
+          banner={<MobileGameTestAutomationFreeTierTopBanner />}
+          option={<MobileGameTestAutomationParallelCounter />}
+        />
+      }
+    >
       {page}
     </AutomationLayout>
   );

@@ -12,6 +12,9 @@ import CreateProjectButton from '../../../../../src/components/projects/CreatePr
 import RefreshButton from '../../../../../src/components/buttons/RefreshButton';
 import LiveChat from '../../../../../src/components/external/livechat';
 import { flexRowSpaceBetweenStyle } from '../../../../../src/styles/box';
+import TitleWithBannerAndOption from '../../../../../src/components/layouts/TitleWithBannerAndOption';
+import MobileGameTestAutomationFreeTierTopBanner from '../../../../../src/components/billing/MobileGameTestAutomationFreeTierTopBanner';
+import { MobileGameTestAutomationParallelCounter } from '../../../../../src/components/projects/AutomationParallelCounter';
 
 const GameAutomationPage: NextPageWithLayout<OrganizationServerSideProps> = ({ user, organization }) => {
   return (
@@ -44,7 +47,13 @@ GameAutomationPage.getLayout = (page) => {
     <ConsoleLayout
       {...page.props}
       sidebar={<OrganizationSideBar />}
-      titleI18nKey="organization:mobileGameAutomationPageTitle"
+      title={
+        <TitleWithBannerAndOption
+          titleKey="organization:mobileGameAutomationPageTitle"
+          banner={<MobileGameTestAutomationFreeTierTopBanner />}
+          option={<MobileGameTestAutomationParallelCounter />}
+        />
+      }
     >
       {page}
     </ConsoleLayout>

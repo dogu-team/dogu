@@ -13,7 +13,7 @@ import UpgradePlanButton from './UpgradePlanButton';
 
 interface Props {}
 
-const LiveTestingFreeTierTopBanner: React.FC<Props> = () => {
+const WebTestAutomationFreeTierTopBanner: React.FC<Props> = () => {
   const license = useLicenseStore((state) => state.license) as CloudLicenseResponse | null;
   const me = useAuthStore((state) => state.me);
   const { t } = useTranslation('billing');
@@ -23,7 +23,8 @@ const LiveTestingFreeTierTopBanner: React.FC<Props> = () => {
   }
 
   const isFreePlan = isLiveTestingFreePlan(license);
-  const remainingSeconds = license.liveTestingRemainingFreeSeconds < 0 ? 0 : license.liveTestingRemainingFreeSeconds;
+  const remainingSeconds =
+    license.webTestAutomationRemainingFreeSeconds < 0 ? 0 : license.webTestAutomationRemainingFreeSeconds;
 
   if (isFreePlan) {
     return (
@@ -32,7 +33,7 @@ const LiveTestingFreeTierTopBanner: React.FC<Props> = () => {
           <ClockCircleOutlined /> {(remainingSeconds / 60).toFixed(0)} min{remainingSeconds > 1 ? 's' : ''} left.
         </span>
         {!!me && hasAdminPermission(me) && (
-          <StyledButton type="ghost" groupType="live-testing-group">
+          <StyledButton type="ghost" groupType="web-test-automation-group">
             {t('upgradePlanButtonTitle')} <ArrowRightOutlined />
           </StyledButton>
         )}
@@ -43,7 +44,7 @@ const LiveTestingFreeTierTopBanner: React.FC<Props> = () => {
   return null;
 };
 
-export default LiveTestingFreeTierTopBanner;
+export default WebTestAutomationFreeTierTopBanner;
 
 const Box = styled.div`
   margin-left: 0.5rem;

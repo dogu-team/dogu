@@ -8,6 +8,9 @@ import { getProjectPageServerSideProps, ProjectServerSideProps } from 'src/ssr/p
 import ErrorBox from 'src/components/common/boxes/ErrorBox';
 import PipelineJobLayout from 'src/components/layouts/PipelineJobLayout';
 import JobFlowController from 'src/components/pipelines/JobFlowController';
+import TitleWithBannerAndOption from '../../../../../../../../src/components/layouts/TitleWithBannerAndOption';
+import MobileGameTestAutomationFreeTierTopBanner from '../../../../../../../../src/components/billing/MobileGameTestAutomationFreeTierTopBanner';
+import { MobileGameTestAutomationParallelCounter } from '../../../../../../../../src/components/projects/AutomationParallelCounter';
 
 const PipelineDetailPage: NextPageWithLayout<ProjectServerSideProps> = ({ organization, project }) => {
   const router = useRouter();
@@ -39,7 +42,16 @@ const PipelineDetailPage: NextPageWithLayout<ProjectServerSideProps> = ({ organi
 
 PipelineDetailPage.getLayout = (page) => {
   return (
-    <PipelineJobLayout {...page.props} pageTitleKey="organization:mobileGameAutomationPageTitle">
+    <PipelineJobLayout
+      {...page.props}
+      title={
+        <TitleWithBannerAndOption
+          titleKey="organization:mobileGameAutomationPageTitle"
+          banner={<MobileGameTestAutomationFreeTierTopBanner />}
+          option={<MobileGameTestAutomationParallelCounter />}
+        />
+      }
+    >
       {page}
     </PipelineJobLayout>
   );
