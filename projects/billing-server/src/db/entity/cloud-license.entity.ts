@@ -1,5 +1,7 @@
 import { BillingCategory, BillingPlanType, CloudLicenseBase, CloudLicenseProp } from '@dogu-private/console';
 import { OrganizationId } from '@dogu-private/types';
+import { Type } from 'class-transformer';
+import { IsOptional } from 'class-validator';
 import { Column, Entity, JoinColumn, OneToOne, PrimaryColumn } from 'typeorm';
 import { CreatedAt, DeletedAt, UpdatedAt } from '../decorators';
 import { BillingOrganization } from './billing-organization.entity';
@@ -13,7 +15,9 @@ export const DefaultCloudLicenseCount: Record<BillingPlanType, number> = {
   'self-device-farm-mobile': 1,
 };
 
-@Entity()
+export const CloudLicenseTableName = 'cloud_license';
+
+@Entity(CloudLicenseTableName)
 export class CloudLicense implements CloudLicenseBase {
   @PrimaryColumn('uuid')
   cloudLicenseId!: string;
@@ -58,12 +62,16 @@ export class CloudLicense implements CloudLicenseBase {
   selfDeviceMobileCount!: number;
 
   @CreatedAt()
+  @Type(() => Date)
   createdAt!: Date;
 
   @UpdatedAt()
+  @Type(() => Date)
   updatedAt!: Date;
 
   @DeletedAt()
+  @Type(() => Date)
+  @IsOptional()
   deletedAt!: Date | null;
 
   @OneToOne(() => BillingOrganization)

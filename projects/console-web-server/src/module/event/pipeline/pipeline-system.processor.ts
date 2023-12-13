@@ -1,20 +1,20 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { DestUpdater } from './dest-updater';
-import { DeviceJobUpdater } from './device-job-updater';
 import { ExternalEventUpdater } from './external-event-updater';
 import { JobUpdater } from './job-updator';
 import { PipelineUpdater } from './pipeline-updater';
+import { RoutineDeviceJobUpdater } from './routine-device-job-updater';
 import { StepUpdater } from './step-updater';
 
 @Injectable()
 export class PipelineSystemProcessor {
   constructor(
-    @Inject(PipelineUpdater) private readonly pipelineUpdater: PipelineUpdater,
-    @Inject(JobUpdater) private readonly jobUpdater: JobUpdater,
-    @Inject(DeviceJobUpdater) private readonly deviceJobUpdater: DeviceJobUpdater,
-    @Inject(StepUpdater) private readonly stepUpdater: StepUpdater,
-    @Inject(DestUpdater) private readonly destUpdater: DestUpdater,
-    @Inject(ExternalEventUpdater) private readonly externalEventUpdater: ExternalEventUpdater,
+    private readonly pipelineUpdater: PipelineUpdater,
+    private readonly jobUpdater: JobUpdater,
+    private readonly deviceJobUpdater: RoutineDeviceJobUpdater,
+    private readonly stepUpdater: StepUpdater,
+    private readonly destUpdater: DestUpdater,
+    private readonly externalEventUpdater: ExternalEventUpdater,
   ) {}
 
   public async update(): Promise<void> {

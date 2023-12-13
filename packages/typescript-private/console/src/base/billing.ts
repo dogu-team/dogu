@@ -1,5 +1,6 @@
 import { IsFilledString, IsOptionalObject, Method } from '@dogu-tech/common';
 import { IsIn } from 'class-validator';
+import { BillingOrganizationBase } from '..';
 
 export const BillingCategory = ['cloud', 'self-hosted'] as const;
 export type BillingCategory = (typeof BillingCategory)[number];
@@ -1676,4 +1677,13 @@ export function matchBillingPlanType(source: MatchBillingPlanType, destination: 
   }
 
   return true;
+}
+
+export function isBillingPlanSubscribing(organization: BillingOrganizationBase, planType: BillingPlanType): boolean {
+  const planInfo = organization.billingPlanInfos?.find((info) => info.type === planType);
+  if (!planInfo) {
+    return false;
+  }
+
+  return planInfo.state !== 'unsubscribed';
 }

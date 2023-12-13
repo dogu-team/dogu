@@ -1,3 +1,4 @@
+import { CloudLicenseEventMessage, CloudLicenseLiveTestingEvent } from '@dogu-private/console';
 import { LiveSessionState, LiveSessionWsMessage } from '@dogu-private/types';
 import { closeWebSocketWithTruncateReason, errorify } from '@dogu-tech/common';
 import { Inject } from '@nestjs/common';
@@ -9,13 +10,17 @@ import WebSocket from 'ws';
 import { config } from '../../config';
 
 import { LiveSession } from '../../db/entity/live-session.entity';
-import { CloudLicenseService } from '../../enterprise/module/license/cloud-license.service';
+import { Message, RetryTransaction } from '../../db/utils';
+import { CloudLicenseEventSubscriber } from '../../enterprise/module/license/cloud-license.event-subscriber';
 import { WsCommonService } from '../../ws/common/ws-common.service';
 import { DoguLogger } from '../logger/logger';
 import { LiveSessionService } from './live-session.service';
+import { LiveSessionSubscriber } from './live-session.subscriber';
 
 @WebSocketGateway({ path: '/live-session-heartbeat' })
 export class LiveSessionHeartbeatGateway implements OnGatewayConnection {
+  private readonly retryTransaction: RetryTransaction;
+
   constructor(
     private readonly logger: DoguLogger,
     @Inject(WsCommonService)
@@ -23,8 +28,11 @@ export class LiveSessionHeartbeatGateway implements OnGatewayConnection {
     @InjectDataSource()
     private readonly dataSource: DataSource,
     private readonly liveSessionService: LiveSessionService,
-    private readonly cloudLicense: CloudLicenseService,
-  ) {}
+    private readonly liveSessionSubscriber: LiveSessionSubscriber,
+    private readonly cloudLicenseEventSubscriber: CloudLicenseEventSubscriber,
+  ) {
+    this.retryTransaction = new RetryTransaction(this.logger, this.dataSource);
+  }
 
   async handleConnection(webSocket: WebSocket, incomingMessage: IncomingMessage): Promise<void> {
     const url = new URL(`http://localhost${incomingMessage.url ?? ''}`);
@@ -52,10 +60,8 @@ export class LiveSessionHeartbeatGateway implements OnGatewayConnection {
     }
 
     webSocket.on('message', () => {
-      (async (): Promise<void> => {
-        await this.liveSessionService.updateHeartbeat(liveSessionId);
-      })().catch((error) => {
-        this.logger.error('LiveSessionHeartbeatGateway.onMessage.catch', { error: errorify(error) });
+      this.liveSessionService.updateHeartbeat(liveSessionId).catch((e) => {
+        this.logger.error('LiveSessionHeartbeatGateway.onMessage.catch', { error: errorify(e) });
       });
     });
 
@@ -73,7 +79,57 @@ export class LiveSessionHeartbeatGateway implements OnGatewayConnection {
       });
     });
 
-    await this.dataSource.transaction(async (manager) => {
+    {
+      const handler = (message: Message<LiveSession>): void => {
+        if (message.data.liveSessionId !== liveSessionId) {
+          return;
+        }
+
+        if (message.data.state === LiveSessionState.CLOSE_WAIT) {
+          const msg: LiveSessionWsMessage = {
+            type: LiveSessionState.CLOSE_WAIT,
+            message: `${config.liveSession.closeWait.allowedMilliseconds}`,
+          };
+          webSocket.send(JSON.stringify(msg));
+          this.logger.debug('LiveSessionHeartbeatGateway.handleConnection.liveSessionSubscriber.handler', { liveSessionId, message });
+          return;
+        }
+
+        if (message.data.state === LiveSessionState.CLOSED) {
+          webSocket.close(1003, 'closed');
+          this.logger.debug('LiveSessionHeartbeatGateway.handleConnection.liveSessionSubscriber.handler', { liveSessionId, message });
+          return;
+        }
+      };
+      webSocket.on('close', () => {
+        this.liveSessionSubscriber.emitter.off('message', handler);
+      });
+      this.liveSessionSubscriber.emitter.on('message', handler);
+    }
+
+    {
+      const handler = (message: CloudLicenseEventMessage): void => {
+        if (message.organizationId !== organizationId) {
+          return;
+        }
+
+        const value: CloudLicenseLiveTestingEvent = {
+          remainingFreeSeconds: message.liveTestingRemainingFreeSeconds,
+        };
+        const msg: LiveSessionWsMessage = {
+          type: 'cloud-license-live-testing',
+          message: JSON.stringify(value),
+        };
+        webSocket.send(JSON.stringify(msg));
+      };
+      webSocket.on('close', () => {
+        this.cloudLicenseEventSubscriber.emitter.off('message', handler);
+      });
+      this.cloudLicenseEventSubscriber.emitter.on('message', handler);
+    }
+
+    await this.retryTransaction.serializable(async (context) => {
+      const { manager } = context;
       const liveSession = await manager.getRepository(LiveSession).findOne({ where: { liveSessionId } });
       if (!liveSession) {
         this.logger.error(`LiveSessionHeartbeatGateway.handleConnection liveSession not found`, { liveSessionId });
@@ -95,44 +151,11 @@ export class LiveSessionHeartbeatGateway implements OnGatewayConnection {
 
       if (liveSession.state === LiveSessionState.CLOSE_WAIT) {
         liveSession.state = LiveSessionState.CREATED;
-        await manager.getRepository(LiveSession).save(liveSession);
+        await manager.save(liveSession);
         this.logger.debug('LiveSessionHeartbeatGateway.handleConnection.toCreated', { liveSession });
       }
-
-      const closeWaitEventSubscriber = await this.liveSessionService.subscribeCloseWaitEvent(liveSessionId, (message) => {
-        const msg: LiveSessionWsMessage = {
-          type: LiveSessionState.CLOSE_WAIT,
-          message: `${config.liveSession.closeWait.allowedMilliseconds}`,
-        };
-        webSocket.send(JSON.stringify(msg));
-        this.logger.debug('LiveSessionHeartbeatGateway.onMessage.subscribeCloseWaitEvent', { liveSessionId, message });
-      });
-
-      const closeEventSubscriber = await this.liveSessionService.subscribeCloseEvent(liveSessionId, (message) => {
-        webSocket.close(1003, 'closed');
-        this.logger.debug('LiveSessionHeartbeatGateway.onClose.subscribeCloseEvent', { liveSessionId, message });
-      });
-
-      const cloudLicense = await this.cloudLicense.getLicenseInfo(organizationId);
-      const cloudLicenseLiveTestingSubscriber = await this.liveSessionService.subscribeCloudLicenseLiveTesting(cloudLicense.cloudLicenseId, (message) => {
-        const sendMessage: LiveSessionWsMessage = {
-          type: 'cloud-license-live-testing',
-          message,
-        };
-        webSocket.send(JSON.stringify(sendMessage));
-      });
-
-      webSocket.on('close', () => {
-        (async (): Promise<void> => {
-          await closeEventSubscriber.quit();
-          await closeWaitEventSubscriber.quit();
-          await cloudLicenseLiveTestingSubscriber.quit();
-        })().catch((error) => {
-          this.logger.error('LiveSessionHeartbeatGateway.onClose.unsubscribe.catch', { error: errorify(error) });
-        });
-      });
-      await this.liveSessionService.updateHeartbeat(liveSessionId);
-      await this.liveSessionService.increaseParticipantsCount(liveSessionId);
     });
+    await this.liveSessionService.updateHeartbeat(liveSessionId);
+    await this.liveSessionService.increaseParticipantsCount(liveSessionId);
   }
 }

@@ -5,7 +5,7 @@ import { DataSource } from 'typeorm';
 import { v4 } from 'uuid';
 
 import { CloudLicense } from '../../db/entity/cloud-license.entity';
-import { RetryTransaction } from '../../db/retry-transaction';
+import { RetryTransaction } from '../../db/utils';
 import { BillingMethodPaddleService } from '../billing-method/billing-method-paddle.service';
 import { createBillingOrganization } from '../billing-organization/billing-organization.serializables';
 import { BillingOrganizationResponseBuilder } from '../common/plan-info-common.module';

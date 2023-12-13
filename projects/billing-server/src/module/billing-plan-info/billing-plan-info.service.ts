@@ -5,7 +5,7 @@ import { DataSource } from 'typeorm';
 
 import { BillingOrganization } from '../../db/entity/billing-organization.entity';
 import { BillingPlanInfo } from '../../db/entity/billing-plan-info.entity';
-import { RetryTransaction } from '../../db/retry-transaction';
+import { RetryTransaction } from '../../db/utils';
 import { BillingPlanInfoResponseBuilder } from '../common/plan-info-common.module';
 import { DoguLogger } from '../logger/logger';
 import { PaddleCaller } from '../paddle/paddle.caller';

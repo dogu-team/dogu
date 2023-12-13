@@ -56,7 +56,7 @@ export class RetryTransaction {
           return result;
         } catch (e) {
           const error = errorify(e);
-          logger.warn('retrySerialize.catch transaction failed', { tryCount, retryCount, retryInterval, error });
+          logger.warn('retrySerialize.catch transaction failed', { tryCount, error });
           await queryRunner.rollbackTransaction();
 
           onAfterRollbacks.reverse();
@@ -73,12 +73,11 @@ export class RetryTransaction {
           }
 
           if (tryCount === retryCount) {
-            logger.error('retrySerialize.catch transaction failed. retry count exceeded', { tryCount, retryCount, retryInterval });
             throw error;
           }
 
           if (isRetryCode(error)) {
-            logger.warn(`retrySerialize.catch serialization failure. retry after`, { tryCount, retryCount, retryInterval });
+            logger.warn(`retrySerialize.catch serialization failure. retry after`, { tryCount, retryCount, retryInterval, error });
             await new Promise((resolve) => setTimeout(resolve, retryInterval));
             continue;
           }
@@ -105,4 +104,93 @@ export class RetryTransaction {
 export async function getClient(dataSource: DataSource): Promise<Client> {
   const [client, _] = (await dataSource.driver.obtainMasterConnection()) as [Client, unknown];
   return client;
+}
+
+export type Message<T extends object = object> =
+  | {
+      event: 'created';
+      data: T;
+    }
+  | {
+      event: 'updated';
+      data: T;
+    }
+  | {
+      event: 'deleted';
+      data: T;
+    };
+
+export async function subscribe(logger: DoguLogger, dataSource: DataSource, tableName: string, fn: (message: Message) => void): Promise<void> {
+  const client = await getClient(dataSource);
+  const channelName = `${tableName}_event`;
+  const functionName = `${tableName}_notify`;
+  await client.query(`
+CREATE OR REPLACE FUNCTION ${functionName}()
+RETURNS TRIGGER AS $$
+DECLARE
+  payload TEXT;
+
+BEGIN
+  IF (TG_OP = 'INSERT') THEN
+    payload := json_build_object(
+      'event', 'created',
+      'data', row_to_json(NEW)
+    )::text;
+    PERFORM pg_notify('${channelName}', payload);
+    RETURN NEW;
+  ELSIF (TG_OP = 'UPDATE') THEN
+    payload := json_build_object(
+      'event', 'updated',
+      'data', row_to_json(NEW)
+    )::text;
+    PERFORM pg_notify('${channelName}', payload);
+    RETURN NEW;
+  ELSIF (TG_OP = 'DELETE') THEN
+    payload := json_build_object(
+      'event', 'deleted',
+      'data', row_to_json(OLD)
+    )::text;
+    PERFORM pg_notify('${channelName}', payload);
+    RETURN OLD;
+  END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE TRIGGER ${tableName}_after_insert
+AFTER INSERT ON "${tableName}"
+FOR EACH ROW EXECUTE FUNCTION ${functionName}();
+
+CREATE OR REPLACE TRIGGER ${tableName}_after_update
+AFTER UPDATE ON "${tableName}"
+FOR EACH ROW EXECUTE FUNCTION ${functionName}();
+
+CREATE OR REPLACE TRIGGER ${tableName}_after_delete
+AFTER DELETE ON "${tableName}"
+FOR EACH ROW EXECUTE FUNCTION ${functionName}();
+
+LISTEN ${channelName};
+`);
+
+  client.on('notification', (notification) => {
+    if (notification.channel !== channelName) {
+      return;
+    }
+
+    if (!notification.payload) {
+      return;
+    }
+
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const message = JSON.parse(notification.payload);
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      fn(message);
+    } catch (e) {
+      logger.error('Failed to handle notification', {
+        channel: notification.channel,
+        payload: notification.payload,
+        error: errorify(e),
+      });
+    }
+  });
 }

@@ -1,7 +1,7 @@
 import { OrganizationId } from '@dogu-private/types';
 import { propertiesOf } from '@dogu-tech/common';
-import { IsBoolean, IsNumber, IsUUID } from 'class-validator';
-import { BillingCategory } from '..';
+import { IsIn, IsNumber, IsUUID } from 'class-validator';
+import { BillingCategory, BillingPlanType } from './billing';
 import { BillingOrganizationBase, BillingOrganizationResponse } from './billing-organization';
 
 export interface CloudLicenseBase {
@@ -32,27 +32,23 @@ export class FindCloudLicenseDto {
   organizationId!: string;
 }
 
-export namespace CloudLicenseMessage {
-  export class LiveTestingSend {
-    @IsUUID()
-    cloudLicenseId!: string;
+export class CloudLicenseUpdateMessage {
+  @IsUUID()
+  organizationId!: string;
 
-    @IsNumber()
-    usedFreeSeconds!: number | null;
-  }
+  @IsIn(BillingPlanType)
+  planType!: BillingPlanType;
 
-  export class LiveTestingReceive {
-    @IsUUID()
-    cloudLicenseId!: string;
-
-    @IsBoolean()
-    expired!: boolean;
-
-    @IsNumber()
-    remainingFreeSeconds!: number;
-  }
+  @IsNumber()
+  usedSeconds!: number;
 }
+
+export type CloudLicenseEventMessage = Omit<CloudLicenseBase, 'billingOrganizationId' | 'createdAt' | 'updatedAt' | 'deletedAt' | 'billingOrganization' | 'category'>;
 
 export interface CloudLicenseResponse extends CloudLicenseBase {
   billingOrganization: BillingOrganizationResponse;
 }
+
+export type CloudLicenseLiveTestingEvent = {
+  remainingFreeSeconds: number;
+};

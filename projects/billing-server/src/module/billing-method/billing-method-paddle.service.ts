@@ -4,7 +4,7 @@ import { DataSource } from 'typeorm';
 import { v4 } from 'uuid';
 import { BillingMethodPaddle } from '../../db/entity/billing-method-paddle.entity';
 import { BillingOrganization } from '../../db/entity/billing-organization.entity';
-import { RetryTransaction } from '../../db/retry-transaction';
+import { RetryTransaction } from '../../db/utils';
 import { DoguLogger } from '../logger/logger';
 import { PaddleCaller } from '../paddle/paddle.caller';
 import { BillingMethodPaddleCustomerService } from './billing-method-paddle.customer-service';

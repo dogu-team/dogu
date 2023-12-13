@@ -13,7 +13,7 @@ import { BillingMethodNice } from '../../db/entity/billing-method-nice.entity';
 import { BillingOrganization, BillingOrganizationTableName } from '../../db/entity/billing-organization.entity';
 import { BillingPlanHistory } from '../../db/entity/billing-plan-history.entity';
 import { BillingPlanInfo } from '../../db/entity/billing-plan-info.entity';
-import { getClient, RetryTransaction } from '../../db/retry-transaction';
+import { getClient, RetryTransaction } from '../../db/utils';
 import { env } from '../../env';
 import { invalidateBillingOrganization } from '../billing-organization/billing-organization.utils';
 import { applyPlanInfoState, calculatePurchaseAmountAndApplyCouponCount, invalidatePlanInfo } from '../billing-plan-info/billing-plan-info.utils';

@@ -21,7 +21,7 @@ import { BillingHistory } from '../../db/entity/billing-history.entity';
 import { BillingOrganization } from '../../db/entity/billing-organization.entity';
 import { BillingPlanHistory } from '../../db/entity/billing-plan-history.entity';
 import { BillingPlanInfo } from '../../db/entity/billing-plan-info.entity';
-import { RetryTransaction } from '../../db/retry-transaction';
+import { RetryTransaction } from '../../db/utils';
 import { createOrUpdateMethodNice } from '../billing-method/billing-method-nice.serializables';
 import { invalidatePlanInfo } from '../billing-plan-info/billing-plan-info.utils';
 import { ConsoleService } from '../console/console.service';

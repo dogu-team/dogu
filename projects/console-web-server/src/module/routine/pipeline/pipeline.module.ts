@@ -16,6 +16,7 @@ import { DestController } from './dest/dest.controller';
 import { DestService } from './dest/dest.service';
 import { DeviceJobController } from './device-job/device-job.controller';
 import { DeviceJobService } from './device-job/device-job.service';
+import { RoutineDeviceJobSubscriber } from './device-job/routine-device-job.subscriber';
 import { PipelineController } from './pipeline.controller';
 import { PipelineService } from './pipeline.service';
 import { DeviceJobMessenger } from './processor/device-job-messenger';
@@ -65,6 +66,7 @@ import { StepService } from './step/step.service';
     DeviceJobService,
     StepService,
     DeviceTagService,
+    RoutineDeviceJobSubscriber,
   ],
   controllers: [PipelineController, DeviceJobController, StepController, DestController],
   exports: [
@@ -79,6 +81,7 @@ import { StepService } from './step/step.service';
     DestService,
     StepService,
     DeviceTagService,
+    RoutineDeviceJobSubscriber,
   ],
 })
 export class PipelineModule {}

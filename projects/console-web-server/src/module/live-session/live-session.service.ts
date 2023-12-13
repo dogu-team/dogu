@@ -1,9 +1,8 @@
 import { CloudLicenseBase, DevicePropCamel, DeviceUsageState, LiveSessionCreateRequestBodyDto, LiveSessionFindQueryDto, OrganizationPropCamel } from '@dogu-private/console';
-import { DeviceConnectionState, LiveSessionActiveStates, LiveSessionId, LiveSessionState, OrganizationId } from '@dogu-private/types';
+import { DeviceConnectionState, LiveSessionId, LiveSessionState } from '@dogu-private/types';
 import { errorify } from '@dogu-tech/common';
-import { HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
-import Redis from 'ioredis';
 import { DataSource, EntityManager, In } from 'typeorm';
 import { v4 } from 'uuid';
 
@@ -11,61 +10,74 @@ import { config } from '../../config';
 import { Device } from '../../db/entity/device.entity';
 import { LiveSession } from '../../db/entity/live-session.entity';
 import { Organization } from '../../db/entity/organization.entity';
+import { Message, RetryTransaction } from '../../db/utils';
+import { CloudLicenseSerializable } from '../../enterprise/module/license/cloud-license.serializables';
 import { CloudLicenseService } from '../../enterprise/module/license/cloud-license.service';
 import { DoguLogger } from '../logger/logger';
 import { DeviceCommandService } from '../organization/device/device-command.service';
 import { RedisService } from '../redis/redis.service';
+import { LiveSessionSubscriber } from './live-session.subscriber';
+
+export function applyLiveSessionToClosed(liveSession: LiveSession): LiveSession {
+  liveSession.state = LiveSessionState.CLOSED;
+  liveSession.closedAt = new Date();
+  return liveSession;
+}
+
+export async function closeInTransaction(
+  logger: DoguLogger,
+  deviceCommandService: DeviceCommandService,
+  manager: EntityManager,
+  liveSessions: LiveSession[],
+): Promise<LiveSession[]> {
+  const toCloseds = liveSessions.map((liveSession) => applyLiveSessionToClosed(liveSession));
+  const closeds = await manager.getRepository(LiveSession).save(toCloseds);
+
+  logger.debug('LiveSessionService.close.liveSessions', {
+    liveSessions,
+  });
+
+  const deviceIds = liveSessions.map((liveSession) => liveSession.deviceId);
+  const devices = await manager.getRepository(Device).find({
+    where: {
+      deviceId: In(deviceIds),
+    },
+  });
+  devices.forEach((device) => {
+    device.usageState = DeviceUsageState.PREPARING;
+  });
+  await manager.getRepository(Device).save(devices);
+  logger.debug('LiveSessionService.close.devices', {
+    devices,
+  });
+
+  devices.forEach((device) => {
+    deviceCommandService.reset(device.organizationId, device.deviceId, device.serial).catch((error) => {
+      logger.error('LiveSessionService.close.reset error', {
+        error: errorify(error),
+        device,
+      });
+    });
+  });
+
+  return closeds;
+}
 
 @Injectable()
 export class LiveSessionService {
-  static updateLiveSessionToClosed(liveSession: LiveSession): LiveSession {
-    liveSession.state = LiveSessionState.CLOSED;
-    liveSession.closedAt = new Date();
-    return liveSession;
-  }
-
-  static async closeInTransaction(logger: DoguLogger, deviceCommandService: DeviceCommandService, manager: EntityManager, liveSessions: LiveSession[]): Promise<LiveSession[]> {
-    const toCloseds = liveSessions.map((liveSession) => LiveSessionService.updateLiveSessionToClosed(liveSession));
-    const closeds = await manager.getRepository(LiveSession).save(toCloseds);
-
-    logger.debug('LiveSessionService.close.liveSessions', {
-      liveSessions,
-    });
-
-    const deviceIds = liveSessions.map((liveSession) => liveSession.deviceId);
-    const devices = await manager.getRepository(Device).find({
-      where: {
-        deviceId: In(deviceIds),
-      },
-    });
-    devices.forEach((device) => {
-      device.usageState = DeviceUsageState.PREPARING;
-    });
-    await manager.getRepository(Device).save(devices);
-    logger.debug('LiveSessionService.close.devices', {
-      devices,
-    });
-
-    devices.forEach((device) => {
-      deviceCommandService.reset(device.organizationId, device.deviceId, device.serial).catch((error) => {
-        logger.error('LiveSessionService.close.reset error', {
-          error: errorify(error),
-          device,
-        });
-      });
-    });
-
-    return closeds;
-  }
+  private readonly retryTransaction: RetryTransaction;
 
   constructor(
+    private readonly logger: DoguLogger,
     @InjectDataSource()
     private readonly dataSource: DataSource,
     private readonly redis: RedisService,
     private readonly deviceCommandService: DeviceCommandService,
     private readonly cloudLicenseService: CloudLicenseService,
-    private readonly logger: DoguLogger,
-  ) {}
+    private readonly liveSessionSubscriber: LiveSessionSubscriber,
+  ) {
+    this.retryTransaction = new RetryTransaction(this.logger, this.dataSource);
+  }
 
   async findAllByQuery(query: LiveSessionFindQueryDto): Promise<LiveSession[]> {
     const { organizationId, deviceId, state } = query;
@@ -81,10 +93,11 @@ export class LiveSessionService {
     return liveSessions;
   }
 
-  async createOrReject(body: LiveSessionCreateRequestBodyDto, cloudLicense: CloudLicenseBase): Promise<LiveSession> {
+  async create(body: LiveSessionCreateRequestBodyDto, cloudLicense: CloudLicenseBase): Promise<LiveSession> {
     const { organizationId, deviceModel, deviceVersion } = body;
-    return await this.dataSource.manager.transaction(async (manager) => {
-      const isLiveTestingSubscribing = await LiveSessionService.validateCloudLicense(manager, organizationId, cloudLicense);
+    const liveSession = await this.retryTransaction.serializable(async (context) => {
+      const { manager } = context;
+      await CloudLicenseSerializable.validateLiveTesting(context, cloudLicense);
 
       const device = await manager
         .getRepository(Device)
@@ -106,7 +119,7 @@ export class LiveSessionService {
       }
 
       device.usageState = DeviceUsageState.IN_USE;
-      await manager.getRepository(Device).save(device);
+      await manager.save(device);
       this.logger.debug('Device usageState updated', { device });
 
       const created = manager.getRepository(LiveSession).create({
@@ -115,15 +128,38 @@ export class LiveSessionService {
         organizationId,
         deviceId: device.deviceId,
       });
-      await this.updateHeartbeat(created.liveSessionId);
-      const saved = await manager.getRepository(LiveSession).save(created);
-      this.logger.debug('LiveSession created', { saved });
-      if (!isLiveTestingSubscribing) {
-        await this.startUpdateCloudLicenseLiveTesting(cloudLicense.cloudLicenseId, saved.liveSessionId);
-      }
 
+      const saved = await manager.save(created);
       return saved;
     });
+
+    this.logger.debug('LiveSession created', { liveSession });
+    await this.updateHeartbeat(liveSession.liveSessionId);
+
+    const stopUpdate = await this.cloudLicenseService.startUpdate({
+      organizationId,
+      planType: 'live-testing',
+      key: 'liveSessionId',
+      value: liveSession.liveSessionId,
+    });
+
+    {
+      const handler = (message: Message<LiveSession>): void => {
+        if (message.data.liveSessionId !== liveSession.liveSessionId) {
+          return;
+        }
+
+        if (message.data.state !== LiveSessionState.CLOSED) {
+          return;
+        }
+
+        this.liveSessionSubscriber.emitter.off('message', handler);
+        stopUpdate();
+      };
+      this.liveSessionSubscriber.emitter.on('message', handler);
+    }
+
+    return liveSession;
   }
 
   async increaseParticipantsCount(liveSessionId: LiveSessionId): Promise<void> {
@@ -145,33 +181,19 @@ export class LiveSessionService {
     await this.redis.expire(key, config.liveSession.heartbeat.allowedSeconds);
   }
 
-  async subscribeCloseWaitEvent(liveSessionId: LiveSessionId, onMessage: (message: string) => void): Promise<Redis> {
-    return await this.redis.createSubscriber(config.redis.key.liveSessionCloseWaitEvent(liveSessionId), onMessage);
-  }
-
-  async publishCloseWaitEvent(liveSessionId: LiveSessionId, message: string): Promise<void> {
-    await this.redis.publish(config.redis.key.liveSessionCloseWaitEvent(liveSessionId), message);
-  }
-
-  async subscribeCloseEvent(liveSessionId: LiveSessionId, onMessage: (message: string) => void): Promise<Redis> {
-    return await this.redis.createSubscriber(config.redis.key.liveSessionCloseEvent(liveSessionId), onMessage);
-  }
-
-  async publishCloseEvent(liveSessionId: LiveSessionId, message: string): Promise<void> {
-    await this.redis.publish(config.redis.key.liveSessionCloseEvent(liveSessionId), message);
-    this.logger.debug('LiveSessionService.publishCloseEvent', { liveSessionId, message });
-  }
-
   async isLiveSessionExists(liveSessionId: LiveSessionId): Promise<boolean> {
-    const heartbeatExists = await this.redis.exists(config.redis.key.liveSessionHeartbeat(liveSessionId));
     const participantsCount = await this.redis.get(config.redis.key.liveSessionParticipantsCount(liveSessionId));
-    return heartbeatExists !== 0 && Number(participantsCount) > 0;
+    if (Number(participantsCount) <= 0) {
+      return false;
+    }
+
+    const heartbeatExists = await this.redis.exists(config.redis.key.liveSessionHeartbeat(liveSessionId));
+    return heartbeatExists !== 0;
   }
 
   /**
    * @description do NOT access this.dataSource in this method
    */
-
   async closeByLiveSessionId(liveSessionId: LiveSessionId): Promise<LiveSession> {
     const liveSession = await this.dataSource.getRepository(LiveSession).findOne({ where: { liveSessionId } });
 
@@ -184,120 +206,10 @@ export class LiveSessionService {
     }
 
     const closedSession = await this.dataSource.transaction(async (manager) => {
-      const rv = await LiveSessionService.closeInTransaction(this.logger, this.deviceCommandService, manager, [liveSession]);
+      const rv = await closeInTransaction(this.logger, this.deviceCommandService, manager, [liveSession]);
       return rv[0];
     });
 
-    await this.publishCloseEvent(closedSession.liveSessionId, 'closed!');
     return closedSession;
-  }
-
-  async startUpdateCloudLicenseLiveTesting(cloudLicenseId: string, liveSessionId: string): Promise<void> {
-    this.logger.debug('LiveSessionService.startUpdateCloudLicenseLiveTesting', {
-      cloudLicenseId,
-      liveSessionId,
-    });
-    await this.updateCloudLicenseId(liveSessionId, cloudLicenseId);
-    await this.updateCloudLicenseLiveTestingHeartbeat(cloudLicenseId);
-    let subscriber: Redis | undefined;
-    this.cloudLicenseService.startUpdateLiveTesting(cloudLicenseId, {
-      onOpen: async (close) => {
-        subscriber = await this.subscribeCloseEvent(liveSessionId, () => {
-          close();
-          this.logger.debug('LiveSessionService.startUpdateLiveTesting.onOpen.subscribeCloseEvent', {
-            cloudLicenseId,
-            liveSessionId,
-          });
-        });
-      },
-      onClose: async () => {
-        await subscriber?.quit();
-        this.logger.debug('LiveSessionService.startUpdateLiveTesting.onClose', {
-          cloudLicenseId,
-          liveSessionId,
-        });
-      },
-      onMessage: async (message) => {
-        await this.updateCloudLicenseLiveTestingHeartbeat(cloudLicenseId);
-        await this.publishCloudLicenseLiveTesting(cloudLicenseId, JSON.stringify(message));
-        if (message.expired) {
-          this.logger.debug('LiveSessionService.startUpdateLiveTesting.message expired', {
-            cloudLicenseId,
-            liveSessionId,
-            message,
-          });
-          await this.closeByLiveSessionId(liveSessionId);
-        }
-      },
-    });
-  }
-
-  async updateCloudLicenseId(liveSessionId: string, cloudLicenseId: string): Promise<void> {
-    const key = config.redis.key.liveSessionCloudLicenseId(liveSessionId);
-    await this.redis.set(key, cloudLicenseId);
-    await this.redis.expire(key, config.liveSession.cloudLicenseId.allowedSeconds);
-  }
-
-  async findCloudLicenseId(liveSessionId: string): Promise<string | null> {
-    const key = config.redis.key.liveSessionCloudLicenseId(liveSessionId);
-    return await this.redis.get(key);
-  }
-
-  async updateCloudLicenseLiveTestingHeartbeat(cloudLicenseId: string): Promise<void> {
-    const key = config.redis.key.cloudLicenseLiveTestingHeartbeat(cloudLicenseId);
-    await this.redis.set(key, Date.now());
-    await this.redis.expire(key, config.liveSession.cloudLicenseLiveTestingHeartbeat.allowedSeconds);
-  }
-
-  async isCloudLicenseLiveTestingHeartbeatExists(cloudLicenseId: string): Promise<boolean> {
-    const key = config.redis.key.cloudLicenseLiveTestingHeartbeat(cloudLicenseId);
-    return (await this.redis.exists(key)) !== 0;
-  }
-
-  async publishCloudLicenseLiveTesting(cloudLicenseId: string, message: string): Promise<void> {
-    await this.redis.publish(config.redis.key.cloudLicenseLiveTesting(cloudLicenseId), message);
-  }
-
-  async subscribeCloudLicenseLiveTesting(cloudLicenseId: string, onMessage: (message: string) => void): Promise<Redis> {
-    return await this.redis.createSubscriber(config.redis.key.cloudLicenseLiveTesting(cloudLicenseId), onMessage);
-  }
-
-  static async validateCloudLicense(manager: EntityManager, organizationId: OrganizationId, cloudLicense: CloudLicenseBase): Promise<boolean> {
-    const activeCount = await manager //
-      .getRepository(LiveSession)
-      .count({
-        where: {
-          organizationId,
-          state: In(LiveSessionActiveStates),
-        },
-      });
-    if (activeCount >= cloudLicense.liveTestingParallelCount) {
-      throw new HttpException(`Live testing parallel count exceeded. liveTestingParallelCount: ${cloudLicense.liveTestingParallelCount}`, HttpStatus.PAYMENT_REQUIRED);
-    }
-
-    const isLiveTestingSubscribing = cloudLicense.billingOrganization?.billingPlanInfos?.find((plan) => plan.type === 'live-testing');
-    if (!isLiveTestingSubscribing && cloudLicense.liveTestingRemainingFreeSeconds <= 0) {
-      throw new HttpException(`Live testing is not subscribed. remainingFreeSeconds: ${cloudLicense.liveTestingRemainingFreeSeconds}`, HttpStatus.PAYMENT_REQUIRED);
-    }
-
-    return !!isLiveTestingSubscribing;
-  }
-
-  async getLiveSessionCount(): Promise<number> {
-    const count = await this.redis.get(config.redis.key.liveSessionCount());
-    if (count === null) {
-      return 0;
-    }
-
-    const parsed = parseInt(count);
-    if (isNaN(parsed)) {
-      return 0;
-    }
-
-    return parsed;
-  }
-
-  async setLiveSessionCount(count: number): Promise<void> {
-    await this.redis.set(config.redis.key.liveSessionCount(), count);
   }
 }

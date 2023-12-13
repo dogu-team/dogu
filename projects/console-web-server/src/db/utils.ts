@@ -56,7 +56,7 @@ export class RetryTransaction {
           return result;
         } catch (e) {
           const error = errorify(e);
-          logger.warn('retrySerialize.catch transaction failed', { tryCount, error });
+          logger.warn('retrySerialize.catch transaction failed', { tryCount, retryCount, retryInterval, error });
           await queryRunner.rollbackTransaction();
 
           onAfterRollbacks.reverse();
@@ -73,11 +73,12 @@ export class RetryTransaction {
           }
 
           if (tryCount === retryCount) {
+            logger.error('retrySerialize.catch transaction failed. retry count exceeded', { tryCount, retryCount, retryInterval });
             throw error;
           }
 
           if (isRetryCode(error)) {
-            logger.warn(`retrySerialize.catch serialization failure. retry after`, { tryCount, retryCount, retryInterval, error });
+            logger.warn(`retrySerialize.catch serialization failure. retry after`, { tryCount, retryCount, retryInterval });
             await new Promise((resolve) => setTimeout(resolve, retryInterval));
             continue;
           }
@@ -106,26 +107,21 @@ export async function getClient(dataSource: DataSource): Promise<Client> {
   return client;
 }
 
-export async function subscribe(
-  logger: DoguLogger,
-  dataSource: DataSource,
-  tableName: string,
-  fn: (
-    message:
-      | {
-          event: 'created';
-          data: Record<string, unknown>;
-        }
-      | {
-          event: 'updated';
-          data: Record<string, unknown>;
-        }
-      | {
-          event: 'deleted';
-          data: Record<string, unknown>;
-        },
-  ) => void,
-): Promise<void> {
+export type Message<T extends object = object> =
+  | {
+      event: 'created';
+      data: T;
+    }
+  | {
+      event: 'updated';
+      data: T;
+    }
+  | {
+      event: 'deleted';
+      data: T;
+    };
+
+export async function subscribe(logger: DoguLogger, dataSource: DataSource, tableName: string, fn: (message: Message) => void): Promise<void> {
   const client = await getClient(dataSource);
   const channelName = `${tableName}_event`;
   const functionName = `${tableName}_notify`;
@@ -186,7 +182,9 @@ LISTEN ${channelName};
     }
 
     try {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const message = JSON.parse(notification.payload);
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       fn(message);
     } catch (e) {
       logger.error('Failed to handle notification', {

@@ -1,5 +1,5 @@
 import {
-  DevicePropCamel,
+  BillingPlanType,
   DeviceUsageState,
   RoutineDeviceJobPropCamel,
   RoutineDeviceJobPropSnake,
@@ -8,30 +8,44 @@ import {
   RoutinePipelinePropSnake,
   RoutineStepPropCamel,
 } from '@dogu-private/console';
-import { PIPELINE_STATUS } from '@dogu-private/types';
-import { errorify } from '@dogu-tech/common';
-import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { DeviceId, isCompleted, OrganizationId, PIPELINE_STATUS, PROJECT_TYPE } from '@dogu-private/types';
+import { assertUnreachable, errorify } from '@dogu-tech/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
-import _ from 'lodash';
 import { Brackets, DataSource } from 'typeorm';
 import util from 'util';
 import { config } from '../../../config';
 import { RoutineDeviceJob } from '../../../db/entity/device-job.entity';
 import { DeviceRunner } from '../../../db/entity/device-runner.entity';
+import { Message, RetryTransaction } from '../../../db/utils';
+import { CloudLicenseSerializable, PaymentRequiredException } from '../../../enterprise/module/license/cloud-license.serializables';
+import { CloudLicenseService } from '../../../enterprise/module/license/cloud-license.service';
 import { DoguLogger } from '../../logger/logger';
+import { RoutineDeviceJobSubscriber } from '../../routine/pipeline/device-job/routine-device-job.subscriber';
 import { DeviceJobRunner } from '../../routine/pipeline/processor/runner/device-job-runner';
-import { StepRunner } from '../../routine/pipeline/processor/runner/step-runner';
+
+type RoutineDeviceJobInProgressResult = {
+  deviceOwnerOrganizationId: OrganizationId;
+  deviceExecutorOrganizationId: OrganizationId;
+  deviceId: DeviceId;
+  routineDeviceJob: RoutineDeviceJob;
+  planType: BillingPlanType;
+};
 
 @Injectable()
-export class DeviceJobUpdater {
+export class RoutineDeviceJobUpdater {
+  private readonly retryTransaction: RetryTransaction;
+
   constructor(
-    @InjectDataSource() private readonly dataSource: DataSource, //
-    @Inject(DeviceJobRunner)
-    private readonly deviceJobRunner: DeviceJobRunner,
-    @Inject(StepRunner)
-    private readonly stepRunner: StepRunner,
     private readonly logger: DoguLogger,
-  ) {}
+    @InjectDataSource()
+    private readonly dataSource: DataSource,
+    private readonly deviceJobRunner: DeviceJobRunner,
+    private readonly cloudLicenseService: CloudLicenseService,
+    private readonly routineDeviceJobSubscriber: RoutineDeviceJobSubscriber,
+  ) {
+    this.retryTransaction = new RetryTransaction(this.logger, this.dataSource);
+  }
 
   public async update(): Promise<void> {
     const functionsToCheck = [
@@ -98,94 +112,224 @@ export class DeviceJobUpdater {
   }
 
   private async checkWaitingDeviceJobsWithInProgressJob(): Promise<void> {
-    const waitingDeviceJobs = await this.dataSource
-      .getRepository(RoutineDeviceJob) //
-      .createQueryBuilder('deviceJob')
-      .innerJoinAndSelect(`deviceJob.${RoutineDeviceJobPropCamel.routineSteps}`, 'step')
-      .innerJoinAndSelect(`deviceJob.${RoutineDeviceJobPropCamel.device}`, 'device')
-      .innerJoinAndSelect(
-        `deviceJob.${RoutineDeviceJobPropCamel.routineJob}`, //
-        'job',
-        `job.${RoutineJobPropCamel.status} =:jobStatus`,
-        { jobStatus: PIPELINE_STATUS.IN_PROGRESS },
-      )
-      .leftJoinAndSelect(
-        `device.${DevicePropCamel.routineDeviceJobs}`, //
-        'deviceJobs',
-        `deviceJobs.${RoutineDeviceJobPropSnake.status} =:deviceJobsStatus`,
-        { deviceJobsStatus: PIPELINE_STATUS.IN_PROGRESS },
-      )
-      .innerJoinAndSelect(`job.${RoutineJobPropCamel.routinePipeline}`, 'pipeline')
-      .innerJoinAndSelect(`pipeline.${RoutinePipelinePropSnake.project}`, 'project')
-      .orderBy(`deviceJob.${RoutineDeviceJobPropCamel.routineDeviceJobId}`, 'ASC')
-      .orderBy(`step.${RoutineStepPropCamel.routineStepId}`, 'ASC')
-      .where({ status: PIPELINE_STATUS.WAITING })
-      .getMany();
+    const routineDeviceJobInProgressResults = await this.retryTransaction.serializable(async (context) => {
+      const { manager } = context;
+      const routineDeviceJobs = await manager.getRepository(RoutineDeviceJob).find({
+        where: {
+          status: PIPELINE_STATUS.WAITING,
+          routineJob: {
+            status: PIPELINE_STATUS.IN_PROGRESS,
+          },
+        },
+        relations: {
+          routineSteps: true,
+          device: {
+            organization: true,
+          },
+          routineJob: {
+            routinePipeline: {
+              project: true,
+            },
+          },
+        },
+        order: {
+          createdAt: 'asc',
+          routineSteps: {
+            routineStepId: 'asc',
+          },
+        },
+      });
 
-    if (waitingDeviceJobs.length === 0) {
-      return;
-    }
-
-    const deviceJobGroups = _.groupBy(waitingDeviceJobs, (deviceJob) => deviceJob.deviceId);
-    const deviceIds = Object.keys(deviceJobGroups);
-    for (const deviceId of deviceIds) {
-      const waitingRoutineDeviceJobsByDeviceId = deviceJobGroups[deviceId];
-      const sortedWaitingDeviceJobs = waitingRoutineDeviceJobsByDeviceId.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
-      const deviceRunners = await this.dataSource.getRepository(DeviceRunner).find({ where: { deviceId, isInUse: 0 }, relations: { device: { organization: true } } });
-      const promises = _.zip(deviceRunners, sortedWaitingDeviceJobs).map(async ([deviceRunner, deviceJob]) => {
-        if (!deviceRunner || !deviceJob) {
-          return;
-        }
-
-        if (!deviceRunner.device) {
-          throw new InternalServerErrorException({
-            reason: 'device must not be null',
-            deviceRunnerId: deviceRunner.deviceRunnerId,
-          });
-        }
-
-        const deviceRunnerDevice = deviceRunner.device;
-        if (deviceRunnerDevice.organization.shareable && deviceRunnerDevice.usageState !== DeviceUsageState.AVAILABLE) {
-          return;
-        }
-
-        const { device } = deviceJob;
+      const routineDeviceJobInProgressResults: RoutineDeviceJobInProgressResult[] = [];
+      for (const routineDeviceJob of routineDeviceJobs) {
+        const { deviceId, device, routineDeviceJobId, routineSteps, routineJob } = routineDeviceJob;
         if (!device) {
           throw new InternalServerErrorException({
             reason: 'device must not be null',
-            routineDeviceJobId: deviceJob.routineDeviceJobId,
+            routineDeviceJobId,
           });
         }
 
-        const { deviceId, organizationId } = device;
-        const steps = deviceJob.routineSteps;
-        if (!steps || steps.length === 0) {
-          throw new Error(`deviceJob ${deviceJob.routineDeviceJobId} has no steps`);
+        const { organizationId: deviceOwnerOrganizationId } = device;
+
+        if (!device.organization) {
+          throw new InternalServerErrorException({
+            reason: 'device.organization must not be null',
+            routineDeviceJobId,
+          });
         }
 
-        this.logger.info(`device-job ${deviceJob.routineDeviceJobId} status change to in_progress.`);
+        if (!routineSteps || routineSteps.length === 0) {
+          throw new InternalServerErrorException({
+            reason: 'deviceJob must have steps',
+            routineDeviceJobId,
+          });
+        }
 
-        await this.dataSource.manager.transaction(async (manager) => {
-          await manager.getRepository(DeviceRunner).update({ deviceRunnerId: deviceRunner.deviceRunnerId }, { isInUse: 1 });
-          deviceJob.deviceRunnerId = deviceRunner.deviceRunnerId;
-          await this.deviceJobRunner.setStatus(manager, deviceJob, PIPELINE_STATUS.IN_PROGRESS, new Date());
-          if (deviceRunnerDevice.organization.shareable) {
-            deviceRunnerDevice.usageState = DeviceUsageState.IN_USE;
-            await manager.save(deviceRunnerDevice);
+        if (!routineJob) {
+          throw new InternalServerErrorException({
+            reason: 'routineJob must not be null',
+            routineDeviceJobId,
+          });
+        }
+
+        const { routinePipeline } = routineJob;
+        if (!routinePipeline) {
+          throw new InternalServerErrorException({
+            reason: 'routinePipeline must not be null',
+            routineDeviceJobId,
+          });
+        }
+
+        const { project } = routinePipeline;
+        if (!project) {
+          throw new InternalServerErrorException({
+            reason: 'project must not be null',
+            routineDeviceJobId,
+          });
+        }
+
+        const { organizationId: deviceExecutorOrganizationId, type: projectType } = project;
+
+        const deviceRunner = await manager.getRepository(DeviceRunner).findOne({ where: { deviceId, isInUse: 0 } });
+        if (!deviceRunner) {
+          continue;
+        }
+
+        if (device.organization.shareable && device.usageState !== DeviceUsageState.AVAILABLE) {
+          continue;
+        }
+
+        // TODO: seperate function condition to planType, planType to validate
+        let planType: BillingPlanType | undefined;
+        let paymentRequiredException: PaymentRequiredException | undefined;
+        const cloudLicense = await this.cloudLicenseService.getLicenseInfo(deviceExecutorOrganizationId);
+        try {
+          if (device.organization.shareable) {
+            switch (projectType) {
+              case PROJECT_TYPE.WEB: {
+                await CloudLicenseSerializable.validateWebTestAutomation(context, cloudLicense);
+                planType = 'web-test-automation';
+                break;
+              }
+              case PROJECT_TYPE.APP: {
+                await CloudLicenseSerializable.validateMobileAppTestAutomation(context, cloudLicense);
+                planType = 'mobile-app-test-automation';
+                break;
+              }
+              case PROJECT_TYPE.GAME: {
+                await CloudLicenseSerializable.validateMobileGameTestAutomation(context, cloudLicense);
+                planType = 'mobile-game-test-automation';
+                break;
+              }
+              case PROJECT_TYPE.CUSTOM: {
+                throw new InternalServerErrorException({
+                  reason: 'custom project is not supported with shareable device',
+                  routineDeviceJobId,
+                });
+              }
+              default: {
+                assertUnreachable(projectType);
+              }
+            }
+          } else {
+            if (device.isHost !== 0) {
+              await CloudLicenseSerializable.validateSelfDeviceBrowser(context, cloudLicense);
+              planType = 'self-device-farm-browser';
+            } else {
+              await CloudLicenseSerializable.validateSelfDeviceMobile(context, cloudLicense);
+              planType = 'self-device-farm-mobile';
+            }
           }
+        } catch (e) {
+          if (e instanceof PaymentRequiredException) {
+            paymentRequiredException = e;
+          } else {
+            throw e;
+          }
+        }
+
+        if (paymentRequiredException) {
+          if (paymentRequiredException.retryable) {
+            continue;
+          } else {
+            // TODO: complete process
+            await this.deviceJobRunner.setStatus(manager, routineDeviceJob, PIPELINE_STATUS.FAILURE, new Date());
+            continue;
+          }
+        }
+
+        if (!planType) {
+          throw new InternalServerErrorException({
+            reason: 'planType must not be null',
+            routineDeviceJobId,
+          });
+        }
+
+        this.logger.info(`device-job ${routineDeviceJobId} status change to in_progress.`);
+
+        deviceRunner.isInUse = 1;
+        await manager.save(deviceRunner);
+
+        routineDeviceJob.deviceRunnerId = deviceRunner.deviceRunnerId;
+        await this.deviceJobRunner.setStatus(manager, routineDeviceJob, PIPELINE_STATUS.IN_PROGRESS, new Date());
+
+        if (device.organization.shareable) {
+          device.usageState = DeviceUsageState.IN_USE;
+          await manager.save(device);
+        }
+
+        routineDeviceJobInProgressResults.push({
+          deviceOwnerOrganizationId,
+          deviceExecutorOrganizationId,
+          deviceId,
+          routineDeviceJob,
+          planType,
+        });
+      }
+
+      return routineDeviceJobInProgressResults;
+    });
+
+    routineDeviceJobInProgressResults.forEach((routineDeviceJobInProgressResult) => {
+      const { routineDeviceJob, planType, deviceExecutorOrganizationId, deviceId, deviceOwnerOrganizationId } = routineDeviceJobInProgressResult;
+      const { routineDeviceJobId } = routineDeviceJob;
+      this.cloudLicenseService
+        .startUpdate({
+          organizationId: deviceExecutorOrganizationId,
+          planType,
+          key: 'routineDeviceJobId',
+          value: routineDeviceJobId.toString(),
+        })
+        .then((stopUpdate) => {
+          const handler: (message: Message<RoutineDeviceJob>) => void = (message) => {
+            if (message.data.routineDeviceJobId !== routineDeviceJobId) {
+              return;
+            }
+
+            if (!isCompleted(message.data.status)) {
+              return;
+            }
+
+            this.routineDeviceJobSubscriber.emitter.off('message', handler);
+            stopUpdate();
+          };
+          this.routineDeviceJobSubscriber.emitter.on('message', handler);
+        })
+        .catch((error) => {
+          this.logger.error('startUpdate process error', { error: errorify(error) });
         });
 
-        this.deviceJobRunner.sendRunDeviceJob(organizationId, deviceId, deviceJob).catch((error) => {
+      this.deviceJobRunner
+        .sendRunDeviceJob({
+          organizationId: deviceOwnerOrganizationId,
+          deviceId,
+          routineDeviceJob,
+        })
+        .catch((error) => {
           this.logger.error('sendRunDeviceJob process error', { error: errorify(error) });
         });
-      });
-
-      const results = await Promise.allSettled(promises);
-      const rejectedResults = results.filter((result) => result.status === 'rejected');
-      if (rejectedResults.length > 0) {
-        this.logger.error('checkWaitingDeviceJobsWithInProgressJob process error', { rejectedResults });
-      }
-    }
+    });
   }
 
   private async checkHeartBeatExpiredDeviceJobs(): Promise<void> {

@@ -32,6 +32,7 @@ export const WebSocketCode = {
 
   // custom codes
   Unauthorized: 4000,
+  BadRequest: 4001,
 };
 
 export function closeWebSocketWithTruncateReason(webSocket: WebSocketCloseable, code?: number, reason?: unknown): void {
@@ -47,4 +48,13 @@ export function closeWebSocketWithTruncateReason(webSocket: WebSocketCloseable, 
   const uint8Array = new TextEncoder().encode(message);
   const truncatedMessage = new TextDecoder().decode(uint8Array.slice(0, 123));
   webSocket.close(code, truncatedMessage);
+}
+
+export class WebSocketException extends Error {
+  constructor(
+    readonly code: number,
+    message: string,
+  ) {
+    super(message);
+  }
 }

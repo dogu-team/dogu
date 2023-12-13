@@ -81,7 +81,8 @@ export class BillingTokenService implements OnModuleInit {
     return saved;
   }
 
-  async validateBillingApiTokenFromRequest(request: IncomingMessage, now: Date): Promise<void> {
+  async validateBillingApiTokenFromRequest(request: IncomingMessage): Promise<void> {
+    const now = this.dateTimeSimulatorService.now();
     const parsedUrl = new URL(request.url ?? '', 'http://localhost');
     const token = parsedUrl.searchParams.get('token');
     if (!token) {

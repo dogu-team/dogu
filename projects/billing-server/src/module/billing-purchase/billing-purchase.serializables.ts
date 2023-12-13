@@ -19,7 +19,7 @@ import { BillingPlanInfo } from '../../db/entity/billing-plan-info.entity';
 import { BillingPlanSource } from '../../db/entity/billing-plan-source.entity';
 import { CloudLicense } from '../../db/entity/cloud-license.entity';
 import { SelfHostedLicense } from '../../db/entity/self-hosted-license.entity';
-import { RetryTransactionContext } from '../../db/retry-transaction';
+import { RetryTransactionContext } from '../../db/utils';
 import { parseCoupon, useCoupon } from '../billing-coupon/billing-coupon.serializables';
 import { ResolveCouponResultSuccess } from '../billing-coupon/billing-coupon.utils';
 import { createPurchase } from '../billing-method/billing-method-nice.serializables';

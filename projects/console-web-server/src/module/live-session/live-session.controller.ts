@@ -20,7 +20,7 @@ export class LiveSessionController {
   async create(@Body() body: LiveSessionCreateRequestBodyDto): Promise<LiveSession> {
     const { organizationId } = body;
     const cloudLicense = await this.cloudLicenseService.getLicenseInfo(organizationId);
-    const liveSession = await this.liveSessionService.createOrReject(body, cloudLicense);
+    const liveSession = await this.liveSessionService.create(body, cloudLicense);
     return liveSession;
   }
 

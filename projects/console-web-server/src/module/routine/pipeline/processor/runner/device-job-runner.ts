@@ -14,6 +14,12 @@ import { DeviceJobMessenger } from '../device-job-messenger';
 import { DestRunner } from './dest-runner';
 import { StepRunner } from './step-runner';
 
+type SendRunDeviceJobOptions = {
+  organizationId: OrganizationId;
+  deviceId: DeviceId;
+  routineDeviceJob: RoutineDeviceJob;
+};
+
 type PostUpdateResult = {
   resetDevice: {
     organizationId: OrganizationId;
@@ -37,9 +43,10 @@ export class DeviceJobRunner {
     private readonly deviceCommandService: DeviceCommandService,
   ) {}
 
-  async sendRunDeviceJob(organizationId: OrganizationId, deviceId: DeviceId, deviceJob: RoutineDeviceJob): Promise<void> {
-    this.logger.info(`DeviceJob [${deviceJob.routineDeviceJobId}] send run request to device [${deviceId}]`);
-    await this.deviceJobMessanger.sendRunDeviceJob(organizationId, deviceId, deviceJob);
+  async sendRunDeviceJob(options: SendRunDeviceJobOptions): Promise<void> {
+    const { organizationId, deviceId, routineDeviceJob } = options;
+    this.logger.info(`DeviceJob [${routineDeviceJob.routineDeviceJobId}] send run request to device [${deviceId}]`);
+    await this.deviceJobMessanger.sendRunDeviceJob(organizationId, deviceId, routineDeviceJob);
   }
 
   async sendCancelDeviceJob(organizationId: OrganizationId, deviceId: DeviceId, executorOrganizationId: OrganizationId, deviceJob: RoutineDeviceJob): Promise<void> {
@@ -97,7 +104,7 @@ export class DeviceJobRunner {
       deviceJob.completedAt = serverTimeStamp;
     }
     deviceJob.status = incomingStatus;
-    await manager.getRepository(RoutineDeviceJob).save(deviceJob);
+    await manager.save(deviceJob);
   }
 
   private async postUpdate(

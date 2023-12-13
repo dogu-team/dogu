@@ -1,5 +1,5 @@
 import { BillingPlanSource } from '../../db/entity/billing-plan-source.entity';
-import { RetryTransactionContext } from '../../db/retry-transaction';
+import { RetryTransactionContext } from '../../db/utils';
 import { FindPlanSourceOptions } from './billing-plan-source.service';
 
 export async function findBillingPlanSource(context: RetryTransactionContext, options: FindPlanSourceOptions): Promise<BillingPlanSource | null> {

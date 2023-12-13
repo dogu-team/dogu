@@ -5,7 +5,7 @@ import { DataSource } from 'typeorm';
 import { BillingHistory } from '../../db/entity/billing-history.entity';
 import { BillingOrganization } from '../../db/entity/billing-organization.entity';
 import { BillingPlanHistory } from '../../db/entity/billing-plan-history.entity';
-import { RetryTransaction } from '../../db/retry-transaction';
+import { RetryTransaction } from '../../db/utils';
 import { DoguLogger } from '../logger/logger';
 
 @Injectable()

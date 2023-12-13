@@ -1,12 +1,16 @@
-import { DeviceRunner } from '@dogu-private/types';
+import { DeviceId, DeviceRunnerId } from '@dogu-private/types';
 import { camelToSnakeCasePropertiesOf, propertiesOf } from '@dogu-tech/common';
 import { DeviceBase } from './device';
 
-interface DeviceRunnerRelationTraits {
+export type DeviceRunnerBase = {
+  deviceRunnerId: DeviceRunnerId;
+  isInUse: number;
+  deviceId: DeviceId;
+  createdAt: Date;
+  updatedAt: Date;
+  deletedAt: Date | null;
   device?: DeviceBase;
-}
-
-export type DeviceRunnerBase = DeviceRunner & DeviceRunnerRelationTraits;
+};
 
 export const DeviceRunnerPropCamel = propertiesOf<DeviceRunnerBase>();
 export const DeviceRunnerPropSnake = camelToSnakeCasePropertiesOf<DeviceRunnerBase>();

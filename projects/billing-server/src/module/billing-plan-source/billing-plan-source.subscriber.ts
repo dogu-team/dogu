@@ -4,7 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { BillingPlanSource, BillingPlanSourceTableName } from '../../db/entity/billing-plan-source.entity';
-import { subscribe } from '../../db/retry-transaction';
+import { subscribe } from '../../db/utils';
 import { DoguLogger } from '../logger/logger';
 import { PaddleCaller } from '../paddle/paddle.caller';
 import { matchPrice, matchProduct } from '../paddle/paddle.utils';

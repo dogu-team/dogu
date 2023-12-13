@@ -1,16 +1,17 @@
-import { DeviceConnectionState, LiveSessionActiveStates, LiveSessionState } from '@dogu-private/types';
+import { DeviceConnectionState, LiveSessionState } from '@dogu-private/types';
 import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
-import { DataSource, In, Not } from 'typeorm';
+import { DataSource, Not } from 'typeorm';
 
 import { config } from '../../config';
 import { LiveSession } from '../../db/entity/live-session.entity';
-import { LiveSessionService } from '../live-session/live-session.service';
+import { CloudLicenseService } from '../../enterprise/module/license/cloud-license.service';
+import { EventConsumer } from '../event/event.consumer';
+import { EventProducer } from '../event/event.producer';
+import { applyLiveSessionToClosed, closeInTransaction, LiveSessionService } from '../live-session/live-session.service';
 import { DoguLogger } from '../logger/logger';
 import { DeviceCommandService } from '../organization/device/device-command.service';
 import { RedisService } from '../redis/redis.service';
-import { EventConsumer } from './event.consumer';
-import { EventProducer } from './event.producer';
 
 @Injectable()
 export class LiveSessionUpdater implements OnModuleInit, OnModuleDestroy {
@@ -20,10 +21,11 @@ export class LiveSessionUpdater implements OnModuleInit, OnModuleDestroy {
   constructor(
     @InjectDataSource()
     private readonly dataSource: DataSource,
-    private readonly redis: RedisService,
+    redis: RedisService,
     private readonly logger: DoguLogger,
     private readonly liveSessionService: LiveSessionService,
     private readonly deviceCommandService: DeviceCommandService,
+    private readonly cloudLicenseService: CloudLicenseService,
   ) {
     this.eventProducer = new EventProducer({
       redis,
@@ -55,37 +57,13 @@ export class LiveSessionUpdater implements OnModuleInit, OnModuleDestroy {
   }
 
   private async update(): Promise<void> {
-    await this.startUpdateCloudLicenseLiveTesting();
     await this.toClosedIfDeviceDisconnected();
     await this.createdToCloseWait();
     await this.closeWaitToCreatedOrClosed();
   }
 
-  private async startUpdateCloudLicenseLiveTesting(): Promise<void> {
-    const liveSessions = await this.dataSource.manager
-      .getRepository(LiveSession)
-      .createQueryBuilder()
-      .where({
-        state: In(LiveSessionActiveStates),
-      })
-      .getMany();
-    for (const liveSession of liveSessions) {
-      const cloudLicenseId = await this.liveSessionService.findCloudLicenseId(liveSession.liveSessionId);
-      if (!cloudLicenseId) {
-        continue;
-      }
-
-      const isCloudLicenseLiveTestingHeartbeatExists = await this.liveSessionService.isCloudLicenseLiveTestingHeartbeatExists(cloudLicenseId);
-      if (isCloudLicenseLiveTestingHeartbeatExists) {
-        continue;
-      }
-
-      await this.liveSessionService.startUpdateCloudLicenseLiveTesting(cloudLicenseId, liveSession.liveSessionId);
-    }
-  }
-
   private async toClosedIfDeviceDisconnected(): Promise<void> {
-    const closedSessions = await this.dataSource.manager.transaction(async (manager) => {
+    await this.dataSource.manager.transaction(async (manager) => {
       const disconnecteds = await manager.getRepository(LiveSession).find({
         where: {
           state: Not(LiveSessionState.CLOSED),
@@ -102,22 +80,14 @@ export class LiveSessionUpdater implements OnModuleInit, OnModuleDestroy {
         return [];
       }
 
-      const toCloseds = disconnecteds.map((liveSession) => LiveSessionService.updateLiveSessionToClosed(liveSession));
-      const closeds = await manager.getRepository(LiveSession).save(toCloseds);
+      const toCloseds = disconnecteds.map((liveSession) => applyLiveSessionToClosed(liveSession));
+      const closeds = await manager.save(toCloseds);
       return closeds;
     });
-
-    if (closedSessions.length > 0) {
-      await Promise.all(
-        closedSessions.map(async (liveSession) => {
-          await this.liveSessionService.publishCloseEvent(liveSession.liveSessionId, 'closed!');
-        }),
-      );
-    }
   }
 
   private async createdToCloseWait(): Promise<void> {
-    const closeWaitSessions = await this.dataSource.manager.transaction(async (manager) => {
+    await this.dataSource.manager.transaction(async (manager) => {
       const createds = await manager.getRepository(LiveSession).find({
         where: {
           state: LiveSessionState.CREATED,
@@ -142,25 +112,16 @@ export class LiveSessionUpdater implements OnModuleInit, OnModuleDestroy {
       }
 
       if (newCloseWaits.length > 0) {
-        const rv = await manager.save(newCloseWaits);
+        await manager.save(newCloseWaits);
         this.logger.debug('LiveSessionUpdater: createdToCloseWait', {
           newCloseWaits,
         });
-        return rv;
       }
     });
-
-    if (!!closeWaitSessions && closeWaitSessions.length > 0) {
-      await Promise.all(
-        closeWaitSessions.map(async (liveSession) => {
-          await this.liveSessionService.publishCloseWaitEvent(liveSession.liveSessionId, `closeWait!`);
-        }),
-      );
-    }
   }
 
   private async closeWaitToCreatedOrClosed(): Promise<void> {
-    const closedSessions = await this.dataSource.manager.transaction(async (manager) => {
+    await this.dataSource.manager.transaction(async (manager) => {
       const closeWaits = await manager //
         .getRepository(LiveSession)
         .find({
@@ -201,16 +162,8 @@ export class LiveSessionUpdater implements OnModuleInit, OnModuleDestroy {
         });
 
       if (toCloses.length > 0) {
-        return await LiveSessionService.closeInTransaction(this.logger, this.deviceCommandService, manager, toCloses);
+        return await closeInTransaction(this.logger, this.deviceCommandService, manager, toCloses);
       }
     });
-
-    if (!!closedSessions && closedSessions.length > 0) {
-      await Promise.all(
-        closedSessions.map(async (liveSession) => {
-          await this.liveSessionService.publishCloseEvent(liveSession.liveSessionId, 'closed!');
-        }),
-      );
-    }
   }
 }

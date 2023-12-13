@@ -32,7 +32,7 @@ export class WebSocketClientFactory {
   }
 }
 
-export function rawToString(raw: unknown): string {
+export function rawMessageToString(raw: unknown): string {
   if (raw instanceof Buffer) {
     return raw.toString();
   } else if (raw instanceof ArrayBuffer) {
@@ -41,7 +41,7 @@ export function rawToString(raw: unknown): string {
     if (raw.length === 0) {
       return '';
     } else {
-      return raw.map((item) => rawToString(item)).join('');
+      return raw.map((item) => rawMessageToString(item)).join('');
     }
   } else if (typeof raw === 'string') {
     return raw;

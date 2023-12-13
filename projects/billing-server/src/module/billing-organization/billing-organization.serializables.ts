@@ -3,7 +3,7 @@ import { ConflictException } from '@nestjs/common';
 import { v4 } from 'uuid';
 import { BillingOrganizationUsedBillingCoupon } from '../../db/entity/billing-organization-used-billing-coupon.entity';
 import { BillingOrganization } from '../../db/entity/billing-organization.entity';
-import { RetryTransactionContext } from '../../db/retry-transaction';
+import { RetryTransactionContext } from '../../db/utils';
 
 export async function findBillingOrganization(context: RetryTransactionContext, options: FindBillingOrganizationOptions): Promise<BillingOrganization | null> {
   const { manager } = context;

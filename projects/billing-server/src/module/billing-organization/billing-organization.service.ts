@@ -11,7 +11,7 @@ import { Injectable, InternalServerErrorException, NotFoundException } from '@ne
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { BillingOrganization } from '../../db/entity/billing-organization.entity';
-import { RetryTransaction } from '../../db/retry-transaction';
+import { RetryTransaction } from '../../db/utils';
 import { BillingMethodPaddleCustomerService } from '../billing-method/billing-method-paddle.customer-service';
 import { DoguLogger } from '../logger/logger';
 import { PaddleCaller } from '../paddle/paddle.caller';
