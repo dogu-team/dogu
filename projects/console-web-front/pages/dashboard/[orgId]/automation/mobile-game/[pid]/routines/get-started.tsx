@@ -126,7 +126,6 @@ const CenteredBox = styled(Box)`
   flex: 1;
   flex-direction: column;
   justify-content: center;
-  background-color: ${(props) => props.theme.main.colors.blue6};
 `;
 
 const HeaderContent = styled.div`
