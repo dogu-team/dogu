@@ -9,6 +9,7 @@ import { swrAuthFetcher } from '../../api';
 import UpgradePlanModal from '../billing/UpgradePlanModal';
 import useModal from '../../hooks/useModal';
 import useBillingPlanPurchaseStore from '../../stores/billing-plan-purchase';
+import useTranslation from 'next-translate/useTranslation';
 
 const DeviceCounter: React.FC = () => {
   const license = useLicenseStore((state) => state.license);
@@ -21,6 +22,7 @@ const DeviceCounter: React.FC = () => {
     },
   );
   const updateBillingGroupType = useBillingPlanPurchaseStore((state) => state.updateBillingGroupType);
+  const { t } = useTranslation();
 
   useRefresh(['onDeviceAdded', 'onDeviceUpdated', 'onDeviceStopped', 'onAddDeviceToProjectModalClosed'], () =>
     mutateCountInfo(),
@@ -56,7 +58,7 @@ const DeviceCounter: React.FC = () => {
               openModal();
             }}
           >
-            Upgrade plan <ArrowRightOutlined />
+            {t('billing:upgradePlanButtonTitle')} <ArrowRightOutlined />
           </UpgradePlanButton>
         </div>
       </FlexRow>

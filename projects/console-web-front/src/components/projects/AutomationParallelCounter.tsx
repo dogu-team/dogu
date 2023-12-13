@@ -5,7 +5,11 @@ interface Props {
 }
 
 const AutomationParallelCounter: React.FC<Props> = ({ maxParallel }) => {
-  return <div style={{ lineHeight: '1.5', fontSize: '.8rem', color: '#222' }}>Max parallel tests: {maxParallel}</div>;
+  return (
+    <div style={{ lineHeight: '1.5', fontSize: '.8rem', color: '#222' }}>
+      Cloud device max parallel tests: {maxParallel}
+    </div>
+  );
 };
 
 export const WebTestAutomationParallelCounter: React.FC = () => {

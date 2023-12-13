@@ -28,7 +28,8 @@ const MobileGameTestAutomationFreeTierTopBanner: React.FC<Props> = () => {
     return (
       <Box>
         <span style={{ fontSize: '.85rem' }}>
-          <ClockCircleOutlined /> {(remainingSeconds / 60).toFixed(0)} min{remainingSeconds > 1 ? 's' : ''} left.
+          <ClockCircleOutlined /> {(remainingSeconds / 60).toFixed(0)} min{remainingSeconds > 1 ? 's' : ''} left(Cloud
+          device).
         </span>
         {!!me && hasAdminPermission(me) && (
           <StyledButton type="ghost" groupType="mobile-game-test-automation-group">
