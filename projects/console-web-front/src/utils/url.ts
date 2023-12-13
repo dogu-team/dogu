@@ -20,6 +20,7 @@ export const DoguDocsUrl = {
       },
     },
     tutorials: {
+      'test-automation': () => `${DoguDocsUrl._index()}/get-started/tutorials/test-automation`,
       'device-farm': () => `${DoguDocsUrl._index()}/get-started/tutorials/device-farm`,
     },
   },

@@ -191,8 +191,7 @@ const ProjectListController = ({ organizationId, projectType }: Props) => {
                   i18nKey="project:projectEmptyDescription"
                   components={{
                     br: <br />,
-                    tutorialLink: <Link href={`/dashboard/${router.query.orgId}/get-started`} />,
-                    link: <Link href={DoguDocsUrl.management.project._index()} target="_blank" />,
+                    link: <Link href={DoguDocsUrl['get-started'].tutorials['test-automation']()} target="_blank" />,
                   }}
                 />
               }
