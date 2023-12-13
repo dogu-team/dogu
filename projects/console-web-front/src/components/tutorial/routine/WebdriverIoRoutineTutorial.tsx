@@ -80,11 +80,10 @@ on:
 
 jobs:
   sample-job:
-    runs-on:
-      group:
-        - android
+    runs-on: []
     appPackageName:
     record: true
+    cloud: true
     steps:
       - name: Run test step
         uses: dogu-actions/run-test

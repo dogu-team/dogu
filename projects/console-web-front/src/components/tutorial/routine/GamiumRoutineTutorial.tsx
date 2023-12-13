@@ -64,16 +64,16 @@ on:
 
 jobs:
   sample-job:
-    runs-on:
-      group:
-        - android
+    runs-on: []
     appPackageName:
     record: true
+    cloud: true
     steps:
       - name: Run test step
         uses: dogu-actions/run-test
         with:
           checkout: true
+          clean: true
           environment: ${selectedGuide?.environment ?? ''}
           command: |
             ${selectedGuide?.command ?? ''}
