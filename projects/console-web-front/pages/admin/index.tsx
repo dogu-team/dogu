@@ -13,34 +13,39 @@ import { NextPageWithLayout } from '../_app';
 const AdminPage: NextPageWithLayout<AdminProps> = ({ license }) => {
   const router = useRouter();
 
-  return (
-    <Box>
-      <FlexRow style={{ padding: '1rem 0' }}>
-        <StyledH1>Admin Settings</StyledH1>
-      </FlexRow>
-      <FlexRow style={{ alignItems: 'flex-start' }}>
-        <Sidebar>
-          <MenuItem href="/admin" isSelected={router.pathname === '/admin'}>
-            <KeyOutlined /> License
-          </MenuItem>
-        </Sidebar>
-        <Content>
-          <SelfHostedLicenseContainer license={license ?? undefined} organizationId={null} />
-        </Content>
-      </FlexRow>
-    </Box>
-  );
+  // return (
+  //   <Box>
+  //     <FlexRow style={{ padding: '1rem 0' }}>
+  //       <StyledH1>Admin Settings</StyledH1>
+  //     </FlexRow>
+  //     <FlexRow style={{ alignItems: 'flex-start' }}>
+  //       <Sidebar>
+  //         <MenuItem href="/admin" isSelected={router.pathname === '/admin'}>
+  //           <KeyOutlined /> License
+  //         </MenuItem>
+  //       </Sidebar>
+  //       <Content>
+  //         <SelfHostedLicenseContainer license={license ?? undefined} organizationId={null} />
+  //       </Content>
+  //     </FlexRow>
+  //   </Box>
+  // );
+  return null;
 };
 
-AdminPage.getLayout = (page) => {
-  return (
-    <ConsoleBasicLayout user={page.props.user} license={page.props.license}>
-      {page}
-    </ConsoleBasicLayout>
-  );
-};
+// AdminPage.getLayout = (page) => {
+//   return (
+//     <ConsoleBasicLayout user={page.props.user} license={page.props.license}>
+//       {page}
+//     </ConsoleBasicLayout>
+//   );
+// };
 
-export const getServerSideProps: GetServerSideProps<AdminProps> = getSelfHostedAdminServerSideProps;
+export const getServerSideProps: GetServerSideProps<AdminProps> = async () => {
+  return {
+    notFound: true,
+  };
+};
 
 export default AdminPage;
 

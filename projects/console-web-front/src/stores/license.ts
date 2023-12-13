@@ -1,9 +1,9 @@
-import { CloudLicenseResponse, SelfHostedLicenseResponse } from '@dogu-private/console';
+import { CloudLicenseResponse } from '@dogu-private/console';
 import { create } from 'zustand';
 
 export interface LicenseStore {
-  license: CloudLicenseResponse | SelfHostedLicenseResponse | null;
-  updateLicense: (license: CloudLicenseResponse | SelfHostedLicenseResponse | null) => void;
+  license: CloudLicenseResponse | null;
+  updateLicense: (license: CloudLicenseResponse | null) => void;
 }
 
 const useLicenseStore = create<LicenseStore>((set) => ({

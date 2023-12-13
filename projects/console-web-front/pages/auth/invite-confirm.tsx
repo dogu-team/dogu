@@ -1,6 +1,6 @@
 import { OrganizationId } from '@dogu-private/types';
 import { GetServerSideProps } from 'next';
-import { CloudLicenseResponse, SelfHostedLicenseResponse, UserAndInvitationTokenBase } from '@dogu-private/console';
+import { CloudLicenseResponse, UserAndInvitationTokenBase } from '@dogu-private/console';
 import { Button } from 'antd';
 import { useRouter } from 'next/router';
 import styled from 'styled-components';
@@ -23,10 +23,10 @@ interface Props {
   email: string;
   token: string;
   invitation: UserAndInvitationTokenBase;
-  license: CloudLicenseResponse | SelfHostedLicenseResponse;
+  license: CloudLicenseResponse;
 }
 
-const InviteConfirmPage: NextPageWithLayout<Props> = ({ email, token, invitation, license }) => {
+const InviteConfirmPage: NextPageWithLayout<Props> = ({ email, token, invitation }) => {
   const router = useRouter();
   const [loading, request] = useRequest(acceptInivitation);
 

@@ -8,7 +8,6 @@ import { BillingCouponBase } from './billing-coupon';
 import { BillingMethodNicePublic } from './billing-method-nice';
 import { BillingPlanInfoResponse } from './billing-plan-info';
 import { CloudLicenseBase } from './cloud-license';
-import { SelfHostedLicenseBase } from './self-hosted-license';
 
 export interface BillingPreprocessOptions {
   organizationId: string;
@@ -93,7 +92,7 @@ export interface CreatePurchaseResponse {
   ok: boolean;
   resultCode: BillingResultCode;
   plan: BillingPlanInfoResponse | null;
-  license: CloudLicenseBase | SelfHostedLicenseBase | null;
+  license: CloudLicenseBase | null;
   niceResultCode: string | null;
 }
 
@@ -141,7 +140,7 @@ export interface CreatePurchaseWithNewCardResponse {
   resultCode: BillingResultCode;
   plan: BillingPlanInfoResponse | null;
   method: BillingMethodNicePublic | null;
-  license: CloudLicenseBase | SelfHostedLicenseBase | null;
+  license: CloudLicenseBase | null;
   niceResultCode: string | null;
 }
 

@@ -1,5 +1,5 @@
 import { LoadingOutlined } from '@ant-design/icons';
-import { CloudLicenseResponse, SelfHostedLicenseResponse, UserBase } from '@dogu-private/console';
+import { CloudLicenseResponse, UserBase } from '@dogu-private/console';
 import { OrganizationId } from '@dogu-private/types';
 import { GetServerSideProps } from 'next';
 import useTranslation from 'next-translate/useTranslation';
@@ -22,7 +22,7 @@ import { NextPageWithLayout } from '../_app';
 
 interface BillingPageProps {
   me: UserBase;
-  license: CloudLicenseResponse | SelfHostedLicenseResponse;
+  license: CloudLicenseResponse;
 }
 
 const BillingPage: NextPageWithLayout<BillingPageProps> = ({ me, license }) => {

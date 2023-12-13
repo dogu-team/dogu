@@ -1,4 +1,13 @@
-import { DeviceBase, DevicePropCamel, DeviceResponse, DeviceTagBase, OrganizationPropCamel, ProjectBase, RuntimeInfoResponse } from '@dogu-private/console';
+import {
+  DeviceBase,
+  DevicePropCamel,
+  DeviceResponse,
+  DeviceTagBase,
+  GetEnabledDeviceCountResponse,
+  OrganizationPropCamel,
+  ProjectBase,
+  RuntimeInfoResponse,
+} from '@dogu-private/console';
 import { DeviceId, DeviceTagId, LocalDeviceDetectToken, OrganizationId, ProjectId, UserPayload } from '@dogu-private/types';
 import { Body, Controller, Delete, Get, Head, Inject, Param, Patch, Post, Query } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
@@ -44,6 +53,13 @@ export class DeviceController {
     @Query() dto: FindDevicesByOrganizationIdDto,
   ): Promise<Page<DeviceResponse>> {
     const rv = await this.deviceStatusService.findDevicesByOrganizationId(user, organizationId, dto);
+    return rv;
+  }
+
+  @Get('count')
+  @OrganizationPermission(ORGANIZATION_ROLE.MEMBER)
+  async getEnabledDeviceCount(@User() user: UserPayload, @Param(OrganizationPropCamel.organizationId) organizationId: OrganizationId): Promise<GetEnabledDeviceCountResponse> {
+    const rv = await this.deviceStatusService.getEnabledDeviceCount(organizationId);
     return rv;
   }
 

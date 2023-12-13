@@ -30,18 +30,17 @@ import {
   validateMaxParallelJobs,
 } from '@dogu-private/types';
 import { notEmpty } from '@dogu-tech/common';
-import { ForbiddenException, forwardRef, HttpException, HttpStatus, Inject, Injectable, NotFoundException, NotImplementedException } from '@nestjs/common';
+import { ForbiddenException, forwardRef, HttpException, HttpStatus, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { BaseEntity, Brackets, DataSource, EntityManager, In, IsNull, Not, SelectQueryBuilder } from 'typeorm';
 import { v4 } from 'uuid';
 
 import { DeviceRunner } from '../../../db/entity/device-runner.entity';
 import { Device } from '../../../db/entity/device.entity';
-import { DeviceBrowserInstallation, DeviceTag, Organization, Project } from '../../../db/entity/index';
+import { DeviceBrowserInstallation, DeviceTag, Project } from '../../../db/entity/index';
 import { DeviceAndDeviceTag } from '../../../db/entity/relations/device-and-device-tag.entity';
 import { ProjectAndDevice } from '../../../db/entity/relations/project-and-device.entity';
 import { CloudLicenseService } from '../../../enterprise/module/license/cloud-license.service';
-import { FeatureConfig } from '../../../feature.config';
 import { Page } from '../../common/dto/pagination/page';
 import { DeviceTagService } from '../device-tag/device-tag.service';
 import {
@@ -64,19 +63,9 @@ export class DeviceStatusService {
     private readonly dataSource: DataSource,
   ) {}
 
-  async getEnabledDeviceCount(): Promise<GetEnabledDeviceCountResponse> {
-    if (FeatureConfig.get('licenseModule') !== 'self-hosted') {
-      throw new NotImplementedException(`This feature is not supported in cloud.`);
-    }
-
-    const rootOrganization = await this.dataSource.getRepository(Organization).createQueryBuilder('organization').orderBy('organization.createdAt', 'ASC').getOne();
-
-    if (!rootOrganization) {
-      throw new NotFoundException(`Cannot find root's organization.`);
-    }
-
-    const enabledHostDevices = await DeviceStatusService.findEnabledHostDevices(this.dataSource.manager, rootOrganization.organizationId);
-    const enabledMobileDevices = await DeviceStatusService.findEnabledMobileDevices(this.dataSource.manager, rootOrganization.organizationId);
+  async getEnabledDeviceCount(organizationId: OrganizationId): Promise<GetEnabledDeviceCountResponse> {
+    const enabledHostDevices = await DeviceStatusService.findEnabledHostDevices(this.dataSource.manager, organizationId);
+    const enabledMobileDevices = await DeviceStatusService.findEnabledMobileDevices(this.dataSource.manager, organizationId);
 
     const enabledMobileCount = enabledMobileDevices.length;
     const enabledHostRunnerCount = enabledHostDevices.map((device) => device.maxParallelJobs).reduce((a, b) => a + b, 0);

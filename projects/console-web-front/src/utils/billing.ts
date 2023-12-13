@@ -8,14 +8,12 @@ import {
   CloudLicenseBase,
   CloudLicenseResponse,
   RegisterCardDto,
-  SelfHostedLicenseBase,
-  SelfHostedLicenseResponse,
 } from '@dogu-private/console';
 import { BillingMethodRegistrationFormValues } from '../components/billing/BillingMethodRegistrationForm';
 import { SelectedPlan } from '../stores/billing-plan-purchase';
 
 export const getSubscriptionPlansFromLicense = (
-  license: CloudLicenseBase | SelfHostedLicenseBase,
+  license: CloudLicenseBase,
   planTypes: BillingPlanType[] | null,
 ): BillingPlanInfoBase[] => {
   if ('licenseKey' in license) {
@@ -53,10 +51,7 @@ export const isLiveTestingFreePlan = (license: CloudLicenseResponse): boolean =>
 
 type SelectedPlanWithPeriod = SelectedPlan & { period: BillingPeriod };
 
-export const checkShouldPurchase = (
-  license: CloudLicenseResponse | SelfHostedLicenseResponse,
-  plan: SelectedPlanWithPeriod,
-): boolean => {
+export const checkShouldPurchase = (license: CloudLicenseResponse, plan: SelectedPlanWithPeriod): boolean => {
   const usingPlans = getSubscriptionPlansFromLicense(license, [plan.type]);
 
   if (!usingPlans.length) {
@@ -102,7 +97,7 @@ export const getHistoryAmount = (history: BillingHistoryBase | BillingPlanHistor
 
 export const getPaymentMethodFromLicense = (
   routerLocale: string = 'en',
-  license: CloudLicenseResponse | SelfHostedLicenseResponse,
+  license: CloudLicenseResponse,
 ): BillingMethod => {
   if (license.billingOrganization.billingMethod) {
     return license.billingOrganization.billingMethod;

@@ -3,7 +3,6 @@ import {
   BillingSubscriptionGroupType,
   BillingPlanInfoResponse,
   CloudLicenseResponse,
-  SelfHostedLicenseBase,
 } from '@dogu-private/console';
 import { Alert, List, MenuProps, Modal, Tag } from 'antd';
 import Trans from 'next-translate/Trans';
@@ -376,8 +375,6 @@ const BillingSubscribedPlanList: React.FC<Props> = () => {
   const license = useLicenseStore((state) => state.license);
 
   if (process.env.NEXT_PUBLIC_ENV === 'self-hosted') {
-    const selfHostedLicense = license as SelfHostedLicenseBase;
-
     return <div>Self hosted billing</div>;
   }
 

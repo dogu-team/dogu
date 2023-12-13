@@ -1,5 +1,5 @@
 import { DeviceBase } from '@dogu-private/console';
-import { HostId, OrganizationId, ProjectId } from '@dogu-private/types';
+import { HostId, OrganizationId } from '@dogu-private/types';
 import { Transfer } from 'antd';
 import { TransferDirection, TransferItem } from 'antd/es/transfer';
 import { isAxiosError } from 'axios';
@@ -15,10 +15,10 @@ import { sendErrorNotification, sendSuccessNotification } from '../../../src/uti
 import { getErrorMessageFromAxios } from '../../../src/utils/error';
 import DeviceConnectionStateTag from '../../../src/components/device/DeviceConnectionStateTag';
 import PlatformIcon from '../../../src/components/device/PlatformIcon';
-import { isPaymentRequired, isTimeout } from '../../utils/error';
+import { isPaymentRequired } from '../../utils/error';
 import useModal from '../../../src/hooks/useModal';
-import TimeoutDocsModal from '../license/TimeoutDocsModal';
-import { UpgradeDevicePlanBannerModal } from '../license/UpgradePlanBannerModal';
+import UpgradePlanModal from '../../../src/components/billing/UpgradePlanModal';
+import useBillingPlanPurchaseStore from '../../../src/stores/billing-plan-purchase';
 
 interface Props {
   organizationId: OrganizationId;
@@ -62,7 +62,7 @@ const TutorialDeviceList = ({ organizationId, hostId }: Props) => {
   );
   const [loading, setLoading] = useState(false);
   const [isBannerOpen, openBanner, closeBanner] = useModal();
-  const [isDocsOtpen, openDocs, closeDocs] = useModal();
+  const updateBillingGroupType = useBillingPlanPurchaseStore((state) => state.updateBillingGroupType);
   const { t } = useTranslation('tutorial');
 
   useRefresh(['onRefreshClicked'], async () => {
@@ -85,10 +85,8 @@ const TutorialDeviceList = ({ organizationId, hostId }: Props) => {
       if (isAxiosError(e)) {
         if (isPaymentRequired(e)) {
           close();
+          updateBillingGroupType('self-device-farm-group');
           openBanner();
-        } else if (isTimeout(e)) {
-          close();
-          openDocs();
         } else {
           sendErrorNotification(`Failed to use devices\b${getErrorMessageFromAxios(e)}`);
         }
@@ -147,13 +145,7 @@ const TutorialDeviceList = ({ organizationId, hostId }: Props) => {
         disabled={loading}
       />
 
-      <UpgradeDevicePlanBannerModal
-        isOpen={isBannerOpen}
-        close={closeBanner}
-        title={t('billing:addDeviceModalTitle')}
-        description={null}
-      />
-      <TimeoutDocsModal isOpen={isDocsOtpen} close={closeDocs} />
+      <UpgradePlanModal isOpen={isBannerOpen} close={closeBanner} />
     </>
   );
 };

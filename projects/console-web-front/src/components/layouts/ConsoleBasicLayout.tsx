@@ -1,5 +1,5 @@
 import { SlackOutlined } from '@ant-design/icons';
-import { CloudLicenseResponse, SelfHostedLicenseResponse, UserBase } from '@dogu-private/console';
+import { CloudLicenseResponse, UserBase } from '@dogu-private/console';
 import { Button, Tooltip } from 'antd';
 import Trans from 'next-translate/Trans';
 import Link from 'next/link';
@@ -21,7 +21,7 @@ import Header from './Header';
 interface Props {
   children: React.ReactNode;
   user?: UserBase;
-  license: SelfHostedLicenseResponse | CloudLicenseResponse | null;
+  license: CloudLicenseResponse | null;
 }
 
 const ConsoleBasicLayout = ({ children, user, license: licenseInfo }: Props) => {
@@ -45,7 +45,7 @@ const ConsoleBasicLayout = ({ children, user, license: licenseInfo }: Props) => 
     useEventStore.subscribe(({ eventName, payload }) => {
       if (eventName === 'onLicenseUpdated') {
         if (payload) {
-          updateLicense(payload as SelfHostedLicenseResponse | CloudLicenseResponse);
+          updateLicense(payload as CloudLicenseResponse);
         }
       }
     });
