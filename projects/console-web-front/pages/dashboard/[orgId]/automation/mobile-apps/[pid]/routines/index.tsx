@@ -56,10 +56,10 @@ const ProjectRoutinePage: NextPageWithLayout<ProjectServerSideProps> = ({ organi
 
                 <PipelineTopButtonWrapper>
                   <RowFlexBox>
-                    {/* <TutorialButton
+                    <TutorialButton
                       href={`/dashboard/${organization.organizationId}/automation/mobile-game/${project.projectId}/routines/get-started`}
                       style={{ marginRight: '.5rem' }}
-                    /> */}
+                    />
                     <RunRoutineButton
                       orgId={organization.organizationId}
                       projectId={project.projectId}

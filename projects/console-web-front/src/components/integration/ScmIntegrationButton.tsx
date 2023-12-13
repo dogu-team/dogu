@@ -91,6 +91,7 @@ const ScmIntegrationButton: React.FC<Props> = ({}) => {
         token: values.token,
       });
       sendSuccessNotification('SCM integration saved');
+      fireEvent('onOrganizationScmUpdated');
       mutate?.();
       handleClose();
     } catch (e) {

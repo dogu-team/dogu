@@ -116,7 +116,6 @@ export const getServerSideProps: GetServerSideProps<ProjectServerSideProps> = ge
 export default ProjectRoutineGetStartedPage;
 
 const Box = styled.div`
-  padding: 2rem;
   line-height: 1.5;
 `;
 
