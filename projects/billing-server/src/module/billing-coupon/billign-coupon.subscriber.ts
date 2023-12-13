@@ -1,4 +1,4 @@
-import { errorify, stringify } from '@dogu-tech/common';
+import { errorify, stringify, transform } from '@dogu-tech/common';
 import { Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
@@ -21,7 +21,7 @@ export class BillingCouponSubscriber {
     await subscribe(this.logger, this.dataSource, BillingCouponTableName, (message) => {
       this.logger.info('BillingCouponSubscriber.subscribe', { message: stringify(message) });
       (async (): Promise<void> => {
-        const coupon = message.data as unknown as BillingCoupon;
+        const coupon = transform(BillingCoupon, message.data);
         if (message.event === 'created' || message.event === 'updated') {
           const discounts = await this.paddleCaller.listDiscountsAll();
           const codeMatched = discounts.find((discount) => matchDiscountCode({ code: coupon.code }, discount));

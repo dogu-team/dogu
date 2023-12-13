@@ -1,4 +1,6 @@
 import { BillingCouponBase, BillingCouponType, BillingPeriod, BillingPlanType } from '@dogu-private/console';
+import { Type } from 'class-transformer';
+import { IsOptional } from 'class-validator';
 import { Column, Entity, PrimaryColumn } from 'typeorm';
 import { CreatedAt, DateColumn, DeletedAt, UpdatedAt } from '../decorators';
 
@@ -31,14 +33,20 @@ export class BillingCoupon implements BillingCouponBase {
   remainingAvailableCount!: number | null;
 
   @DateColumn({ nullable: true })
+  @Type(() => Date)
+  @IsOptional()
   expiredAt!: Date | null;
 
   @CreatedAt()
+  @Type(() => Date)
   createdAt!: Date;
 
   @UpdatedAt()
+  @Type(() => Date)
   updatedAt!: Date;
 
   @DeletedAt()
+  @Type(() => Date)
+  @IsOptional()
   deletedAt!: Date | null;
 }

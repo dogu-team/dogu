@@ -6,7 +6,7 @@ export interface WebSocketClientCreateOptions {
   /**
    * @default 5 * 60
    * @unit seconds
-   * @description dogu aws load balancer idle timeout is 400 seconds.
+   * @description dogu gcp load balancer idle timeout is 500 seconds.
    */
   pingInterval?: number;
 }
