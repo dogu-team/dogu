@@ -509,9 +509,13 @@ export class DeviceStatusService {
   }
 
   async checkDeviceStreamingAvailable(deviceId: DeviceId): Promise<void> {
-    const device = await this.dataSource.getRepository(Device).findOne({ where: { deviceId } });
+    const device = await this.dataSource.getRepository(Device).findOne({ where: { deviceId }, relations: ['projectAndDevices'] });
 
     if (device) {
+      if (device.isGlobal !== 1 && device.projectAndDevices?.length === 0) {
+        throw new ForbiddenException('Device is not using.');
+      }
+
       if (
         device.connectionState === DeviceConnectionState.DEVICE_CONNECTION_STATE_DISCONNECTED ||
         device.connectionState === DeviceConnectionState.DEVICE_CONNECTION_STATE_UNSPECIFIED ||
