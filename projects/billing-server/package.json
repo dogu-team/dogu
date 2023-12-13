@@ -21,7 +21,8 @@
     "typeorm:generate": "cross-env TZ=UTC NODE_ENV=development ts-node scripts/typeorm/typeorm-generate.ts",
     "typeorm:init": "cross-env TZ=UTC NODE_ENV=development ts-node scripts/typeorm/typeorm-init.ts",
     "typeorm:revert": "yarn run rebuild && cross-env TZ=UTC NODE_ENV=development yarn typeorm migration:revert -d ./src/migration.config.ts",
-    "typeorm:run": "yarn run rebuild && cross-env TZ=UTC NODE_ENV=development yarn typeorm migration:run -d ./src/migration.config.ts",
+    "typeorm:run": "cross-env TZ=UTC NODE_ENV=development yarn typeorm migration:run -d ./src/migration.config.ts",
+    "typeorm:run:build": "yarn run rebuild && yarn run typeorm:run",
     "typeorm:schema": "cross-env TZ=UTC NODE_ENV=development yarn typeorm schema:sync -d src/migration.config.ts",
     "typeorm:show": "cross-env TZ=UTC NODE_ENV=development yarn typeorm migration:show -d ./src/migration.config.ts"
   },
