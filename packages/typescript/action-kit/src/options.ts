@@ -16,6 +16,7 @@ function defaultActionKitOptions(): FilledActionKitOptions {
     DOGU_DEVICE_TOKEN: '',
     DOGU_DEVICE_SERVER_URL: '',
     DOGU_DEVICE_WORKSPACE_PATH: '',
+    DOGU_DEVICE_IS_SHAREABLE: 'false',
     DOGU_ROUTINE_WORKSPACE_PATH: '',
     DOGU_HOST_PLATFORM: 'unspecified',
     DOGU_HOST_WORKSPACE_PATH: '',

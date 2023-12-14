@@ -1,4 +1,4 @@
-import { ActionKit, assertUnreachable, checkoutProject, downloadApp, errorify, newCleanNodeEnv, stringify, ChildProcess } from '@dogu-tech/action-kit';
+import { ActionKit, assertUnreachable, checkoutProject, ChildProcess, downloadApp, errorify, newCleanNodeEnv, stringify } from '@dogu-tech/action-kit';
 import { exec, spawnSync } from 'child_process';
 import fs from 'fs';
 import _ from 'lodash';
@@ -20,6 +20,7 @@ ActionKit.run(async ({ options, logger, input, deviceHostClient, consoleActionCl
     DOGU_HOST_WORKSPACE_PATH,
     DOGU_DEVICE_SERIAL,
     DOGU_STEP_WORKING_PATH,
+    DOGU_DEVICE_IS_SHAREABLE,
   } = options;
   logger.info('log level', { DOGU_LOG_LEVEL });
 
@@ -91,6 +92,14 @@ ActionKit.run(async ({ options, logger, input, deviceHostClient, consoleActionCl
       ...appEnv,
     });
     env = _.merge(env, appEnv);
+
+    if (DOGU_DEVICE_IS_SHAREABLE === 'true' && DOGU_DEVICE_PLATFORM === 'ios') {
+      try {
+        await deviceHostClient.resignApp({ filePath: appPath });
+      } catch (e) {
+        logger.warn('Failed to resign app', { error: errorify(e) });
+      }
+    }
 
     if (uninstallApp) {
       logger.info('Uninstalling app...', { appPath });

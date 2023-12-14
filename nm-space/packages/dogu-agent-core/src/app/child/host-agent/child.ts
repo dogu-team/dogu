@@ -39,6 +39,7 @@ export class HostAgentChild implements Child {
     const DOGU_API_BASE_URL = appConfigService.get<string>('DOGU_API_BASE_URL');
     const DOGU_DEVICE_SERVER_HOST_PORT = appConfigService.get<string>('DOGU_DEVICE_SERVER_HOST_PORT');
     const DOGU_HOST_AGENT_PORT = appConfigService.get<number>('DOGU_HOST_AGENT_PORT');
+    const DOGU_DEVICE_IS_SHAREABLE = appConfigService.getOrDefault<boolean>('DOGU_DEVICE_IS_SHAREABLE', false);
     const DOGU_USE_SENTRY = this.featureConfigService.get('useSentry');
     if (!isValidDoguRunType(DOGU_RUN_TYPE)) {
       throw new Error(`Invalid DOGU_RUN_TYPE: ${DOGU_RUN_TYPE}`);
@@ -67,6 +68,7 @@ export class HostAgentChild implements Child {
           DOGU_ROOT_PID,
           DOGU_USE_SENTRY: DOGU_USE_SENTRY ? 'true' : 'false',
           DOGU_SECRET_INITIAL_ADMIN_TOKEN: this.authService.adminToken.value,
+          DOGU_DEVICE_IS_SHAREABLE: DOGU_DEVICE_IS_SHAREABLE ? 'true' : 'false',
         },
       },
       childLogger: this.logger,
