@@ -11,8 +11,8 @@ export const DefaultCloudLicenseCount: Record<BillingPlanType, number> = {
   'web-test-automation': 1,
   'mobile-app-test-automation': 1,
   'mobile-game-test-automation': 1,
-  'self-device-farm-browser': 2,
-  'self-device-farm-mobile': 2,
+  'self-device-farm-browser': 1,
+  'self-device-farm-mobile': 1,
 };
 
 export const CloudLicenseTableName = 'cloud_license';
