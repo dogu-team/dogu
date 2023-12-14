@@ -32,9 +32,7 @@ const SampleApplicationUploadStep = ({ hasSampleApp, category, extension }: Prop
         {extension === 'ipa' && (
           <Alert
             style={{ marginTop: '.5rem' }}
-            message={
-              'iOS의 Self device에서는 제공하는 샘플 앱을 설치할 수 없습니다. Self device에서 실행하기 위해서는 직접 앱을 업로드하세요.'
-            }
+            message={t('uploadSampleAppIosRestrictionMessage')}
             type="warning"
             showIcon
             action={

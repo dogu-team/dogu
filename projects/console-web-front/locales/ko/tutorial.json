@@ -74,6 +74,7 @@
   "doneStepTitle": "마치며, 더 알아보기 🚀",
 
   "uploadSampleAppButtonTitle": "예제 앱 업로드하기",
+  "uploadSampleAppIosRestrictionMessage": "iOS의 Self device에서는 제공하는 샘플 앱을 설치할 수 없습니다. Self device에서 실행하기 위해서는 직접 앱을 업로드하세요.",
   "uploadSampleAppNotSupportMessage": "해당 플랫폼에서는 예제 앱을 제공하지 않습니다. 대신 앱을 직접 업로드 해주세요.",
 
   "runTestNotSupportMessage": "해당 플랫폼에서는 예제 테스트 스크립트를 제공하지 않습니다. 직접 구성하여 테스트를 실행해 보세요.",
