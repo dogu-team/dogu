@@ -62,6 +62,8 @@ const ProjectRoutinePage: NextPageWithLayout<ProjectServerSideProps> = ({ organi
                     <TutorialButton
                       href={`/dashboard/${organization.organizationId}/automation/mobile-game/${project.projectId}/routines/get-started`}
                       style={{ marginRight: '.5rem' }}
+                      translationKey="tutorial"
+                      target="_self"
                     />
                     <RunRoutineButton
                       orgId={organization.organizationId}

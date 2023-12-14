@@ -42,7 +42,7 @@ const RoutineFrameworkSelectContainer = ({ skipButton }: Props) => {
         // return [TutorialSupportSdk.WEBDRIVERIO, TutorialSupportSdk.SELENIUM, TutorialSupportSdk.APPIUM];
         return [TutorialSupportSdk.SELENIUM];
       case PROJECT_TYPE.APP:
-        return [TutorialSupportSdk.APPIUM];
+        return [TutorialSupportSdk.APPIUM, TutorialSupportSdk.WEBDRIVERIO];
       case PROJECT_TYPE.GAME:
         return [TutorialSupportSdk.GAMIUM];
       default:

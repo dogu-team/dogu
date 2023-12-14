@@ -199,7 +199,13 @@ jobs:
               id={UPLOAD_SAMPLE_APP_ID}
               title={t('routineTutorialUploadSampleAppTitle')}
               description={<p>{t('routineTutorialUploadSampleAppDescription')}</p>}
-              content={<SampleApplicationUploadStep hasSampleApp={selectedGuide?.hasSampleApp} category="mobile" />}
+              content={
+                <SampleApplicationUploadStep
+                  hasSampleApp={selectedGuide?.hasSampleApp}
+                  category="mobile"
+                  extension="apk"
+                />
+              }
             />
           )}
           <GuideStep

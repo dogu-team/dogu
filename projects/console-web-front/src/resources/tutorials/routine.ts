@@ -25,13 +25,15 @@ export const routineTutorialSdkSupportInfo: TutorialSdkSupportInfoMap = {
   },
   [TutorialSupportSdk.WEBDRIVERIO]: {
     frameworksPerLang: {
-      [TutorialSupportLanguage.JAVASCRIPT]: [TutorialSupportFramework.JEST],
+      [TutorialSupportLanguage.TYPESCRIPT]: [TutorialSupportFramework.JEST],
     },
     targetsPerPlatform: {
-      [TutorialSupportPlatform.ANDROID]: [TutorialSupportTarget.WEB, TutorialSupportTarget.APP],
-      [TutorialSupportPlatform.IOS]: [TutorialSupportTarget.WEB, TutorialSupportTarget.APP],
-      [TutorialSupportPlatform.WINDOWS]: [TutorialSupportTarget.WEB],
-      [TutorialSupportPlatform.MACOS]: [TutorialSupportTarget.WEB],
+      [TutorialSupportPlatform.ANDROID]: [TutorialSupportTarget.APP],
+      [TutorialSupportPlatform.IOS]: [TutorialSupportTarget.APP],
+      // [TutorialSupportPlatform.ANDROID]: [TutorialSupportTarget.WEB, TutorialSupportTarget.APP],
+      // [TutorialSupportPlatform.IOS]: [TutorialSupportTarget.WEB, TutorialSupportTarget.APP],
+      // [TutorialSupportPlatform.WINDOWS]: [TutorialSupportTarget.WEB],
+      // [TutorialSupportPlatform.MACOS]: [TutorialSupportTarget.WEB],
     },
     defaultOptions: {
       framework: TutorialSupportFramework.JEST,
@@ -191,25 +193,25 @@ export const webdriverioRoutineTutorialData: RoutineTutorial = {
     },
     {
       framework: TutorialSupportFramework.JEST,
-      language: TutorialSupportLanguage.JAVASCRIPT,
+      language: TutorialSupportLanguage.TYPESCRIPT,
       platform: TutorialSupportPlatform.ANDROID,
       target: TutorialSupportTarget.APP,
       hasSampleApp: true,
-      cwd: 'webdriverio/javascript/jest',
+      cwd: 'webdriverio/typescript/jest',
       environment: 'node',
       command: `npm install
             npm run test:app:android`,
     },
     {
       framework: TutorialSupportFramework.JEST,
-      language: TutorialSupportLanguage.JAVASCRIPT,
+      language: TutorialSupportLanguage.TYPESCRIPT,
       platform: TutorialSupportPlatform.IOS,
       target: TutorialSupportTarget.APP,
       hasSampleApp: false,
-      cwd: 'webdriverio/javascript/jest',
+      cwd: 'webdriverio/typescript/jest',
       environment: 'node',
       command: `npm install
-            npm run test:app:android`,
+            npm run test:app:ios`,
     },
   ],
 };
@@ -277,7 +279,7 @@ export const gamiumRoutineTutorialData: RoutineTutorial = {
       language: TutorialSupportLanguage.TYPESCRIPT,
       platform: TutorialSupportPlatform.IOS,
       target: TutorialSupportTarget.UNITY,
-      hasSampleApp: false,
+      hasSampleApp: true,
       cwd: 'gamium/typescript/jest',
       environment: 'node',
       command: `npm install
@@ -292,18 +294,18 @@ export const gamiumRoutineTutorialData: RoutineTutorial = {
       cwd: 'gamium/python/pytest',
       environment: 'python',
       command: `pip install -r requirements.txt
-            pytest app/test_android.py --capture=no -x`,
+            pytest app/test_dogurpgsample.py --capture=no -x`,
     },
     {
       framework: TutorialSupportFramework.PYTEST,
       language: TutorialSupportLanguage.PYTHON,
       platform: TutorialSupportPlatform.IOS,
       target: TutorialSupportTarget.UNITY,
-      hasSampleApp: false,
+      hasSampleApp: true,
       cwd: 'gamium/python/pytest',
       environment: 'python',
       command: `pip install -r requirements.txt
-            pytest app/test_android.py --capture=no -x`,
+            pytest app/test_dogurpgsample.py --capture=no -x`,
     },
   ],
 };

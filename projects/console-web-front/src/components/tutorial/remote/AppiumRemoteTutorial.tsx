@@ -187,7 +187,13 @@ const AppiumRemoteTutorial = ({ organizationId, projectId }: RemoteTutorialProps
               id={UPLOAD_SAMPLE_APP_ID}
               title={t('remoteTestTutorialUploadSampleAppTitle')}
               description={<p>{t('remoteTestTutorialUploadSampleAppDescription')}</p>}
-              content={<SampleApplicationUploadStep hasSampleApp={selectedGuide?.hasSampleApp} category="mobile" />}
+              content={
+                <SampleApplicationUploadStep
+                  hasSampleApp={selectedGuide?.hasSampleApp}
+                  category="mobile"
+                  extension="apk"
+                />
+              }
             />
           )}
           <GuideStep

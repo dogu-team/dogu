@@ -78,13 +78,17 @@ export class OrganizationApplicationController {
           appFilePath = path.resolve(__dirname, '../../../../samples/mobile/wikipedia-sample.apk');
           break;
         case 'game':
-          appFilePath = path.resolve(__dirname, '../../../../samples/game/dogurpgsample.apk');
+          if (uploadSmapleAppDto.extension === 'ipa') {
+            appFilePath = path.resolve(__dirname, '../../../../samples/game/DoguRpgSample.ipa');
+          } else {
+            appFilePath = path.resolve(__dirname, '../../../../samples/game/dogurpgsample.apk');
+          }
           break;
         default:
           throw new BadRequestException('Invalid category');
       }
 
-      await this.applicationService.uploadSampleApk(manager, appFilePath, userPayload.userId, organizationId);
+      await this.applicationService.uploadSampleApp(manager, appFilePath, userPayload.userId, organizationId);
     });
   }
 

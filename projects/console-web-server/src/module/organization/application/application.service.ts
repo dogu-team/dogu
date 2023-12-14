@@ -211,20 +211,23 @@ export class OrganizationApplicationService {
     return await manager.getRepository(OrganizationApplication).save(newApp);
   }
 
-  async uploadSampleApk(manager: EntityManager, sampleAppPath: string, creatorUserId: UserId, organizationId: OrganizationId): Promise<void> {
+  async uploadSampleApp(manager: EntityManager, sampleAppPath: string, creatorUserId: UserId, organizationId: OrganizationId): Promise<void> {
     const buffer = await promisify(fs.readFile)(sampleAppPath);
     const size = (await promisify(fs.stat)(sampleAppPath)).size;
 
-    const apkFile: Express.Multer.File = {
+    const appName = sampleAppPath.split('/').pop()?.split('.')[0] ?? 'sample';
+    const extension = (sampleAppPath.split('.').pop() ?? 'apk') as 'apk' | 'ipa';
+
+    const appFile: Express.Multer.File = {
       fieldname: 'file',
-      originalname: 'dogurpgsample.apk',
+      originalname: `${appName}.${extension}`,
       encoding: '7bit',
-      mimetype: organizationAppMeta.apk.mimeTypes[0],
+      mimetype: organizationAppMeta[extension].mimeTypes[0],
       buffer: buffer,
       size: size,
     } as Express.Multer.File;
 
-    await this.uploadApplication(manager, apkFile, creatorUserId, CREATOR_TYPE.USER, organizationId);
+    await this.uploadApplication(manager, appFile, creatorUserId, CREATOR_TYPE.USER, organizationId);
     return;
   }
 

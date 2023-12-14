@@ -165,7 +165,13 @@ const GamiumRemoteTutorial = ({ organizationId, projectId }: RemoteTutorialProps
             id={UPLOAD_SAMPLE_APP_ID}
             title={t('remoteTestTutorialUploadSampleAppTitle')}
             description={<p>{t('remoteTestTutorialUploadSampleAppDescription')}</p>}
-            content={<SampleApplicationUploadStep hasSampleApp={selectedGuide?.hasSampleApp} category="game" />}
+            content={
+              <SampleApplicationUploadStep
+                hasSampleApp={selectedGuide?.hasSampleApp}
+                category="game"
+                extension={platform === TutorialSupportPlatform.IOS ? 'ipa' : 'apk'}
+              />
+            }
           />
           <GuideStep
             id={RUN_TEST_ID}

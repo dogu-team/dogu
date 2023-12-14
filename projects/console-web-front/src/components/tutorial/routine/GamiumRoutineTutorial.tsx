@@ -6,6 +6,7 @@ import useTutorialSelector from '../../../hooks/useTutorialSelector';
 import {
   ROUTINE_SAMPLE_GIT_URL,
   TutorialSupportLanguage,
+  TutorialSupportPlatform,
   TutorialSupportSdk,
   TutorialSupportTarget,
 } from '../../../resources/tutorials';
@@ -66,6 +67,7 @@ jobs:
   sample-job:
     runs-on: []
     appPackageName:
+      ${platform === TutorialSupportPlatform.IOS ? 'ios' : 'android'}: com.dogutech.DoguRpgSample
     record: true
     cloud: true
     steps:
@@ -155,7 +157,13 @@ jobs:
             id={UPLOAD_SAMPLE_APP_ID}
             title={t('routineTutorialUploadSampleAppTitle')}
             description={<p>{t('routineTutorialUploadSampleAppDescription')}</p>}
-            content={<SampleApplicationUploadStep hasSampleApp={selectedGuide?.hasSampleApp} category="game" />}
+            content={
+              <SampleApplicationUploadStep
+                hasSampleApp={selectedGuide?.hasSampleApp}
+                category="game"
+                extension={platform === TutorialSupportPlatform.IOS ? 'ipa' : 'apk'}
+              />
+            }
           />
           <GuideStep
             id={CREATE_ROUTINE_ID}

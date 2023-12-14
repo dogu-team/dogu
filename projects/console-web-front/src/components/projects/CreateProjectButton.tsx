@@ -30,8 +30,8 @@ const CreateProjectButton: React.FC<Props> = ({ projectType }: Props) => {
         close={closeModal}
         onCreate={(result) => {
           const moveTo = router.asPath.includes('?')
-            ? `${router.asPath.split('?')[0]}/${result.projectId}/routines`
-            : `${router.asPath}/${result.projectId}/routines`;
+            ? `${router.asPath.split('?')[0]}/${result.projectId}/routines/get-started`
+            : `${router.asPath}/${result.projectId}/routines/get-started`;
           router.push(moveTo);
         }}
         projectType={projectType}
