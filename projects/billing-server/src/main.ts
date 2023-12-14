@@ -63,14 +63,6 @@ async function bootstrap(): Promise<void> {
   const port = process.env.PORT || '4001';
   await app.listen(port);
   logger.info(`ready - started server on ${port}`);
-
-  const shutdownSignals = ['SIGINT', 'SIGTERM', 'SIGQUIT'];
-  app.enableShutdownHooks(shutdownSignals);
-  shutdownSignals.forEach((signal) => {
-    process.on(signal, () => {
-      logger.info(`shutdown - received ${signal}`);
-    });
-  });
 }
 
 bootstrap().catch((error) => {
