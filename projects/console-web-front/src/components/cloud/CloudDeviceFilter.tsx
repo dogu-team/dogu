@@ -1,9 +1,10 @@
 import { Platform } from '@dogu-private/types';
-import { Input, Select, SelectProps } from 'antd';
+import { Button, Input, Radio, Select, SelectProps, Space } from 'antd';
 import useTranslation from 'next-translate/useTranslation';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import useSWR from 'swr';
+import { shallow } from 'zustand/shallow';
 
 import { swrAuthFetcher } from '../../api';
 import useDebouncedInputValues from '../../hooks/useDebouncedInputValues';
@@ -50,7 +51,10 @@ const CloudDeviceFilter: React.FC = () => {
     debouncedValue: debouncedKeyword,
     handleChangeValues: handleChangekeyword,
   } = useDebouncedInputValues();
-  const [updateFilter, resetFilter] = useCloudDeviceFilterStore((state) => [state.updateFilter, state.resetFilter]);
+  const [platform, updateFilter, resetFilter] = useCloudDeviceFilterStore(
+    (state) => [state.filterValue.platform, state.updateFilter, state.resetFilter],
+    shallow,
+  );
   const { t } = useTranslation('cloud-device');
 
   useEffect(() => {
@@ -92,13 +96,31 @@ const CloudDeviceFilter: React.FC = () => {
 
   return (
     <FlexRow>
-      <Select<Platform>
+      {/* <Select<Platform>
         options={platformOptions}
         dropdownMatchSelectWidth={false}
         defaultValue={Platform.PLATFORM_UNSPECIFIED}
         onChange={(value) => updateFilter({ platform: () => value, version: () => '' })}
         style={{ marginRight: '.5rem' }}
-      />
+      /> */}
+      <Space.Compact style={{ marginRight: '.5rem' }}>
+        <Button
+          type={platform === Platform.PLATFORM_ANDROID ? 'primary' : 'default'}
+          icon={<PlatformIcon platform={Platform.PLATFORM_ANDROID} hideTooltip />}
+          style={{ width: '110px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+          onClick={() => updateFilter({ platform: () => Platform.PLATFORM_ANDROID, version: () => '' })}
+        >
+          Android
+        </Button>
+        <Button
+          type={platform === Platform.PLATFORM_IOS ? 'primary' : 'default'}
+          icon={<PlatformIcon platform={Platform.PLATFORM_IOS} hideTooltip />}
+          style={{ width: '110px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+          onClick={() => updateFilter({ platform: () => Platform.PLATFORM_IOS, version: () => '' })}
+        >
+          iOS
+        </Button>
+      </Space.Compact>
       <VersionSelect />
       <Input.Search
         placeholder={t('cloudDeviceFilterSearchInputPlaceholder')}

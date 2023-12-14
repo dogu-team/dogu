@@ -8,7 +8,7 @@ export interface CloudDeviceFilter extends Omit<Required<FindCloudDevicesDtoBase
 
 export const defaultCloudDeviceFilter: CloudDeviceFilter = {
   keyword: '',
-  platform: Platform.PLATFORM_UNSPECIFIED,
+  platform: Platform.PLATFORM_ANDROID,
   version: '',
 };
 
