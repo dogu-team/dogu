@@ -10,6 +10,8 @@ const DeviceFarmTutorialLinkButton = () => {
   return (
     <TutorialButton
       href={`/dashboard/${router.query.orgId}/get-started`}
+      translationKey="tutorial"
+      target="_self"
       onClick={() => {
         sessionStorage.removeItem(TUTORIAL_PROJECT_SESSION_KEY);
         sessionStorage.removeItem(TUTORIAL_HOST_SESSION_KEY);

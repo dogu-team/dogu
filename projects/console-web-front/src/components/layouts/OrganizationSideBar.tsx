@@ -385,9 +385,9 @@ const OrganizationSideBar = () => {
           <Box>
             <Menu style={{ borderInline: 'none' }} items={items} mode="inline" />
 
-            <div style={{ marginTop: '1rem' }}>
+            {/* <div style={{ marginTop: '1rem' }}>
               <Menu style={{ borderInline: 'none' }} items={bottomItems} mode="inline" />
-            </div>
+            </div> */}
           </Box>
         </SidebarInner>
       </div>

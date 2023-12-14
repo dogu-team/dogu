@@ -11,7 +11,9 @@ import TableListView from '../../../../../src/components/common/TableListView';
 import CreateProjectButton from '../../../../../src/components/projects/CreateProjectButton';
 import RefreshButton from '../../../../../src/components/buttons/RefreshButton';
 import LiveChat from '../../../../../src/components/external/livechat';
-import { flexRowSpaceBetweenStyle } from '../../../../../src/styles/box';
+import { flexRowBaseStyle, flexRowSpaceBetweenStyle } from '../../../../../src/styles/box';
+import TutorialButton from '../../../../../src/components/buttons/TutorialButton';
+import { DoguDocsUrl } from '../../../../../src/utils/url';
 
 const WebAutomationPage: NextPageWithLayout<OrganizationServerSideProps> = ({ user, organization }) => {
   return (
@@ -22,7 +24,10 @@ const WebAutomationPage: NextPageWithLayout<OrganizationServerSideProps> = ({ us
       <TableListView
         top={
           <FlexBox>
-            <CreateProjectButton projectType={PROJECT_TYPE.WEB} />
+            <FlexRow>
+              <CreateProjectButton projectType={PROJECT_TYPE.WEB} />
+              <TutorialButton href={DoguDocsUrl['get-started'].tutorials.web()} />
+            </FlexRow>
             <RefreshButton />
           </FlexBox>
         }
@@ -41,7 +46,11 @@ const WebAutomationPage: NextPageWithLayout<OrganizationServerSideProps> = ({ us
 
 WebAutomationPage.getLayout = (page) => {
   return (
-    <ConsoleLayout {...page.props} sidebar={<OrganizationSideBar />} titleI18nKey="organization:webAutomationPageTitle">
+    <ConsoleLayout
+      {...page.props}
+      sidebar={<OrganizationSideBar />}
+      titleI18nKey="organization:webAutomatioProjectPageTitle"
+    >
       {page}
     </ConsoleLayout>
   );
@@ -53,4 +62,12 @@ export default WebAutomationPage;
 
 const FlexBox = styled.div`
   ${flexRowSpaceBetweenStyle}
+`;
+
+const FlexRow = styled.div`
+  ${flexRowBaseStyle}
+
+  & > * {
+    margin-right: 0.5rem;
+  }
 `;

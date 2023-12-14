@@ -11,7 +11,9 @@ import TableListView from '../../../../../src/components/common/TableListView';
 import CreateProjectButton from '../../../../../src/components/projects/CreateProjectButton';
 import RefreshButton from '../../../../../src/components/buttons/RefreshButton';
 import LiveChat from '../../../../../src/components/external/livechat';
-import { flexRowSpaceBetweenStyle } from '../../../../../src/styles/box';
+import { flexRowBaseStyle, flexRowSpaceBetweenStyle } from '../../../../../src/styles/box';
+import TutorialButton from '../../../../../src/components/buttons/TutorialButton';
+import { DoguDocsUrl } from '../../../../../src/utils/url';
 
 const AppAutomationPage: NextPageWithLayout<OrganizationServerSideProps> = ({ user, organization }) => {
   return (
@@ -22,7 +24,10 @@ const AppAutomationPage: NextPageWithLayout<OrganizationServerSideProps> = ({ us
       <TableListView
         top={
           <FlexBox>
-            <CreateProjectButton projectType={PROJECT_TYPE.APP} />
+            <FlexRow>
+              <CreateProjectButton projectType={PROJECT_TYPE.APP} />
+              <TutorialButton href={DoguDocsUrl['get-started'].tutorials.mobile()} />
+            </FlexRow>
             <RefreshButton />
           </FlexBox>
         }
@@ -44,7 +49,7 @@ AppAutomationPage.getLayout = (page) => {
     <ConsoleLayout
       {...page.props}
       sidebar={<OrganizationSideBar />}
-      titleI18nKey="organization:mobileAppAutomationPageTitle"
+      titleI18nKey="organization:mobileAppAutomationProjectPageTitle"
     >
       {page}
     </ConsoleLayout>
@@ -57,4 +62,12 @@ export default AppAutomationPage;
 
 const FlexBox = styled.div`
   ${flexRowSpaceBetweenStyle}
+`;
+
+const FlexRow = styled.div`
+  ${flexRowBaseStyle}
+
+  & > * {
+    margin-right: 0.5rem;
+  }
 `;
