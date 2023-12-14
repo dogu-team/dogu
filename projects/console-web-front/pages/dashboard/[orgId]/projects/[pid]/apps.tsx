@@ -51,7 +51,7 @@ const ProjectAppPage: NextPageWithLayout<ProjectServerSideProps> = ({ project, o
                 href={DoguDocsUrl.api.organization.application['upload-application']()}
                 icon={<ApiOutlined style={{ fontSize: '1rem', color: '#000' }} />}
               >
-                Upload API
+                API
               </ExternalGuideLink>
             </MenuList>
             <div>

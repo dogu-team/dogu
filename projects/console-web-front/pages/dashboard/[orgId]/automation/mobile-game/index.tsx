@@ -11,10 +11,12 @@ import TableListView from '../../../../../src/components/common/TableListView';
 import CreateProjectButton from '../../../../../src/components/projects/CreateProjectButton';
 import RefreshButton from '../../../../../src/components/buttons/RefreshButton';
 import LiveChat from '../../../../../src/components/external/livechat';
-import { flexRowSpaceBetweenStyle } from '../../../../../src/styles/box';
 import TitleWithBannerAndOption from '../../../../../src/components/layouts/TitleWithBannerAndOption';
 import MobileGameTestAutomationFreeTierTopBanner from '../../../../../src/components/billing/MobileGameTestAutomationFreeTierTopBanner';
 import { MobileGameTestAutomationParallelCounter } from '../../../../../src/components/projects/AutomationParallelCounter';
+import { flexRowBaseStyle, flexRowSpaceBetweenStyle } from '../../../../../src/styles/box';
+import { DoguDocsUrl } from '../../../../../src/utils/url';
+import TutorialButton from '../../../../../src/components/buttons/TutorialButton';
 
 const GameAutomationPage: NextPageWithLayout<OrganizationServerSideProps> = ({ user, organization }) => {
   return (
@@ -25,7 +27,10 @@ const GameAutomationPage: NextPageWithLayout<OrganizationServerSideProps> = ({ u
       <TableListView
         top={
           <FlexBox>
-            <CreateProjectButton projectType={PROJECT_TYPE.GAME} />
+            <FlexRow>
+              <CreateProjectButton projectType={PROJECT_TYPE.GAME} />
+              <TutorialButton href={DoguDocsUrl['get-started'].tutorials.game()} />
+            </FlexRow>
             <RefreshButton />
           </FlexBox>
         }
@@ -49,7 +54,7 @@ GameAutomationPage.getLayout = (page) => {
       sidebar={<OrganizationSideBar />}
       title={
         <TitleWithBannerAndOption
-          titleKey="organization:mobileGameAutomationPageTitle"
+          titleKey="organization:mobileGameAutomationProjectPageTitle"
           banner={<MobileGameTestAutomationFreeTierTopBanner />}
           option={<MobileGameTestAutomationParallelCounter />}
         />
@@ -66,4 +71,12 @@ export default GameAutomationPage;
 
 const FlexBox = styled.div`
   ${flexRowSpaceBetweenStyle}
+`;
+
+const FlexRow = styled.div`
+  ${flexRowBaseStyle}
+
+  & > * {
+    margin-right: 0.5rem;
+  }
 `;

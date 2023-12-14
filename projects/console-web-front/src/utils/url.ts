@@ -22,6 +22,9 @@ export const DoguDocsUrl = {
     tutorials: {
       'test-automation': () => `${DoguDocsUrl._index()}/get-started/tutorials/test-automation`,
       'device-farm': () => `${DoguDocsUrl._index()}/get-started/tutorials/device-farm`,
+      mobile: () => `${DoguDocsUrl._index()}/get-started/tutorials/test-automation/appium/pytest`,
+      web: () => `${DoguDocsUrl._index()}/get-started/tutorials/test-automation/selenium/pytest`,
+      game: () => `${DoguDocsUrl._index()}/get-started/tutorials/test-automation/gamium/pytest/mobile`,
     },
   },
   integration: {

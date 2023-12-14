@@ -11,10 +11,12 @@ import TableListView from '../../../../../src/components/common/TableListView';
 import CreateProjectButton from '../../../../../src/components/projects/CreateProjectButton';
 import RefreshButton from '../../../../../src/components/buttons/RefreshButton';
 import LiveChat from '../../../../../src/components/external/livechat';
-import { flexRowSpaceBetweenStyle } from '../../../../../src/styles/box';
 import TitleWithBannerAndOption from '../../../../../src/components/layouts/TitleWithBannerAndOption';
 import MobileAppTestAutomationFreeTierTopBanner from '../../../../../src/components/billing/MobileAppTestAutomationFreeTierTopBanner';
 import { MobileAppTestAutomationParallelCounter } from '../../../../../src/components/projects/AutomationParallelCounter';
+import { flexRowBaseStyle, flexRowSpaceBetweenStyle } from '../../../../../src/styles/box';
+import TutorialButton from '../../../../../src/components/buttons/TutorialButton';
+import { DoguDocsUrl } from '../../../../../src/utils/url';
 
 const AppAutomationPage: NextPageWithLayout<OrganizationServerSideProps> = ({ user, organization }) => {
   return (
@@ -25,7 +27,10 @@ const AppAutomationPage: NextPageWithLayout<OrganizationServerSideProps> = ({ us
       <TableListView
         top={
           <FlexBox>
-            <CreateProjectButton projectType={PROJECT_TYPE.APP} />
+            <FlexRow>
+              <CreateProjectButton projectType={PROJECT_TYPE.APP} />
+              <TutorialButton href={DoguDocsUrl['get-started'].tutorials.mobile()} />
+            </FlexRow>
             <RefreshButton />
           </FlexBox>
         }
@@ -49,7 +54,7 @@ AppAutomationPage.getLayout = (page) => {
       sidebar={<OrganizationSideBar />}
       title={
         <TitleWithBannerAndOption
-          titleKey="organization:mobileAppAutomationPageTitle"
+          titleKey="organization:mobileAppAutomationProjectPageTitle"
           banner={<MobileAppTestAutomationFreeTierTopBanner />}
           option={<MobileAppTestAutomationParallelCounter />}
         />
@@ -66,4 +71,12 @@ export default AppAutomationPage;
 
 const FlexBox = styled.div`
   ${flexRowSpaceBetweenStyle}
+`;
+
+const FlexRow = styled.div`
+  ${flexRowBaseStyle}
+
+  & > * {
+    margin-right: 0.5rem;
+  }
 `;

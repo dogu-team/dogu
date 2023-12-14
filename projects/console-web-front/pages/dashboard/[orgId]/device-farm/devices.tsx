@@ -21,8 +21,8 @@ const TeamDevicePage: NextPageWithLayout<OrganizationServerSideProps> = ({ organ
         top={
           <TopWrapper>
             <FlexRow>
-              <DeviceFarmTutorialLinkButton />
               <DeviceFilter />
+              <DeviceFarmTutorialLinkButton />
             </FlexRow>
             <RefreshButton />
           </TopWrapper>
@@ -56,6 +56,6 @@ const FlexRow = styled.div`
   ${flexRowBaseStyle}
 
   & > * {
-    margin-right: 0.5rem;
+    margin-right: 0.25rem;
   }
 `;

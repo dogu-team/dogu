@@ -160,6 +160,19 @@ const ProjectListController = ({ organizationId, projectType }: Props) => {
     return <LoadingOutlined style={{ fontSize: '2rem' }} />;
   }
 
+  const getTutorialLink = (type: PROJECT_TYPE | undefined) => {
+    switch (type) {
+      case PROJECT_TYPE.WEB:
+        return DoguDocsUrl['get-started'].tutorials.web();
+      case PROJECT_TYPE.APP:
+        return DoguDocsUrl['get-started'].tutorials.mobile();
+      case PROJECT_TYPE.GAME:
+        return DoguDocsUrl['get-started'].tutorials.game();
+      default:
+        return '';
+    }
+  };
+
   return (
     <>
       <Header>
@@ -191,7 +204,7 @@ const ProjectListController = ({ organizationId, projectType }: Props) => {
                   i18nKey="project:projectEmptyDescription"
                   components={{
                     br: <br />,
-                    link: <Link href={DoguDocsUrl['get-started'].tutorials['test-automation']()} target="_blank" />,
+                    link: <a href={getTutorialLink(projectType)} target="_blank" />,
                   }}
                 />
               }

@@ -47,7 +47,7 @@ const OrganizationAppPage: NextPageWithLayout<OrganizationServerSideProps> = ({ 
                 href={DoguDocsUrl.api.organization.application['upload-application']()}
                 icon={<ApiOutlined style={{ fontSize: '1rem', color: '#000' }} />}
               >
-                Upload API
+                API
               </ExternalGuideLink>
             </FlexRow>
             <div>
@@ -63,7 +63,7 @@ const OrganizationAppPage: NextPageWithLayout<OrganizationServerSideProps> = ({ 
 
 OrganizationAppPage.getLayout = (page) => {
   return (
-    <ConsoleLayout {...page.props} sidebar={<OrganizationSideBar />} titleI18nKey="organization:appsPageTitle">
+    <ConsoleLayout {...page.props} sidebar={<OrganizationSideBar />} titleI18nKey="organization:appsStoragePageTitle">
       {page}
     </ConsoleLayout>
   );

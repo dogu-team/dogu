@@ -19,19 +19,11 @@ const RoutineGitIntegrationAlert: React.FC<{ isScmIntegrated: boolean }> = ({ is
         <Space direction="vertical">
           <Button
             type="primary"
-            size="small"
             style={{ width: '100%' }}
             onClick={() => router.push(`/dashboard/${router.query.orgId}/settings`)}
           >
             Integrate
           </Button>
-          <Link
-            href={DoguDocsUrl.management.organization['git-integration']._index()}
-            target="_blank"
-            style={{ textDecoration: 'none' }}
-          >
-            <Button size="small">Documentation</Button>
-          </Link>
         </Space>
       }
     />

@@ -11,10 +11,12 @@ import TableListView from '../../../../../src/components/common/TableListView';
 import CreateProjectButton from '../../../../../src/components/projects/CreateProjectButton';
 import RefreshButton from '../../../../../src/components/buttons/RefreshButton';
 import LiveChat from '../../../../../src/components/external/livechat';
-import { flexRowSpaceBetweenStyle } from '../../../../../src/styles/box';
 import TitleWithBannerAndOption from '../../../../../src/components/layouts/TitleWithBannerAndOption';
 import WebTestAutomationFreeTierTopBanner from '../../../../../src/components/billing/WebTestAutomationFreeTierTopBanner';
 import { WebTestAutomationParallelCounter } from '../../../../../src/components/projects/AutomationParallelCounter';
+import { flexRowBaseStyle, flexRowSpaceBetweenStyle } from '../../../../../src/styles/box';
+import TutorialButton from '../../../../../src/components/buttons/TutorialButton';
+import { DoguDocsUrl } from '../../../../../src/utils/url';
 
 const WebAutomationPage: NextPageWithLayout<OrganizationServerSideProps> = ({ user, organization }) => {
   return (
@@ -25,7 +27,10 @@ const WebAutomationPage: NextPageWithLayout<OrganizationServerSideProps> = ({ us
       <TableListView
         top={
           <FlexBox>
-            <CreateProjectButton projectType={PROJECT_TYPE.WEB} />
+            <FlexRow>
+              <CreateProjectButton projectType={PROJECT_TYPE.WEB} />
+              <TutorialButton href={DoguDocsUrl['get-started'].tutorials.web()} />
+            </FlexRow>
             <RefreshButton />
           </FlexBox>
         }
@@ -49,7 +54,7 @@ WebAutomationPage.getLayout = (page) => {
       sidebar={<OrganizationSideBar />}
       title={
         <TitleWithBannerAndOption
-          titleKey="organization:webAutomationPageTitle"
+          titleKey="organization:webAutomatioProjectPageTitle"
           banner={<WebTestAutomationFreeTierTopBanner />}
           option={<WebTestAutomationParallelCounter />}
         />
@@ -66,4 +71,12 @@ export default WebAutomationPage;
 
 const FlexBox = styled.div`
   ${flexRowSpaceBetweenStyle}
+`;
+
+const FlexRow = styled.div`
+  ${flexRowBaseStyle}
+
+  & > * {
+    margin-right: 0.5rem;
+  }
 `;
