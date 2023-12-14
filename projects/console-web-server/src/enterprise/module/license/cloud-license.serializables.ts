@@ -205,7 +205,7 @@ export namespace CloudLicenseSerializable {
         device: {
           isHost: 0,
           organization: {
-            shareable: false,
+            shareable: true,
           },
         },
       },

@@ -28,7 +28,6 @@ type RoutineDeviceJobInProgressResult = {
   deviceOwnerOrganizationId: OrganizationId;
   deviceExecutorOrganizationId: OrganizationId;
   deviceId: DeviceId;
-  routineDeviceJob: RoutineDeviceJob;
   planType: BillingPlanType | undefined;
 };
 
@@ -112,9 +111,9 @@ export class RoutineDeviceJobUpdater {
   }
 
   private async checkWaitingDeviceJobsWithInProgressJob(): Promise<void> {
-    const routineDeviceJobInProgressResults = await this.retryTransaction.serializable(async (context) => {
+    const routineDeviceJobs = await this.retryTransaction.serializable(async (context) => {
       const { manager } = context;
-      const routineDeviceJobs = await manager.getRepository(RoutineDeviceJob).find({
+      return await manager.getRepository(RoutineDeviceJob).find({
         where: {
           status: PIPELINE_STATUS.WAITING,
           routineJob: {
@@ -139,9 +138,11 @@ export class RoutineDeviceJobUpdater {
           },
         },
       });
+    });
 
-      const routineDeviceJobInProgressResults: RoutineDeviceJobInProgressResult[] = [];
-      for (const routineDeviceJob of routineDeviceJobs) {
+    for (const routineDeviceJob of routineDeviceJobs) {
+      const routineDeviceJobInProgressResult = await this.retryTransaction.serializable(async (context) => {
+        const { manager } = context;
         const { deviceId, device, routineDeviceJobId, routineSteps, routineJob } = routineDeviceJob;
         if (!device) {
           throw new InternalServerErrorException({
@@ -193,11 +194,11 @@ export class RoutineDeviceJobUpdater {
 
         const deviceRunner = await manager.getRepository(DeviceRunner).findOne({ where: { deviceId, isInUse: 0 } });
         if (!deviceRunner) {
-          continue;
+          return;
         }
 
         if (device.organization.shareable && device.usageState !== DeviceUsageState.AVAILABLE) {
-          continue;
+          return;
         }
 
         let planType: BillingPlanType | undefined;
@@ -248,11 +249,11 @@ export class RoutineDeviceJobUpdater {
 
           if (paymentRequiredException) {
             if (paymentRequiredException.retryable) {
-              continue;
+              return;
             } else {
-              // TODO: complete process
+              this.logger.warn(`device-job ${routineDeviceJobId} status change to failure.`, { message: paymentRequiredException.message });
               await this.deviceJobRunner.setStatus(manager, routineDeviceJob, PIPELINE_STATUS.FAILURE, new Date());
-              continue;
+              return;
             }
           }
         }
@@ -270,20 +271,20 @@ export class RoutineDeviceJobUpdater {
           await manager.save(device);
         }
 
-        routineDeviceJobInProgressResults.push({
+        const result: RoutineDeviceJobInProgressResult = {
           deviceOwnerOrganizationId,
           deviceExecutorOrganizationId,
           deviceId,
-          routineDeviceJob,
           planType,
-        });
+        };
+        return result;
+      });
+
+      if (!routineDeviceJobInProgressResult) {
+        continue;
       }
 
-      return routineDeviceJobInProgressResults;
-    });
-
-    routineDeviceJobInProgressResults.forEach((routineDeviceJobInProgressResult) => {
-      const { routineDeviceJob, planType, deviceExecutorOrganizationId, deviceId, deviceOwnerOrganizationId } = routineDeviceJobInProgressResult;
+      const { planType, deviceExecutorOrganizationId, deviceId, deviceOwnerOrganizationId } = routineDeviceJobInProgressResult;
       const { routineDeviceJobId } = routineDeviceJob;
       if (planType) {
         this.cloudLicenseService
@@ -322,7 +323,7 @@ export class RoutineDeviceJobUpdater {
         .catch((error) => {
           this.logger.error('sendRunDeviceJob process error', { error: errorify(error) });
         });
-    });
+    }
   }
 
   private async checkHeartBeatExpiredDeviceJobs(): Promise<void> {

@@ -63,7 +63,7 @@ export class CloudLicenseService {
 
   async startUpdate(options: StartCloudLicenseUpdateOptions): Promise<StopCloudLicenseUpdate> {
     return new Promise((resolve, reject) => {
-      const { organizationId, planType } = options;
+      const { organizationId, planType, key, value } = options;
       const updaterKey = createUpdaterKey(options);
       if (this.updaterMap.has(updaterKey)) {
         resolve(() => {});
@@ -73,6 +73,7 @@ export class CloudLicenseService {
       const url = `${getBillingServerWebSocketUrl()}/cloud-licenses/update?token=${env.DOGU_BILLING_TOKEN}`;
       const webSocket = new WebSocketClientFactory().create({ url });
       webSocket.on('open', () => {
+        this.logger.info(`start cloud license update`, { options });
         let updatedAt = Date.now();
 
         const update = (): void => {
@@ -128,5 +129,6 @@ export class CloudLicenseService {
 
     closeWebSocketWithTruncateReason(webSocket, 1000, 'closed');
     this.updaterMap.delete(updaterKey);
+    this.logger.info(`stop cloud license update`, { options });
   }
 }

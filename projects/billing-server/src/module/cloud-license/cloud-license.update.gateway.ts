@@ -57,9 +57,6 @@ export class CloudLicenseUpdateGateway implements OnGatewayConnection {
             billingPlanInfos: true,
           },
         },
-        lock: {
-          mode: 'pessimistic_write',
-        },
       });
 
       if (!cloudLicense) {

@@ -14,14 +14,14 @@ import {
 } from '@dogu-private/types';
 import { Type } from 'class-transformer';
 import { IsOptional } from 'class-validator';
-import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { ColumnTemplate } from './decorators';
 import { DeviceRunner } from './device-runner.entity';
 import { Device, RoutineJob } from './index';
 import { RoutineStep } from './step.entity';
 
 @Entity(ROUTINE_DEVICE_JOB_TABLE_NAME)
-export class RoutineDeviceJob extends BaseEntity implements RoutineDeviceJobBase {
+export class RoutineDeviceJob implements RoutineDeviceJobBase {
   @PrimaryGeneratedColumn('increment', { type: 'int', name: RoutineDeviceJobPropSnake.routine_device_job_id, unsigned: true })
   routineDeviceJobId!: RoutineDeviceJobId;
 

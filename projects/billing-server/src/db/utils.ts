@@ -56,7 +56,7 @@ export class RetryTransaction {
           return result;
         } catch (e) {
           const error = errorify(e);
-          logger.warn('retrySerialize.catch transaction failed', { tryCount, error });
+          logger.warn('retrySerialize.catch transaction failed', { tryCount, retryCount, retryInterval, errorMessage: error.message });
           await queryRunner.rollbackTransaction();
 
           onAfterRollbacks.reverse();
@@ -73,11 +73,12 @@ export class RetryTransaction {
           }
 
           if (tryCount === retryCount) {
+            logger.error('retrySerialize.catch transaction failed. retry count exceeded', { tryCount, retryCount, retryInterval });
             throw error;
           }
 
           if (isRetryCode(error)) {
-            logger.warn(`retrySerialize.catch serialization failure. retry after`, { tryCount, retryCount, retryInterval, error });
+            logger.warn(`retrySerialize.catch serialization failure. retry after`, { tryCount, retryCount, retryInterval });
             await new Promise((resolve) => setTimeout(resolve, retryInterval));
             continue;
           }

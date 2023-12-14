@@ -5,8 +5,6 @@ import { DoguLogger } from '../logger/logger';
 
 @Injectable()
 export class RedisService extends Redis implements OnModuleInit {
-  readonly subscriber: Redis;
-
   constructor(private readonly logger: DoguLogger) {
     super({
       host: config.redis.options.host,
@@ -15,7 +13,6 @@ export class RedisService extends Redis implements OnModuleInit {
       db: config.redis.options.db,
       lazyConnect: true,
     });
-    this.subscriber = this.duplicate();
   }
 
   async onModuleInit(): Promise<void> {

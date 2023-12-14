@@ -56,7 +56,7 @@ export class RetryTransaction {
           return result;
         } catch (e) {
           const error = errorify(e);
-          logger.warn('retrySerialize.catch transaction failed', { tryCount, retryCount, retryInterval, error });
+          logger.warn('retrySerialize.catch transaction failed', { tryCount, retryCount, retryInterval, errorMessage: error.message });
           await queryRunner.rollbackTransaction();
 
           onAfterRollbacks.reverse();
