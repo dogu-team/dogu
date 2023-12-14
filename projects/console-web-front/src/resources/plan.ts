@@ -14,7 +14,7 @@ export type PlanDescriptionInfoMap = {
 export const planDescriptionInfoMap: PlanDescriptionInfoMap = {
   'live-testing': {
     titleI18nKey: 'liveTestingPlanTitle',
-    featureI18nKeys: ['liveTestingFeature1'],
+    featureI18nKeys: ['liveTestingFeature1', 'liveTestingFeature2'],
     getOptionLabelI18nKey: (optionKey: number | string) => {
       if (Number(optionKey) === 1) {
         return 'liveTestingOptionSingular';
@@ -84,6 +84,14 @@ export const groupTypeI18nKeyMap: { [key in BillingSubscriptionGroupType]: strin
   'mobile-app-test-automation-group': 'mobileAppTestAutomationPlanGroupTitle',
   'mobile-game-test-automation-group': 'mobileGameTestAutomationPlanGroupTitle',
   'self-device-farm-group': 'selfDeviceFarmPlanGroupTitle',
+};
+
+export const groupTypeSortMap: { [key in BillingSubscriptionGroupType]: number } = {
+  'live-testing-group': 1,
+  'web-test-automation-group': 2,
+  'mobile-app-test-automation-group': 3,
+  'mobile-game-test-automation-group': 4,
+  'self-device-farm-group': 5,
 };
 
 export const niceErrorCodeMessageI18nKeyMap: { [key: string]: string } = {

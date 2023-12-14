@@ -4,7 +4,6 @@ import useTranslation from 'next-translate/useTranslation';
 import { useCallback, useEffect } from 'react';
 import styled from 'styled-components';
 import { shallow } from 'zustand/shallow';
-import { groupTypeI18nKeyMap } from '../../resources/plan';
 
 import useBillingPlanPurchaseStore from '../../stores/billing-plan-purchase';
 import useEventStore from '../../stores/events';
@@ -22,7 +21,6 @@ const UpgradePlanModal: React.FC<Props> = ({ isOpen, close }) => {
     (state) => [state.selectedPlan, state.updateSelectedPlan],
     shallow,
   );
-  const billingGroupType = useBillingPlanPurchaseStore((state) => state.billingGroupType);
   const reset = useBillingPlanPurchaseStore((state) => state.reset);
   const updateWithNewCard = useBillingPlanPurchaseStore((state) => state.updateWithNewCard);
   const updatePurchaseErrorText = useBillingPlanPurchaseStore((state) => state.updatePurchaseErrorText);
@@ -60,10 +58,7 @@ const UpgradePlanModal: React.FC<Props> = ({ isOpen, close }) => {
             {!!selectedPlan && (
               <Button icon={<ArrowLeftOutlined />} style={{ marginRight: '.25rem' }} type="text" onClick={handleBack} />
             )}
-            <p>
-              {t('upgradePlanModalTitle')}
-              {!!billingGroupType ? ` - ${t(groupTypeI18nKeyMap[billingGroupType])}` : ''}
-            </p>
+            <p>{t('upgradePlanModalTitle')}</p>
           </FlexRow>
           <Button icon={<CloseOutlined />} type="text" style={{ marginLeft: '.25rem' }} onClick={handleClose} />
         </FlexRow>

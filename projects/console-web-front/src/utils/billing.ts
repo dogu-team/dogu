@@ -49,6 +49,24 @@ export const isLiveTestingFreePlan = (license: CloudLicenseResponse): boolean =>
   return liveTestingPlan.length === 0;
 };
 
+export const isWebTestAutomationFreePlan = (license: CloudLicenseResponse): boolean => {
+  const webTestAutomationPlan = getSubscriptionPlansFromLicense(license, ['web-test-automation']);
+
+  return webTestAutomationPlan.length === 0;
+};
+
+export const isMobileAppTestAutomationFreePlan = (license: CloudLicenseResponse): boolean => {
+  const mobileAppTestAutomationPlan = getSubscriptionPlansFromLicense(license, ['mobile-app-test-automation']);
+
+  return mobileAppTestAutomationPlan.length === 0;
+};
+
+export const isMobileGameTestAutomationFreePlan = (license: CloudLicenseResponse): boolean => {
+  const mobileGameTestAutomationPlan = getSubscriptionPlansFromLicense(license, ['mobile-game-test-automation']);
+
+  return mobileGameTestAutomationPlan.length === 0;
+};
+
 type SelectedPlanWithPeriod = SelectedPlan & { period: BillingPeriod };
 
 export const checkShouldPurchase = (license: CloudLicenseResponse, plan: SelectedPlanWithPeriod): boolean => {

@@ -1,20 +1,17 @@
 import { ArrowRightOutlined, ClockCircleOutlined } from '@ant-design/icons';
-import { CloudLicenseResponse } from '@dogu-private/console';
-import { Alert } from 'antd';
-import Trans from 'next-translate/Trans';
 import useTranslation from 'next-translate/useTranslation';
 import styled from 'styled-components';
 
 import useAuthStore from '../../stores/auth';
 import useLicenseStore from '../../stores/license';
 import { hasAdminPermission } from '../../utils/auth';
-import { isLiveTestingFreePlan } from '../../utils/billing';
+import { isWebTestAutomationFreePlan } from '../../utils/billing';
 import UpgradePlanButton from './UpgradePlanButton';
 
 interface Props {}
 
 const WebTestAutomationFreeTierTopBanner: React.FC<Props> = () => {
-  const license = useLicenseStore((state) => state.license) as CloudLicenseResponse | null;
+  const license = useLicenseStore((state) => state.license);
   const me = useAuthStore((state) => state.me);
   const { t } = useTranslation('billing');
 
@@ -22,7 +19,7 @@ const WebTestAutomationFreeTierTopBanner: React.FC<Props> = () => {
     return null;
   }
 
-  const isFreePlan = isLiveTestingFreePlan(license);
+  const isFreePlan = isWebTestAutomationFreePlan(license);
   const remainingSeconds =
     license.webTestAutomationRemainingFreeSeconds < 0 ? 0 : license.webTestAutomationRemainingFreeSeconds;
 

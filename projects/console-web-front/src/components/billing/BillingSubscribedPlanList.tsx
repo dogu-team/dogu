@@ -4,17 +4,19 @@ import {
   BillingPlanInfoResponse,
   CloudLicenseResponse,
 } from '@dogu-private/console';
+import { assertUnreachable } from '@dogu-tech/common';
 import { Alert, List, MenuProps, Modal, Tag } from 'antd';
 import Trans from 'next-translate/Trans';
 import useTranslation from 'next-translate/useTranslation';
 import { useRouter } from 'next/router';
+import { sort } from 'ramda';
 import styled from 'styled-components';
 import { shallow } from 'zustand/shallow';
 
 import { cancelChangePlanOptionOrPeriod, cancelUnsubscribePlan, unsubscribePlan } from '../../api/billing';
 import useModal from '../../hooks/useModal';
 import useRequest from '../../hooks/useRequest';
-import { planDescriptionInfoMap } from '../../resources/plan';
+import { groupTypeI18nKeyMap, groupTypeSortMap, planDescriptionInfoMap } from '../../resources/plan';
 import useBillingPlanPurchaseStore from '../../stores/billing-plan-purchase';
 import useLicenseStore from '../../stores/license';
 import { flexRowBaseStyle, listItemStyle, tableCellStyle, tableHeaderStyle } from '../../styles/box';
@@ -242,7 +244,7 @@ const StateBadge: React.FC<StateProps> = ({ plan }) => {
         </div>
       );
     default:
-      return <Tag color="error">Error</Tag>;
+      assertUnreachable(plan.state);
   }
 };
 
@@ -256,6 +258,7 @@ const PlanItem: React.FC<ItemProps> = ({ plan }) => {
   const { t } = useTranslation('billing');
 
   const description = planDescriptionInfoMap[plan.type];
+  const groupType = BillingSubscriptionGroupType.find((group) => BillingPlanGroupMap[group].includes(plan.type))!;
 
   const handleUnsubscribe = async () => {
     if (!license) {
@@ -344,7 +347,9 @@ const PlanItem: React.FC<ItemProps> = ({ plan }) => {
       <Item>
         <ItemInner>
           <Cell flex={1}>
-            <b>{t(description.titleI18nKey)}</b>
+            <b>
+              [{t(groupTypeI18nKeyMap[groupType])}] {t(description.titleI18nKey)}
+            </b>
           </Cell>
           <Cell flex={1}>
             <PlanOption plan={plan} />
@@ -380,6 +385,12 @@ const BillingSubscribedPlanList: React.FC<Props> = () => {
 
   const cloudLicense = license as CloudLicenseResponse;
   const subscribedPlans = cloudLicense.billingOrganization?.billingPlanInfos;
+  const sortedSubscribedPlans = sort((a, b) => {
+    const aGropuType = BillingSubscriptionGroupType.find((group) => BillingPlanGroupMap[group].includes(a.type))!;
+    const bGropuType = BillingSubscriptionGroupType.find((group) => BillingPlanGroupMap[group].includes(b.type))!;
+
+    return groupTypeSortMap[aGropuType] - groupTypeSortMap[bGropuType];
+  }, subscribedPlans);
 
   if (!subscribedPlans || subscribedPlans.length === 0) {
     return (
@@ -406,7 +417,7 @@ const BillingSubscribedPlanList: React.FC<Props> = () => {
         </ItemInner>
       </Header>
       <List
-        dataSource={subscribedPlans}
+        dataSource={sortedSubscribedPlans}
         renderItem={(plan) => <PlanItem plan={plan} />}
         rowKey={(plan) => plan.billingPlanInfoId}
       />

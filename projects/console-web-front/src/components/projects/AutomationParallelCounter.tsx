@@ -1,3 +1,4 @@
+import { ArrowRightOutlined } from '@ant-design/icons';
 import useLicenseStore from '../../stores/license';
 
 interface Props {

@@ -36,7 +36,7 @@ const BillingSelectPlanStep: React.FC<Props> = ({}) => {
       <CurrentPlanWrapper>
         {/* TODO: from user's current plan */}
         <CurrentPlanText>
-          {t('currentPlanText')}:{' '}
+          {t('currentPlanText')}:&nbsp;&nbsp;&nbsp;&nbsp;
           <span>
             {planTypes.map((planType, i) => {
               const descriptionInfo = planDescriptionInfoMap[planType];
@@ -46,7 +46,8 @@ const BillingSelectPlanStep: React.FC<Props> = ({}) => {
               return (
                 <Fragment key={planType}>
                   <span>
-                    <b>{t(descriptionInfo.titleI18nKey)}</b>{' '}
+                    {t(groupTypeI18nKeyMap[groupType ?? currentGroup])} - {t(descriptionInfo.titleI18nKey)}
+                    {': '}
                     {!!usingPlan
                       ? `(${t(descriptionInfo.getOptionLabelI18nKey(usingPlan.option), {
                           option: usingPlan.option,
