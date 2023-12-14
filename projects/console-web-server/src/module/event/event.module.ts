@@ -30,10 +30,10 @@ import { HeartBeatSystemProcessor } from './heartbeat/heartbeat-system.processor
 import { HostConnectionUpdater } from './heartbeat/host-connection-updater';
 import { DestUpdater } from './pipeline/dest-updater';
 import { ExternalEventUpdater } from './pipeline/external-event-updater';
-import { JobUpdater } from './pipeline/job-updator';
 import { PipelineSystemProcessor } from './pipeline/pipeline-system.processor';
 import { PipelineUpdater } from './pipeline/pipeline-updater';
 import { RoutineDeviceJobUpdater } from './pipeline/routine-device-job-updater';
+import { RoutineJobUpdater } from './pipeline/routine-job-updater';
 import { StepUpdater } from './pipeline/step-updater';
 import { CancelPipelineQueue, UpdateDestStateQueue, UpdateDeviceJobStatusQueue, UpdateRemoteDestStateQueue, UpdateStepStatusQueue } from './pipeline/update-pipeline-queue';
 import { RecordCaseActionUpdater } from './record/record-case-action-updater';
@@ -91,7 +91,7 @@ import { UpdateProducer } from './update-producer';
     LicenseSystemProcessor,
 
     PipelineUpdater,
-    JobUpdater,
+    RoutineJobUpdater,
     RoutineDeviceJobUpdater,
     StepUpdater,
     DestUpdater,

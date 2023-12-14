@@ -32,6 +32,7 @@ const PipelineStatusIcon = ({ status }: Props) => {
         </StateBox>
       );
     case PIPELINE_STATUS.WAITING:
+    case PIPELINE_STATUS.WAITING_TO_START:
       return (
         <StateBox status={status}>
           <ClockCircleFilled style={{ fontSize: '1.1rem', color: pipelineStatusColor[status] }} />

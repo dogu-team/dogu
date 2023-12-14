@@ -18,7 +18,7 @@ export class JobRunner {
       job.completedAt = new Date();
     }
 
-    await manager.getRepository(job.constructor.name).save(job);
+    await manager.save(job);
   }
 
   public getNextStatusFromWaiting(job: RoutineJob): PIPELINE_STATUS | null {
@@ -44,13 +44,13 @@ export class JobRunner {
 
     const parentJobInfos = parentJobs.map((job) => `${job.routineJobId}(${job.name})`).toString();
     if (parentJobs.length === 0) {
-      this.logger.info(`Job [${routineJobId}][${job.name}] has no parent jobs. This Job will be in progress.`);
-      return PIPELINE_STATUS.IN_PROGRESS;
+      this.logger.info(`Job [${routineJobId}][${job.name}] has no parent jobs. This Job will be waiting to start.`);
+      return PIPELINE_STATUS.WAITING_TO_START;
     }
 
     if (everyInStatus(parentJobs, PIPELINE_STATUS.SUCCESS)) {
-      this.logger.info(`Job [${routineJobId}][${name}]. Every parent jobs are success. It will be in progress. Parent Jobs: ${parentJobInfos}`);
-      return PIPELINE_STATUS.IN_PROGRESS;
+      this.logger.info(`Job [${routineJobId}][${name}]. Every parent jobs are success. It will be waiting to start. Parent Jobs: ${parentJobInfos}`);
+      return PIPELINE_STATUS.WAITING_TO_START;
     }
 
     if (this.hasParentJobsIssues(parentJobs)) {
@@ -66,11 +66,12 @@ export class JobRunner {
     }
   }
 
-  public getNextStatusFromInProgress(job: RoutineJob): PIPELINE_STATUS | null {
+  public getNextStatusFromWaitingToStartOrInProgress(job: RoutineJob): PIPELINE_STATUS | null {
     const { name, status, routineJobId, routineDeviceJobs: deviceJobs, routinePipeline: pipeline } = job;
     const statusStr = PIPELINE_STATUS[status];
-    if (status !== PIPELINE_STATUS.IN_PROGRESS) {
-      throw new Error(`Job [${routineJobId}][${name}] is in ${statusStr} state. can not run getNextStatusFromInProgress.`);
+    const isWaitingToStartOrInProgress = status === PIPELINE_STATUS.WAITING_TO_START || status === PIPELINE_STATUS.IN_PROGRESS;
+    if (!isWaitingToStartOrInProgress) {
+      throw new Error(`Job [${routineJobId}][${name}] is in ${statusStr} state. can not run getNextStatusFromWaitingToStartOrInProgress.`);
     }
     if (!deviceJobs || deviceJobs.length === 0) {
       throw new Error(`Job [${routineJobId}][${name}] has no device running jobs.`);

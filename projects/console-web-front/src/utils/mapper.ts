@@ -27,6 +27,7 @@ export const mapDeviceConnectionStateToString = (connectionState: DeviceConnecti
 
 export const pipelineStatusText: { [key in PIPELINE_STATUS]: string } = {
   [PIPELINE_STATUS.WAITING]: 'Waiting',
+  [PIPELINE_STATUS.WAITING_TO_START]: 'Waiting',
   [PIPELINE_STATUS.IN_PROGRESS]: 'Running',
   [PIPELINE_STATUS.CANCEL_REQUESTED]: 'Cancelling',
   [PIPELINE_STATUS.SUCCESS]: 'Success',
@@ -38,6 +39,7 @@ export const pipelineStatusText: { [key in PIPELINE_STATUS]: string } = {
 
 export const pipelineStatusColor: { [key in PIPELINE_STATUS]: string } = {
   [PIPELINE_STATUS.WAITING]: '#fcba03',
+  [PIPELINE_STATUS.WAITING_TO_START]: '#fcba03',
   [PIPELINE_STATUS.IN_PROGRESS]: '#6499f5',
   [PIPELINE_STATUS.CANCEL_REQUESTED]: '#888888',
   [PIPELINE_STATUS.SUCCESS]: '#5cb85c',
@@ -71,6 +73,7 @@ export const remoteStatusText: { [key in REMOTE_DEVICE_JOB_STATE]: string } = {
 
 export const pipelineStepEmptyText: { [key in PIPELINE_STATUS]?: string } = {
   [PIPELINE_STATUS.WAITING]: "This step doesn't start yet",
+  [PIPELINE_STATUS.WAITING_TO_START]: "This step doesn't start yet",
   [PIPELINE_STATUS.CANCELLED]: 'This step was cancelled',
   [PIPELINE_STATUS.CANCEL_REQUESTED]: 'This step will be cancelled',
   [PIPELINE_STATUS.SKIPPED]: 'This step was skipped',
@@ -87,6 +90,7 @@ export const destStatusColor: { [key in DEST_STATE]: string } = {
 
 export const pipelineJobEmptyText: { [key in PIPELINE_STATUS]?: string } = {
   [PIPELINE_STATUS.WAITING]: "This job doesn't start yet",
+  [PIPELINE_STATUS.WAITING_TO_START]: "This job doesn't start yet",
   [PIPELINE_STATUS.CANCELLED]: 'This job was cancelled',
   [PIPELINE_STATUS.SKIPPED]: 'This job was skipped',
 };

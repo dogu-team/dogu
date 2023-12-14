@@ -235,22 +235,20 @@ export class DeviceJobRunner {
     }
   }
 
-  public async handleHeartbeatExpiredWithInprogress(deviceJob: RoutineDeviceJob): Promise<void> {
+  public async processToFailure(manager: EntityManager, deviceJob: RoutineDeviceJob, reason: string): Promise<void> {
     const { routineSteps: steps } = deviceJob;
     if (!steps || steps.length === 0) {
       throw new Error(`Steps not found: ${deviceJob.routineDeviceJobId}`);
     }
     this.logger.warn(
-      `DeviceJob [${deviceJob.routineDeviceJobId}] is heartbeat failure. transition ${PIPELINE_STATUS[deviceJob.status]} to ${PIPELINE_STATUS[PIPELINE_STATUS.FAILURE]} status...`,
+      `DeviceJob [${deviceJob.routineDeviceJobId}] is ${reason}. transition ${PIPELINE_STATUS[deviceJob.status]} to ${PIPELINE_STATUS[PIPELINE_STATUS.FAILURE]} status...`,
     );
 
-    await this.dataSource.transaction(async (manager) => {
-      await this.setStatus(manager, deviceJob, PIPELINE_STATUS.FAILURE, new Date());
-      await this.postHeartbeatFailureDeviceJob(manager, steps, deviceJob.deviceRunnerId);
-    });
+    await this.setStatus(manager, deviceJob, PIPELINE_STATUS.FAILURE, new Date());
+    await this.postProcessToFailure(manager, steps, deviceJob.deviceRunnerId);
   }
 
-  private async postHeartbeatFailureDeviceJob(manager: EntityManager, steps: RoutineStep[], deviceRunnerId: DeviceRunnerId | null): Promise<void> {
+  private async postProcessToFailure(manager: EntityManager, steps: RoutineStep[], deviceRunnerId: DeviceRunnerId | null): Promise<void> {
     if (deviceRunnerId) {
       await manager.getRepository(DeviceRunner).update(deviceRunnerId, { isInUse: 0 });
     }

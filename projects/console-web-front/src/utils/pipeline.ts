@@ -1,7 +1,11 @@
 import { DEST_STATE, PIPELINE_STATUS } from '@dogu-private/types';
 
 export const isPipelineInProgress = (status: PIPELINE_STATUS): boolean => {
-  return status === PIPELINE_STATUS.WAITING || status === PIPELINE_STATUS.IN_PROGRESS;
+  return (
+    status === PIPELINE_STATUS.WAITING ||
+    status === PIPELINE_STATUS.WAITING_TO_START ||
+    status === PIPELINE_STATUS.IN_PROGRESS
+  );
 };
 
 export const isPipelineEmptyLogStatus = (status: PIPELINE_STATUS) => {

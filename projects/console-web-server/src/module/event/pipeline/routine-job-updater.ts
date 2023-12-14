@@ -2,14 +2,13 @@ import { RoutineJobEdgePropCamel, RoutineJobPropCamel } from '@dogu-private/cons
 import { PIPELINE_STATUS } from '@dogu-private/types';
 import { Inject, Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
+import { DataSource, In } from 'typeorm';
 import { RoutineJob } from '../../../db/entity/job.entity';
 import { DoguLogger } from '../../logger/logger';
-// import { setStatus } from '../../routine/pipeline/common/runner';
 import { JobRunner } from '../../routine/pipeline/processor/runner/job-runner';
 
 @Injectable()
-export class JobUpdater {
+export class RoutineJobUpdater {
   constructor(
     @InjectDataSource() private readonly dataSource: DataSource,
     @Inject(JobRunner)
@@ -20,7 +19,7 @@ export class JobUpdater {
   public async update(): Promise<void> {
     const functionsToCheck = [
       this.checkJobsInWaiting.bind(this), //
-      this.checkJobsInProgress.bind(this),
+      this.checkJobsWaitingToStartOrInProgress.bind(this),
     ];
 
     for (const checkFunction of functionsToCheck) {
@@ -32,24 +31,27 @@ export class JobUpdater {
     }
   }
 
-  private async checkJobsInProgress(): Promise<void> {
-    const inProgressJobs = await this.dataSource
-      .getRepository(RoutineJob) //
-      .createQueryBuilder('job')
-      .innerJoinAndSelect(`job.${RoutineJobPropCamel.routineDeviceJobs}`, 'deviceJob')
-      .innerJoinAndSelect(`job.${RoutineJobPropCamel.routinePipeline}`, 'pipeline')
-      .where('job.status = :status', { status: PIPELINE_STATUS.IN_PROGRESS })
-      .getMany();
+  private async checkJobsWaitingToStartOrInProgress(): Promise<void> {
+    const jobs = await this.dataSource.getRepository(RoutineJob).find({
+      where: {
+        status: In([PIPELINE_STATUS.WAITING_TO_START, PIPELINE_STATUS.IN_PROGRESS]),
+      },
+      relations: {
+        routineDeviceJobs: true,
+        routinePipeline: true,
+      },
+    });
 
-    if (inProgressJobs.length === 0) {
+    if (jobs.length === 0) {
       return;
     }
 
-    for (const job of inProgressJobs) {
-      const nextState = this.jobRunner.getNextStatusFromInProgress(job);
+    for (const job of jobs) {
+      const nextState = this.jobRunner.getNextStatusFromWaitingToStartOrInProgress(job);
       if (nextState === null) {
         continue;
       }
+
       await this.jobRunner.setStatus(this.dataSource.manager, job, nextState);
     }
   }
@@ -74,10 +76,6 @@ export class JobUpdater {
         continue;
       }
 
-      /**
-       * (felix): delete를 안하면 에러가 발생함. 원인 파악중
-       */
-      delete job.routineJobEdges;
       await this.jobRunner.setStatus(this.dataSource.manager, job, nextStatus);
     }
   }

@@ -12,7 +12,7 @@ import { DeviceId, isCompleted, OrganizationId, PIPELINE_STATUS, PROJECT_TYPE } 
 import { assertUnreachable, errorify } from '@dogu-tech/common';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
-import { Brackets, DataSource } from 'typeorm';
+import { Brackets, DataSource, In } from 'typeorm';
 import util from 'util';
 import { config } from '../../../config';
 import { RoutineDeviceJob } from '../../../db/entity/device-job.entity';
@@ -23,6 +23,7 @@ import { CloudLicenseService } from '../../../enterprise/module/license/cloud-li
 import { DoguLogger } from '../../logger/logger';
 import { RoutineDeviceJobSubscriber } from '../../routine/pipeline/device-job/routine-device-job.subscriber';
 import { DeviceJobRunner } from '../../routine/pipeline/processor/runner/device-job-runner';
+import { JobRunner } from '../../routine/pipeline/processor/runner/job-runner';
 
 type RoutineDeviceJobInProgressResult = {
   deviceOwnerOrganizationId: OrganizationId;
@@ -39,6 +40,7 @@ export class RoutineDeviceJobUpdater {
     private readonly logger: DoguLogger,
     @InjectDataSource()
     private readonly dataSource: DataSource,
+    private readonly jobRunner: JobRunner,
     private readonly deviceJobRunner: DeviceJobRunner,
     private readonly cloudLicenseService: CloudLicenseService,
     private readonly routineDeviceJobSubscriber: RoutineDeviceJobSubscriber,
@@ -49,7 +51,7 @@ export class RoutineDeviceJobUpdater {
   public async update(): Promise<void> {
     const functionsToCheck = [
       //waiting device job
-      this.checkWaitingDeviceJobsWithInProgressJob.bind(this), //
+      this.checkWaitingDeviceJobsWithWaitingToStartOrInProgressJob.bind(this), //
       this.checkWaitingDeviceJobsWithSkippedJob.bind(this),
 
       //cancel requested device job
@@ -110,14 +112,14 @@ export class RoutineDeviceJobUpdater {
     }
   }
 
-  private async checkWaitingDeviceJobsWithInProgressJob(): Promise<void> {
+  private async checkWaitingDeviceJobsWithWaitingToStartOrInProgressJob(): Promise<void> {
     const routineDeviceJobs = await this.retryTransaction.serializable(async (context) => {
       const { manager } = context;
       return await manager.getRepository(RoutineDeviceJob).find({
         where: {
           status: PIPELINE_STATUS.WAITING,
           routineJob: {
-            status: PIPELINE_STATUS.IN_PROGRESS,
+            status: In([PIPELINE_STATUS.WAITING_TO_START, PIPELINE_STATUS.IN_PROGRESS]),
           },
         },
         relations: {
@@ -252,13 +254,18 @@ export class RoutineDeviceJobUpdater {
               return;
             } else {
               this.logger.warn(`device-job ${routineDeviceJobId} status change to failure.`, { message: paymentRequiredException.message });
-              await this.deviceJobRunner.setStatus(manager, routineDeviceJob, PIPELINE_STATUS.FAILURE, new Date());
+              await this.deviceJobRunner.setStatus(manager, routineDeviceJob, PIPELINE_STATUS.IN_PROGRESS, new Date());
+              await this.deviceJobRunner.processToFailure(manager, routineDeviceJob, paymentRequiredException.message);
               return;
             }
           }
         }
 
         this.logger.info(`device-job ${routineDeviceJobId} status change to in_progress.`);
+
+        if (routineJob.status === PIPELINE_STATUS.WAITING_TO_START) {
+          await this.jobRunner.setStatus(manager, routineJob, PIPELINE_STATUS.IN_PROGRESS);
+        }
 
         deviceRunner.isInUse = 1;
         await manager.save(deviceRunner);
@@ -347,7 +354,7 @@ export class RoutineDeviceJobUpdater {
     for (const deviceJob of deviceJobs) {
       this.logger.error(`in_progress deviceJob heartbeat is expired. deviceJobId: ${deviceJob.routineDeviceJobId}`);
       this.logger.info(`deviceJob status is changed to failure. deviceJobId: ${deviceJob.routineDeviceJobId}`);
-      await this.deviceJobRunner.handleHeartbeatExpiredWithInprogress(deviceJob);
+      await this.deviceJobRunner.processToFailure(this.dataSource.manager, deviceJob, 'heartbeat failed');
     }
   }
 

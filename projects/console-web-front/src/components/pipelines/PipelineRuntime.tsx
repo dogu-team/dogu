@@ -15,6 +15,7 @@ const PipelineRuntime = ({ status, startedAt, endedAt }: Props) => {
     case PIPELINE_STATUS.SKIPPED:
       return <p>Skipped</p>;
     case PIPELINE_STATUS.WAITING:
+    case PIPELINE_STATUS.WAITING_TO_START:
       return <p>Waiting...</p>;
     case PIPELINE_STATUS.SUCCESS:
     case PIPELINE_STATUS.FAILURE:

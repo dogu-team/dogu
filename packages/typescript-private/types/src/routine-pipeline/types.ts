@@ -15,6 +15,13 @@ export enum PIPELINE_STATUS {
   FAILURE = 5,
   CANCELLED = 6,
   SKIPPED = 7,
+
+  /**
+   * @note only used in RoutineJob.
+   * When all dependencies in WAITING become IN_PROGRESS, it becomes WAITING_TO_START.
+   * In WAITING_TO_START, if at least one RoutineDeviceJob becomes IN_PROGRESS, it becomes IN_PROGRESS.
+   */
+  WAITING_TO_START = 8,
 }
 
 export type PIPELINE_STATE_KEY = keyof typeof PIPELINE_STATUS;
@@ -25,6 +32,8 @@ export function getPipelineStateKey(state: PIPELINE_STATUS): PIPELINE_STATE_KEY 
       return 'UNSPECIFIED';
     case PIPELINE_STATUS.WAITING:
       return 'WAITING';
+    case PIPELINE_STATUS.WAITING_TO_START:
+      return 'WAITING_TO_START';
     case PIPELINE_STATUS.IN_PROGRESS:
       return 'IN_PROGRESS';
     case PIPELINE_STATUS.CANCEL_REQUESTED:
