@@ -5,6 +5,7 @@ import { Dest, Device, DeviceAndDeviceTag, DeviceTag, Project, ProjectAndDevice,
 import { Routine } from '../../../db/entity/routine.entity';
 import { RoutineStep } from '../../../db/entity/step.entity';
 import { SlackModule } from '../../../enterprise/module/integration/slack/slack.module';
+import { LicenseModule } from '../../../enterprise/module/license/license.module';
 import { DeviceMessageModule } from '../../device-message/device-message.module';
 import { EventModule } from '../../event/event.module';
 import { FileModule } from '../../file/file.module';
@@ -52,6 +53,7 @@ import { StepService } from './step/step.service';
     SlackModule,
     DeviceModule,
     forwardRef(() => EventModule),
+    LicenseModule,
   ],
   providers: [
     PipelineService, //

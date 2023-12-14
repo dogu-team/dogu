@@ -38,7 +38,7 @@ export class CloudLicenseEventSubscriber implements OnModuleInit {
       this.logger.error(`websocket error occurred`, { error });
     });
     webSocket.on('close', (code, reason) => {
-      this.logger.debug(`websocket closed. resubscribe after ${retryIntervalSeconds} seconds`, { code, reason });
+      this.logger.debug(`websocket closed. resubscribe after ${retryIntervalSeconds} seconds`, { code, reason: reason.toString() });
       setTimeout(() => {
         this.subscribe();
       }, retryIntervalSeconds * 1000);

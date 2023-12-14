@@ -29,7 +29,7 @@ type RoutineDeviceJobInProgressResult = {
   deviceExecutorOrganizationId: OrganizationId;
   deviceId: DeviceId;
   routineDeviceJob: RoutineDeviceJob;
-  planType: BillingPlanType;
+  planType: BillingPlanType | undefined;
 };
 
 @Injectable()
@@ -200,25 +200,24 @@ export class RoutineDeviceJobUpdater {
           continue;
         }
 
-        // TODO: seperate function condition to planType, planType to validate
         let planType: BillingPlanType | undefined;
-        let paymentRequiredException: PaymentRequiredException | undefined;
-        const cloudLicense = await this.cloudLicenseService.getLicenseInfo(deviceExecutorOrganizationId);
-        try {
-          if (device.organization.shareable) {
+        if (device.organization.shareable) {
+          let paymentRequiredException: PaymentRequiredException | undefined;
+          try {
+            const cloudLicense = await this.cloudLicenseService.getLicenseInfo(deviceExecutorOrganizationId);
             switch (projectType) {
               case PROJECT_TYPE.WEB: {
-                await CloudLicenseSerializable.validateWebTestAutomation(context, cloudLicense);
+                await CloudLicenseSerializable.validateWebTestAutomation(context.manager, cloudLicense);
                 planType = 'web-test-automation';
                 break;
               }
               case PROJECT_TYPE.APP: {
-                await CloudLicenseSerializable.validateMobileAppTestAutomation(context, cloudLicense);
+                await CloudLicenseSerializable.validateMobileAppTestAutomation(context.manager, cloudLicense);
                 planType = 'mobile-app-test-automation';
                 break;
               }
               case PROJECT_TYPE.GAME: {
-                await CloudLicenseSerializable.validateMobileGameTestAutomation(context, cloudLicense);
+                await CloudLicenseSerializable.validateMobileGameTestAutomation(context.manager, cloudLicense);
                 planType = 'mobile-game-test-automation';
                 break;
               }
@@ -232,38 +231,30 @@ export class RoutineDeviceJobUpdater {
                 assertUnreachable(projectType);
               }
             }
-          } else {
-            if (device.isHost !== 0) {
-              await CloudLicenseSerializable.validateSelfDeviceBrowser(context, cloudLicense);
-              planType = 'self-device-farm-browser';
+
+            if (!planType) {
+              throw new InternalServerErrorException({
+                reason: 'planType must not be null',
+                routineDeviceJobId,
+              });
+            }
+          } catch (e) {
+            if (e instanceof PaymentRequiredException) {
+              paymentRequiredException = e;
             } else {
-              await CloudLicenseSerializable.validateSelfDeviceMobile(context, cloudLicense);
-              planType = 'self-device-farm-mobile';
+              throw e;
             }
           }
-        } catch (e) {
-          if (e instanceof PaymentRequiredException) {
-            paymentRequiredException = e;
-          } else {
-            throw e;
-          }
-        }
 
-        if (paymentRequiredException) {
-          if (paymentRequiredException.retryable) {
-            continue;
-          } else {
-            // TODO: complete process
-            await this.deviceJobRunner.setStatus(manager, routineDeviceJob, PIPELINE_STATUS.FAILURE, new Date());
-            continue;
+          if (paymentRequiredException) {
+            if (paymentRequiredException.retryable) {
+              continue;
+            } else {
+              // TODO: complete process
+              await this.deviceJobRunner.setStatus(manager, routineDeviceJob, PIPELINE_STATUS.FAILURE, new Date());
+              continue;
+            }
           }
-        }
-
-        if (!planType) {
-          throw new InternalServerErrorException({
-            reason: 'planType must not be null',
-            routineDeviceJobId,
-          });
         }
 
         this.logger.info(`device-job ${routineDeviceJobId} status change to in_progress.`);
@@ -294,31 +285,33 @@ export class RoutineDeviceJobUpdater {
     routineDeviceJobInProgressResults.forEach((routineDeviceJobInProgressResult) => {
       const { routineDeviceJob, planType, deviceExecutorOrganizationId, deviceId, deviceOwnerOrganizationId } = routineDeviceJobInProgressResult;
       const { routineDeviceJobId } = routineDeviceJob;
-      this.cloudLicenseService
-        .startUpdate({
-          organizationId: deviceExecutorOrganizationId,
-          planType,
-          key: 'routineDeviceJobId',
-          value: routineDeviceJobId.toString(),
-        })
-        .then((stopUpdate) => {
-          const handler: (message: Message<RoutineDeviceJob>) => void = (message) => {
-            if (message.data.routineDeviceJobId !== routineDeviceJobId) {
-              return;
-            }
+      if (planType) {
+        this.cloudLicenseService
+          .startUpdate({
+            organizationId: deviceExecutorOrganizationId,
+            planType,
+            key: 'routineDeviceJobId',
+            value: routineDeviceJobId.toString(),
+          })
+          .then((stopUpdate) => {
+            const handler: (message: Message<RoutineDeviceJob>) => void = (message) => {
+              if (message.data.routineDeviceJobId !== routineDeviceJobId) {
+                return;
+              }
 
-            if (!isCompleted(message.data.status)) {
-              return;
-            }
+              if (!isCompleted(message.data.status)) {
+                return;
+              }
 
-            this.routineDeviceJobSubscriber.emitter.off('message', handler);
-            stopUpdate();
-          };
-          this.routineDeviceJobSubscriber.emitter.on('message', handler);
-        })
-        .catch((error) => {
-          this.logger.error('startUpdate process error', { error: errorify(error) });
-        });
+              this.routineDeviceJobSubscriber.emitter.off('message', handler);
+              stopUpdate();
+            };
+            this.routineDeviceJobSubscriber.emitter.on('message', handler);
+          })
+          .catch((error) => {
+            this.logger.error('startUpdate process error', { error: errorify(error) });
+          });
+      }
 
       this.deviceJobRunner
         .sendRunDeviceJob({

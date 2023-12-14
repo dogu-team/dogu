@@ -2,6 +2,7 @@ import { CloudLicenseEventMessage } from '@dogu-private/console';
 import { closeWebSocketWithTruncateReason, errorify, WebSocketCode, WebSocketException } from '@dogu-tech/common';
 import { OnGatewayConnection, WebSocketGateway } from '@nestjs/websockets';
 import { IncomingMessage } from 'http';
+import { WebSocket } from 'ws';
 import { CloudLicense } from '../../db/entity/cloud-license.entity';
 import { Message } from '../../db/utils';
 import { BillingTokenService } from '../billing-token/billing-token.service';

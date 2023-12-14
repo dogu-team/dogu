@@ -1,7 +1,7 @@
 import { CloudLicenseBase, isBillingPlanSubscribing } from '@dogu-private/console';
 import { LiveSessionActiveStates, PROJECT_TYPE } from '@dogu-private/types';
 import { HttpException, HttpStatus, InternalServerErrorException } from '@nestjs/common';
-import { In } from 'typeorm';
+import { EntityManager, In } from 'typeorm';
 import { DeviceRunner } from '../../../db/entity/device-runner.entity';
 import { LiveSession } from '../../../db/entity/live-session.entity';
 import { RetryTransactionContext } from '../../../db/utils';
@@ -55,8 +55,7 @@ export namespace CloudLicenseSerializable {
     }
   }
 
-  export async function validateWebTestAutomation(context: RetryTransactionContext, cloudLicense: CloudLicenseBase): Promise<void> {
-    const { manager } = context;
+  export async function validateWebTestAutomation(manager: EntityManager, cloudLicense: CloudLicenseBase): Promise<void> {
     const count = await manager.getRepository(DeviceRunner).count({
       where: {
         isInUse: 1,
@@ -120,8 +119,7 @@ export namespace CloudLicenseSerializable {
     }
   }
 
-  export async function validateMobileAppTestAutomation(context: RetryTransactionContext, cloudLicense: CloudLicenseBase): Promise<void> {
-    const { manager } = context;
+  export async function validateMobileAppTestAutomation(manager: EntityManager, cloudLicense: CloudLicenseBase): Promise<void> {
     const count = await manager.getRepository(DeviceRunner).count({
       where: {
         isInUse: 1,
@@ -188,8 +186,7 @@ export namespace CloudLicenseSerializable {
     }
   }
 
-  export async function validateMobileGameTestAutomation(context: RetryTransactionContext, cloudLicense: CloudLicenseBase): Promise<void> {
-    const { manager } = context;
+  export async function validateMobileGameTestAutomation(manager: EntityManager, cloudLicense: CloudLicenseBase): Promise<void> {
     const count = await manager.getRepository(DeviceRunner).count({
       where: {
         isInUse: 1,
@@ -251,134 +248,6 @@ export namespace CloudLicenseSerializable {
 
     if (cloudLicense.mobileGameTestAutomationRemainingFreeSeconds <= 0) {
       throw new PaymentRequiredException(`Mobile game test automation is not subscribed. remainingFreeSeconds: ${cloudLicense.mobileGameTestAutomationRemainingFreeSeconds}`, {
-        retryable: false,
-      });
-    }
-  }
-
-  export async function validateSelfDeviceBrowser(context: RetryTransactionContext, cloudLicense: CloudLicenseBase): Promise<void> {
-    const { manager } = context;
-    const count = await manager.getRepository(DeviceRunner).count({
-      where: {
-        isInUse: 1,
-        routineDeviceJobs: {
-          routineJob: {
-            routinePipeline: {
-              project: {
-                organization: {
-                  organizationId: cloudLicense.organizationId,
-                },
-              },
-            },
-          },
-        },
-        device: {
-          isHost: 1,
-          organization: {
-            shareable: false,
-          },
-        },
-      },
-      relations: {
-        routineDeviceJobs: {
-          routineJob: {
-            routinePipeline: {
-              project: {
-                organization: true,
-              },
-            },
-          },
-        },
-        device: {
-          organization: true,
-        },
-      },
-    });
-
-    if (count >= cloudLicense.selfDeviceBrowserCount) {
-      throw new PaymentRequiredException(`Self device browser count exceeded. selfDeviceBrowserCount: ${cloudLicense.selfDeviceBrowserCount}`, {
-        retryable: true,
-      });
-    }
-
-    if (!cloudLicense.billingOrganization) {
-      throw new InternalServerErrorException({
-        reason: 'Billing organization is not found.',
-        organizationId: cloudLicense.organizationId,
-      });
-    }
-
-    const isSubscribing = isBillingPlanSubscribing(cloudLicense.billingOrganization, 'self-device-farm-browser');
-    if (isSubscribing) {
-      return;
-    }
-
-    if (cloudLicense.selfDeviceBrowserCount <= 0) {
-      throw new PaymentRequiredException(`Self device browser is not subscribed. selfDeviceBrowserCount: ${cloudLicense.selfDeviceBrowserCount}`, {
-        retryable: false,
-      });
-    }
-  }
-
-  export async function validateSelfDeviceMobile(context: RetryTransactionContext, cloudLicense: CloudLicenseBase): Promise<void> {
-    const { manager } = context;
-    const count = await manager.getRepository(DeviceRunner).count({
-      where: {
-        isInUse: 1,
-        routineDeviceJobs: {
-          routineJob: {
-            routinePipeline: {
-              project: {
-                organization: {
-                  organizationId: cloudLicense.organizationId,
-                },
-              },
-            },
-          },
-        },
-        device: {
-          isHost: 0,
-          organization: {
-            shareable: false,
-          },
-        },
-      },
-      relations: {
-        routineDeviceJobs: {
-          routineJob: {
-            routinePipeline: {
-              project: {
-                organization: true,
-              },
-            },
-          },
-        },
-        device: {
-          organization: true,
-        },
-      },
-    });
-
-    if (count >= cloudLicense.selfDeviceMobileCount) {
-      throw new PaymentRequiredException(`Self device mobile count exceeded. selfDeviceMobileCount: ${cloudLicense.selfDeviceMobileCount}`, {
-        retryable: true,
-      });
-    }
-
-    if (!cloudLicense.billingOrganization) {
-      throw new InternalServerErrorException({
-        reason: 'Billing organization is not found.',
-        organizationId: cloudLicense.organizationId,
-      });
-    }
-
-    const isSubscribing = isBillingPlanSubscribing(cloudLicense.billingOrganization, 'self-device-farm-mobile');
-    if (isSubscribing) {
-      return;
-    }
-
-    if (cloudLicense.selfDeviceMobileCount <= 0) {
-      throw new PaymentRequiredException(`Self device mobile is not subscribed. selfDeviceMobileCount: ${cloudLicense.selfDeviceMobileCount}`, {
         retryable: false,
       });
     }

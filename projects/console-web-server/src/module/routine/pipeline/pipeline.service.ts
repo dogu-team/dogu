@@ -28,6 +28,7 @@ import {
   PIPELINE_STATUS,
   platformTypeFromPlatform,
   ProjectId,
+  PROJECT_TYPE,
   RoutineDeviceJobId,
   RoutineId,
   RoutineJobId,
@@ -36,17 +37,19 @@ import {
   StepSchema,
   UserId,
 } from '@dogu-private/types';
-import { notEmpty, stringify } from '@dogu-tech/common';
+import { assertUnreachable, notEmpty, stringify } from '@dogu-tech/common';
 import { HttpException, HttpStatus, Inject, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import lodash from 'lodash';
 import { Brackets, DataSource, EntityManager } from 'typeorm';
 import { RoutineDeviceJob } from '../../../db/entity/device-job.entity';
 import { DeviceRunner } from '../../../db/entity/device-runner.entity';
-import { Device, DeviceAndDeviceTag, DeviceTag, ProjectAndDevice, RoutineJob, RoutineJobEdge } from '../../../db/entity/index';
+import { Device, DeviceAndDeviceTag, DeviceTag, Project, ProjectAndDevice, RoutineJob, RoutineJobEdge } from '../../../db/entity/index';
 import { RoutinePipeline } from '../../../db/entity/pipeline.entity';
 import { Routine } from '../../../db/entity/routine.entity';
 import { RoutineStep } from '../../../db/entity/step.entity';
+import { CloudLicenseSerializable } from '../../../enterprise/module/license/cloud-license.serializables';
+import { CloudLicenseService } from '../../../enterprise/module/license/cloud-license.service';
 import { Page } from '../../common/dto/pagination/page';
 import { ProjectFileService } from '../../file/project-file.service';
 import { YamlLoaderService } from '../../init/yaml-loader/yaml-loader.service';
@@ -70,6 +73,7 @@ export class PipelineService {
     @InjectDataSource()
     private readonly dataSource: DataSource,
     private readonly logger: DoguLogger,
+    private readonly cloudLicenseService: CloudLicenseService,
   ) {}
 
   public async findPipelineAndSubDatasById(manager: EntityManager, pipelineId: RoutinePipelineId): Promise<RoutinePipeline> {
@@ -276,6 +280,9 @@ export class PipelineService {
 
   private static async createDeviceJobsFromShareable(
     manager: EntityManager,
+    cloudLicenseService: CloudLicenseService,
+    organizationId: OrganizationId,
+    projectId: ProjectId,
     routineJob: RoutineJob,
     jobSchema: JobSchema,
     cloud: boolean,
@@ -291,6 +298,43 @@ export class PipelineService {
         reason: 'Not supported pickAll type',
         jobName,
       });
+    }
+
+    // validate cloud license
+    {
+      const project = await manager.getRepository(Project).findOne({ where: { projectId } });
+      if (!project) {
+        throw new InternalServerErrorException({
+          reason: 'Project must exist',
+          projectId,
+        });
+      }
+
+      const cloudLicense = await cloudLicenseService.getLicenseInfo(organizationId);
+      switch (project.type) {
+        case PROJECT_TYPE.WEB: {
+          await CloudLicenseSerializable.validateWebTestAutomation(manager, cloudLicense);
+          break;
+        }
+        case PROJECT_TYPE.APP: {
+          await CloudLicenseSerializable.validateMobileAppTestAutomation(manager, cloudLicense);
+          break;
+        }
+        case PROJECT_TYPE.GAME: {
+          await CloudLicenseSerializable.validateMobileGameTestAutomation(manager, cloudLicense);
+          break;
+        }
+        case PROJECT_TYPE.CUSTOM: {
+          throw new InternalServerErrorException({
+            reason: 'Not supported project type',
+            jobName,
+            projectType: project.type,
+          });
+        }
+        default: {
+          assertUnreachable(project.type);
+        }
+      }
     }
 
     const create = async (deviceRunner: DeviceRunner): Promise<void> => {
@@ -635,6 +679,7 @@ export class PipelineService {
 
   private static async createDeviceJobs(
     manager: EntityManager,
+    cloudLicenseService: CloudLicenseService,
     organizationId: OrganizationId,
     projectId: ProjectId,
     routineSchema: RoutineSchema,
@@ -652,7 +697,18 @@ export class PipelineService {
       const record = jobSchema.record ? 1 : 0;
       const cloud = jobSchema.cloud ?? false;
       if (cloud) {
-        await PipelineService.createDeviceJobsFromShareable(manager, routineJob, jobSchema, cloud, record, routineDeviceJobs, reservedDeviceRunnerIds);
+        await PipelineService.createDeviceJobsFromShareable(
+          manager,
+          cloudLicenseService,
+          organizationId,
+          projectId,
+          routineJob,
+          jobSchema,
+          cloud,
+          record,
+          routineDeviceJobs,
+          reservedDeviceRunnerIds,
+        );
       } else {
         await PipelineService.createDeviceJobFromSelfDevice(manager, organizationId, projectId, routineJob, jobSchema, cloud, record, routineDeviceJobs, reservedDeviceRunnerIds);
       }
@@ -723,7 +779,7 @@ export class PipelineService {
 
       await this.createJobEdges(manager, routineSchema, jobs);
 
-      const deviceJobs = await PipelineService.createDeviceJobs(manager, organizationId, projectId, routineSchema, jobs);
+      const deviceJobs = await PipelineService.createDeviceJobs(manager, this.cloudLicenseService, organizationId, projectId, routineSchema, jobs);
       if (deviceJobs.length === 0) {
         throw new HttpException(`DeviceJobs are not created. pipelineId: ${pipeline.routinePipelineId}`, HttpStatus.INTERNAL_SERVER_ERROR);
       }
