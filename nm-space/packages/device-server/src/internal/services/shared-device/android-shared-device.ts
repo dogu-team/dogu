@@ -385,17 +385,6 @@ export class AndroidSharedDeviceService implements Zombieable {
     }
     const { serial, printable: logger, adb } = this;
     if (await this.reset.isDirty()) {
-      // to test prevent enter download mode
-      await this.checkSetup(`AndroidSharedDeviceService.setup.turnOffScreen`, adb.turnOffScreen()).catch((e) => {
-        this.printable.error(`AndroidSharedDeviceService.revive.turnOffScreen failed.`, { serial, error: errorify(e) });
-      });
-      await this.checkSetup(`AndroidSharedDeviceService.setup.turnOnScreen`, adb.turnOnScreen()).catch((e) => {
-        this.printable.error(`AndroidSharedDeviceService.revive.turnOnScreen failed.`, { serial, error: errorify(e) });
-      });
-      await this.checkSetup(`AndroidSharedDeviceService.setup.mute`, this.mute()).catch((e) => {
-        this.printable.error(`AndroidSharedDeviceService.revive.mute failed.`, { serial, error: errorify(e) });
-      });
-
       await this.checkSetup(`AndroidSharedDeviceService.setup.reset`, this.reset.reset(this.systemInfo, this.appiumAdb, this.appiumContext));
       throw new Error(`AndroidSharedDeviceService.revive. device is dirty. so trigger reset ${serial}`);
     }
