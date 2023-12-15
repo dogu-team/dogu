@@ -65,7 +65,7 @@ const PipelineItem = ({ pipeline }: ItemProps) => {
             <div style={{ marginRight: '1rem' }}>
               <Link
                 href={{
-                  pathname: router.pathname.replace(/\/\[pipelineId\](.+)?$/, '/[pipelineId]/devices'),
+                  pathname: router.pathname.replace(/\/\[pid\](.+)?$/, '/[pid]/routines/[pipelineId]/devices'),
                   query: { orgId: router.query.orgId, pid: router.query.pid, pipelineId: pipeline.routinePipelineId },
                 }}
               >
