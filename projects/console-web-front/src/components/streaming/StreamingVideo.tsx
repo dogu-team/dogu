@@ -103,6 +103,22 @@ const StreamingVideo = ({
   }, [videoRef, onResize]);
 
   useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.tagName === 'TEXTAREA' || target.tagName === 'INPUT') {
+        return;
+      }
+      inputRef.current?.focus({ preventScroll: true });
+      e.preventDefault();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
+
+  useEffect(() => {
     const preventContext = (e: Event) => e.preventDefault();
     const moveCursor = (e: MouseEvent) => {
       const mouseY = e.offsetY;
@@ -257,7 +273,6 @@ const StreamingVideo = ({
               e.preventDefault();
               // e.stopPropagation();
               onBlur?.(e);
-              e.currentTarget.focus();
             }}
             readOnly
           />
