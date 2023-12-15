@@ -66,6 +66,7 @@ const nextConfig = {
   },
   compiler: {
     styledComponents: true,
+    removeConsole: process.env.NEXT_PUBLIC_ENV === 'production',
   },
   sentry: {
     disableServerWebpackPlugin: true,
