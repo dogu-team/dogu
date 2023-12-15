@@ -26,7 +26,8 @@ const LiveTestingFreeTierTopBanner: React.FC<Props> = () => {
     return (
       <Box>
         <span style={{ fontSize: '.85rem' }}>
-          <ClockCircleOutlined /> {(remainingSeconds / 60).toFixed(0)} min{remainingSeconds > 1 ? 's' : ''} left.
+          <ClockCircleOutlined /> {Math.floor(remainingSeconds / 60).toFixed(0)} min{remainingSeconds > 1 ? 's' : ''}{' '}
+          left.
         </span>
         {!!me && hasAdminPermission(me) && (
           <StyledButton type="ghost" groupType="live-testing-group">
