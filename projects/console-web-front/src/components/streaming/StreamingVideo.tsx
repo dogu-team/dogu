@@ -257,6 +257,7 @@ const StreamingVideo = ({
               e.preventDefault();
               // e.stopPropagation();
               onBlur?.(e);
+              e.currentTarget.focus();
             }}
             readOnly
           />

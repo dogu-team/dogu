@@ -1,12 +1,7 @@
-import {
-  CaretRightOutlined,
-  DisconnectOutlined,
-  PauseOutlined,
-  ReloadOutlined,
-  SelectOutlined,
-} from '@ant-design/icons';
+import { CaretRightOutlined, PauseOutlined, ReloadOutlined, SelectOutlined } from '@ant-design/icons';
 import { Tooltip } from 'antd';
 import moment from 'moment';
+import { GrConnect } from 'react-icons/gr';
 import useTranslation from 'next-translate/useTranslation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
@@ -73,7 +68,7 @@ const InspectorToolbar = ({ onRefresh, onReset, selectDisabled }: Props) => {
   }, [handleRefresh, refreshEnabled, inspectorType]);
 
   useEffect(() => {
-    if (mode === 'inspect' && inspectorType === InspectorType.APP) {
+    if (mode === 'inspect') {
       refreshAndClearTimer();
     }
   }, [mode, refreshAndClearTimer, inspectorType]);
@@ -86,9 +81,9 @@ const InspectorToolbar = ({ onRefresh, onReset, selectDisabled }: Props) => {
 
       <ButtonWrapper>
         {inspectorType === InspectorType.GAME && (
-          <Tooltip title="Reconnect">
+          <Tooltip title="Connect">
             <StyledButton onClick={handleReset} disabled={loading}>
-              <DisconnectOutlined style={{ fontSize: '.75rem' }} />
+              <GrConnect style={{ fontSize: '.75rem' }} />
             </StyledButton>
           </Tooltip>
         )}
