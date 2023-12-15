@@ -63,11 +63,11 @@ export class AndroidResetService {
 
         if (env.DOGU_RUN_TYPE === 'local' && env.DOGU_DEVICE_SKIP_RESET_FOR_LOCAL) {
           logger.info(`AndroidResetService.reset skipped for local`, { serial, info });
+          await this.check(`AndroidResetService.reset.reboot`, this.adb.reboot());
         } else {
           await this.runReset(info, appiumAdb, appiumContext);
         }
 
-        await this.check(`AndroidResetService.reset.reboot`, this.adb.reboot());
         AndroidResetService.map.set(serial, { lastResetTime: Date.now() });
         this.logger.info(`AndroidResetService.reset end`, { serial, info });
       },
@@ -91,6 +91,7 @@ export class AndroidResetService {
       await this.check(`AndroidResetService.reset.logcatClear`, this.adb.logcatClear());
       await this.check(`AndroidResetService.reset.resetPackages`, this.adb.resetPackages());
       await this.check(`AndroidResetService.reset.resetDirty`, this.resetDirty());
+      await this.check(`AndroidResetService.reset.reboot`, this.adb.reboot());
     } finally {
       this._state = null;
     }
