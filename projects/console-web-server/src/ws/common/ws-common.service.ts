@@ -187,10 +187,18 @@ export class WsCommonService {
       return { result: false, resultCode: 1003, message: `The user is not a member of the organization. UserId: ${userId}, OrganizationId: ${organizationId}`, userId };
     }
 
-    const device = await dataSource.getRepository(Device).findOne({ where: { deviceId, organizationId }, relations: ['projectAndDevices'] });
+    const device = await dataSource.getRepository(Device).findOne({ where: { deviceId }, relations: ['projectAndDevices', 'organization'] });
 
     if (!device) {
       return { result: false, resultCode: 1003, message: `The device is not found.`, userId };
+    }
+
+    if (device.organization.shareable) {
+      return { result: true, resultCode: 1000, message: 'success', userId };
+    }
+
+    if (device.organizationId !== organizationId) {
+      return { result: false, resultCode: 1003, message: `The device is not found in the organization.`, userId };
     }
 
     if (device.isGlobal === 1) {
