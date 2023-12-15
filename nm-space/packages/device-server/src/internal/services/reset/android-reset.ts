@@ -3,7 +3,6 @@ import { delay, filterAsync, loop, PrefixLogger, retry, stringify } from '@dogu-
 import { CheckTimer } from '@dogu-tech/node';
 import semver from 'semver';
 import { AppiumContextImpl } from '../../../appium/appium.context';
-import { env } from '../../../env';
 import { AdbSerial, AppiumAdb } from '../../externals/index';
 export interface AndroidResetInfo {
   lastResetTime: number;
@@ -59,41 +58,30 @@ export class AndroidResetService {
     const { serial, logger } = this;
     await retry(
       async (): Promise<void> => {
-        logger.info(`AndroidResetService.reset begin`, { serial, info });
-
-        if (env.DOGU_RUN_TYPE === 'local' && env.DOGU_DEVICE_SKIP_RESET_FOR_LOCAL) {
-          logger.info(`AndroidResetService.reset skipped for local`, { serial, info });
-        } else {
-          await this.runReset(info, appiumAdb, appiumContext);
+        logger.info(`AndroidResetService.resetDevice begin`, { serial, info });
+        try {
+          this._state = 'resetting';
+          if (!this.isHarnessAvailable(info)) {
+            throw new Error(`AndroidResetService.resetDevice Android version must be 10 or higher. to use testharness, serial:${serial}. version:${info.version}`);
+          }
+          await this.check(`AndroidResetService.reset.enableTestharness`, this.adb.enableTestharness());
+        } catch (e) {
+          await this.check(`AndroidResetService.reset.resetAccounts`, this.resetAccounts(appiumAdb, appiumContext));
+          await this.check(`AndroidResetService.reset.runAppSettingsActivity`, this.adb.runActivity('android.settings.MANAGE_APPLICATIONS_SETTINGS'));
+          await this.check(`AndroidResetService.reset.resetSdcard`, this.adb.resetSdcard());
+          await this.check(`AndroidResetService.reset.resetIMEList`, this.resetIMEList());
+          await this.check(`AndroidResetService.reset.logcatClear`, this.adb.logcatClear());
+          await this.check(`AndroidResetService.reset.resetPackages`, this.adb.resetPackages());
+          await this.check(`AndroidResetService.reset.resetDirty`, this.resetDirty());
+          await this.check(`AndroidResetService.reset.reboot`, this.adb.reboot());
+        } finally {
+          this._state = null;
         }
-
-        await this.check(`AndroidResetService.reset.reboot`, this.adb.reboot());
         AndroidResetService.map.set(serial, { lastResetTime: Date.now() });
-        this.logger.info(`AndroidResetService.reset end`, { serial, info });
+        this.logger.info(`AndroidResetService.resetDevice end`, { serial, info });
       },
       { retryCount: 5, retryInterval: 1000, printable: new PrefixLogger(logger, 'AndroidResetService.reset') },
     );
-  }
-
-  private async runReset(info: DeviceSystemInfo, appiumAdb: AppiumAdb, appiumContext: AppiumContextImpl): Promise<void> {
-    const { serial } = this;
-    try {
-      this._state = 'resetting';
-      if (!this.isHarnessAvailable(info)) {
-        throw new Error(`AndroidResetService.resetDevice Android version must be 10 or higher. to use testharness, serial:${serial}. version:${info.version}`);
-      }
-      await this.check(`AndroidResetService.reset.enableTestharness`, this.adb.enableTestharness());
-    } catch (e) {
-      await this.check(`AndroidResetService.reset.resetAccounts`, this.resetAccounts(appiumAdb, appiumContext));
-      await this.check(`AndroidResetService.reset.runAppSettingsActivity`, this.adb.runActivity('android.settings.MANAGE_APPLICATIONS_SETTINGS'));
-      await this.check(`AndroidResetService.reset.resetSdcard`, this.adb.resetSdcard());
-      await this.check(`AndroidResetService.reset.resetIMEList`, this.resetIMEList());
-      await this.check(`AndroidResetService.reset.logcatClear`, this.adb.logcatClear());
-      await this.check(`AndroidResetService.reset.resetPackages`, this.adb.resetPackages());
-      await this.check(`AndroidResetService.reset.resetDirty`, this.resetDirty());
-    } finally {
-      this._state = null;
-    }
   }
 
   private isHarnessAvailable(systemInfo: DeviceSystemInfo): boolean {

@@ -62,8 +62,4 @@ export class DeviceServerEnv extends PreloadDeviceServerEnv {
 
   @IsFilledString()
   DOGU_SECRET_INITIAL_ADMIN_TOKEN = '';
-
-  @IsBoolean()
-  @TransformBooleanString()
-  DOGU_DEVICE_SKIP_RESET_FOR_LOCAL = false;
 }
