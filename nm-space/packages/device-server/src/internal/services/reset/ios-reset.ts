@@ -3,6 +3,7 @@ import { delay, filterAsync, loop, loopTime, PrefixLogger, Repeat, retry, TimeOp
 import { CheckTimer } from '@dogu-tech/node';
 import { boxBox } from 'intersects';
 import { AppiumContextImpl, WDIOElement } from '../../../appium/appium.context';
+import { env } from '../../../env';
 import { IosDriver } from '../../driver/ios-driver';
 import { IdeviceInstaller } from '../../externals/cli/ideviceinstaller';
 import { WebdriverAgentProcess } from '../../externals/cli/webdriver-agent-process';
@@ -234,8 +235,6 @@ export class IosResetService {
         if (!driver) {
           throw new Error(`IosResetService.reset driver is null`);
         }
-        const iosDriver = new IosWebDriver(driver, wda, iosWebDriverInfo, logger);
-        const helper = new IosResetHelper(iosDriver);
 
         await usingAsnyc(
           {
@@ -250,22 +249,11 @@ export class IosResetService {
             },
           },
           async () => {
-            await iosDriver.homeAndDismissAlert();
-            await this.check('IosResetService.reset.removeSystemApps', this.removeSystemApps());
-            await iosDriver.homeAndDismissAlert();
-            await this.check('IosResetService.reset.logoutAppleAccount', this.logoutAppleAccount(iosDriver));
-            await this.check('IosResetService.reset.clearSafariCache', this.clearSafariCache(iosDriver));
-            await this.check('IosResetService.reset.clearPhotoImages', this.clearPhotoImages(iosDriver));
-            await this.check('IosResetService.reset.clearPhotoAlbums', this.clearPhotoAlbums(iosDriver));
-            await this.check('IosResetService.reset.clearPhotosRecentlyDeleted', this.clearPhotosRecentlyDeleted(iosDriver));
-            await this.check('IosResetService.reset.clearPhotosSuggestionAndFeedbacks', this.clearPhotosSuggestionAndFeedbacks(iosDriver));
-            await this.check('IosResetService.reset.clearFilesOnMyiPhone', this.clearFilesOnMyiPhone(iosDriver, helper));
-            await this.check('IosResetService.reset.clearFilesTags', this.clearFilesTags(iosDriver, helper));
-            await this.check('IosResetService.reset.clearFilesRecentlyDeleted', this.clearFilesRecentlyDeleted(iosDriver, helper));
-            await this.check('IosResetService.reset.resetSettings', this.resetSettings(iosDriver));
-            await this.check('IosResetService.reset.removeWidgets', this.removeWidgets(iosDriver));
-            await this.check('IosResetService.reset.clearNotifications', this.clearNotifications(iosDriver));
-            await this.check('IosResetService.reset.removeUserApps', this.removeUserApps()); // last step because this removes appium
+            if (env.DOGU_RUN_TYPE === 'local' && env.DOGU_DEVICE_SKIP_RESET_FOR_LOCAL) {
+              logger.info(`IosResetService.reset skipped for local`, { serial });
+            } else {
+              await this.runReset(appiumContext, wda);
+            }
             await this.check(
               'IosResetService.reset.restart',
               retry(async (): Promise<string> => await IdeviceDiagnostics.restart(serial, logger), { retryCount: 5, retryInterval: 1000 }).catch((e) => {
@@ -279,6 +267,29 @@ export class IosResetService {
       },
       { retryCount: 5, retryInterval: 1000, printable: new PrefixLogger(logger, 'IosResetService.reset') },
     );
+  }
+
+  private async runReset(appiumContext: AppiumContextImpl, wda: WebdriverAgentProcess): Promise<void> {
+    const { serial, iosWebDriverInfo, logger } = this;
+    const iosDriver = new IosWebDriver(driver, wda, iosWebDriverInfo, logger);
+    const helper = new IosResetHelper(iosDriver);
+
+    await iosDriver.homeAndDismissAlert();
+    await this.check('IosResetService.reset.removeSystemApps', this.removeSystemApps());
+    await iosDriver.homeAndDismissAlert();
+    await this.check('IosResetService.reset.logoutAppleAccount', this.logoutAppleAccount(iosDriver));
+    await this.check('IosResetService.reset.clearSafariCache', this.clearSafariCache(iosDriver));
+    await this.check('IosResetService.reset.clearPhotoImages', this.clearPhotoImages(iosDriver));
+    await this.check('IosResetService.reset.clearPhotoAlbums', this.clearPhotoAlbums(iosDriver));
+    await this.check('IosResetService.reset.clearPhotosRecentlyDeleted', this.clearPhotosRecentlyDeleted(iosDriver));
+    await this.check('IosResetService.reset.clearPhotosSuggestionAndFeedbacks', this.clearPhotosSuggestionAndFeedbacks(iosDriver));
+    await this.check('IosResetService.reset.clearFilesOnMyiPhone', this.clearFilesOnMyiPhone(iosDriver, helper));
+    await this.check('IosResetService.reset.clearFilesTags', this.clearFilesTags(iosDriver, helper));
+    await this.check('IosResetService.reset.clearFilesRecentlyDeleted', this.clearFilesRecentlyDeleted(iosDriver, helper));
+    await this.check('IosResetService.reset.resetSettings', this.resetSettings(iosDriver));
+    await this.check('IosResetService.reset.removeWidgets', this.removeWidgets(iosDriver));
+    await this.check('IosResetService.reset.clearNotifications', this.clearNotifications(iosDriver));
+    await this.check('IosResetService.reset.removeUserApps', this.removeUserApps()); // last step because this removes appium
   }
 
   private async removeSystemApps(): Promise<void> {
