@@ -1,6 +1,7 @@
 import { time } from '@dogu-tech/common';
 import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { config } from '../../../../config';
+import { FeatureConfig } from '../../../../feature.config';
 import { EventConsumer } from '../../../../module/event/event.consumer';
 import { EventProducer } from '../../../../module/event/event.producer';
 import { DoguLogger } from '../../../../module/logger/logger';
@@ -47,6 +48,10 @@ export class HostAppUpdateProcessor implements OnModuleInit, OnModuleDestroy {
   }
 
   private async update(): Promise<void> {
+    if (!FeatureConfig.get('doguAgentAutoUpdate')) {
+      return;
+    }
+
     await this.hostApp.updateAllIdleHost();
   }
 }

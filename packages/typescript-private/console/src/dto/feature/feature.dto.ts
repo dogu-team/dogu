@@ -10,5 +10,6 @@ export interface FeatureTableBase {
   forceInvitation: boolean;
   thirdPartyLogin: boolean;
   doguAgentAppLocation: 's3' | 'github' | 'off';
+  doguAgentAutoUpdate: boolean;
   slackNotification: boolean;
 }

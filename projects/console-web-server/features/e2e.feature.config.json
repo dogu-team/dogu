@@ -7,5 +7,6 @@
   "forceInvitation": true,
   "thirdPartyLogin": false,
   "doguAgentAppLocation": "off",
+  "doguAgentAutoUpdate": true,
   "slackNotification": false
 }
