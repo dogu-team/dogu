@@ -3,7 +3,7 @@ import { DeviceRTCCaller } from '@dogu-private/webrtc';
 import React, { useContext } from 'react';
 
 import { StreamingMode } from '../../types/device';
-import { InspectorType, StreamingError } from '../../types/streaming';
+import { InspectorType, StreamingError, StreamingTabMenuKey } from '../../types/streaming';
 import useDeviceClient from './useDeviceClient';
 import useGamiumClient from './useGamiumClient';
 import useGamiumInspector from './useGamiumInspector';
@@ -17,6 +17,7 @@ export interface StreamingContextValue {
   deviceRTCCaller: DeviceRTCCaller | null;
   peerConnection: RTCPeerConnection | null;
   error: StreamingError | null;
+  tab: StreamingTabMenuKey;
   gamiumService: ReturnType<typeof useGamiumClient> | null;
   deviceService: ReturnType<typeof useDeviceClient> | null;
   isSelf: boolean;
@@ -25,6 +26,7 @@ export interface StreamingContextValue {
   gamiumInspector: ReturnType<typeof useGamiumInspector> | null;
   updateMode: (mode: StreamingMode) => void;
   updateInspectorType: (type: InspectorType) => void;
+  updateTab: (tab: StreamingTabMenuKey) => void;
   isCloudDevice?: boolean;
   deviceScreenshotBase64: string | null;
   isAdmin: boolean;
@@ -37,6 +39,7 @@ const defaultContextValue: StreamingContextValue = {
   deviceRTCCaller: null,
   peerConnection: null,
   error: null,
+  tab: StreamingTabMenuKey.INFO,
   gamiumService: null,
   deviceService: null,
   device: null,
@@ -46,6 +49,7 @@ const defaultContextValue: StreamingContextValue = {
   gamiumInspector: null,
   updateMode: () => {},
   updateInspectorType: () => {},
+  updateTab: () => {},
   isCloudDevice: undefined,
   deviceScreenshotBase64: null,
   isAdmin: false,

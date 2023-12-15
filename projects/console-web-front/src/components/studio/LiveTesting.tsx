@@ -25,8 +25,8 @@ const DeviceStreamingLayout = dynamic<DeviceStreamingLayoutProps>(() => import('
 
 const LiveTestingMenu = () => {
   const router = useRouter();
-  const [tab, setTab] = useState<StreamingTabMenuKey>(StreamingTabMenuKey.INFO);
-  const { device, deviceService, inspector, isCloudDevice, gamiumInspector } = useDeviceStreamingContext();
+  const { device, deviceService, inspector, isCloudDevice, gamiumInspector, tab, updateTab } =
+    useDeviceStreamingContext();
   const runtimeInfos = useDeviceStreamingProfile(deviceService?.deviceClientRef, device ?? null);
   const { t } = useTranslation();
   const { deviceLogs, isLogStopped, logFilterValue, togglePlay, handleChangeFilterValue, clearLog } = useDeviceLog(
@@ -38,11 +38,11 @@ const LiveTestingMenu = () => {
     useEventStore.subscribe(({ eventName, payload }) => {
       if (eventName === 'onStreamingHotkeyPressed') {
         if (payload === StreamingHotKey.INSPECTOR_RELOAD || payload === StreamingHotKey.INSPECTOR_SELECT) {
-          setTab(StreamingTabMenuKey.INSPECTOR);
+          updateTab(StreamingTabMenuKey.INSPECTOR);
         }
       }
     });
-  }, []);
+  }, [updateTab]);
 
   const getTabMenu = (platform: Platform): StreamingTabMenuKey[] => {
     switch (platform) {
@@ -73,14 +73,14 @@ const LiveTestingMenu = () => {
   return (
     <TabBox>
       <ButtonWrapper>
-        <TabButton isSelected={tab === StreamingTabMenuKey.INFO} onClick={() => setTab(StreamingTabMenuKey.INFO)}>
+        <TabButton isSelected={tab === StreamingTabMenuKey.INFO} onClick={() => updateTab(StreamingTabMenuKey.INFO)}>
           <InfoCircleOutlined />
           &nbsp;General
         </TabButton>
         {tabMenus.includes(StreamingTabMenuKey.INSPECTOR) && (
           <TabButton
             isSelected={tab === StreamingTabMenuKey.INSPECTOR}
-            onClick={() => setTab(StreamingTabMenuKey.INSPECTOR)}
+            onClick={() => updateTab(StreamingTabMenuKey.INSPECTOR)}
           >
             <LuInspect />
             &nbsp;Inspector
@@ -89,14 +89,14 @@ const LiveTestingMenu = () => {
         {tabMenus.includes(StreamingTabMenuKey.PROFILE) && (
           <TabButton
             isSelected={tab === StreamingTabMenuKey.PROFILE}
-            onClick={() => setTab(StreamingTabMenuKey.PROFILE)}
+            onClick={() => updateTab(StreamingTabMenuKey.PROFILE)}
           >
             <AreaChartOutlined />
             &nbsp;Profiler
           </TabButton>
         )}
         {tabMenus.includes(StreamingTabMenuKey.LOGS) && (
-          <TabButton isSelected={tab === StreamingTabMenuKey.LOGS} onClick={() => setTab(StreamingTabMenuKey.LOGS)}>
+          <TabButton isSelected={tab === StreamingTabMenuKey.LOGS} onClick={() => updateTab(StreamingTabMenuKey.LOGS)}>
             <CodeOutlined />
             &nbsp;Logcat
           </TabButton>

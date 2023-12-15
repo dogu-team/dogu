@@ -13,7 +13,7 @@ import useInspector from '../../hooks/streaming/useInspector';
 import useLocalDeviceDetect from '../../hooks/streaming/useLocalDeviceDetect';
 import useRTCConnection from '../../hooks/streaming/useRTCConnection';
 import { StreamingMode } from '../../types/device';
-import { InspectorType, StreamingErrorType } from '../../types/streaming';
+import { InspectorType, StreamingErrorType, StreamingTabMenuKey } from '../../types/streaming';
 import ErrorBox from '../common/boxes/ErrorBox';
 import ApplicationUploader from './ApplicationUploader';
 import DeviceControlToolbar from './DeviceControlToolbar';
@@ -34,6 +34,7 @@ const THROTTLE_MS = 33;
 const DeviceStreaming = ({ device, children, pid, isCloudDevice, isAdmin }: Props) => {
   const [mode, setMode] = useState<StreamingMode>('input');
   const [inspectorType, setInspectorType] = useState<InspectorType>(InspectorType.APP);
+  const [tab, setTab] = useState<StreamingTabMenuKey>(StreamingTabMenuKey.INFO);
   const isSelf = useLocalDeviceDetect(device);
   const { loading, deviceRTCCallerRef, peerConnectionRef, videoRef, deviceToken, error } = useRTCConnection(
     { device, pid, isCloudDevice },
@@ -143,6 +144,7 @@ const DeviceStreaming = ({ device, children, pid, isCloudDevice, isAdmin }: Prop
         deviceRTCCaller: deviceRTCCallerRef.current ?? null,
         peerConnection: peerConnectionRef.current ?? null,
         error: error ?? null,
+        tab,
         gamiumService,
         deviceService,
         device: device ?? null,
@@ -152,6 +154,7 @@ const DeviceStreaming = ({ device, children, pid, isCloudDevice, isAdmin }: Prop
         gamiumInspector,
         updateMode: setMode,
         updateInspectorType: setInspectorType,
+        updateTab: setTab,
         isCloudDevice,
         deviceScreenshotBase64: imageBase64,
         isAdmin,
