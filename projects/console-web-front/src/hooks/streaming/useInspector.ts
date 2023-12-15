@@ -14,8 +14,10 @@ import { ScreenSize } from '@dogu-tech/device-client-common';
 import { GamiumClient } from 'gamium/common';
 import { throttle } from 'lodash';
 import React, { RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import useEventStore from '../../stores/events';
 
 import { InspectorWorkerMessage, InspectorWorkerResponse } from '../../types/inspector';
+import { StreamingHotKey } from '../../types/streaming';
 import { BrowserDeviceInspector } from '../../utils/streaming/browser-device-inspector';
 
 const useInspector = (
@@ -36,6 +38,16 @@ const useInspector = (
     (c) => c.context === selectedContextKey,
   );
   const isGamium = selectedContextKey === GAMIUM_CONTEXT_KEY;
+
+  useEffect(() => {
+    useEventStore.subscribe(({ eventName, payload }) => {
+      if (eventName === 'onStreamingHotkeyPressed') {
+        if (payload === StreamingHotKey.INSPECTOR_SELECT) {
+          setInspectingNode(undefined);
+        }
+      }
+    });
+  }, []);
 
   useEffect(() => {
     if (selectedContextAndNode && device?.platform) {
