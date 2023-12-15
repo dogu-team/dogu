@@ -12,6 +12,7 @@ import {
   mapWebMetaKeyToDeviceMetaState,
 } from 'src/utils/streaming/streaming';
 import useEventStore from '../../stores/events';
+import { StreamingHotKey } from '../../types/streaming';
 import { sendErrorNotification } from '../../utils/antd';
 
 type DeviceControlType = PrivateProtocol.DeviceControlType;
@@ -172,6 +173,10 @@ const useDeviceInput = (deviceRTCCaller: DeviceRTCCaller | undefined, platform: 
             return;
           }
         } catch (e) {}
+      } else if (!isKeyUp && event.code === 'KeyR' && event.ctrlKey && event.shiftKey) {
+        fireEvent('onStreamingHotkeyPressed', StreamingHotKey.INSPECTOR_RELOAD);
+      } else if (!isKeyUp && event.code === 'KeyS' && event.ctrlKey && event.shiftKey) {
+        fireEvent('onStreamingHotkeyPressed', StreamingHotKey.INSPECTOR_SELECT);
       }
 
       const c: DeviceControl = {
