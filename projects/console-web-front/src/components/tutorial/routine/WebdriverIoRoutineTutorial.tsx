@@ -80,11 +80,10 @@ on:
 
 jobs:
   sample-job:
-    runs-on:
-      group:
-        - android
+    runs-on: []
     appPackageName:
     record: true
+    cloud: true
     steps:
       - name: Run test step
         uses: dogu-actions/run-test
@@ -200,7 +199,13 @@ jobs:
               id={UPLOAD_SAMPLE_APP_ID}
               title={t('routineTutorialUploadSampleAppTitle')}
               description={<p>{t('routineTutorialUploadSampleAppDescription')}</p>}
-              content={<SampleApplicationUploadStep hasSampleApp={selectedGuide?.hasSampleApp} category="mobile" />}
+              content={
+                <SampleApplicationUploadStep
+                  hasSampleApp={selectedGuide?.hasSampleApp}
+                  category="mobile"
+                  extension="apk"
+                />
+              }
             />
           )}
           <GuideStep

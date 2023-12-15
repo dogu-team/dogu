@@ -1,5 +1,7 @@
 import {
+  BillingPlanGroupMap,
   BillingPlanMap,
+  BillingSubscriptionGroupType,
   CallBillingApiResponse,
   GetBillingPreviewDto,
   GetBillingPreviewResponse,
@@ -13,7 +15,7 @@ import { useRouter } from 'next/router';
 import { LoadingOutlined } from '@ant-design/icons';
 import { shallow } from 'zustand/shallow';
 
-import { planDescriptionInfoMap } from '../../resources/plan';
+import { groupTypeI18nKeyMap, planDescriptionInfoMap } from '../../resources/plan';
 import useBillingPlanPurchaseStore from '../../stores/billing-plan-purchase';
 import { getLocaleFormattedDate, getLocaleFormattedPrice } from '../../utils/locale';
 import ErrorBox from '../common/boxes/ErrorBox';
@@ -99,6 +101,9 @@ const BillingCalculatedPreview: React.FC<Props> = ({}) => {
   const originPricePerMonth = isAnnualSubscription
     ? responseSubscriptionPlan.originPrice / 12
     : responseSubscriptionPlan.originPrice;
+  const selectedPlanGroupType = BillingSubscriptionGroupType.find((group) =>
+    BillingPlanGroupMap[group].includes(selectedPlan.type),
+  )!;
 
   const ProductBadge = () => {
     if (getSubscriptionPlansFromLicense(license, [selectedPlan.type]).length === 0) {
@@ -117,7 +122,9 @@ const BillingCalculatedPreview: React.FC<Props> = ({}) => {
       <Content>
         <div>
           <ProductBadge />
-          <PlanTitle>{t(planDescription.titleI18nKey)}</PlanTitle>
+          <PlanTitle>
+            [{t(groupTypeI18nKeyMap[selectedPlanGroupType])}] {t(planDescription.titleI18nKey)}
+          </PlanTitle>
           <div>
             <MonthlyPrice>
               {getLocaleFormattedPrice(router.locale, responseSubscriptionPlan.currency, originPricePerMonth)}
@@ -297,19 +304,24 @@ const BillingCalculatedPreview: React.FC<Props> = ({}) => {
           </div>
         )}
 
-        <div style={{ marginTop: '.5rem' }}>
+        {/* <div style={{ marginTop: '.5rem' }}>
           <CalculatedPriceContent>
-            <span>{t('taxLabelText')}</span>
+            <span>
+              {t('taxLabelText')} <span style={{ color: '#666', fontSize: '.8rem' }}>(incl.)</span>
+            </span>
             <b>{getLocaleFormattedPrice(router.locale, responseSubscriptionPlan.currency, data.body.tax)}</b>
           </CalculatedPriceContent>
-        </div>
+        </div> */}
 
         <Divider style={{ margin: '.5rem 0', borderTopWidth: '2px' }} />
 
         {shouldPurchase ? (
           <div>
             <CalculatedPriceContent>
-              <TotalText>{t('totalLabelText')}</TotalText>
+              <TotalText>
+                {t('totalLabelText')}{' '}
+                <span style={{ color: '#666', fontSize: '.8rem' }}>({t('taxIncludedLabelText')})</span>
+              </TotalText>
               <TotalText>
                 {getLocaleFormattedPrice(router.locale, responseSubscriptionPlan.currency, data.body.totalPrice)}
               </TotalText>

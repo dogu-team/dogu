@@ -47,6 +47,6 @@ export class HostAppUpdateProcessor implements OnModuleInit, OnModuleDestroy {
   }
 
   private async update(): Promise<void> {
-    await this.hostApp.updateAllIdleHost();
+    // await this.hostApp.updateAllIdleHost();
   }
 }

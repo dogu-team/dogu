@@ -1,3 +1,4 @@
+import { BadRequestException } from '@nestjs/common';
 import { Paddle } from './paddle.types';
 
 export function matchProduct(match: Paddle.ProductMatch, product: Paddle.ProductWithPrices): boolean {
@@ -46,4 +47,16 @@ export function matchDiscountCode(match: Paddle.DiscountCodeMatch, discount: Pad
   }
 
   return true;
+}
+
+const paddleDiscountPattern = /^[a-zA-Z0-9]{1,16}$/;
+
+export function validatePaddleDiscountPattern(couponCode: string): void {
+  const match = couponCode.match(paddleDiscountPattern);
+  if (!match) {
+    throw new BadRequestException({
+      reason: `Only ${paddleDiscountPattern} is allowed.`,
+      couponCode,
+    });
+  }
 }

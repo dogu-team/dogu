@@ -1,7 +1,7 @@
 import { DoguRunType, NodeEnvType } from '@dogu-private/types';
 import { IsFilledString, TransformBooleanString } from '@dogu-tech/common';
 import { Type } from 'class-transformer';
-import { IsBoolean, IsIn, IsNumber, IsOptional } from 'class-validator';
+import { IsBoolean, IsBooleanString, IsIn, IsNumber, IsOptional } from 'class-validator';
 
 export class PreloadHostAgentEnv {
   @IsIn(NodeEnvType)
@@ -39,4 +39,7 @@ export class HostAgentEnv extends PreloadHostAgentEnv {
 
   @IsFilledString()
   DOGU_SECRET_INITIAL_ADMIN_TOKEN = '';
+
+  @IsBooleanString()
+  DOGU_DEVICE_IS_SHAREABLE = 'false';
 }

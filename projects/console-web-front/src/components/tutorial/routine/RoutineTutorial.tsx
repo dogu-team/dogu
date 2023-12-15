@@ -23,7 +23,7 @@ const RoutineTutorial = ({ selectedSdk }: Props) => {
 
   return (
     <>
-      {/* {selectedSdk === TutorialSupportSdk.WEBDRIVERIO && <WebdriverIoRoutineTutorial />} */}
+      {selectedSdk === TutorialSupportSdk.WEBDRIVERIO && <WebdriverIoRoutineTutorial />}
       {selectedSdk === TutorialSupportSdk.APPIUM && <AppiumRoutineTutorial />}
       {selectedSdk === TutorialSupportSdk.GAMIUM && <GamiumRoutineTutorial />}
       {selectedSdk === TutorialSupportSdk.SELENIUM && <SeleniumRoutineTutorial />}

@@ -74,6 +74,7 @@
   "doneStepTitle": "Done! Next step 🚀",
 
   "uploadSampleAppButtonTitle": "Upload sample app",
+  "uploadSampleAppIosRestrictionMessage": "It's unable to install the sample app we provide on iOS Self devices. To run on them, please upload your own app.",
   "uploadSampleAppNotSupportMessage": "For this platform, we don't provide sample app. Please upload your app manually.",
 
   "runTestNotSupportMessage": "We don't provide sample test script for this platform. Please run test with your own configuration.",

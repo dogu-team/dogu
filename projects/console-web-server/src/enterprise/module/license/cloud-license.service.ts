@@ -1,7 +1,7 @@
-import { CloudLicenseBase, CloudLicenseMessage, CreateCloudLicenseDto, FindCloudLicenseDto } from '@dogu-private/console';
+import { BillingPlanType, CloudLicenseBase, CloudLicenseUpdateMessage, CreateCloudLicenseDto, FindCloudLicenseDto } from '@dogu-private/console';
 import { OrganizationId } from '@dogu-private/types';
-import { closeWebSocketWithTruncateReason, errorify, setAxiosErrorFilterToIntercepter, transformAndValidate } from '@dogu-tech/common';
-import { rawToString, WebSocketClientFactory } from '@dogu-tech/node';
+import { closeWebSocketWithTruncateReason, setAxiosErrorFilterToIntercepter } from '@dogu-tech/common';
+import { WebSocketClientFactory } from '@dogu-tech/node';
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
 import { WebSocket } from 'ws';
@@ -11,15 +11,30 @@ import { FeatureConfig } from '../../../feature.config';
 import { DoguLogger } from '../../../module/logger/logger';
 import { getBillingServerWebSocketUrl, updateAuthHeaderByBillingApiToken } from './common/utils';
 
-export interface CloudLicenseLiveTestingFreeSecondsHandler {
-  onOpen: (close: () => void) => Promise<void>;
-  onClose: () => Promise<void>;
-  onMessage: (message: CloudLicenseMessage.LiveTestingReceive) => Promise<void>;
+const CloudLicenseUpdateIntervalSeconds = 5;
+
+export type StartCloudLicenseUpdateOptions = {
+  organizationId: string;
+  planType: BillingPlanType;
+  key: string;
+  value: string;
+};
+
+type CloudLicenseUpdaterKeyOptions = Pick<StartCloudLicenseUpdateOptions, 'key' | 'value'>;
+
+export type StopCloudLicenseUpdateOptions = CloudLicenseUpdaterKeyOptions;
+
+export type StopCloudLicenseUpdate = () => void;
+
+function createUpdaterKey(options: CloudLicenseUpdaterKeyOptions): string {
+  const { key, value } = options;
+  return `${key}:${value}`;
 }
 
 @Injectable()
 export class CloudLicenseService {
   private readonly api: axios.AxiosInstance;
+  private readonly updaterMap = new Map<string, WebSocket>();
 
   constructor(private readonly logger: DoguLogger) {
     this.api = axios.create({
@@ -46,84 +61,74 @@ export class CloudLicenseService {
     return response.data;
   }
 
-  startUpdateLiveTesting(cloudLicenseId: string, handler: CloudLicenseLiveTestingFreeSecondsHandler): void {
-    const intervalSeconds = 5;
-    const url = `${getBillingServerWebSocketUrl()}/cloud-licenses/live-testing?token=${env.DOGU_BILLING_TOKEN}`;
-    const webSocket = new WebSocketClientFactory().create({ url });
-    webSocket.on('open', () => {
-      let updatedAt = Date.now();
-      const update = (): void => {
-        if (webSocket.readyState !== WebSocket.OPEN) {
-          return;
-        }
+  async startUpdate(options: StartCloudLicenseUpdateOptions): Promise<StopCloudLicenseUpdate> {
+    return new Promise((resolve, reject) => {
+      const { organizationId, planType, key, value } = options;
+      const updaterKey = createUpdaterKey(options);
+      if (this.updaterMap.has(updaterKey)) {
+        resolve(() => {});
+        return;
+      }
 
-        const now = Date.now();
-        const diff = now - updatedAt;
-        const usedFreeSeconds = Math.floor(diff / 1000);
-        updatedAt = now;
-        const message: CloudLicenseMessage.LiveTestingSend = {
-          cloudLicenseId,
-          usedFreeSeconds,
+      const url = `${getBillingServerWebSocketUrl()}/cloud-licenses/update?token=${env.DOGU_BILLING_TOKEN}`;
+      const webSocket = new WebSocketClientFactory().create({ url });
+      webSocket.on('open', () => {
+        this.logger.info(`start cloud license update`, { options });
+        let updatedAt = Date.now();
+
+        const update = (): void => {
+          if (webSocket.readyState !== WebSocket.OPEN) {
+            return;
+          }
+
+          const now = Date.now();
+          const diff = now - updatedAt;
+          const usedSeconds = Math.floor(diff / 1000);
+          updatedAt = now;
+          const message: CloudLicenseUpdateMessage = {
+            organizationId,
+            planType,
+            usedSeconds,
+          };
+          webSocket.send(JSON.stringify(message));
         };
-        webSocket.send(JSON.stringify(message));
-      };
 
-      let interval: NodeJS.Timer | undefined = setInterval(() => {
-        if (webSocket.readyState !== WebSocket.OPEN) {
-          clearInterval(interval);
-          interval = undefined;
-          return;
-        }
+        let intervalTimer: NodeJS.Timer | undefined = setInterval(() => {
+          if (webSocket.readyState !== WebSocket.OPEN) {
+            clearInterval(intervalTimer);
+            intervalTimer = undefined;
+            return;
+          }
 
-        update();
-      }, intervalSeconds * 1000);
+          update();
+        }, CloudLicenseUpdateIntervalSeconds * 1000);
 
-      const close = (): void => {
-        update();
-        closeWebSocketWithTruncateReason(webSocket, 1000, 'closed');
-        this.logger.debug('LiveSessionService.startUpdateLiveTesting.close', {
-          cloudLicenseId,
+        webSocket.on('close', () => {
+          this.updaterMap.delete(updaterKey);
         });
-      };
-      handler.onOpen(close).catch((error) => {
-        this.logger.error('LiveSessionService.startUpdateLiveTesting.onOpen error', {
-          error: errorify(error),
-          cloudLicenseId,
+        this.updaterMap.set(updaterKey, webSocket);
+
+        resolve(() => {
+          this.stopUpdate(options);
         });
-        close();
+      });
+
+      webSocket.on('error', (error) => {
+        this.logger.error(`websocket error occurred`, { error });
+        reject(error);
       });
     });
+  }
 
-    webSocket.on('close', () => {
-      handler.onClose().catch((error) => {
-        this.logger.error('LiveSessionService.startUpdateLiveTesting.onClose error', {
-          error: errorify(error),
-          cloudLicenseId,
-        });
-      });
-      this.logger.debug('LiveSessionService.startUpdateLiveTesting.onClose', {
-        cloudLicenseId,
-      });
-    });
+  stopUpdate(options: StopCloudLicenseUpdateOptions): void {
+    const updaterKey = createUpdaterKey(options);
+    const webSocket = this.updaterMap.get(updaterKey);
+    if (!webSocket) {
+      return;
+    }
 
-    webSocket.on('message', (data) => {
-      (async (): Promise<void> => {
-        const receiveMessage = await transformAndValidate(CloudLicenseMessage.LiveTestingReceive, JSON.parse(rawToString(data)));
-        if (receiveMessage.cloudLicenseId !== cloudLicenseId) {
-          this.logger.error('LiveSessionService.startUpdateLiveTesting.message cloudLicenseId not matched', {
-            cloudLicenseId,
-            receiveMessage,
-          });
-          return;
-        }
-
-        await handler.onMessage(receiveMessage);
-      })().catch((error) => {
-        this.logger.error('LiveSessionService.startUpdateLiveTesting.message error', {
-          error: errorify(error),
-          cloudLicenseId,
-        });
-      });
-    });
+    closeWebSocketWithTruncateReason(webSocket, 1000, 'closed');
+    this.updaterMap.delete(updaterKey);
+    this.logger.info(`stop cloud license update`, { options });
   }
 }

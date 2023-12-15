@@ -295,10 +295,10 @@ const PlanItem: React.FC<Props> = ({ planType, planInfo, descriptionInfo }) => {
         <div>
           <ul>
             {descriptionInfo.featureI18nKeys.map((featureKey) => (
-              <li key={featureKey}>
-                <CheckOutlined style={{ color: '#5cb85c', marginRight: '.25rem' }} />
+              <StyledLi key={featureKey}>
+                <CheckOutlined style={{ color: '#5cb85c', marginRight: '.25rem', marginTop: '.25rem' }} />
                 {t(featureKey)}
-              </li>
+              </StyledLi>
             ))}
           </ul>
         </div>
@@ -334,4 +334,9 @@ const PricingPrice = styled.span`
 const PricingPeriod = styled.span`
   color: #999;
   font-size: 0.9rem;
+`;
+
+const StyledLi = styled.ul`
+  display: flex;
+  align-items: flex-start;
 `;

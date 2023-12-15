@@ -1,11 +1,13 @@
 import { LiveSessionBase, LiveSessionPropCamel, LiveSessionPropSnake } from '@dogu-private/console';
 import { DeviceId, LiveSessionId, LiveSessionState, OrganizationId } from '@dogu-private/types';
+import { Type } from 'class-transformer';
+import { IsOptional } from 'class-validator';
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 import { ColumnTemplate } from './decorators';
 import { Device } from './device.entity';
 import { Organization } from './organization.entity';
 
-const LIVE_SESSION_TABLE_NAME = 'live_session';
+export const LIVE_SESSION_TABLE_NAME = 'live_session';
 
 @Entity(LIVE_SESSION_TABLE_NAME)
 export class LiveSession implements LiveSessionBase {
@@ -22,18 +24,26 @@ export class LiveSession implements LiveSessionBase {
   state!: LiveSessionState;
 
   @ColumnTemplate.Date(LiveSessionPropSnake.close_wait_at, true)
+  @Type(() => Date)
+  @IsOptional()
   closeWaitAt!: Date | null;
 
   @ColumnTemplate.Date(LiveSessionPropSnake.closed_at, true)
+  @Type(() => Date)
+  @IsOptional()
   closedAt!: Date | null;
 
   @ColumnTemplate.CreateDate(LiveSessionPropSnake.created_at)
+  @Type(() => Date)
   createdAt!: Date;
 
   @ColumnTemplate.UpdateDate(LiveSessionPropSnake.updated_at)
+  @Type(() => Date)
   updatedAt!: Date;
 
   @ColumnTemplate.DeleteDate(LiveSessionPropSnake.deleted_at)
+  @Type(() => Date)
+  @IsOptional()
   deletedAt!: Date | null;
 
   @ManyToOne(() => Organization, (organization) => organization.liveSessions, { onDelete: 'NO ACTION', onUpdate: 'NO ACTION' })

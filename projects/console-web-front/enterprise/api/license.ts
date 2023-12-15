@@ -43,9 +43,9 @@ export const getCloudLicenseInServerSide = async (context: GetServerSidePropsCon
 };
 
 export const getLicenseInServerSide = async (context: GetServerSidePropsContext) => {
-  if (process.env.NEXT_PUBLIC_ENV === 'self-hosted') {
-    return await getSelfHostedLicenseInServerSide(context);
-  } else {
-    return await getCloudLicenseInServerSide(context);
-  }
+  // if (process.env.NEXT_PUBLIC_ENV === 'self-hosted') {
+  //   return await getSelfHostedLicenseInServerSide(context);
+  // } else {
+  return await getCloudLicenseInServerSide(context);
+  // }
 };

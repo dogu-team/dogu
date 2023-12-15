@@ -12,17 +12,17 @@ import { getErrorMessageFromAxios } from '../../utils/error';
 
 interface Props {
   organizationId: OrganizationId;
-  projectId: ProjectId;
   category: UploadSampleAppDtoBase['category'];
+  extension: UploadSampleAppDtoBase['extension'];
 }
 
-const SampleApplicationUploadButton = ({ organizationId, projectId, category }: Props) => {
+const SampleApplicationUploadButton = ({ organizationId, category, extension }: Props) => {
   const [loading, request] = useRequest(uploadSampleApplication);
   const { t } = useTranslation('tutorial');
 
   const handleUploadSample = async () => {
     try {
-      await request(organizationId, projectId, { category, extension: 'apk' });
+      await request(organizationId, { category, extension });
       sendSuccessNotification('Successfully uploaded sample application');
     } catch (e) {
       if (isAxiosError(e)) {

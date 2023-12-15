@@ -10,7 +10,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { BillingCoupon } from '../../db/entity/billing-coupon.entity';
-import { RetryTransaction } from '../../db/retry-transaction';
+import { RetryTransaction } from '../../db/utils';
 import { DateTimeSimulatorService } from '../date-time-simulator/date-time-simulator.service';
 import { DoguLogger } from '../logger/logger';
 import { createBillingCoupon, getAvailableCoupons, validateCoupon } from './billing-coupon.serializables';

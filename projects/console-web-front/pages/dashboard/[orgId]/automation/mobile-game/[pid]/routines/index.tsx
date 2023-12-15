@@ -24,6 +24,9 @@ import AutomationLayout from '../../../../../../../src/components/layouts/Automa
 import TutorialButton from '../../../../../../../src/components/buttons/TutorialButton';
 import { isOrganizationScmIntegrated } from '../../../../../../../src/utils/organization';
 import { DoguDocsUrl } from '../../../../../../../src/utils/url';
+import TitleWithBannerAndOption from '../../../../../../../src/components/layouts/TitleWithBannerAndOption';
+import MobileGameTestAutomationFreeTierTopBanner from '../../../../../../../src/components/billing/MobileGameTestAutomationFreeTierTopBanner';
+import { MobileGameTestAutomationParallelCounter } from '../../../../../../../src/components/projects/AutomationParallelCounter';
 
 const ProjectRoutinePage: NextPageWithLayout<ProjectServerSideProps> = ({ organization, project }) => {
   const router = useRouter();
@@ -56,10 +59,12 @@ const ProjectRoutinePage: NextPageWithLayout<ProjectServerSideProps> = ({ organi
 
                 <PipelineTopButtonWrapper>
                   <RowFlexBox>
-                    {/* <TutorialButton
+                    <TutorialButton
                       href={`/dashboard/${organization.organizationId}/automation/mobile-game/${project.projectId}/routines/get-started`}
                       style={{ marginRight: '.5rem' }}
-                    /> */}
+                      translationKey="tutorial"
+                      target="_self"
+                    />
                     <RunRoutineButton
                       orgId={organization.organizationId}
                       projectId={project.projectId}
@@ -122,7 +127,13 @@ ProjectRoutinePage.getLayout = (page) => {
     <AutomationLayout
       {...page.props}
       innerSidebar={<RoutineSideBar isScmIntegrated={isOrganizationScmIntegrated(page.props.organization)} />}
-      titleI18nKey="organization:mobileGameAutomationPageTitle"
+      title={
+        <TitleWithBannerAndOption
+          titleKey="organization:mobileGameAutomationPageTitle"
+          banner={<MobileGameTestAutomationFreeTierTopBanner />}
+          option={<MobileGameTestAutomationParallelCounter />}
+        />
+      }
     >
       {page}
     </AutomationLayout>

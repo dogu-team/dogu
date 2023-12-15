@@ -52,5 +52,5 @@
 
   "createProjectButtonTitle": "프로젝트 생성",
 
-  "projectEmptyDescription": "프로젝트를 만들고 자동화 테스트를 시작해보세요.<br></br><br></br><tutorialLink>튜토리얼</tutorialLink>을 진행하거나 <link>여기를 눌러</link> 더 많은 정보 보기"
+  "projectEmptyDescription": "프로젝트를 만들고 자동화 테스트를 시작해보세요.<br></br><br></br><link>여기를 눌러</link> 튜토리얼을 확인하세요."
 }

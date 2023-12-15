@@ -24,6 +24,9 @@ import AutomationLayout from '../../../../../../../src/components/layouts/Automa
 import TutorialButton from '../../../../../../../src/components/buttons/TutorialButton';
 import { isOrganizationScmIntegrated } from '../../../../../../../src/utils/organization';
 import { DoguDocsUrl } from '../../../../../../../src/utils/url';
+import TitleWithBannerAndOption from '../../../../../../../src/components/layouts/TitleWithBannerAndOption';
+import WebTestAutomationFreeTierTopBanner from '../../../../../../../src/components/billing/WebTestAutomationFreeTierTopBanner';
+import { WebTestAutomationParallelCounter } from '../../../../../../../src/components/projects/AutomationParallelCounter';
 
 const ProjectRoutinePage: NextPageWithLayout<ProjectServerSideProps> = ({ organization, project }) => {
   const router = useRouter();
@@ -57,7 +60,7 @@ const ProjectRoutinePage: NextPageWithLayout<ProjectServerSideProps> = ({ organi
                 <PipelineTopButtonWrapper>
                   <RowFlexBox>
                     {/* <TutorialButton
-                      href={`/dashboard/${organization.organizationId}/automation/mobile-game/${project.projectId}/routines/get-started`}
+                      href={`/dashboard/${organization.organizationId}/automation/web/${project.projectId}/routines/get-started`}
                       style={{ marginRight: '.5rem' }}
                     /> */}
                     <RunRoutineButton
@@ -122,7 +125,13 @@ ProjectRoutinePage.getLayout = (page) => {
     <AutomationLayout
       {...page.props}
       innerSidebar={<RoutineSideBar isScmIntegrated={isOrganizationScmIntegrated(page.props.organization)} />}
-      titleI18nKey="organization:webAutomationPageTitle"
+      title={
+        <TitleWithBannerAndOption
+          titleKey="organization:webAutomationPageTitle"
+          banner={<WebTestAutomationFreeTierTopBanner />}
+          option={<WebTestAutomationParallelCounter />}
+        />
+      }
     >
       {page}
     </AutomationLayout>

@@ -10,9 +10,10 @@ import SampleApplicationUploadButton from './SampleApplicationUploadButton';
 interface Props {
   hasSampleApp?: boolean;
   category: UploadSampleAppDtoBase['category'];
+  extension: UploadSampleAppDtoBase['extension'];
 }
 
-const SampleApplicationUploadStep = ({ hasSampleApp, category }: Props) => {
+const SampleApplicationUploadStep = ({ hasSampleApp, category, extension }: Props) => {
   const { project } = useTutorialContext();
   const { t } = useTranslation('tutorial');
 
@@ -22,11 +23,24 @@ const SampleApplicationUploadStep = ({ hasSampleApp, category }: Props) => {
 
   if (hasSampleApp) {
     return (
-      <SampleApplicationUploadButton
-        organizationId={project.organizationId}
-        projectId={project.projectId}
-        category={category}
-      />
+      <>
+        <SampleApplicationUploadButton
+          organizationId={project.organizationId}
+          category={category}
+          extension={extension}
+        />
+        {extension === 'ipa' && (
+          <Alert
+            style={{ marginTop: '.5rem' }}
+            message={t('uploadSampleAppIosRestrictionMessage')}
+            type="warning"
+            showIcon
+            action={
+              <ProjectApplicationUploadButton organizationId={project.organizationId} projectId={project.projectId} />
+            }
+          />
+        )}
+      </>
     );
   }
 

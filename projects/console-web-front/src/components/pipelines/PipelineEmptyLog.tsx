@@ -15,6 +15,7 @@ const PipelineEmptyLog = ({ status, title }: Props) => {
 
   switch (status) {
     case PIPELINE_STATUS.WAITING:
+    case PIPELINE_STATUS.WAITING_TO_START:
       return (
         <Box>
           <ClockCircleOutlined style={iconStyle} />

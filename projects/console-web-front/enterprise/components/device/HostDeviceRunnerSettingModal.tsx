@@ -6,14 +6,14 @@ import useTranslation from 'next-translate/useTranslation';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 
+import UpgradePlanModal from '../../../src/components/billing/UpgradePlanModal';
 import useModal from '../../../src/hooks/useModal';
+import useBillingPlanPurchaseStore from '../../../src/stores/billing-plan-purchase';
 import useEventStore from '../../../src/stores/events';
 import { sendErrorNotification, sendSuccessNotification } from '../../../src/utils/antd';
 import { getErrorMessageFromAxios } from '../../../src/utils/error';
 import { updateDeviceMaxParallelCount } from '../../api/device';
-import { isPaymentRequired, isTimeout } from '../../utils/error';
-import TimeoutDocsModal from '../license/TimeoutDocsModal';
-import { UpgradeBrowserPlanModal } from '../license/UpgradePlanBannerModal';
+import { isPaymentRequired } from '../../utils/error';
 
 interface Props {
   device: DeviceBase;
@@ -26,10 +26,10 @@ const HostDeviceRunnerSettingModal: React.FC<Props> = ({ device, isOpen, close }
   const [form] = Form.useForm<{ browser: number }>();
   const [loading, setLoading] = useState(false);
   const [isBannerOpen, openBanner, closeBanner] = useModal();
-  const [isDocsOtpen, openDocs, closeDocs] = useModal();
   const router = useRouter();
   const organizationId = router.query.orgId as OrganizationId;
   const fireEvent = useEventStore((state) => state.fireEvent);
+  const updateBillingGroupType = useBillingPlanPurchaseStore((state) => state.updateBillingGroupType);
 
   const handleSave = async () => {
     const { browser } = await form.validateFields();
@@ -53,10 +53,8 @@ const HostDeviceRunnerSettingModal: React.FC<Props> = ({ device, isOpen, close }
       if (isAxiosError(e)) {
         if (isPaymentRequired(e)) {
           handleClose();
+          updateBillingGroupType('self-device-farm-group');
           openBanner();
-        } else if (isTimeout(e)) {
-          handleClose();
-          openDocs();
         } else {
           sendErrorNotification(t('device-farm:deviceSettingFailureMsg', { message: getErrorMessageFromAxios(e) }));
         }
@@ -117,13 +115,7 @@ const HostDeviceRunnerSettingModal: React.FC<Props> = ({ device, isOpen, close }
         </Form>
       </Modal>
 
-      <UpgradeBrowserPlanModal
-        isOpen={isBannerOpen}
-        close={closeBanner}
-        title={t('billing:addHostDeviceModalTitle')}
-        description={null}
-      />
-      <TimeoutDocsModal isOpen={isDocsOtpen} close={closeDocs} />
+      <UpgradePlanModal isOpen={isBannerOpen} close={closeBanner} />
     </>
   );
 };

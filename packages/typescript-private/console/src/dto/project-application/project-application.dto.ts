@@ -7,5 +7,5 @@ export interface FindProjectApplicationDtoBase extends PageDtoBase {
 
 export interface UploadSampleAppDtoBase {
   category: 'mobile' | 'game';
-  extension: 'apk';
+  extension: 'apk' | 'ipa';
 }

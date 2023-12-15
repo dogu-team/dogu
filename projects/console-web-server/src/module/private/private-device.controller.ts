@@ -15,7 +15,7 @@ import { Body, ConflictException, Controller, Get, NotFoundException, Param, Pat
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { Device, DEVICE_DEFAULT_MAX_PARALLEL_JOBS_IF_IS_HOST } from '../../db/entity/device.entity';
-import { RetryTransaction } from '../../db/retry-transaction';
+import { RetryTransaction } from '../../db/utils';
 import { HOST_ACTION_TYPE } from '../auth/auth.types';
 import { HostPermission } from '../auth/decorators';
 import { DeviceMessageQueue } from '../device-message/device-message.queue';

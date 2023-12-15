@@ -22,6 +22,7 @@ export class PipelineUpdater {
   public async update(): Promise<void> {
     const functionsToCheck = [
       this.checkPipelineWaiting.bind(this), //
+      this.checkPipelinesWaitingToStart.bind(this),
       this.checkPipelinesInProgress.bind(this),
       this.checkPipelinesInCancelReqeusted.bind(this),
       this.checkInstantPipelinesWaiting.bind(this),
@@ -48,7 +49,9 @@ export class PipelineUpdater {
           .select('1')
           .from(RoutinePipeline, 'subPipeline')
           .where('subPipeline.routine_id = routine.routine_id')
-          .andWhere('subPipeline.status = :status1', { status1: PIPELINE_STATUS.IN_PROGRESS })
+          .andWhere('subPipeline.status IN (:...status1)', {
+            status1: [PIPELINE_STATUS.WAITING_TO_START, PIPELINE_STATUS.IN_PROGRESS],
+          })
           .getQuery();
         return `NOT EXISTS ${subQuery}`;
       })
@@ -72,7 +75,7 @@ export class PipelineUpdater {
       });
 
     for (const waitingPipeline of filteredWaitingPipeline) {
-      await this.pipelineRunner.setStatus(this.dataSource.manager, waitingPipeline, PIPELINE_STATUS.IN_PROGRESS);
+      await this.pipelineRunner.setStatus(this.dataSource.manager, waitingPipeline, PIPELINE_STATUS.WAITING_TO_START);
     }
   }
 
@@ -118,6 +121,42 @@ export class PipelineUpdater {
           this.logger.error(`Pipeline ${pipeline.routinePipelineId} status is ${nextState} but postprocess result something wrong.`);
         }
       });
+    }
+  }
+
+  private async checkPipelinesWaitingToStart(): Promise<void> {
+    const pipelines = await this.dataSource.manager.getRepository(RoutinePipeline).find({
+      where: {
+        status: PIPELINE_STATUS.WAITING_TO_START,
+      },
+      relations: {
+        routineJobs: {
+          routineDeviceJobs: {
+            routineSteps: {
+              dests: true,
+            },
+          },
+        },
+      },
+    });
+
+    for (const pipeline of pipelines) {
+      const routineJobs = pipeline.routineJobs ?? [];
+      const starteds = routineJobs.filter((routineJob) => {
+        if (routineJob.status === PIPELINE_STATUS.WAITING) {
+          return false;
+        }
+
+        if (routineJob.status === PIPELINE_STATUS.WAITING_TO_START) {
+          return false;
+        }
+
+        return true;
+      });
+
+      if (starteds.length > 0) {
+        await this.pipelineRunner.setStatus(this.dataSource.manager, pipeline, PIPELINE_STATUS.IN_PROGRESS);
+      }
     }
   }
 

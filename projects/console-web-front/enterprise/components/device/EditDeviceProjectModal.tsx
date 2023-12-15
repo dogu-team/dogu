@@ -17,12 +17,11 @@ import useEventStore from '../../../src/stores/events';
 import { getErrorMessageFromAxios } from '../../../src/utils/error';
 import { sendErrorNotification, sendSuccessNotification } from '../../../src/utils/antd';
 import { enableDevice } from '../../api/device';
-import { isPaymentRequired, isTimeout } from '../../utils/error';
+import { isPaymentRequired } from '../../utils/error';
 import useModal from '../../../src/hooks/useModal';
-import { UpgradeDevicePlanBannerModal, UpgradeBrowserPlanModal } from '../license/UpgradePlanBannerModal';
-import TimeoutDocsModal from '../license/TimeoutDocsModal';
-import { isDesktop } from '../../../src/utils/device';
 import ProjectTypeIcon from '../../../src/components/projects/ProjectTypeIcon';
+import UpgradePlanModal from '../../../src/components/billing/UpgradePlanModal';
+import useBillingPlanPurchaseStore from '../../../src/stores/billing-plan-purchase';
 
 interface Props {
   device: DeviceBase;
@@ -48,10 +47,10 @@ const EditDeviceProjectModal = ({ device, isOpen, close, isGlobal: isGlobalProp 
     },
   );
   const [isBannerOpen, openBanner, closeBanner] = useModal();
-  const [isDocsOtpen, openDocs, closeDocs] = useModal();
   const [isGlobal, setIsGlobal] = useState(isGlobalProp);
   const fireEvent = useEventStore((state) => state.fireEvent);
   const { t } = useTranslation();
+  const updateBillingGroupType = useBillingPlanPurchaseStore((state) => state.updateBillingGroupType);
 
   useEffect(() => {
     if (isOpen) {
@@ -68,10 +67,8 @@ const EditDeviceProjectModal = ({ device, isOpen, close, isGlobal: isGlobalProp 
       if (e instanceof AxiosError) {
         if (isPaymentRequired(e)) {
           close();
+          updateBillingGroupType('self-device-farm-group');
           openBanner();
-        } else if (isTimeout(e)) {
-          close();
-          openDocs();
         } else {
           sendErrorNotification(t('device-farm:addDeviceToProjectFailureMsg', { reason: getErrorMessageFromAxios(e) }));
         }
@@ -89,10 +86,8 @@ const EditDeviceProjectModal = ({ device, isOpen, close, isGlobal: isGlobalProp 
       if (e instanceof AxiosError) {
         if (isPaymentRequired(e)) {
           close();
+          updateBillingGroupType('self-device-farm-group');
           openBanner();
-        } else if (isTimeout(e)) {
-          close();
-          openDocs();
         } else {
           sendErrorNotification(
             t('device-farm:toggleDeviceAsGlobalFailureMsg', { reason: getErrorMessageFromAxios(e) }),
@@ -209,22 +204,8 @@ const EditDeviceProjectModal = ({ device, isOpen, close, isGlobal: isGlobalProp 
           </GlobalCheckBoxWrapper>
         </Box>
       </Modal>
-      {isDesktop(device) ? (
-        <UpgradeBrowserPlanModal
-          isOpen={isBannerOpen}
-          close={closeBanner}
-          title={t('billing:addHostDeviceModalTitle')}
-          description={null}
-        />
-      ) : (
-        <UpgradeDevicePlanBannerModal
-          isOpen={isBannerOpen}
-          close={closeBanner}
-          title={t('billing:addDeviceModalTitle')}
-          description={null}
-        />
-      )}
-      <TimeoutDocsModal isOpen={isDocsOtpen} close={closeDocs} />
+
+      <UpgradePlanModal isOpen={isBannerOpen} close={closeBanner} />
     </>
   );
 };

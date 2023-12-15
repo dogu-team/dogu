@@ -218,5 +218,15 @@
   },
   "terminal.integrated.env.windows": {
     "NODE_OPTIONS": "--max-old-space-size=16384 $NODE_OPTIONS"
+  },
+  "[javascript][typescriptreact]": {
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": "never"
+    }
+  },
+  "[javascriptreact][proto3]": {
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": "explicit"
+    }
   }
 }

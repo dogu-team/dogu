@@ -24,6 +24,6 @@ export class UploadSampleAppDto implements UploadSampleAppDtoBase {
   category!: 'mobile' | 'game';
 
   @IsNotEmpty()
-  @IsIn(['apk'])
-  extension!: 'apk';
+  @IsIn(['apk', 'ipa'])
+  extension!: 'apk' | 'ipa';
 }

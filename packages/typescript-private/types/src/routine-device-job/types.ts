@@ -1,4 +1,4 @@
-import { DeviceId, DeviceRunnerId } from '@dogu-tech/types';
+import { DeviceId } from '@dogu-tech/types';
 import { RoutineJobId } from '../routine-job';
 import { PIPELINE_STATUS } from '../routine-pipeline';
 
@@ -20,7 +20,7 @@ export interface RoutineDeviceJob {
   appPackageName: string | null;
   browserName: string | null;
   browserVersion: string | null;
-  deviceRunnerId: DeviceRunnerId | null;
+  deviceRunnerId: string | null;
   windowProcessId: number | null;
   heartbeat: Date | null;
   createdAt: Date;

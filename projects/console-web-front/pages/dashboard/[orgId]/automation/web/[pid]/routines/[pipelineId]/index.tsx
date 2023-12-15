@@ -8,6 +8,9 @@ import { getProjectPageServerSideProps, ProjectServerSideProps } from 'src/ssr/p
 import ErrorBox from 'src/components/common/boxes/ErrorBox';
 import PipelineJobLayout from 'src/components/layouts/PipelineJobLayout';
 import JobFlowController from 'src/components/pipelines/JobFlowController';
+import TitleWithBannerAndOption from '../../../../../../../../src/components/layouts/TitleWithBannerAndOption';
+import WebTestAutomationFreeTierTopBanner from '../../../../../../../../src/components/billing/WebTestAutomationFreeTierTopBanner';
+import { WebTestAutomationParallelCounter } from '../../../../../../../../src/components/projects/AutomationParallelCounter';
 
 const PipelineDetailPage: NextPageWithLayout<ProjectServerSideProps> = ({ organization, project }) => {
   const router = useRouter();
@@ -39,7 +42,16 @@ const PipelineDetailPage: NextPageWithLayout<ProjectServerSideProps> = ({ organi
 
 PipelineDetailPage.getLayout = (page) => {
   return (
-    <PipelineJobLayout {...page.props} pageTitleKey="organization:webAutomationPageTitle">
+    <PipelineJobLayout
+      {...page.props}
+      title={
+        <TitleWithBannerAndOption
+          titleKey="organization:webAutomationPageTitle"
+          banner={<WebTestAutomationFreeTierTopBanner />}
+          option={<WebTestAutomationParallelCounter />}
+        />
+      }
+    >
       {page}
     </PipelineJobLayout>
   );

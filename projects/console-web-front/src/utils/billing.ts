@@ -8,14 +8,12 @@ import {
   CloudLicenseBase,
   CloudLicenseResponse,
   RegisterCardDto,
-  SelfHostedLicenseBase,
-  SelfHostedLicenseResponse,
 } from '@dogu-private/console';
 import { BillingMethodRegistrationFormValues } from '../components/billing/BillingMethodRegistrationForm';
 import { SelectedPlan } from '../stores/billing-plan-purchase';
 
 export const getSubscriptionPlansFromLicense = (
-  license: CloudLicenseBase | SelfHostedLicenseBase,
+  license: CloudLicenseBase,
   planTypes: BillingPlanType[] | null,
 ): BillingPlanInfoBase[] => {
   if ('licenseKey' in license) {
@@ -51,12 +49,27 @@ export const isLiveTestingFreePlan = (license: CloudLicenseResponse): boolean =>
   return liveTestingPlan.length === 0;
 };
 
+export const isWebTestAutomationFreePlan = (license: CloudLicenseResponse): boolean => {
+  const webTestAutomationPlan = getSubscriptionPlansFromLicense(license, ['web-test-automation']);
+
+  return webTestAutomationPlan.length === 0;
+};
+
+export const isMobileAppTestAutomationFreePlan = (license: CloudLicenseResponse): boolean => {
+  const mobileAppTestAutomationPlan = getSubscriptionPlansFromLicense(license, ['mobile-app-test-automation']);
+
+  return mobileAppTestAutomationPlan.length === 0;
+};
+
+export const isMobileGameTestAutomationFreePlan = (license: CloudLicenseResponse): boolean => {
+  const mobileGameTestAutomationPlan = getSubscriptionPlansFromLicense(license, ['mobile-game-test-automation']);
+
+  return mobileGameTestAutomationPlan.length === 0;
+};
+
 type SelectedPlanWithPeriod = SelectedPlan & { period: BillingPeriod };
 
-export const checkShouldPurchase = (
-  license: CloudLicenseResponse | SelfHostedLicenseResponse,
-  plan: SelectedPlanWithPeriod,
-): boolean => {
+export const checkShouldPurchase = (license: CloudLicenseResponse, plan: SelectedPlanWithPeriod): boolean => {
   const usingPlans = getSubscriptionPlansFromLicense(license, [plan.type]);
 
   if (!usingPlans.length) {
@@ -102,7 +115,7 @@ export const getHistoryAmount = (history: BillingHistoryBase | BillingPlanHistor
 
 export const getPaymentMethodFromLicense = (
   routerLocale: string = 'en',
-  license: CloudLicenseResponse | SelfHostedLicenseResponse,
+  license: CloudLicenseResponse,
 ): BillingMethod => {
   if (license.billingOrganization.billingMethod) {
     return license.billingOrganization.billingMethod;

@@ -8,8 +8,6 @@ import { useRouter } from 'next/router';
 import { shallow } from 'zustand/shallow';
 import Trans from 'next-translate/Trans';
 import useTranslation from 'next-translate/useTranslation';
-import { transform } from '@dogu-tech/common';
-import { CloudLicenseMessage } from '@dogu-private/console';
 
 import { NextPageWithLayout } from 'pages/_app';
 import ManualTesting from 'src/components/studio/LiveTesting';
@@ -51,8 +49,7 @@ const CloudLiveTestingStudioPage: NextPageWithLayout<CloudStudioTestingPageProps
           if (data.type === LiveSessionState.CLOSE_WAIT) {
             openModal(data.message);
           } else if (data.type === 'cloud-license-live-testing') {
-            const parsed = transform(CloudLicenseMessage.LiveTestingReceive, JSON.parse(data.message));
-            fireEvent('onCloudRemainingFreeSecondMessage', parsed);
+            fireEvent('onCloudRemainingFreeSecondMessage', JSON.parse(data.message));
           }
         } catch (e) {
           console.error('Invalid message: ', event.data);

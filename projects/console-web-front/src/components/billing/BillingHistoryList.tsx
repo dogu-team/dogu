@@ -1,4 +1,11 @@
-import { BillingHistoryBase, CallBillingApiResponse, GetBillingHistoriesDto, PageBase } from '@dogu-private/console';
+import {
+  BillingHistoryBase,
+  BillingPlanGroupMap,
+  BillingSubscriptionGroupType,
+  CallBillingApiResponse,
+  GetBillingHistoriesDto,
+  PageBase,
+} from '@dogu-private/console';
 import { OrganizationId } from '@dogu-private/types';
 import { Button, List, Modal } from 'antd';
 import useTranslation from 'next-translate/useTranslation';
@@ -10,7 +17,7 @@ import useSWR from 'swr';
 import { swrAuthFetcher } from '../../api';
 import useModal from '../../hooks/useModal';
 import useRefresh from '../../hooks/useRefresh';
-import { planDescriptionInfoMap } from '../../resources/plan';
+import { groupTypeI18nKeyMap, planDescriptionInfoMap } from '../../resources/plan';
 import { flexRowBaseStyle, listItemStyle, tableCellStyle, tableHeaderStyle } from '../../styles/box';
 import { getHistoryAmount } from '../../utils/billing';
 import { getLocaleFormattedDate, getLocaleFormattedPrice } from '../../utils/locale';
@@ -40,10 +47,15 @@ const HistoryItem: React.FC<ItemProps> = ({ history }) => {
           {history.billingPlanHistories?.map((item) => {
             const isAnnual = item.period === 'yearly';
             const descriptionInfo = planDescriptionInfoMap[item.type];
+            const groupType = BillingSubscriptionGroupType.find((group) =>
+              BillingPlanGroupMap[group].includes(item.type),
+            )!;
 
             return (
               <HistoryItemWrapper key={item.billingPlanHistoryId}>
-                <b>{t(descriptionInfo.titleI18nKey)}</b>
+                <b>
+                  [{t(groupTypeI18nKeyMap[groupType])}] {t(descriptionInfo.titleI18nKey)}
+                </b>
                 <span>
                   {`(${t(descriptionInfo.getOptionLabelI18nKey(item.option), {
                     option: item.option,

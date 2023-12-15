@@ -2,7 +2,7 @@ import styled from 'styled-components';
 import { Button, Divider, Input } from 'antd';
 import { useCallback, useEffect, useState } from 'react';
 import useTranslation from 'next-translate/useTranslation';
-import { CloudLicenseResponse, SelfHostedLicenseResponse, UserBase } from '@dogu-private/console';
+import { CloudLicenseResponse, UserBase } from '@dogu-private/console';
 import Head from 'next/head';
 import { AxiosError } from 'axios';
 import { GetServerSideProps, Redirect } from 'next';
@@ -42,7 +42,7 @@ import { getLicenseInServerSide } from '../../enterprise/api/license';
 
 interface Props {
   user: UserBase;
-  license: CloudLicenseResponse | SelfHostedLicenseResponse;
+  license: CloudLicenseResponse;
 }
 
 const AccountPage: NextPageWithLayout<Props> = ({ user, license }) => {

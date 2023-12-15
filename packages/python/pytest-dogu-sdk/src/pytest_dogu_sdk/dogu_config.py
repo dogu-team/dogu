@@ -1,7 +1,7 @@
 from typing import List, Optional, Union
 import os
 
-from pyjson5 import decode_io  # pylint: disable=no-name-in-module
+import json
 from jsonschema import validate
 
 
@@ -12,12 +12,12 @@ _config_file_path = os.path.join(os.getcwd(), "dogu.config.json")
 
 def _load_config_file_schema() -> dict:
     with open(_schema_file_path, "r", encoding="utf8") as file:
-        return decode_io(file)
+        return json.load(file)
 
 
 def _load_config_file() -> dict:
     with open(_config_file_path, "r", encoding="utf8") as file:
-        return decode_io(file)
+        return json.load(file)
 
 
 def _validate_config_file(config: dict, schema: dict) -> None:

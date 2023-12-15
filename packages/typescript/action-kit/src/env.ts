@@ -1,7 +1,7 @@
 import { IsFilledString, LogLevel, TransformBooleanString } from '@dogu-tech/common';
 import { ActionContextEnv, DeviceId, OrganizationId, PlatformType, ProjectId, Serial, StepContextEnv } from '@dogu-tech/types';
 import { Type } from 'class-transformer';
-import { IsBoolean, IsIn, IsJSON, IsNumber, IsOptional, IsString, IsUUID } from 'class-validator';
+import { IsBoolean, IsBooleanString, IsIn, IsJSON, IsNumber, IsOptional, IsString, IsUUID } from 'class-validator';
 
 export class ActionKitEnv
   implements
@@ -15,6 +15,7 @@ export class ActionKitEnv
       | 'DOGU_DEVICE_SERIAL'
       | 'DOGU_DEVICE_TOKEN'
       | 'DOGU_DEVICE_SERVER_URL'
+      | 'DOGU_DEVICE_IS_SHAREABLE'
       | 'DOGU_HOST_PLATFORM'
       | 'DOGU_HOST_WORKSPACE_PATH'
       | 'DOGU_LOG_LEVEL'
@@ -82,6 +83,13 @@ export class ActionKitEnv
    */
   @IsFilledString()
   DOGU_DEVICE_SERVER_URL!: string;
+
+  /**
+   * @requires process.env.DOGU_DEVICE_IS_SHAREABLE
+   * @default 'false'
+   */
+  @IsBooleanString()
+  DOGU_DEVICE_IS_SHAREABLE!: string;
 
   /**
    * @requires process.env.DOGU_DEVICE_WORKSPACE_PATH

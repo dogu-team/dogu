@@ -2,7 +2,7 @@ import { BillingResult } from '@dogu-private/console';
 import { v4 } from 'uuid';
 import { BillingPlanInfo } from '../../db/entity/billing-plan-info.entity';
 import { BillingPlanSource } from '../../db/entity/billing-plan-source.entity';
-import { RetryTransactionContext } from '../../db/retry-transaction';
+import { RetryTransactionContext } from '../../db/utils';
 import { UseCouponResult } from '../billing-coupon/billing-coupon.serializables';
 
 export interface NewAndApplyPlanInfoOptions {

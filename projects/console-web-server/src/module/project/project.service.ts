@@ -275,7 +275,7 @@ export class ProjectService {
     // name check
     if (name) {
       const existingProject = await this.dataSource.getRepository(Project).findOne({
-        where: { projectId: Not(projectId), organizationId, name },
+        where: { projectId: Not(projectId), organizationId, name, type: project.type },
       });
       if (existingProject) {
         throw new HttpException(`Project name ${name} is already exist`, HttpStatus.BAD_REQUEST);

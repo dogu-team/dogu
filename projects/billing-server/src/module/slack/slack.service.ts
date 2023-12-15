@@ -12,6 +12,10 @@ export class SlackService {
   constructor(private readonly logger: DoguLogger) {}
 
   async sendPurchaseSlackMessage(param: SendPurchaseSlackMessageParam): Promise<void> {
+    if (env.DOGU_BILLING_RUN_TYPE !== 'development' && env.DOGU_BILLING_RUN_TYPE !== 'production') {
+      return;
+    }
+
     const blocks: KnownBlock[] = [
       {
         type: 'header',
@@ -75,6 +79,10 @@ export class SlackService {
   }
 
   async sendUnsubscribeSlackMessage(param: SendUnsubscribeSlackMessageParam): Promise<void> {
+    if (env.DOGU_BILLING_RUN_TYPE !== 'development' && env.DOGU_BILLING_RUN_TYPE !== 'production') {
+      return;
+    }
+
     const blocks: KnownBlock[] = [
       {
         type: 'header',

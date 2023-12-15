@@ -30,21 +30,18 @@ import {
   validateMaxParallelJobs,
 } from '@dogu-private/types';
 import { notEmpty } from '@dogu-tech/common';
-import { ForbiddenException, forwardRef, HttpException, HttpStatus, Inject, Injectable, NotFoundException, NotImplementedException } from '@nestjs/common';
+import { ForbiddenException, forwardRef, HttpException, HttpStatus, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { BaseEntity, Brackets, DataSource, EntityManager, In, IsNull, Not, SelectQueryBuilder } from 'typeorm';
 import { v4 } from 'uuid';
 
 import { DeviceRunner } from '../../../db/entity/device-runner.entity';
 import { Device } from '../../../db/entity/device.entity';
-import { DeviceBrowserInstallation, DeviceTag, Organization, Project } from '../../../db/entity/index';
+import { DeviceBrowserInstallation, DeviceTag, Project } from '../../../db/entity/index';
 import { DeviceAndDeviceTag } from '../../../db/entity/relations/device-and-device-tag.entity';
 import { ProjectAndDevice } from '../../../db/entity/relations/project-and-device.entity';
-import { SelfHostedLicenseValidator } from '../../../enterprise/module/license/common/validation';
-import { SelfHostedLicenseService } from '../../../enterprise/module/license/self-hosted-license.service';
-import { FeatureConfig } from '../../../feature.config';
+import { CloudLicenseService } from '../../../enterprise/module/license/cloud-license.service';
 import { Page } from '../../common/dto/pagination/page';
-import { TokenService } from '../../token/token.service';
 import { DeviceTagService } from '../device-tag/device-tag.service';
 import {
   AttachTagToDeviceDto,
@@ -58,27 +55,17 @@ import {
 @Injectable()
 export class DeviceStatusService {
   constructor(
-    @Inject(SelfHostedLicenseService)
-    private readonly selfHostedLicenseService: SelfHostedLicenseService,
+    @Inject(CloudLicenseService)
+    private readonly cloudLicenseService: CloudLicenseService,
     @Inject(forwardRef(() => DeviceTagService))
     private readonly tagService: DeviceTagService,
     @InjectDataSource()
     private readonly dataSource: DataSource,
   ) {}
 
-  async getEnabledDeviceCount(): Promise<GetEnabledDeviceCountResponse> {
-    if (FeatureConfig.get('licenseModule') !== 'self-hosted') {
-      throw new NotImplementedException(`This feature is not supported in cloud.`);
-    }
-
-    const rootOrganization = await this.dataSource.getRepository(Organization).createQueryBuilder('organization').orderBy('organization.createdAt', 'ASC').getOne();
-
-    if (!rootOrganization) {
-      throw new NotFoundException(`Cannot find root's organization.`);
-    }
-
-    const enabledHostDevices = await DeviceStatusService.findEnabledHostDevices(this.dataSource.manager, rootOrganization.organizationId);
-    const enabledMobileDevices = await DeviceStatusService.findEnabledMobileDevices(this.dataSource.manager, rootOrganization.organizationId);
+  async getEnabledDeviceCount(organizationId: OrganizationId): Promise<GetEnabledDeviceCountResponse> {
+    const enabledHostDevices = await DeviceStatusService.findEnabledHostDevices(this.dataSource.manager, organizationId);
+    const enabledMobileDevices = await DeviceStatusService.findEnabledMobileDevices(this.dataSource.manager, organizationId);
 
     const enabledMobileCount = enabledMobileDevices.length;
     const enabledHostRunnerCount = enabledHostDevices.map((device) => device.maxParallelJobs).reduce((a, b) => a + b, 0);
@@ -278,29 +265,23 @@ export class DeviceStatusService {
       throw new HttpException(`Cannot find device. deviceId: ${deviceId}`, HttpStatus.NOT_FOUND);
     }
 
-    if (FeatureConfig.get('licenseModule') === 'self-hosted') {
-      if (projectId || isGlobal) {
-        const license = await this.selfHostedLicenseService.getLicenseInfo(organizationId);
+    const license = await this.cloudLicenseService.getLicenseInfo(organizationId);
 
-        const isExpired = TokenService.isExpired(license.expiredAt);
+    if (device.isHost) {
+      const enabledHostDevices = await DeviceStatusService.findEnabledHostDevices(this.dataSource.manager, organizationId);
+      const enabledHostRunnerCount = enabledHostDevices.map((device) => device.maxParallelJobs).reduce((a, b) => a + b, 0);
+      const maximumBrowserCount = license.selfDeviceBrowserCount;
 
-        if (device.isHost) {
-          const enabledHostDevices = await DeviceStatusService.findEnabledHostDevices(this.dataSource.manager, organizationId);
-          const enabledHostRunnerCount = enabledHostDevices.map((device) => device.maxParallelJobs).reduce((a, b) => a + b, 0);
-          const maximumBrowserCount = SelfHostedLicenseValidator.getMaxmiumBrowserCount(license);
+      if (enabledHostRunnerCount + device.maxParallelJobs > maximumBrowserCount) {
+        throw new HttpException(`License browser runner count is not enough. license browser runner count: ${maximumBrowserCount}`, HttpStatus.PAYMENT_REQUIRED);
+      }
+    } else {
+      const enabledMobileDevices = await DeviceStatusService.findEnabledMobileDevices(this.dataSource.manager, organizationId);
+      const enabledMobileCount = enabledMobileDevices.length;
+      const maximumMobileCount = license.selfDeviceMobileCount;
 
-          if (enabledHostRunnerCount + device.maxParallelJobs > maximumBrowserCount) {
-            throw new HttpException(`License browser runner count is not enough. license browser runner count: ${maximumBrowserCount}`, HttpStatus.PAYMENT_REQUIRED);
-          }
-        } else {
-          const enabledMobileDevices = await DeviceStatusService.findEnabledMobileDevices(this.dataSource.manager, organizationId);
-          const enabledMobileCount = enabledMobileDevices.length;
-          const maximumMobileCount = SelfHostedLicenseValidator.getMaxmiumMobileCount(license);
-
-          if (enabledMobileCount + 1 > maximumMobileCount) {
-            throw new HttpException(`License mobile device count is not enough. license mobile device count: ${maximumMobileCount}`, HttpStatus.PAYMENT_REQUIRED);
-          }
-        }
+      if (enabledMobileCount + 1 > maximumMobileCount) {
+        throw new HttpException(`License mobile device count is not enough. license mobile device count: ${maximumMobileCount}`, HttpStatus.PAYMENT_REQUIRED);
       }
     }
 
@@ -387,16 +368,17 @@ export class DeviceStatusService {
     }
 
     if (device.isGlobal === 1 || (device.projectAndDevices && device.projectAndDevices.length > 0)) {
-      if (FeatureConfig.get('licenseModule') === 'self-hosted') {
-        const license = await this.selfHostedLicenseService.getLicenseInfo(organizationId);
-        const enabledHostDevices = await DeviceStatusService.findEnabledHostDevices(this.dataSource.manager, organizationId);
-        const enabledHostRunnerCount = enabledHostDevices.map((device) => device.maxParallelJobs).reduce((a, b) => a + b, 0);
-        const maximumBrowserCount = SelfHostedLicenseValidator.getMaxmiumBrowserCount(license);
+      // if (FeatureConfig.get('licenseModule') === 'self-hosted') {
+      //   const license = await this.selfHostedLicenseService.getLicenseInfo(organizationId);
+      const license = await this.cloudLicenseService.getLicenseInfo(organizationId);
+      const enabledHostDevices = await DeviceStatusService.findEnabledHostDevices(this.dataSource.manager, organizationId);
+      const enabledHostRunnerCount = enabledHostDevices.map((device) => device.maxParallelJobs).reduce((a, b) => a + b, 0);
+      const maximumBrowserCount = license.selfDeviceBrowserCount;
 
-        if (enabledHostRunnerCount + maxParallelJobs - device.maxParallelJobs > maximumBrowserCount) {
-          throw new HttpException(`License browser runner count is not enough. license browser runner count: ${maximumBrowserCount}`, HttpStatus.PAYMENT_REQUIRED);
-        }
+      if (enabledHostRunnerCount + maxParallelJobs - device.maxParallelJobs > maximumBrowserCount) {
+        throw new HttpException(`License browser runner count is not enough. license browser runner count: ${maximumBrowserCount}`, HttpStatus.PAYMENT_REQUIRED);
       }
+      // }
     }
 
     const newData = Object.assign(device, {
@@ -527,9 +509,13 @@ export class DeviceStatusService {
   }
 
   async checkDeviceStreamingAvailable(deviceId: DeviceId): Promise<void> {
-    const device = await this.dataSource.getRepository(Device).findOne({ where: { deviceId } });
+    const device = await this.dataSource.getRepository(Device).findOne({ where: { deviceId }, relations: ['projectAndDevices'] });
 
     if (device) {
+      if (device.isGlobal !== 1 && device.projectAndDevices?.length === 0) {
+        throw new ForbiddenException('Device is not using.');
+      }
+
       if (
         device.connectionState === DeviceConnectionState.DEVICE_CONNECTION_STATE_DISCONNECTED ||
         device.connectionState === DeviceConnectionState.DEVICE_CONNECTION_STATE_UNSPECIFIED ||

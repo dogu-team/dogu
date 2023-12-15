@@ -109,6 +109,11 @@ export class BillingOrganizationResponseBuilder {
 export namespace BillingPlanInfoCommonModule {
   export const planTypeDescriptionMap: Record<BillingPlanType, string> = {
     'live-testing': 'Live Testing',
+    'web-test-automation': 'Web Test Automation',
+    'mobile-app-test-automation': 'Mobile App Test Automation',
+    'mobile-game-test-automation': 'Mobile Game Test Automation',
+    'self-device-farm-browser': 'Self Device Farm Browser',
+    'self-device-farm-mobile': 'Self Device Farm Mobile',
   };
 
   export const planOptionDescriptionMap: Record<
@@ -121,6 +126,26 @@ export namespace BillingPlanInfoCommonModule {
     'live-testing': {
       singular: 'parallel session',
       plural: 'parallel sessions',
+    },
+    'web-test-automation': {
+      singular: 'parallel test',
+      plural: 'parallel tests',
+    },
+    'mobile-app-test-automation': {
+      singular: 'parallel test',
+      plural: 'parallel tests',
+    },
+    'mobile-game-test-automation': {
+      singular: 'parallel test',
+      plural: 'parallel tests',
+    },
+    'self-device-farm-browser': {
+      singular: 'browser',
+      plural: 'browsers',
+    },
+    'self-device-farm-mobile': {
+      singular: 'device',
+      plural: 'devices',
     },
   };
 }

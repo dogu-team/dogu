@@ -1,4 +1,4 @@
-import { CloudLicenseBase, LiveSessionBase } from '@dogu-private/console';
+import { LiveSessionBase } from '@dogu-private/console';
 import styled from 'styled-components';
 import useSWR from 'swr';
 
@@ -23,7 +23,7 @@ const LiveTestingSessionCounter: React.FC<Props> = () => {
 
   return (
     <Box>
-      Parallel sessions: {data?.length ?? '-'} / {(license as CloudLicenseBase).liveTestingParallelCount}
+      Parallel sessions: {data?.length ?? '-'} / {license.liveTestingParallelCount}
     </Box>
   );
 };

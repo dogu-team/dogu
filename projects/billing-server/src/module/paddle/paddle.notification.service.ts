@@ -13,7 +13,7 @@ import { BillingPlanInfo } from '../../db/entity/billing-plan-info.entity';
 import { BillingPlanSource } from '../../db/entity/billing-plan-source.entity';
 import { CloudLicense } from '../../db/entity/cloud-license.entity';
 import { SelfHostedLicense } from '../../db/entity/self-hosted-license.entity';
-import { RetryTransaction } from '../../db/retry-transaction';
+import { RetryTransaction } from '../../db/utils';
 import { BillingCouponService } from '../billing-coupon/billing-coupon.service';
 import { registerUsedCoupon } from '../billing-organization/billing-organization.serializables';
 import { updateMethod, validateMethod } from '../billing-organization/billing-organization.utils';

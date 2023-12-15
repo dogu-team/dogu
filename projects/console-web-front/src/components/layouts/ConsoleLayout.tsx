@@ -68,7 +68,7 @@ const ConsoleLayout = ({
                   <StyledHr />
                 </TitleBox>
               )}
-              <ContentBox>{children}</ContentBox>
+              <ContentBox emptyTitle={!(title ?? titleI18nKey)}>{children}</ContentBox>
             </PaddingBox>
           </StyledLayoutContent>
         </StyledLayout>
@@ -129,7 +129,7 @@ const PaddingBox = styled.div`
   }
 `;
 
-const ContentBox = styled.div`
-  margin-top: 1rem;
+const ContentBox = styled.div<{ emptyTitle: boolean }>`
+  margin-top: ${(props) => (props.emptyTitle ? '0' : '1rem')};
   flex: 1;
 `;

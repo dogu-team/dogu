@@ -1,59 +1,48 @@
-import { ExclamationCircleOutlined } from '@ant-design/icons';
-import {
-  SelfHostedLicenseResponse,
-  COMMUNITY_MAX_BROWSER_COUNT,
-  COMMUNITY_MAX_MOBILE_COUNT,
-} from '@dogu-private/console';
+import { ArrowRightOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
+import { GetEnabledDeviceCountResponse } from '@dogu-private/console';
+import useSWR from 'swr';
 import styled from 'styled-components';
 
-import { useDeviceCount } from '../../../enterprise/api/device';
-import { checkExpired } from '../../../enterprise/utils/license';
 import useRefresh from '../../hooks/useRefresh';
 import useLicenseStore from '../../stores/license';
+import { swrAuthFetcher } from '../../api';
+import UpgradePlanModal from '../billing/UpgradePlanModal';
+import useModal from '../../hooks/useModal';
+import useBillingPlanPurchaseStore from '../../stores/billing-plan-purchase';
+import useTranslation from 'next-translate/useTranslation';
 
 const DeviceCounter: React.FC = () => {
   const license = useLicenseStore((state) => state.license);
-  const { data: countInfo, mutate: mutateCountInfo } = useDeviceCount();
+  const [isOpen, openModal, closeModal] = useModal();
+  const { data: countInfo, mutate: mutateCountInfo } = useSWR<GetEnabledDeviceCountResponse>(
+    !!license?.organizationId && `/organizations/${license.organizationId}/devices/count`,
+    swrAuthFetcher,
+    {
+      revalidateOnFocus: false,
+    },
+  );
+  const updateBillingGroupType = useBillingPlanPurchaseStore((state) => state.updateBillingGroupType);
+  const { t } = useTranslation();
 
-  useRefresh(['onDeviceAdded', 'onDeviceUpdated'], () => mutateCountInfo());
+  useRefresh(['onDeviceAdded', 'onDeviceUpdated', 'onDeviceStopped', 'onAddDeviceToProjectModalClosed'], () =>
+    mutateCountInfo(),
+  );
 
   if (!license) {
     return null;
   }
 
-  const getbrowserMaxCount = () => {
-    if (process.env.NEXT_PUBLIC_ENV === 'self-hosted') {
-      if (checkExpired(license as SelfHostedLicenseResponse)) {
-        return COMMUNITY_MAX_BROWSER_COUNT;
-      }
-      return (license as SelfHostedLicenseResponse)?.maximumEnabledBrowserCount ?? COMMUNITY_MAX_BROWSER_COUNT;
-    } else {
-      return Number.POSITIVE_INFINITY;
-    }
-  };
-
-  const getMobileMaxCount = () => {
-    if (process.env.NEXT_PUBLIC_ENV === 'self-hosted') {
-      if (checkExpired(license as SelfHostedLicenseResponse)) {
-        return COMMUNITY_MAX_MOBILE_COUNT;
-      }
-      return (license as SelfHostedLicenseResponse)?.maximumEnabledBrowserCount ?? COMMUNITY_MAX_MOBILE_COUNT;
-    } else {
-      return Number.POSITIVE_INFINITY;
-    }
-  };
-
   const browserUsedCount = countInfo?.enabledBrowserCount ?? 0;
-  const browserMaxCount = getbrowserMaxCount();
+  const browserMaxCount = license.selfDeviceBrowserCount;
 
   const mobileUsedCount = countInfo?.enabledMobileCount ?? 0;
-  const mobileMaxCount = getMobileMaxCount();
+  const mobileMaxCount = license.selfDeviceMobileCount;
 
   const isBrowserMaxed = browserUsedCount >= browserMaxCount;
   const isMobileMaxed = mobileUsedCount >= mobileMaxCount;
 
-  if (process.env.NEXT_PUBLIC_ENV === 'self-hosted') {
-    return (
+  return (
+    <>
       <FlexRow>
         <StyledText>
           {isBrowserMaxed && <ExclamationCircleOutlined style={{ color: 'red' }} />}&nbsp;Browsers: {browserUsedCount} /{' '}
@@ -62,25 +51,27 @@ const DeviceCounter: React.FC = () => {
           {mobileUsedCount} / {mobileMaxCount === Number.POSITIVE_INFINITY ? '∞' : mobileMaxCount}
         </StyledText>
 
-        {/* {(isBrowserMaxed || isMobileMaxed) && (
-        <a href={`${process.env.NEXT_PUBLIC_LANDING_URL}/pricing`} target="_blank">
-          <Button type="primary" size="small">
-            Upgrade plan
-          </Button>
-        </a>
-      )} */}
+        <div style={{ marginLeft: '.25rem' }}>
+          <UpgradePlanButton
+            onClick={() => {
+              updateBillingGroupType('self-device-farm-group');
+              openModal();
+            }}
+          >
+            {t('billing:upgradePlanButtonTitle')} <ArrowRightOutlined />
+          </UpgradePlanButton>
+        </div>
       </FlexRow>
-    );
-  }
 
-  return null;
+      <UpgradePlanModal isOpen={isOpen} close={closeModal} />
+    </>
+  );
 };
 
 export default DeviceCounter;
 
 const FlexRow = styled.div`
   display: flex;
-  justify-content: space-between;
   align-items: center;
 `;
 
@@ -88,4 +79,15 @@ const StyledText = styled.p`
   line-height: 1.5;
   font-size: 0.8rem;
   color: ${(props) => props.theme.main.colors.gray2};
+`;
+
+const UpgradePlanButton = styled.button`
+  display: inline-block;
+  color: ${(props) => props.theme.colorPrimary};
+  padding: 0 0.25rem;
+  background-color: #fff;
+
+  &:hover {
+    text-decoration: underline;
+  }
 `;

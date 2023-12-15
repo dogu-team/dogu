@@ -116,7 +116,6 @@ export const getServerSideProps: GetServerSideProps<ProjectServerSideProps> = ge
 export default ProjectRoutineGetStartedPage;
 
 const Box = styled.div`
-  padding: 2rem;
   line-height: 1.5;
 `;
 
@@ -126,7 +125,6 @@ const CenteredBox = styled(Box)`
   flex: 1;
   flex-direction: column;
   justify-content: center;
-  background-color: ${(props) => props.theme.main.colors.blue6};
 `;
 
 const HeaderContent = styled.div`

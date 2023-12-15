@@ -15,7 +15,7 @@ import PlanItem from './PlanItem';
 interface Props {}
 
 const BillingSelectPlanStep: React.FC<Props> = ({}) => {
-  const [currentGroup, setCurrentGroup] = useState(BillingSubscriptionGroupType[0]);
+  const [currentGroup, setCurrentGroup] = useState<BillingSubscriptionGroupType>(BillingSubscriptionGroupType[0]);
   const license = useLicenseStore((state) => state.license);
   const groupType = useBillingPlanPurchaseStore((state) => state.billingGroupType);
   const { t } = useTranslation('billing');
@@ -36,7 +36,7 @@ const BillingSelectPlanStep: React.FC<Props> = ({}) => {
       <CurrentPlanWrapper>
         {/* TODO: from user's current plan */}
         <CurrentPlanText>
-          {t('currentPlanText')}:{' '}
+          {t('currentPlanText')}:&nbsp;&nbsp;&nbsp;&nbsp;
           <span>
             {planTypes.map((planType, i) => {
               const descriptionInfo = planDescriptionInfoMap[planType];
@@ -46,7 +46,8 @@ const BillingSelectPlanStep: React.FC<Props> = ({}) => {
               return (
                 <Fragment key={planType}>
                   <span>
-                    <b>{t(descriptionInfo.titleI18nKey)}</b>{' '}
+                    {t(groupTypeI18nKeyMap[groupType ?? currentGroup])} - {t(descriptionInfo.titleI18nKey)}
+                    {': '}
                     {!!usingPlan
                       ? `(${t(descriptionInfo.getOptionLabelI18nKey(usingPlan.option), {
                           option: usingPlan.option,
@@ -82,7 +83,7 @@ const BillingSelectPlanStep: React.FC<Props> = ({}) => {
           </PlanSidebar>
         )}
 
-        <PlanWrapper style={{ justifyContent: groupType ? 'center' : 'flex-start' }}>
+        <PlanWrapper style={{ justifyContent: groupType ? 'center' : 'flex-start', gap: '.5rem' }}>
           {planTypes.map((planType) => {
             const planInfo = BillingPlanMap[planType];
             const descriptionInfo = planDescriptionInfoMap[planType];
@@ -126,6 +127,7 @@ const PlanContent = styled.div`
 const PlanSidebar = styled.div`
   width: 10rem;
   margin-right: 1rem;
+  flex-shrink: 0;
 `;
 
 const PlanGroupButton = styled.button<{ isSelected: boolean }>`
@@ -136,6 +138,8 @@ const PlanGroupButton = styled.button<{ isSelected: boolean }>`
   margin-bottom: 0.5rem;
   background-color: #fff;
   cursor: pointer;
+  word-break: keep-all;
+  text-align: left;
 
   &:hover {
     background-color: ${(props) => props.theme.colorPrimary}22;

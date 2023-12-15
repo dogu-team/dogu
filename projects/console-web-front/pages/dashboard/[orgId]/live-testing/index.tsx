@@ -8,7 +8,6 @@ import { LoadingOutlined } from '@ant-design/icons';
 import useTranslation from 'next-translate/useTranslation';
 import { useEffect } from 'react';
 import { LiveSessionId } from '@dogu-private/types';
-import Trans from 'next-translate/Trans';
 
 import { NextPageWithLayout } from 'pages/_app';
 import ConsoleLayout from 'src/components/layouts/ConsoleLayout';
@@ -30,6 +29,7 @@ import useModal from '../../../../src/hooks/useModal';
 import LiveTestingSessionCounter from '../../../../src/components/cloud/LiveTestingSessionCounter';
 import LiveTestingFreeTierTopBanner from '../../../../src/components/billing/LiveTestingFreeTierTopBanner';
 import usePromotionStore from '../../../../src/stores/promotion';
+import TitleWithBannerAndOption from '../../../../src/components/layouts/TitleWithBannerAndOption';
 
 const OrganizationLiveTestingPage: NextPageWithLayout<OrganizationServerSideProps> = ({
   user,
@@ -154,16 +154,11 @@ OrganizationLiveTestingPage.getLayout = (page) => {
       {...page.props}
       sidebar={<OrganizationSideBar />}
       title={
-        <div style={{ marginBottom: '.5rem' }}>
-          <LiveTestingFreeTierTopBanner />
-
-          <StyledH4>
-            <Trans i18nKey="organization:liveTestingPageTitle" />
-          </StyledH4>
-          <div style={{ marginTop: '.25rem' }}>
-            <LiveTestingSessionCounter />
-          </div>
-        </div>
+        <TitleWithBannerAndOption
+          banner={<LiveTestingFreeTierTopBanner />}
+          titleKey="organization:liveTestingPageTitle"
+          option={<LiveTestingSessionCounter />}
+        />
       }
     >
       {page}
@@ -182,12 +177,6 @@ export const getServerSideProps: GetServerSideProps<OrganizationServerSideProps>
 };
 
 export default OrganizationLiveTestingPage;
-
-const StyledH4 = styled.h4`
-  font-size: 1.25rem;
-  font-weight: 600;
-  line-height: 1.5;
-`;
 
 const FlexSpaceBetweenBox = styled.div`
   ${flexRowSpaceBetweenStyle}

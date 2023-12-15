@@ -11,6 +11,9 @@ import TableListView from '../../../../../src/components/common/TableListView';
 import CreateProjectButton from '../../../../../src/components/projects/CreateProjectButton';
 import RefreshButton from '../../../../../src/components/buttons/RefreshButton';
 import LiveChat from '../../../../../src/components/external/livechat';
+import TitleWithBannerAndOption from '../../../../../src/components/layouts/TitleWithBannerAndOption';
+import WebTestAutomationFreeTierTopBanner from '../../../../../src/components/billing/WebTestAutomationFreeTierTopBanner';
+import { WebTestAutomationParallelCounter } from '../../../../../src/components/projects/AutomationParallelCounter';
 import { flexRowBaseStyle, flexRowSpaceBetweenStyle } from '../../../../../src/styles/box';
 import TutorialButton from '../../../../../src/components/buttons/TutorialButton';
 import { DoguDocsUrl } from '../../../../../src/utils/url';
@@ -49,7 +52,13 @@ WebAutomationPage.getLayout = (page) => {
     <ConsoleLayout
       {...page.props}
       sidebar={<OrganizationSideBar />}
-      titleI18nKey="organization:webAutomatioProjectPageTitle"
+      title={
+        <TitleWithBannerAndOption
+          titleKey="organization:webAutomatioProjectPageTitle"
+          banner={<WebTestAutomationFreeTierTopBanner />}
+          option={<WebTestAutomationParallelCounter />}
+        />
+      }
     >
       {page}
     </ConsoleLayout>

@@ -11,6 +11,9 @@ import TableListView from '../../../../../src/components/common/TableListView';
 import CreateProjectButton from '../../../../../src/components/projects/CreateProjectButton';
 import RefreshButton from '../../../../../src/components/buttons/RefreshButton';
 import LiveChat from '../../../../../src/components/external/livechat';
+import TitleWithBannerAndOption from '../../../../../src/components/layouts/TitleWithBannerAndOption';
+import MobileGameTestAutomationFreeTierTopBanner from '../../../../../src/components/billing/MobileGameTestAutomationFreeTierTopBanner';
+import { MobileGameTestAutomationParallelCounter } from '../../../../../src/components/projects/AutomationParallelCounter';
 import { flexRowBaseStyle, flexRowSpaceBetweenStyle } from '../../../../../src/styles/box';
 import { DoguDocsUrl } from '../../../../../src/utils/url';
 import TutorialButton from '../../../../../src/components/buttons/TutorialButton';
@@ -49,7 +52,13 @@ GameAutomationPage.getLayout = (page) => {
     <ConsoleLayout
       {...page.props}
       sidebar={<OrganizationSideBar />}
-      titleI18nKey="organization:mobileGameAutomationProjectPageTitle"
+      title={
+        <TitleWithBannerAndOption
+          titleKey="organization:mobileGameAutomationProjectPageTitle"
+          banner={<MobileGameTestAutomationFreeTierTopBanner />}
+          option={<MobileGameTestAutomationParallelCounter />}
+        />
+      }
     >
       {page}
     </ConsoleLayout>

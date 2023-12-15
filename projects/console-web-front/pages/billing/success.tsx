@@ -1,5 +1,5 @@
 import { CheckCircleOutlined } from '@ant-design/icons';
-import { CloudLicenseResponse, SelfHostedLicenseResponse, UserBase } from '@dogu-private/console';
+import { CloudLicenseResponse, UserBase } from '@dogu-private/console';
 import { Button } from 'antd';
 import { GetServerSideProps } from 'next';
 import Head from 'next/head';
@@ -16,7 +16,7 @@ import { NextPageWithLayout } from '../_app';
 
 interface BillingPageProps {
   me: UserBase;
-  license: CloudLicenseResponse | SelfHostedLicenseResponse;
+  license: CloudLicenseResponse;
 }
 
 const BillingSuccessPage: NextPageWithLayout<BillingPageProps> = ({ me, license }) => {

@@ -1,8 +1,6 @@
-import { ClockCircleOutlined } from '@ant-design/icons';
-import { CloudLicenseResponse } from '@dogu-private/console';
-import { Alert } from 'antd';
-import Trans from 'next-translate/Trans';
+import { ArrowRightOutlined, ClockCircleOutlined } from '@ant-design/icons';
 import useTranslation from 'next-translate/useTranslation';
+import styled from 'styled-components';
 
 import useAuthStore from '../../stores/auth';
 import useLicenseStore from '../../stores/license';
@@ -13,7 +11,7 @@ import UpgradePlanButton from './UpgradePlanButton';
 interface Props {}
 
 const LiveTestingFreeTierTopBanner: React.FC<Props> = () => {
-  const license = useLicenseStore((state) => state.license) as CloudLicenseResponse | null;
+  const license = useLicenseStore((state) => state.license);
   const me = useAuthStore((state) => state.me);
   const { t } = useTranslation('billing');
 
@@ -26,31 +24,16 @@ const LiveTestingFreeTierTopBanner: React.FC<Props> = () => {
 
   if (isFreePlan) {
     return (
-      <Alert
-        type="info"
-        icon={<ClockCircleOutlined />}
-        showIcon
-        message={
-          <p>
-            {remainingSeconds > 0 ? (
-              <Trans
-                i18nKey="billing:liveTestingFreeTierInfoBannerMessage"
-                components={{
-                  time: <>{(remainingSeconds / 60).toFixed(0)}</>,
-                }}
-              />
-            ) : (
-              t('liveTestingFreeTierInfoBannerExpiredMessage')
-            )}
-          </p>
-        }
-        action={
-          me && hasAdminPermission(me) ? (
-            <UpgradePlanButton groupType="live-testing-group">{t('upgradePlanButtonTitle')}</UpgradePlanButton>
-          ) : null
-        }
-        style={{ marginBottom: '.5rem' }}
-      />
+      <Box>
+        <span style={{ fontSize: '.85rem' }}>
+          <ClockCircleOutlined /> {(remainingSeconds / 60).toFixed(0)} min{remainingSeconds > 1 ? 's' : ''} left.
+        </span>
+        {!!me && hasAdminPermission(me) && (
+          <StyledButton type="ghost" groupType="live-testing-group">
+            {t('upgradePlanButtonTitle')} <ArrowRightOutlined />
+          </StyledButton>
+        )}
+      </Box>
     );
   }
 
@@ -58,3 +41,17 @@ const LiveTestingFreeTierTopBanner: React.FC<Props> = () => {
 };
 
 export default LiveTestingFreeTierTopBanner;
+
+const Box = styled.div`
+  margin-left: 0.5rem;
+  padding: 0 0.25rem;
+  border-radius: 4px;
+  background-color: #e6f4ff;
+  border: 1px solid #91d5ff;
+`;
+
+const StyledButton = styled(UpgradePlanButton)`
+  margin-left: 0.25rem;
+  padding: 0 0.25rem;
+  color: ${(props) => props.theme.main.colors.blue4};
+`;

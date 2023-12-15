@@ -173,6 +173,7 @@ export class DeviceJobStepProcessor {
       DOGU_DEVICE_ID: deviceId,
       DOGU_DEVICE_SERVER_URL: `http://${env.DOGU_DEVICE_SERVER_HOST_PORT}`,
       DOGU_DEVICE_JOB_ID: `${routineDeviceJobId}`,
+      DOGU_DEVICE_IS_SHAREABLE: env.DOGU_DEVICE_IS_SHAREABLE,
       DOGU_DEVICE_WORKSPACE_PATH: deviceWorkspacePath,
       DOGU_ROUTINE_WORKSPACE_PATH: doguRoutineWorkspacePath,
       DOGU_ORGANIZATION_ID: executorOrganizationId,

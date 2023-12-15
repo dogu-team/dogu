@@ -3,7 +3,7 @@ import { NotFoundException } from '@nestjs/common';
 
 import { BillingPlanInfo } from '../../db/entity/billing-plan-info.entity';
 import { CloudLicense } from '../../db/entity/cloud-license.entity';
-import { RetryTransactionContext } from '../../db/retry-transaction';
+import { RetryTransactionContext } from '../../db/utils';
 import { applyCloudLicense } from './cloud-license.utils';
 
 export async function findCloudLicense(context: RetryTransactionContext, dto: FindCloudLicenseDto): Promise<CloudLicense> {

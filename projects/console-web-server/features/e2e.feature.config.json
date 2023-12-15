@@ -6,6 +6,6 @@
   "cookieSecure": false,
   "forceInvitation": true,
   "thirdPartyLogin": false,
-  "doguAgentAppLocation": "github",
+  "doguAgentAppLocation": "off",
   "slackNotification": false
 }

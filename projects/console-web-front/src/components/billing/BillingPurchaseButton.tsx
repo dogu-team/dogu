@@ -1,9 +1,4 @@
-import {
-  BillingMethodNiceBase,
-  BillingPlanInfoResponse,
-  CloudLicenseBase,
-  SelfHostedLicenseBase,
-} from '@dogu-private/console';
+import { BillingMethodNiceBase, BillingPlanInfoResponse, CloudLicenseBase } from '@dogu-private/console';
 import { Button } from 'antd';
 import useTranslation from 'next-translate/useTranslation';
 import { useRouter } from 'next/router';
@@ -44,7 +39,7 @@ const BillingPurchaseButton: React.FC = () => {
   const shouldPurchase = checkShouldPurchase(license, { ...selectedPlan, period: isAnnual ? 'yearly' : 'monthly' });
 
   const handleSuccess = (
-    newLicense: CloudLicenseBase | SelfHostedLicenseBase | null,
+    newLicense: CloudLicenseBase | null,
     plan: BillingPlanInfoResponse | null,
     method: Partial<BillingMethodNiceBase> | null,
   ) => {

@@ -5,12 +5,13 @@ import { DataSource } from 'typeorm';
 import { v4 } from 'uuid';
 
 import { CloudLicense } from '../../db/entity/cloud-license.entity';
-import { RetryTransaction } from '../../db/retry-transaction';
+import { RetryTransaction } from '../../db/utils';
 import { BillingMethodPaddleService } from '../billing-method/billing-method-paddle.service';
 import { createBillingOrganization } from '../billing-organization/billing-organization.serializables';
 import { BillingOrganizationResponseBuilder } from '../common/plan-info-common.module';
 import { DoguLogger } from '../logger/logger';
 import { PaddleCaller } from '../paddle/paddle.caller';
+import { Paddle } from '../paddle/paddle.types';
 import { findCloudLicense } from './cloud-license.serializables';
 
 @Injectable()
@@ -77,19 +78,30 @@ export class CloudLicenseService {
       throw new InternalServerErrorException(`Cloud license does not have a billing organization. organizationId: ${dto.organizationId}`);
     }
 
-    if (!cloudLicense.billingOrganization.billingMethodPaddle) {
-      throw new InternalServerErrorException(`Cloud license does not have a billing method. organizationId: ${dto.organizationId}`);
+    const paddleSubscriptions: Paddle.Subscription[] = [];
+    const paddleAddresses: Paddle.Address[] = [];
+    const paddleBusinesses: Paddle.Business[] = [];
+    if (cloudLicense.billingOrganization.billingMethod === 'paddle') {
+      if (!cloudLicense.billingOrganization.billingMethodPaddle) {
+        throw new InternalServerErrorException(`Cloud license does not have a billing method. organizationId: ${dto.organizationId}`);
+      }
+
+      const subscriptions = await this.paddleCaller.listSubscriptionsAll({
+        customerId: cloudLicense.billingOrganization.billingMethodPaddle.customerId,
+      });
+      paddleSubscriptions.push(...subscriptions);
+
+      const addresses = await this.paddleCaller.listAddressesAll({
+        customerId: cloudLicense.billingOrganization.billingMethodPaddle.customerId,
+      });
+      paddleAddresses.push(...addresses);
+
+      const businesses = await this.paddleCaller.listBusinessesAll({
+        customerId: cloudLicense.billingOrganization.billingMethodPaddle.customerId,
+      });
+      paddleBusinesses.push(...businesses);
     }
 
-    const paddleSubscriptions = await this.paddleCaller.listSubscriptionsAll({
-      customerId: cloudLicense.billingOrganization.billingMethodPaddle.customerId,
-    });
-    const paddleAddresses = await this.paddleCaller.listAddressesAll({
-      customerId: cloudLicense.billingOrganization.billingMethodPaddle.customerId,
-    });
-    const paddleBusinesses = await this.paddleCaller.listBusinessesAll({
-      customerId: cloudLicense.billingOrganization.billingMethodPaddle.customerId,
-    });
     const builder = new BillingOrganizationResponseBuilder(cloudLicense.billingOrganization, paddleSubscriptions, paddleAddresses, paddleBusinesses);
     cloudLicense.billingOrganization = builder.build();
     const cloudLicenseResponse = cloudLicense as CloudLicenseResponse;

@@ -109,37 +109,20 @@ export class DownloadService {
     return packages;
   }
 
-  // private async getAllS3Objects(param: ListObjectsV2Request): Promise<Object[]> {
-  //   let continueToken: string | undefined;
-  //   let shouldRequest: boolean | undefined = true;
-  //   let objects: Object[] = [];
-
-  //   ({ Bucket: 'appupdate.dev.dogutech.io', Prefix: 'dost/' });
-
-  //   while (shouldRequest) {
-  //     try {
-  //       const result = await S3.listObjectsAsync({ ...param, ContinuationToken: continueToken });
-  //       continueToken = result.ContinuationToken;
-  //       shouldRequest = result.IsTruncated;
-  //       if (result.Contents) {
-  //         objects = concat(objects, result.Contents);
-  //         objects = objects.concat(result.Contents);
-  //       }
-  //     } catch (e) {
-  //       Logger.error('AWS s3 pagination error', e);
-  //       throw new BadRequestException('Failed to get list');
-  //     }
-  //   }
-
-  //   return objects;
-  // }
-
   async getDoguAgentPackageList(dto: PageDto): Promise<Page<DownloadablePackageResult>> {
     return FeatureConfig.get('doguAgentAppLocation') === 's3' ? await this.getDoguAgentS3PackageList(dto) : await this.getDoguAgentGithubPackageList(dto);
   }
 
   async getDoguAgentLatest(): Promise<DownloadablePackageResult[]> {
-    return FeatureConfig.get('doguAgentAppLocation') === 's3' ? await this.getDoguAgentS3LatestWithBeta() : await this.getDoguAgentGithubLatest();
+    switch (FeatureConfig.get('doguAgentAppLocation')) {
+      case 's3':
+        return await this.getDoguAgentS3Latest();
+      case 'github':
+        return await this.getDoguAgentGithubLatest();
+      case 'off':
+      default:
+        return [];
+    }
   }
 
   private async getDoguAgentGithubPackageList(dto: PageDto): Promise<Page<DownloadablePackageResult>> {
@@ -186,7 +169,7 @@ export class DownloadService {
         if (!asset.name.startsWith('dogu-agent')) {
           continue;
         }
-        let platform = downloadPlatformsFromFilename(asset.name);
+        const platform = downloadPlatformsFromFilename(asset.name);
         const version = parseSemver(path.parse(asset.name).name);
 
         result.push({

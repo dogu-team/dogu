@@ -9,6 +9,7 @@ export type EventName =
   | 'onOrganizationCreated'
   | 'onOrganizationLeft'
   | 'onOrganizationUpdated'
+  | 'onOrganizationScmUpdated'
 
   // tag
   | 'onTagCreated'

@@ -7,7 +7,7 @@ import useTranslation from 'next-translate/useTranslation';
 import { updateProject } from '../../api/project';
 import useRequest from '../../hooks/useRequest';
 import useEventStore from '../../stores/events';
-import { sendSuccessNotification } from '../../utils/antd';
+import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd';
 
 interface Props {
   isOpen: boolean;
@@ -37,7 +37,7 @@ const ProjectEditModal: React.FC<Props> = ({ isOpen, close, project }) => {
       close();
     } catch (e) {
       if (isAxiosError(e)) {
-        sendSuccessNotification(`Failed to update project.\n${e.message}`);
+        sendErrorNotification(`Failed to update project.\n${e.message}`);
       }
     }
   };

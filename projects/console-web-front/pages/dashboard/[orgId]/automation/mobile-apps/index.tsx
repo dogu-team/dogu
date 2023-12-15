@@ -11,6 +11,9 @@ import TableListView from '../../../../../src/components/common/TableListView';
 import CreateProjectButton from '../../../../../src/components/projects/CreateProjectButton';
 import RefreshButton from '../../../../../src/components/buttons/RefreshButton';
 import LiveChat from '../../../../../src/components/external/livechat';
+import TitleWithBannerAndOption from '../../../../../src/components/layouts/TitleWithBannerAndOption';
+import MobileAppTestAutomationFreeTierTopBanner from '../../../../../src/components/billing/MobileAppTestAutomationFreeTierTopBanner';
+import { MobileAppTestAutomationParallelCounter } from '../../../../../src/components/projects/AutomationParallelCounter';
 import { flexRowBaseStyle, flexRowSpaceBetweenStyle } from '../../../../../src/styles/box';
 import TutorialButton from '../../../../../src/components/buttons/TutorialButton';
 import { DoguDocsUrl } from '../../../../../src/utils/url';
@@ -49,7 +52,13 @@ AppAutomationPage.getLayout = (page) => {
     <ConsoleLayout
       {...page.props}
       sidebar={<OrganizationSideBar />}
-      titleI18nKey="organization:mobileAppAutomationProjectPageTitle"
+      title={
+        <TitleWithBannerAndOption
+          titleKey="organization:mobileAppAutomationProjectPageTitle"
+          banner={<MobileAppTestAutomationFreeTierTopBanner />}
+          option={<MobileAppTestAutomationParallelCounter />}
+        />
+      }
     >
       {page}
     </ConsoleLayout>

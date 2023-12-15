@@ -8,15 +8,18 @@ import { VscRepo } from 'react-icons/vsc';
 import { swrAuthFetcher } from '../../../../api';
 import useOrganizationContext from '../../../../hooks/context/useOrganizationContext';
 import { flexRowCenteredStyle } from '../../../../styles/box';
+import useRefresh from '../../../../hooks/useRefresh';
 
 interface Props extends Omit<SelectProps, 'options'> {}
 
 const RepositorySelector: React.FC<Props> = ({ ...props }) => {
   const { organization } = useOrganizationContext();
-  const { data, isLoading, error } = useSWR<OrganizationScmRespository[]>(
+  const { data, isLoading, error, mutate } = useSWR<OrganizationScmRespository[]>(
     !!organization?.organizationId && `/organizations/${organization?.organizationId}/scm/repositories`,
     swrAuthFetcher,
   );
+
+  useRefresh(['onOrganizationScmUpdated'], () => mutate());
 
   const options: SelectProps['options'] = data?.map((item) => {
     return {

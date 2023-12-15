@@ -17,6 +17,7 @@ interface Props {
 const JobStatusIcon = ({ status }: Props) => {
   switch (status) {
     case PIPELINE_STATUS.WAITING:
+    case PIPELINE_STATUS.WAITING_TO_START:
       return <ClockCircleFilled style={{ fontSize: '1.1rem', color: pipelineStatusColor[status] }} />;
     case PIPELINE_STATUS.IN_PROGRESS:
       return <SettingFilled style={{ fontSize: '1.1rem', color: pipelineStatusColor[status] }} spin />;

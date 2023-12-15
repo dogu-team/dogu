@@ -80,3 +80,5 @@ export * from './user-gitlab';
 export * from './user-key';
 export * from './user-sns';
 export * from './user-visit/index';
+
+export type DeviceRunnerId = string;

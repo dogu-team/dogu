@@ -4,7 +4,7 @@ import { ConflictException, NotFoundException } from '@nestjs/common';
 import { v4 } from 'uuid';
 
 import { SelfHostedLicense } from '../../db/entity/self-hosted-license.entity';
-import { RetryTransactionContext } from '../../db/retry-transaction';
+import { RetryTransactionContext } from '../../db/utils';
 import { createBillingOrganization } from '../billing-organization/billing-organization.serializables';
 import { LicenseKeyService } from '../common/license-key.service';
 import { FindSelfHostedLicenseQueryDto } from './self-hosted-license.dto';

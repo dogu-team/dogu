@@ -7,7 +7,6 @@ import { DeviceMessageModule } from '../../device-message/device-message.module'
 import { InfluxDbModule } from '../../influxdb/influxdb.module';
 import { DeviceTagModule } from '../device-tag/device-tag.module';
 import { DeviceCommandService } from './device-command.service';
-import { DeviceSelfHostedController } from './device-self-hosted.controller';
 import { DeviceStatusService } from './device-status.service';
 import { DeviceController } from './device.controller';
 
@@ -20,7 +19,7 @@ import { DeviceController } from './device.controller';
     forwardRef(() => DeviceTagModule),
     LicenseModule,
   ],
-  controllers: [DeviceController, DeviceSelfHostedController],
+  controllers: [DeviceController],
   providers: [DeviceStatusService, DeviceCommandService],
   exports: [DeviceStatusService, DeviceCommandService],
 })

@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 
-import { RetryTransaction } from '../../db/retry-transaction';
+import { RetryTransaction } from '../../db/utils';
 import { DateTimeSimulatorService } from '../date-time-simulator/date-time-simulator.service';
 import { DoguLogger } from '../logger/logger';
 import { NiceCaller } from '../nice/nice.caller';

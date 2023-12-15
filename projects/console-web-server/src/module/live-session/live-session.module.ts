@@ -7,11 +7,13 @@ import { RedisModule } from '../redis/redis.module';
 import { LiveSessionHeartbeatGateway } from './live-session-heartbeat.gateway';
 import { LiveSessionController } from './live-session.controller';
 import { LiveSessionService } from './live-session.service';
+import { LiveSessionSubscriber } from './live-session.subscriber';
+import { LiveSessionUpdater } from './live-session.updater';
 
 @Module({
   imports: [DeviceModule, WsCommonModule, LicenseModule, RedisModule],
   controllers: [LiveSessionController],
-  providers: [LiveSessionHeartbeatGateway, LiveSessionService],
+  providers: [LiveSessionHeartbeatGateway, LiveSessionService, LiveSessionUpdater, LiveSessionSubscriber],
   exports: [LiveSessionService],
 })
 export class LiveSessionModule {}

@@ -11,6 +11,9 @@ import AutomationLayout from '../../../../../../../../src/components/layouts/Aut
 import useGitIntegrationStore from '../../../../../../../../src/stores/git-integration';
 import RoutineGitIntegrationAlert from '../../../../../../../../src/components/projects/RoutineGitIntegrationAlert';
 import { isOrganizationScmIntegrated } from '../../../../../../../../src/utils/organization';
+import TitleWithBannerAndOption from '../../../../../../../../src/components/layouts/TitleWithBannerAndOption';
+import WebTestAutomationFreeTierTopBanner from '../../../../../../../../src/components/billing/WebTestAutomationFreeTierTopBanner';
+import { WebTestAutomationParallelCounter } from '../../../../../../../../src/components/projects/AutomationParallelCounter';
 
 const ProjectRoutineCreatorPage: NextPageWithLayout<ProjectServerSideProps> = ({
   organization,
@@ -46,7 +49,16 @@ const ProjectRoutineCreatorPage: NextPageWithLayout<ProjectServerSideProps> = ({
 
 ProjectRoutineCreatorPage.getLayout = (page) => {
   return (
-    <AutomationLayout {...page.props} titleI18nKey="organization:webAutomationPageTitle">
+    <AutomationLayout
+      {...page.props}
+      title={
+        <TitleWithBannerAndOption
+          titleKey="organization:webAutomationPageTitle"
+          banner={<WebTestAutomationFreeTierTopBanner />}
+          option={<WebTestAutomationParallelCounter />}
+        />
+      }
+    >
       {page}
     </AutomationLayout>
   );

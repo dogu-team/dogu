@@ -204,8 +204,7 @@ const ProjectListController = ({ organizationId, projectType }: Props) => {
                   i18nKey="project:projectEmptyDescription"
                   components={{
                     br: <br />,
-                    tutorialLink: <Link href={getTutorialLink(projectType)} />,
-                    link: <Link href={DoguDocsUrl.management.project._index()} target="_blank" />,
+                    link: <a href={getTutorialLink(projectType)} target="_blank" />,
                   }}
                 />
               }

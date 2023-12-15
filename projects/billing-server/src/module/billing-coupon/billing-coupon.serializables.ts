@@ -19,9 +19,10 @@ import { BillingCoupon } from '../../db/entity/billing-coupon.entity';
 import { BillingOrganizationUsedBillingCoupon } from '../../db/entity/billing-organization-used-billing-coupon.entity';
 import { BillingOrganization } from '../../db/entity/billing-organization.entity';
 import { BillingPlanSource } from '../../db/entity/billing-plan-source.entity';
-import { RetryTransactionContext } from '../../db/retry-transaction';
+import { RetryTransactionContext } from '../../db/utils';
 import { registerUsedCoupon } from '../billing-organization/billing-organization.serializables';
 import { findCloudLicense } from '../cloud-license/cloud-license.serializables';
+import { validatePaddleDiscountPattern } from '../paddle/paddle.utils';
 import { ResolveCouponResultSuccess } from './billing-coupon.utils';
 
 export interface ValidateCouponOptions extends ValidateBillingCouponDto {
@@ -209,6 +210,8 @@ export async function findAvailablePromotionCoupon(context: RetryTransactionCont
 export async function createBillingCoupon(context: RetryTransactionContext, dto: CreateBillingCouponDto): Promise<BillingCoupon> {
   const { manager } = context;
   const { code, type, discountPercent, applyCount, remainingAvailableCount, planType, period } = dto;
+
+  validatePaddleDiscountPattern(code);
 
   const exsitCoupon = await manager.getRepository(BillingCoupon).findOne({ where: { code } });
   if (exsitCoupon) {

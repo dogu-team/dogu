@@ -4,7 +4,7 @@ import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { BillingOrganization } from '../../db/entity/billing-organization.entity';
 import { BillingPlanSource } from '../../db/entity/billing-plan-source.entity';
-import { RetryTransaction } from '../../db/retry-transaction';
+import { RetryTransaction } from '../../db/utils';
 import { DoguLogger } from '../logger/logger';
 
 export interface FindPlanSourceOptions {

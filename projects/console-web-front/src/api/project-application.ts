@@ -37,10 +37,6 @@ export const deleteProjectApplication = async (organizationId: OrganizationId, p
   await api.delete<void>(`/organizations/${organizationId}/projects/${projectId}/applications/${id}`);
 };
 
-export const uploadSampleApplication = async (
-  organizationId: OrganizationId,
-  projectId: ProjectId,
-  dto: UploadSampleAppDtoBase,
-) => {
-  await api.put<void>(`/organizations/${organizationId}/projects/${projectId}/applications/samples`, dto);
+export const uploadSampleApplication = async (organizationId: OrganizationId, dto: UploadSampleAppDtoBase) => {
+  await api.put<void>(`/organizations/${organizationId}/applications/samples`, dto);
 };

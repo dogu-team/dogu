@@ -5,6 +5,9 @@ import PipelineJobLayout from 'src/components/layouts/PipelineJobLayout';
 import PipelineDeviceGrid from 'src/components/pipelines/PipelineDeviceGrid';
 import { getProjectPageServerSideProps, ProjectServerSideProps } from 'src/ssr/project';
 import useLivePipelineStore from 'src/stores/live-pipeline';
+import MobileGameTestAutomationFreeTierTopBanner from '../../../../../../../../src/components/billing/MobileGameTestAutomationFreeTierTopBanner';
+import TitleWithBannerAndOption from '../../../../../../../../src/components/layouts/TitleWithBannerAndOption';
+import { MobileGameTestAutomationParallelCounter } from '../../../../../../../../src/components/projects/AutomationParallelCounter';
 import { NextPageWithLayout } from '../../../../../../../_app';
 
 const PipelineDeviceViewPage: NextPageWithLayout<ProjectServerSideProps> = ({ organization, project }) => {
@@ -20,7 +23,16 @@ const PipelineDeviceViewPage: NextPageWithLayout<ProjectServerSideProps> = ({ or
 
 PipelineDeviceViewPage.getLayout = (page) => {
   return (
-    <PipelineJobLayout {...page.props} pageTitleKey="organization:mobileGameAutomationPageTitle">
+    <PipelineJobLayout
+      {...page.props}
+      title={
+        <TitleWithBannerAndOption
+          titleKey="organization:mobileGameAutomationPageTitle"
+          banner={<MobileGameTestAutomationFreeTierTopBanner />}
+          option={<MobileGameTestAutomationParallelCounter />}
+        />
+      }
+    >
       {page}
     </PipelineJobLayout>
   );

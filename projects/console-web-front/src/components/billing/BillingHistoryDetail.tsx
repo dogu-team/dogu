@@ -1,10 +1,10 @@
-import { BillingHistoryBase } from '@dogu-private/console';
+import { BillingHistoryBase, BillingPlanGroupMap, BillingSubscriptionGroupType } from '@dogu-private/console';
 import { Divider } from 'antd';
 import useTranslation from 'next-translate/useTranslation';
 import { useRouter } from 'next/router';
 import styled from 'styled-components';
 
-import { planDescriptionInfoMap } from '../../resources/plan';
+import { groupTypeI18nKeyMap, planDescriptionInfoMap } from '../../resources/plan';
 import { flexRowSpaceBetweenStyle } from '../../styles/box';
 import { getHistoryAmount } from '../../utils/billing';
 import { getLocaleFormattedDate, getLocaleFormattedPrice } from '../../utils/locale';
@@ -52,11 +52,16 @@ const BillingHistoryDetail: React.FC<Props> = ({ history }) => {
       <div>
         {history.billingPlanHistories.map((planHistory) => {
           const descriptionInfo = planDescriptionInfoMap[planHistory.type];
+          const groupType = BillingSubscriptionGroupType.find((group) =>
+            BillingPlanGroupMap[group].includes(planHistory.type),
+          )!;
 
           return (
             <div key={planHistory.billingPlanHistoryId} style={{ margin: '.25rem 0' }}>
               <FlexSpaceBetween>
-                <b style={{ fontWeight: '600' }}>{t(descriptionInfo.titleI18nKey)}</b>
+                <b style={{ fontWeight: '600' }}>
+                  [{t(groupTypeI18nKeyMap[groupType])}] {t(descriptionInfo.titleI18nKey)}
+                </b>
                 <b style={{ fontWeight: '600' }}>
                   {getLocaleFormattedPrice(router.locale, planHistory.currency, getHistoryAmount(planHistory))}
                 </b>

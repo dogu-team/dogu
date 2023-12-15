@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { BillingCoupon, BillingCouponTableName } from '../../db/entity/billing-coupon.entity';
-import { subscribe } from '../../db/retry-transaction';
+import { subscribe } from '../../db/utils';
 import { DoguLogger } from '../logger/logger';
 import { PaddleCaller } from '../paddle/paddle.caller';
 import { matchDiscount, matchDiscountCode } from '../paddle/paddle.utils';

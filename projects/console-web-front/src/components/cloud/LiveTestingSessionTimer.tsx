@@ -1,5 +1,5 @@
 import { CloseOutlined, FieldTimeOutlined } from '@ant-design/icons';
-import { CloudLicenseMessage, LiveSessionBase } from '@dogu-private/console';
+import { LiveSessionBase, CloudLicenseLiveTestingEvent } from '@dogu-private/console';
 import { LiveSessionId, OrganizationId } from '@dogu-private/types';
 import { Tooltip } from 'antd';
 import { useEffect, useRef, useState } from 'react';
@@ -59,7 +59,7 @@ const LiveTestingSessionTimer: React.FC<Props> = ({ organizationId, sessionId })
   useEffect(() => {
     useEventStore.subscribe(({ eventName, payload }) => {
       if (eventName === 'onCloudRemainingFreeSecondMessage') {
-        const message = payload as CloudLicenseMessage.LiveTestingReceive;
+        const message = payload as CloudLicenseLiveTestingEvent;
         if (message.remainingFreeSeconds < 5 * 60) {
           setSessionTimeInfo((prev) => ({ ...prev, remainingFreeSeconds: message.remainingFreeSeconds }));
           if (!isUserCloseTooltip.current) {

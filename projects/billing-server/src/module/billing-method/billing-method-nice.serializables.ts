@@ -11,7 +11,7 @@ import { errorify } from '@dogu-tech/common';
 import { v4 } from 'uuid';
 import { BillingMethodNice } from '../../db/entity/billing-method-nice.entity';
 import { BillingOrganization } from '../../db/entity/billing-organization.entity';
-import { RetryTransactionContext } from '../../db/retry-transaction';
+import { RetryTransactionContext } from '../../db/utils';
 import { NiceCaller } from '../nice/nice.caller';
 
 export interface CreateOrUpdateMethodNiceOptions {

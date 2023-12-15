@@ -12,14 +12,16 @@ import {
   ROUTINE_DEVICE_JOB_BROWSER_VERSION_MAX_LENGTH,
   ROUTINE_DEVICE_JOB_TABLE_NAME,
 } from '@dogu-private/types';
-import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Type } from 'class-transformer';
+import { IsOptional } from 'class-validator';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { ColumnTemplate } from './decorators';
 import { DeviceRunner } from './device-runner.entity';
 import { Device, RoutineJob } from './index';
 import { RoutineStep } from './step.entity';
 
 @Entity(ROUTINE_DEVICE_JOB_TABLE_NAME)
-export class RoutineDeviceJob extends BaseEntity implements RoutineDeviceJobBase {
+export class RoutineDeviceJob implements RoutineDeviceJobBase {
   @PrimaryGeneratedColumn('increment', { type: 'int', name: RoutineDeviceJobPropSnake.routine_device_job_id, unsigned: true })
   routineDeviceJobId!: RoutineDeviceJobId;
 
@@ -51,30 +53,44 @@ export class RoutineDeviceJob extends BaseEntity implements RoutineDeviceJobBase
   windowProcessId!: number | null;
 
   @ColumnTemplate.Date(RoutineDeviceJobPropSnake.heartbeat, true)
+  @Type(() => Date)
+  @IsOptional()
   heartbeat!: Date | null;
 
   @ColumnTemplate.RelationUuid(RoutineDeviceJobPropSnake.device_runner_id, true)
   deviceRunnerId!: DeviceRunnerId | null;
 
   @ColumnTemplate.CreateDate(RoutineDeviceJobPropSnake.created_at)
+  @Type(() => Date)
   createdAt!: Date;
 
   @ColumnTemplate.UpdateDate(RoutineDeviceJobPropSnake.updated_at)
+  @Type(() => Date)
   updatedAt!: Date;
 
   @ColumnTemplate.DeleteDate(RoutineDeviceJobPropSnake.deleted_at)
+  @Type(() => Date)
+  @IsOptional()
   deletedAt!: Date | null;
 
   @ColumnTemplate.Date(RoutineDeviceJobPropSnake.in_progress_at, true)
+  @Type(() => Date)
+  @IsOptional()
   inProgressAt!: Date | null;
 
   @ColumnTemplate.Date(RoutineDeviceJobPropSnake.completed_at, true)
+  @Type(() => Date)
+  @IsOptional()
   completedAt!: Date | null;
 
   @ColumnTemplate.Date(RoutineDeviceJobPropSnake.local_in_progress_at, true)
+  @Type(() => Date)
+  @IsOptional()
   localInProgressAt!: Date | null;
 
   @ColumnTemplate.Date(RoutineDeviceJobPropSnake.local_completed_at, true)
+  @Type(() => Date)
+  @IsOptional()
   localCompletedAt!: Date | null;
 
   @ManyToOne(() => Device, { createForeignKeyConstraints: false })

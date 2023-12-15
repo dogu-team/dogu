@@ -22,6 +22,7 @@ export function validateStatusTransition(curStatus: PIPELINE_STATUS, nextStatus:
   switch (curStatus) {
     case PIPELINE_STATUS.WAITING: {
       if (
+        nextStatus === PIPELINE_STATUS.WAITING_TO_START || //
         nextStatus === PIPELINE_STATUS.IN_PROGRESS || //
         nextStatus === PIPELINE_STATUS.SKIPPED
       ) {
