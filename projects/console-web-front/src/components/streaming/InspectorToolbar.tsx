@@ -1,19 +1,15 @@
-import {
-  CaretRightOutlined,
-  DisconnectOutlined,
-  PauseOutlined,
-  ReloadOutlined,
-  SelectOutlined,
-} from '@ant-design/icons';
+import { CaretRightOutlined, PauseOutlined, ReloadOutlined, SelectOutlined } from '@ant-design/icons';
 import { Tooltip } from 'antd';
 import moment from 'moment';
+import { GrConnect } from 'react-icons/gr';
 import useTranslation from 'next-translate/useTranslation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
 import useDeviceStreamingContext from '../../hooks/streaming/useDeviceStreamingContext';
 import { flexRowBaseStyle, flexRowCenteredStyle } from '../../styles/box';
-import { InspectorType } from '../../types/streaming';
+import { InspectorType, StreamingHotKey } from '../../types/streaming';
+import useEventStore from '../../stores/events';
 
 interface Props {
   onRefresh: () => void | Promise<void>;
@@ -73,10 +69,23 @@ const InspectorToolbar = ({ onRefresh, onReset, selectDisabled }: Props) => {
   }, [handleRefresh, refreshEnabled, inspectorType]);
 
   useEffect(() => {
-    if (mode === 'inspect' && inspectorType === InspectorType.APP) {
-      refreshAndClearTimer();
-    }
-  }, [mode, refreshAndClearTimer, inspectorType]);
+    const unsub = useEventStore.subscribe(({ eventName, payload }) => {
+      if (eventName === 'onStreamingHotkeyPressed') {
+        if (payload === StreamingHotKey.INSPECTOR_RELOAD) {
+          refreshAndClearTimer();
+        } else if (payload === StreamingHotKey.INSPECTOR_SELECT) {
+          updateMode(mode === 'input' ? 'inspect' : 'input');
+          if (mode === 'input') {
+            refreshAndClearTimer();
+          }
+        }
+      }
+    });
+
+    return () => {
+      unsub();
+    };
+  }, [updateMode, mode, refreshAndClearTimer]);
 
   return (
     <Box>
@@ -86,9 +95,9 @@ const InspectorToolbar = ({ onRefresh, onReset, selectDisabled }: Props) => {
 
       <ButtonWrapper>
         {inspectorType === InspectorType.GAME && (
-          <Tooltip title="Reconnect">
+          <Tooltip title="Connect" overlayInnerStyle={{ fontSize: '.75rem' }}>
             <StyledButton onClick={handleReset} disabled={loading}>
-              <DisconnectOutlined style={{ fontSize: '.75rem' }} />
+              <GrConnect style={{ fontSize: '.75rem' }} />
             </StyledButton>
           </Tooltip>
         )}
@@ -99,18 +108,25 @@ const InspectorToolbar = ({ onRefresh, onReset, selectDisabled }: Props) => {
             <CaretRightOutlined style={{ fontSize: '.75rem' }} />
           )}
         </StyledButton>
-        <StyledButton onClick={refreshAndClearTimer} disabled={loading}>
-          <ReloadOutlined style={{ fontSize: '.75rem' }} spin={loading} />
-        </StyledButton>
-        <StyledButton
-          style={{ backgroundColor: mode === 'inspect' ? 'skyblue' : '#ffffff' }}
-          onClick={() => {
-            updateMode(mode === 'input' ? 'inspect' : 'input');
-          }}
-          disabled={selectDisabled}
-        >
-          <SelectOutlined style={{ fontSize: '.75rem', color: mode === 'inspect' ? '#fff' : 'black' }} />
-        </StyledButton>
+        <Tooltip title="Refresh (ctrl + r)" overlayInnerStyle={{ fontSize: '.75rem' }}>
+          <StyledButton onClick={refreshAndClearTimer} disabled={loading}>
+            <ReloadOutlined style={{ fontSize: '.75rem' }} spin={loading} />
+          </StyledButton>
+        </Tooltip>
+        <Tooltip title="Select (ctrl + s)" overlayInnerStyle={{ fontSize: '.75rem' }}>
+          <StyledButton
+            style={{ backgroundColor: mode === 'inspect' ? 'skyblue' : '#ffffff' }}
+            onClick={() => {
+              updateMode(mode === 'input' ? 'inspect' : 'input');
+              if (mode === 'input') {
+                refreshAndClearTimer();
+              }
+            }}
+            disabled={selectDisabled}
+          >
+            <SelectOutlined style={{ fontSize: '.75rem', color: mode === 'inspect' ? '#fff' : 'black' }} />
+          </StyledButton>
+        </Tooltip>
       </ButtonWrapper>
     </Box>
   );

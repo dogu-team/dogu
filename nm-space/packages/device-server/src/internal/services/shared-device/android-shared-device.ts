@@ -124,64 +124,6 @@ const BlockAppList: BlockAppInfo[] = [
     packageName: 'com.google.android.gms',
     runtime: true,
   },
-  //#region scam
-  // {
-  //   vender: 'unknown',
-  //   category: 'scam',
-  //   keyword: 'me.nextplus.',
-  //   packageName: 'me.nextplus.smsfreetext.phonecalls',
-  //   runtime: true,
-  // },
-  // {
-  //   vender: 'unknown',
-  //   category: 'scam',
-  //   keyword: 'me.dingtone.',
-  //   packageName: 'me.dingtone.app.im',
-  //   runtime: true,
-  // },
-  // {
-  //   vender: 'unknown',
-  //   category: 'scam',
-  //   keyword: 'com.gogii.',
-  //   packageName: 'com.gogii.textplus',
-  //   runtime: true,
-  // },
-  // {
-  //   vender: 'unknown',
-  //   category: 'scam',
-  //   keyword: 'com.talkatone.',
-  //   packageName: 'com.talkatone.android',
-  //   runtime: true,
-  // },
-  // {
-  //   vender: 'unknown',
-  //   category: 'scam',
-  //   keyword: 'me.talkyou.',
-  //   packageName: 'me.talkyou.app.im',
-  //   runtime: true,
-  // },
-  // {
-  //   vender: 'unknown',
-  //   category: 'scam',
-  //   keyword: 'com.textmeinc.',
-  //   packageName: 'com.textmeinc.textme',
-  //   runtime: true,
-  // },
-  // {
-  //   vender: 'unknown',
-  //   category: 'scam',
-  //   keyword: 'com.iplum.',
-  //   packageName: 'com.iplum.android',
-  //   runtime: true,
-  // },
-  // {
-  //   vender: 'unknown',
-  //   category: 'scam',
-  //   keyword: 'com.whatsapp',
-  //   packageName: 'com.whatsapp',
-  //   runtime: true,
-  // },
-  //#endregion
 
   /*
    * Block noise apps
@@ -320,6 +262,71 @@ const BlockAppList: BlockAppInfo[] = [
     disable: true,
   },
 ];
+
+const ScamBlockAppList: BlockAppInfo[] = [
+  //#region scam
+  {
+    vender: 'unknown',
+    category: 'scam',
+    keyword: 'me.nextplus.',
+    packageName: 'me.nextplus.smsfreetext.phonecalls',
+    runtime: true,
+  },
+  {
+    vender: 'unknown',
+    category: 'scam',
+    keyword: 'me.dingtone.',
+    packageName: 'me.dingtone.app.im',
+    runtime: true,
+  },
+  {
+    vender: 'unknown',
+    category: 'scam',
+    keyword: 'com.gogii.',
+    packageName: 'com.gogii.textplus',
+    runtime: true,
+  },
+  {
+    vender: 'unknown',
+    category: 'scam',
+    keyword: 'com.talkatone.',
+    packageName: 'com.talkatone.android',
+    runtime: true,
+  },
+  {
+    vender: 'unknown',
+    category: 'scam',
+    keyword: 'me.talkyou.',
+    packageName: 'me.talkyou.app.im',
+    runtime: true,
+  },
+  {
+    vender: 'unknown',
+    category: 'scam',
+    keyword: 'com.textmeinc.',
+    packageName: 'com.textmeinc.textme',
+    runtime: true,
+  },
+  {
+    vender: 'unknown',
+    category: 'scam',
+    keyword: 'com.iplum.',
+    packageName: 'com.iplum.android',
+    runtime: true,
+  },
+  {
+    vender: 'unknown',
+    category: 'scam',
+    keyword: 'com.whatsapp',
+    packageName: 'com.whatsapp',
+    runtime: true,
+  },
+  //#endregion
+];
+
+if (undefined === process.env.DOGU_UNBLOCK_SCAM_APPS) {
+  BlockAppList.push(...ScamBlockAppList);
+}
 
 const StartActivityLogKeyword = `START u${UserId}`;
 
@@ -614,70 +621,4 @@ export class AndroidSharedDeviceService implements Zombieable {
     this.setupState = name;
     return this.timer.check(name, promise);
   }
-
-  // async disableLocationGoogleAccuracy(): Promise<void> {
-  //   const { adb, appiumContext } = this;
-  //   const driver = appiumContext.driver();
-  //   if (!driver) {
-  //     throw new Error(`AndroidResetService.disableLocationGoogleAccuracy Appium Driver is not found`);
-  //   }
-  //   const aosDriver = new AndroidWebDriver(driver, this.printable);
-  //   await adb.runActivity('android.settings.LOCATION_SOURCE_SETTINGS');
-
-  //   const locationServices = await aosDriver.waitElementsExist(`android=new UiSelector().className("android.widget.TextView").text("Location services")`, { seconds: 4 });
-  //   if (0 < locationServices.length) {
-  //     await locationServices[0].click();
-  //   }
-
-  //   const locationAccuracy = await aosDriver.waitElementExist(`android=new UiSelector().className("android.widget.TextView").text("Google Location Accuracy")`, { seconds: 4 });
-  //   if (locationAccuracy.error) {
-  //     throw new Error(`AndroidResetService.disableLocationGoogleAccuracy Google Location Accuracy is not found`);
-  //   }
-  //   await locationAccuracy.click();
-
-  //   const toggle = await aosDriver.waitElementExist(`android=new UiSelector().className("android.widget.Switch")`, { seconds: 5 });
-  //   if (toggle.error) {
-  //     throw new Error(`AndroidResetService.disableLocationGoogleAccuracy toggle not found`);
-  //   }
-  //   const checked = await toggle.getAttribute('checked');
-  //   this.printable.info(`AndroidResetService.disableLocationGoogleAccuracy checked`, { checked });
-  //   if (checked.toLowerCase() === 'true') {
-  //     await toggle.click();
-  //     await delay(300);
-  //   }
-  // }
-
-  // async disableWifiAccuracy(): Promise<void> {
-  //   const { adb, appiumContext } = this;
-  //   const driver = appiumContext.driver();
-  //   if (!driver) {
-  //     throw new Error(`AndroidResetService.disableLocationGoogleAccuracy Appium Driver is not found`);
-  //   }
-  //   const aosDriver = new AndroidWebDriver(driver, this.printable);
-  //   await adb.runActivity('android.settings.LOCATION_SOURCE_SETTINGS');
-
-  //   const locationServices = await aosDriver.waitElementsExist(`android=new UiSelector().className("android.widget.TextView").text("Location services")`, { seconds: 4 });
-  //   if (0 < locationServices.length) {
-  //     await locationServices[0].click();
-  //   }
-  //   const improveAccuracy = await aosDriver.waitElementsExist(`android=new UiSelector().className("android.widget.TextView").text("Improve accuracy")`, { seconds: 4 });
-  //   if (0 < improveAccuracy.length) {
-  //     await improveAccuracy[0].click();
-  //   }
-  //   const wifiScanning = await aosDriver.waitElementsExist(`android=new UiSelector().className("android.widget.TextView").text("Wi-Fi scanning")`, { seconds: 4 });
-  //   if (0 === wifiScanning.length) {
-  //     throw new Error(`AndroidResetService.disableLocationGoogleAccuracy wifiScanning not found`);
-  //   }
-
-  //   const toggles = await aosDriver.waitElementsExist(`android=new UiSelector().className("android.widget.Switch")`, { seconds: 5 });
-  //   for (const toggle of toggles) {
-  //     const checked = await toggle.getAttribute('checked');
-  //     this.printable.info(`AndroidResetService.disableLocationGoogleAccuracy checked`, { checked });
-  //     if (checked.toLowerCase() === 'true') {
-  //       await toggle.click();
-  //       await delay(300);
-  //     }
-  //   }
-  //   return;
-  // }
 }

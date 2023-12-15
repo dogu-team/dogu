@@ -9,13 +9,15 @@ import { LuInspect } from 'react-icons/lu';
 
 import DeviceStreaming from '../streaming/DeviceStreaming';
 import { DeviceStreamingLayoutProps } from './DeviceStreamingLayout';
-import { StreamingTabMenuKey } from '../../types/streaming';
+import { StreamingHotKey, StreamingTabMenuKey } from '../../types/streaming';
 import useDeviceStreamingContext from '../../hooks/streaming/useDeviceStreamingContext';
 import DeviceStreamingGraphContainer from '../streaming/DeviceStreamingGraphContainer';
 import useDeviceStreamingProfile from '../../hooks/streaming/useDeviceStreamingProfile';
 import DeviceStreamingLogContainer from '../streaming/DeviceStreamingLogContainer';
 import useDeviceLog from '../../hooks/streaming/useDeviceLog';
 import LiveTestingScreenViewer from './LIveTestingScreenViewer';
+import { useEffect, useState } from 'react';
+import useEventStore from '../../stores/events';
 // @ts-ignore
 const DeviceStreamingLayout = dynamic<DeviceStreamingLayoutProps>(() => import('./DeviceStreamingLayout'), {
   ssr: false,
@@ -23,7 +25,8 @@ const DeviceStreamingLayout = dynamic<DeviceStreamingLayoutProps>(() => import('
 
 const LiveTestingMenu = () => {
   const router = useRouter();
-  const { device, deviceService, inspector, isCloudDevice, gamiumInspector } = useDeviceStreamingContext();
+  const { device, deviceService, inspector, isCloudDevice, gamiumInspector, tab, updateTab } =
+    useDeviceStreamingContext();
   const runtimeInfos = useDeviceStreamingProfile(deviceService?.deviceClientRef, device ?? null);
   const { t } = useTranslation();
   const { deviceLogs, isLogStopped, logFilterValue, togglePlay, handleChangeFilterValue, clearLog } = useDeviceLog(
@@ -31,11 +34,15 @@ const LiveTestingMenu = () => {
     device ?? null,
   );
 
-  const clickTab = (key: StreamingTabMenuKey) => {
-    router.push({ pathname: router.pathname, query: { ...router.query, tab: key } }, undefined, {
-      shallow: true,
+  useEffect(() => {
+    useEventStore.subscribe(({ eventName, payload }) => {
+      if (eventName === 'onStreamingHotkeyPressed') {
+        if (payload === StreamingHotKey.INSPECTOR_RELOAD || payload === StreamingHotKey.INSPECTOR_SELECT) {
+          updateTab(StreamingTabMenuKey.INSPECTOR);
+        }
+      }
     });
-  };
+  }, [updateTab]);
 
   const getTabMenu = (platform: Platform): StreamingTabMenuKey[] => {
     switch (platform) {
@@ -62,21 +69,18 @@ const LiveTestingMenu = () => {
   };
 
   const tabMenus = getTabMenu(device?.platform ?? Platform.UNRECOGNIZED);
-  const tab = tabMenus?.find((menu) => menu === router.query.tab)
-    ? (router.query.tab as StreamingTabMenuKey | undefined) ?? StreamingTabMenuKey.INFO
-    : StreamingTabMenuKey.INFO;
 
   return (
     <TabBox>
       <ButtonWrapper>
-        <TabButton isSelected={tab === StreamingTabMenuKey.INFO} onClick={() => clickTab(StreamingTabMenuKey.INFO)}>
+        <TabButton isSelected={tab === StreamingTabMenuKey.INFO} onClick={() => updateTab(StreamingTabMenuKey.INFO)}>
           <InfoCircleOutlined />
           &nbsp;General
         </TabButton>
         {tabMenus.includes(StreamingTabMenuKey.INSPECTOR) && (
           <TabButton
             isSelected={tab === StreamingTabMenuKey.INSPECTOR}
-            onClick={() => clickTab(StreamingTabMenuKey.INSPECTOR)}
+            onClick={() => updateTab(StreamingTabMenuKey.INSPECTOR)}
           >
             <LuInspect />
             &nbsp;Inspector
@@ -85,14 +89,14 @@ const LiveTestingMenu = () => {
         {tabMenus.includes(StreamingTabMenuKey.PROFILE) && (
           <TabButton
             isSelected={tab === StreamingTabMenuKey.PROFILE}
-            onClick={() => clickTab(StreamingTabMenuKey.PROFILE)}
+            onClick={() => updateTab(StreamingTabMenuKey.PROFILE)}
           >
             <AreaChartOutlined />
             &nbsp;Profiler
           </TabButton>
         )}
         {tabMenus.includes(StreamingTabMenuKey.LOGS) && (
-          <TabButton isSelected={tab === StreamingTabMenuKey.LOGS} onClick={() => clickTab(StreamingTabMenuKey.LOGS)}>
+          <TabButton isSelected={tab === StreamingTabMenuKey.LOGS} onClick={() => updateTab(StreamingTabMenuKey.LOGS)}>
             <CodeOutlined />
             &nbsp;Logcat
           </TabButton>

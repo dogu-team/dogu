@@ -82,6 +82,7 @@ export type EventName =
   // streaming
   | 'onDeviceInput'
   | 'onStreamingClosed'
+  | 'onStreamingHotkeyPressed'
 
   // cloud
   | 'onCloudLiveTestingSessionCreated'

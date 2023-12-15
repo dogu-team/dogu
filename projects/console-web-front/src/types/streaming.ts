@@ -39,3 +39,8 @@ export enum InspectorType {
   APP = 'app',
   GAME = 'game',
 }
+
+export enum StreamingHotKey {
+  INSPECTOR_RELOAD = 'inspector_reload',
+  INSPECTOR_SELECT = 'inspector_select',
+}

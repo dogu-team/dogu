@@ -54,7 +54,7 @@
   "deviceLogFilterSetButtonText": "Set",
 
   "inspectorEmptyTreeText": "No element found.<br></br>If you want to see guide for UI inspector, please refer to <link>document</link>.",
-  "gamiumInspectorEmptyTreeText": "No element found.<br></br>Please click the Reconnect button or check the Gamium SDK, see <link>document</link> for more information.",
+  "gamiumInspectorEmptyTreeText": "No element found.<br></br>Please click the Connect button or check the Gamium SDK, see <link>document</link> for more information.",
 
   "liveSessionToCloseWaitModalTitle": "Your session will be closed!",
   "liveSessionToCloseWaitModalContent": "There is no interaction for 30 minutes.<br></br>Your session will be closed in <timer></timer>."

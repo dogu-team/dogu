@@ -61,11 +61,20 @@ const Inspector = ({ inspector, gamiumInspector }: Props) => {
     }
   }, [inspectorType, inspector.updateSources, gamiumInspector.handleDumpHierarchy]);
 
+  const connectGamium = useCallback(async () => {
+    gamiumService?.destroyGamiumClient();
+    await gamiumService?.initializeGamiumClient();
+    await new Promise((resolve) => setTimeout(resolve, 3500));
+    await handleRefresh();
+  }, [gamiumService?.destroyGamiumClient, gamiumService?.initializeGamiumClient, handleRefresh]);
+
   return (
     <Box>
       <Radio.Group
         value={inspectorType}
-        onChange={(e) => updateInspectorType(e.target.value)}
+        onChange={(e) => {
+          updateInspectorType(e.target.value);
+        }}
         style={{ marginBottom: '.5rem' }}
       >
         <Radio.Button value={InspectorType.APP}>Native UI</Radio.Button>
@@ -103,12 +112,7 @@ const Inspector = ({ inspector, gamiumInspector }: Props) => {
         <Inner h={55}>
           <InspectorToolbar
             onRefresh={handleRefresh}
-            onReset={async () => {
-              gamiumService?.destroyGamiumClient();
-              await gamiumService?.initializeGamiumClient();
-              await new Promise((resolve) => setTimeout(resolve, 3500));
-              await handleRefresh();
-            }}
+            onReset={connectGamium}
             selectDisabled={inspectorType === InspectorType.GAME ? undefined : !isContextSelected}
           />
           <Content>

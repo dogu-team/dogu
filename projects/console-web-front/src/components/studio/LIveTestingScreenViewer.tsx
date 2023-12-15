@@ -1,5 +1,4 @@
 import { Platform } from '@dogu-private/types';
-import { useRouter } from 'next/router';
 import { useCallback } from 'react';
 import styled from 'styled-components';
 
@@ -12,10 +11,8 @@ import InspectorSelectedNode from '../streaming/InspectorSelectedNode';
 import { VideoSize } from '../streaming/StreamingVideo';
 
 const LiveTestingScreenViewer: React.FC = () => {
-  const router = useRouter();
-  const { mode, inspectorType, inspector, gamiumInspector, deviceRTCCaller, device, updateMode } =
+  const { mode, inspectorType, inspector, gamiumInspector, deviceRTCCaller, device, updateMode, tab } =
     useDeviceStreamingContext();
-  const tab = (router.query.tab as StreamingTabMenuKey | undefined) ?? StreamingTabMenuKey.INFO;
   const {
     handleDoubleClick,
     handleKeyDown,

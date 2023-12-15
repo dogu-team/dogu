@@ -3,9 +3,10 @@ import { HitPoint } from '@dogu-tech/device-client-common';
 import { DataNode } from 'antd/es/tree';
 import { GamiumClient, ObjectInfo, Vector2 } from 'gamium/common';
 import { throttle } from 'lodash';
-import React, { RefObject, useCallback, useMemo, useState } from 'react';
+import React, { RefObject, useCallback, useEffect, useMemo, useState } from 'react';
+import useEventStore from '../../stores/events';
 
-import { ResizedObjectInfo } from '../../types/streaming';
+import { ResizedObjectInfo, StreamingHotKey } from '../../types/streaming';
 import { BrowserDeviceInspector } from '../../utils/streaming/browser-device-inspector';
 
 type YDirection = 'bottomUp' | 'topDown';
@@ -26,6 +27,16 @@ const useGamiumInspector = (
   // const resetResizedObjectInfos = useCallback(() => {
   //   setTimeout(() => setResizedObjectInfos(undefined), THROTTLE_INTERVAL);
   // }, []);
+
+  useEffect(() => {
+    useEventStore.subscribe(({ eventName, payload }) => {
+      if (eventName === 'onStreamingHotkeyPressed') {
+        if (payload === StreamingHotKey.INSPECTOR_SELECT) {
+          setInspectingGamiumNode(undefined);
+        }
+      }
+    });
+  }, []);
 
   const connectGamium = useCallback(async () => {
     if (!deviceInspector.current || !device) {
@@ -49,14 +60,12 @@ const useGamiumInspector = (
       const connectResult = await connectGamium();
       if (connectResult === 'connected') {
         const result = await gamiumRef.current.inspector().dumpHierarchy('', 0);
-        console.log('dumpResult', result);
         worker.postMessage(result);
         const convertedResult: DataNode[] = await new Promise((resolve) => {
           worker.onmessage = (e: MessageEvent<DataNode[]>) => {
             resolve(e.data);
           };
         });
-        console.log('convertedResult', convertedResult);
         setGamiumTreeNode(convertedResult);
       } else {
         setGamiumTreeNode(undefined);
