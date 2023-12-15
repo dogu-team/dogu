@@ -173,9 +173,9 @@ const useDeviceInput = (deviceRTCCaller: DeviceRTCCaller | undefined, platform: 
             return;
           }
         } catch (e) {}
-      } else if (!isKeyUp && event.code === 'KeyR' && event.ctrlKey && event.shiftKey) {
+      } else if (!isKeyUp && event.code === 'KeyR' && event.ctrlKey) {
         fireEvent('onStreamingHotkeyPressed', StreamingHotKey.INSPECTOR_RELOAD);
-      } else if (!isKeyUp && event.code === 'KeyS' && event.ctrlKey && event.shiftKey) {
+      } else if (!isKeyUp && event.code === 'KeyS' && event.ctrlKey) {
         fireEvent('onStreamingHotkeyPressed', StreamingHotKey.INSPECTOR_SELECT);
       }
 

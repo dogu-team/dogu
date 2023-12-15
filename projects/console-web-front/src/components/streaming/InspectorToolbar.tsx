@@ -108,12 +108,12 @@ const InspectorToolbar = ({ onRefresh, onReset, selectDisabled }: Props) => {
             <CaretRightOutlined style={{ fontSize: '.75rem' }} />
           )}
         </StyledButton>
-        <Tooltip title="Refresh (ctrl + shifh +r)" overlayInnerStyle={{ fontSize: '.75rem' }}>
+        <Tooltip title="Refresh (ctrl + r)" overlayInnerStyle={{ fontSize: '.75rem' }}>
           <StyledButton onClick={refreshAndClearTimer} disabled={loading}>
             <ReloadOutlined style={{ fontSize: '.75rem' }} spin={loading} />
           </StyledButton>
         </Tooltip>
-        <Tooltip title="Select (ctrl + shift + s)" overlayInnerStyle={{ fontSize: '.75rem' }}>
+        <Tooltip title="Select (ctrl + s)" overlayInnerStyle={{ fontSize: '.75rem' }}>
           <StyledButton
             style={{ backgroundColor: mode === 'inspect' ? 'skyblue' : '#ffffff' }}
             onClick={() => {
