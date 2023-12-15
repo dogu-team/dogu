@@ -21,16 +21,16 @@ export class PipelineUpdater {
 
   public async update(): Promise<void> {
     const functionsToCheck = [
-      this.checkPipelineWaiting.bind(this), //
-      this.checkPipelinesWaitingToStart.bind(this),
-      this.checkPipelinesInProgress.bind(this),
-      this.checkPipelinesInCancelReqeusted.bind(this),
-      this.checkInstantPipelinesWaiting.bind(this),
+      async (): Promise<void> => this.checkPipelineWaiting(),
+      async (): Promise<void> => this.checkPipelinesWaitingToStart(),
+      async (): Promise<void> => this.checkPipelinesInProgress(),
+      async (): Promise<void> => this.checkPipelinesInCancelReqeusted(),
+      async (): Promise<void> => this.checkInstantPipelinesWaiting(),
     ];
 
     for (const checkFunction of functionsToCheck) {
       try {
-        await checkFunction.call(this);
+        await checkFunction();
       } catch (error) {
         this.logger.error(error);
       }
