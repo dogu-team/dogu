@@ -3,7 +3,7 @@ import { Architecture, createConsoleApiAuthHeader, HostId, OrganizationId, Platf
 import { DefaultHttpOptions, errorify, Instance, validateAndEmitEventAsync } from '@dogu-tech/common';
 import { DeleteOldFilesCloser, HostPaths, MultiPlatformEnvironmentVariableReplacer, openDeleteOldFiles, processArchitecture, processPlatform } from '@dogu-tech/node';
 import { Injectable } from '@nestjs/common';
-import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { isNotEmptyObject } from 'class-validator';
 import fs from 'fs';
 import path from 'path';
@@ -56,8 +56,7 @@ export class HostResolver {
     private readonly deviceClientService: DeviceClientService,
   ) {}
 
-  @OnEvent(OnHostConnectedEvent.key)
-  async onHostConnected(value: Instance<typeof OnHostConnectedEvent.value>): Promise<void> {
+  async resolve(value: Instance<typeof OnHostConnectedEvent.value>): Promise<void> {
     this.logger.verbose('Host connected', { value });
     const { organizationId, hostId, platform, architecture, rootWorkspace, deviceServerPort } = value;
     const receivedRootWorkspacePath = rootWorkspace;
@@ -113,6 +112,7 @@ export class HostResolver {
     }
     return { needUpdate: 'yes', architecture: currentArchitecture };
   }
+
   private async validateAndUpdateRootWorkspace(receivedRootWorkspacePath: string): Promise<{ needUpdateResult: RootWorkspaceNeedUpdate; resolvedWorkspacePath: string }> {
     const defaultRootWorkspacePath = receivedRootWorkspacePath.length === 0 ? '$HOME/.dogu' : receivedRootWorkspacePath;
     this.logger.verbose('Default root workspace path', { defaultRootWorkspacePath });
@@ -142,7 +142,7 @@ export class HostResolver {
     return { needUpdate: 'yes', deviceServerPort: envDeviceServerPort };
   }
 
-  private accessable(dirPath: string): Promise<boolean> {
+  private async accessable(dirPath: string): Promise<boolean> {
     return fs.promises
       .access(dirPath, fs.constants.F_OK | fs.constants.R_OK | fs.constants.W_OK)
       .then(() => true)

@@ -2,9 +2,9 @@ import { Serial } from '@dogu-private/types';
 import { emitEventAsync, Instance } from '@dogu-tech/common';
 import { Injectable } from '@nestjs/common';
 import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
+import { DoguLogger } from '../logger/logger';
 import { DeviceResolutionInfo, DeviceWebSocketMap } from '../types';
 import { OnDeviceConnectionSubscriberDisconnectedEvent, OnDeviceDisconnectedEvent, OnDeviceRegisteredEvent, OnDeviceResolvedEvent } from './device.events';
-import { DeviceUpdater } from './device.updater';
 
 export interface DeviceRegistryValue extends DeviceResolutionInfo {
   webSocketMap: DeviceWebSocketMap;
@@ -15,8 +15,8 @@ export class DeviceRegistry {
   private readonly _devices = new Map<Serial, DeviceRegistryValue>();
 
   constructor(
+    private readonly logger: DoguLogger,
     private readonly eventEmitter: EventEmitter2,
-    private readonly deviceUpdater: DeviceUpdater,
   ) {}
 
   get devices(): Map<Serial, DeviceRegistryValue> {
@@ -38,7 +38,7 @@ export class DeviceRegistry {
       throw new Error(`device ${serial} already exists`);
     }
 
-    const registryValue = { ...value, webSocketMap: new DeviceWebSocketMap(`device ${serial}`) };
+    const registryValue = { ...value, webSocketMap: new DeviceWebSocketMap(this.logger, `device ${serial}`) };
     this._devices.set(serial, registryValue);
     await emitEventAsync(this.eventEmitter, OnDeviceRegisteredEvent, registryValue);
   }

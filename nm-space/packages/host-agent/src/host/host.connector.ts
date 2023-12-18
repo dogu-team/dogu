@@ -9,6 +9,7 @@ import { ConsoleClientService } from '../console-client/console-client.service';
 import { env } from '../env';
 import { DoguLogger } from '../logger/logger';
 import { HostDisconnectedReason, OnHostConnectedEvent, OnHostConnectingEvent, OnHostDisconnectedEvent } from './host.events';
+import { HostResolver } from './host.resolver';
 
 @Injectable()
 export class HostConnector implements OnApplicationBootstrap {
@@ -16,6 +17,7 @@ export class HostConnector implements OnApplicationBootstrap {
     private readonly consoleClientService: ConsoleClientService,
     private readonly eventEmitter: EventEmitter2,
     private readonly logger: DoguLogger,
+    private readonly hostResolver: HostResolver,
   ) {}
 
   private connectLock = new AsyncLock();
@@ -56,8 +58,9 @@ export class HostConnector implements OnApplicationBootstrap {
 
         try {
           const connectionInfo = await this.getConnectionInfo();
-          this.isConnected = true;
           await validateAndEmitEventAsync(this.eventEmitter, OnHostConnectedEvent, connectionInfo);
+          await this.hostResolver.resolve(connectionInfo);
+          this.isConnected = true;
           this.logger.info(`ready - connected server with ${connectionInfo.hostId}`);
           return;
         } catch (e) {

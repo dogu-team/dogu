@@ -58,7 +58,7 @@ export class MessagePuller {
       this.logger.error('MessagePuller.subscribeParamDatas.error', { serial: value.serial, error });
     });
     webSocket.on('close', (code, reason) => {
-      this.logger.info('MemssagePuller.subscribeParaDatas.close', { serial: value.serial, code, reason: reason.toString() });
+      this.logger.info('MessagePuller.subscribeParaDatas.close', { serial: value.serial, code, reason: reason.toString() });
       const registryValue = this.deviceRegistry.get(value.serial);
       if (registryValue) {
         registryValue.webSocketMap.unregister(MessagePuller.name);

@@ -16,8 +16,7 @@ export async function emitEventAsync<Key extends string, Value extends Class<Val
   eventDefinition: EventDefinition<Key, Value>,
   value: Instance<typeof eventDefinition.value>,
 ): Promise<unknown[]> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let results: any[] = [];
+  const results: unknown[] = [];
   const listeners = eventEmitter.listeners(eventDefinition.key);
   if (listeners.length === 0) {
     return [];
@@ -33,7 +32,7 @@ export async function emitEventAsync<Key extends string, Value extends Class<Val
     }
   }
 
-  return results as unknown[];
+  return results;
 }
 
 export async function validateAndEmitEventAsync<Key extends string, Value extends Class<Value>>(

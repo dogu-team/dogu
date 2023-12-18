@@ -12,6 +12,7 @@ import { OnHostDisconnectedEvent, OnHostResolvedEvent } from '../host/host.event
 import { DoguLogger } from '../logger/logger';
 import { HostConnectionInfo } from '../types';
 import { OnDeviceConnectedEvent, OnDeviceConnectionSubscriberDisconnectedEvent, OnDeviceDisconnectedEvent } from './device.events';
+import { DeviceResolver } from './device.resolver';
 
 @Injectable()
 export class DeviceConnectionSubscriber {
@@ -22,6 +23,7 @@ export class DeviceConnectionSubscriber {
     private readonly eventEmitter: EventEmitter2,
     private readonly logger: DoguLogger,
     private readonly authService: DeviceAuthService,
+    private readonly deviceResolver: DeviceResolver,
   ) {}
 
   get doReconnect(): boolean {
@@ -113,13 +115,17 @@ export class DeviceConnectionSubscriber {
     if (this.hostConnectionInfo === null) {
       throw new Error('host is not connected');
     }
+
     const { organizationId, hostId } = this.hostConnectionInfo;
-    this.logger.info('Event OnDeviceConnectedEvent fired', { deviceConnectionInfo });
-    await validateAndEmitEventAsync(this.eventEmitter, OnDeviceConnectedEvent, {
+    const event: Instance<typeof OnDeviceConnectedEvent.value> = {
       ...deviceConnectionInfo,
       organizationId,
       hostId,
-    });
+    };
+    this.logger.info('Event OnDeviceConnectedEvent fired', { deviceConnectionInfo });
+    await validateAndEmitEventAsync(this.eventEmitter, OnDeviceConnectedEvent, event);
+
+    await this.deviceResolver.resolve(event);
   }
 
   private async emitOnDeviceDisconnected(deviceConnectionInfo: Instance<typeof DeviceConnectionSubscribe.receiveMessage>): Promise<void> {

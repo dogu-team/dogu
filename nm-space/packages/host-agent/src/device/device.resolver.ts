@@ -34,8 +34,7 @@ export class DeviceResolver {
     this.hostResolutionInfo = null;
   }
 
-  @OnEvent(OnDeviceConnectedEvent.key)
-  async onDeviceConnected(value: Instance<typeof OnDeviceConnectedEvent.value>): Promise<void> {
+  async resolve(value: Instance<typeof OnDeviceConnectedEvent.value>): Promise<void> {
     if (this.hostResolutionInfo === null) {
       throw new Error('Host resolution info is not resolved');
     }

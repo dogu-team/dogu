@@ -1,6 +1,6 @@
 import { PrivateHostToken } from '@dogu-private/console-host-agent';
 import { Device, Platform, ThirdPartyPathMap } from '@dogu-private/types';
-import { Class, Instance, KindHavable, Registry } from '@dogu-tech/common';
+import { Class, FilledPrintable, Instance, KindHavable, Registry } from '@dogu-tech/common';
 import { BrowserInstallation } from '@dogu-tech/device-client';
 import { MessageHandler, MessagePattern } from '@nestjs/microservices';
 import WebSocket from 'ws';
@@ -37,6 +37,7 @@ export interface DeviceResolutionInfo extends DeviceConnectionInfo, Pick<Device,
 export type MessageInfo = DeviceResolutionInfo;
 export type MessageHandlers = ReadonlyMap<string, MessageHandler<KindHavable, MessageContext, KindHavable>>;
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export interface MessageHandlerInfo<P extends Class<P> = any, R extends Class<R> = any> {
   param: P;
   result: R | null;
@@ -57,12 +58,16 @@ export interface DeviceWebSocketHandler {
 export class DeviceWebSocketMap {
   private readonly map: Registry<string, { webSocket: WebSocket; handler: DeviceWebSocketHandler }>;
 
-  constructor(name: string) {
+  constructor(
+    private readonly logger: FilledPrintable,
+    private readonly name: string,
+  ) {
     this.map = new Registry(name);
   }
 
   register(key: string, webSocket: WebSocket, handler: DeviceWebSocketHandler): void {
     this.map.register(key, { webSocket, handler });
+    this.logger.info('DeviceWebSocketMap.register', { name: this.name, key });
   }
 
   unregister(key: string): void {
@@ -73,6 +78,7 @@ export class DeviceWebSocketMap {
 
     const { webSocket, handler } = value;
     handler.onUnregister(webSocket);
+    this.logger.info('DeviceWebSocketMap.unregister', { name: this.name, key });
   }
 
   unregisterAll(): void {
