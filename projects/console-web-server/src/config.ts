@@ -99,7 +99,7 @@ export const config = {
   virtualWebSocket: {
     pop: {
       count: 10,
-      intervalMilliseconds: 100,
+      intervalMilliseconds: 300,
     },
   },
   event: {

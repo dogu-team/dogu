@@ -28,7 +28,7 @@ export class WebSocketProxy<S extends Class<S>, R extends Class<R>> {
     private readonly spec: WebSocketSpec<S, R>,
   ) {}
 
-  send(message: Instance<S>): Promise<void> {
+  async send(message: Instance<S>): Promise<void> {
     return this.deviceMessageRelayer.sendWebSocketMessage(this.organizationId, this.deviceId, this.webSocketProxyId, JSON.stringify(message));
   }
 
@@ -36,7 +36,7 @@ export class WebSocketProxy<S extends Class<S>, R extends Class<R>> {
     return this.deviceMessageRelayer.receiveWebSocketMessage(this.organizationId, this.deviceId, this.webSocketProxyId, this.spec);
   }
 
-  close(reason: string): Promise<void> {
+  async close(reason: string): Promise<void> {
     return this.deviceMessageRelayer.close(this.organizationId, this.deviceId, this.webSocketProxyId, reason);
   }
 }
@@ -61,36 +61,67 @@ export interface BatchHttpResponse {
 
 @Injectable()
 export class DeviceMessageRelayer {
-  constructor(private readonly deviceMessageQueue: DeviceMessageQueue, private readonly logger: DoguLogger) {}
+  constructor(
+    private readonly deviceMessageQueue: DeviceMessageQueue,
+    private readonly logger: DoguLogger,
+  ) {}
 
   async sendParam(organizationId: OrganizationId, deviceId: DeviceId, paramValue: ParamValue): Promise<Result> {
     return new Promise<Result>((resolve, reject): void => {
+      let timeoutId: ReturnType<typeof setTimeout> | null = null;
+      let resultId: string | null = null;
+      let clearCalled = false;
+
+      const clear = async (): Promise<void> => {
+        if (clearCalled) {
+          return;
+        }
+
+        clearCalled = true;
+        if (timeoutId !== null) {
+          try {
+            clearTimeout(timeoutId);
+          } catch (error) {
+            this.logger.error('clearTimeout error', { error });
+          } finally {
+            timeoutId = null;
+          }
+        }
+
+        if (resultId !== null) {
+          try {
+            await this.deviceMessageQueue.deleteResult(organizationId, deviceId, resultId);
+          } catch (error) {
+            this.logger.error('deleteResult error', { error });
+          } finally {
+            resultId = null;
+          }
+        }
+      };
+
+      const _resolve = (result: Result): void => {
+        clear().catch((e) => {
+          this.logger.error('DeviceMessageRelayer.sendParam.clear error', { error: errorify(e) });
+        });
+        resolve(result);
+      };
+
+      const _reject = (error: unknown): void => {
+        clear().catch((e) => {
+          this.logger.error('DeviceMessageRelayer.sendParam.clear error', { error: errorify(e) });
+        });
+        reject(error);
+      };
+
       (async (): Promise<void> => {
-        let timeoutId: ReturnType<typeof setTimeout> | null = null;
-        let resultId: string | null = null;
-        const clear = async (): Promise<void> => {
-          if (timeoutId !== null) {
-            try {
-              clearTimeout(timeoutId);
-            } catch (error) {
-              this.logger.error('clearTimeout error', { error });
-            }
-          }
-          if (resultId !== null) {
-            try {
-              await this.deviceMessageQueue.deleteResult(organizationId, deviceId, resultId);
-            } catch (error) {
-              this.logger.error('deleteResult error', { error });
-            }
-          }
-        };
         try {
           timeoutId = setTimeout(() => {
-            reject('Param timeout');
+            _reject('Param timeout');
           }, config.device.param.timeoutMilliseconds);
           if (timeoutId === null) {
-            reject('timeoutId is null');
+            _reject('timeoutId is null');
           }
+
           resultId = uuidv4();
           const param: Param = {
             resultId,
@@ -98,13 +129,17 @@ export class DeviceMessageRelayer {
           };
           const transformed = await transformAndValidate(Param, param);
           await this.deviceMessageQueue.pushParam(organizationId, deviceId, transformed);
+
           for await (const _ of loop(config.device.message.intervalMilliseconds)) {
+            if (clearCalled) {
+              return;
+            }
             const resultData = await this.deviceMessageQueue.popResultData(organizationId, deviceId, resultId);
             if (resultData === null) {
               continue;
             }
             const result = await transformAndValidate(Result, JSON.parse(resultData));
-            resolve(result);
+            _resolve(result);
           }
         } catch (error) {
           this.logger.error('sendParam error', { error });
@@ -112,9 +147,11 @@ export class DeviceMessageRelayer {
         } finally {
           await clear();
         }
+
         throw new Error('unhandled error');
-      })().catch((error) => {
-        reject(error);
+      })().catch((e) => {
+        this.logger.error('sendParam unhandled error', { error: errorify(e) });
+        _reject(e);
       });
     });
   }

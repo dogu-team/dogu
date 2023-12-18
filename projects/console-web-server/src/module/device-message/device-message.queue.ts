@@ -8,7 +8,10 @@ import { RedisService } from '../redis/redis.service';
 
 @Injectable()
 export class DeviceMessageQueue {
-  constructor(private readonly redis: RedisService, private readonly logger: DoguLogger) {}
+  constructor(
+    private readonly redis: RedisService,
+    private readonly logger: DoguLogger,
+  ) {}
 
   async pushParam(organizationId: OrganizationId, deviceId: DeviceId, param: Param): Promise<void> {
     const key = config.redis.key.deviceParam(organizationId, deviceId);
@@ -28,7 +31,7 @@ export class DeviceMessageQueue {
     await this.rpushWithExpire(key, data);
   }
 
-  popResultData(organizationId: OrganizationId, deviceId: DeviceId, resultId: string): Promise<string | null> {
+  async popResultData(organizationId: OrganizationId, deviceId: DeviceId, resultId: string): Promise<string | null> {
     const key = config.redis.key.deviceResult(organizationId, deviceId, resultId);
     return this.redis.lpop(key);
   }
