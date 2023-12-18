@@ -47,6 +47,9 @@ export const AppConfigSchema = {
   DOGU_WIFI_PASSWORD: {
     type: 'string',
   },
+  DOGU_DEVICE_SKIP_RESET_FOR_LOCAL: {
+    type: 'boolean',
+  },
   is_show_devui: {
     type: 'boolean',
   },
