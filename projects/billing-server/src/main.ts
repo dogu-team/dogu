@@ -40,7 +40,7 @@ async function bootstrap(): Promise<void> {
     ],
     environment: env.DOGU_BILLING_RUN_TYPE,
     maxBreadcrumbs: 10000,
-    tracesSampleRate: 0.1,
+    tracesSampleRate: 0.01,
   });
   handleLoggerCreateWithSentry(isSentryEnabled(), logger);
 
