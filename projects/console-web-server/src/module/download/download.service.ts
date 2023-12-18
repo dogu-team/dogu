@@ -20,6 +20,9 @@ export class DownloadService {
     private readonly logger: DoguLogger,
   ) {}
 
+  /**
+   * @deprecated use getDoguAgentS3LatestWithBeta
+   */
   async getDoguAgentS3Latest(): Promise<DownloadablePackageResult[]> {
     const { mac, windows } = await this.parseLatestYaml();
 
@@ -116,7 +119,7 @@ export class DownloadService {
   async getDoguAgentLatest(): Promise<DownloadablePackageResult[]> {
     switch (FeatureConfig.get('doguAgentAppLocation')) {
       case 's3':
-        return await this.getDoguAgentS3Latest();
+        return await this.getDoguAgentS3LatestWithBeta();
       case 'github':
         return await this.getDoguAgentGithubLatest();
       case 'off':
