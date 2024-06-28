@@ -1,6 +1,5 @@
 export const CONSOLE_WEB_FRONT_SPREADSHEET_ID = '1SL1fcos9C08eYUDVap8KyRleJfnRQQ5rDlGui1Z9MVw';
 export const CONSOLE_WEB_SERVER_SPREADSHEET_ID = '1Zjb17qSaKKhuBDdssYL-cg2SNf9UroAeHX-CwMg6-r0';
-export const BILLING_SERVER_SPREADSHEET_ID = '1taSE-MPqzphCE0iTnD7d-MhWHvrzPty65tafm_0JfEM';
 export const HOST_AGENT_SPREADSHEET_ID = '166HkuXoAoS5n_vnkMfuZHIHv-tGeCNVX4KjG-TM6aK0';
 export const DEIVCE_SERVER_SPREADSHEET_ID = '1xRW7XT00vr7SQsy9m-tmApAv01hXOmsYDZ__R-RWkeo';
 export const E2E_SPREADSHEET_ID = '1ex2TaEBXhnI0DXIbEUSUGk3a9aXeYwc4k4v5gBe1iJM';
@@ -27,10 +26,6 @@ const projectNameToSheet: {
   'console-web-server': {
     path: 'projects/console-web-server',
     sheets: [{ name: '.env.local', id: CONSOLE_WEB_SERVER_SPREADSHEET_ID }],
-  },
-  'billing-server': {
-    path: 'projects/billing-server',
-    sheets: [{ name: '.env.local', id: BILLING_SERVER_SPREADSHEET_ID }],
   },
   'dogu-agent': {
     path: 'projects/dogu-agent',

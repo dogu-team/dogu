@@ -17,7 +17,6 @@ on:
         options:
           - console-web-front
           - console-web-server
-          - billing-server
           - dogu-redis
           - dogu-influxdb
           - dogu-coturn

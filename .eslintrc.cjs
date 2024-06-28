@@ -15,7 +15,6 @@ module.exports = {
      */
     project: [
       './tsconfig.eslint.json', //
-      './projects/billing-server/tsconfig.json',
       './projects/console-web-front/tsconfig.json',
       './projects/console-web-server/tsconfig.json',
       './projects/test-executor/tsconfig.json',
