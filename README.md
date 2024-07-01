@@ -5,30 +5,8 @@
 Dogu - Seamless Unified  Test Automation Platform.
 </p>
 
-<p align="center">
-  <a href="https://github.com/dogu-team/dogu/actions/workflows/ci-e2e.yml">
-    <img src="https://github.com/dogu-team/dogu/actions/workflows/ci-e2e.yml/badge.svg" alt="GitHub Actions status">
-  </a>
-  <a href="https://github.com/dogu-team/dogu/releases" alt="Release">
-    <img alt="GitHub tag (latest SemVer pre-release)" src="https://img.shields.io/github/v/tag/dogu-team/dogu?label=release">
-  </a>
-  <a href="https://hub.docker.com/r/dogutechio/dogu/tags" alt="Download">
-    <img alt="Docker Pulls" src="https://img.shields.io/docker/pulls/dogutechio/dogu?label=downloads">
-  </a>
-  <div align="center">
-    <a href="https://join.slack.com/t/dogu-community/shared_invite/zt-1zespy16o-TgYIureSBI6ma6o_nG3gVw">
-      <img src="https://img.shields.io/badge/Slack-4A154B?style=for-the-badge&logo=slack&logoColor=white" alt="Slack" />
-    </a>
-  <a href="https://blog.dogutech.io">
-    <img src="https://img.shields.io/badge/blog-007396?style=for-the-badge&logo=ghost&logoColor=white" alt="Blog" />
-  </a>
-    <a href="https://www.linkedin.com/company/dogu-technologies">
-      <img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn" />
-    </a>
-    <a href="https://twitter.com/dogutechio">
-      <img src="https://img.shields.io/badge/Twitter-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white" alt="Twitter" />
-    </a>
-  </div>
+<p align="center" style="color:red">
+We are preparing for re-building project to open source. We are currently working on the project.
 </p>
 
 # What's Dogu?
@@ -40,6 +18,10 @@ Dogu is a seamless unified test automation platform for web, mobile and game app
 Dogu is a test automation platform that provides a seamless unified experience for web, mobile and game application. Dogu is composed of the following components.
 
 <img src=".github/resources/architecture.png" width="100%"/>
+
+### Test CI Architecture
+
+<img src=".github/resources/architecture-test-automation-flow.png" width="100%"/>
 
 # Dogu Features
 
@@ -84,10 +66,6 @@ Visualize test unit by integrating test unit framework with report.
 
 Use Dogu on a self-hosted. See [guide setting up Dogu with self-hosted](https://docs.dogutech.io/get-started/installation/self-hosted/installation) for more details.
 
-### Run Dogu with Cloud Service
-
-Start [cloud service](https://dogutech.io) right now without any installation.
-
 # Documentation
 
 - [Documentation](https://docs.dogutech.io)
@@ -110,18 +88,10 @@ Start [cloud service](https://dogutech.io) right now without any installation.
 - Test Report
 - Test Auto Recovery
 
-# Join Our Community
-
-Join our [Slack Community](https://join.slack.com/t/dogu-community/shared_invite/zt-1zespy16o-TgYIureSBI6ma6o_nG3gVw) to engage in discussions about test automation and receive community support.
-
 # Contributing
 
 Do you want to contribute to Dogu? We'd love your help. Dogu is an open source project, built one contribution at a time by users like you. Read [CONTRIBUTING.md](CONTRIBUTING.md) for more details.
 
 # License
 
-We provide [community edition](https://dogutech.io/pricing) and [enterprise edition](https://dogutech.io/pricing). See [LICENSE](LICENSE.md) for more details.
-
-# Contact
-
-contact@dogutech.io
+AGPL-3.0 License

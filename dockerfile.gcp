@@ -67,17 +67,6 @@ RUN yarn run build
 EXPOSE 4000
 CMD ["node", "scripts/entrypoint.mjs"]
 
-# billing-server
-FROM base AS billing-server
-COPY projects/billing-server ./projects/billing-server
-RUN yarn env-generator gen ${DOGU_RUN_TYPE} billing-server --cwd projects/billing-server
-RUN yarn run newbie:cicd && \
-    yarn run build:packages
-WORKDIR /dogu/projects/billing-server
-RUN yarn run build
-EXPOSE 4001
-CMD ["node", "scripts/entrypoint.mjs"]
-
 # dogu-redis
 FROM redis:7.2.3-bookworm AS dogu-redis
 ARG DEBIAN_FRONTEND=noninteractive

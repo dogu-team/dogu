@@ -6794,25 +6794,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@slack/web-api@npm:^6.10.0":
-  version: 6.10.0
-  resolution: "@slack/web-api@npm:6.10.0"
-  dependencies:
-    "@slack/logger": ^3.0.0
-    "@slack/types": ^2.8.0
-    "@types/is-stream": ^1.1.0
-    "@types/node": ">=12.0.0"
-    axios: ^1.6.0
-    eventemitter3: ^3.1.0
-    form-data: ^2.5.0
-    is-electron: 2.2.2
-    is-stream: ^1.1.0
-    p-queue: ^6.6.1
-    p-retry: ^4.0.0
-  checksum: 7904f5d28fe166ab8ca0839b85f6076d7b66a76a85424fa2e8e0247ee6ad998fc73c8bdfa182ef81ecfdb35bd2be2da532be32686eb2d0f17cd71aa3f9af98ce
-  languageName: node
-  linkType: hard
-
 "@socket.io/component-emitter@npm:~3.1.0":
   version: 3.1.0
   resolution: "@socket.io/component-emitter@npm:3.1.0"
@@ -8271,27 +8252,6 @@ __metadata:
   dependencies:
     "@types/express": "*"
   checksum: 8e89c99d770db8acac54f15e06867a4795c441ef17007784dbb4494f5c5c371154d1ee7ef2abbadbcd10619e0ed3304f837cb78a1be478cb783a6ca98d49f3f9
-  languageName: node
-  linkType: hard
-
-"@types/pg-cursor@npm:2":
-  version: 2.7.2
-  resolution: "@types/pg-cursor@npm:2.7.2"
-  dependencies:
-    "@types/node": "*"
-    "@types/pg": "*"
-  checksum: bedf37185917be9e9db01a865dca89676aedec55b25b6ab3fdb00e7bbb3f4bf40986086eab670aef55cdb513e5877a22b8c05c81460d8590014aeadd5276e126
-  languageName: node
-  linkType: hard
-
-"@types/pg@npm:*":
-  version: 8.10.9
-  resolution: "@types/pg@npm:8.10.9"
-  dependencies:
-    "@types/node": "*"
-    pg-protocol: "*"
-    pg-types: ^4.0.1
-  checksum: c0c750af1f0945fe31c2793931da33bf596476ec8b52babfdb20f61006570c1c6c7f62f2dedd0cb9aefd2cddab238f2ed279337d3b2aa734ddd1ee8958e2355e
   languageName: node
   linkType: hard
 
@@ -11130,66 +11090,6 @@ __metadata:
   checksum: 582c03af77ec9cb0ebd682a373ee6c66475db94a4325f92299621d544aa4bd45cb45fd60001610e94aef8ae98a0905fa538241d9638d4422d57abbeeac6fadaf
   languageName: node
   linkType: hard
-
-"billing-server@workspace:projects/billing-server":
-  version: 0.0.0-use.local
-  resolution: "billing-server@workspace:projects/billing-server"
-  dependencies:
-    "@dogu-dev-private/build-tools": "workspace:^"
-    "@dogu-private/console": "workspace:^"
-    "@dogu-private/nestjs-common": "workspace:^"
-    "@dogu-private/types": "workspace:^"
-    "@dogu-tech/common": "workspace:^"
-    "@dogu-tech/env-tools": "workspace:^"
-    "@dogu-tech/node": "workspace:^"
-    "@nestjs/common": 10.2.7
-    "@nestjs/core": 10.2.7
-    "@nestjs/platform-express": 10.2.7
-    "@nestjs/platform-socket.io": 10.2.7
-    "@nestjs/platform-ws": 10.2.7
-    "@nestjs/typeorm": 10.0.0
-    "@nestjs/websockets": 10.2.7
-    "@sentry/node": 7.77.0
-    "@slack/web-api": ^6.10.0
-    "@types/express": 4.17.20
-    "@types/lodash": 4.14.200
-    "@types/luxon": 3.3.3
-    "@types/node": 18.15.11
-    "@types/nodemailer": 6
-    "@types/passport": 1.0.14
-    "@types/pg": 8
-    "@types/pg-cursor": 2
-    "@types/shelljs": 0.8.14
-    "@types/uuid": 9.0.6
-    "@types/ws": 8
-    aws-sdk: 2.1481.0
-    axios: 1.5.1
-    class-transformer: 0.5.1
-    class-validator: 0.14.0
-    cross-env: 7.0.3
-    express: 4.18.2
-    lodash: 4.17.21
-    luxon: 3.4.3
-    nodemailer: 6.9.7
-    nodemon: 3.0.1
-    npm-check-updates: 16.14.6
-    pg: 8.11.3
-    pg-cursor: 2.10.3
-    reflect-metadata: 0.1.13
-    rxjs: 7.8.1
-    shelljs: 0.8.5
-    shx: 0.3.4
-    source-map-support: 0.5.21
-    ts-loader: 9.5.0
-    ts-node: 10.9.1
-    tsconfig-paths: 4.2.0
-    typeorm: 0.3.17
-    typescript: 4.7.4
-    uuid: 9.0.1
-    webpack: 5.89.0
-    ws: 8.14.2
-  languageName: unknown
-  linkType: soft
 
 "binary-extensions@npm:^2.0.0":
   version: 2.2.0
@@ -25053,15 +24953,6 @@ __metadata:
   version: 2.6.2
   resolution: "pg-connection-string@npm:2.6.2"
   checksum: 22265882c3b6f2320785378d0760b051294a684989163d5a1cde4009e64e84448d7bf67d9a7b9e7f69440c3ee9e2212f9aa10dd17ad6773f6143c6020cebbcb5
-  languageName: node
-  linkType: hard
-
-"pg-cursor@npm:2.10.3":
-  version: 2.10.3
-  resolution: "pg-cursor@npm:2.10.3"
-  peerDependencies:
-    pg: ^8
-  checksum: 86dd66c4bf70da5272eb60d485a60f4216ebbffe2b7d314fe18a28a0cadf9b0d056d2291e0f108ed413be185818c2e82105bf290bf98fc91f73c52e4d0de42b8
   languageName: node
   linkType: hard
 
