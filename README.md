@@ -5,8 +5,8 @@
 Dogu - Seamless Unified  Test Automation Platform.
 </p>
 
-<p align="center" style="color:red">
-We are preparing for re-building project to open source. We are currently working on the project.
+<p align="center">
+We are preparing for re-building project to open source.
 </p>
 
 # What's Dogu?
