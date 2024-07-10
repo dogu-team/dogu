@@ -30,11 +30,11 @@
   "dependencies": {
     "@dogu-tech/common": "workspace:^",
     "@dogu-tech/types": "workspace:^",
-    "@grpc/grpc-js": "1.7.3",
+    "@grpc/grpc-js": "1.8.22",
     "class-transformer": "0.5.1",
     "class-validator": "0.14.0",
     "long": "4.0.0",
-    "protobufjs": "7.1.2",
+    "protobufjs": "7.2.5",
     "reflect-metadata": "0.1.13"
   },
   "devDependencies": {
