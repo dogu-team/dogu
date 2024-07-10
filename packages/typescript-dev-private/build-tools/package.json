@@ -19,7 +19,7 @@
     "@dogu-tech/common": "workspace:^",
     "@dogu-tech/node": "workspace:^",
     "assert": "2.0.0",
-    "minimatch": "7.4.3",
+    "minimatch": "7.4.4",
     "pbxproj-dom": "1.2.0",
     "shelljs": "0.8.5"
   },
